@@ -1,0 +1,72 @@
+<RCC>    
+    <qresource prefix="/qm">
+        <file alias="qt_zh_CN_4.8.5">resource/qm/qt4.8.5/qt_zh_CN.qm</file>
+        <file alias="qt_zh_CN_5.8.0">resource/qm/qt5.8.0/qt_zh_CN.qm</file>
+        <file alias="lang_en_US">resource/qm/lang_en_US.qm</file>
+        <file alias="lang_zh_CN">resource/qm/lang_zh_CN.qm</file>
+    </qresource>
+    <qresource prefix="/qss">
+        <file alias="classic">resource/qss/classic.qss</file>
+    </qresource>
+    <qresource prefix="/main">
+        <file alias="logo">resource/main/logo.png</file>
+    </qresource>
+    <qresource prefix="/tools">
+        <file alias="new">resource/tools/common/new.png</file>
+        <file alias="open">resource/tools/common/open.png</file>
+        <file alias="save">resource/tools/common/save.png</file>
+        <file alias="save_all">resource/tools/common/save_all.png</file>
+        <file alias="recent">resource/tools/common/recent.png</file>
+        <file alias="copy">resource/tools/common/copy.png</file>
+        <file alias="cut">resource/tools/common/cut.png</file>
+        <file alias="redo">resource/tools/common/redo.png</file>
+        <file alias="undo">resource/tools/common/undo.png</file>
+        <file alias="paste">resource/tools/common/paste.png</file>
+        <file alias="help">resource/tools/common/help.png</file>
+        <file alias="option">resource/tools/common/option.png</file>
+        <file alias="exit">resource/tools/common/exit.png</file>
+        <file alias="align-bottom">resource/tools/align/align-bottom.png</file>
+        <file alias="align-center-horizontal">resource/tools/align/align-center-horizontal.png</file>
+        <file alias="align-center-vertical">resource/tools/align/align-center-vertical.png</file>
+        <file alias="align-left">resource/tools/align/align-left.png</file>
+        <file alias="align-right">resource/tools/align/align-right.png</file>
+        <file alias="align-top">resource/tools/align/align-top.png</file>
+        <file alias="start">resource/tools/start.png</file>
+        <file alias="suspend">resource/tools/suspend.png</file>
+        <file alias="stop">resource/tools/stop.png</file>
+        <file alias="menu">resource/tools/menu.png</file>
+        <file alias="skin">resource/tools/skin.png</file>
+    </qresource>
+    <qresource prefix="/mode">
+        <file alias="debug">resource/mode/debug.png</file>
+        <file alias="edit">resource/mode/edit.png</file>
+        <file alias="graph">resource/mode/graph.png</file>
+        <file alias="master">resource/mode/master.png</file>
+        <file alias="refer">resource/mode/refer.png</file>
+        <file alias="explorer">resource/mode/explorer.png</file>
+        <file alias="paint">resource/mode/paint.png</file>
+        <file alias="home">resource/mode/home.png</file>
+        <file alias="menu">resource/mode/menu.png</file>
+        <file alias="chart">resource/mode/chart.png</file>
+    </qresource>
+    <qresource prefix="/skin">
+        <file alias="darktheme">resource/skin/dark.cptheme</file>
+        <file alias="defaulttheme">resource/skin/default.cptheme</file>
+        <file alias="whitetheme">resource/skin/white.cptheme</file>
+        <file alias="0">resource/skin/0.jpg</file>
+        <file alias="1">resource/skin/1.jpg</file>
+        <file alias="2">resource/skin/2.jpg</file>
+        <file alias="3">resource/skin/3.jpg</file>
+        <file alias="4">resource/skin/4.jpg</file>
+        <file alias="5">resource/skin/5.jpg</file>
+        <file alias="6">resource/skin/6.jpg</file>
+        <file alias="7">resource/skin/7.jpg</file>
+        <file alias="8">resource/skin/8.jpg</file>
+        <file alias="9">resource/skin/9.jpg</file>
+        <file alias="10">resource/skin/10.jpg</file>
+        <file alias="11">resource/skin/11.jpg</file>
+        <file alias="12">resource/skin/12.jpg</file>
+        <file alias="13">resource/skin/13.jpg</file>
+        <file alias="14">resource/skin/14.jpg</file>
+    </qresource>
+</RCC>

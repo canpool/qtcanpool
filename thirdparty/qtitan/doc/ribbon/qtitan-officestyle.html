@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- QtnCommonStyle.qdoc -->
+  <title>Qt QtitanRibbon 3.1: OfficeStyle Class Reference</title>
+  <link rel="stylesheet" type="text/css" href="style/style.css" />
+  <script src="scripts/jquery.js" type="text/javascript"></script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script src="./scripts/superfish.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/superfish.css" />  <script src="./scripts/narrow.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/narrow.css" />
+  <!--[if IE]>
+<meta name="MSSmartTagsPreventParsing" content="true">
+<meta http-equiv="imagetoolbar" content="no">
+<![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="style/style_ie8.css">
+<![endif]-->
+</head>
+<body class="" onload="CheckEmptyAndLoadList();">
+ <div class="header" id="qtdocheader">
+    <div class="content"> 
+    <div id="nav-logo">
+      <a href="index.html">Home</a></div>
+		<div id="narrowsearch"><form onsubmit="return false;" action="" id="qtdocsearch">
+		<fieldset>
+		<input type="text" value="" id="pageType2" name="searchstring"/>
+		 </fieldset>
+		</form></div>
+    <div id="nav-topright">
+      <ul>
+      </ul>
+    </div>
+    <div id="shortCut">
+      <ul>
+        <li class="shortCut-topleft-inactive"><span><a href="index.html">Home</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="classes.html">All&nbsp;Classes</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="overviews.html">Overviews</a></span></li>
+      </ul>
+</div> <ul class="sf-menu sf-js-enabled sf-shadow" id="narrowmenu"> 
+		 <li><a href="#">API Lookup</a> 
+			 <ul id="topmenuLook"> 
+			   <li><a href="qtitan.html">Qtitan Namespace</a></li> 
+			   <li><a href="classes.html">Class index</a></li> 
+ 			  <li><a href="qtitan.html#functions">Function index</a></li> 
+			   </ul> 
+		 </li> 
+ </ul> 
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="hd">
+      <span></span>
+    </div>
+    <div class="bd group">
+      <div class="sidebar">
+        <div class="searchlabel">
+          Search index:</div>
+        <div class="search">
+          <form id="qtdocsearch" action="" onsubmit="return false;">
+            <fieldset>
+              <input type="text" name="searchstring" id="pageType" value="" />
+            </fieldset>
+          </form>
+        </div>
+        <div class="box first bottombar" id="lookup">
+          <h2 title="API Lookup"><span></span>
+            API Lookup</h2>
+          <div  id="list001" class="list">
+          <ul id="ul001" >
+              <li class="defaultLink"><a href="qtitan.html">Qtitan Namespace</a></li>
+              <li class="defaultLink"><a href="classes.html">Class index</a></li>
+              <li class="defaultLink"><a href="qtitan.html#functions">Function index</a></li>
+            </ul> 
+          </div>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="toolbar">
+          <div class="breadcrumb toolblock">
+            <ul>
+              <li class="first"><a href="index.html">Home</a></li>
+              <!--  Bread crumbs goes here -->
+              <li><a href="modules.html">Modules</a></li>              <li>QtitanRibbon</li>
+              <li>OfficeStyle</li>
+            </ul>
+          </div>
+          <div class="toolbuttons toolblock">
+            <ul>
+              <li id="smallA" class="t_button">A</li>
+              <li id="medA" class="t_button active">A</li>
+              <li id="bigA" class="t_button">A</li>
+              <li id="print" class="t_button"><a href="javascript:this.print();">
+                <span>Print</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="content">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-types">Public Types</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#protected-functions">Protected Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<h1 class="title">OfficeStyle Class Reference</h1>
+<span class="small-subtitle">(Qtitan::OfficeStyle)<br/></span>
+<!-- $$$OfficeStyle-brief -->
+<p>OfficeStyle class implements the style of Microsoft Office 2007 and Microsoft Office 2010 for Qt. The styles are available for Windows, Linux and <a href="http://qt.nokia.com/doc/4.7/winsystem.html">MacOSX</a> without restrictions. To change the appearance of your application to the Microsoft Office 2007 style, you must initialize it using this line of code: QApplication::setStyle(new Qtitan::OfficeStyle()); Style OfficeStyle supports 8 themes - <a href="qtitan-officestyle.html#Theme-enum">Office2007Blue</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2007Black</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2007Silver</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2007Aqua</a>, <a href="qtitan-officestyle.html#Theme-enum">Windows7Scenic</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2010Blue</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2010Black</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2010Silver</a>. <a href="#details">More...</a></p>
+<!-- @@@OfficeStyle -->
+<p>Inherits <a href="qtitan-commonstyle.html">CommonStyle</a>.</p>
+<p>Inherited by <a href="qtitan-ribbonstyle.html">Qtitan::RibbonStyle</a>.</p>
+<ul>
+<li><a href="qtitan-officestyle-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h2>Public Types</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#OfficePopupDecoration-enum">OfficePopupDecoration</a></b> { PopupSystemDecoration, PopupCompatibleDecoration, PopupOfficeFlatDecoration, PopupMSNDecoration }</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#Theme-enum">Theme</a></b> { Office2007Blue, Office2007Black, Office2007Silver, Office2007Aqua, ..., Office2010Black }</td></tr>
+</table>
+<a name="public-functions"></a>
+<h2>Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#OfficeStyle">OfficeStyle</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#OfficeStyle-2">OfficeStyle</a></b> ( QMainWindow * <i>mainWindow</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#dtor.OfficeStyle">~OfficeStyle</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#getDPI">getDPI</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#getDPIToPercent">getDPIToPercent</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Theme </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#getTheme">getTheme</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#isAnimationEnabled">isAnimationEnabled</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#isDPIAware">isDPIAware</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#isDialogsIgnored">isDialogsIgnored</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> OfficeStyle::OfficePopupDecoration </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#popupDecoration">popupDecoration</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#setAnimationEnabled">setAnimationEnabled</a></b> ( bool <i>enable</i> = true )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#setDPIAware">setDPIAware</a></b> ( bool <i>aware</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#setDialogsIgnored">setDialogsIgnored</a></b> ( bool <i>ignore</i> = false )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#setPopupDecoration">setPopupDecoration</a></b> ( OfficeStyle::OfficePopupDecoration <i>decoration</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#setTheme">setTheme</a></b> ( Theme <i>theme</i> )</td></tr>
+</table>
+<a name="reimplemented-public-functions"></a>
+<h2>Reimplemented Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#drawComplexControl">drawComplexControl</a></b> ( ComplexControl <i>cc</i>, const QStyleOptionComplex * <i>opt</i>, QPainter * <i>p</i>, const QWidget * <i>widget</i> ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#drawPrimitive">drawPrimitive</a></b> ( PrimitiveElement <i>element</i>, const QStyleOption * <i>option</i>, QPainter * <i>painter</i>, const QWidget * <i>widget</i> ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual SubControl </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#hitTestComplexControl">hitTestComplexControl</a></b> ( ComplexControl <i>control</i>, const QStyleOptionComplex * <i>opt</i>, const QPoint &amp; <i>pt</i>, const QWidget * <i>widget</i> = 0 ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#pixelMetric">pixelMetric</a></b> ( PixelMetric <i>pm</i>, const QStyleOption * <i>opt</i> = Q_NULL, const QWidget * <i>w</i> = Q_NULL ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#polish">polish</a></b> ( QApplication * <i>pApp</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#polish-2">polish</a></b> ( QWidget * <i>widget</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#polish-3">polish</a></b> ( QPalette &amp; <i>palette</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual QSize </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#sizeFromContents">sizeFromContents</a></b> ( ContentsType <i>ct</i>, const QStyleOption * <i>opt</i>, const QSize &amp; <i>contentsSize</i>, const QWidget * <i>w</i> = Q_NULL ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#styleHint">styleHint</a></b> ( StyleHint <i>hint</i>, const QStyleOption * <i>opt</i> = Q_NULL, const QWidget * <i>widget</i> = Q_NULL, QStyleHintReturn * <i>returnData</i> = Q_NULL ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual QRect </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#subControlRect">subControlRect</a></b> ( ComplexControl <i>cc</i>, const QStyleOptionComplex * <i>opt</i>, SubControl <i>sc</i>, const QWidget * <i>widget</i> ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#unpolish">unpolish</a></b> ( QApplication * <i>app</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#unpolish-2">unpolish</a></b> ( QWidget * <i>widget</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">12 public functions inherited from <a href="qtitan-commonstyle.html#public-functions">Qtitan::CommonStyle</a></li>
+<li class="fn">16 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qcommonstyle.html#public-functions">QCommonStyle</a></li>
+<li class="fn">24 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#public-functions">QStyle</a></li>
+<li class="fn">29 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-functions">QObject</a></li>
+</ul>
+<a name="protected-functions"></a>
+<h2>Protected Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#isStyle2010">isStyle2010</a></b> () const</td></tr>
+</table>
+<a name="reimplemented-protected-functions"></a>
+<h2>Reimplemented Protected Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officestyle.html#eventFilter">eventFilter</a></b> ( QObject * <i>watched</i>, QEvent * <i>event</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">3 protected functions inherited from <a href="qtitan-commonstyle.html#protected-functions">Qtitan::CommonStyle</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+</ul>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li class="fn">1 property inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#properties">QObject</a></li>
+<li class="fn">1 public slot inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-slots">QObject</a></li>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#signals">QObject</a></li>
+<li class="fn">1 public variable inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-variables">QObject</a></li>
+<li class="fn">6 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#static-public-members">QStyle</a></li>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#static-public-members">QObject</a></li>
+<li class="fn">2 protected slots inherited from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#protected-slots">QStyle</a></li>
+<li class="fn">2 protected variables inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-variables">QObject</a></li>
+</ul>
+<a name="details"></a>
+<!-- $$$OfficeStyle-description -->
+<div class="descr">
+<h2>Detailed Description</h2>
+<p>OfficeStyle class implements the style of Microsoft Office 2007 and Microsoft Office 2010 for Qt. The styles are available for Windows, Linux and <a href="http://qt.nokia.com/doc/4.7/winsystem.html">MacOSX</a> without restrictions. To change the appearance of your application to the Microsoft Office 2007 style, you must initialize it using this line of code: QApplication::setStyle(new Qtitan::OfficeStyle()); Style OfficeStyle supports 8 themes - <a href="qtitan-officestyle.html#Theme-enum">Office2007Blue</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2007Black</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2007Silver</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2007Aqua</a>, <a href="qtitan-officestyle.html#Theme-enum">Windows7Scenic</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2010Blue</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2010Black</a>, <a href="qtitan-officestyle.html#Theme-enum">Office2010Silver</a>.</p>
+</div>
+<!-- @@@OfficeStyle -->
+<div class="types">
+<h2>Member Type Documentation</h2>
+<!-- $$$OfficePopupDecoration$$$PopupSystemDecoration$$$PopupCompatibleDecoration$$$PopupOfficeFlatDecoration$$$PopupMSNDecoration -->
+<h3 class="fn"><a name="OfficePopupDecoration-enum"></a>enum OfficeStyle::OfficePopupDecoration</h3>
+<p>This enum determines the decoration for specialized popup windows - <a href="qtitan-officepopupwindow.html">OfficePopupWindow</a>, which are used for informing users about the events which are occurred.</p>
+<table class="valuelist"><tr class="odd"><tr><th class="tblConst">Constant</th><th class="tblval">Value</th><th class="tbldscr">Description</th></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::PopupSystemDecoration</tt></td><td class=" topAlign"><tt>0</tt></td><td  class="topAlign">Decoration of the popup depends from value of the style installed in the <a href="http://qt.nokia.com/doc/4.7/qapplication.html">QApplication</a> or in the poup window inside. If the installed style is descendant of <a href="qtitan-officestyle.html">OfficeStyle</a> then the value of the <a href="qtitan-officestyle.html#getTheme">getTheme</a>() will be taken into account when decoration will be painting.</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::PopupCompatibleDecoration</tt></td><td class=" topAlign"><tt>1</tt></td><td  class="topAlign">Old decoration which has used in XP and other old Microsoft products.</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::PopupOfficeFlatDecoration</tt></td><td class=" topAlign"><tt>2</tt></td><td  class="topAlign">Flat decoration of the popup</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::PopupMSNDecoration</tt></td><td class=" topAlign"><tt>3</tt></td><td  class="topAlign">Decoration which has used in Microsoft Messanger product.</td></tr>
+</table>
+<!-- @@@OfficePopupDecoration -->
+<!-- $$$Theme$$$Office2007Blue$$$Office2007Black$$$Office2007Silver$$$Office2007Aqua$$$Windows7Scenic$$$Office2010Silver$$$Office2010Blue$$$Office2010Black$$$Office2013White -->
+<h3 class="fn"><a name="Theme-enum"></a>enum OfficeStyle::Theme</h3>
+<p>This enum describes color scheme and theme that will be used to show the Qt widgets and elements.</p>
+<table class="valuelist"><tr class="odd"><tr><th class="tblConst">Constant</th><th class="tblval">Value</th><th class="tbldscr">Description</th></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2007Blue</tt></td><td class=" topAlign"><tt>0</tt></td><td  class="topAlign">Blue Office 2007 theme</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2007Black</tt></td><td class=" topAlign"><tt>1</tt></td><td  class="topAlign">Black Office 2007 theme</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2007Silver</tt></td><td class=" topAlign"><tt>2</tt></td><td  class="topAlign">Silver Office 2007 theme</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2007Aqua</tt></td><td class=" topAlign"><tt>3</tt></td><td  class="topAlign">Aqua Office 2007 theme</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Windows7Scenic</tt></td><td class=" topAlign"><tt>4</tt></td><td  class="topAlign">Windows 7 Scenic theme (sometimes this theme is called White)</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2010Silver</tt></td><td class=" topAlign"><tt>5</tt></td><td  class="topAlign">Silver Office 2010 theme</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2010Blue</tt></td><td class=" topAlign"><tt>6</tt></td><td  class="topAlign">Blue Office 2010 theme</td></tr>
+<tr><td  class="topAlign"><tt>Qtitan::OfficeStyle::Office2010Black</tt></td><td class=" topAlign"><tt>7</tt></td><td  class="topAlign">Black Office 2010 theme</td></tr>
+</table>
+<!-- @@@Theme -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$OfficeStyle[overload1]$$$OfficeStyle -->
+<h3 class="fn"><a name="OfficeStyle"></a>OfficeStyle::OfficeStyle ()</h3>
+<p>Constuctor of the <a href="qtitan-officestyle.html">OfficeStyle</a>.</p>
+<!-- @@@OfficeStyle -->
+<!-- $$$OfficeStyle$$$OfficeStyleQMainWindow* -->
+<h3 class="fn"><a name="OfficeStyle-2"></a>OfficeStyle::OfficeStyle ( <a href="http://qt.nokia.com/doc/4.7/qmainwindow.html">QMainWindow</a> * <i>mainWindow</i> )</h3>
+<p>Constructor of the <a href="qtitan-officestyle.html">OfficeStyle</a>. The application is usually required to use this constructor only once. After this, the call QApplcation::setStyle(..&#x2e;) is not required. Parameter <i>mainWindow</i> is not used.</p>
+<!-- @@@OfficeStyle -->
+<!-- $$$~OfficeStyle[overload1]$$$~OfficeStyle -->
+<h3 class="fn"><a name="dtor.OfficeStyle"></a>OfficeStyle::~OfficeStyle ()<tt> [virtual]</tt></h3>
+<p>Destructor of the <a href="qtitan-officestyle.html">OfficeStyle</a>.</p>
+<!-- @@@~OfficeStyle -->
+<!-- $$$drawComplexControl[overload1]$$$drawComplexControlComplexControlconstQStyleOptionComplex*QPainter*constQWidget* -->
+<h3 class="fn"><a name="drawComplexControl"></a>void OfficeStyle::drawComplexControl ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#ComplexControl-enum">ComplexControl</a> <i>cc</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoptioncomplex.html">QStyleOptionComplex</a> * <i>opt</i>, <a href="http://qt.nokia.com/doc/4.7/qpainter.html">QPainter</a> * <i>p</i>, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#drawComplexControl">QStyle::drawComplexControl</a>().</p>
+<!-- @@@drawComplexControl -->
+<!-- $$$drawPrimitive[overload1]$$$drawPrimitivePrimitiveElementconstQStyleOption*QPainter*constQWidget* -->
+<h3 class="fn"><a name="drawPrimitive"></a>void OfficeStyle::drawPrimitive ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#PrimitiveElement-enum">PrimitiveElement</a> <i>element</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoption.html">QStyleOption</a> * <i>option</i>, <a href="http://qt.nokia.com/doc/4.7/qpainter.html">QPainter</a> * <i>painter</i>, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#drawPrimitive">QStyle::drawPrimitive</a>().</p>
+<!-- @@@drawPrimitive -->
+<!-- $$$eventFilter[overload1]$$$eventFilterQObject*QEvent* -->
+<h3 class="fn"><a name="eventFilter"></a>bool OfficeStyle::eventFilter ( <a href="http://qt.nokia.com/doc/4.7/qobject.html">QObject</a> * <i>watched</i>, <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qobject.html#eventFilter">QObject::eventFilter</a>().</p>
+<!-- @@@eventFilter -->
+<!-- $$$getDPI[overload1]$$$getDPI -->
+<h3 class="fn"><a name="getDPI"></a>int OfficeStyle::getDPI () const</h3>
+<p>Returns the value of the DPI setting in native format. If <a href="qtitan-officestyle.html#isDPIAware">isDPIAware</a>() is false then this function always returns 96.</p>
+<!-- @@@getDPI -->
+<!-- $$$getDPIToPercent[overload1]$$$getDPIToPercent -->
+<h3 class="fn"><a name="getDPIToPercent"></a>int OfficeStyle::getDPIToPercent () const</h3>
+<p>Returns the value of the DPI setting in percentage. If <a href="qtitan-officestyle.html#isDPIAware">isDPIAware</a>() is false then this function always returns 100%.</p>
+<!-- @@@getDPIToPercent -->
+<!-- $$$getTheme[overload1]$$$getTheme -->
+<h3 class="fn"><a name="getTheme"></a><a href="qtitan-officestyle.html#Theme-enum">Theme</a> OfficeStyle::getTheme () const</h3>
+<p>Returns the theme of the style.</p>
+<p>See also <a href="qtitan-officestyle.html#Theme-enum">Theme</a>.</p>
+<!-- @@@getTheme -->
+<!-- $$$hitTestComplexControl[overload1]$$$hitTestComplexControlComplexControlconstQStyleOptionComplex*constQPoint&constQWidget* -->
+<h3 class="fn"><a name="hitTestComplexControl"></a><a href="http://qt.nokia.com/doc/4.7/qstyle.html#SubControl-enum">SubControl</a> OfficeStyle::hitTestComplexControl ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#ComplexControl-enum">ComplexControl</a> <i>control</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoptioncomplex.html">QStyleOptionComplex</a> * <i>opt</i>, const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pt</i>, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> = 0 ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#hitTestComplexControl">QStyle::hitTestComplexControl</a>().</p>
+<!-- @@@hitTestComplexControl -->
+<!-- $$$isAnimationEnabled[overload1]$$$isAnimationEnabled -->
+<h3 class="fn"><a name="isAnimationEnabled"></a>bool OfficeStyle::isAnimationEnabled () const</h3>
+<p>Returns animation state for Microsoft Office's controls when mouse over the elements.</p>
+<!-- @@@isAnimationEnabled -->
+<!-- $$$isDPIAware[overload1]$$$isDPIAware -->
+<h3 class="fn"><a name="isDPIAware"></a>bool OfficeStyle::isDPIAware () const</h3>
+<p>Returns the feature of style reaction to the system DPI settings.</p>
+<!-- @@@isDPIAware -->
+<!-- $$$isDialogsIgnored[overload1]$$$isDialogsIgnored -->
+<h3 class="fn"><a name="isDialogsIgnored"></a>bool OfficeStyle::isDialogsIgnored () const</h3>
+<p>Returns the ignore dialog flag.</p>
+<!-- @@@isDialogsIgnored -->
+<!-- $$$isStyle2010[overload1]$$$isStyle2010 -->
+<h3 class="fn"><a name="isStyle2010"></a>bool OfficeStyle::isStyle2010 () const<tt> [protected]</tt></h3>
+<p>Returns true if style is using Office 2010 themes family. Otherwise it return false.</p>
+<!-- @@@isStyle2010 -->
+<!-- $$$pixelMetric[overload1]$$$pixelMetricPixelMetricconstQStyleOption*constQWidget* -->
+<h3 class="fn"><a name="pixelMetric"></a>int OfficeStyle::pixelMetric ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#PixelMetric-enum">PixelMetric</a> <i>pm</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoption.html">QStyleOption</a> * <i>opt</i> = Q_NULL, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>w</i> = Q_NULL ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#pixelMetric">QStyle::pixelMetric</a>().</p>
+<!-- @@@pixelMetric -->
+<!-- $$$polish[overload1]$$$polishQApplication* -->
+<h3 class="fn"><a name="polish"></a>void OfficeStyle::polish ( <a href="http://qt.nokia.com/doc/4.7/qapplication.html">QApplication</a> * <i>pApp</i> )<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#polish-2">QStyle::polish</a>().</p>
+<!-- @@@polish -->
+<!-- $$$polish$$$polishQWidget* -->
+<h3 class="fn"><a name="polish-2"></a>void OfficeStyle::polish ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> )<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#polish">QStyle::polish</a>().</p>
+<!-- @@@polish -->
+<!-- $$$polish$$$polishQPalette& -->
+<h3 class="fn"><a name="polish-3"></a>void OfficeStyle::polish ( <a href="http://qt.nokia.com/doc/4.7/qpalette.html">QPalette</a> &amp; <i>palette</i> )<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#polish-3">QStyle::polish</a>().</p>
+<!-- @@@polish -->
+<!-- $$$popupDecoration[overload1]$$$popupDecoration -->
+<h3 class="fn"><a name="popupDecoration"></a><a href="qtitan-officestyle.html#OfficePopupDecoration-enum">OfficeStyle::OfficePopupDecoration</a> OfficeStyle::popupDecoration () const</h3>
+<p>Returns the value of the popupDecoration flag.</p>
+<p>See also <a href="qtitan-officestyle.html#setPopupDecoration">setPopupDecoration</a>().</p>
+<!-- @@@popupDecoration -->
+<!-- $$$setAnimationEnabled[overload1]$$$setAnimationEnabledbool -->
+<h3 class="fn"><a name="setAnimationEnabled"></a>void OfficeStyle::setAnimationEnabled ( bool <i>enable</i> = true )</h3>
+<p>Sets the animation for Microsoft Office's controls when mouse over the elements to <i>enable</i> state. By default the animation is set.</p>
+<p>See also <a href="qtitan-officestyle.html#isAnimationEnabled">isAnimationEnabled</a>().</p>
+<!-- @@@setAnimationEnabled -->
+<!-- $$$setDPIAware[overload1]$$$setDPIAwarebool -->
+<h3 class="fn"><a name="setDPIAware"></a>void OfficeStyle::setDPIAware ( bool <i>aware</i> )</h3>
+<p>Activates in the style the mechanism that makes it possible to bind variety font metrics to the system DPI settings. If parameter <i>aware</i> is true then the application is sensitive to DPI settings.</p>
+<p>See also <a href="qtitan-officestyle.html#isDPIAware">isDPIAware</a>().</p>
+<!-- @@@setDPIAware -->
+<!-- $$$setDialogsIgnored[overload1]$$$setDialogsIgnoredbool -->
+<h3 class="fn"><a name="setDialogsIgnored"></a>void OfficeStyle::setDialogsIgnored ( bool <i>ignore</i> = false )</h3>
+<p>Sets <i>ignore</i> dialog flag. If this flag is true that can ignore the current Ribbon or Office Style for dialogs and standard Qt style will be used for dialog. By default this flag is false.</p>
+<p>See also <a href="qtitan-officestyle.html#isDialogsIgnored">isDialogsIgnored</a>().</p>
+<!-- @@@setDialogsIgnored -->
+<!-- $$$setPopupDecoration[overload1]$$$setPopupDecorationOfficeStyle::OfficePopupDecoration -->
+<h3 class="fn"><a name="setPopupDecoration"></a>void OfficeStyle::setPopupDecoration ( <a href="qtitan-officestyle.html#OfficePopupDecoration-enum">OfficeStyle::OfficePopupDecoration</a> <i>decoration</i> )</h3>
+<p>Sets the style of the <i>decoration</i> for <a href="qtitan-officepopupwindow.html">OfficePopupWindow</a>.</p>
+<p>See also <a href="qtitan-officestyle.html#popupDecoration">popupDecoration</a>().</p>
+<!-- @@@setPopupDecoration -->
+<!-- $$$setTheme[overload1]$$$setThemeTheme -->
+<h3 class="fn"><a name="setTheme"></a>void OfficeStyle::setTheme ( <a href="qtitan-officestyle.html#Theme-enum">Theme</a> <i>theme</i> )</h3>
+<p>Sets the <i>theme</i> of the office style. You can choose from Office 2007 or Office 2010 theme's families.</p>
+<p>See also <a href="qtitan-officestyle.html#Theme-enum">Theme</a>.</p>
+<!-- @@@setTheme -->
+<!-- $$$sizeFromContents[overload1]$$$sizeFromContentsContentsTypeconstQStyleOption*constQSize&constQWidget* -->
+<h3 class="fn"><a name="sizeFromContents"></a><a href="http://qt.nokia.com/doc/4.7/qsize.html">QSize</a> OfficeStyle::sizeFromContents ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#ContentsType-enum">ContentsType</a> <i>ct</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoption.html">QStyleOption</a> * <i>opt</i>, const <a href="http://qt.nokia.com/doc/4.7/qsize.html">QSize</a> &amp; <i>contentsSize</i>, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>w</i> = Q_NULL ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#sizeFromContents">QStyle::sizeFromContents</a>().</p>
+<!-- @@@sizeFromContents -->
+<!-- $$$styleHint[overload1]$$$styleHintStyleHintconstQStyleOption*constQWidget*QStyleHintReturn* -->
+<h3 class="fn"><a name="styleHint"></a>int OfficeStyle::styleHint ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#StyleHint-enum">StyleHint</a> <i>hint</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoption.html">QStyleOption</a> * <i>opt</i> = Q_NULL, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> = Q_NULL, <a href="http://qt.nokia.com/doc/4.7/qstylehintreturn.html">QStyleHintReturn</a> * <i>returnData</i> = Q_NULL ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#styleHint">QStyle::styleHint</a>().</p>
+<!-- @@@styleHint -->
+<!-- $$$subControlRect[overload1]$$$subControlRectComplexControlconstQStyleOptionComplex*SubControlconstQWidget* -->
+<h3 class="fn"><a name="subControlRect"></a><a href="http://qt.nokia.com/doc/4.7/qrect.html">QRect</a> OfficeStyle::subControlRect ( <a href="http://qt.nokia.com/doc/4.7/qstyle.html#ComplexControl-enum">ComplexControl</a> <i>cc</i>, const <a href="http://qt.nokia.com/doc/4.7/qstyleoptioncomplex.html">QStyleOptionComplex</a> * <i>opt</i>, <a href="http://qt.nokia.com/doc/4.7/qstyle.html#SubControl-enum">SubControl</a> <i>sc</i>, const <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#subControlRect">QStyle::subControlRect</a>().</p>
+<!-- @@@subControlRect -->
+<!-- $$$unpolish[overload1]$$$unpolishQApplication* -->
+<h3 class="fn"><a name="unpolish"></a>void OfficeStyle::unpolish ( <a href="http://qt.nokia.com/doc/4.7/qapplication.html">QApplication</a> * <i>app</i> )<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#unpolish-2">QStyle::unpolish</a>().</p>
+<!-- @@@unpolish -->
+<!-- $$$unpolish$$$unpolishQWidget* -->
+<h3 class="fn"><a name="unpolish-2"></a>void OfficeStyle::unpolish ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> )<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qstyle.html#unpolish">QStyle::unpolish</a>().</p>
+<!-- @@@unpolish -->
+</div>
+        <!-- /div -->
+        <div class="feedback t_button">
+          </div>
+      </div>
+    </div>
+    <div class="ft">
+      <span></span>
+    </div>
+  </div> 
+  <div class="footer">
+    <p>
+      <acronym title="Copyright">&copy;</acronym> 2009-2013 Developer Machines<br><br>      Nokia, Qt and their respective logos are trademarks of Nokia Corporation 
+      in Finland and/or other countries worldwide.</p>
+    <p>
+      All other trademarks are property of their respective owners. <a title="Privacy Policy"
+        href="http://www.devmachines.com/company/privacy-policy.html">Privacy Policy</a></p>
+  </div>
+  <div id="blurpage">
+  </div>
+  <!--/div -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+</body>
+</html>

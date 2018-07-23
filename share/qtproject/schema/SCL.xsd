@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:scl="http://www.iec.ch/61850/2003/SCL" xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified" attributeFormDefault="unqualified" finalDefault="extension" version="2.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">SCL informative schema. Version 2.0. (SCL language version "2003"). Release 2007/11/19.</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="SCL_Substation.xsd"/>
+	<xs:include schemaLocation="SCL_IED.xsd"/>
+	<xs:include schemaLocation="SCL_Communication.xsd"/>
+	<xs:include schemaLocation="SCL_DataTypeTemplates.xsd"/>
+	<xs:element name="SCL">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="tBaseElement">
+					<xs:sequence>
+						<xs:element name="Header" type="tHeader">
+							<xs:unique name="uniqueHitem">
+								<xs:selector xpath="./scl:History/scl:Hitem"/>
+								<xs:field xpath="@version"/>
+								<xs:field xpath="@revision"/>
+							</xs:unique>
+						</xs:element>
+						<xs:element ref="Substation" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="Communication" minOccurs="0"/>
+						<xs:element ref="IED" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="DataTypeTemplates" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="version" type="tSclVersion" use="optional" default="2003"/>
+					<xs:attribute name="revision" type="tSclRevision" use="optional" default="A"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+		<xs:unique name="uniqueSubstation">
+			<xs:selector xpath="./scl:Substation"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+		<xs:key name="IEDKey">
+			<xs:selector xpath="./scl:IED"/>
+			<xs:field xpath="@name"/>
+		</xs:key>
+		<xs:key name="LNodeTypeKey">
+			<xs:selector xpath="./scl:DataTypeTemplates/scl:LNodeType"/>
+			<xs:field xpath="@id"/>
+			<xs:field xpath="@lnClass"/>
+		</xs:key>
+		<xs:keyref name="ref2LNodeTypeDomain1" refer="LNodeTypeKey">
+			<xs:selector xpath="./scl:IED/scl:AccessPoint/scl:LN"/>
+			<xs:field xpath="@lnType"/>
+			<xs:field xpath="@lnClass"/>
+		</xs:keyref>
+		<xs:keyref name="ref2LNodeTypeDomain2" refer="LNodeTypeKey">
+			<xs:selector xpath="./scl:IED/scl:AccessPoint/scl:Server/scl:LDevice/scl:LN"/>
+			<xs:field xpath="@lnType"/>
+			<xs:field xpath="@lnClass"/>
+		</xs:keyref>
+		<xs:keyref name="ref2LNodeTypeLLN0" refer="LNodeTypeKey">
+			<xs:selector xpath="./scl:IED/scl:AccessPoint/scl:Server/scl:LDevice/scl:LN0"/>
+			<xs:field xpath="@lnType"/>
+			<xs:field xpath="@lnClass"/>
+		</xs:keyref>
+		<!--
+		<xs:unique name="uniqueLDName">
+			<xs:selector xpath=".//scl:LDevice"/>
+			<xs:field xpath="@ldName"/>
+		</xs:unique>
+		-->
+		<!--
+		<xs:unique name="uniqueLNode">
+			<xs:selector xpath=".//scl:LNode"/>
+			<xs:field xpath="@lnInst"/>
+			<xs:field xpath="@lnClass"/>
+			<xs:field xpath="@iedName"/>
+			<xs:field xpath="@ldInst"/>
+			<xs:field xpath="@prefix"/>
+		</xs:unique>
+		-->
+		<xs:keyref name="refConnectedAP2IED" refer="IEDKey">
+			<xs:selector xpath="./scl:Communication/scl:SubNetwork/scl:ConnectedAP"/>
+			<xs:field xpath="@iedName"/>
+		</xs:keyref>
+	</xs:element>
+</xs:schema>

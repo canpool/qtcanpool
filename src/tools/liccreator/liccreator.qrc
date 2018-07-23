@@ -1,0 +1,6 @@
+<RCC>
+	<qresource prefix="/ico" >
+		<file>ico/sys_nr.png</file>
+		<file>ico/tool_maintain.png</file>
+	</qresource>
+</RCC>

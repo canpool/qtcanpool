@@ -1,0 +1,42 @@
+/* ====== shared ==================== */
+
+
+/* === QWidget === */
+QWidget {
+    background: #404244;
+    color: #BBBBBB;
+}
+
+/* === QToolButton === */
+
+QToolButton {
+    /*border: 1px solid #333333;*/
+    border: none;
+    margin: 1px;
+}
+
+QToolButton:hover {
+    background-color: #333333;
+    /*border: 1px solid #444444;*/
+}
+
+QToolButton[popupMode="1"] {
+    padding-right: 20px;
+}
+
+QToolButton::menu-button {
+    /*border-left: 1px solid #333333;*/
+    background: transparent;
+    width: 16px;
+}
+
+QToolButton::menu-button:hover {
+    /*border-left: 1px solid #444444;*/
+    background: transparent;
+    width: 16px;
+}
+
+QToolButton:checked, QToolButton:pressed {
+    background-color: #111111;
+    color: yellow;
+}

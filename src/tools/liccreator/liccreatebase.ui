@@ -1,0 +1,1329 @@
+<ui version="4.0" >
+ <class>liccreatebase</class>
+ <widget class="QDialog" name="liccreatebase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>469</width>
+    <height>301</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>liccreatebase</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="leftMargin" >
+    <number>3</number>
+   </property>
+   <property name="topMargin" >
+    <number>6</number>
+   </property>
+   <property name="rightMargin" >
+    <number>3</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>3</number>
+   </property>
+   <property name="horizontalSpacing" >
+    <number>3</number>
+   </property>
+   <property name="verticalSpacing" >
+    <number>3</number>
+   </property>
+   <item row="0" column="0" >
+    <widget class="QTabWidget" name="tabWidget" >
+     <property name="tabShape" >
+      <enum>QTabWidget::Rounded</enum>
+     </property>
+     <property name="currentIndex" >
+      <number>0</number>
+     </property>
+     <property name="usesScrollButtons" >
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="tab" >
+      <attribute name="title" >
+       <string>PCS series</string>
+      </attribute>
+      <layout class="QGridLayout" >
+       <item row="0" column="0" >
+        <layout class="QGridLayout" >
+         <property name="horizontalSpacing" >
+          <number>3</number>
+         </property>
+         <property name="verticalSpacing" >
+          <number>3</number>
+         </property>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="label_logo" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize" >
+            <size>
+             <width>80</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="whatsThis" >
+            <string/>
+           </property>
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="pixmap" >
+            <pixmap/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="2" >
+          <widget class="QTextBrowser" name="textBrowser_info" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>66</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>66</height>
+            </size>
+           </property>
+           <property name="cursor" stdset="0" >
+            <cursorShape>IBeamCursor</cursorShape>
+           </property>
+           <property name="frameShape" >
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="html" >
+            <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'宋体'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">             PCS系列产品软件序列号生成器&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">                     版本V2.00&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">           版权所有 南京南瑞继保电气有限公司&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">                 www.nari-relays.com&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" >
+          <widget class="QLabel" name="label_hostid" >
+           <property name="minimumSize" >
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>*Host ID</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy" >
+            <cstring>lineEdit_hostid</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" >
+          <layout class="QHBoxLayout" >
+           <property name="spacing" >
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_hostid" >
+             <property name="minimumSize" >
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip" >
+              <string>input host id</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_bit" >
+             <property name="text" >
+              <string>(12-bit)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item rowspan="4" row="1" column="2" >
+          <widget class="QGroupBox" name="groupBox_2" >
+           <property name="toolTip" >
+            <string>license type</string>
+           </property>
+           <property name="title" >
+            <string/>
+           </property>
+           <layout class="QGridLayout" >
+            <property name="leftMargin" >
+             <number>3</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>3</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <property name="horizontalSpacing" >
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing" >
+             <number>0</number>
+            </property>
+            <item row="0" column="0" >
+             <widget class="QRadioButton" name="radioButton_permanent" >
+              <property name="toolTip" >
+               <string>select to create permanent license</string>
+              </property>
+              <property name="text" >
+               <string>Permanent</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QRadioButton" name="radioButton_temporary" >
+              <property name="toolTip" >
+               <string>select to create temporary license</string>
+              </property>
+              <property name="text" >
+               <string>Temporary</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0" >
+          <widget class="QLabel" name="label_softname" >
+           <property name="text" >
+            <string>*Software name</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy" >
+            <cstring>lineEdit_license</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" >
+          <layout class="QHBoxLayout" >
+           <property name="spacing" >
+            <number>2</number>
+           </property>
+           <item>
+            <widget class="QComboBox" name="comboBox_softname" >
+             <property name="minimumSize" >
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip" >
+              <string>select software name</string>
+             </property>
+             <property name="editable" >
+              <bool>true</bool>
+             </property>
+             <property name="duplicatesEnabled" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addSoft" >
+             <property name="minimumSize" >
+              <size>
+               <width>25</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize" >
+              <size>
+               <width>25</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip" >
+              <string>add software name</string>
+             </property>
+             <property name="text" >
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="configSoft" >
+             <property name="minimumSize" >
+              <size>
+               <width>25</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize" >
+              <size>
+               <width>25</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip" >
+              <string>config software name</string>
+             </property>
+             <property name="text" >
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="0" >
+          <widget class="QLabel" name="label_contactid" >
+           <property name="text" >
+            <string>Contact ID</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy" >
+            <cstring>lineEdit_license</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1" >
+          <widget class="QLineEdit" name="lineEdit_contactid" >
+           <property name="toolTip" >
+            <string>input contact id</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" >
+          <widget class="QLabel" name="label_limited" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text" >
+            <string>Limited</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" >
+          <widget class="QGroupBox" name="groupBox" >
+           <property name="title" >
+            <string/>
+           </property>
+           <layout class="QGridLayout" >
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <property name="horizontalSpacing" >
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing" >
+             <number>0</number>
+            </property>
+            <item row="0" column="0" >
+             <widget class="QComboBox" name="comboBox_year" >
+              <property name="minimumSize" >
+               <size>
+                <width>50</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>select year</string>
+              </property>
+              <property name="editable" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" >
+             <widget class="QLabel" name="label_year" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>year</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" >
+             <widget class="QComboBox" name="comboBox_month" >
+              <property name="minimumSize" >
+               <size>
+                <width>40</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>select month</string>
+              </property>
+              <property name="editable" >
+               <bool>false</bool>
+              </property>
+              <item>
+               <property name="text" >
+                <string>1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>4</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>8</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>9</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>11</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>12</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="3" >
+             <widget class="QLabel" name="label_month" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>month</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4" >
+             <widget class="QComboBox" name="comboBox_day" >
+              <property name="minimumSize" >
+               <size>
+                <width>40</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>select day</string>
+              </property>
+              <property name="editable" >
+               <bool>false</bool>
+              </property>
+              <item>
+               <property name="text" >
+                <string>1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>4</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>8</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>9</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>11</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>12</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>13</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>14</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>15</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>16</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>17</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>18</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>19</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>20</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>21</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>22</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>23</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>24</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>25</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>26</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>27</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>28</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>29</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>30</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>31</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="5" >
+             <widget class="QLabel" name="label_day" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>day</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="5" column="0" >
+          <widget class="QLabel" name="label_license" >
+           <property name="text" >
+            <string>License</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy" >
+            <cstring>lineEdit_license</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1" colspan="2" >
+          <widget class="QLineEdit" name="lineEdit_license" >
+           <property name="minimumSize" >
+            <size>
+             <width>350</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="toolTip" >
+            <string>license</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="3" >
+          <widget class="QLabel" name="label_status" >
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2" >
+      <attribute name="title" >
+       <string>RCS series</string>
+      </attribute>
+      <layout class="QGridLayout" >
+       <item row="0" column="0" >
+        <layout class="QGridLayout" >
+         <property name="horizontalSpacing" >
+          <number>3</number>
+         </property>
+         <property name="verticalSpacing" >
+          <number>3</number>
+         </property>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="label_logo_2" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize" >
+            <size>
+             <width>80</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="whatsThis" >
+            <string/>
+           </property>
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="pixmap" >
+            <pixmap/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="2" >
+          <widget class="QTextBrowser" name="textBrowser_info_old" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>66</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>66</height>
+            </size>
+           </property>
+           <property name="cursor" stdset="0" >
+            <cursorShape>IBeamCursor</cursorShape>
+           </property>
+           <property name="frameShape" >
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="html" >
+            <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'宋体'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">             RCS系列产品软件序列号生成器&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">                     版本V1.00&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">           版权所有 南京南瑞继保电气有限公司&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" color:#5f9ea0;">                 www.nari-relays.com&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" >
+          <widget class="QLabel" name="label_hostid_old" >
+           <property name="minimumSize" >
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>*Host ID</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy" >
+            <cstring>lineEdit_hostid</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" >
+          <layout class="QHBoxLayout" >
+           <property name="spacing" >
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_hostid_old" >
+             <property name="minimumSize" >
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip" >
+              <string>input host id</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_bit_old" >
+             <property name="text" >
+              <string>(12-bit)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item rowspan="2" row="1" column="2" >
+          <widget class="QGroupBox" name="groupBox_4" >
+           <property name="toolTip" >
+            <string>license type</string>
+           </property>
+           <property name="title" >
+            <string/>
+           </property>
+           <layout class="QGridLayout" >
+            <property name="leftMargin" >
+             <number>3</number>
+            </property>
+            <property name="topMargin" >
+             <number>3</number>
+            </property>
+            <property name="rightMargin" >
+             <number>3</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>3</number>
+            </property>
+            <item row="0" column="0" >
+             <widget class="QRadioButton" name="radioButton_permanent_old" >
+              <property name="toolTip" >
+               <string>select to create permanent license</string>
+              </property>
+              <property name="text" >
+               <string>Permanent</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QRadioButton" name="radioButton_temporary_old" >
+              <property name="toolTip" >
+               <string>select to create temporary license</string>
+              </property>
+              <property name="text" >
+               <string>Temporary</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0" >
+          <widget class="QLabel" name="label_limited_old" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text" >
+            <string>Limited</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" >
+          <widget class="QGroupBox" name="groupBox_3" >
+           <property name="title" >
+            <string/>
+           </property>
+           <layout class="QGridLayout" >
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <property name="horizontalSpacing" >
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing" >
+             <number>0</number>
+            </property>
+            <item row="0" column="0" >
+             <widget class="QComboBox" name="comboBox_year_old" >
+              <property name="minimumSize" >
+               <size>
+                <width>50</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>select year</string>
+              </property>
+              <property name="editable" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" >
+             <widget class="QLabel" name="label_year_old" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>year</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" >
+             <widget class="QComboBox" name="comboBox_month_old" >
+              <property name="minimumSize" >
+               <size>
+                <width>40</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>select month</string>
+              </property>
+              <property name="editable" >
+               <bool>false</bool>
+              </property>
+              <item>
+               <property name="text" >
+                <string>1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>4</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>8</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>9</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>11</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>12</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="3" >
+             <widget class="QLabel" name="label_month_old" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>month</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4" >
+             <widget class="QComboBox" name="comboBox_day_old" >
+              <property name="minimumSize" >
+               <size>
+                <width>40</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip" >
+               <string>select day</string>
+              </property>
+              <property name="editable" >
+               <bool>false</bool>
+              </property>
+              <item>
+               <property name="text" >
+                <string>1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>4</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>8</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>9</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>11</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>12</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>13</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>14</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>15</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>16</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>17</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>18</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>19</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>20</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>21</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>22</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>23</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>24</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>25</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>26</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>27</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>28</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>29</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>30</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>31</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="5" >
+             <widget class="QLabel" name="label_day_old" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>day</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="3" column="0" >
+          <widget class="QLabel" name="label_license_old" >
+           <property name="text" >
+            <string>License</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="buddy" >
+            <cstring>lineEdit_license</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1" colspan="2" >
+          <widget class="QLineEdit" name="lineEdit_license_old" >
+           <property name="minimumSize" >
+            <size>
+             <width>350</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="toolTip" >
+            <string>license</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" >
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>20</width>
+             <height>21</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="0" colspan="3" >
+          <widget class="QLabel" name="label_status_old" >
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <layout class="QHBoxLayout" >
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>101</width>
+         <height>25</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_create" >
+       <property name="text" >
+        <string>Create</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_cancel" >
+       <property name="text" >
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

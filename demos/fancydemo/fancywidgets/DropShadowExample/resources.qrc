@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/shadow_bottom.png</file>
+        <file>resources/shadow_corner1.png</file>
+        <file>resources/shadow_corner2.png</file>
+        <file>resources/shadow_corner3.png</file>
+        <file>resources/shadow_corner4.png</file>
+        <file>resources/shadow_left.png</file>
+        <file>resources/shadow_right.png</file>
+        <file>resources/shadow_top.png</file>
+    </qresource>
+</RCC>

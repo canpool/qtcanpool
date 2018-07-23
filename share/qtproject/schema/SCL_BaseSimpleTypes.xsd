@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iec.ch/61850/2003/SCL" targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">SCL informative schema. Version 2.0. (SCL language version "2003"). Release 2007/10/18.</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="tRef">
+		<xs:restriction base="xs:normalizedString">
+			<xs:pattern value=".+/.+/.+/.+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tAnyName">
+		<xs:restriction base="xs:normalizedString"/>
+	</xs:simpleType>
+	<xs:simpleType name="tName">
+		<xs:restriction base="tAnyName">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tAcsiName">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="\p{L}[\d,\p{L},_]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tRestrName">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="[\d,\p{L}]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tRestrName1stU">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="\p{Lu}[\d,\p{L}]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tRestrName1stL">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="\p{Ll}[\d,\p{L}]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tPAddr">
+		<xs:restriction base="xs:normalizedString">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tSclVersion">
+		<xs:restriction base="tName">
+			<xs:pattern value="20\d{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tSclRevision">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="\p{Lu}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tRestrLdName">
+		<xs:restriction base="tAcsiName">
+			<xs:maxLength value="64"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tEmpty">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tIEDName">
+		<xs:restriction base="tAcsiName">
+			<xs:maxLength value="64"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLDName">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="64"/>
+			<xs:pattern value="[\d,\p{L}][\d,\p{L},_]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLDInst">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="64"/>
+			<xs:pattern value="[\d,\p{L}][\d,\p{L},_]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLDInstOrEmpty">
+		<xs:union memberTypes="tLDInst tEmpty"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPrefix">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="6"/>
+			<xs:pattern value="[\d,\p{L}][\d,\p{L},_]*"/>
+			<xs:pattern value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLNInstOrEmpty">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="7"/>
+			<xs:pattern value="[\d]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLNInst">
+		<xs:restriction base="tLNInstOrEmpty">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDataName">
+		<xs:restriction base="tRestrName1stU">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDataSetName">
+		<xs:restriction base="tAcsiName">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tCBName">
+		<xs:restriction base="tAcsiName">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLogName">
+		<xs:restriction base="tAcsiName">
+			<xs:maxLength value="64"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tAccessPointName">
+		<xs:restriction base="xs:normalizedString">
+			<xs:pattern value="[\d,\p{L}][\d,\p{L},_]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

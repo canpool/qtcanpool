@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DynamicProgressBarTest</class>
+ <widget class="QWidget" name="DynamicProgressBarTest">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>648</width>
+    <height>224</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>多态进度条</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="2">
+    <widget class="PieWait" name="pieWait1" native="true"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="TaiChiWait" name="taichiWait2" native="true"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="CircleWait" name="circleWait2" native="true"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="TaiChiWait" name="taichiWait1" native="true"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="CircleWait" name="circleWait1" native="true"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="PieWait" name="pieWait2" native="true"/>
+   </item>
+   <item row="0" column="3">
+    <widget class="LineWait" name="lineWait1" native="true"/>
+   </item>
+   <item row="1" column="3">
+    <widget class="LineWait" name="lineWait2" native="true"/>
+   </item>
+   <item row="0" column="4">
+    <widget class="DonutWait" name="donutWait1" native="true"/>
+   </item>
+   <item row="1" column="4">
+    <widget class="DonutWait" name="donutWait2" native="true"/>
+   </item>
+   <item row="0" column="5">
+    <widget class="ZoomCircleWait" name="zoomCircleWait1" native="true"/>
+   </item>
+   <item row="1" column="5">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="ZoomCircleWait" name="zoomCircleWait2_1" native="true"/>
+      </item>
+      <item>
+       <widget class="ZoomCircleWait" name="zoomCircleWait2_2" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TaiChiWait</class>
+   <extends>QWidget</extends>
+   <header>taichiwait.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CircleWait</class>
+   <extends>QWidget</extends>
+   <header>circlewait.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PieWait</class>
+   <extends>QWidget</extends>
+   <header>piewait.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LineWait</class>
+   <extends>QWidget</extends>
+   <header>linewait.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DonutWait</class>
+   <extends>QWidget</extends>
+   <header>donutwait.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ZoomCircleWait</class>
+   <extends>QWidget</extends>
+   <header>zoomcirclewait.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
