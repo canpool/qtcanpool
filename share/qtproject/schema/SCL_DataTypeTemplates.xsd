@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:scl="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.iec.ch/61850/2003/SCL" targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">SCL informative schema. Version 2.0. (SCL language version "2003"). Release 2007/10/18.</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="SCL_BaseTypes.xsd"/>
+	<xs:attributeGroup name="agDATrgOp">
+		<xs:attribute name="dchg" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="qchg" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="dupd" type="xs:boolean" use="optional" default="false"/>
+	</xs:attributeGroup>
+	<xs:complexType name="tAbstractDataAttribute" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="tUnNaming">
+				<xs:sequence>
+					<xs:element name="Val" type="tVal" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="tAttributeNameEnum" use="required"/>
+				<xs:attribute name="sAddr" type="xs:normalizedString" use="optional"/>
+				<xs:attribute name="bType" type="tBasicTypeEnum" use="required"/>
+				<xs:attribute name="valKind" type="tValKindEnum" use="optional" default="Set"/>
+				<xs:attribute name="type" type="tAnyName" use="optional"/>
+				<xs:attribute name="count" type="xs:unsignedInt" use="optional" default="0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tLNodeType">
+		<xs:complexContent>
+			<xs:extension base="tIDNaming">
+				<xs:sequence>
+					<xs:element name="DO" type="tDO" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="iedType" type="tAnyName" use="optional" default=""/>
+				<xs:attribute name="lnClass" type="tLNClassEnum" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tDO">
+		<xs:complexContent>
+			<xs:extension base="tUnNaming">
+				<xs:attribute name="name" type="tDataName" use="required"/>
+				<xs:attribute name="type" type="tName" use="required"/>
+				<xs:attribute name="accessControl" type="xs:normalizedString" use="optional"/>
+				<xs:attribute name="transient" type="xs:boolean" use="optional" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tDOType">
+		<xs:complexContent>
+			<xs:extension base="tIDNaming">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="SDO" type="tSDO"/>
+					<xs:element name="DA" type="tDA"/>
+				</xs:choice>
+				<xs:attribute name="iedType" type="tAnyName" use="optional" default=""/>
+				<xs:attribute name="cdc" type="tCDCEnum" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tSDO">
+		<xs:complexContent>
+			<xs:extension base="tUnNaming">
+				<xs:attribute name="name" type="tRestrName1stL" use="required"/>
+				<xs:attribute name="type" type="tName" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tDA">
+		<xs:complexContent>
+			<xs:extension base="tAbstractDataAttribute">
+				<xs:attributeGroup ref="agDATrgOp"/>
+				<xs:attribute name="fc" type="tFCEnum" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tDAType">
+		<xs:complexContent>
+			<xs:extension base="tIDNaming">
+				<xs:sequence>
+					<xs:element name="BDA" type="tBDA" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="iedType" type="tAnyName" use="optional" default=""/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tBDA">
+		<xs:complexContent>
+			<xs:extension base="tAbstractDataAttribute"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tEnumType">
+		<xs:complexContent>
+			<xs:extension base="tIDNaming">
+				<xs:sequence>
+					<xs:element name="EnumVal" type="tEnumVal" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tEnumVal">
+		<xs:simpleContent>
+			<xs:extension base="xs:normalizedString">
+				<xs:attribute name="ord" type="xs:integer" use="required"/>
+				<xs:attributeGroup ref="agDesc"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tDataTypeTemplates">
+		<xs:sequence>
+			<xs:element name="LNodeType" type="tLNodeType" maxOccurs="unbounded">
+				<xs:unique name="uniqueDOInLNodeType">
+					<xs:selector xpath="scl:DO"/>
+					<xs:field xpath="@name"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="DOType" type="tDOType" maxOccurs="unbounded">
+				<xs:unique name="uniqueDAorSDOInDOType">
+					<xs:selector xpath="./*"/>
+					<xs:field xpath="@name"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="DAType" type="tDAType" minOccurs="0" maxOccurs="unbounded">
+				<xs:unique name="uniqueBDAInDAType">
+					<xs:selector xpath="scl:BDA"/>
+					<xs:field xpath="@name"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="EnumType" type="tEnumType" minOccurs="0" maxOccurs="unbounded">
+				<xs:unique name="uniqueOrdInEnumType">
+					<xs:selector xpath="scl:EnumVal"/>
+					<xs:field xpath="@ord"/>
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DataTypeTemplates" type="tDataTypeTemplates">
+		<xs:unique name="uniqueLNodeType">
+			<xs:selector xpath="scl:LNodeType"/>
+			<xs:field xpath="@id"/>
+			<!--<xs:field xpath="@iedType"/>-->
+		</xs:unique>
+		<xs:key name="DOTypeKey">
+			<xs:selector xpath="scl:DOType"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="ref2DOType" refer="DOTypeKey">
+			<xs:selector xpath="scl:LNodeType/scl:DO"/>
+			<xs:field xpath="@type"/>
+		</xs:keyref>
+		<xs:keyref name="ref2DOTypeForSDO" refer="DOTypeKey">
+			<xs:selector xpath="scl:DOType/scl:SDO"/>
+			<xs:field xpath="@type"/>
+		</xs:keyref>
+		<xs:key name="DATypeKey">
+			<xs:selector xpath="scl:DAType"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:key name="EnumTypeKey">
+			<xs:selector xpath="scl:EnumType"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+	</xs:element>
+</xs:schema>

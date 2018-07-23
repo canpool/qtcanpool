@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/smallcopy.png</file>
+        <file>res/smallcut.png</file>
+        <file>res/smallNew.png</file>
+        <file>res/smallOpen.png</file>
+        <file>res/smallpaste.png</file>
+        <file>res/smallPrint.png</file>
+        <file>res/smallRedo.png</file>
+        <file>res/smallSave.png</file>
+        <file>res/smallSavePDF.png</file>
+        <file>res/smallUndo.png</file>
+        <file>res/smallPrintPreview.png</file>
+        <file>res/smalltextbold.png</file>
+        <file>res/smalltextitalic.png</file>
+        <file>res/smalltextunder.png</file>
+        <file>res/smalltextcenter.png</file>
+        <file>res/smalltextjustify.png</file>
+        <file>res/smalltextleft.png</file>
+        <file>res/smalltextright.png</file>
+        <file>example.html</file>
+        <file>res/smallcolor.png</file>
+    </qresource>
+</RCC>

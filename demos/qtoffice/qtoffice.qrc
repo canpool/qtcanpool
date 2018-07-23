@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/main">
+        <file alias="qrcode">resource/qrcode.png</file>
+    </qresource>
+</RCC>

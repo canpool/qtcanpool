@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:scl="http://www.iec.ch/61850/2003/SCL" xmlns="http://www.iec.ch/61850/2003/SCL" targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">SCL informative schema. Version 2.0. (SCL language version "2003"). Release 2007/10/18.</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="SCL_BaseTypes.xsd"/>
+	<xs:complexType name="tControlBlock" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="tUnNaming">
+				<xs:sequence>
+					<xs:element name="Address" type="tAddress" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="ldInst" type="tLDInst" use="required"/>
+				<xs:attribute name="cbName" type="tCBName" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tCommunication">
+		<xs:complexContent>
+			<xs:extension base="tUnNaming">
+				<xs:sequence>
+					<xs:element name="SubNetwork" type="tSubNetwork" maxOccurs="unbounded">
+						<xs:unique name="uniqueConnectedAP">
+							<xs:selector xpath="./scl:ConnectedAP"/>
+							<xs:field xpath="@iedName"/>
+							<xs:field xpath="@apName"/>
+						</xs:unique>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tSubNetwork">
+		<xs:complexContent>
+			<xs:extension base="tNaming">
+				<xs:sequence>
+					<xs:element name="BitRate" type="tBitRateInMbPerSec" minOccurs="0"/>
+					<xs:element name="ConnectedAP" type="tConnectedAP" maxOccurs="unbounded">
+						<xs:unique name="uniqueGSEinConnectedAP">
+							<xs:selector xpath="./scl:GSE"/>
+							<xs:field xpath="@cbName"/>
+							<xs:field xpath="@ldInst"/>
+						</xs:unique>
+						<xs:unique name="uniqueSMVinConnectedAP">
+							<xs:selector xpath="./scl:SMV"/>
+							<xs:field xpath="@cbName"/>
+							<xs:field xpath="@ldInst"/>
+						</xs:unique>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="type" type="xs:normalizedString" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tConnectedAP">
+		<xs:complexContent>
+			<xs:extension base="tUnNaming">
+				<xs:sequence>
+					<xs:element name="Address" type="tAddress" minOccurs="0"/>
+					<xs:element name="GSE" type="tGSE" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="SMV" type="tSMV" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="PhysConn" type="tPhysConn" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="iedName" type="tIEDName" use="required"/>
+				<xs:attribute name="apName" type="tAccessPointName" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tAddress">
+		<xs:sequence>
+			<xs:element name="P" type="tP" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="tGSE">
+		<xs:complexContent>
+			<xs:extension base="tControlBlock">
+				<xs:sequence>
+					<xs:element name="MinTime" type="tDurationInMilliSec" minOccurs="0"/>
+					<xs:element name="MaxTime" type="tDurationInMilliSec" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tSMV">
+		<xs:complexContent>
+			<xs:extension base="tControlBlock"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tPhysConn">
+		<xs:sequence>
+			<xs:element name="P" type="tP" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="type" type="xs:normalizedString" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="tP">
+		<xs:simpleContent>
+			<xs:extension base="tPAddr">
+				<xs:attribute name="type" type="tPTypeEnum" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_IP">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:pattern value="[0-2]?\d{1,2}\.[0-2]?\d{1,2}\.[0-2]?\d{1,2}\.[0-2]?\d{1,2}"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="IP"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_IP-SUBNET">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:pattern value="[0-2]?\d{1,2}\.[0-2]?\d{1,2}\.[0-2]?\d{1,2}\.[0-2]?\d{1,2}"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="IP-SUBNET"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_IP-GATEWAY">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:pattern value="[0-2]?\d{1,2}\.[0-2]?\d{1,2}\.[0-2]?\d{1,2}\.[0-2]?\d{1,2}"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="IP-GATEWAY"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-NSAP">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="40"/>
+				<xs:pattern value="[\d,A-F]+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-NSAP"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-TSEL">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="8"/>
+				<xs:pattern value="[\d,A-F]+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-TSEL"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-SSEL">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="16"/>
+				<xs:pattern value="[\d,A-F]+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-SSEL"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-PSEL">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="16"/>
+				<xs:pattern value="[\d,A-F]+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-PSEL"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-AP-Title">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:pattern value="&#34;[\d,&#44;]+&#34;"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-AP-Title"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-AP-Invoke">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="5"/>
+				<xs:pattern value="\d+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-AP-Invoke"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-AE-Qualifier">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="5"/>
+				<xs:pattern value="\d+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-AE-Qualifier"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_OSI-AE-Invoke">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:maxLength value="5"/>
+				<xs:pattern value="\d+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="OSI-AE-Invoke"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_MAC-Address">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:minLength value="17"/>
+				<xs:maxLength value="17"/>
+				<xs:pattern value="[\d,A-F]{2}\-[\d,A-F]{2}\-[\d,A-F]{2}\-[\d,A-F]{2}\-[\d,A-F]{2}\-[\d,A-F]{2}"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="MAC-Address"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_APPID">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:minLength value="4"/>
+				<xs:maxLength value="4"/>
+				<xs:pattern value="[\d,A-F]+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="APPID"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_VLAN-PRIORITY">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:pattern value="[0-7]"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="VLAN-PRIORITY"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="tP_VLAN-ID">
+		<xs:simpleContent>
+			<xs:restriction base="tP">
+				<xs:minLength value="3"/>
+				<xs:maxLength value="3"/>
+				<xs:pattern value="[\d,A-F]+"/>
+				<xs:attribute name="type" type="tPTypeEnum" use="required" fixed="VLAN-ID"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="Communication" type="tCommunication">
+		<xs:unique name="uniqueSubNetwork">
+			<xs:selector xpath="./scl:SubNetwork"/>
+			<xs:field xpath="@name"/>
+		</xs:unique>
+	</xs:element>
+</xs:schema>

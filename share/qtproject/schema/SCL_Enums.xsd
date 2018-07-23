@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:scl="http://www.iec.ch/61850/2003/SCL" xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.iec.ch/61850/2003/SCL" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">SCL informative schema. Version 2.0. (SCL language version "2003"). Release 2007/10/18.</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="SCL_BaseSimpleTypes.xsd"/>
+	<xs:simpleType name="tPredefinedPTypeEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="IP"/>
+			<xs:enumeration value="IP-SUBNET"/>
+			<xs:enumeration value="IP-GATEWAY"/>
+			<xs:enumeration value="OSI-NSAP"/>
+			<xs:enumeration value="OSI-TSEL"/>
+			<xs:enumeration value="OSI-SSEL"/>
+			<xs:enumeration value="OSI-PSEL"/>
+			<xs:enumeration value="OSI-AP-Title"/>
+			<xs:enumeration value="OSI-AP-Invoke"/>
+			<xs:enumeration value="OSI-AE-Qualifier"/>
+			<xs:enumeration value="OSI-AE-Invoke"/>
+			<xs:enumeration value="MAC-Address"/>
+			<xs:enumeration value="APPID"/>
+			<xs:enumeration value="VLAN-PRIORITY"/>
+			<xs:enumeration value="VLAN-ID"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionPTypeEnum">
+		<xs:restriction base="xs:normalizedString">
+			<xs:pattern value="\p{Lu}[\d,\p{L},\-]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tPTypeEnum">
+		<xs:union memberTypes="tPredefinedPTypeEnum tExtensionPTypeEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedAttributeNameEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="T"/>
+			<xs:enumeration value="Test"/>
+			<xs:enumeration value="Check"/>
+			<xs:enumeration value="SIUnit"/>
+			<xs:enumeration value="Oper"/>
+			<xs:enumeration value="SBO"/>
+			<xs:enumeration value="SBOw"/>
+			<xs:enumeration value="Cancel"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionAttributeNameEnum">
+		<xs:restriction base="tRestrName1stL"/>
+	</xs:simpleType>
+	<xs:simpleType name="tAttributeNameEnum">
+		<xs:union memberTypes="tPredefinedAttributeNameEnum tExtensionAttributeNameEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedCommonConductingEquipmentEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="CBR"/>
+			<xs:enumeration value="DIS"/>
+			<xs:enumeration value="VTR"/>
+			<xs:enumeration value="CTR"/>
+			<xs:enumeration value="GEN"/>
+			<xs:enumeration value="CAP"/>
+			<xs:enumeration value="REA"/>
+			<xs:enumeration value="CON"/>
+			<xs:enumeration value="MOT"/>
+			<xs:enumeration value="EFN"/>
+			<xs:enumeration value="PSH"/>
+			<xs:enumeration value="BAT"/>
+			<xs:enumeration value="BSH"/>
+			<xs:enumeration value="CAB"/>
+			<xs:enumeration value="GIL"/>
+			<xs:enumeration value="LIN"/>
+			<xs:enumeration value="RRC"/>
+			<xs:enumeration value="SAR"/>
+			<xs:enumeration value="TCF"/>
+			<xs:enumeration value="TCR"/>
+			<xs:enumeration value="IFL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionEquipmentEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="E\p{Lu}*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tCommonConductingEquipmentEnum">
+		<xs:union memberTypes="tPredefinedCommonConductingEquipmentEnum tExtensionEquipmentEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPowerTransformerEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="PTR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tTransformerWindingEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="PTW"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedEquipmentEnum">
+		<xs:union memberTypes="tCommonConductingEquipmentEnum tPowerTransformerEnum tTransformerWindingEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tEquipmentEnum">
+		<xs:union memberTypes="tPredefinedEquipmentEnum tExtensionEquipmentEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedGeneralEquipmentEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="AXN"/>
+			<xs:enumeration value="BAT"/>
+			<xs:enumeration value="MOT"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionGeneralEquipmentEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="E\p{Lu}*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tGeneralEquipmentEnum">
+		<xs:union memberTypes="tPredefinedGeneralEquipmentEnum tExtensionGeneralEquipmentEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tServiceSettingsEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="Dyn"/>
+			<xs:enumeration value="Conf"/>
+			<xs:enumeration value="Fix"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tPhaseEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="B"/>
+			<xs:enumeration value="C"/>
+			<xs:enumeration value="N"/>
+			<xs:enumeration value="all"/>
+			<xs:enumeration value="none"/>
+			<xs:enumeration value="AB"/>
+			<xs:enumeration value="BC"/>
+			<xs:enumeration value="CA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tAuthenticationEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="none"/>
+			<xs:enumeration value="password"/>
+			<xs:enumeration value="weak"/>
+			<xs:enumeration value="strong"/>
+			<xs:enumeration value="certificate"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tAssociationKindEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="pre-established"/>
+			<xs:enumeration value="predefined"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLPHDEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="LPHD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLLN0Enum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="LLN0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupAEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="A[A-Z]*"/>
+			<xs:enumeration value="ANCR"/>
+			<xs:enumeration value="ARCO"/>
+			<xs:enumeration value="ATCC"/>
+			<xs:enumeration value="AVCO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupCEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="C[A-Z]*"/>
+			<xs:enumeration value="CILO"/>
+			<xs:enumeration value="CSWI"/>
+			<xs:enumeration value="CALH"/>
+			<xs:enumeration value="CCGR"/>
+			<xs:enumeration value="CPOW"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupGEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="G[A-Z]*"/>
+			<xs:enumeration value="GAPC"/>
+			<xs:enumeration value="GGIO"/>
+			<xs:enumeration value="GSAL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupIEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="I[A-Z]*"/>
+			<xs:enumeration value="IHMI"/>
+			<xs:enumeration value="IARC"/>
+			<xs:enumeration value="ITCI"/>
+			<xs:enumeration value="ITMI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupMEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="M[A-Z]*"/>
+			<xs:enumeration value="MMXU"/>
+			<xs:enumeration value="MDIF"/>
+			<xs:enumeration value="MHAI"/>
+			<xs:enumeration value="MHAN"/>
+			<xs:enumeration value="MMTR"/>
+			<xs:enumeration value="MMXN"/>
+			<xs:enumeration value="MSQI"/>
+			<xs:enumeration value="MSTA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupPEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="P[A-Z]*"/>
+			<xs:enumeration value="PDIF"/>
+			<xs:enumeration value="PDIS"/>
+			<xs:enumeration value="PDIR"/>
+			<xs:enumeration value="PDOP"/>
+			<xs:enumeration value="PDUP"/>
+			<xs:enumeration value="PFRC"/>
+			<xs:enumeration value="PHAR"/>
+			<xs:enumeration value="PHIZ"/>
+			<xs:enumeration value="PIOC"/>
+			<xs:enumeration value="PMRI"/>
+			<xs:enumeration value="PMSS"/>
+			<xs:enumeration value="POPF"/>
+			<xs:enumeration value="PPAM"/>
+			<xs:enumeration value="PSCH"/>
+			<xs:enumeration value="PSDE"/>
+			<xs:enumeration value="PTEF"/>
+			<xs:enumeration value="PTOC"/>
+			<xs:enumeration value="PTOF"/>
+			<xs:enumeration value="PTOV"/>
+			<xs:enumeration value="PTRC"/>
+			<xs:enumeration value="PTTR"/>
+			<xs:enumeration value="PTUC"/>
+			<xs:enumeration value="PTUV"/>
+			<xs:enumeration value="PUPF"/>
+			<xs:enumeration value="PTUF"/>
+			<xs:enumeration value="PVOC"/>
+			<xs:enumeration value="PVPH"/>
+			<xs:enumeration value="PZSU"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupREnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="R[A-Z]*"/>
+			<xs:enumeration value="RSYN"/>
+			<xs:enumeration value="RDRE"/>
+			<xs:enumeration value="RADR"/>
+			<xs:enumeration value="RBDR"/>
+			<xs:enumeration value="RDRS"/>
+			<xs:enumeration value="RBRF"/>
+			<xs:enumeration value="RDIR"/>
+			<xs:enumeration value="RFLO"/>
+			<xs:enumeration value="RPSB"/>
+			<xs:enumeration value="RREC"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupSEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="S[A-Z]*"/>
+			<xs:enumeration value="SARC"/>
+			<xs:enumeration value="SIMG"/>
+			<xs:enumeration value="SIML"/>
+			<xs:enumeration value="SPDC"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupTEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="T[A-Z]*"/>
+			<xs:enumeration value="TCTR"/>
+			<xs:enumeration value="TVTR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupXEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="X[A-Z]*"/>
+			<xs:enumeration value="XCBR"/>
+			<xs:enumeration value="XSWI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupYEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="Y[A-Z]*"/>
+			<xs:enumeration value="YPTR"/>
+			<xs:enumeration value="YEFN"/>
+			<xs:enumeration value="YLTC"/>
+			<xs:enumeration value="YPSH"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNGroupZEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="Z[A-Z]*"/>
+			<xs:enumeration value="ZAXN"/>
+			<xs:enumeration value="ZBAT"/>
+			<xs:enumeration value="ZBSH"/>
+			<xs:enumeration value="ZCAB"/>
+			<xs:enumeration value="ZCAP"/>
+			<xs:enumeration value="ZCON"/>
+			<xs:enumeration value="ZGEN"/>
+			<xs:enumeration value="ZGIL"/>
+			<xs:enumeration value="ZLIN"/>
+			<xs:enumeration value="ZMOT"/>
+			<xs:enumeration value="ZREA"/>
+			<xs:enumeration value="ZRRC"/>
+			<xs:enumeration value="ZSAR"/>
+			<xs:enumeration value="ZTCF"/>
+			<xs:enumeration value="ZTCR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tDomainLNEnum">
+		<xs:union memberTypes="tDomainLNGroupAEnum tDomainLNGroupCEnum tDomainLNGroupGEnum tDomainLNGroupIEnum tDomainLNGroupMEnum tDomainLNGroupPEnum tDomainLNGroupREnum tDomainLNGroupSEnum tDomainLNGroupTEnum tDomainLNGroupXEnum tDomainLNGroupYEnum tDomainLNGroupZEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedLNClassEnum">
+		<xs:union memberTypes="tLPHDEnum tLLN0Enum tDomainLNEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionLNClassEnum">
+		<xs:restriction base="xs:Name">
+			<xs:minLength value="1"/>
+			<xs:pattern value="\p{Lu}+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tLNClassEnum">
+		<xs:union memberTypes="tPredefinedLNClassEnum tExtensionLNClassEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedCDCEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="SPS"/>
+			<xs:enumeration value="DPS"/>
+			<xs:enumeration value="INS"/>
+			<xs:enumeration value="ACT"/>
+			<xs:enumeration value="ACD"/>
+			<xs:enumeration value="SEC"/>
+			<xs:enumeration value="BCR"/>
+			<xs:enumeration value="MV"/>
+			<xs:enumeration value="CMV"/>
+			<xs:enumeration value="SAV"/>
+			<xs:enumeration value="WYE"/>
+			<xs:enumeration value="DEL"/>
+			<xs:enumeration value="SEQ"/>
+			<xs:enumeration value="HMV"/>
+			<xs:enumeration value="HWYE"/>
+			<xs:enumeration value="HDEL"/>
+			<xs:enumeration value="SPC"/>
+			<xs:enumeration value="DPC"/>
+			<xs:enumeration value="INC"/>
+			<xs:enumeration value="BSC"/>
+			<xs:enumeration value="ISC"/>
+			<xs:enumeration value="APC"/>
+			<xs:enumeration value="SPG"/>
+			<xs:enumeration value="ING"/>
+			<xs:enumeration value="ASG"/>
+			<xs:enumeration value="CURVE"/>
+			<xs:enumeration value="DPL"/>
+			<xs:enumeration value="LPL"/>
+			<xs:enumeration value="CSD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionCDCEnum">
+		<xs:restriction base="xs:Name">
+			<xs:minLength value="1"/>
+			<xs:pattern value="\p{Lu}+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tCDCEnum">
+		<xs:union memberTypes="tPredefinedCDCEnum tExtensionCDCEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tTrgOptEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="dchg"/>
+			<xs:enumeration value="qchg"/>
+			<xs:enumeration value="dupd"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tTrgOptControlEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="dchg"/>
+			<xs:enumeration value="qchg"/>
+			<xs:enumeration value="dupd"/>
+			<xs:enumeration value="period"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tFCEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="ST"/>
+			<xs:enumeration value="MX"/>
+			<xs:enumeration value="CO"/>
+			<xs:enumeration value="SP"/>
+			<xs:enumeration value="SG"/>
+			<xs:enumeration value="SE"/>
+			<xs:enumeration value="SV"/>
+			<xs:enumeration value="CF"/>
+			<xs:enumeration value="DC"/>
+			<xs:enumeration value="EX"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tServiceFCEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="SG"/>
+			<xs:enumeration value="BR"/>
+			<xs:enumeration value="RP"/>
+			<xs:enumeration value="LG"/>
+			<xs:enumeration value="GO"/>
+			<xs:enumeration value="GS"/>
+			<xs:enumeration value="MS"/>
+			<xs:enumeration value="US"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tPredefinedBasicTypeEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="BOOLEAN"/>
+			<xs:enumeration value="INT8"/>
+			<xs:enumeration value="INT16"/>
+			<xs:enumeration value="INT24"/>
+			<xs:enumeration value="INT32"/>
+			<xs:enumeration value="INT128"/>
+			<xs:enumeration value="INT8U"/>
+			<xs:enumeration value="INT16U"/>
+			<xs:enumeration value="INT24U"/>
+			<xs:enumeration value="INT32U"/>
+			<xs:enumeration value="FLOAT32"/>
+			<xs:enumeration value="FLOAT64"/>
+			<xs:enumeration value="Enum"/>
+			<xs:enumeration value="Dbpos"/>
+			<xs:enumeration value="Tcmd"/>
+			<xs:enumeration value="Quality"/>
+			<xs:enumeration value="Timestamp"/>
+			<xs:enumeration value="VisString32"/>
+			<xs:enumeration value="VisString64"/>
+			<xs:enumeration value="VisString129"/>
+			<xs:enumeration value="VisString255"/>
+			<xs:enumeration value="Octet64"/>
+			<xs:enumeration value="Unicode255"/>
+			<xs:enumeration value="Struct"/>
+			<xs:enumeration value="EntryTime"/>
+			<xs:enumeration value="Check"/>
+			<xs:enumeration value="ObjRef"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tExtensionBasicTypeEnum">
+		<xs:restriction base="xs:Name">
+			<xs:pattern value="\p{Lu}[\p{L},\d]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tBasicTypeEnum">
+		<xs:union memberTypes="tPredefinedBasicTypeEnum tExtensionBasicTypeEnum"/>
+	</xs:simpleType>
+	<xs:simpleType name="tValKindEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="Spec"/>
+			<xs:enumeration value="Conf"/>
+			<xs:enumeration value="RO"/>
+			<xs:enumeration value="Set"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tGSEControlTypeEnum">
+		<xs:restriction base="xs:Name">
+			<xs:enumeration value="GSSE"/>
+			<xs:enumeration value="GOOSE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tSIUnitEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="none"/>
+			<xs:enumeration value="m"/>
+			<xs:enumeration value="kg"/>
+			<xs:enumeration value="s"/>
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="K"/>
+			<xs:enumeration value="mol"/>
+			<xs:enumeration value="cd"/>
+			<xs:enumeration value="deg"/>
+			<xs:enumeration value="rad"/>
+			<xs:enumeration value="sr"/>
+			<xs:enumeration value="Gy"/>
+			<xs:enumeration value="q"/>
+			<xs:enumeration value="°C"/>
+			<xs:enumeration value="Sv"/>
+			<xs:enumeration value="F"/>
+			<xs:enumeration value="C"/>
+			<xs:enumeration value="S"/>
+			<xs:enumeration value="H"/>
+			<xs:enumeration value="V"/>
+			<xs:enumeration value="ohm"/>
+			<xs:enumeration value="J"/>
+			<xs:enumeration value="N"/>
+			<xs:enumeration value="Hz"/>
+			<xs:enumeration value="lx"/>
+			<xs:enumeration value="Lm"/>
+			<xs:enumeration value="Wb"/>
+			<xs:enumeration value="T"/>
+			<xs:enumeration value="W"/>
+			<xs:enumeration value="Pa"/>
+			<xs:enumeration value="m²"/>
+			<xs:enumeration value="m³"/>
+			<xs:enumeration value="m/s"/>
+			<xs:enumeration value="m/s²"/>
+			<xs:enumeration value="m³/s"/>
+			<xs:enumeration value="m/m³"/>
+			<xs:enumeration value="M"/>
+			<xs:enumeration value="kg/m³"/>
+			<xs:enumeration value="m²/s"/>
+			<xs:enumeration value="W/m K"/>
+			<xs:enumeration value="J/K"/>
+			<xs:enumeration value="ppm"/>
+			<xs:enumeration value="1/s"/>
+			<xs:enumeration value="rad/s"/>
+			<xs:enumeration value="VA"/>
+			<xs:enumeration value="Watts"/>
+			<xs:enumeration value="VAr"/>
+			<xs:enumeration value="phi"/>
+			<xs:enumeration value="cos_phi"/>
+			<xs:enumeration value="Vs"/>
+			<xs:enumeration value="V²"/>
+			<xs:enumeration value="As"/>
+			<xs:enumeration value="A²"/>
+			<xs:enumeration value="A²t"/>
+			<xs:enumeration value="VAh"/>
+			<xs:enumeration value="Wh"/>
+			<xs:enumeration value="VArh"/>
+			<xs:enumeration value="V/Hz"/>
+			<xs:enumeration value="Hz/s"/>
+			<xs:enumeration value="char"/>
+			<xs:enumeration value="char/s"/>
+			<xs:enumeration value="kgm²"/>
+			<xs:enumeration value="b/s"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tUnitMultiplierEnum">
+		<xs:restriction base="xs:normalizedString">
+			<xs:enumeration value=""/>
+			<xs:enumeration value="m"/>
+			<xs:enumeration value="k"/>
+			<xs:enumeration value="M"/>
+			<xs:enumeration value="mu"/>
+			<xs:enumeration value="y"/>
+			<xs:enumeration value="z"/>
+			<xs:enumeration value="a"/>
+			<xs:enumeration value="f"/>
+			<xs:enumeration value="p"/>
+			<xs:enumeration value="n"/>
+			<xs:enumeration value="c"/>
+			<xs:enumeration value="d"/>
+			<xs:enumeration value="da"/>
+			<xs:enumeration value="h"/>
+			<xs:enumeration value="G"/>
+			<xs:enumeration value="T"/>
+			<xs:enumeration value="P"/>
+			<xs:enumeration value="E"/>
+			<xs:enumeration value="Z"/>
+			<xs:enumeration value="Y"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="tRightEnum">
+		<xs:restriction base="xs:normalizedString">
+			<xs:enumeration value="full"/>
+			<xs:enumeration value="fix"/>
+			<xs:enumeration value="dataflow"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

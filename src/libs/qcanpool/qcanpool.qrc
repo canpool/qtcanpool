@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/main">
+        <file alias="close">resource/main/close.png</file>
+        <file alias="max">resource/main/max.png</file>
+        <file alias="min">resource/main/min.png</file>
+        <file alias="restore">resource/main/restore.png</file>
+        <file alias="arrow">resource/main/arrow.png</file>
+        <file alias="close2">resource/main/close2.png</file>
+        <file alias="max2">resource/main/max2.png</file>
+        <file alias="min2">resource/main/min2.png</file>
+        <file alias="restore2">resource/main/restore2.png</file>
+    </qresource>
+    <qresource prefix="/tools">
+        <file alias="setup">resource/tools/setup.png</file>
+        <file alias="arrow_down">resource/tools/arrow_down.png</file>
+        <file alias="arrow_left">resource/tools/arrow_left.png</file>
+        <file alias="arrow_right">resource/tools/arrow_right.png</file>
+        <file alias="arrow_up">resource/tools/arrow_up.png</file>
+        <file alias="navmenu">resource/tools/menu.png</file>
+        <file alias="sidebar">resource/tools/sidebar.png</file>
+        <file alias="close">resource/tools/close.png</file>
+    </qresource>
+    <qresource prefix="/skin">
+        <file alias="default">resource/skin/0.jpg</file>
+        <file alias="state_ok">resource/skin/state_ok.png</file>
+    </qresource>
+</RCC>

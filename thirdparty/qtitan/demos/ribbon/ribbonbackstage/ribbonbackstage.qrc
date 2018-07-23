@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/clipboard.png</file>
+        <file>res/smallOpen.png</file>
+        <file>res/smallSave.png</file>
+        <file>res/smallSaveAs.png</file>
+        <file>res/smallClipboard.png</file>
+        <file>res/smallCopy.png</file>
+        <file>res/smallCut.png</file>
+        <file>res/smallFormatPainter.png</file>
+        <file>res/smallNew.png</file>
+        <file>res/smallRedo.png</file>
+        <file>res/smallUndo.png</file>
+        <file>res/smallOptions.png</file>
+        <file>res/smallClose.png</file>
+        <file>res/ScreenPreview.png</file>
+        <file>res/ProtectDocument.png</file>
+        <file>res/CheckIssues.png</file>
+        <file>res/MngVersions.png</file>
+        <file>res/SendUsing.png</file>
+        <file>res/SaveWeb.png</file>
+        <file>res/SaveSharePoint.png</file>
+        <file>res/Publish.png</file>
+        <file>res/ChangeFileType.png</file>
+        <file>res/CreateDocument.png</file>
+        <file>res/devmachines.png</file>
+        <file>res/help.png</file>
+        <file>../../shared/res/about.png</file>
+        <file>../../shared/res/qtitanlogo32x32.png</file>
+        <file>../../shared/res/qtitan.png</file>
+        <file>../../shared/res/ribbonMaximize.png</file>
+        <file>../../shared/res/ribbonMinimize.png</file>
+    </qresource>
+</RCC>
