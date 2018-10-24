@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme name ="BlackBlue">
+  <Chart>
+    <Border>
+      <Color>#969696</Color>
+      <Rounded round="0"/>
+    </Border>
+    <Background style="LinearGradientPattern" gradientDirection="BottomToTop">
+      <Color position="0.0">#000000</Color>
+      <Color position="1.0">#000000</Color>
+    </Background>
+    <Title>
+      <Color>#F8F8F8</Color>
+    </Title>
+    <Legend>
+      <TextColor>#F8F8F8</TextColor>
+      <Background style="LinearGradientPattern">
+        <Color position="0.0">#000000</Color>
+        <Color position="1.0">#000000</Color>
+      </Background>
+      <Border>
+        <Color>#969696</Color>
+        <Rounded round="0"/>
+      </Border>
+    </Legend>
+
+    <!--- -->
+    <Area2D>
+      <Background type="LinearGradientPattern" gradientDirection="BottomRightToTopLeft">
+        <Color position="0.0">#333333</Color>
+        <Color position="1.0">#000000</Color>
+      </Background>
+      <Border>
+        <Color>#808080</Color>
+      </Border>
+      <Axis>
+        <Color>#969696</Color>
+        <InterlacedColor>#4D4D4D;#000000</InterlacedColor>
+        
+        <GridLines>
+          <Color>#808080</Color>
+          <MinorColor>#4D4D4D</MinorColor>
+        </GridLines>
+        
+        <AxisLabel>
+          <TextColor>#F8F8F8</TextColor>
+        </AxisLabel>
+        
+        <AxisTitle>
+          <TextColor>#F8F8F8</TextColor>
+        </AxisTitle>
+        
+        <ConstantLine>
+          <Color>#000000</Color>
+          <TextColor>#F8F8F8</TextColor>
+        </ConstantLine>
+
+        <StripColor>#000000;#000000</StripColor>
+        
+      </Axis>
+    </Area2D>
+  </Chart>
+
+  <SeriesImpl>
+    <Label>
+      <BackgroundColor alpha ="0">#FFFFFF</BackgroundColor>
+      <TextColor>#FFFFFF</TextColor>
+      <BorderColor alpha ="0">#FFFFFF</BorderColor>
+      <ConnectorColor>#FFFFFF</ConnectorColor>
+    </Label>
+  </SeriesImpl>
+
+  <PieSeries>
+    <BorderColor>#000000</BorderColor>
+  </PieSeries>
+
+  <SeriePalette>
+    <Color>#64BFC1;#DEE3E4</Color>
+    <Color>#8698AD;#B4BFCC</Color>
+    <Color>#3C5365;#597C98</Color>
+    <Color>#2E4761;#476E96</Color>
+    <Color>#05131E;#2D5B89</Color>
+    <Color>#05131E;#103B61</Color>
+    <Color>#000000;#001F3E</Color>
+  </SeriePalette>
+</Theme>

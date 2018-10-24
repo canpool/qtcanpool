@@ -3,7 +3,7 @@
 
 ### 仓库
 - [github](https://github.com/canpool/qtcanpool)
-- [码云](https://gitee.com/mamj/qtcanpool)(更新中)
+- [码云](https://gitee.com/mamj/qtcanpool)
 
 ### 教程
 - [核心库使用教程](http://blog.csdn.net/mmjbigma/article/details/79427537)

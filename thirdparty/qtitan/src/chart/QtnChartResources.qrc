@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+      <file>../../res/ChartTheme/default.xml</file>
+      <file>../../res/ChartTheme/fire.xml</file>
+      <file>../../res/ChartTheme/office.xml</file>
+      <file>../../res/ChartTheme/sunny.xml</file>
+      <file>../../res/ChartTheme/blue.xml</file>
+      <file>../../res/ChartTheme/gray.xml</file>
+      <file>../../res/ChartTheme/green.xml</file>
+      <file>../../res/ChartTheme/azureoffice.xml</file>
+      <file>../../res/ChartTheme/bluesunny.xml</file>
+      <file>../../res/ChartTheme/graygray.xml</file>
+      <file>../../res/ChartTheme/greengreen.xml</file>
+      <file>../../res/ChartTheme/blackblue.xml</file>
+    </qresource>
+</RCC>

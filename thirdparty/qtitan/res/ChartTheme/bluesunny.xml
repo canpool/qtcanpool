@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme name ="BlueSunny">
+  <Chart>
+    <Border>
+      <Color>#C9CBA4</Color>
+      <Rounded round="5"/>
+    </Border>
+    <Background style="LinearGradientPattern" gradientDirection="BottomToTop">
+      <Color position="0.0">#001DDD</Color>
+      <Color position="1.0">#001D63</Color>
+    </Background>
+    <Title>
+      <Color>#FFFFFF</Color>
+    </Title>
+    <Legend>
+      <TextColor>#FFFFFF</TextColor>
+      <Background>
+        <Color position="0.0">#001D63</Color>
+        <Color position="1.0">#001D63</Color>
+      </Background>
+      <Border>
+        <Color>#6AC0FF</Color>
+        <Rounded round="0"/>
+      </Border>
+    </Legend>
+
+    <!--- -->
+    <Area2D>
+      <Background style="LinearGradientPattern" gradientDirection="TopToBottom">
+        <Color alpha="200" position="0.0">#001D63</Color>
+        <Color alpha="200" position="1.0">#001D63</Color>
+      </Background>
+      <Border>
+        <Color>#6AC0FF</Color>
+      </Border>
+      <Axis>
+        <Color>#6AC0FF</Color>
+        <InterlacedColor>#001D63;#F8FCFC</InterlacedColor>
+
+        <GridLines>
+          <Color>#6AC0FF</Color>
+          <MinorColor>#6AC0FF</MinorColor>
+        </GridLines>
+        
+        <AxisLabel>
+          <TextColor>#FFFFFF</TextColor>
+        </AxisLabel>
+        
+        <AxisTitle>
+          <TextColor>#FFFFFF</TextColor>
+        </AxisTitle>
+        
+        <ConstantLine>
+          <Color>#4C5C2B</Color>
+          <TextColor>#0094FF</TextColor>
+        </ConstantLine>
+
+        <StripColor>#F6F6F3;#FAFAF7</StripColor>
+        
+      </Axis>
+    </Area2D>
+  </Chart>
+  
+  <SeriesImpl>
+    <Label>
+      <BackgroundColor>#FFFFFF</BackgroundColor>
+    </Label>
+  </SeriesImpl>
+
+  <PieSeries>
+    <BorderColor>#82FFFFFF</BorderColor>
+  </PieSeries>
+
+  <SeriePalette>
+    <Color>#699000;#9FDE00</Color>
+    <Color>#98000A;#E7000C</Color>
+    <Color>#A00061;#EC008C</Color>
+    <Color>#B64D00;#E17404</Color>
+    <Color>#DE9700;#FFBE2A</Color>
+    <Color>#5495D1;#8FB9E1</Color>
+    <Color>#88C6E1;#D5EAFF</Color>
+    <Color>#D1C8C8;#F6F4F4</Color>
+  </SeriePalette>
+
+  </Theme>

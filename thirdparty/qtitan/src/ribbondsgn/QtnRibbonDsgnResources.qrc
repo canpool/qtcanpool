@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>../../res/style_icon.png</file>
+  <file>../../res/ribbon_icon.png</file>
+  <file>../../res/statusbar_icon.png</file>
+  <file>../../res/ribbonbackstagepage_icon.png</file>
+  <file>../../res/ribbonbackstagebutton_icon.png</file>
+  <file>../../res/ribbonbackstageseparator_icon.png</file>
+</qresource>
+</RCC>
