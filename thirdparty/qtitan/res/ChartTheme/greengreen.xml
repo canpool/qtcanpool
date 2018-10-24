@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme name ="GreenGreen">
+  <Chart>
+    <Border>
+      <Color>#003E0C</Color>
+      <Rounded round="0"/>
+    </Border>
+    <Background style="LinearGradientPattern" gradientDirection="BottomToTop">
+      <Color position="0.0">#FEFEFD</Color>
+      <Color position="1.0">#CCD0A7</Color>
+    </Background>
+    <Title>
+      <Color>#003E0C</Color>
+    </Title>
+    <Legend>
+      <TextColor>#003E0C</TextColor>
+      <Background style="SolidPattern">
+        <Color>#FEFEFD</Color>
+      </Background>
+      <Border>
+        <Color>#003E0C</Color>
+        <Rounded round="0"/>
+      </Border>
+    </Legend>
+
+    <!---  -->
+    <Area2D>
+      <Background style="LinearGradientPattern" gradientDirection="TopToBottom">
+        <Color alpha="200" position="0.0">#FEFEFD</Color>
+        <Color alpha="200" position="1.0">#CCD0A7</Color>
+      </Background>
+      <Border>
+        <Color>#003E0C</Color>
+      </Border>
+      <Axis>
+        <Color>#003E0C</Color>
+        <InterlacedColor>#FFFFFF;#FFFFFF</InterlacedColor>
+
+        <GridLines>
+          <Color>#003E0C</Color>
+          <MinorColor>#003E0C</MinorColor>
+        </GridLines>
+
+        <AxisLabel>
+          <TextColor>#003E0C</TextColor>
+        </AxisLabel>
+
+        <AxisTitle>
+          <TextColor>#003E0C</TextColor>
+        </AxisTitle>
+
+        <ConstantLine>
+          <Color>#4C5C2B</Color>
+          <TextColor>#003E0C</TextColor>
+        </ConstantLine>
+
+        <StripColor>#D0DEB9;#D0DEB9</StripColor>
+
+      </Axis>
+    </Area2D>
+  </Chart>
+
+  <SeriesImpl>
+    <Label>
+      <BackgroundColor>#FFFFFF</BackgroundColor>
+    </Label>
+  </SeriesImpl>
+
+  <PieSeries>
+    <BorderColor>#85FFFFFF</BorderColor>
+  </PieSeries>
+
+  <SeriePalette>
+    <Color>#556839;#7F9E56</Color>
+    <Color>#6D8E3F;#95BA65</Color>
+    <Color>#87BC2B;#BCE27F</Color>
+    <Color>#A2C061;#CADCA7</Color>
+    <Color>#BBD982;#D5E8B1</Color>
+    <Color>#D1E5A6;#F0F7E2</Color>
+  </SeriePalette>
+
+</Theme>

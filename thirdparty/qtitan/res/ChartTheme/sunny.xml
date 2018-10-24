@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme name ="Sunny">
+  <Chart>
+    <Border>
+      <Color>#808080</Color>
+    </Border>
+    <Background style="LinearGradientPattern" gradientDirection="BottomToTop">
+      <Color>#FFFFFF</Color>
+    </Background>
+    <Title>
+      <Color>#000000</Color>
+    </Title>
+    <Legend>
+      <TextColor>#000000</TextColor>
+      <Background>
+        <Color>#EEEEE3</Color>
+      </Background>
+      <Border>
+        <Color>#C9CBA4</Color>
+      </Border>
+    </Legend>
+
+    <!--- -->
+    <Area2D>
+      <Background style="LinearGradientPattern" gradientDirection="TopToBottom">
+        <Color>#FFFFFF</Color>
+      </Background>
+      <Border>
+        <Color>#D9D9D9</Color>
+      </Border>
+      <Axis>
+        <Color>#4C5C2B</Color>
+        <InterlacedColor>#F6F6F3;#FAFAF7</InterlacedColor>
+        
+        <GridLines>
+          <Color>#DCDDC5</Color> <MinorColor>#E8E9D8</MinorColor>
+        </GridLines>
+        
+        <AxisLabel>
+          <TextColor>#000000</TextColor>
+        </AxisLabel>
+        
+        <AxisTitle>
+          <TextColor>#000000</TextColor>
+        </AxisTitle>
+        
+        <ConstantLine>
+          <Color>#4C5C2B</Color>
+          <TextColor>#000000</TextColor>
+        </ConstantLine>
+
+        <StripColor>#DCDDC5;#FFFFFF</StripColor>
+        
+      </Axis>
+    </Area2D>
+  </Chart>
+  
+  <!--- -->
+  <SeriesImpl>
+    <Label>
+      <BackgroundColor>#FFFFFF</BackgroundColor>
+    </Label>
+  </SeriesImpl>
+  
+  <!--- -->
+  <PieSeries>
+    <BorderColor>#82FFFFFF</BorderColor>
+  </PieSeries>
+
+  <SeriePalette>
+    <!---  start   final  -->
+    <Color>#699000;#9FDE00</Color>
+    <Color>#98000A;#E7000C</Color>
+    <Color>#A00061;#EC008C</Color>
+    <Color>#B64D00;#E17404</Color>
+    <Color>#DE9700;#FFBE2A</Color>
+    <Color>#5495D1;#8FB9E1</Color>
+    <Color>#88C6E1;#D5EAFF</Color>
+    <Color>#D1C8C8;#F6F4F4</Color>
+  </SeriePalette>
+
+  </Theme>
