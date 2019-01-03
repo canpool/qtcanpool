@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
 
 //    qDebug()<<QLocale::system().name(); // zh_CN
 
-    CMainWindow w;
-//    MainWindow w;
+//    CMainWindow w;
+    MainWindow w;
     w.show();
 
     return a.exec();

@@ -8,5 +8,5 @@ SUBDIRS +=  \
             fancydemo \
             qtoffice \
             qtqrcode \
-            $$QTITAN_DIR/demos/ribbon \
-            $$QTITAN_DIR/demos/chart
+#            $$QTITAN_DIR/demos/ribbon \
+#            $$QTITAN_DIR/demos/chart
