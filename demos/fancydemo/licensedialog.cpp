@@ -84,7 +84,7 @@ void LicenseDialog::initUi()
     memset(hostid,0,sizeof(hostid));
     bool nret = createHostIDNew(hostid);
     if(nret)
-        hostEdit->setText(QString(hostid));
+        hostEdit->setText(QString::fromLocal8Bit(hostid));
     else
         hostEdit->setText(tr("Please check configuration!"));
 }

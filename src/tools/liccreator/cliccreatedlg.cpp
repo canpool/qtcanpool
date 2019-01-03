@@ -165,7 +165,7 @@ void CLicCreateDlg::accept()
                              strHostID.toLocal8Bit().data(),strLicense))
 #endif
             {
-				lineEdit_license->setText(strLicense);
+                lineEdit_license->setText(QString::fromLocal8Bit(strLicense));
 				QPalette pl = label_status->palette();
 				pl.setColor(QPalette::WindowText,QColor(Qt::blue));
 				label_status->setPalette(pl);
@@ -195,7 +195,7 @@ void CLicCreateDlg::accept()
                                  strProName.toLocal8Bit().data(),nYear,nMonth,nDay,strLicense))
 #endif
             {
-				lineEdit_license->setText(strLicense);
+                lineEdit_license->setText(QString::fromLocal8Bit(strLicense));
 				QPalette pl = label_status->palette();
 				pl.setColor(QPalette::WindowText,QColor(Qt::blue));
 				label_status->setPalette(pl);
@@ -235,7 +235,7 @@ void CLicCreateDlg::accept()
             if(createLicenseOld(strHostID.toLocal8Bit().data(),strLicense))
 #endif
 			{
-				lineEdit_license_old->setText(strLicense);
+                lineEdit_license_old->setText(QString::fromLocal8Bit(strLicense));
 				QPalette pl = label_status->palette();
 				pl.setColor(QPalette::WindowText,QColor(Qt::blue));
 				label_status_old->setPalette(pl);
@@ -257,7 +257,7 @@ void CLicCreateDlg::accept()
 			int nDay = comboBox_day_old->currentText().toInt();
 			if(createTempLicenseOld(nYear,nMonth,nDay,strLicense))
 			{
-				lineEdit_license_old->setText(strLicense);
+                lineEdit_license_old->setText(QString::fromLocal8Bit(strLicense));
 				QPalette pl = label_status->palette();
 				pl.setColor(QPalette::WindowText,QColor(Qt::blue));
 				label_status_old->setPalette(pl);
