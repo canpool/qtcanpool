@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- QtnPopupWindowClass.qdoc -->
+  <title>Qt QtitanRibbon 3.1: OfficePopupWindow Class Reference</title>
+  <link rel="stylesheet" type="text/css" href="style/style.css" />
+  <script src="scripts/jquery.js" type="text/javascript"></script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script src="./scripts/superfish.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/superfish.css" />  <script src="./scripts/narrow.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/narrow.css" />
+  <!--[if IE]>
+<meta name="MSSmartTagsPreventParsing" content="true">
+<meta http-equiv="imagetoolbar" content="no">
+<![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="style/style_ie8.css">
+<![endif]-->
+</head>
+<body class="" onload="CheckEmptyAndLoadList();">
+ <div class="header" id="qtdocheader">
+    <div class="content"> 
+    <div id="nav-logo">
+      <a href="index.html">Home</a></div>
+		<div id="narrowsearch"><form onsubmit="return false;" action="" id="qtdocsearch">
+		<fieldset>
+		<input type="text" value="" id="pageType2" name="searchstring"/>
+		 </fieldset>
+		</form></div>
+    <div id="nav-topright">
+      <ul>
+      </ul>
+    </div>
+    <div id="shortCut">
+      <ul>
+        <li class="shortCut-topleft-inactive"><span><a href="index.html">Home</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="classes.html">All&nbsp;Classes</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="overviews.html">Overviews</a></span></li>
+      </ul>
+</div> <ul class="sf-menu sf-js-enabled sf-shadow" id="narrowmenu"> 
+		 <li><a href="#">API Lookup</a> 
+			 <ul id="topmenuLook"> 
+			   <li><a href="qtitan.html">Qtitan Namespace</a></li> 
+			   <li><a href="classes.html">Class index</a></li> 
+ 			  <li><a href="qtitan.html#functions">Function index</a></li> 
+			   </ul> 
+		 </li> 
+ </ul> 
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="hd">
+      <span></span>
+    </div>
+    <div class="bd group">
+      <div class="sidebar">
+        <div class="searchlabel">
+          Search index:</div>
+        <div class="search">
+          <form id="qtdocsearch" action="" onsubmit="return false;">
+            <fieldset>
+              <input type="text" name="searchstring" id="pageType" value="" />
+            </fieldset>
+          </form>
+        </div>
+        <div class="box first bottombar" id="lookup">
+          <h2 title="API Lookup"><span></span>
+            API Lookup</h2>
+          <div  id="list001" class="list">
+          <ul id="ul001" >
+              <li class="defaultLink"><a href="qtitan.html">Qtitan Namespace</a></li>
+              <li class="defaultLink"><a href="classes.html">Class index</a></li>
+              <li class="defaultLink"><a href="qtitan.html#functions">Function index</a></li>
+            </ul> 
+          </div>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="toolbar">
+          <div class="breadcrumb toolblock">
+            <ul>
+              <li class="first"><a href="index.html">Home</a></li>
+              <!--  Bread crumbs goes here -->
+              <li><a href="modules.html">Modules</a></li>              <li>QtitanRibbon</li>
+              <li>OfficePopupWindow</li>
+            </ul>
+          </div>
+          <div class="toolbuttons toolblock">
+            <ul>
+              <li id="smallA" class="t_button">A</li>
+              <li id="medA" class="t_button active">A</li>
+              <li id="bigA" class="t_button">A</li>
+              <li id="print" class="t_button"><a href="javascript:this.print();">
+                <span>Print</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="content">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#public-slots">Public Slots</a></li>
+<li class="level1"><a href="#signals">Signals</a></li>
+<li class="level1"><a href="#static-public-members">Static Public Members</a></li>
+<li class="level1"><a href="#protected-functions">Protected Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<h1 class="title">OfficePopupWindow Class Reference</h1>
+<span class="small-subtitle">(Qtitan::OfficePopupWindow)<br/></span>
+<!-- $$$OfficePopupWindow-brief -->
+<p>OfficePopupWindow class is a realization of a Microsoft Office popup window. Such window is widely used in products of Microsoft Office for showing messages or groups of messages. Typically, a window appears at the bottom right. Just above the desktop task bar. <a href="qtitan-officestyle.html">OfficeStyle</a> and <a href="qtitan-ribbonstyle.html">RibbonStyle</a> have a property setPopupDecoration() to set the decoration of this window. With this property you can give a look of Microsoft Messanger (MSN) or it allows to decorate the window depending on the style which installed in <a href="http://qt.nokia.com/doc/4.7/qapplication.html">QApplication</a>. <a href="#details">More...</a></p>
+<!-- @@@OfficePopupWindow -->
+<p>Inherits <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a>.</p>
+<ul>
+<li><a href="qtitan-officepopupwindow-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2>Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#OfficePopupWindow">OfficePopupWindow</a></b> ( QWidget * <i>parent</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#dtor.OfficePopupWindow">~OfficePopupWindow</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> PopupAnimation </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#animation">animation</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#animationSpeed">animationSpeed</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QString &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#bodyText">bodyText</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QWidget * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#centralWidget">centralWidget</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QPixmap &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#closeButtonPixmap">closeButtonPixmap</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#displayTime">displayTime</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#dragDropEnabled">dragDropEnabled</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QPoint </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#getPosition">getPosition</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#isTitleCloseButtonVisible">isTitleCloseButtonVisible</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> PopupLocation </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#location">location</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setAnimation">setAnimation</a></b> ( PopupAnimation <i>popupAnimation</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setAnimationSpeed">setAnimationSpeed</a></b> ( int <i>time</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setBodyText">setBodyText</a></b> ( const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setCentralWidget">setCentralWidget</a></b> ( QWidget * <i>widget</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setCloseButtonPixmap">setCloseButtonPixmap</a></b> ( const QPixmap &amp; <i>pixmap</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setDisplayTime">setDisplayTime</a></b> ( int <i>time</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setDragDropEnabled">setDragDropEnabled</a></b> ( bool <i>enabled</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setLocation">setLocation</a></b> ( PopupLocation <i>location</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setPosition">setPosition</a></b> ( const QPoint &amp; <i>pos</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setTitleCloseButtonVisible">setTitleCloseButtonVisible</a></b> ( bool <i>visible</i> = true )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setTitleIcon">setTitleIcon</a></b> ( const QIcon &amp; <i>icon</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setTitleText">setTitleText</a></b> ( const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#setTransparency">setTransparency</a></b> ( qreal <i>transparency</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#showPopup-2">showPopup</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#showPopup-3">showPopup</a></b> ( const QPoint &amp; <i>pos</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QIcon &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#titleIcon">titleIcon</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QString &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#titleText">titleText</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> qreal </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#transparency">transparency</a></b> () const</td></tr>
+</table>
+<a name="reimplemented-public-functions"></a>
+<h2>Reimplemented Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual QSize </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#sizeHint">sizeHint</a></b> () const</td></tr>
+</table>
+<ul>
+<li class="fn">217 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#public-functions">QWidget</a></li>
+<li class="fn">13 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#public-functions">QPaintDevice</a></li>
+<li class="fn">29 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-functions">QObject</a></li>
+</ul>
+<a name="public-slots"></a>
+<h2>Public Slots</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#closePopup">closePopup</a></b> ()</td></tr>
+</table>
+<ul>
+<li class="fn">19 public slots inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#public-slots">QWidget</a></li>
+<li class="fn">1 public slot inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-slots">QObject</a></li>
+</ul>
+<a name="signals"></a>
+<h2>Signals</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#aboutToHide">aboutToHide</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#aboutToShow">aboutToShow</a></b> ()</td></tr>
+</table>
+<ul>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#signals">QWidget</a></li>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#signals">QObject</a></li>
+</ul>
+<a name="static-public-members"></a>
+<h2>Static Public Members</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#showPopup">showPopup</a></b> ( QWidget * <i>parent</i>, const QIcon &amp; <i>titleIcon</i>, const QString &amp; <i>titleText</i>, const QString &amp; <i>bodyText</i>, bool <i>closeButtonVisible</i> = true, OfficeStyle::OfficePopupDecoration <i>decoration</i> = OfficeStyle::PopupSystemDecoration )</td></tr>
+</table>
+<ul>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#static-public-members">QWidget</a></li>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#static-public-members">QObject</a></li>
+</ul>
+<a name="reimplemented-protected-functions"></a>
+<h2>Reimplemented Protected Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#enterEvent">enterEvent</a></b> ( QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#event">event</a></b> ( QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#leaveEvent">leaveEvent</a></b> ( QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-officepopupwindow.html#paintEvent">paintEvent</a></b> ( QPaintEvent * <i>event</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">37 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-functions">QWidget</a></li>
+<li class="fn">1 protected function inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-functions">QPaintDevice</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+</ul>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li class="fn">58 properties inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#properties">QWidget</a></li>
+<li class="fn">1 property inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#properties">QObject</a></li>
+<li class="fn">1 public variable inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-variables">QObject</a></li>
+<li class="fn">37 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-functions">QWidget</a></li>
+<li class="fn">1 protected function inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-functions">QPaintDevice</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+<li class="fn">1 protected slot inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-slots">QWidget</a></li>
+<li class="fn">1 protected type inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-variables">QPaintDevice</a></li>
+<li class="fn">2 protected variables inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-variables">QObject</a></li>
+</ul>
+<a name="details"></a>
+<!-- $$$OfficePopupWindow-description -->
+<div class="descr">
+<h2>Detailed Description</h2>
+<p>OfficePopupWindow class is a realization of a Microsoft Office popup window. Such window is widely used in products of Microsoft Office for showing messages or groups of messages. Typically, a window appears at the bottom right. Just above the desktop task bar. <a href="qtitan-officestyle.html">OfficeStyle</a> and <a href="qtitan-ribbonstyle.html">RibbonStyle</a> have a property setPopupDecoration() to set the decoration of this window. With this property you can give a look of Microsoft Messanger (MSN) or it allows to decorate the window depending on the style which installed in <a href="http://qt.nokia.com/doc/4.7/qapplication.html">QApplication</a>.</p>
+        <table cellpadding="2" cellspacing="1" border="0" width="95%" class="indextable" align="center">
+        <tr><td colspan=2><h2>Variants of the office popup windows with different decoration</h2><br><br></td></tr>
+        <tr>
+        <td><img src="images/ribbonui_officepopupwindow1.png"</td>
+        <td><img src="images/ribbonui_officepopupwindow2.png"</td>
+        </tr>
+        <tr>
+        <td><img src="images/ribbonui_officepopupwindow3.png"</td>
+        <td><img src="images/ribbonui_officepopupwindow4.png"</td>
+        </tr>
+        </table>
+    </div>
+<!-- @@@OfficePopupWindow -->
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$OfficePopupWindow[overload1]$$$OfficePopupWindowQWidget* -->
+<h3 class="fn"><a name="OfficePopupWindow"></a>OfficePopupWindow::OfficePopupWindow ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>parent</i> )</h3>
+<p>Constructs the <a href="qtitan-officepopupwindow.html">OfficePopupWindow</a> object with the given <i>parent</i>.</p>
+<!-- @@@OfficePopupWindow -->
+<!-- $$$~OfficePopupWindow[overload1]$$$~OfficePopupWindow -->
+<h3 class="fn"><a name="dtor.OfficePopupWindow"></a>OfficePopupWindow::~OfficePopupWindow ()<tt> [virtual]</tt></h3>
+<p>Destructor of the <a href="qtitan-officepopupwindow.html">OfficePopupWindow</a> object.</p>
+<!-- @@@~OfficePopupWindow -->
+<!-- $$$aboutToHide[overload1]$$$aboutToHide -->
+<h3 class="fn"><a name="aboutToHide"></a>void OfficePopupWindow::aboutToHide ()<tt> [signal]</tt></h3>
+<p>This signal is emitted just before the office popup window is hidden from the user.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#aboutToShow">aboutToShow</a>() and <a href="qtitan-officepopupwindow.html#showPopup">showPopup</a>().</p>
+<!-- @@@aboutToHide -->
+<!-- $$$aboutToShow[overload1]$$$aboutToShow -->
+<h3 class="fn"><a name="aboutToShow"></a>void OfficePopupWindow::aboutToShow ()<tt> [signal]</tt></h3>
+<p>This signal is emitted just before the office popup window is shown to the user.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#aboutToHide">aboutToHide</a>() and <a href="qtitan-officepopupwindow.html#closePopup">closePopup</a>().</p>
+<!-- @@@aboutToShow -->
+<!-- $$$animation[overload1]$$$animation -->
+<h3 class="fn"><a name="animation"></a><a href="qtitan.html#PopupAnimation-enum">PopupAnimation</a> OfficePopupWindow::animation () const</h3>
+<p>Returns the popup window animation type.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setAnimation">setAnimation</a>().</p>
+<!-- @@@animation -->
+<!-- $$$animationSpeed[overload1]$$$animationSpeed -->
+<h3 class="fn"><a name="animationSpeed"></a>int OfficePopupWindow::animationSpeed () const</h3>
+<p>Returns the speed of the animation in milliseconds.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setAnimationSpeed">setAnimationSpeed</a>().</p>
+<!-- @@@animationSpeed -->
+<!-- $$$bodyText[overload1]$$$bodyText -->
+<h3 class="fn"><a name="bodyText"></a>const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; OfficePopupWindow::bodyText () const</h3>
+<p>Returns the text of the popup window body. Returned text is the same you have passed to <a href="qtitan-officepopupwindow.html#setBodyText">setBodyText</a>() function.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setBodyText">setBodyText</a>().</p>
+<!-- @@@bodyText -->
+<!-- $$$centralWidget[overload1]$$$centralWidget -->
+<h3 class="fn"><a name="centralWidget"></a><a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * OfficePopupWindow::centralWidget () const</h3>
+<p>Returns the central widget for the office popup window.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setCentralWidget">setCentralWidget</a>().</p>
+<!-- @@@centralWidget -->
+<!-- $$$closeButtonPixmap[overload1]$$$closeButtonPixmap -->
+<h3 class="fn"><a name="closeButtonPixmap"></a>const <a href="http://qt.nokia.com/doc/4.7/qpixmap.html">QPixmap</a> &amp; OfficePopupWindow::closeButtonPixmap () const</h3>
+<p>Returns the close button pixmap for painting on the office popup window title.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setCloseButtonPixmap">setCloseButtonPixmap</a>().</p>
+<!-- @@@closeButtonPixmap -->
+<!-- $$$closePopup[overload1]$$$closePopup -->
+<h3 class="fn"><a name="closePopup"></a>void OfficePopupWindow::closePopup ()<tt> [slot]</tt></h3>
+<p>Hides the office popup window.</p>
+<!-- @@@closePopup -->
+<!-- $$$displayTime[overload1]$$$displayTime -->
+<h3 class="fn"><a name="displayTime"></a>int OfficePopupWindow::displayTime () const</h3>
+<p>Returns the display time for showing office popup window. The returned value is in milliseconds.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setDisplayTime">setDisplayTime</a>().</p>
+<!-- @@@displayTime -->
+<!-- $$$dragDropEnabled[overload1]$$$dragDropEnabled -->
+<h3 class="fn"><a name="dragDropEnabled"></a>bool OfficePopupWindow::dragDropEnabled () const</h3>
+<p>Returns the drag-and-drop flag for the popup box. If returned value is true then the user may use grip to drag-and-drop window over desktop.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setDragDropEnabled">setDragDropEnabled</a>().</p>
+<!-- @@@dragDropEnabled -->
+<!-- $$$enterEvent[overload1]$$$enterEventQEvent* -->
+<h3 class="fn"><a name="enterEvent"></a>void OfficePopupWindow::enterEvent ( <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#enterEvent">QWidget::enterEvent</a>().</p>
+<!-- @@@enterEvent -->
+<!-- $$$event[overload1]$$$eventQEvent* -->
+<h3 class="fn"><a name="event"></a>bool OfficePopupWindow::event ( <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qobject.html#event">QObject::event</a>().</p>
+<!-- @@@event -->
+<!-- $$$getPosition[overload1]$$$getPosition -->
+<h3 class="fn"><a name="getPosition"></a><a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> OfficePopupWindow::getPosition () const</h3>
+<p>Returns the current popup window position on the desktop.</p>
+<!-- @@@getPosition -->
+<!-- $$$isTitleCloseButtonVisible[overload1]$$$isTitleCloseButtonVisible -->
+<h3 class="fn"><a name="isTitleCloseButtonVisible"></a>bool OfficePopupWindow::isTitleCloseButtonVisible () const</h3>
+<p>Returns the visibility of the title's close buttone.</p>
+<!-- @@@isTitleCloseButtonVisible -->
+<!-- $$$leaveEvent[overload1]$$$leaveEventQEvent* -->
+<h3 class="fn"><a name="leaveEvent"></a>void OfficePopupWindow::leaveEvent ( <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#leaveEvent">QWidget::leaveEvent</a>().</p>
+<!-- @@@leaveEvent -->
+<!-- $$$location[overload1]$$$location -->
+<h3 class="fn"><a name="location"></a><a href="qtitan.html#PopupLocation-enum">PopupLocation</a> OfficePopupWindow::location () const</h3>
+<p>Returns the start location of the office popup window.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setLocation">setLocation</a>().</p>
+<!-- @@@location -->
+<!-- $$$paintEvent[overload1]$$$paintEventQPaintEvent* -->
+<h3 class="fn"><a name="paintEvent"></a>void OfficePopupWindow::paintEvent ( <a href="http://qt.nokia.com/doc/4.7/qpaintevent.html">QPaintEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#paintEvent">QWidget::paintEvent</a>().</p>
+<!-- @@@paintEvent -->
+<!-- $$$setAnimation[overload1]$$$setAnimationPopupAnimation -->
+<h3 class="fn"><a name="setAnimation"></a>void OfficePopupWindow::setAnimation ( <a href="qtitan.html#PopupAnimation-enum">PopupAnimation</a> <i>popupAnimation</i> )</h3>
+<p>Sets the popup window animation type with given <i>popupAnimation</i> parameter.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#animation">animation</a>().</p>
+<!-- @@@setAnimation -->
+<!-- $$$setAnimationSpeed[overload1]$$$setAnimationSpeedint -->
+<h3 class="fn"><a name="setAnimationSpeed"></a>void OfficePopupWindow::setAnimationSpeed ( int <i>time</i> )</h3>
+<p>Sets the speed of the animation. <i>time</i> - the value of the speed in milliseconds.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#animationSpeed">animationSpeed</a>().</p>
+<!-- @@@setAnimationSpeed -->
+<!-- $$$setBodyText[overload1]$$$setBodyTextconstQString& -->
+<h3 class="fn"><a name="setBodyText"></a>void OfficePopupWindow::setBodyText ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Sets the body <i>text</i> for the popup window. The body text can be pure text or HTML.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#bodyText">bodyText</a>().</p>
+<!-- @@@setBodyText -->
+<!-- $$$setCentralWidget[overload1]$$$setCentralWidgetQWidget* -->
+<h3 class="fn"><a name="setCentralWidget"></a>void OfficePopupWindow::setCentralWidget ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>widget</i> )</h3>
+<p>Sets the central <i>widget</i> for the office popup window. The method is used when you have to show the non-standard contents inside the popup box. In this case the settings of the <a href="qtitan-officepopupwindow.html#titleText">titleText</a>(), <a href="qtitan-officepopupwindow.html#titleIcon">titleIcon</a>() and <a href="qtitan-officepopupwindow.html#bodyText">bodyText</a>() will be ignored and given <i>widget</i> will be showing instead.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#centralWidget">centralWidget</a>().</p>
+<!-- @@@setCentralWidget -->
+<!-- $$$setCloseButtonPixmap[overload1]$$$setCloseButtonPixmapconstQPixmap& -->
+<h3 class="fn"><a name="setCloseButtonPixmap"></a>void OfficePopupWindow::setCloseButtonPixmap ( const <a href="http://qt.nokia.com/doc/4.7/qpixmap.html">QPixmap</a> &amp; <i>pixmap</i> )</h3>
+<p>Sets the close button <i>pixmap</i> for painting on the office popup window title.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#closeButtonPixmap">closeButtonPixmap</a>().</p>
+<!-- @@@setCloseButtonPixmap -->
+<!-- $$$setDisplayTime[overload1]$$$setDisplayTimeint -->
+<h3 class="fn"><a name="setDisplayTime"></a>void OfficePopupWindow::setDisplayTime ( int <i>time</i> )</h3>
+<p>Sets the display time for showing office popup window. Parameter <i>time</i> is the value in milliseconds.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#displayTime">displayTime</a>().</p>
+<!-- @@@setDisplayTime -->
+<!-- $$$setDragDropEnabled[overload1]$$$setDragDropEnabledbool -->
+<h3 class="fn"><a name="setDragDropEnabled"></a>void OfficePopupWindow::setDragDropEnabled ( bool <i>enabled</i> )</h3>
+<p>Sets the drag-and-drop <i>enabled</i> flag for the popup box. If <i>enabled</i> is true then the user may use grip to drag-and-drop window over desktop.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#dragDropEnabled">dragDropEnabled</a>().</p>
+<!-- @@@setDragDropEnabled -->
+<!-- $$$setLocation[overload1]$$$setLocationPopupLocation -->
+<h3 class="fn"><a name="setLocation"></a>void OfficePopupWindow::setLocation ( <a href="qtitan.html#PopupLocation-enum">PopupLocation</a> <i>location</i> )</h3>
+<p>Sets the start <i>location</i> of the office popup window.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#location">location</a>().</p>
+<!-- @@@setLocation -->
+<!-- $$$setPosition[overload1]$$$setPositionconstQPoint& -->
+<h3 class="fn"><a name="setPosition"></a>void OfficePopupWindow::setPosition ( const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pos</i> )</h3>
+<p>Sets the popup window position on the desktop with given <i>pos</i> parameter.</p>
+<!-- @@@setPosition -->
+<!-- $$$setTitleCloseButtonVisible[overload1]$$$setTitleCloseButtonVisiblebool -->
+<h3 class="fn"><a name="setTitleCloseButtonVisible"></a>void OfficePopupWindow::setTitleCloseButtonVisible ( bool <i>visible</i> = true )</h3>
+<p>Sets the visibility of the title's close button. Parameter <i>visible</i> is a visibility of the close button.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#isTitleCloseButtonVisible">isTitleCloseButtonVisible</a>().</p>
+<!-- @@@setTitleCloseButtonVisible -->
+<!-- $$$setTitleIcon[overload1]$$$setTitleIconconstQIcon& -->
+<h3 class="fn"><a name="setTitleIcon"></a>void OfficePopupWindow::setTitleIcon ( const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; <i>icon</i> )</h3>
+<p>Sets the <i>icon</i> for the office popup window title.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#titleIcon">titleIcon</a>().</p>
+<!-- @@@setTitleIcon -->
+<!-- $$$setTitleText[overload1]$$$setTitleTextconstQString& -->
+<h3 class="fn"><a name="setTitleText"></a>void OfficePopupWindow::setTitleText ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Sets the <i>text</i> for the office popup window title. Text can be pure text or HTML.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#titleText">titleText</a>().</p>
+<!-- @@@setTitleText -->
+<!-- $$$setTransparency[overload1]$$$setTransparencyqreal -->
+<h3 class="fn"><a name="setTransparency"></a>void OfficePopupWindow::setTransparency ( qreal <i>transparency</i> )</h3>
+<p>Sets the start <i>transparency</i> of the office popup window.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#transparency">transparency</a>().</p>
+<!-- @@@setTransparency -->
+<!-- $$$showPopup[overload1]$$$showPopupQWidget*constQIcon&constQString&constQString&boolOfficeStyle::OfficePopupDecoration -->
+<h3 class="fn"><a name="showPopup"></a>void OfficePopupWindow::showPopup ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>parent</i>, const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; <i>titleIcon</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>titleText</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>bodyText</i>, bool <i>closeButtonVisible</i> = true, <a href="qtitan-officestyle.html#OfficePopupDecoration-enum">OfficeStyle::OfficePopupDecoration</a> <i>decoration</i> = OfficeStyle::PopupSystemDecoration )<tt> [static]</tt></h3>
+<p>Static method to quick show the office popup box with given <i>parent</i>, <i>titleIcon</i> - title icon, <i>titleText</i> - title text and bodyText - body text. You may use HTML to fill <i>titleText</i> and <i>bodyText</i>. Optional parameters <i>closeButtonVisible</i> and <i>decoration</i> are used for the customization purposes. After it will be closed the instance of the window will be deleted automaticaly.</p>
+<p class="centerAlign"><img src="images/ribbonui_officepopupwindow5.png" /></p><p>To show such message on the desktop you need invoke code bellow:</p>
+<pre class="highlightedCode brush: cpp">    QString titleHtml = &quot;&lt;span style=\&quot;font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:600; font-style:normal;\&quot;&gt;John Smith&lt;/span&gt;&lt;br&gt;Re: Your request&quot;;
+    QString bodyHtml = &quot;&lt;a href='#'&gt;&lt;img src=':/res/cross.ico'&gt;&lt;/a&gt; \
+                    &lt;a href='#'&gt;&lt;img src=':/res/flag.ico'&gt;&lt;/a&gt; \
+                    &lt;span style=\&quot;color:#0000ff; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;\&quot;&gt; \
+                    I am sending you the requested inform&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;&quot;;
+    OfficePopupWindow::showPopup(0, QIcon(&quot;:/res/letter.ico&quot;), titleHtml, bodyHtml);</pre>
+<!-- @@@showPopup -->
+<!-- $$$showPopup$$$showPopup -->
+<h3 class="fn"><a name="showPopup-2"></a>bool OfficePopupWindow::showPopup ()</h3>
+<p>Shows popup box on the desktop.</p>
+<!-- @@@showPopup -->
+<!-- $$$showPopup$$$showPopupconstQPoint& -->
+<h3 class="fn"><a name="showPopup-3"></a>bool OfficePopupWindow::showPopup ( const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pos</i> )</h3>
+<p>Shows popup box on the desktop at the given <i>pos</i>. This method is equal to: setPosition(pos); <a href="qtitan-officepopupwindow.html#showPopup">showPopup</a>(); line of code.</p>
+<!-- @@@showPopup -->
+<!-- $$$sizeHint[overload1]$$$sizeHint -->
+<h3 class="fn"><a name="sizeHint"></a><a href="http://qt.nokia.com/doc/4.7/qsize.html">QSize</a> OfficePopupWindow::sizeHint () const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#sizeHint-prop">QWidget::sizeHint</a>().</p>
+<!-- @@@sizeHint -->
+<!-- $$$titleIcon[overload1]$$$titleIcon -->
+<h3 class="fn"><a name="titleIcon"></a>const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; OfficePopupWindow::titleIcon () const</h3>
+<p>Returns the icon of the office popup window title.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setTitleIcon">setTitleIcon</a>().</p>
+<!-- @@@titleIcon -->
+<!-- $$$titleText[overload1]$$$titleText -->
+<h3 class="fn"><a name="titleText"></a>const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; OfficePopupWindow::titleText () const</h3>
+<p>Returns the text of the popup window title. Returned text is the same you have passed to <a href="qtitan-officepopupwindow.html#setTitleText">setTitleText</a>() function.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setTitleText">setTitleText</a>().</p>
+<!-- @@@titleText -->
+<!-- $$$transparency[overload1]$$$transparency -->
+<h3 class="fn"><a name="transparency"></a>qreal OfficePopupWindow::transparency () const</h3>
+<p>Returns the start transparency of the office popup window.</p>
+<p>See also <a href="qtitan-officepopupwindow.html#setTransparency">setTransparency</a>().</p>
+<!-- @@@transparency -->
+</div>
+        <!-- /div -->
+        <div class="feedback t_button">
+          </div>
+      </div>
+    </div>
+    <div class="ft">
+      <span></span>
+    </div>
+  </div> 
+  <div class="footer">
+    <p>
+      <acronym title="Copyright">&copy;</acronym> 2009-2013 Developer Machines<br><br>      Nokia, Qt and their respective logos are trademarks of Nokia Corporation 
+      in Finland and/or other countries worldwide.</p>
+    <p>
+      All other trademarks are property of their respective owners. <a title="Privacy Policy"
+        href="http://www.devmachines.com/company/privacy-policy.html">Privacy Policy</a></p>
+  </div>
+  <div id="blurpage">
+  </div>
+  <!--/div -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+</body>
+</html>

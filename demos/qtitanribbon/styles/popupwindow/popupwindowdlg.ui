@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PopupDemoDlg</class>
+ <widget class="QWidget" name="PopupDemoDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>340</width>
+    <height>260</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>340</width>
+    <height>260</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>340</width>
+    <height>260</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Qtitan Popup Widget Demo</string>
+  </property>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>54</y>
+     <width>80</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Animation Type</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="transparencyLabel">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>166</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Transparency:</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="transparencylSlider">
+   <property name="geometry">
+    <rect>
+     <x>196</x>
+     <y>166</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>255</number>
+   </property>
+   <property name="sliderPosition">
+    <number>255</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="animationTypeBox">
+   <property name="geometry">
+    <rect>
+     <x>196</x>
+     <y>52</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>94</y>
+     <width>151</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Animation Speed (millisec)</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="animationSpeedBox">
+   <property name="geometry">
+    <rect>
+     <x>196</x>
+     <y>88</y>
+     <width>131</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>600000</number>
+   </property>
+   <property name="singleStep">
+    <number>100</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>132</y>
+     <width>173</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>DisplayTime (-1 to 600000 millisec)</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="displayTimeBox">
+   <property name="geometry">
+    <rect>
+     <x>196</x>
+     <y>128</y>
+     <width>131</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>-1</number>
+   </property>
+   <property name="maximum">
+    <number>600000</number>
+   </property>
+   <property name="singleStep">
+    <number>100</number>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="allowMoveBox">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>200</y>
+     <width>309</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>&amp;Moveable Widget</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="showPopupButton">
+   <property name="geometry">
+    <rect>
+     <x>112</x>
+     <y>232</y>
+     <width>111</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show Popup</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>20</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Popup Window Look</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="lookWindow">
+   <property name="geometry">
+    <rect>
+     <x>196</x>
+     <y>16</y>
+     <width>131</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+ <designerdata>
+  <property name="gridDeltaX">
+   <number>4</number>
+  </property>
+  <property name="gridDeltaY">
+   <number>4</number>
+  </property>
+  <property name="gridSnapX">
+   <bool>true</bool>
+  </property>
+  <property name="gridSnapY">
+   <bool>true</bool>
+  </property>
+  <property name="gridVisible">
+   <bool>true</bool>
+  </property>
+ </designerdata>
+</ui>

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SaveSendPage</class>
+ <widget class="Qtitan::RibbonBackstagePage" name="SaveSendPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>704</width>
+    <height>490</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>637</width>
+    <height>445</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Save &amp; Send</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayoutMain" stretch="0,1">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>14</number>
+     </property>
+     <property name="topMargin">
+      <number>24</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>14</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayoutTabs" stretch="0,0,0,0,1">
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayoutSaveSend">
+         <property name="spacing">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="labelSaveSend">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Save &amp;amp; Send&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Qtitan::RibbonBackstageSeparator" name="backstageSeparatorFileType">
+         <property name="maximumSize">
+          <size>
+           <width>270</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <item>
+          <widget class="Qtitan::RibbonBackstageButton" name="sendEmailButton">
+           <property name="minimumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Send Using E-mail</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ribbonbackstage.qrc">
+             <normaloff>:/res/SendUsing.png</normaloff>:/res/SendUsing.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="tabStyle">
+            <bool>true</bool>
+           </property>
+           <property name="flatStyle">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Qtitan::RibbonBackstageButton" name="saveWebButton">
+           <property name="minimumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Save to Web</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ribbonbackstage.qrc">
+             <normaloff>:/res/SaveWeb.png</normaloff>:/res/SaveWeb.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="tabStyle">
+            <bool>true</bool>
+           </property>
+           <property name="flatStyle">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Qtitan::RibbonBackstageButton" name="sharePointButton">
+           <property name="minimumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Save to SharePoint</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ribbonbackstage.qrc">
+             <normaloff>:/res/SaveSharePoint.png</normaloff>:/res/SaveSharePoint.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="tabStyle">
+            <bool>true</bool>
+           </property>
+           <property name="flatStyle">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Qtitan::RibbonBackstageButton" name="blogPostButton">
+           <property name="minimumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Publish as Blog Post</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ribbonbackstage.qrc">
+             <normaloff>:/res/Publish.png</normaloff>:/res/Publish.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="tabStyle">
+            <bool>true</bool>
+           </property>
+           <property name="flatStyle">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayoutFileTypeCaption">
+         <property name="spacing">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="labelFileTypes">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;File Types&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Qtitan::RibbonBackstageSeparator" name="backstageSeparator">
+           <property name="maximumSize">
+            <size>
+             <width>270</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayoutFileType">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <item>
+          <widget class="Qtitan::RibbonBackstageButton" name="fileTypeButton">
+           <property name="minimumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Change File Type</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ribbonbackstage.qrc">
+             <normaloff>:/res/ChangeFileType.png</normaloff>:/res/ChangeFileType.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="tabStyle">
+            <bool>true</bool>
+           </property>
+           <property name="flatStyle">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Qtitan::RibbonBackstageButton" name="createDocButton">
+           <property name="minimumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>282</width>
+             <height>47</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Create PDF/XPS Document</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ribbonbackstage.qrc">
+             <normaloff>:/res/CreateDocument.png</normaloff>:/res/CreateDocument.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+           <property name="tabStyle">
+            <bool>true</bool>
+           </property>
+           <property name="flatStyle">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelWrapperNull">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="pageWrapper">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Wrapper</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Qtitan::RibbonBackstageButton</class>
+   <extends>QToolButton</extends>
+   <header>QtnRibbonBackstageView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Qtitan::RibbonBackstageSeparator</class>
+   <extends>QFrame</extends>
+   <header>QtnRibbonBackstageView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Qtitan::RibbonBackstagePage</class>
+   <extends>QWidget</extends>
+   <header>QtnRibbonBackstageView.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="ribbonbackstage.qrc"/>
+ </resources>
+ <connections/>
+</ui>

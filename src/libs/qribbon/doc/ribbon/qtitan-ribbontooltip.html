@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- QtnRibbonToolTip.qdoc -->
+  <title>Qt QtitanRibbon 3.1: RibbonToolTip Class Reference</title>
+  <link rel="stylesheet" type="text/css" href="style/style.css" />
+  <script src="scripts/jquery.js" type="text/javascript"></script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script src="./scripts/superfish.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/superfish.css" />  <script src="./scripts/narrow.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/narrow.css" />
+  <!--[if IE]>
+<meta name="MSSmartTagsPreventParsing" content="true">
+<meta http-equiv="imagetoolbar" content="no">
+<![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="style/style_ie8.css">
+<![endif]-->
+</head>
+<body class="" onload="CheckEmptyAndLoadList();">
+ <div class="header" id="qtdocheader">
+    <div class="content"> 
+    <div id="nav-logo">
+      <a href="index.html">Home</a></div>
+		<div id="narrowsearch"><form onsubmit="return false;" action="" id="qtdocsearch">
+		<fieldset>
+		<input type="text" value="" id="pageType2" name="searchstring"/>
+		 </fieldset>
+		</form></div>
+    <div id="nav-topright">
+      <ul>
+      </ul>
+    </div>
+    <div id="shortCut">
+      <ul>
+        <li class="shortCut-topleft-inactive"><span><a href="index.html">Home</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="classes.html">All&nbsp;Classes</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="overviews.html">Overviews</a></span></li>
+      </ul>
+</div> <ul class="sf-menu sf-js-enabled sf-shadow" id="narrowmenu"> 
+		 <li><a href="#">API Lookup</a> 
+			 <ul id="topmenuLook"> 
+			   <li><a href="qtitan.html">Qtitan Namespace</a></li> 
+			   <li><a href="classes.html">Class index</a></li> 
+ 			  <li><a href="qtitan.html#functions">Function index</a></li> 
+			   </ul> 
+		 </li> 
+ </ul> 
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="hd">
+      <span></span>
+    </div>
+    <div class="bd group">
+      <div class="sidebar">
+        <div class="searchlabel">
+          Search index:</div>
+        <div class="search">
+          <form id="qtdocsearch" action="" onsubmit="return false;">
+            <fieldset>
+              <input type="text" name="searchstring" id="pageType" value="" />
+            </fieldset>
+          </form>
+        </div>
+        <div class="box first bottombar" id="lookup">
+          <h2 title="API Lookup"><span></span>
+            API Lookup</h2>
+          <div  id="list001" class="list">
+          <ul id="ul001" >
+              <li class="defaultLink"><a href="qtitan.html">Qtitan Namespace</a></li>
+              <li class="defaultLink"><a href="classes.html">Class index</a></li>
+              <li class="defaultLink"><a href="qtitan.html#functions">Function index</a></li>
+            </ul> 
+          </div>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="toolbar">
+          <div class="breadcrumb toolblock">
+            <ul>
+              <li class="first"><a href="index.html">Home</a></li>
+              <!--  Bread crumbs goes here -->
+              <li><a href="modules.html">Modules</a></li>              <li>QtitanRibbon</li>
+              <li>RibbonToolTip</li>
+            </ul>
+          </div>
+          <div class="toolbuttons toolblock">
+            <ul>
+              <li id="smallA" class="t_button">A</li>
+              <li id="medA" class="t_button active">A</li>
+              <li id="bigA" class="t_button">A</li>
+              <li id="print" class="t_button"><a href="javascript:this.print();">
+                <span>Print</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="content">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-types">Public Types</a></li>
+<li class="level1"><a href="#properties">Properties</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#public-slots">Public Slots</a></li>
+<li class="level1"><a href="#static-public-members">Static Public Members</a></li>
+<li class="level1"><a href="#protected-functions">Protected Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<h1 class="title">RibbonToolTip Class Reference</h1>
+<span class="small-subtitle">(Qtitan::RibbonToolTip)<br/></span>
+<!-- $$$RibbonToolTip-brief -->
+<p>The RibbonToolTip class provides tool tips (balloon help) for any widget. <a href="#details">More...</a></p>
+<!-- @@@RibbonToolTip -->
+<p>Inherits <a href="http://qt.nokia.com/doc/4.7/qframe.html">QFrame</a>.</p>
+<ul>
+<li><a href="qtitan-ribbontooltip-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h2>Public Types</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#WrapMode-enum">WrapMode</a></b> { NoWrap, NativeWrap, AutoWrap }</td></tr>
+</table>
+<a name="properties"></a>
+<h2>Properties</h2>
+<ul>
+<li class="fn"><b><a href="qtitan-ribbontooltip.html#icon-prop">icon</a></b> : QIcon</li>
+<li class="fn"><b><a href="qtitan-ribbontooltip.html#margin-prop">margin</a></b> : int</li>
+<li class="fn"><b><a href="qtitan-ribbontooltip.html#text-prop">text</a></b> : QString</li>
+<li class="fn"><b><a href="qtitan-ribbontooltip.html#title-prop">title</a></b> : QString</li>
+</ul>
+<ul>
+<li class="fn">6 properties inherited from <a href="http://qt.nokia.com/doc/4.7/qframe.html#properties">QFrame</a></li>
+<li class="fn">58 properties inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#properties">QWidget</a></li>
+<li class="fn">1 property inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#properties">QObject</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2>Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#RibbonToolTip">RibbonToolTip</a></b> ( const QString &amp; <i>title</i>, const QString &amp; <i>text</i>, const QIcon &amp; <i>icon</i> = QIcon(), QWidget * <i>parent</i> = Q_NULL )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#dtor.RibbonToolTip">~RibbonToolTip</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#closeToolTip">closeToolTip</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#fadingOut">fadingOut</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#hideTip">hideTip</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QIcon &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#icon-prop">icon</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#margin-prop">margin</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#placeTip">placeTip</a></b> ( const QPoint &amp; <i>pos</i>, QWidget * <i>w</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#restartExpireTimer">restartExpireTimer</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#reuseTip">reuseTip</a></b> ( const QString &amp; <i>textTitle</i>, const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#icon-prop">setIcon</a></b> ( const QIcon &amp; <i>icon</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#margin-prop">setMargin</a></b> ( int <i>margin</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#setTipRect">setTipRect</a></b> ( QWidget * <i>w</i>, const QRect &amp; <i>r</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QString &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#text-prop">text</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#tipChanged">tipChanged</a></b> ( const QPoint &amp; <i>pos</i>, const QString &amp; <i>text</i>, const QString &amp; <i>textTitle</i>, QObject * <i>o</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const QString &amp; </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#title-prop">title</a></b> () const</td></tr>
+</table>
+<a name="reimplemented-public-functions"></a>
+<h2>Reimplemented Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual QSize </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#sizeHint">sizeHint</a></b> () const</td></tr>
+</table>
+<ul>
+<li class="fn">14 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qframe.html#public-functions">QFrame</a></li>
+<li class="fn">217 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#public-functions">QWidget</a></li>
+<li class="fn">13 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#public-functions">QPaintDevice</a></li>
+<li class="fn">29 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-functions">QObject</a></li>
+</ul>
+<a name="public-slots"></a>
+<h2>Public Slots</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#text-prop">setText</a></b> ( const QString &amp; )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#title-prop">setTitle</a></b> ( const QString &amp; )</td></tr>
+</table>
+<ul>
+<li class="fn">19 public slots inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#public-slots">QWidget</a></li>
+<li class="fn">1 public slot inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-slots">QObject</a></li>
+</ul>
+<a name="static-public-members"></a>
+<h2>Static Public Members</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#getTipScreen">getTipScreen</a></b> ( const QPoint &amp; <i>pos</i>, QWidget * <i>w</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#hideToolTip">hideToolTip</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RibbonToolTip * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#instance">instance</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#isIconVisible">isIconVisible</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#isToolTipVisible">isToolTipVisible</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#setIconVisible">setIconVisible</a></b> ( bool <i>visible</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#setWrapMode">setWrapMode</a></b> ( WrapMode <i>mode</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#showToolTip">showToolTip</a></b> ( const QPoint &amp; <i>pos</i>, const QString &amp; <i>title</i>, const QString &amp; <i>text</i>, const QIcon &amp; <i>icon</i> = QIcon(), QWidget * <i>w</i> = Q_NULL )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> WrapMode </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#wordWrap">wordWrap</a></b> ()</td></tr>
+</table>
+<ul>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#static-public-members">QWidget</a></li>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#static-public-members">QObject</a></li>
+</ul>
+<a name="reimplemented-protected-functions"></a>
+<h2>Reimplemented Protected Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#eventFilter">eventFilter</a></b> ( QObject * <i>o</i>, QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#mouseMoveEvent">mouseMoveEvent</a></b> ( QMouseEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#paintEvent">paintEvent</a></b> ( QPaintEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#resizeEvent">resizeEvent</a></b> ( QResizeEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbontooltip.html#timerEvent">timerEvent</a></b> ( QTimerEvent * <i>event</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">3 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qframe.html#protected-functions">QFrame</a></li>
+<li class="fn">37 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-functions">QWidget</a></li>
+<li class="fn">1 protected function inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-functions">QPaintDevice</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+</ul>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#signals">QWidget</a></li>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#signals">QObject</a></li>
+<li class="fn">1 public variable inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-variables">QObject</a></li>
+<li class="fn">3 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qframe.html#protected-functions">QFrame</a></li>
+<li class="fn">37 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-functions">QWidget</a></li>
+<li class="fn">1 protected function inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-functions">QPaintDevice</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+<li class="fn">1 protected slot inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-slots">QWidget</a></li>
+<li class="fn">1 protected type inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-variables">QPaintDevice</a></li>
+<li class="fn">2 protected variables inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-variables">QObject</a></li>
+</ul>
+<a name="details"></a>
+<!-- $$$RibbonToolTip-description -->
+<div class="descr">
+<h2>Detailed Description</h2>
+<p>The RibbonToolTip class provides tool tips (balloon help) for any widget.</p>
+</div>
+<!-- @@@RibbonToolTip -->
+<div class="types">
+<h2>Member Type Documentation</h2>
+<!-- $$$WrapMode$$$NoWrap$$$NativeWrap$$$AutoWrap -->
+<h3 class="fn"><a name="WrapMode-enum"></a>enum RibbonToolTip::WrapMode</h3>
+<!-- @@@WrapMode -->
+</div>
+<div class="prop">
+<h2>Property Documentation</h2>
+<!-- $$$icon-prop$$$icon$$$setIconconstQIcon& -->
+<h3 class="fn"><a name="icon-prop"></a>icon : <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a></h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> const QIcon &amp; </td><td class="memItemRight bottomAlign"><b>icon</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setIcon</b> ( const QIcon &amp; <i>icon</i> )</td></tr>
+</table>
+<!-- @@@icon -->
+<!-- $$$margin-prop$$$margin$$$setMarginint -->
+<h3 class="fn"><a name="margin-prop"></a>margin : int</h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> int </td><td class="memItemRight bottomAlign"><b>margin</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setMargin</b> ( int <i>margin</i> )</td></tr>
+</table>
+<!-- @@@margin -->
+<!-- $$$text-prop$$$text$$$setTextconstQString& -->
+<h3 class="fn"><a name="text-prop"></a>text : <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a></h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> const QString &amp; </td><td class="memItemRight bottomAlign"><b>text</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setText</b> ( const QString &amp; )</td></tr>
+</table>
+<!-- @@@text -->
+<!-- $$$title-prop$$$title$$$setTitleconstQString& -->
+<h3 class="fn"><a name="title-prop"></a>title : <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a></h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> const QString &amp; </td><td class="memItemRight bottomAlign"><b>title</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setTitle</b> ( const QString &amp; )</td></tr>
+</table>
+<!-- @@@title -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$RibbonToolTip[overload1]$$$RibbonToolTipconstQString&constQString&constQIcon&QWidget* -->
+<h3 class="fn"><a name="RibbonToolTip"></a>RibbonToolTip::RibbonToolTip ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>title</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i>, const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; <i>icon</i> = QIcon(), <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>parent</i> = Q_NULL )</h3>
+<p>Constructs <a href="qtitan-ribbontooltip.html">RibbonToolTip</a> object with the given <i>parent</i>. Parameter <i>title</i> - is a title of the tooltip, <i>text</i> - is a text of the tooltip.</p>
+<!-- @@@RibbonToolTip -->
+<!-- $$$~RibbonToolTip[overload1]$$$~RibbonToolTip -->
+<h3 class="fn"><a name="dtor.RibbonToolTip"></a>RibbonToolTip::~RibbonToolTip ()<tt> [virtual]</tt></h3>
+<p>Destructor of the <a href="qtitan-ribbontooltip.html">RibbonToolTip</a> object.</p>
+<!-- @@@~RibbonToolTip -->
+<!-- $$$closeToolTip[overload1]$$$closeToolTip -->
+<h3 class="fn"><a name="closeToolTip"></a>void RibbonToolTip::closeToolTip ()</h3>
+<!-- @@@closeToolTip -->
+<!-- $$$eventFilter[overload1]$$$eventFilterQObject*QEvent* -->
+<h3 class="fn"><a name="eventFilter"></a>bool RibbonToolTip::eventFilter ( <a href="http://qt.nokia.com/doc/4.7/qobject.html">QObject</a> * <i>o</i>, <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qobject.html#eventFilter">QObject::eventFilter</a>().</p>
+<!-- @@@eventFilter -->
+<!-- $$$fadingOut[overload1]$$$fadingOut -->
+<h3 class="fn"><a name="fadingOut"></a>bool RibbonToolTip::fadingOut () const</h3>
+<!-- @@@fadingOut -->
+<!-- $$$getTipScreen[overload1]$$$getTipScreenconstQPoint&QWidget* -->
+<h3 class="fn"><a name="getTipScreen"></a>int RibbonToolTip::getTipScreen ( const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pos</i>, <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>w</i> )<tt> [static]</tt></h3>
+<!-- @@@getTipScreen -->
+<!-- $$$hideTip[overload1]$$$hideTip -->
+<h3 class="fn"><a name="hideTip"></a>void RibbonToolTip::hideTip ()</h3>
+<!-- @@@hideTip -->
+<!-- $$$hideToolTip[overload1]$$$hideToolTip -->
+<h3 class="fn"><a name="hideToolTip"></a>void RibbonToolTip::hideToolTip ()<tt> [static]</tt></h3>
+<p>Hides the tooltip window.</p>
+<!-- @@@hideToolTip -->
+<!-- $$$instance[overload1]$$$instance -->
+<h3 class="fn"><a name="instance"></a>RibbonToolTip * RibbonToolTip::instance ()<tt> [static]</tt></h3>
+<!-- @@@instance -->
+<!-- $$$isIconVisible[overload1]$$$isIconVisible -->
+<h3 class="fn"><a name="isIconVisible"></a>bool RibbonToolTip::isIconVisible ()<tt> [static]</tt></h3>
+<p>Returns the visibility of the tooltip's icon. Method is static.</p>
+<!-- @@@isIconVisible -->
+<!-- $$$isToolTipVisible[overload1]$$$isToolTipVisible -->
+<h3 class="fn"><a name="isToolTipVisible"></a>bool RibbonToolTip::isToolTipVisible ()<tt> [static]</tt></h3>
+<p>Returns visibility of the tooltip at the moment.</p>
+<!-- @@@isToolTipVisible -->
+<!-- $$$mouseMoveEvent[overload1]$$$mouseMoveEventQMouseEvent* -->
+<h3 class="fn"><a name="mouseMoveEvent"></a>void RibbonToolTip::mouseMoveEvent ( <a href="http://qt.nokia.com/doc/4.7/qmouseevent.html">QMouseEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#mouseMoveEvent">QWidget::mouseMoveEvent</a>().</p>
+<!-- @@@mouseMoveEvent -->
+<!-- $$$paintEvent[overload1]$$$paintEventQPaintEvent* -->
+<h3 class="fn"><a name="paintEvent"></a>void RibbonToolTip::paintEvent ( <a href="http://qt.nokia.com/doc/4.7/qpaintevent.html">QPaintEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#paintEvent">QWidget::paintEvent</a>().</p>
+<!-- @@@paintEvent -->
+<!-- $$$placeTip[overload1]$$$placeTipconstQPoint&QWidget* -->
+<h3 class="fn"><a name="placeTip"></a>void RibbonToolTip::placeTip ( const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pos</i>, <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>w</i> )</h3>
+<!-- @@@placeTip -->
+<!-- $$$resizeEvent[overload1]$$$resizeEventQResizeEvent* -->
+<h3 class="fn"><a name="resizeEvent"></a>void RibbonToolTip::resizeEvent ( <a href="http://qt.nokia.com/doc/4.7/qresizeevent.html">QResizeEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#resizeEvent">QWidget::resizeEvent</a>().</p>
+<!-- @@@resizeEvent -->
+<!-- $$$restartExpireTimer[overload1]$$$restartExpireTimer -->
+<h3 class="fn"><a name="restartExpireTimer"></a>void RibbonToolTip::restartExpireTimer ()</h3>
+<!-- @@@restartExpireTimer -->
+<!-- $$$reuseTip[overload1]$$$reuseTipconstQString&constQString& -->
+<h3 class="fn"><a name="reuseTip"></a>void RibbonToolTip::reuseTip ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>textTitle</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<!-- @@@reuseTip -->
+<!-- $$$setIconVisible[overload1]$$$setIconVisiblebool -->
+<h3 class="fn"><a name="setIconVisible"></a>void RibbonToolTip::setIconVisible ( bool <i>visible</i> )<tt> [static]</tt></h3>
+<p>Sets the visibility of the tooltip's icon to <i>visible</i>. Method is static.</p>
+<p>See also <a href="qtitan-ribbontooltip.html#isIconVisible">isIconVisible</a>().</p>
+<!-- @@@setIconVisible -->
+<!-- $$$setTipRect[overload1]$$$setTipRectQWidget*constQRect& -->
+<h3 class="fn"><a name="setTipRect"></a>void RibbonToolTip::setTipRect ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>w</i>, const <a href="http://qt.nokia.com/doc/4.7/qrect.html">QRect</a> &amp; <i>r</i> )</h3>
+<!-- @@@setTipRect -->
+<!-- $$$setWrapMode[overload1]$$$setWrapModeWrapMode -->
+<h3 class="fn"><a name="setWrapMode"></a>void RibbonToolTip::setWrapMode ( <a href="qtitan-ribbontooltip.html#WrapMode-enum">WrapMode</a> <i>mode</i> )<tt> [static]</tt></h3>
+<p>Sets the wrap <i>mode</i> for the tolltip's text.</p>
+<!-- @@@setWrapMode -->
+<!-- $$$showToolTip[overload1]$$$showToolTipconstQPoint&constQString&constQString&constQIcon&QWidget* -->
+<h3 class="fn"><a name="showToolTip"></a>void RibbonToolTip::showToolTip ( const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pos</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>title</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i>, const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; <i>icon</i> = QIcon(), <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>w</i> = Q_NULL )<tt> [static]</tt></h3>
+<p>Shows tooltip in <i>pos</i> position. Parameter <i>title</i> - is a title of the tooltip, <i>text</i> - is a text of the tooltip, <i>icon</i> - the icon of the tooltip. Parameter <i>widget</i> - reference to the widget for calculating the position of tooltip.</p>
+<!-- @@@showToolTip -->
+<!-- $$$sizeHint[overload1]$$$sizeHint -->
+<h3 class="fn"><a name="sizeHint"></a><a href="http://qt.nokia.com/doc/4.7/qsize.html">QSize</a> RibbonToolTip::sizeHint () const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#sizeHint-prop">QWidget::sizeHint</a>().</p>
+<!-- @@@sizeHint -->
+<!-- $$$timerEvent[overload1]$$$timerEventQTimerEvent* -->
+<h3 class="fn"><a name="timerEvent"></a>void RibbonToolTip::timerEvent ( <a href="http://qt.nokia.com/doc/4.7/qtimerevent.html">QTimerEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qobject.html#timerEvent">QObject::timerEvent</a>().</p>
+<!-- @@@timerEvent -->
+<!-- $$$tipChanged[overload1]$$$tipChangedconstQPoint&constQString&constQString&QObject* -->
+<h3 class="fn"><a name="tipChanged"></a>bool RibbonToolTip::tipChanged ( const <a href="http://qt.nokia.com/doc/4.7/qpoint.html">QPoint</a> &amp; <i>pos</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>textTitle</i>, <a href="http://qt.nokia.com/doc/4.7/qobject.html">QObject</a> * <i>o</i> )</h3>
+<!-- @@@tipChanged -->
+<!-- $$$wordWrap[overload1]$$$wordWrap -->
+<h3 class="fn"><a name="wordWrap"></a><a href="qtitan-ribbontooltip.html#WrapMode-enum">WrapMode</a> RibbonToolTip::wordWrap ()<tt> [static]</tt></h3>
+<p>Returns the wrap mode for the tooltip's text.</p>
+<!-- @@@wordWrap -->
+</div>
+        <!-- /div -->
+        <div class="feedback t_button">
+          </div>
+      </div>
+    </div>
+    <div class="ft">
+      <span></span>
+    </div>
+  </div> 
+  <div class="footer">
+    <p>
+      <acronym title="Copyright">&copy;</acronym> 2009-2013 Developer Machines<br><br>      Nokia, Qt and their respective logos are trademarks of Nokia Corporation 
+      in Finland and/or other countries worldwide.</p>
+    <p>
+      All other trademarks are property of their respective owners. <a title="Privacy Policy"
+        href="http://www.devmachines.com/company/privacy-policy.html">Privacy Policy</a></p>
+  </div>
+  <div id="blurpage">
+  </div>
+  <!--/div -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/clipboard.png</file>
+        <file>res/close.png</file>
+        <file>res/largeButton.png</file>
+        <file>res/largePopupButton.png</file>
+        <file>res/largeSplitButton.png</file>
+        <file>res/largeToggleButton.png</file>
+        <file>res/new.png</file>
+        <file>res/smallButton.png</file>
+        <file>res/smallOpen.png</file>
+        <file>res/smallPopupButton.png</file>
+        <file>res/smallPrint.png</file>
+        <file>res/smallSave.png</file>
+        <file>res/smallSplitButton.png</file>
+        <file>res/smallToggleButton.png</file>
+        <file>res/save.png</file>
+        <file>res/open.png</file>
+        <file>res/print.png</file>
+        <file>res/printPreview.png</file>
+        <file>res/smallClipboard.png</file>
+        <file>res/smallCopy.png</file>
+        <file>res/smallCut.png</file>
+        <file>res/smallNew.png</file>
+        <file>res/smallRedo.png</file>
+        <file>res/smallUndo.png</file>
+        <file>res/smallComboBox.png</file>
+        <file>res/smallEditor.png</file>
+        <file>res/Windows.png</file>
+        <file>res/linux.png</file>
+        <file>res/smallclose.png</file>
+        <file>res/smalloption.png</file>
+        <file>../../shared/res/about.png</file>
+        <file>../../shared/res/qtitanlogo32x32.png</file>
+        <file>../../shared/res/qtitan.png</file>
+        <file>../../shared/res/ribbonMaximize.png</file>
+        <file>../../shared/res/ribbonMinimize.png</file>
+    </qresource>
+</RCC>

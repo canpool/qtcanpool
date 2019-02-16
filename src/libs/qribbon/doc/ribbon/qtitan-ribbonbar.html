@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- QtnRibbonBarClass.qdoc -->
+  <title>Qt QtitanRibbon 3.1: RibbonBar Class Reference</title>
+  <link rel="stylesheet" type="text/css" href="style/style.css" />
+  <script src="scripts/jquery.js" type="text/javascript"></script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script src="./scripts/superfish.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/superfish.css" />  <script src="./scripts/narrow.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/narrow.css" />
+  <!--[if IE]>
+<meta name="MSSmartTagsPreventParsing" content="true">
+<meta http-equiv="imagetoolbar" content="no">
+<![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="style/style_ie8.css">
+<![endif]-->
+</head>
+<body class="" onload="CheckEmptyAndLoadList();">
+ <div class="header" id="qtdocheader">
+    <div class="content"> 
+    <div id="nav-logo">
+      <a href="index.html">Home</a></div>
+		<div id="narrowsearch"><form onsubmit="return false;" action="" id="qtdocsearch">
+		<fieldset>
+		<input type="text" value="" id="pageType2" name="searchstring"/>
+		 </fieldset>
+		</form></div>
+    <div id="nav-topright">
+      <ul>
+      </ul>
+    </div>
+    <div id="shortCut">
+      <ul>
+        <li class="shortCut-topleft-inactive"><span><a href="index.html">Home</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="classes.html">All&nbsp;Classes</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="overviews.html">Overviews</a></span></li>
+      </ul>
+</div> <ul class="sf-menu sf-js-enabled sf-shadow" id="narrowmenu"> 
+		 <li><a href="#">API Lookup</a> 
+			 <ul id="topmenuLook"> 
+			   <li><a href="qtitan.html">Qtitan Namespace</a></li> 
+			   <li><a href="classes.html">Class index</a></li> 
+ 			  <li><a href="qtitan.html#functions">Function index</a></li> 
+			   </ul> 
+		 </li> 
+ </ul> 
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="hd">
+      <span></span>
+    </div>
+    <div class="bd group">
+      <div class="sidebar">
+        <div class="searchlabel">
+          Search index:</div>
+        <div class="search">
+          <form id="qtdocsearch" action="" onsubmit="return false;">
+            <fieldset>
+              <input type="text" name="searchstring" id="pageType" value="" />
+            </fieldset>
+          </form>
+        </div>
+        <div class="box first bottombar" id="lookup">
+          <h2 title="API Lookup"><span></span>
+            API Lookup</h2>
+          <div  id="list001" class="list">
+          <ul id="ul001" >
+              <li class="defaultLink"><a href="qtitan.html">Qtitan Namespace</a></li>
+              <li class="defaultLink"><a href="classes.html">Class index</a></li>
+              <li class="defaultLink"><a href="qtitan.html#functions">Function index</a></li>
+            </ul> 
+          </div>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="toolbar">
+          <div class="breadcrumb toolblock">
+            <ul>
+              <li class="first"><a href="index.html">Home</a></li>
+              <!--  Bread crumbs goes here -->
+              <li><a href="modules.html">Modules</a></li>              <li>QtitanRibbon</li>
+              <li>RibbonBar</li>
+            </ul>
+          </div>
+          <div class="toolbuttons toolblock">
+            <ul>
+              <li id="smallA" class="t_button">A</li>
+              <li id="medA" class="t_button active">A</li>
+              <li id="bigA" class="t_button">A</li>
+              <li id="print" class="t_button"><a href="javascript:this.print();">
+                <span>Print</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="content">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#properties">Properties</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#public-slots">Public Slots</a></li>
+<li class="level1"><a href="#signals">Signals</a></li>
+<li class="level1"><a href="#protected-functions">Protected Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<h1 class="title">RibbonBar Class Reference</h1>
+<span class="small-subtitle">(Qtitan::RibbonBar)<br/></span>
+<!-- $$$RibbonBar-brief -->
+<p>RibbonBar class represents a component Ribbon UI used in Microsoft Office 2007/2010. Please note, after the ribbon bar has been added to the main window you need to setup the Ribbon's style (or MS-Office Style) to the application. To do that please use the following code: <a href="#details">More...</a></p>
+<!-- @@@RibbonBar -->
+<p>Inherits <a href="http://qt.nokia.com/doc/4.7/qmenubar.html">QMenuBar</a>.</p>
+<ul>
+<li><a href="qtitan-ribbonbar-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="properties"></a>
+<h2>Properties</h2>
+<ul>
+<li class="fn"><b><a href="qtitan-ribbonbar.html#currentIndexPage-prop">currentIndexPage</a></b> : int</li>
+<li class="fn"><b><a href="qtitan-ribbonbar.html#frameThemeEnabled-prop">frameThemeEnabled</a></b> : bool</li>
+<li class="fn"><b><a href="qtitan-ribbonbar.html#maximized-prop">maximized</a></b> : bool</li>
+<li class="fn"><b><a href="qtitan-ribbonbar.html#minimized-prop">minimized</a></b> : bool</li>
+</ul>
+<ul>
+<li class="fn">2 properties inherited from <a href="http://qt.nokia.com/doc/4.7/qmenubar.html#properties">QMenuBar</a></li>
+<li class="fn">58 properties inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#properties">QWidget</a></li>
+<li class="fn">1 property inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#properties">QObject</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2>Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#RibbonBar">RibbonBar</a></b> ( QWidget * <i>parent</i> = Q_NULL )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#dtor.RibbonBar">~RibbonBar</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QAction * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addAction">addAction</a></b> ( const QIcon &amp; <i>icon</i>, const QString &amp; <i>text</i>, Qt::ToolButtonStyle <i>style</i>, QMenu * <i>menu</i> = Q_NULL )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QAction * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addAction-2">addAction</a></b> ( QAction * <i>action</i>, Qt::ToolButtonStyle <i>style</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QMenu * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addMenu">addMenu</a></b> ( const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RibbonPage * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addPage">addPage</a></b> ( const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addPage-2">addPage</a></b> ( RibbonPage * <i>page</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QAction * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addSystemButton">addSystemButton</a></b> ( const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> QAction * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#addSystemButton-2">addSystemButton</a></b> ( const QIcon &amp; <i>icon</i>, const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#clearPages">clearPages</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#currentIndexPage-prop">currentIndexPage</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#detachPage">detachPage</a></b> ( RibbonPage * <i>page</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#detachPage-2">detachPage</a></b> ( int <i>index</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RibbonPage * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#getPage">getPage</a></b> ( int <i>index</i> ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#getPageCount">getPageCount</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RibbonQuickAccessBar * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#getQuickAccessBar">getQuickAccessBar</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RibbonSystemButton * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#getSystemButton">getSystemButton</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RibbonPage * </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#insertPage">insertPage</a></b> ( int <i>index</i>, const QString &amp; <i>text</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#insertPage-2">insertPage</a></b> ( int <i>index</i>, RibbonPage * <i>page</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isBackstageVisible">isBackstageVisible</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#frameThemeEnabled-prop">isFrameThemeEnabled</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isKeyTipsComplement">isKeyTipsComplement</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isKeyTipsShowing">isKeyTipsShowing</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#maximized-prop">isMaximized</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isMinimizationEnabled">isMinimizationEnabled</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#minimized-prop">isMinimized</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isQuickAccessVisible">isQuickAccessVisible</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isTitleBarVisible">isTitleBarVisible</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#isVisible">isVisible</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#keyTipsEnabled">keyTipsEnabled</a></b> () const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#maximize">maximize</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#minimize">minimize</a></b> ()</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#movePage">movePage</a></b> ( RibbonPage * <i>page</i>, int <i>newIndex</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#movePage-2">movePage</a></b> ( int <i>index</i>, int <i>newIndex</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#removePage">removePage</a></b> ( RibbonPage * <i>page</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#removePage-2">removePage</a></b> ( int <i>index</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#frameThemeEnabled-prop">setFrameThemeEnabled</a></b> ( bool <i>enable</i> = true )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#setKeyTip">setKeyTip</a></b> ( QAction * <i>action</i>, const QString &amp; <i>keyTip</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#setKeyTipsComplement">setKeyTipsComplement</a></b> ( bool <i>complement</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#setKeyTipsEnable">setKeyTipsEnable</a></b> ( bool <i>enable</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#maximized-prop">setMaximized</a></b> ( bool <i>flag</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#setMinimizationEnabled">setMinimizationEnabled</a></b> ( bool <i>enabled</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#minimized-prop">setMinimized</a></b> ( bool <i>flag</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#setTitleBarVisible">setTitleBarVisible</a></b> ( bool <i>show</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#showQuickAccess">showQuickAccess</a></b> ( bool <i>show</i> = true )</td></tr>
+</table>
+<a name="reimplemented-public-functions"></a>
+<h2>Reimplemented Public Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual int </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#heightForWidth">heightForWidth</a></b> ( int ) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual QSize </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#sizeHint">sizeHint</a></b> () const</td></tr>
+</table>
+<ul>
+<li class="fn">21 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qmenubar.html#public-functions">QMenuBar</a></li>
+<li class="fn">217 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#public-functions">QWidget</a></li>
+<li class="fn">13 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#public-functions">QPaintDevice</a></li>
+<li class="fn">29 public functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-functions">QObject</a></li>
+</ul>
+<a name="public-slots"></a>
+<h2>Public Slots</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#currentIndexPage-prop">setCurrentPage</a></b> ( int <i>index</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">1 public slot inherited from <a href="http://qt.nokia.com/doc/4.7/qmenubar.html#public-slots">QMenuBar</a></li>
+<li class="fn">19 public slots inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#public-slots">QWidget</a></li>
+<li class="fn">1 public slot inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-slots">QObject</a></li>
+</ul>
+<a name="signals"></a>
+<h2>Signals</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#currentPageChanged">currentPageChanged</a></b> ( int <i>index</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#currentPageChanged-2">currentPageChanged</a></b> ( RibbonPage * <i>page</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#keyTipsShowed">keyTipsShowed</a></b> ( bool <i>showed</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#minimizationChanged">minimizationChanged</a></b> ( bool <i>minimized</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">2 signals inherited from <a href="http://qt.nokia.com/doc/4.7/qmenubar.html#signals">QMenuBar</a></li>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#signals">QWidget</a></li>
+<li class="fn">1 signal inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#signals">QObject</a></li>
+</ul>
+<a name="reimplemented-protected-functions"></a>
+<h2>Reimplemented Protected Functions</h2>
+<table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#changeEvent">changeEvent</a></b> ( QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#event">event</a></b> ( QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual bool </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#eventFilter">eventFilter</a></b> ( QObject * <i>object</i>, QEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#mouseDoubleClickEvent">mouseDoubleClickEvent</a></b> ( QMouseEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#mousePressEvent">mousePressEvent</a></b> ( QMouseEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#paintEvent">paintEvent</a></b> ( QPaintEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#resizeEvent">resizeEvent</a></b> ( QResizeEvent * <i>event</i> )</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#wheelEvent">wheelEvent</a></b> ( QWheelEvent * <i>event</i> )</td></tr>
+</table>
+<ul>
+<li class="fn">15 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qmenubar.html#protected-functions">QMenuBar</a></li>
+<li class="fn">37 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-functions">QWidget</a></li>
+<li class="fn">1 protected function inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-functions">QPaintDevice</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+</ul>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li class="fn">1 public variable inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#public-variables">QObject</a></li>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#static-public-members">QWidget</a></li>
+<li class="fn">4 static public members inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#static-public-members">QObject</a></li>
+<li class="fn">15 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qmenubar.html#protected-functions">QMenuBar</a></li>
+<li class="fn">37 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-functions">QWidget</a></li>
+<li class="fn">1 protected function inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-functions">QPaintDevice</a></li>
+<li class="fn">7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-functions">QObject</a></li>
+<li class="fn">1 protected slot inherited from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#protected-slots">QWidget</a></li>
+<li class="fn">1 protected type inherited from <a href="http://qt.nokia.com/doc/4.7/qpaintdevice.html#protected-variables">QPaintDevice</a></li>
+<li class="fn">2 protected variables inherited from <a href="http://qt.nokia.com/doc/4.7/qobject.html#protected-variables">QObject</a></li>
+</ul>
+<a name="details"></a>
+<!-- $$$RibbonBar-description -->
+<div class="descr">
+<h2>Detailed Description</h2>
+<p>RibbonBar class represents a component Ribbon UI used in Microsoft Office 2007/2010. Please note, after the ribbon bar has been added to the main window you need to setup the Ribbon's style (or MS-Office Style) to the application. To do that please use the following code:</p>
+<pre class="highlightedCode brush: cpp">    QApplication app(...);
+    app.setStyle(new Qtitan::RibbonStyle());</pre>
+<p>or</p>
+<pre class="highlightedCode brush: cpp">    QApplication app(...);
+    app.setStyle(&quot;ribbonstyle&quot;);</pre>
+<p>Note: To display RibbonBar correctly the Ribbon style (or Office style) should be installed into your application by calling <a href="http://qt.nokia.com/doc/4.7/qapplication.html#qApp">qApp</a>.setStyle(new Qtitan::RibbonStyle()); or app.setStyle(&quot;ribbonstyle&quot;); RibbonBar does not work with platform's specific or standard Qt styles.</p>
+</div>
+<!-- @@@RibbonBar -->
+<div class="prop">
+<h2>Property Documentation</h2>
+<!-- $$$currentIndexPage-prop$$$currentIndexPage$$$setCurrentPageint$$$currentPageChangedint$$$currentPageChangedRibbonPage* -->
+<h3 class="fn"><a name="currentIndexPage-prop"></a>currentIndexPage : int</h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> int </td><td class="memItemRight bottomAlign"><b>currentIndexPage</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setCurrentPage</b> ( int <i>index</i> )</td></tr>
+</table>
+<p><b>Notifier signal:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#currentPageChanged">currentPageChanged</a></b> ( int <i>index</i> )</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#currentPageChanged-2">currentPageChanged</a></b> ( RibbonPage * <i>page</i> )</td></tr>
+</table>
+<!-- @@@currentIndexPage -->
+<!-- $$$frameThemeEnabled-prop$$$isFrameThemeEnabled$$$setFrameThemeEnabledbool -->
+<h3 class="fn"><a name="frameThemeEnabled-prop"></a>frameThemeEnabled : bool</h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> bool </td><td class="memItemRight bottomAlign"><b>isFrameThemeEnabled</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setFrameThemeEnabled</b> ( bool <i>enable</i> = true )</td></tr>
+</table>
+<!-- @@@frameThemeEnabled -->
+<!-- $$$maximized-prop$$$isMaximized$$$setMaximizedbool$$$minimizationChangedbool -->
+<h3 class="fn"><a name="maximized-prop"></a>maximized : bool</h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> bool </td><td class="memItemRight bottomAlign"><b>isMaximized</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setMaximized</b> ( bool <i>flag</i> )</td></tr>
+</table>
+<p><b>Notifier signal:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#minimizationChanged">minimizationChanged</a></b> ( bool <i>minimized</i> )</td></tr>
+</table>
+<!-- @@@maximized -->
+<!-- $$$minimized-prop$$$isMinimized$$$setMinimizedbool$$$minimizationChangedbool -->
+<h3 class="fn"><a name="minimized-prop"></a>minimized : bool</h3>
+<p><b>Access functions:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> bool </td><td class="memItemRight bottomAlign"><b>isMinimized</b> () const</td></tr>
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b>setMinimized</b> ( bool <i>flag</i> )</td></tr>
+</table>
+<p><b>Notifier signal:</b></p>
+<table class="alignedsummary">
+<tr><td class="memItemLeft topAlign rightAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="qtitan-ribbonbar.html#minimizationChanged">minimizationChanged</a></b> ( bool <i>minimized</i> )</td></tr>
+</table>
+<!-- @@@minimized -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$RibbonBar[overload1]$$$RibbonBarQWidget* -->
+<h3 class="fn"><a name="RibbonBar"></a>RibbonBar::RibbonBar ( <a href="http://qt.nokia.com/doc/4.7/qwidget.html">QWidget</a> * <i>parent</i> = Q_NULL )</h3>
+<p>Constructs <a href="qtitan-ribbonbar.html">RibbonBar</a> object with the given <i>parent</i>.</p>
+<!-- @@@RibbonBar -->
+<!-- $$$~RibbonBar[overload1]$$$~RibbonBar -->
+<h3 class="fn"><a name="dtor.RibbonBar"></a>RibbonBar::~RibbonBar ()<tt> [virtual]</tt></h3>
+<p>Destructor of the <a href="qtitan-ribbonbar.html">RibbonBar</a> object.</p>
+<!-- @@@~RibbonBar -->
+<!-- $$$addAction[overload1]$$$addActionconstQIcon&constQString&Qt::ToolButtonStyleQMenu* -->
+<h3 class="fn"><a name="addAction"></a><a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> * RibbonBar::addAction ( const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; <i>icon</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i>, <a href="http://qt.nokia.com/doc/4.7/qt.html#ToolButtonStyle-enum">Qt::ToolButtonStyle</a> <i>style</i>, <a href="http://qt.nokia.com/doc/4.7/qmenu.html">QMenu</a> * <i>menu</i> = Q_NULL )</h3>
+<p>Adds button in the upper part of <a href="qtitan-ribbonbar.html">RibbonBar</a>. Parameter <i>icon</i> specifies the icon on the button. Parameter <i>text</i> specifies the button text. Parameter <i>style</i> specifies the button style and parameter <i>menu</i> specifies the pointer to <a href="http://qt.nokia.com/doc/4.7/qmenu.html">QMenu</a> object. Function returns a pointer to an <a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> object.</p>
+<!-- @@@addAction -->
+<!-- $$$addAction$$$addActionQAction*Qt::ToolButtonStyle -->
+<h3 class="fn"><a name="addAction-2"></a><a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> * RibbonBar::addAction ( <a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> * <i>action</i>, <a href="http://qt.nokia.com/doc/4.7/qt.html#ToolButtonStyle-enum">Qt::ToolButtonStyle</a> <i>style</i> )</h3>
+<p>Adds button to the upper part of the <a href="qtitan-ribbonbar.html">RibbonBar</a> associated with an existing <i>action</i>. Parameter <i>style</i> specified the style of the button.</p>
+<!-- @@@addAction -->
+<!-- $$$addMenu[overload1]$$$addMenuconstQString& -->
+<h3 class="fn"><a name="addMenu"></a><a href="http://qt.nokia.com/doc/4.7/qmenu.html">QMenu</a> * RibbonBar::addMenu ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Adds the menu at the top right <a href="qtitan-ribbonbar.html">RibbonBar</a> with a given <i>text</i>. Returns a pointer to an object <a href="http://qt.nokia.com/doc/4.7/qmenu.html">QMenu</a>.</p>
+<!-- @@@addMenu -->
+<!-- $$$addPage[overload1]$$$addPageconstQString& -->
+<h3 class="fn"><a name="addPage"></a><a href="qtitan-ribbonpage.html">RibbonPage</a> * RibbonBar::addPage ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Add a new page on <a href="qtitan-ribbonbar.html">RibbonBar</a>. Parameter <i>text</i> is used to initialize the page title. The function returns a pointer to the new object <a href="qtitan-ribbonpage.html">RibbonPage</a>.</p>
+<!-- @@@addPage -->
+<!-- $$$addPage$$$addPageRibbonPage* -->
+<h3 class="fn"><a name="addPage-2"></a>void RibbonBar::addPage ( <a href="qtitan-ribbonpage.html">RibbonPage</a> * <i>page</i> )</h3>
+<p>Add new page to the <a href="qtitan-ribbonbar.html">RibbonBar</a>. <i>page</i> - is a pointer to the <a href="qtitan-ribbonpage.html">RibbonPage</a> object.</p>
+<!-- @@@addPage -->
+<!-- $$$addSystemButton[overload1]$$$addSystemButtonconstQString& -->
+<h3 class="fn"><a name="addSystemButton"></a><a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> * RibbonBar::addSystemButton ( const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Adds system button to the upper left part of <a href="qtitan-ribbonbar.html">RibbonBar</a>. Parameter <i>text</i> specifies the text on the system button. Function returns a pointer to the <a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> object.</p>
+<!-- @@@addSystemButton -->
+<!-- $$$addSystemButton$$$addSystemButtonconstQIcon&constQString& -->
+<h3 class="fn"><a name="addSystemButton-2"></a><a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> * RibbonBar::addSystemButton ( const <a href="http://qt.nokia.com/doc/4.7/qicon.html">QIcon</a> &amp; <i>icon</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Adds system button to the upper left part of <a href="qtitan-ribbonbar.html">RibbonBar</a> with <i>icon</i>. Parameter <i>text</i> specifies the text on the system button. Parameter icon specifies the icon. Function returns a pointer to the <a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> object.</p>
+<!-- @@@addSystemButton -->
+<!-- $$$changeEvent[overload1]$$$changeEventQEvent* -->
+<h3 class="fn"><a name="changeEvent"></a>void RibbonBar::changeEvent ( <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#changeEvent">QWidget::changeEvent</a>().</p>
+<!-- @@@changeEvent -->
+<!-- $$$clearPages[overload1]$$$clearPages -->
+<h3 class="fn"><a name="clearPages"></a>void RibbonBar::clearPages ()</h3>
+<p>Clear all pages in the ribbon bar.</p>
+<!-- @@@clearPages -->
+<!-- $$$currentPageChanged[overload1]$$$currentPageChangedint -->
+<h3 class="fn"><a name="currentPageChanged"></a>void RibbonBar::currentPageChanged ( int <i>index</i> )<tt> [signal]</tt></h3>
+<p>The signal is emitted when the active page on <a href="qtitan-ribbonbar.html">RibbonBar</a> was changed. Parameter <i>index</i> - the index of the new active page.</p>
+<!-- @@@currentPageChanged -->
+<!-- $$$currentPageChanged$$$currentPageChangedRibbonPage* -->
+<h3 class="fn"><a name="currentPageChanged-2"></a>void RibbonBar::currentPageChanged ( <a href="qtitan-ribbonpage.html">RibbonPage</a> * <i>page</i> )<tt> [signal]</tt></h3>
+<p>The signal is emitted when the active page on <a href="qtitan-ribbonbar.html">RibbonBar</a> was changed. Parameter <i>page</i> is a reference to the new active page object.</p>
+<!-- @@@currentPageChanged -->
+<!-- $$$detachPage[overload1]$$$detachPageRibbonPage* -->
+<h3 class="fn"><a name="detachPage"></a>void RibbonBar::detachPage ( <a href="qtitan-ribbonpage.html">RibbonPage</a> * <i>page</i> )</h3>
+<p>Removes page from the ribbon by the given <i>page</i>. Important: The function does not destroy the page, but sets the parent to the NULL.</p>
+<!-- @@@detachPage -->
+<!-- $$$detachPage$$$detachPageint -->
+<h3 class="fn"><a name="detachPage-2"></a>void RibbonBar::detachPage ( int <i>index</i> )</h3>
+<p>Removes page from the ribbon by the given <i>index</i>. Important: The function does not destroy the page, but sets the parent to the NULL.</p>
+<!-- @@@detachPage -->
+<!-- $$$event[overload1]$$$eventQEvent* -->
+<h3 class="fn"><a name="event"></a>bool RibbonBar::event ( <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qobject.html#event">QObject::event</a>().</p>
+<!-- @@@event -->
+<!-- $$$eventFilter[overload1]$$$eventFilterQObject*QEvent* -->
+<h3 class="fn"><a name="eventFilter"></a>bool RibbonBar::eventFilter ( <a href="http://qt.nokia.com/doc/4.7/qobject.html">QObject</a> * <i>object</i>, <a href="http://qt.nokia.com/doc/4.7/qevent.html">QEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qobject.html#eventFilter">QObject::eventFilter</a>().</p>
+<!-- @@@eventFilter -->
+<!-- $$$getPage[overload1]$$$getPageint -->
+<h3 class="fn"><a name="getPage"></a><a href="qtitan-ribbonpage.html">RibbonPage</a> * RibbonBar::getPage ( int <i>index</i> ) const</h3>
+<p>Returns a pointer to the page at the specified position. Parameter <i>index</i> is the page index.</p>
+<!-- @@@getPage -->
+<!-- $$$getPageCount[overload1]$$$getPageCount -->
+<h3 class="fn"><a name="getPageCount"></a>int RibbonBar::getPageCount () const</h3>
+<p>Returns the count of pages in the <a href="qtitan-ribbonbar.html">RibbonBar</a>.</p>
+<!-- @@@getPageCount -->
+<!-- $$$getQuickAccessBar[overload1]$$$getQuickAccessBar -->
+<h3 class="fn"><a name="getQuickAccessBar"></a><a href="qtitan-ribbonquickaccessbar.html">RibbonQuickAccessBar</a> * RibbonBar::getQuickAccessBar () const</h3>
+<p>Get a reference to the Quick Access Toolbar. Returns a pointer to an object <a href="qtitan-ribbonquickaccessbar.html">RibbonQuickAccessBar</a>.</p>
+<!-- @@@getQuickAccessBar -->
+<!-- $$$getSystemButton[overload1]$$$getSystemButton -->
+<h3 class="fn"><a name="getSystemButton"></a><a href="qtitan-ribbonsystembutton.html">RibbonSystemButton</a> * RibbonBar::getSystemButton () const</h3>
+<p>Returns pointer to the system button.</p>
+<!-- @@@getSystemButton -->
+<!-- $$$heightForWidth[overload1]$$$heightForWidthint -->
+<h3 class="fn"><a name="heightForWidth"></a>int RibbonBar::heightForWidth ( int ) const<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#heightForWidth">QWidget::heightForWidth</a>().</p>
+<!-- @@@heightForWidth -->
+<!-- $$$insertPage[overload1]$$$insertPageintconstQString& -->
+<h3 class="fn"><a name="insertPage"></a><a href="qtitan-ribbonpage.html">RibbonPage</a> * RibbonBar::insertPage ( int <i>index</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>text</i> )</h3>
+<p>Create a new page with the <i>text</i> title and insert it into the position <i>index</i>. The function returns a pointer to the new object <a href="qtitan-ribbonpage.html">RibbonPage</a>.</p>
+<!-- @@@insertPage -->
+<!-- $$$insertPage$$$insertPageintRibbonPage* -->
+<h3 class="fn"><a name="insertPage-2"></a>void RibbonBar::insertPage ( int <i>index</i>, <a href="qtitan-ribbonpage.html">RibbonPage</a> * <i>page</i> )</h3>
+<p>Insert a new page at the specified position of the <a href="qtitan-ribbonbar.html">RibbonBar</a>. <i>index</i> - the position of the page, <i>page</i> - a pointer to the new object <a href="qtitan-ribbonpage.html">RibbonPage</a>.</p>
+<!-- @@@insertPage -->
+<!-- $$$isBackstageVisible[overload1]$$$isBackstageVisible -->
+<h3 class="fn"><a name="isBackstageVisible"></a>bool RibbonBar::isBackstageVisible () const</h3>
+<p>Returns the visibility of the BackStage view at the moment.</p>
+<!-- @@@isBackstageVisible -->
+<!-- $$$isKeyTipsComplement[overload1]$$$isKeyTipsComplement -->
+<h3 class="fn"><a name="isKeyTipsComplement"></a>bool RibbonBar::isKeyTipsComplement () const</h3>
+<p>Returns the policy of assignment for KeyTips of the buttons and other controls. If return value is true then the keytips assigned automatically, based on keyboard shortcuts &lt;&amp;File, &amp;Open..&#x2e;&gt;&#x2e; If return value is false keytips will be assigned only if user set it by <a href="qtitan-ribbonbar.html#setKeyTip">RibbonBar::setKeyTip</a>() function.</p>
+<p>See also <a href="qtitan-ribbonbar.html#setKeyTip">setKeyTip</a>().</p>
+<!-- @@@isKeyTipsComplement -->
+<!-- $$$isKeyTipsShowing[overload1]$$$isKeyTipsShowing -->
+<h3 class="fn"><a name="isKeyTipsShowing"></a>bool RibbonBar::isKeyTipsShowing () const</h3>
+<p>Returns the current state of showing Key-Tips. If true then Key-Tips visible on screen at the moment.</p>
+<!-- @@@isKeyTipsShowing -->
+<!-- $$$isMinimizationEnabled[overload1]$$$isMinimizationEnabled -->
+<h3 class="fn"><a name="isMinimizationEnabled"></a>bool RibbonBar::isMinimizationEnabled () const</h3>
+<p>Returns the enable flag of the minimization feature of the Ribbon Bar.</p>
+<!-- @@@isMinimizationEnabled -->
+<!-- $$$isQuickAccessVisible[overload1]$$$isQuickAccessVisible -->
+<h3 class="fn"><a name="isQuickAccessVisible"></a>bool RibbonBar::isQuickAccessVisible () const</h3>
+<p>Returns the visible state of the Quick Access ToolBar. Return true, if the quick access toolbar is visible.</p>
+<!-- @@@isQuickAccessVisible -->
+<!-- $$$isTitleBarVisible[overload1]$$$isTitleBarVisible -->
+<h3 class="fn"><a name="isTitleBarVisible"></a>bool RibbonBar::isTitleBarVisible () const</h3>
+<p>Returns the visible state for the title bar of the ribbon. By default it is true.</p>
+<!-- @@@isTitleBarVisible -->
+<!-- $$$isVisible[overload1]$$$isVisible -->
+<h3 class="fn"><a name="isVisible"></a>bool RibbonBar::isVisible () const</h3>
+<p>Returns the visible flag of the Ribbon Bar.</p>
+<!-- @@@isVisible -->
+<!-- $$$keyTipsEnabled[overload1]$$$keyTipsEnabled -->
+<h3 class="fn"><a name="keyTipsEnabled"></a>bool RibbonBar::keyTipsEnabled () const</h3>
+<p>Returns the flag is mechanizm of Key-Tips enabled or not.</p>
+<!-- @@@keyTipsEnabled -->
+<!-- $$$keyTipsShowed[overload1]$$$keyTipsShowedbool -->
+<h3 class="fn"><a name="keyTipsShowed"></a>void RibbonBar::keyTipsShowed ( bool <i>showed</i> )<tt> [signal]</tt></h3>
+<!-- @@@keyTipsShowed -->
+<!-- $$$maximize[overload1]$$$maximize -->
+<h3 class="fn"><a name="maximize"></a>void RibbonBar::maximize ()</h3>
+<p>Maximize the Ribbon if it has been minimized before.</p>
+<!-- @@@maximize -->
+<!-- $$$minimizationChanged[overload1]$$$minimizationChangedbool -->
+<h3 class="fn"><a name="minimizationChanged"></a>void RibbonBar::minimizationChanged ( bool <i>minimized</i> )<tt> [signal]</tt></h3>
+<p>The signal is used to get notification about changes of the minimization state of the Ribbon. The parameter <i>minimized</i> holds the current state of the minimization.</p>
+<!-- @@@minimizationChanged -->
+<!-- $$$minimize[overload1]$$$minimize -->
+<h3 class="fn"><a name="minimize"></a>void RibbonBar::minimize ()</h3>
+<p>Minimize the Ribbon if it has been maximized before.</p>
+<!-- @@@minimize -->
+<!-- $$$mouseDoubleClickEvent[overload1]$$$mouseDoubleClickEventQMouseEvent* -->
+<h3 class="fn"><a name="mouseDoubleClickEvent"></a>void RibbonBar::mouseDoubleClickEvent ( <a href="http://qt.nokia.com/doc/4.7/qmouseevent.html">QMouseEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#mouseDoubleClickEvent">QWidget::mouseDoubleClickEvent</a>().</p>
+<!-- @@@mouseDoubleClickEvent -->
+<!-- $$$mousePressEvent[overload1]$$$mousePressEventQMouseEvent* -->
+<h3 class="fn"><a name="mousePressEvent"></a>void RibbonBar::mousePressEvent ( <a href="http://qt.nokia.com/doc/4.7/qmouseevent.html">QMouseEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#mousePressEvent">QWidget::mousePressEvent</a>().</p>
+<!-- @@@mousePressEvent -->
+<!-- $$$movePage[overload1]$$$movePageRibbonPage*int -->
+<h3 class="fn"><a name="movePage"></a>void RibbonBar::movePage ( <a href="qtitan-ribbonpage.html">RibbonPage</a> * <i>page</i>, int <i>newIndex</i> )</h3>
+<p>Moves the <i>page</i> from current position to the position <i>newIndex</i>.</p>
+<!-- @@@movePage -->
+<!-- $$$movePage$$$movePageintint -->
+<h3 class="fn"><a name="movePage-2"></a>void RibbonBar::movePage ( int <i>index</i>, int <i>newIndex</i> )</h3>
+<p>Moves the page in the position <i>index</i> to the position <i>newIndex</i>.</p>
+<!-- @@@movePage -->
+<!-- $$$paintEvent[overload1]$$$paintEventQPaintEvent* -->
+<h3 class="fn"><a name="paintEvent"></a>void RibbonBar::paintEvent ( <a href="http://qt.nokia.com/doc/4.7/qpaintevent.html">QPaintEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#paintEvent">QWidget::paintEvent</a>().</p>
+<!-- @@@paintEvent -->
+<!-- $$$removePage[overload1]$$$removePageRibbonPage* -->
+<h3 class="fn"><a name="removePage"></a>void RibbonBar::removePage ( <a href="qtitan-ribbonpage.html">RibbonPage</a> * <i>page</i> )</h3>
+<p>Removes the page. Parameter <i>page</i> is a pointer to page that will be removed. The object that is referenced by <i>page</i> will be destroyed.</p>
+<!-- @@@removePage -->
+<!-- $$$removePage$$$removePageint -->
+<h3 class="fn"><a name="removePage-2"></a>void RibbonBar::removePage ( int <i>index</i> )</h3>
+<p>Remove page at the given <i>index</i>. An object that represents the page at position <i>index</i> will be destroyed.</p>
+<!-- @@@removePage -->
+<!-- $$$resizeEvent[overload1]$$$resizeEventQResizeEvent* -->
+<h3 class="fn"><a name="resizeEvent"></a>void RibbonBar::resizeEvent ( <a href="http://qt.nokia.com/doc/4.7/qresizeevent.html">QResizeEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#resizeEvent">QWidget::resizeEvent</a>().</p>
+<!-- @@@resizeEvent -->
+<!-- $$$setKeyTip[overload1]$$$setKeyTipQAction*constQString& -->
+<h3 class="fn"><a name="setKeyTip"></a>void RibbonBar::setKeyTip ( <a href="http://qt.nokia.com/doc/4.7/qaction.html">QAction</a> * <i>action</i>, const <a href="http://qt.nokia.com/doc/4.7/qstring.html">QString</a> &amp; <i>keyTip</i> )</h3>
+<p>Sets the <i>keyTip</i> for the control associated with given <i>action</i>. Function is taken effect if <a href="qtitan-ribbonbar.html#isKeyTipsComplement">RibbonBar::isKeyTipsComplement</a>() return true.</p>
+<p>See also <a href="qtitan-ribbonbar.html#setKeyTipsComplement">setKeyTipsComplement</a>().</p>
+<!-- @@@setKeyTip -->
+<!-- $$$setKeyTipsComplement[overload1]$$$setKeyTipsComplementbool -->
+<h3 class="fn"><a name="setKeyTipsComplement"></a>void RibbonBar::setKeyTipsComplement ( bool <i>complement</i> )</h3>
+<p>The function sets the policy of assignment for KeyTips of the buttons and other controls. If the parameter <i>complement</i> is true then the keytips assigned automatically, based on keyboard shortcuts &lt;&amp;File, &amp;Open..&#x2e;&gt;&#x2e; If parameter <i>complement</i> is false keytips will be assigned only if user set it by <a href="qtitan-ribbonbar.html#setKeyTip">RibbonBar::setKeyTip</a>() function.</p>
+<p>See also <a href="qtitan-ribbonbar.html#isKeyTipsComplement">isKeyTipsComplement</a>() and <a href="qtitan-ribbonbar.html#setKeyTip">setKeyTip</a>().</p>
+<!-- @@@setKeyTipsComplement -->
+<!-- $$$setKeyTipsEnable[overload1]$$$setKeyTipsEnablebool -->
+<h3 class="fn"><a name="setKeyTipsEnable"></a>void RibbonBar::setKeyTipsEnable ( bool <i>enable</i> )</h3>
+<p>Enabled or disabled mechanizm of Key-Tips.</p>
+<!-- @@@setKeyTipsEnable -->
+<!-- $$$setMinimizationEnabled[overload1]$$$setMinimizationEnabledbool -->
+<h3 class="fn"><a name="setMinimizationEnabled"></a>void RibbonBar::setMinimizationEnabled ( bool <i>enabled</i> )</h3>
+<p>Sets the minimization feature of the Ribbon Bar to the <i>enabled</i>.</p>
+<p>See also <a href="qtitan-ribbonbar.html#isMinimizationEnabled">isMinimizationEnabled</a>().</p>
+<!-- @@@setMinimizationEnabled -->
+<!-- $$$setTitleBarVisible[overload1]$$$setTitleBarVisiblebool -->
+<h3 class="fn"><a name="setTitleBarVisible"></a>void RibbonBar::setTitleBarVisible ( bool <i>show</i> )</h3>
+<p>Sets the visible state for the ribbon title defined by <i>show</i> parameter in case then the Office frame is not used.</p>
+<p>See also <a href="qtitan-ribbonbar.html#isTitleBarVisible">isTitleBarVisible</a>().</p>
+<!-- @@@setTitleBarVisible -->
+<!-- $$$showQuickAccess[overload1]$$$showQuickAccessbool -->
+<h3 class="fn"><a name="showQuickAccess"></a>void RibbonBar::showQuickAccess ( bool <i>show</i> = true )</h3>
+<p>Show/Hide the Quick Access Toolbar. Parameter <i>show</i> is true, to show the Quick Access Toolbar, false, to hide. By default, the show parameter is true.</p>
+<!-- @@@showQuickAccess -->
+<!-- $$$sizeHint[overload1]$$$sizeHint -->
+<h3 class="fn"><a name="sizeHint"></a><a href="http://qt.nokia.com/doc/4.7/qsize.html">QSize</a> RibbonBar::sizeHint () const<tt> [virtual]</tt></h3>
+<!-- @@@sizeHint -->
+<!-- $$$wheelEvent[overload1]$$$wheelEventQWheelEvent* -->
+<h3 class="fn"><a name="wheelEvent"></a>void RibbonBar::wheelEvent ( <a href="http://qt.nokia.com/doc/4.7/qwheelevent.html">QWheelEvent</a> * <i>event</i> )<tt> [virtual protected]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.7/qwidget.html#wheelEvent">QWidget::wheelEvent</a>().</p>
+<!-- @@@wheelEvent -->
+</div>
+        <!-- /div -->
+        <div class="feedback t_button">
+          </div>
+      </div>
+    </div>
+    <div class="ft">
+      <span></span>
+    </div>
+  </div> 
+  <div class="footer">
+    <p>
+      <acronym title="Copyright">&copy;</acronym> 2009-2013 Developer Machines<br><br>      Nokia, Qt and their respective logos are trademarks of Nokia Corporation 
+      in Finland and/or other countries worldwide.</p>
+    <p>
+      All other trademarks are property of their respective owners. <a title="Privacy Policy"
+        href="http://www.devmachines.com/company/privacy-policy.html">Privacy Policy</a></p>
+  </div>
+  <div id="blurpage">
+  </div>
+  <!--/div -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+</body>
+</html>

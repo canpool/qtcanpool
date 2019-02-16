@@ -1,0 +1,30 @@
+#include "winver.h"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 3,1,0,0
+ PRODUCTVERSION 3,1,0,0
+ FILEFLAGS 0x0L
+ FILEFLAGSMASK 0x3fL
+ FILEOS 0x00040004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "CompanyName", "Developer Machines"
+            VALUE "FileDescription", "QtitanRibbon user interface component for Qt"
+            VALUE "FileVersion", "3.1.0.0"
+            VALUE "InternalName", "qtnribbon3.dll"
+            VALUE "LegalCopyright", "Copyright (C) 2009-2013 Developer Machines"
+            VALUE "OriginalFilename", "qtnribbon2.dll"
+            VALUE "ProductName", "QtitanRibbon user interface component for Qt"
+            VALUE "ProductVersion", "3.1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
