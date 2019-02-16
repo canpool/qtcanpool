@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/favicon.ico</file>
+        <file>res/qtitan.png</file>
+        <file>res/qtitanlogo32x32.png</file>
+        <file>res/qtitanlogo64x64.png</file>
+        <file>res/question.png</file>
+    <file>res/topheader.png</file></qresource>
+</RCC>

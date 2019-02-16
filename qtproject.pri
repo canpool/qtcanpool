@@ -28,6 +28,20 @@ defineReplace(qtLibraryName) {
    return($$RET)
 }
 
+# eg: $$qtLibraryNameVersion(qcanpool, 1)
+defineReplace(qtLibraryNameVersion) {
+   RET = $$qtLibraryTargetName($$1)
+   win32 {
+      exists($$2) {
+          VERSION_LIST = $$split(QTPROJECT_VERSION, .)
+          RET = $$RET$$first(VERSION_LIST)
+      } else {
+          RET = $$RET$$2
+      }
+   }
+   return($$RET)
+}
+
 defineTest(minQtVersion) {
     maj = $$1
     min = $$2

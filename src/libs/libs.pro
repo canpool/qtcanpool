@@ -4,7 +4,8 @@ TEMPLATE  = subdirs
 
 SUBDIRS =   \
     qcanpool   \
-    qexts
+    qexts \
+    qribbon
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =

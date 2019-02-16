@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- changelog.qdoc -->
+  <title>Qt QtitanRibbon 3.1: QtitanRibbon Changelog</title>
+  <link rel="stylesheet" type="text/css" href="style/style.css" />
+  <script src="scripts/jquery.js" type="text/javascript"></script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script src="./scripts/superfish.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/superfish.css" />  <script src="./scripts/narrow.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="style/narrow.css" />
+  <!--[if IE]>
+<meta name="MSSmartTagsPreventParsing" content="true">
+<meta http-equiv="imagetoolbar" content="no">
+<![endif]-->
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="style/style_ie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="style/style_ie8.css">
+<![endif]-->
+</head>
+<body class="" onload="CheckEmptyAndLoadList();">
+ <div class="header" id="qtdocheader">
+    <div class="content"> 
+    <div id="nav-logo">
+      <a href="index.html">Home</a></div>
+		<div id="narrowsearch"><form onsubmit="return false;" action="" id="qtdocsearch">
+		<fieldset>
+		<input type="text" value="" id="pageType2" name="searchstring"/>
+		 </fieldset>
+		</form></div>
+    <div id="nav-topright">
+      <ul>
+      </ul>
+    </div>
+    <div id="shortCut">
+      <ul>
+        <li class="shortCut-topleft-inactive"><span><a href="index.html">Home</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="classes.html">All&nbsp;Classes</a></span></li>
+        <li class="shortCut-topleft-inactive"><span><a href="overviews.html">Overviews</a></span></li>
+      </ul>
+</div> <ul class="sf-menu sf-js-enabled sf-shadow" id="narrowmenu"> 
+		 <li><a href="#">API Lookup</a> 
+			 <ul id="topmenuLook"> 
+			   <li><a href="qtitan.html">Qtitan Namespace</a></li> 
+			   <li><a href="classes.html">Class index</a></li> 
+ 			  <li><a href="qtitan.html#functions">Function index</a></li> 
+			   </ul> 
+		 </li> 
+ </ul> 
+    </div>
+  </div>
+  <div class="wrapper">
+    <div class="hd">
+      <span></span>
+    </div>
+    <div class="bd group">
+      <div class="sidebar">
+        <div class="searchlabel">
+          Search index:</div>
+        <div class="search">
+          <form id="qtdocsearch" action="" onsubmit="return false;">
+            <fieldset>
+              <input type="text" name="searchstring" id="pageType" value="" />
+            </fieldset>
+          </form>
+        </div>
+        <div class="box first bottombar" id="lookup">
+          <h2 title="API Lookup"><span></span>
+            API Lookup</h2>
+          <div  id="list001" class="list">
+          <ul id="ul001" >
+              <li class="defaultLink"><a href="qtitan.html">Qtitan Namespace</a></li>
+              <li class="defaultLink"><a href="classes.html">Class index</a></li>
+              <li class="defaultLink"><a href="qtitan.html#functions">Function index</a></li>
+            </ul> 
+          </div>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="toolbar">
+          <div class="breadcrumb toolblock">
+            <ul>
+              <li class="first"><a href="index.html">Home</a></li>
+              <!--  Bread crumbs goes here -->
+              <li>QtitanRibbon Changelog</li>            </ul>
+          </div>
+          <div class="toolbuttons toolblock">
+            <ul>
+              <li id="smallA" class="t_button">A</li>
+              <li id="medA" class="t_button active">A</li>
+              <li id="bigA" class="t_button">A</li>
+              <li id="print" class="t_button"><a href="javascript:this.print();">
+                <span>Print</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="content">
+<h1 class="title">QtitanRibbon Changelog</h1>
+<span class="subtitle"></span>
+<!-- $$$qtitanribbonchangelog.html-description -->
+<div class="descr"> <a name="details"></a>
+<a name="qtitanribbon-changelog"></a><p>QtitanRibbon changelog:</p>
+
+<p><strong>Version 3.1.0</strong></p>
+<p>
+- Fixed: MDI-tabs are rendered incorrectly.<br/>
+- Fixed: Sometime there is a lock of Autohide taskbar  panel.<br/>
+- Fixed: System button displayed incorrectly if click in a specific zone under OS Windows.<br/>
+- Fixed: The size of the title is not determined correctly when going from the minimize to the maximize state (black streaks appear instead of a title).<br/>
+- Fixed: Scroll button is missing if the group is in the reduce state and does not fit on the screen.<br/>
+- Fixed: The text is not centered on the title of the main window.<br/>
+- Fixed: The source code produced by uic.exe compiler from the Qt5 designer does not compile if the Qt-form has a RibonBar.<br/>
+- Fixed: Ribbon bar with Air title under standard Windows theme does not work corectly with Qt5 (bottom area of the main window is not rendered correctly and drag-drop of main window does not work). Qt5 issue.<br/>
+- Fixed: System menu is not displayed when you right-click on the application icon.<br/>
+- Fixed: Issue with displaying title with Qt5.1.<br/>
+- Fixed: Many minor errors encountered when moving to Qt5.1.<br/>
+- Fixed: The problem of using standard Qt layouts with group of RibonBar.<br/>
+- Fixed: Rendering RibonBar's elements to better fit the style of Microsoft Ribbon.<br/>
+</p>
+
+<p><strong>Version 3.0.0</strong></p>
+<p>
+- Added: Support for Qt5.<br/>
+- Fixed: If the theme Windows 7 Basic is enabled then the main window border drawing incorrectly.<br/>
+- Fixed: In ribbon minimizing mode: Activation and initialize a modal dialog by pressing a button (which is on the ribbon) a button click event is skipping to the main window.<br/>
+- Fixed: Signal keyTipsShowing and value fo the flag m_keyTipsShowing are not synchronized.<br/>
+- Fixed: Incorrect rendering Popup-menu indicator in the QToolButton, if it is not on the ribbon.<br/>
+- Fixed: At times there are delays in drawing of the ribbon.<br/>
+- Fixed: Not expected movement position of the main window is appearing when you switch to FrameThemeEnabled mode.<br/>
+</p>
+
+<p><strong>Version 2.8.5</strong></p>
+<p>
+- Bugfix: Incorrect rendering of the system menu 2007 style separator (the height of the separator was assigned incorrectly).<br/>
+- Bugfix: Correction Ribbon's tabs initialization on startup.<br/>
+- Bugfix: Keytips blocking.<br/>
+- Bugfix: Incorrect rendering of text in the ComboBox in select mode.<br/>
+- Bugfix: Error KeyTips activating if AltGr key is pressed.<br/>
+- Fixed other reported bugs.<br />
+- Moved to Qt4.8.4.<br/>
+- Implementation of scrolling Ribbon's items if the items do not fit the screen.<br/>
+- Ribbon Group elements layout optimization (group can be optimized for 2 or 3 rows, like in MS-Word).<br/>
+- Controls in the StatusBar panel aligned in accordance the style of MS-Office.<br/>
+- Group of elements can be added to StatusBar panel (like in MS-Office).<br/>
+- Added methods setKeyTipsEnable(bool enable), isKeyTipsShowing() and signal keyTipsShowed(bool showed) to handle keytips behaviour.<br/>
+- Rendering Office stlye under 16 bits color system palette and under MacOSX.<br/>
+</p>
+
+<p><strong>Version 2.8.4</strong></p>
+<p>
+- Bugfix: Rendering of the QTreeWidget in Office 2010 style does not work.<br/>
+- Bugfix: Problem in the OfficeStyle::drawItemViewItem function (crash and warning).<br/>
+- Bugfix: Rendering of scrollbars under Office 2010 Black theme.<br/>
+- Optimization and moving to the Qt 4.8.x<br/>
+</p>
+
+<p><strong>Version 2.8.3</strong></p>
+- Improvement OfficePopupWindow: The negative value of displayTime will block the window's automatic hiding.<br/>
+- Improvement RibbonToolTip: Info about shortcuts is showing in tooltips.<br/>
+- Improvement RibbonSystemButton: Added ability to setup the button color.<br/>
+- Bugfix: OfficePopupWindow is crashing if child widgets has been deleted.<br/>
+- Bugfix: Alignment of the internal widgets in OfficePopupWindow does not work properly.<br/>
+- Bugfix: Mouse click on left side of the tab invoked action of the button on the right side of the tab-bar.<br/>
+- Bugfix: Problem with rendering of the QToolButton in Qt::DownArrow mode.<br/>
+- Bugfix: Problem with rendering of the RibbonToolTips if length of the title is big.<br/>
+- Bugfix: Problem with rendering of the MDITabs and MDIArea.<br/>
+- Bugfix: Problem and crash if Windows color theme is changing.<br/>
+- Bugfix: Incorrect placement actions on RibbonBackstageView.<br/>
+- Bugfix: Crash in setDialogsIgnored(true) function if setStyleSheet(...) was used.<br/>
+
+<p><strong>Version 2.8.2</strong></p>
+<p>Added new features:</p>
+<p>- New demo ribbonsystemmenu was added.<br />- Improved system menu to better suit Office 2007 style. Now it is possible to add a page of sub-commands to a menu in the first level.<br />- Optimization of the rendering of the Ribbon UI. Speed of rendering has improved by 50-70%.<br />- Added functions to RibbonBar: QAction* RibbonBar::addAction(QAction* action, Qt::ToolButtonStyle style); and void RibbonGroup::setOptionButtonAction(QAction* action);<br />- Added functions to RibbonToolTip to control text wrapping and icon showing: static void setWrapMode(WrapMode mode); static WrapMode wordWrap(); static void setShowIcon(bool show); static bool showIcon();</p>
+<p>- Bugfix. Not functioning fullscreen mode if setFrameThemeEnabled turn enabled on.<br />- Bugfix. Error restoring state of the main window.<br />- Bugfix. Correction of the crash of the group in popup mode with a large number of elements.<br />- Bugfix. Problem with PopupMenu - skip the event "mouse click in child window."<br />- Bugfix. Problem with contextual tabs if color and text the same.<br />- Bugfix. Function removeAction is not works properly.<br />- Bugfix. Positioning of the system buttons is not working in child windows in MDI case.<br />- Bugfix. Right border of the RibbonBar draws with errors.<br />- Bugfix. Crash the application if pass empty icon to the RibbonGroup::addMenu().<br />- Bugfix. Indicator (DropDown - Arrow) incorrectly drawn in QToolButton if the Menu is available.<br />- Bugfix. If RibbonBar is minimized signals currentPageChanged(int) and currentPageChanged(RibbonPage *) are not raised.<br />- Bugfix. The application crashes when QListWidget's cells are drawing, if color is set.<br />- Bugfix. Items in the groups are not aligned on the left side.<br />- Bugfix. If action was added from ribbonBar()-&gt;addAction(...) then call action-&gt;setVisible() or action-&gt;setEnabled() has no effects.</p>
+<p><strong>Version 2.8.1</strong></p>
+<p>- Bugfix: Rendering of the QTreeWidget in Office 2010 style does not work.<br />- Bugfix: Problem in the OfficeStyle::drawItemViewItem function (crash and warning).<br />- Bugfix: Rendering of scrollbars under Office 2010 Black theme.<br />- Optimization and moving to Qt 4.8.x.</p>
+<p><strong>Version 2.8</strong></p>
+<p>- Added method void RibbonBar::setKeyTip(QAction* action, const QString&amp; keyTip); to set the specified key for ribbon keytips mechanism.<br />- Added support for scrolling ribbon tabs by mouse wheel.<br />- Added support for DPI system settings. Now font size can be binding to DPI installed in OS.<br />- Improved the group's shrinking if it is not fully fit.<br />- Implemented visibility setting for the gallery's items.<br />- Added new class OfficePopupWindow for showing Office like messages in the application.<br />- Improved the behaviour of the QtDesigner plugin.<br />- Fixed: QTableWidgetItem::setTextColor() does not have effect if RibbonStyle is used.<br />- Fixed: Strange behavior with some widgets in a QWizardPage.<br />- Fixed: Some problems to dock a QDockWidget when RibbonStyle is used.<br />- Fixed: If i have some mdi opened and i arrange it tiled, the main window is moved.<br />- Fixed other bugs that were found in the course of the project 2.8.</p>
+<p><strong>Version 2.7</strong></p>
+<p>- Added support for HTML in the Ribbon Tooltips.<br />- Added support for custom layout in group.<br />- Added a special mode in which the Ribbon Group can be stretched in height. It depend on the height of the elements within it.<br />- Added support to setting font for the entire Ribbon at once.<br />- Added support to setting font for Ribbon's items and groups of each page individually.<br />- Further development of automatic selection for icon's size to display the system button <br />(now is possible to set the icon in format *.ico and the most appropriate size will be selected <br />to show the system button for cases if the ICO file contains images with several sizes).<br />- Added ability to drag-and-drop the styles from QtDesigner component's palette to the QMainWindow.<br />- Added Ribbon Bar, Ribbon Status Bar to the QtDesigner component's palette.<br />- Fixed bug to show tooltips in MacOSX and Linux.<br />- Fixed location of controls (minimize, maximize a child window) while QMdiArea is using.<br />- Fixed incorrect frame displaying in the classic Windows's styles (Windows 7, Vista, XP).<br />- Fixed tooltips positioning and displaying in Ribbon Gallery.<br />- The sistem button has not properly drawing regarding quick panel.<br />- Fixed drag-droping main window if setFrameEnabled() option is enabled in Office 2010 style.<br />- Fixed a bug in the BackStageView control. If the main window has QDockWidget panels then they are always expanded.</p>
+<p><strong>Version 2.6</strong></p>
+<p>- Added support for keytips.<br />- Added new widget - backstage view. It's allows you to make a next generation menu.<br />- Added ability to manage backstage view in Qt designer.<br />- Added ability to block usage of the Ribbon of Office styles for dialogs.<br />- Added ability to block closing galleries's popups.<br />- Added functions to remove items from the specified gallery list.<br />- Fixed tri-state check box paint flaw.<br />- Fixed: I set Qt::DownArrow in qtoolbuton, it drawed incorrectly, but only if I use ribbon.<br />- Fixed a crash in the ribbon's animation mechanism during dynamic re-creation of ribbon stuff.<br />- Fixed a bug related to wrong title on the modified document of the main window (QWidget::setWindowModified).<br />- Fixed: Adding a menu to the ribbon in the maximize handler does not have effects.<br />- Fixed a series of drawing errors under Windows XP (or win7 with classic theme).<br />- Fixed: When ribbon loses focus for another window (toolbar, for example) and mouse passes over the tabs of ribbonpage, the tabs of ribbonpages are not drawn correctly.<br />- Fixed an issue with regards to the command execution by hotkeys, if QAction is not visible.<br /><br />- Fixed a bug - StatusBar's accelerator does not showing correctly.<br />- Implemented a lot of small and large patches to increase stability and improve performance characteristics.</p>
+<p><strong>Version 2.5</strong></p>
+<p>- Implemented minimize/maximize mechanism of the Ribbon Bar relative to the main window of the application.<br />- Performed refactoring of the Ribbon styles.<br />- Added a set of the Microsoft Office 2010 styles.<br />- Added Windows 7 Scenik style.<br />- Fixed known bugs.</p>
+<p><strong>Version 2.4</strong></p>
+<p>- Fixed a problem in the function setVisible of the group in its reduction mode.<br />- Fixed a crash of the application without system button.<br />- Fixed the application fails under Windows XP operating system if setFrameThemeEnabled has been called.<br />- Fixed crash of the application after cleaning ribbon from the pages.<br />- Fixed a rendering problem of the checked feature in the popup-menu if the item's icons is exists.<br />- Fixed a rendering problem of png-images for different sizes (which are defined in the QAction) for the ribbon and for the popup.<br />- Fixed a problem switching tabs on the ribbon.<br />- Fixed a bug in group's layouter when you install the text for the button beside the icon (setIconText).<br />- Fixed problem with system button and Qt::ToolButtonFollowStyle style.<br />- Fixed problem with calculating the size of main window title when the application starts (the coordinates of the title overlapped the tabs and nothing worked). The problem was solved only if you resize the main window.<br />- Fixed many other bugs that are not critical. </p>
+<p><strong>Version 2.3</strong></p>
+<p>- Switching to the MSVS2010.<br />- Added support for AIR tehnology for Windows 7. (Windows platform only).<br />- Support for Windows color scheme, both classical and standard Windows 7 (Windows platform only).<br />- Added the ability to place a SYSTEM (round Office button) on the title of the main window (Windows platform only).<br />- Added the ability to place the Quick Access Toolbar in main window title (Windows platform only).<br />- Added ability to display the Contextual Tab on the main window title (Windows platform only).<br />- Replaced font for default MS Office font.<br />- A more accurate calculation of the ribbon bar layouter height.<br />- Developed the ability to create a custom main window title to locate in it the SYSTEM button Quick Access Toolbar, as well as Contextual Tabs for ALL PLATFORMS.<br />- Added the ability to scale the ribbon bar with different DPI font installed in the system.<br />- Added ability to display the standard MS Office 2007 background in the main window, which contains QtitanRibbon bar.<br />                <br />- Bugfix. Function isVisible() of the ribbon page worked is not properly<br />- Bugfix. Drawing items of the QListWidget and QTreeWidget is not correct in Office 2007 style.<br />- Bugfix. Placing the text in the header of the group (the tail of the letter "g" was cut off).<br />- Fixed a problem with setChecked in the QMenu items.<br />- Bugfix. The background of the tab page is not being drawn (should be the same colour as the tab). <br />- Bugfix. The custom widget factory registered for widgets of class Qtitan::RibbonPage returned 0.<br />- Bugfix. The group layoutis not correctly converted when you setup a text for a button via a QAction.<br />- Bugfix. The Office 2007 style does not apply for elements in the QWebView.</p>
+<p><strong>Version 2.2</strong></p>
+<p>- Bugfix - loyaut of the quick access bar buttons.<br />- Bugfix - visual display of some controls.<br />- Mac OS X font for ribbon control.<br />- Option button has been added.<br />- System menu button. Has the ability to add page to display a list of recently used files.<br />- Has been strengthened RibbonStyle and Office2007Style styles for use in UI dialogs.</p>
+<p><strong>Version 2.1</strong></p>
+<p>- Bugfixes for the painting mechanism under Mac OS X</p>
+<p><strong>Version 2.0</strong></p>
+<p>- Added control - Ribbon gallery.<br />- Added control - Contextual tab (tab can be green, blue. red, yellow, cyan, purple and orange).<br />- Added White style to the Office 2007 UI style collection.<br />- Fixed bug - layout elements on the ribbon.<br />- Many small fixes to improve stability.<br />- Implemented the possibility to create a ribbon page with null parent.<br />- Improved API.<br />- Updated documentation.</p>
+<p><strong>Version 1.0</strong></p>
+<p>- Initial release</p>
+<p> </p>
+
+    </div>
+<!-- @@@qtitanribbonchangelog.html -->
+        <!-- /div -->
+        <div class="feedback t_button">
+          </div>
+      </div>
+    </div>
+    <div class="ft">
+      <span></span>
+    </div>
+  </div> 
+  <div class="footer">
+    <p>
+      <acronym title="Copyright">&copy;</acronym> 2009-2013 Developer Machines<br><br>      Nokia, Qt and their respective logos are trademarks of Nokia Corporation 
+      in Finland and/or other countries worldwide.</p>
+    <p>
+      All other trademarks are property of their respective owners. <a title="Privacy Policy"
+        href="http://www.devmachines.com/company/privacy-policy.html">Privacy Policy</a></p>
+  </div>
+  <div id="blurpage">
+  </div>
+  <!--/div -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+  <script src="scripts/functions.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17002018-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
+</body>
+</html>

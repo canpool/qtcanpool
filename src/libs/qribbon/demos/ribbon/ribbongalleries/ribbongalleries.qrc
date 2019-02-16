@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+      <file>res/largeStyleButton.png</file>
+      <file>res/largeTable.png</file>
+      <file>res/galleryStyles.png</file>
+      <file>res/smallRedo.png</file>
+      <file>res/smallNew.png</file>
+      <file>res/smallOpen.png</file>
+      <file>res/smallSave.png</file>
+      <file>res/smallUndo.png</file>
+      <file>res/close.png</file>
+      <file>res/new.png</file>
+      <file>res/open.png</file>
+      <file>res/print.png</file>
+      <file>res/printPreview.png</file>
+      <file>res/save.png</file>
+      <file>res/largeColorButton.png</file>
+      <file>res/largeUndo.png</file>
+      <file>res/galleryShapes.png</file>
+      <file>../../shared/res/about.png</file>
+      <file>../../shared/res/qtitanlogo32x32.png</file>
+      <file>../../shared/res/qtitan.png</file>
+      <file>../../shared/res/ribbonMaximize.png</file>
+      <file>../../shared/res/ribbonMinimize.png</file>
+    </qresource>
+</RCC>

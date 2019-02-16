@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+      <file>../../shared/res/about.png</file>
+      <file>res/cross.ico</file>
+      <file>res/flag.ico</file>
+      <file>res/letter.ico</file>
+      <file>res/close.ico</file>
+      <file>res/logooffice.bmp</file>
+      <file>res/devmachines.png</file>
+      <file>res/word2000.ico</file>
+      <file>res/logoMSN.png</file>
+      <file>res/titleMSN.png</file>
+      <file>res/closeMSN.png</file>
+    </qresource>
+</RCC>
