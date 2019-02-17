@@ -8,7 +8,7 @@
 #include "cwidgets.h"
 #include "ctablewidget.h"
 
-#include "qcustomplot/qcustomchart.h"
+#include "qcustomchart.h"
 
 CustomMode::CustomMode(QWidget *parent)
     : IMode(parent)
