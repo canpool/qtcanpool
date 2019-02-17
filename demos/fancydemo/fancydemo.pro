@@ -34,7 +34,7 @@ INCLUDEPATH += .. $$TOPDIR/src/libs
 
 include(fancydemo-src.pri)
 include(fancywidgets/fancywidgets.pri)
-include(qcustomplot/qcustomplot.pri)
+include($$TOPDIR/src/modules/qcustomplot/qcustomplot.pri)
 include($$TOPDIR/src/modules/modules.pri)
 
 win32{

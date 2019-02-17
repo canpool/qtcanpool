@@ -1,9 +1,14 @@
 greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 
 HEADERS += \
-    $$PWD/qcustomplot.h
+    $$PWD/qcustomplot.h \
+    $$PWD/qcustomchart.h
 
 SOURCES += \
-    $$PWD/qcustomplot.cpp
+    $$PWD/qcustomplot.cpp \
+    $$PWD/qcustomchart.cpp
+
+RESOURCES += \
+    $$PWD/chart.qrc
 
 
