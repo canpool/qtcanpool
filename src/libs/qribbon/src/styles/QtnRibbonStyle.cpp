@@ -3386,7 +3386,7 @@ bool RibbonStyle::drawPanelButtonTool(const QStyleOption* opt, QPainter* p, cons
         {
             QRect rcSrc = getSource(soImageIndicator.rect(), state, 5);
             QRect rcGlyph(QPoint((toolbutton->rect.right() + toolbutton->rect.left() - rcSrc.width()+1) / 2, (toolbutton->rect.top() + toolbutton->rect.bottom() - rcSrc.height()+2) / 2), rcSrc.size());
-            drawImage(soImageIndicator, *p, rcGlyph, rcSrc, QRect(QPoint(0, 0), QPoint(0, 0)), QColor(0xFF, 0, 0xFF));
+//            drawImage(soImageIndicator, *p, rcGlyph, rcSrc, QRect(QPoint(0, 0), QPoint(0, 0)), QColor(0xFF, 0, 0xFF));
         }
         return true;
     }
