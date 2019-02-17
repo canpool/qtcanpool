@@ -127,7 +127,7 @@ FancyBannerArrow::FancyBannerArrow(ArrowType type, QWidget *parent)
     m_bMouseHover = false;
     m_bMousePress = false;
     m_type = type;
-    setFixedSize(12,20);
+    setFixedSize(12, 20);
 }
 
 FancyBannerArrow::~FancyBannerArrow()
@@ -179,18 +179,16 @@ void FancyBannerArrow::paintEvent(QPaintEvent *event)
     painter.setPen(pen);
     int margin = 2;
     switch (m_type) {
-    case Right:
-    {
-        painter.drawLine(QPointF(margin, margin), QPointF(this->width()-margin, this->height()/2));
-        painter.drawLine(QPointF(margin, this->height()-margin), QPointF(this->width()-margin, this->height()/2));
-    }break;
-    case Left:
-    {
-        painter.drawLine(QPointF(this->width()-margin, margin), QPointF(margin, this->height()/2));
-        painter.drawLine(QPointF(this->width()-margin, this->height()-margin), QPointF(margin, this->height()/2));
-    }break;
-    default:
-        break;
+        case Right:
+        {
+            painter.drawLine(QPointF(margin, margin), QPointF(this->width()-margin, this->height()/2));
+            painter.drawLine(QPointF(margin, this->height()-margin), QPointF(this->width()-margin, this->height()/2));
+        }break;
+        case Left:
+        {
+            painter.drawLine(QPointF(this->width()-margin, margin), QPointF(margin, this->height()/2));
+            painter.drawLine(QPointF(this->width()-margin, this->height()-margin), QPointF(margin, this->height()/2));
+        }break;
     }
     QWidget::paintEvent(event);
 }
@@ -250,7 +248,7 @@ void FancyBannerPage::paintEvent(QPaintEvent *event)
     if(!m_bActive){
         QPainter painter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(10,10,10, 100));
+        painter.setBrush(QColor(0, 0, 0, 150));
         painter.drawRect(rect());
     }
 }
@@ -293,29 +291,39 @@ private:
     FancyBannerPage *m_rightPage;
     FancyBannerArrow *m_leftArrow;
     FancyBannerArrow *m_rightArrow;
-    QSize m_size;
+
+    QRect m_centerRect;
+    QRect m_leftRect;
+    QRect m_rightRect;
 };
+
+#define PAGE_WIDTH          500
+#define PAGE_HEIGHT         200
+#define PAGE_WIDTH_OFFSET   130
+#define PAGE_HEIGHT_OFFSET  12
 
 FancyBannerView::FancyBannerView(QWidget *parent)
     : QWidget(parent)
 {
-    m_size = QSize(540, 200);
-
-    m_leftPage = new FancyBannerPage();
-    m_centerPage = new FancyBannerPage();
+    m_leftPage = new FancyBannerPage(this);
+    m_centerPage = new FancyBannerPage(this);
     m_centerPage->setActive(true);
-    m_rightPage = new FancyBannerPage();
+    m_rightPage = new FancyBannerPage(this);
     connect(m_leftPage, SIGNAL(clicked()), this, SLOT(slotPageClicked()));
     connect(m_centerPage, SIGNAL(clicked()), this, SLOT(slotPageClicked()));
     connect(m_rightPage, SIGNAL(clicked()), this, SLOT(slotPageClicked()));
 
-    m_centerPage->setFixedSize(m_size);
-    m_leftPage->setMinimumWidth(m_size.width()/4);
-    m_leftPage->setMaximumWidth(m_size.width()*2/3);
-    m_leftPage->setFixedHeight(m_size.height()-12);
-    m_rightPage->setMinimumWidth(m_size.width()/4);
-    m_rightPage->setMaximumWidth(m_size.width()*2/3);
-    m_rightPage->setFixedHeight(m_size.height()-12);
+//    this->setFixedSize(PAGE_WIDTH+PAGE_WIDTH_OFFSET*2+10,PAGE_HEIGHT);
+    this->setMinimumWidth(PAGE_WIDTH+PAGE_WIDTH_OFFSET*2+10);
+    this->setFixedHeight(PAGE_HEIGHT);
+
+    m_centerPage->setFixedSize(PAGE_WIDTH, PAGE_HEIGHT);
+
+    m_leftPage->setFixedWidth(PAGE_WIDTH);
+    m_leftPage->setFixedHeight(PAGE_HEIGHT-PAGE_HEIGHT_OFFSET);
+
+    m_rightPage->setFixedWidth(PAGE_WIDTH);
+    m_rightPage->setFixedHeight(PAGE_HEIGHT-PAGE_HEIGHT_OFFSET);
 
     m_leftArrow = new FancyBannerArrow(FancyBannerArrow::Left, this);
     m_rightArrow = new FancyBannerArrow(FancyBannerArrow::Right, this);
@@ -323,23 +331,17 @@ FancyBannerView::FancyBannerView(QWidget *parent)
     connect(m_leftArrow, SIGNAL(clicked()), this, SLOT(slotArrowClicked()));
     connect(m_rightArrow, SIGNAL(clicked()), this, SLOT(slotArrowClicked()));
 
-//    QHBoxLayout *leftLayout = new QHBoxLayout();
-//    leftLayout->addWidget(m_leftArrow, 0, Qt::AlignVCenter|Qt::AlignLeft);
-//    m_leftPage->setLayout(leftLayout);
-//    QHBoxLayout *rightLayout = new QHBoxLayout();
-//    rightLayout->addWidget(m_rightArrow, 0, Qt::AlignVCenter|Qt::AlignRight);
-//    m_rightPage->setLayout(rightLayout);
+    const int x = this->x() + this->width()/2 - PAGE_WIDTH/2 - PAGE_WIDTH_OFFSET;
+    const int y = this->y();
 
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->setSpacing(0);
-    layout->setMargin(0);
-    layout->addStretch(1);
-    layout->addWidget(m_leftPage, 0, Qt::AlignBottom);
-    layout->addWidget(m_centerPage, 0, Qt::AlignBottom);
-    layout->addWidget(m_rightPage, 0, Qt::AlignBottom);
-    layout->addStretch(1);
-    setLayout(layout);
+    m_leftPage->move(x, y+PAGE_HEIGHT_OFFSET);
+    m_centerPage->move(x+PAGE_WIDTH_OFFSET, y);
+    m_rightPage->move(x+PAGE_WIDTH_OFFSET*2, y+PAGE_HEIGHT_OFFSET);
+    m_centerPage->raise();
 
+    m_centerRect = m_centerPage->geometry();
+    m_leftRect = m_leftPage->geometry();
+    m_rightRect = m_rightPage->geometry();
 }
 
 FancyBannerView::~FancyBannerView()
@@ -364,56 +366,44 @@ void FancyBannerView::setRightPixmap(const QPixmap &pixmap)
 
 void FancyBannerView::startAnimation(int direction)
 {
-    QRect leftRect = m_leftPage->geometry();
-    QRect centerRect = m_centerPage->geometry();
-    QRect rightRect = m_rightPage->geometry();
-
-    QRect tmpRect = QRect(centerRect.x(), centerRect.y()+12,
-                          centerRect.width(), centerRect.height()-12);
+    QRect tmpRect = QRect(m_centerRect.x(), m_centerRect.y()+12,
+                          m_centerRect.width(), m_centerRect.height()-12);
 
     QPropertyAnimation *m_leftAnimation = new QPropertyAnimation(m_leftPage, "geometry");
-    m_leftAnimation->setDuration(100);
-    m_leftAnimation->setEasingCurve(QEasingCurve::Linear);
-
     QPropertyAnimation *m_centerAnimation = new QPropertyAnimation(m_centerPage, "geometry");
-    m_centerAnimation->setDuration(100);
-    m_centerAnimation->setEasingCurve(QEasingCurve::Linear);
-
     QPropertyAnimation *m_rightAnimation = new QPropertyAnimation(m_rightPage, "geometry");
-    m_rightAnimation->setDuration(100);
-    m_rightAnimation->setEasingCurve(QEasingCurve::Linear);
+
+    m_leftAnimation->setDuration(200);
+    m_centerAnimation->setDuration(250);
+    m_rightAnimation->setDuration(200);
 
     if(direction < 0){
-        m_leftAnimation->setStartValue(rightRect);
-        m_leftAnimation->setEndValue(leftRect);
-        m_centerAnimation->setStartValue(leftRect);
-        m_centerAnimation->setEndValue(centerRect);
-        m_rightAnimation->setStartValue(tmpRect);
-        m_rightAnimation->setEndValue(rightRect);
+        m_centerAnimation->setStartValue(m_leftRect);
+        m_centerAnimation->setEndValue(m_centerRect);
+        m_rightPage->raise();
     }else if(direction > 0){
-//        tmpRect = QRect(tmpRect.x()+tmpRect.width()/8, rightRect.y(),
-//                           rightRect.width(), rightRect.height());
-        m_leftAnimation->setStartValue(tmpRect);
-//        tmpRect = QRect(leftRect.x(), leftRect.y(),
-//                           leftRect.width()*2, leftRect.height());
-        m_leftAnimation->setEndValue(leftRect);
-        m_centerAnimation->setStartValue(rightRect);
-        m_centerAnimation->setEndValue(centerRect);
-//        m_rightAnimation->setStartValue(leftRect);
-        tmpRect = QRect(rightRect.x()+rightRect.x()/2-leftRect.x(), rightRect.y(),
-                           rightRect.width(), rightRect.height());
-        m_rightAnimation->setStartValue(tmpRect);
-        m_rightAnimation->setEndValue(rightRect);
+        m_centerAnimation->setStartValue(m_rightRect);
+        m_centerAnimation->setEndValue(m_centerRect);
+        m_leftPage->raise();
     }
+    m_leftAnimation->setStartValue(tmpRect);
+    m_leftAnimation->setEndValue(m_leftRect);
+    m_rightAnimation->setStartValue(tmpRect);
+    m_rightAnimation->setEndValue(m_rightRect);
+    m_centerPage->raise();
+
+    m_leftArrow->raise();
+    m_rightArrow->raise();
+
+    m_leftAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     m_rightAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     m_centerAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-    m_leftAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void FancyBannerView::setPagePixmap(FancyBannerPage *page, const QPixmap &pixmap)
 {
     if(page){
-        page->setPixmap(pixmap.scaled(m_size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        page->setPixmap(pixmap.scaled(QSize(PAGE_WIDTH, PAGE_HEIGHT), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     }
 }
 
@@ -422,9 +412,9 @@ void FancyBannerView::setArrowHidden(bool hidden)
     m_leftArrow->setHidden(hidden);
     m_rightArrow->setHidden(hidden);
     if(!hidden){
-        m_leftArrow->move(m_leftPage->x()+8, m_leftPage->y()+(m_leftPage->height()-m_leftArrow->height())/2);
-        m_rightArrow->move(m_rightPage->x()+m_rightPage->width()-m_rightArrow->width()-8,
-                           m_rightPage->y()+(m_rightPage->height()-m_rightArrow->height())/2);
+        m_leftArrow->move(m_leftRect.x()+8, m_leftRect.y()+(m_leftRect.height()-m_leftArrow->height())/2);
+        m_rightArrow->move(m_rightRect.x()+m_rightRect.width()-m_rightArrow->width()-8,
+                           m_rightRect.y()+(m_rightRect.height()-m_rightArrow->height())/2);
         m_leftArrow->raise();
         m_rightArrow->raise();
     }
@@ -543,9 +533,18 @@ void FancyBannerPrivate::init()
     bottomLayout->addLayout(m_indLayout);
     bottomLayout->addStretch();
 
+    QHBoxLayout *viewLayout = new QHBoxLayout();
+    viewLayout->setSpacing(0);
+    viewLayout->setMargin(0);
+    viewLayout->addStretch();
+    viewLayout->addWidget(m_view);
+    viewLayout->addStretch();
+
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(m_view);
+    layout->addStretch();
+    layout->addLayout(viewLayout);
     layout->addLayout(bottomLayout);
+    layout->addStretch();
     q->setLayout(layout);
 }
 
@@ -645,7 +644,6 @@ void FancyBannerPrivate::slotTimeOut()
     switchPage(1);
 }
 
-
 FancyBanner::FancyBanner(QWidget *parent)
     : QWidget(parent), d(new FancyBannerPrivate())
 {
@@ -694,7 +692,6 @@ void FancyBanner::setIndicatorBackColor(QColor color)
 
 void FancyBanner::paintEvent(QPaintEvent *event)
 {
-
     QWidget::paintEvent(event);
 }
 
