@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/chart">
+        <file alias="2d">images/2d.png</file>
+        <file alias="3d">images/3d.png</file>
+        <file alias="bar">images/bar.png</file>
+        <file alias="data">images/data.png</file>
+        <file alias="download">images/download.png</file>
+        <file alias="line">images/line.png</file>
+        <file alias="refresh">images/refresh.png</file>
+    </qresource>
+</RCC>
