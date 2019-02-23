@@ -27,7 +27,7 @@
 class FancyDialogPrivate : public QObject
 {
 public:
-    FancyDialogPrivate(QObject *parent = 0);
+    FancyDialogPrivate(QObject *parent = nullptr);
 
     FancyBar *fancyBar;
     QWidget *centralWidget;
@@ -36,8 +36,8 @@ public:
 FancyDialogPrivate::FancyDialogPrivate(QObject *parent)
     : QObject(parent)
 {
-    fancyBar = 0;
-    centralWidget = 0;
+    fancyBar = nullptr;
+    centralWidget = nullptr;
 }
 
 FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)

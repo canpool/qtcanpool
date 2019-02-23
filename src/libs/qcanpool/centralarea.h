@@ -27,7 +27,7 @@ class QCANPOOL_SHARED_EXPORT CentralArea : public QScrollArea
 {
     Q_OBJECT
 public:
-    explicit CentralArea(QWidget *parent = 0);
+    explicit CentralArea(QWidget *parent = nullptr);
 };
 
 #endif // CENTRALAREA_H

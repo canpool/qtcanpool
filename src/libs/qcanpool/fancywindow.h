@@ -29,7 +29,7 @@ class QCANPOOL_SHARED_EXPORT FancyWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit FancyWindow(QWidget *parent = 0);
+    explicit FancyWindow(QWidget *parent = nullptr);
     ~FancyWindow();
 
     FancyBar* fancyBar() const;

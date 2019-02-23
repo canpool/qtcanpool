@@ -429,7 +429,7 @@ public:
 class QWD_LIB_DECL QtWordTable
 {
 public:
-    QtWordTable(QAxObject *word = 0, QAxObject *table = 0);
+    QtWordTable(QAxObject *word = nullptr, QAxObject *table = nullptr);
     virtual ~QtWordTable();
     QtWordTable& operator =(const QtWordTable &other);
 
@@ -537,8 +537,8 @@ class QWD_LIB_DECL QtWord : public QObject
 {
     Q_OBJECT
 public:
-    explicit QtWord(QObject *parent = 0);
-    QtWord(const QString &name, QObject *parent = 0);
+    explicit QtWord(QObject *parent = nullptr);
+    QtWord(const QString &name, QObject *parent = nullptr);
     ~QtWord();
 
     bool open(bool visible = false);

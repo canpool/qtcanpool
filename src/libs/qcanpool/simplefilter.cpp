@@ -26,7 +26,7 @@
 #include <QHBoxLayout>
 #include <QTreeView>
 
-enum Type{
+enum Type {
     NoneType,
     TableType,
     TreeType,
@@ -37,7 +37,7 @@ class SimpleFilterPrivate : public QObject
 {
     Q_OBJECT
 public:
-    explicit SimpleFilterPrivate(QObject *parent = 0);
+    explicit SimpleFilterPrivate(QObject *parent = nullptr);
     void init();
 
     /// tree
@@ -73,9 +73,9 @@ public slots:
 };
 
 SimpleFilterPrivate::SimpleFilterPrivate(QObject *parent)
-    : QObject(parent),m_table(0),m_tree(0),
-      m_view(0),m_model(0),
-      m_lineEdit(0),q(0),m_type(NoneType)
+    : QObject(parent), m_table(nullptr), m_tree(nullptr),
+      m_view(nullptr) ,m_model(nullptr),
+      m_lineEdit(nullptr),  q(nullptr), m_type(NoneType)
 {
 
 }
@@ -107,7 +107,7 @@ void SimpleFilterPrivate::showTreeItem(QTreeWidgetItem *item)
 
 void SimpleFilterPrivate::parentExpand(QTreeWidgetItem *item)
 {
-    if(item->parent() != NULL){
+    if(item->parent() != nullptr){
         QTreeWidgetItem *parentItem = item->parent();
         if(parentItem->isHidden()){
             parentItem->setHidden(false);
@@ -159,7 +159,7 @@ void SimpleFilterPrivate::searchChild(QTreeWidgetItem *item, const QString &text
 
 void SimpleFilterPrivate::showTableItems()
 {
-    if(m_table == 0) return;
+    if(m_table == nullptr) return;
     for(int i = 0; i < m_table->rowCount(); i++){
         m_table->showRow(i);
     }
@@ -167,7 +167,7 @@ void SimpleFilterPrivate::showTableItems()
 
 void SimpleFilterPrivate::search(const QString &text)
 {
-    if(m_table == 0) return;
+    if(m_table == nullptr) return;
     for(int i = 0; i < m_table->rowCount(); i++){
         int j;
         for(j = 0; j < m_table->columnCount(); j++){

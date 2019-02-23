@@ -36,7 +36,7 @@ class IModeButton : public QToolButton
 public:
     enum ButtonType { Mode, Action};
 public:
-    explicit IModeButton(const QIcon &icon, QWidget *parent = 0);
+    explicit IModeButton(const QIcon &icon, QWidget *parent = nullptr);
     ~IModeButton();
 
     void select(bool selected);

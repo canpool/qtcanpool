@@ -70,7 +70,7 @@ public:
     enum TabStyle {IconOnly, TextOnly, TextBesideIcon, TextUnderIcon};
     enum CornerPosition {Left, Top, Right, Bottom};
 
-    explicit FancyTabWidget(QWidget *parent = 0);
+    explicit FancyTabWidget(QWidget *parent = nullptr);
     ~FancyTabWidget();
 
     void insertTab(int index, QWidget *tab, const QIcon &icon, const QString &label, bool hasMenu);

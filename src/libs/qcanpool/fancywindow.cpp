@@ -37,7 +37,7 @@ public:
 
 FancyWindowPrivate::FancyWindowPrivate()
 {
-    fancyBar = 0;
+    fancyBar = nullptr;
 }
 
 FancyWindow::FancyWindow(QWidget *parent)

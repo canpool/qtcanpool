@@ -45,7 +45,7 @@ QtWordTable &QtWordTable::operator =(const QtWordTable &other)
 
 bool QtWordTable::isValid()
 {
-    if(m_word == 0 || m_table == 0)
+    if(m_word == nullptr || m_table == nullptr)
         return false;
     return true;
 }
@@ -665,20 +665,20 @@ QtWord::QtWord(QObject *parent)
     : QObject(parent)
 {
     m_word = new QAxObject();
-    m_document = NULL;
+    m_document = nullptr;
     m_bOpened = false;
     m_fileName = QString("");
-    OleInitialize(0);
+    OleInitialize(nullptr);
 }
 
 QtWord::QtWord(const QString &name, QObject *parent)
     : QObject(parent)
 {
     m_word = new QAxObject();
-    m_document = NULL;
+    m_document = nullptr;
     m_bOpened = false;
     m_fileName = name;
-    OleInitialize(0);
+    OleInitialize(nullptr);
 }
 
 QtWord::~QtWord()
@@ -740,9 +740,9 @@ bool QtWord::close()
     if(m_word){
         delete m_word;
     }
-    m_word = NULL;
-    m_document = NULL;
-    m_documents = NULL;
+    m_word = nullptr;
+    m_document = nullptr;
+    m_documents = nullptr;
     m_bOpened = false;
     return true;
 }

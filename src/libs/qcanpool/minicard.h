@@ -49,7 +49,7 @@ class QCANPOOL_SHARED_EXPORT MiniCard : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MiniCard(QWidget *parent = 0);
+    explicit MiniCard(QWidget *parent = nullptr);
 
     void setTitle(const QString &text);
     void setInfo(const QString &text);

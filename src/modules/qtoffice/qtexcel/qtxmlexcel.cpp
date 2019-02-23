@@ -47,7 +47,7 @@ Worksheet::~Worksheet()
 
 }
 
-QtXmlExcel* QtXmlExcel::m_instance = 0;
+QtXmlExcel* QtXmlExcel::m_instance = nullptr;
 
 QtXmlExcel::QtXmlExcel(QObject *parent)
     : QObject(parent)
@@ -67,7 +67,7 @@ void QtXmlExcel::close()
 {
     if(m_instance){
         delete m_instance;
-        m_instance = 0;
+        m_instance = nullptr;
     }
 }
 

@@ -34,7 +34,7 @@ class TinyTab : public QToolButton
     Q_OBJECT
 public:
     enum SlidePosition { Left, Bottom, Right };
-    explicit TinyTab(QWidget *parent = 0);
+    explicit TinyTab(QWidget *parent = nullptr);
 
     void select(bool selected);
 
@@ -179,8 +179,7 @@ void TinyTab::painterSlide(QColor &color)
         p1 = this->rect().topRight();
         p2 = this->rect().bottomRight();
         break;
-    default:
-        break;
+    /*default:*/
     }
     painter.drawLine(p1, p2);
 }
@@ -242,7 +241,7 @@ class TinyTabBar : public QWidget
     Q_OBJECT
 public:
     enum Direction {Horizontal, Vertical};
-    explicit TinyTabBar(QWidget *parent = 0);
+    explicit TinyTabBar(QWidget *parent = nullptr);
 
     void setDirection(Direction direction);
     void setSlidePosition(TinyTab::SlidePosition pos);
@@ -290,7 +289,7 @@ TinyTabBar::TinyTabBar(QWidget *parent)
     m_direction = Horizontal;
     m_currentIndex = -1;
     m_tabs.clear();
-    m_layout = 0;
+    m_layout = nullptr;
 
     m_layout = new QBoxLayout(QBoxLayout::LeftToRight);
     m_layout->setMargin(0);
@@ -317,7 +316,7 @@ void TinyTabBar::setDirection(TinyTabBar::Direction direction)
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         break;
     case Vertical:
-    default:
+    /*default:*/
         layDirection = QBoxLayout::TopToBottom;
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         break;
@@ -448,7 +447,7 @@ void TinyTabBar::setCurrentIndex(int index)
 void TinyTabBar::switchTab()
 {
     TinyTab *tab = qobject_cast<TinyTab*>(sender());
-    if(tab == 0) return;
+    if(tab == nullptr) return;
     int index = m_tabs.indexOf(tab);
     if(index == m_currentIndex) return;
     if(m_currentIndex != -1){
@@ -466,7 +465,7 @@ class TinyTabWidgetPrivate : public QObject
 {
     Q_OBJECT
 public:
-    explicit TinyTabWidgetPrivate(QObject *parent = 0);
+    explicit TinyTabWidgetPrivate(QObject *parent = nullptr);
     void updateTabBarPosition();
     void init();
 
@@ -480,8 +479,8 @@ public:
 };
 
 TinyTabWidgetPrivate::TinyTabWidgetPrivate(QObject *parent)
-    : QObject(parent), m_tabBar(0), m_stack(0), q(0),
-      m_layout(0), m_pos(TinyTabWidget::North)
+    : QObject(parent), m_tabBar(nullptr), m_stack(nullptr), q(nullptr),
+      m_layout(nullptr), m_pos(TinyTabWidget::North)
 {
 
 }
@@ -509,11 +508,7 @@ void TinyTabWidgetPrivate::updateTabBarPosition()
         m_tabBar->setSlidePosition(TinyTab::Right);
         m_layout->setDirection(QBoxLayout::RightToLeft);
         break;
-    default:
-        m_tabBar->setDirection(TinyTabBar::Horizontal);
-        m_tabBar->setSlidePosition(TinyTab::Bottom);
-        m_layout->setDirection(QBoxLayout::TopToBottom);
-        break;
+    /*default:*/
     }
 }
 

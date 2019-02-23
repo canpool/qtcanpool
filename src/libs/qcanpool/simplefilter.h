@@ -32,9 +32,9 @@ class QCANPOOL_SHARED_EXPORT SimpleFilter : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SimpleFilter(QTableWidget *table, QWidget *parent = 0);
-    explicit SimpleFilter(QTreeWidget *tree, QWidget *parent = 0);
-    explicit SimpleFilter(QTreeView *view, QWidget *parent = 0);
+    explicit SimpleFilter(QTableWidget *table, QWidget *parent = nullptr);
+    explicit SimpleFilter(QTreeWidget *tree, QWidget *parent = nullptr);
+    explicit SimpleFilter(QTreeView *view, QWidget *parent = nullptr);
 
     void setTableWidget(QTableWidget *table);
     void setTreeWidget(QTreeWidget *tree);

@@ -28,7 +28,7 @@ class FancyNavButton : public QToolButton
 {
     Q_OBJECT
 public:
-    explicit FancyNavButton(QWidget *parent = 0);
+    explicit FancyNavButton(QWidget *parent = nullptr);
 
     enum ButtonType { Button, Action};
 

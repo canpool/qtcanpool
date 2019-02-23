@@ -56,8 +56,8 @@ public:
 };
 
 FancyTabWidgetPrivate::FancyTabWidgetPrivate()
-    : m_tabBar(0), m_stack(0), m_statusBar(0), m_center(0),m_topCorner(0),
-      q(0), m_layout(0), m_pos(FancyTabWidget::West)
+    : m_tabBar(nullptr), m_stack(nullptr), m_statusBar(nullptr), m_center(nullptr),
+      m_topCorner(nullptr), q(nullptr), m_layout(nullptr), m_pos(FancyTabWidget::West)
 {}
 
 FancyTabWidgetPrivate::~FancyTabWidgetPrivate()
@@ -82,10 +82,7 @@ void FancyTabWidgetPrivate::updateTabBarPosition()
         m_tabBar->setDirection(FancyTabBar::Vertical);
         m_layout->setDirection(QBoxLayout::RightToLeft);
         break;
-    default:
-        m_tabBar->setDirection(FancyTabBar::Vertical);
-        m_layout->setDirection(QBoxLayout::LeftToRight);
-        break;
+    /*default:*/
     }
 }
 
@@ -260,7 +257,7 @@ int FancyTabWidget::currentIndex() const
 
 QStatusBar *FancyTabWidget::statusBar() const
 {
-    if(d->m_statusBar == 0){
+    if(d->m_statusBar == nullptr){
         d->m_statusBar = new QStatusBar;
         d->m_center->layout()->addWidget(d->m_statusBar);
     }
@@ -274,17 +271,18 @@ FancyTabBar *FancyTabWidget::tabBar() const
 
 void FancyTabWidget::setTabStyle(FancyTabWidget::TabType type, FancyTabWidget::TabStyle style)
 {
-    d->m_tabBar->setTabStyle((FancyTabBar::TabType)type, (FancyTabBar::TabStyle)style);
+    d->m_tabBar->setTabStyle(static_cast<FancyTabBar::TabType>(type),
+                             static_cast<FancyTabBar::TabStyle>(style));
 }
 
 void FancyTabWidget::setTabFont(FancyTabWidget::TabType type, QFont &font)
 {
-    d->m_tabBar->setTabFont((FancyTabBar::TabType)type, font);
+    d->m_tabBar->setTabFont(static_cast<FancyTabBar::TabType>(type), font);
 }
 
 void FancyTabWidget::setTabSpace(FancyTabWidget::TabType type, int space)
 {
-    d->m_tabBar->setTabSpace((FancyTabBar::TabType)type, space);
+    d->m_tabBar->setTabSpace(static_cast<FancyTabBar::TabType>(type), space);
 }
 
 void FancyTabWidget::setTabIconSize(QSize size)
@@ -294,7 +292,7 @@ void FancyTabWidget::setTabIconSize(QSize size)
 
 int FancyTabWidget::addAction(QAction *action, FancyTabWidget::ActionPosition position)
 {
-    return d->m_tabBar->addAction(action, (FancyTabBar::ActionPosition)position);
+    return d->m_tabBar->addAction(action, static_cast<FancyTabBar::ActionPosition>(position));
 }
 
 void FancyTabWidget::removeAction(QAction *action)
@@ -304,12 +302,12 @@ void FancyTabWidget::removeAction(QAction *action)
 
 void FancyTabWidget::setActionStyle(QAction *action, FancyTabWidget::TabStyle style)
 {
-    d->m_tabBar->setActionStyle(action, (FancyTabBar::TabStyle)style);
+    d->m_tabBar->setActionStyle(action, static_cast<FancyTabBar::TabStyle>(style));
 }
 
 QSplitter* FancyTabWidget::addCornerWidget(QWidget *widget, FancyTabWidget::CornerPosition position)
 {
-    QSplitter *splitter = NULL;
+    QSplitter *splitter = nullptr;
     switch (position) {
     case Left:
     {
@@ -328,8 +326,7 @@ QSplitter* FancyTabWidget::addCornerWidget(QWidget *widget, FancyTabWidget::Corn
         d->m_bottomSplitter->addWidget(widget);
         splitter = d->m_bottomSplitter;
         break;
-    default:
-        break;
+    /*default:*/
     }
     return splitter;
 }

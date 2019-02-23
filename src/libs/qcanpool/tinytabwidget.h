@@ -28,7 +28,7 @@ class QCANPOOL_SHARED_EXPORT TinyTabWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TinyTabWidget(QWidget *parent = 0);
+    explicit TinyTabWidget(QWidget *parent = nullptr);
     ~TinyTabWidget();
 
     int addTab(QWidget *page, const QString &label);

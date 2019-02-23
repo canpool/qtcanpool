@@ -28,7 +28,7 @@ class FancyTab : public QToolButton
     Q_OBJECT
 public:
     enum TabType { Mode, Action };
-    explicit FancyTab(QWidget *parent = 0);
+    explicit FancyTab(QWidget *parent = nullptr);
     ~FancyTab();
 
     void select(bool selected);

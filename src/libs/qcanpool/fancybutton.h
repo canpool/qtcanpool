@@ -27,7 +27,7 @@ class FancyButton : public QToolButton
 {
     Q_OBJECT
 public:
-    explicit FancyButton(QWidget *parent = 0);
+    explicit FancyButton(QWidget *parent = nullptr);
     ~FancyButton();
 
     void select(bool selected);

@@ -73,20 +73,20 @@ FancyTabBarPrivate::FancyTabBarPrivate()
     m_actionTabs.clear();
     m_actionTabMap.clear();
 
-    m_layout = 0;
-    m_modeLayout = 0;
-    m_menuModeLayout = 0;
-    m_frontActionLayout = 0;
-    m_middleActionLayout = 0;
-    m_backActionLayout = 0;
+    m_layout = nullptr;
+    m_modeLayout = nullptr;
+    m_menuModeLayout = nullptr;
+    m_frontActionLayout = nullptr;
+    m_middleActionLayout = nullptr;
+    m_backActionLayout = nullptr;
 
-    m_headSpacer = 0;
-    m_splitLine = 0;
+    m_headSpacer = nullptr;
+    m_splitLine = nullptr;
 
     m_modeStyle = FancyTabBar::TextUnderIcon;
     m_actionStyle = FancyTabBar::IconOnly;
 
-    q = 0;
+    q = nullptr;
 }
 
 FancyTabBarPrivate::~FancyTabBarPrivate()
@@ -110,7 +110,7 @@ void FancyTabBarPrivate::updateTabBarPosition()
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         break;
     case FancyTabBar::Vertical:
-    default:
+    /*default:*/
         direction = QBoxLayout::TopToBottom;
         m_headSpacer->setFixedHeight(25);
         m_splitLine->setFixedHeight(1);
@@ -204,7 +204,7 @@ void FancyTabBarPrivate::init()
 void FancyTabBarPrivate::switchTab()
 {
     FancyTab *tab = qobject_cast<FancyTab*>(sender());
-    if(tab == 0) return;
+    if(tab == nullptr) return;
     int index = m_modeTabs.indexOf(tab);
     if(index == m_currentIndex) return;
     if(m_currentIndex != -1){
@@ -218,7 +218,7 @@ void FancyTabBarPrivate::switchTab()
 void FancyTabBarPrivate::menuTriggered(QMouseEvent *e)
 {
     FancyTab *tab = qobject_cast<FancyTab*>(sender());
-    if(tab == 0) return;
+    if(tab == nullptr) return;
     int index = m_modeTabs.indexOf(tab);
 
     int x = e->x();

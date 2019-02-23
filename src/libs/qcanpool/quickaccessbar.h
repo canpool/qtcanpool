@@ -29,7 +29,7 @@ class QCANPOOL_SHARED_EXPORT QuickAccessBar : public QToolBar
 {
     Q_OBJECT
 public:
-    explicit QuickAccessBar(QWidget *parent = 0);
+    explicit QuickAccessBar(QWidget *parent = nullptr);
 
 public:
     QAction* actionCustomizeButton() const;

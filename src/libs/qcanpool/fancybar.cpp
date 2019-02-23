@@ -42,7 +42,7 @@ class FancyBarPrivate : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FancyBarPrivate(QWidget *parent = 0);
+    explicit FancyBarPrivate(QWidget *parent = nullptr);
     ~FancyBarPrivate();
 
     void showQuickAccessBar(bool show);
@@ -209,32 +209,32 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     m_bWidgetResizable = true;
     m_bWidgetMaximizable = true;
 
-    q = 0;
-    m_logoLayout = 0;
-    m_titleWidget = 0;
-    m_logoButton = 0;
-    m_quickAccessBar = 0;
-    m_leftSpacerItem = 0;
-    m_titleLabel = 0;
-    m_titleAdditionalControlArea = 0;
-    m_maximizeButton = 0;
-    m_minimizeButton = 0;
-    m_closeButton = 0;
-    m_systemGroup = 0;
+    q = nullptr;
+    m_logoLayout = nullptr;
+    m_titleWidget = nullptr;
+    m_logoButton = nullptr;
+    m_quickAccessBar = nullptr;
+    m_leftSpacerItem = nullptr;
+    m_titleLabel = nullptr;
+    m_titleAdditionalControlArea = nullptr;
+    m_maximizeButton = nullptr;
+    m_minimizeButton = nullptr;
+    m_closeButton = nullptr;
+    m_systemGroup = nullptr;
 
-    m_menuWidget = 0;
-    m_applicationButton = 0;
-    m_appButtonLayout = 0;
-    m_menuBar = 0;
-    m_menuAdditionalControlArea = 0;
-    m_menuBarArea = 0;
-    m_middleSpacerItem = 0;
+    m_menuWidget = nullptr;
+    m_applicationButton = nullptr;
+    m_appButtonLayout = nullptr;
+    m_menuBar = nullptr;
+    m_menuAdditionalControlArea = nullptr;
+    m_menuBarArea = nullptr;
+    m_middleSpacerItem = nullptr;
 
-    m_mainWidget = 0;
+    m_mainWidget = nullptr;
 
-    m_menuButton = 0;
+    m_menuButton = nullptr;
     m_additionalButtons.clear();
-    m_applicationWidget = 0;
+    m_applicationWidget = nullptr;
 
     m_menuTextColor = QColor(250,250,250);
     m_menuHoverColor = QColor(255,255,255,50);
@@ -576,7 +576,7 @@ void FancyBarPrivate::createWindowButtons()
 
 void FancyBarPrivate::updateMenuColor()
 {
-    if(m_menuBar == 0) return;
+    if(m_menuBar == nullptr) return;
     m_menuBar->setStyleSheet(QString(
                 "QMenuBar{background-color: transparent;margin:1px;color: #%1;}"
                 "QMenuBar::item{background-color: transparent;}"
@@ -1034,7 +1034,7 @@ void FancyBarPrivate::aboutToHideSystemMenu()
 void FancyBarPrivate::systemMenuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == 0) return;
+    if(button == nullptr) return;
 
     int x = e->x();
     int y = e->y();
@@ -1061,10 +1061,10 @@ void FancyBarPrivate::aboutToHideMenu()
 void FancyBarPrivate::menuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == 0) return;
+    if(button == nullptr) return;
     QAction *action = button->defaultAction();
     QMenu *menu = action->menu();
-    if(menu == 0) return;
+    if(menu == nullptr) return;
 
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
     connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
@@ -1080,10 +1080,10 @@ void FancyBarPrivate::menuTriggered(QMouseEvent *e)
 
 void FancyBarPrivate::applicationMenuTriggered(QMouseEvent *e)
 {
-    if(m_applicationWidget == 0) return;
-    if(m_applicationWidget->layout()->itemAt(0) == NULL) return;
+    if(m_applicationWidget == nullptr) return;
+    if(m_applicationWidget->layout()->itemAt(0) == nullptr) return;
     FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == 0) return;
+    if(button == nullptr) return;
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
@@ -1134,7 +1134,7 @@ FancyBar::~FancyBar()
 
 QMenuBar *FancyBar::menuBar() const
 {
-    if(d->m_menuBar == 0){
+    if(d->m_menuBar == nullptr){
         d->m_menuBar = new QMenuBar();
         d->m_menuBar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         d->updateMenuColor();
@@ -1272,12 +1272,12 @@ bool FancyBar::eventFilter(QObject *object, QEvent *event)
     {
         d->windowStateChange(object);
         return true;
-    }break;
+    }/*break*/;
     case QEvent::Resize:
     {
         d->windowSizeChange(object);
         return true;
-    }break;
+    }/*break*/;
     case QEvent::MouseMove:
     case QEvent::HoverMove:
     case QEvent::MouseButtonPress:
@@ -1286,7 +1286,7 @@ bool FancyBar::eventFilter(QObject *object, QEvent *event)
     {
         d->handleWidgetMouseEvent(object,event);
         return true;
-    }break;
+    }/*break*/;
     default:
         break;
     }

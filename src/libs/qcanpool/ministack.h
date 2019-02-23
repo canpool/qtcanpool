@@ -59,9 +59,9 @@ class QCANPOOL_SHARED_EXPORT MiniStack : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MiniStack(QWidget *parent = 0);
+    explicit MiniStack(QWidget *parent = nullptr);
 
-    void addTab(const QString &text, QWidget *widget, QWidget *appendix = 0);
+    void addTab(const QString &text, QWidget *widget, QWidget *appendix = nullptr);
 
     void addAction(QAction *action);
 

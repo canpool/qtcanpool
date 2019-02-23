@@ -116,7 +116,7 @@ class QtHtmlWord : public QObject
 {
     Q_OBJECT
 public:
-    explicit QtHtmlWord(QObject *parent = 0);
+    explicit QtHtmlWord(QObject *parent = nullptr);
     ~QtHtmlWord();
 
     void saveAs(const QString &fileName);

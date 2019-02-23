@@ -34,7 +34,7 @@ public:
     enum TabType { Mode, Action };
     enum TabStyle {IconOnly, TextOnly, TextBesideIcon, TextUnderIcon};
 
-    explicit FancyTabBar(QWidget *parent = 0);
+    explicit FancyTabBar(QWidget *parent = nullptr);
     ~FancyTabBar();
 
     void setDirection(Direction direction);

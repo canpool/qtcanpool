@@ -28,7 +28,7 @@ class QCANPOOL_SHARED_EXPORT SkinItem : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SkinItem(QWidget *parent = 0);
+    explicit SkinItem(QWidget *parent = nullptr);
     ~SkinItem();
 
     void setPixmapName(const QString &name);

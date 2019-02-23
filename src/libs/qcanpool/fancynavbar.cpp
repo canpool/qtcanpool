@@ -33,7 +33,7 @@ class FancyNavBarPrivate : public QObject
 {
     Q_OBJECT
 public:
-    explicit FancyNavBarPrivate(QObject *parent = 0);
+    explicit FancyNavBarPrivate(QObject *parent = nullptr);
     ~FancyNavBarPrivate();
     void init();
 
@@ -84,24 +84,24 @@ public:
 FancyNavBarPrivate::FancyNavBarPrivate(QObject *parent)
     : QObject(parent)
 {
-    m_stack = 0;
-    m_opToolBarWidgets = 0;
-    m_menu = 0;
-    m_toolbar = 0;
-    m_panel = 0;
+    m_stack = nullptr;
+    m_opToolBarWidgets = nullptr;
+    m_menu = nullptr;
+    m_toolbar = nullptr;
+    m_panel = nullptr;
 
     m_navMap.clear();
     m_widgets.clear();
     m_toggleNavMap.clear();
-    m_pLastButton = 0;
-    m_pSideExpandButton = 0;
-    m_pMenuButton = 0;
+    m_pLastButton = nullptr;
+    m_pSideExpandButton = nullptr;
+    m_pMenuButton = nullptr;
 
-    m_titleLabel = 0;
-    m_minMaxAction = 0;
-    m_closeAction = 0;
+    m_titleLabel = nullptr;
+    m_minMaxAction = nullptr;
+    m_closeAction = nullptr;
 
-    m_splitter = 0;
+    m_splitter = nullptr;
 }
 
 FancyNavBarPrivate::~FancyNavBarPrivate()
@@ -253,7 +253,7 @@ void FancyNavBarPrivate::slotNavToggled(bool checked)
 void FancyNavBarPrivate::slotMenuItemToggled(bool checked)
 {
     QAction *toggleAction = qobject_cast<QAction *>(sender());
-    FancyNavButton *button = m_toggleNavMap.value(toggleAction, 0);
+    FancyNavButton *button = m_toggleNavMap.value(toggleAction, nullptr);
     if(button){
         button->setVisible(checked);
     }
@@ -367,7 +367,7 @@ void FancyNavBar::remove(QWidget *widget)
     if(!button) return;
     if(button == d->m_pLastButton){
         d->slotClosePanel();
-        d->m_pLastButton = NULL;
+        d->m_pLastButton = nullptr;
     }
     int index = d->m_widgets.indexOf(widget);
     d->m_widgets.removeAll(widget);

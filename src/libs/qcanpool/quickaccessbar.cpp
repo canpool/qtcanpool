@@ -34,7 +34,7 @@ class QuickAccessBarPrivate : public QWidget
 {
     Q_OBJECT
 public:
-    QuickAccessBarPrivate(QWidget *parent = 0);
+    QuickAccessBarPrivate(QWidget *parent = nullptr);
     void init();
 
     void addAction(QAction *action);
@@ -68,21 +68,21 @@ private Q_SLOTS:
 QuickAccessBarPrivate::QuickAccessBarPrivate(QWidget *parent)
     : QWidget(parent)
 {
-    q = 0;
-    m_accessButton = 0;
-    m_menu = 0;
+    q = nullptr;
+    m_accessButton = nullptr;
+    m_menu = nullptr;
     m_bAddEnable = true;
 
     m_checkActions.clear();
     m_actions.clear();
     m_actionButtons.clear();
 
-    m_accessArea = 0;
+    m_accessArea = nullptr;
 
-    m_customizeAction = 0;
-    m_separatorAction = 0;
+    m_customizeAction = nullptr;
+    m_separatorAction = nullptr;
 
-    m_menuButton = 0;
+    m_menuButton = nullptr;
 }
 
 void QuickAccessBarPrivate::init()
@@ -155,7 +155,7 @@ void QuickAccessBarPrivate::aboutToHideCustomizeMenu()
 void QuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == 0) return;
+    if(button == nullptr) return;
 
     int x = e->x();
     int y = e->y();
@@ -169,10 +169,10 @@ void QuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
 void QuickAccessBarPrivate::menuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == 0) return;
+    if(button == nullptr) return;
     QAction *action = button->defaultAction();
     QMenu *menu = action->menu();
-    if(menu == 0) return;
+    if(menu == nullptr) return;
 
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
     connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
