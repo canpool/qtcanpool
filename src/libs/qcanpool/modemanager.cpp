@@ -34,7 +34,7 @@ public:
     int m_oldCurrent;
     int m_menuIndex;
 
-    bool validIndex(int index) { return index >=0 && index < m_modes.size();}
+    bool validIndex(int index) { return index >= 0 && index < m_modes.size();}
 
 public slots:
     void showMenu(int index, QPoint pos);
@@ -55,7 +55,7 @@ void ModeManagerPrivate::hideMenu()
     m_modeStack->hideMenu(m_menuIndex);
 }
 
-ModeManagerPrivate *d;
+ModeManagerPrivate *d = nullptr;
 
 ModeManager::ModeManager(FancyTabWidget *modeStack, QObject *parent)
     : QObject(parent)
@@ -73,7 +73,7 @@ ModeManager::ModeManager(FancyTabWidget *modeStack, QObject *parent)
 ModeManager::~ModeManager()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 void ModeManager::setCurrentMode(IMode *mode)
@@ -94,7 +94,7 @@ IMode *ModeManager::currentMode() const
 {
     int currentIndex = d->m_modeStack->currentIndex();
     if(currentIndex < 0){
-        return 0;
+        return nullptr;
     }
     return d->m_modes.at(currentIndex);
 }
@@ -103,7 +103,7 @@ IMode *ModeManager::mode(int index) const
 {
     if(index >= 0 && index < d->m_modes.count())
         return d->m_modes.at(index);
-    return 0;
+    return nullptr;
 }
 
 void ModeManager::setEnabled(IMode *mode, bool enable)
@@ -163,7 +163,7 @@ void ModeManager::currentTabChanged(int index)
     if(d->validIndex(index) && index != d->m_oldCurrent){
         IMode *mode = d->m_modes.at(index);
 
-        IMode *oldMode = 0;
+        IMode *oldMode = nullptr;
         if(d->validIndex(d->m_oldCurrent))
             oldMode = d->m_modes.at(d->m_oldCurrent);
         d->m_oldCurrent = index;

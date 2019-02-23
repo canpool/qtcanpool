@@ -32,7 +32,7 @@ class QCANPOOL_SHARED_EXPORT IMode : public QObject
     Q_OBJECT
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
 public:
-    explicit IMode(QObject *parent = 0);
+    explicit IMode(QObject *parent = nullptr);
     ~IMode();
 
     QString displayName() const { return m_displayName;}

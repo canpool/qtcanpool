@@ -31,7 +31,7 @@ class QCANPOOL_SHARED_EXPORT PageSorter : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PageSorter(int block = 3, QWidget *parent = 0);
+    explicit PageSorter(int block = 3, QWidget *parent = nullptr);
     ~PageSorter();
 
     int maxPage() const { return m_maxPage; }

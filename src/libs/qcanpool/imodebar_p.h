@@ -34,7 +34,7 @@ class IModeBarPrivate : public QObject
 {
     Q_OBJECT
 public:
-    explicit IModeBarPrivate(QObject *parent = 0);
+    explicit IModeBarPrivate(QObject *parent = nullptr);
     ~IModeBarPrivate();
 
     void selectMode(IMode *mode);

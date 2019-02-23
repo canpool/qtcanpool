@@ -44,13 +44,13 @@ IModeBarPrivate::IModeBarPrivate(QObject *parent)
     m_modeStyle = Qt::ToolButtonTextUnderIcon;
     m_actionStyle = Qt::ToolButtonIconOnly;
 
-    m_modeStack = 0;
-    m_modeLayout = 0;
-    m_frontActionLayout = 0;
-    m_backActionLayout = 0;
+    m_modeStack = nullptr;
+    m_modeLayout = nullptr;
+    m_frontActionLayout = nullptr;
+    m_backActionLayout = nullptr;
 
-    m_spacer = 0;
-    m_line = 0;
+    m_spacer = nullptr;
+    m_line = nullptr;
 }
 
 IModeBarPrivate::~IModeBarPrivate()
@@ -412,7 +412,7 @@ IMode* IModeBar::currentMode() const
 IMode* IModeBar::mode(int index)
 {
     if(index < 0 || index >= d->m_modes.count())
-        return NULL;
+        return nullptr;
     IMode *mode = d->m_modes.at(index);
     return mode;
 }

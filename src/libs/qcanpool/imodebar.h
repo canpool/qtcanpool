@@ -37,7 +37,7 @@ public:
     enum ActionPosition { AP_Front, AP_Middle, AP_Back };
     enum ButtonType { Mode, Action };
 
-    explicit IModeBar(QStackedWidget *modeStack, Direction direction = Vertical, QWidget *parent = 0);
+    explicit IModeBar(QStackedWidget *modeStack, Direction direction = Vertical, QWidget *parent = nullptr);
     ~IModeBar();
 
     void addMode(IMode *mode);

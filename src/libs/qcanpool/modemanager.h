@@ -30,7 +30,7 @@ class QCANPOOL_SHARED_EXPORT ModeManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModeManager(FancyTabWidget *modeStack, QObject *parent = 0);
+    explicit ModeManager(FancyTabWidget *modeStack, QObject *parent = nullptr);
     ~ModeManager();
 
     void setCurrentMode(IMode *mode);

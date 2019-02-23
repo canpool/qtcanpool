@@ -104,8 +104,8 @@ class QXL_LIB_DECL QtExcel : public QObject
 {
     Q_OBJECT
 public:
-    explicit QtExcel(QObject *parent = 0);
-    QtExcel(const QString &name, QObject *parent = 0);
+    explicit QtExcel(QObject *parent = nullptr);
+    QtExcel(const QString &name, QObject *parent = nullptr);
     ~QtExcel();
 
     bool open(bool visible = false);

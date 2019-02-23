@@ -190,7 +190,7 @@ QString QtHtmlTable::ParagraphAlignment(ParagraphAlign align)
         alignment = QString("right");
         break;
     case alignParagraphCenter:
-    default:
+    /*default:*/
         alignment = QString("center");
         break;
     }
@@ -208,7 +208,7 @@ QString QtHtmlTable::cellVerticalAlignment(CellVerticalAlign valign)
         alignment = QString("bottom");
         break;
     case cellAlignVerticalCenter:
-    default:
+    /*default:*/
         alignment = QString("center");
         break;
     }
@@ -293,7 +293,7 @@ QtHtmlTable *QtHtmlWord::insertTable(int rows)
 QtHtmlTable *QtHtmlWord::table(int index)
 {
     if(index < 0 || index >= m_tables.count())
-        return NULL;
+        return nullptr;
     QtHtmlTable *table = m_tables.at(index);
     return table;
 }

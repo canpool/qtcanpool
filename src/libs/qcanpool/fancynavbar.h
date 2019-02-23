@@ -29,9 +29,9 @@ class QCANPOOL_SHARED_EXPORT FancyNavBar : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FancyNavBar(QWidget *parent = 0);
+    explicit FancyNavBar(QWidget *parent = nullptr);
 
-    void add(const QString &title, QWidget *widget, QWidget *appendix = 0);
+    void add(const QString &title, QWidget *widget, QWidget *appendix = nullptr);
     void remove(QWidget *widget);
     void select(QWidget *widget);
 

@@ -104,11 +104,11 @@ QtExcel::QtExcel(const QString &name, QObject *parent)
 
 void QtExcel::init()
 {
-    m_excel = 0;
-    m_workBooks = 0;
-    m_workBook = 0;
-    m_sheets = 0;
-    m_sheet = 0;
+    m_excel = nullptr;
+    m_workBooks = nullptr;
+    m_workBook = nullptr;
+    m_sheets = nullptr;
+    m_sheet = nullptr;
     m_bOpened = false;
 
     m_excel = new QAxObject("Excel.Application", this);
@@ -153,19 +153,19 @@ void QtExcel::close()
         m_excel->dynamicCall("Quit()");
     }
     if(m_sheet){
-        delete m_sheet; m_sheet = 0;
+        delete m_sheet; m_sheet = nullptr;
     }
     if(m_sheets){
-        delete m_sheets; m_sheets = 0;
+        delete m_sheets; m_sheets = nullptr;
     }
     if(m_workBook){
-        delete m_workBook; m_workBook = 0;
+        delete m_workBook; m_workBook = nullptr;
     }
     if(m_workBooks){
-        delete m_workBooks; m_workBooks = 0;
+        delete m_workBooks; m_workBooks = nullptr;
     }
     if(m_excel){
-        delete m_excel; m_excel = 0;
+        delete m_excel; m_excel = nullptr;
     }
 }
 
@@ -192,9 +192,9 @@ void QtExcel::saveAs(const QString &name)
 QVariant QtExcel::readAll()
 {
     QVariant var;
-    if(m_sheet != NULL && !m_sheet->isNull()){
+    if(m_sheet != nullptr && !m_sheet->isNull()){
         QAxObject *usedRange = m_sheet->querySubObject("UsedRange");
-        if(usedRange == NULL || usedRange->isNull()){
+        if(usedRange == nullptr || usedRange->isNull()){
             return var;
         }
         var = usedRange->dynamicCall("Value");
@@ -243,7 +243,7 @@ bool QtExcel::deleteSheet(const QString &name)
     if(sheet){
         sheet->dynamicCall("delete");
         if(m_sheet == sheet){
-            m_sheet = 0;
+            m_sheet = nullptr;
         }
         return true;
     }
@@ -256,7 +256,7 @@ bool QtExcel::deleteSheet(int index)
     if(sheet){
         sheet->dynamicCall("delete");
         if(m_sheet == sheet){
-            m_sheet = 0;
+            m_sheet = nullptr;
         }
         return true;
     }

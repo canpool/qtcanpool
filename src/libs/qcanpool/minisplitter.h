@@ -33,7 +33,7 @@ class QCANPOOL_SHARED_EXPORT MiniSplitter : public QSplitter
 public:
     enum SplitterStyle {Dark, Light};
 
-    MiniSplitter(QWidget *parent = 0, SplitterStyle style = Dark);
+    MiniSplitter(QWidget *parent = nullptr, SplitterStyle style = Dark);
     MiniSplitter(Qt::Orientation orientation, SplitterStyle style = Dark);
 
 protected:

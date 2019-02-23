@@ -101,7 +101,7 @@ class FancyBannerArrow : public QWidget
 
 public:
     enum ArrowType{Left, Right};
-    explicit FancyBannerArrow(ArrowType type, QWidget *parent = 0);
+    explicit FancyBannerArrow(ArrowType type, QWidget *parent = nullptr);
     ~FancyBannerArrow();
 
 signals:
@@ -200,7 +200,7 @@ class FancyBannerPage : public QLabel
 {
     Q_OBJECT
 public:
-    explicit FancyBannerPage(QWidget *parent = 0);
+    explicit FancyBannerPage(QWidget *parent = nullptr);
     ~FancyBannerPage();
 
     void setActive(bool active);
@@ -260,7 +260,7 @@ class FancyBannerView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FancyBannerView(QWidget *parent = 0);
+    explicit FancyBannerView(QWidget *parent = nullptr);
     ~FancyBannerView();
 
     void setLeftPixmap(const QPixmap &pixmap);
@@ -423,7 +423,7 @@ void FancyBannerView::setArrowHidden(bool hidden)
 void FancyBannerView::slotPageClicked()
 {
     FancyBannerPage *page = qobject_cast<FancyBannerPage*>(sender());
-    if(page == NULL) return;
+    if(page == nullptr) return;
     int flag = 0;
     if(page == m_leftPage){
         flag = -1;
@@ -436,7 +436,7 @@ void FancyBannerView::slotPageClicked()
 void FancyBannerView::slotArrowClicked()
 {
     FancyBannerArrow *arrow = qobject_cast<FancyBannerArrow*>(sender());
-    if(arrow == NULL) return;
+    if(arrow == nullptr) return;
     if(arrow == m_leftArrow){
         emit clicked(-1);
     }else if(arrow == m_rightArrow){
@@ -501,13 +501,13 @@ public:
 
 FancyBannerPrivate::FancyBannerPrivate()
 {
-    q = 0;
-    m_view = 0;
-    m_indLayout = 0;
+    q = nullptr;
+    m_view = nullptr;
+    m_indLayout = nullptr;
     m_indicators.clear();
     m_pixmaps.clear();
     m_currentIndex = -1;
-    m_timer = 0;
+    m_timer = nullptr;
     m_interval = 2000;
 }
 
@@ -597,7 +597,7 @@ void FancyBannerPrivate::play(int index)
 void FancyBannerPrivate::switchIndicator()
 {
     FancyBannerIndicator *ind = qobject_cast<FancyBannerIndicator*>(sender());
-    if(ind == 0) return;
+    if(ind == nullptr) return;
     int index = m_indicators.indexOf(ind);
     if(index == m_currentIndex) return;
     if(m_currentIndex != -1){

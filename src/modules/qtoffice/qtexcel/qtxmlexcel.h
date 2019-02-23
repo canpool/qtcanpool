@@ -45,7 +45,7 @@ class QtXmlExcel : public QObject
 {
     Q_OBJECT
 public:
-    explicit QtXmlExcel(QObject *parent = 0);
+    explicit QtXmlExcel(QObject *parent = nullptr);
 
     static QtXmlExcel *instance();
     static void close();
