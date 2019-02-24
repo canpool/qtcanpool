@@ -38,11 +38,19 @@ public:
 
     void select(bool selected);
 
-    void setHoverColor(const QColor &color) { m_hoverColor = color;}
-    QColor hoverColor() const { return m_hoverColor;}
+    void setHoverColor(const QColor &color) {
+        m_hoverColor = color;
+    }
+    QColor hoverColor() const {
+        return m_hoverColor;
+    }
 
-    void setPressColor(const QColor &color) { m_pressColor = color;}
-    QColor pressColor() const { return m_pressColor;}
+    void setPressColor(const QColor &color) {
+        m_pressColor = color;
+    }
+    QColor pressColor() const {
+        return m_pressColor;
+    }
 
     void setTextColor(const QColor &color);
     void setSelectedTextColor(const QColor &color);
@@ -84,27 +92,19 @@ TinyTab::TinyTab(QWidget *parent)
     : QToolButton(parent)
 {
     setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    setIconSize(QSize(22,22));
-
+    setIconSize(QSize(22, 22));
     setAutoRaise(true);
-
     m_bMouseHover = false;
     m_bMousePress = false;
-
     m_slidePos = Bottom;
-
     m_hoverColor = QColor(255, 255, 255, 50);
     m_pressColor = QColor(0, 0, 0, 100);
-    m_textColor = QColor(255,255,255);
-    m_selectedTextColor = QColor(255,255,255);
+    m_textColor = QColor(255, 255, 255);
+    m_selectedTextColor = QColor(255, 255, 255);
     m_normalColor = QColor(0, 0, 0, 20);
     m_slideColor = QColor(250, 0, 0);
-
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-
     setStyleSheet("QToolButton{background-color: transparent;color: white;}");
-
     update();
 }
 
@@ -128,7 +128,7 @@ void TinyTab::setColor(const QColor &color)
 {
     setStyleSheet(QString("QToolButton{background-color: transparent;color: rgba(%1,%2,%3,%4);}")
                   .arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha())
-                  );
+                 );
 }
 
 void TinyTab::setSlideColor(const QColor &color)
@@ -151,7 +151,6 @@ void TinyTab::painterInfo(QColor &color)
     QPainter painter(this);
     QPen pen(Qt::NoBrush, 1);
     painter.setPen(pen);
-
     painter.setBrush(color);
     painter.drawRect(rect());
 }
@@ -163,32 +162,38 @@ void TinyTab::painterSlide(QColor &color)
     pen.setColor(color);
     pen.setWidth(2);
     painter.setPen(pen);
-
     QPointF p1;
     QPointF p2;
+
     switch (m_slidePos) {
     case Left:
         p1 = this->rect().topLeft();
         p2 = this->rect().bottomLeft();
         break;
+
     case Bottom:
         p1 = this->rect().bottomLeft();
         p2 = this->rect().bottomRight();
         break;
+
     case Right:
         p1 = this->rect().topRight();
         p2 = this->rect().bottomRight();
         break;
-    /*default:*/
+        /*default:*/
     }
+
     painter.drawLine(p1, p2);
 }
 
 void TinyTab::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    if(!isEnabled())
+
+    if (!isEnabled()) {
         return;
+    }
+
     m_bMouseHover = true;
 }
 
@@ -200,9 +205,8 @@ void TinyTab::leaveEvent(QEvent *event)
 
 void TinyTab::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
-        if(isEnabled()){
+    if (event->button() == Qt::LeftButton) {
+        if (isEnabled()) {
             emit clicked();
         }
     }
@@ -210,21 +214,21 @@ void TinyTab::mousePressEvent(QMouseEvent *event)
 
 void TinyTab::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton){
+    if (event->button() == Qt::LeftButton) {
     }
 }
 
 void TinyTab::paintEvent(QPaintEvent *event)
 {
-    if(m_bMousePress){
+    if (m_bMousePress) {
         painterInfo(m_pressColor);
         setColor(m_selectedTextColor);
         painterSlide(m_slideColor);
-    }else if(m_bMouseHover){
+    } else if (m_bMouseHover) {
         painterInfo(m_hoverColor);
         setColor(m_selectedTextColor);
         painterSlide(m_slideColor);
-    }else{
+    } else {
         painterInfo(m_normalColor);
         setColor(m_textColor);
         painterSlide(m_normalColor);
@@ -279,7 +283,7 @@ private:
     Direction m_direction;
     int m_currentIndex;
 
-    QList<TinyTab*> m_tabs;
+    QList<TinyTab *> m_tabs;
     QBoxLayout *m_layout;
 };
 
@@ -290,45 +294,49 @@ TinyTabBar::TinyTabBar(QWidget *parent)
     m_currentIndex = -1;
     m_tabs.clear();
     m_layout = nullptr;
-
     m_layout = new QBoxLayout(QBoxLayout::LeftToRight);
     m_layout->setMargin(0);
     m_layout->setSpacing(1);
     m_layout->addStretch();
     setLayout(m_layout);
-    if(m_direction == Horizontal){
+
+    if (m_direction == Horizontal) {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    }else{
+    } else {
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
 }
 
 void TinyTabBar::setDirection(TinyTabBar::Direction direction)
 {
-    if(m_direction == direction)
+    if (m_direction == direction) {
         return;
-    m_direction = direction;
+    }
 
+    m_direction = direction;
     QBoxLayout::Direction layDirection;
+
     switch (m_direction) {
     case Horizontal:
         layDirection = QBoxLayout::LeftToRight;
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         break;
+
     case Vertical:
-    /*default:*/
+        /*default:*/
         layDirection = QBoxLayout::TopToBottom;
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         break;
     }
+
     m_layout->setDirection(layDirection);
 
-    if(m_direction == Vertical){
-        foreach (TinyTab *tab, m_tabs) {
+    if (m_direction == Vertical) {
+        foreach (TinyTab * tab, m_tabs) {
             tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         }
-    }else if(m_direction == Horizontal){
-        foreach (TinyTab *tab, m_tabs) {
+    } else if (m_direction == Horizontal) {
+        foreach (TinyTab * tab, m_tabs) {
             tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         }
     }
@@ -336,7 +344,7 @@ void TinyTabBar::setDirection(TinyTabBar::Direction direction)
 
 void TinyTabBar::setSlidePosition(TinyTab::SlidePosition pos)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setSlidePosition(pos);
     }
 }
@@ -358,58 +366,60 @@ void TinyTabBar::addTab(const QIcon &icon, const QString &label)
 
 void TinyTabBar::setHoverColor(const QColor &color)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setHoverColor(color);
     }
 }
 
 QColor TinyTabBar::hoverColor() const
 {
-    if(m_tabs.count() > 0){
+    if (m_tabs.count() > 0) {
         return m_tabs.at(0)->hoverColor();
     }
+
     return QColor();
 }
 
 void TinyTabBar::setPressColor(const QColor &color)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setPressColor(color);
     }
 }
 
 QColor TinyTabBar::pressColor() const
 {
-    if(m_tabs.count() > 0){
+    if (m_tabs.count() > 0) {
         return m_tabs.at(0)->pressColor();
     }
+
     return QColor();
 }
 
 void TinyTabBar::setTextColor(const QColor &color)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setTextColor(color);
     }
 }
 
 void TinyTabBar::setSelectedTextColor(const QColor &color)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setSelectedTextColor(color);
     }
 }
 
 void TinyTabBar::setSlideColor(const QColor &color)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setSlideColor(color);
     }
 }
 
 void TinyTabBar::setNormalColor(const QColor &color)
 {
-    foreach (TinyTab *tab, m_tabs) {
+    foreach (TinyTab * tab, m_tabs) {
         tab->setNormalColor(color);
     }
 }
@@ -421,38 +431,52 @@ void TinyTabBar::setTabSpace(int space)
 
 void TinyTabBar::addTab(TinyTab *tab)
 {
-    if(m_direction == Vertical){
+    if (m_direction == Vertical) {
         tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    }else if(m_direction == Horizontal){
+    } else if (m_direction == Horizontal) {
         tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
+
     m_tabs.append(tab);
     connect(tab, SIGNAL(clicked(bool)), this, SLOT(switchTab()));
-    m_layout->insertWidget(m_tabs.count()-1, tab);
-//    m_layout->addWidget(tab);
+    m_layout->insertWidget(m_tabs.count() - 1, tab);
+    //    m_layout->addWidget(tab);
     m_tabs.at(0)->select(true);
     m_currentIndex = 0;
 }
 
 void TinyTabBar::setCurrentIndex(int index)
 {
-    if(index == m_currentIndex) return;
-    if(m_currentIndex != -1){
+    if (index == m_currentIndex) {
+        return;
+    }
+
+    if (m_currentIndex != -1) {
         m_tabs.at(m_currentIndex)->select(false);
     }
+
     m_currentIndex = index;
     m_tabs.at(m_currentIndex)->select(true);
 }
 
 void TinyTabBar::switchTab()
 {
-    TinyTab *tab = qobject_cast<TinyTab*>(sender());
-    if(tab == nullptr) return;
+    TinyTab *tab = qobject_cast<TinyTab *>(sender());
+
+    if (tab == nullptr) {
+        return;
+    }
+
     int index = m_tabs.indexOf(tab);
-    if(index == m_currentIndex) return;
-    if(m_currentIndex != -1){
+
+    if (index == m_currentIndex) {
+        return;
+    }
+
+    if (m_currentIndex != -1) {
         m_tabs.at(m_currentIndex)->select(false);
     }
+
     m_currentIndex = index;
     m_tabs.at(m_currentIndex)->select(true);
     emit currentChanged(m_currentIndex);
@@ -482,7 +506,6 @@ TinyTabWidgetPrivate::TinyTabWidgetPrivate(QObject *parent)
     : QObject(parent), m_tabBar(nullptr), m_stack(nullptr), q(nullptr),
       m_layout(nullptr), m_pos(TinyTabWidget::North)
 {
-
 }
 
 void TinyTabWidgetPrivate::updateTabBarPosition()
@@ -493,22 +516,25 @@ void TinyTabWidgetPrivate::updateTabBarPosition()
         m_tabBar->setSlidePosition(TinyTab::Bottom);
         m_layout->setDirection(QBoxLayout::TopToBottom);
         break;
+
     case TinyTabWidget::South:
         m_tabBar->setDirection(TinyTabBar::Horizontal);
         m_tabBar->setSlidePosition(TinyTab::Bottom);
         m_layout->setDirection(QBoxLayout::BottomToTop);
         break;
+
     case TinyTabWidget::West:
         m_tabBar->setDirection(TinyTabBar::Vertical);
         m_tabBar->setSlidePosition(TinyTab::Left);
         m_layout->setDirection(QBoxLayout::LeftToRight);
         break;
+
     case TinyTabWidget::East:
         m_tabBar->setDirection(TinyTabBar::Vertical);
         m_tabBar->setSlidePosition(TinyTab::Right);
         m_layout->setDirection(QBoxLayout::RightToLeft);
         break;
-    /*default:*/
+        /*default:*/
     }
 }
 
@@ -516,11 +542,9 @@ void TinyTabWidgetPrivate::init()
 {
     m_tabBar = new TinyTabBar(q);
     m_stack = new QStackedWidget(q);
-
     connect(m_tabBar, SIGNAL(currentChanged(int)), m_stack, SLOT(setCurrentIndex(int)));
     connect(m_stack, SIGNAL(currentChanged(int)), q, SIGNAL(currentChanged(int)));
     connect(m_stack, SIGNAL(currentChanged(int)), m_tabBar, SLOT(setCurrentIndex(int)));
-
     m_layout = new QBoxLayout(QBoxLayout::TopToBottom);
     m_layout->setMargin(0);
     m_layout->setSpacing(0);
@@ -542,21 +566,20 @@ TinyTabWidget::TinyTabWidget(QWidget *parent)
 
 TinyTabWidget::~TinyTabWidget()
 {
-
 }
 
 int TinyTabWidget::addTab(QWidget *page, const QString &label)
 {
     d->m_tabBar->addTab(label);
     d->m_stack->addWidget(page);
-    return (d->m_stack->count()-1);
+    return (d->m_stack->count() - 1);
 }
 
 int TinyTabWidget::addTab(QWidget *page, const QIcon &icon, const QString &label)
 {
     d->m_tabBar->addTab(icon, label);
     d->m_stack->addWidget(page);
-    return (d->m_stack->count()-1);
+    return (d->m_stack->count() - 1);
 }
 
 TinyTabWidget::TabPosition TinyTabWidget::tabPosition() const
@@ -566,8 +589,10 @@ TinyTabWidget::TabPosition TinyTabWidget::tabPosition() const
 
 void TinyTabWidget::setTabPosition(TinyTabWidget::TabPosition pos)
 {
-    if(d->m_pos == pos)
+    if (d->m_pos == pos) {
         return;
+    }
+
     d->m_pos = pos;
     d->updateTabBarPosition();
 }

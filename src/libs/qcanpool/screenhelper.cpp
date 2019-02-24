@@ -27,44 +27,43 @@ ScreenHelper::ScreenHelper()
     QDesktopWidget *desktop = QApplication::desktop();
     int screenCnt = desktop->screenCount();
     int primScreen = desktop->primaryScreen();
-
     m_screenInfoList.clear();
-    for(int i = 0; i < screenCnt; i++)
-    {
+
+    for (int i = 0; i < screenCnt; i++) {
         ScreenInfo info;
         info.no = primScreen + i;
-// 		info.rect = desktop->screenGeometry(info.no);
+//      info.rect = desktop->screenGeometry(info.no);
         info.rect = desktop->availableGeometry(info.no);
         m_screenInfoList.append(info);
-
 //       qDebug()<<"screen no: "<<m_screenInfoList.at(i).no;
 //       qDebug()<<"x:"<<m_screenInfoList.at(i).rect.x()<<" y:"<<m_screenInfoList.at(i).rect.y()
 //             <<" width:"<<m_screenInfoList.at(i).rect.width()
 //            <<" height:"<<m_screenInfoList.at(i).rect.height();
     }
-
 }
 
 int ScreenHelper::currentScreen(const int x)
 {
     int width;
-    for(int i = 0; i < m_screenInfoList.count(); i++)
-    {
+
+    for (int i = 0; i < m_screenInfoList.count(); i++) {
         width = m_screenInfoList.at(i).rect.x() + m_screenInfoList.at(i).rect.width();
-        if(x > width){
+
+        if (x > width) {
             continue;
-        }else{
+        } else {
             return m_screenInfoList.at(i).no;
         }
     }
+
     return m_screenInfoList.at(0).no;
 }
 
 QRect ScreenHelper::screenRect(const int current)
 {
-    if(current >= m_screenInfoList.count()){
+    if (current >= m_screenInfoList.count()) {
         return m_screenInfoList.at(0).rect;
-    }else{
+    } else {
         return m_screenInfoList.at(current).rect;
     }
 }

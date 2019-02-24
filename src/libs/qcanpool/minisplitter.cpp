@@ -26,9 +26,8 @@ class MiniSplitterHandle : public QSplitterHandle
 {
 public:
     MiniSplitterHandle(Qt::Orientation orientation, QSplitter *parent, bool lightColored = false)
-            : QSplitterHandle(orientation, parent),
-              m_lightColored(lightColored)
-    {
+        : QSplitterHandle(orientation, parent),
+          m_lightColored(lightColored) {
         setMask(QRegion(contentsRect()));
         setAttribute(Qt::WA_MouseNoMask, true);
     }
@@ -42,10 +41,12 @@ private:
 
 void MiniSplitterHandle::resizeEvent(QResizeEvent *event)
 {
-    if (orientation() == Qt::Horizontal)
+    if (orientation() == Qt::Horizontal) {
         setContentsMargins(2, 0, 2, 0);
-    else
+    } else {
         setContentsMargins(0, 2, 0, 2);
+    }
+
     setMask(QRegion(contentsRect()));
     QSplitterHandle::resizeEvent(event);
 }

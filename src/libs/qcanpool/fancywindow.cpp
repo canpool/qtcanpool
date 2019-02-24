@@ -41,19 +41,17 @@ FancyWindowPrivate::FancyWindowPrivate()
 }
 
 FancyWindow::FancyWindow(QWidget *parent)
-    : QMainWindow(parent),d(new FancyWindowPrivate())
+    : QMainWindow(parent), d(new FancyWindowPrivate())
 {
     setWindowFlags(Qt::FramelessWindowHint
                    | Qt::WindowSystemMenuHint
                    | Qt::WindowMinimizeButtonHint
                    | Qt::Window
-                   );
-
+                  );
     d->fancyBar = new FancyBar(this);
     connect(d->fancyBar, SIGNAL(maximizationChanged(bool)), this, SIGNAL(resizable(bool)));
     setMenuWidget(d->fancyBar);
     setMouseTracking(true);
-
     QRect geom = QApplication::desktop()->availableGeometry();
     resize(2 * geom.width() / 3, 2 * geom.height() / 3);
     raise();
@@ -62,7 +60,6 @@ FancyWindow::FancyWindow(QWidget *parent)
 
 FancyWindow::~FancyWindow()
 {
-
 }
 
 FancyBar *FancyWindow::fancyBar() const
@@ -73,16 +70,17 @@ FancyBar *FancyWindow::fancyBar() const
 void FancyWindow::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-
     QSettings settings("Canpool", "qtcanpool");
     QString skinName = settings.value("skin").toString();
-    if(skinName.isEmpty()){
+
+    if (skinName.isEmpty()) {
         skinName = QString(":/skin/default");
     }
+
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::gray);
-    painter.drawPixmap(QRect(0,0,this->width(),this->height()),
+    painter.drawPixmap(QRect(0, 0, this->width(), this->height()),
                        QPixmap(skinName));
 }
 

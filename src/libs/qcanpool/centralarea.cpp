@@ -26,7 +26,6 @@ CentralArea::CentralArea(QWidget *parent)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
     setWidgetResizable(true);
     setFrameShape(QFrame::NoFrame);
 }

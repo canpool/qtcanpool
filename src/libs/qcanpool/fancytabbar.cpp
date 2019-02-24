@@ -38,9 +38,9 @@ public:
     FancyTabBar::Direction m_direction;
 
     int m_currentIndex;
-    QList<FancyTab*> m_modeTabs;
-    QList<FancyTab*> m_actionTabs;
-    QMap<QAction*, FancyTab*> m_actionTabMap;
+    QList<FancyTab *> m_modeTabs;
+    QList<FancyTab *> m_actionTabs;
+    QMap<QAction *, FancyTab *> m_actionTabMap;
 
     QBoxLayout *m_layout;
     QBoxLayout *m_modeLayout;
@@ -68,24 +68,19 @@ FancyTabBarPrivate::FancyTabBarPrivate()
 {
     m_direction = FancyTabBar::Vertical;
     m_currentIndex = -1;
-
     m_modeTabs.clear();
     m_actionTabs.clear();
     m_actionTabMap.clear();
-
     m_layout = nullptr;
     m_modeLayout = nullptr;
     m_menuModeLayout = nullptr;
     m_frontActionLayout = nullptr;
     m_middleActionLayout = nullptr;
     m_backActionLayout = nullptr;
-
     m_headSpacer = nullptr;
     m_splitLine = nullptr;
-
     m_modeStyle = FancyTabBar::TextUnderIcon;
     m_actionStyle = FancyTabBar::IconOnly;
-
     q = nullptr;
 }
 
@@ -101,6 +96,7 @@ FancyTabBarPrivate::~FancyTabBarPrivate()
 void FancyTabBarPrivate::updateTabBarPosition()
 {
     QBoxLayout::Direction direction;
+
     switch (m_direction) {
     case FancyTabBar::Horizontal:
         direction = QBoxLayout::LeftToRight;
@@ -109,8 +105,9 @@ void FancyTabBarPrivate::updateTabBarPosition()
         m_layout->setSpacing(5);
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         break;
+
     case FancyTabBar::Vertical:
-    /*default:*/
+        /*default:*/
         direction = QBoxLayout::TopToBottom;
         m_headSpacer->setFixedHeight(25);
         m_splitLine->setFixedHeight(1);
@@ -118,6 +115,7 @@ void FancyTabBarPrivate::updateTabBarPosition()
         q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         break;
     }
+
     m_layout->setDirection(direction);
     m_frontActionLayout->setDirection(direction);
     m_modeLayout->setDirection(direction);
@@ -129,56 +127,53 @@ void FancyTabBarPrivate::updateTabBarPosition()
 void FancyTabBarPrivate::init()
 {
     QBoxLayout::Direction direction = QBoxLayout::TopToBottom;
-
     // mode layout
     m_modeLayout = new QBoxLayout(direction);
     m_modeLayout->setMargin(0);
     m_modeLayout->setSpacing(0);
-
     // menu mode layout
     m_menuModeLayout = new QBoxLayout(direction);
     m_menuModeLayout->setMargin(0);
     m_menuModeLayout->setSpacing(0);
-
     // front action layout
     m_frontActionLayout = new QBoxLayout(direction);
     m_frontActionLayout->setMargin(0);
     m_frontActionLayout->setSpacing(0);
-
     // middle action layout
     m_middleActionLayout = new QBoxLayout(direction);
     m_middleActionLayout->setMargin(0);
     m_middleActionLayout->setSpacing(0);
-
     // back action layout
     m_backActionLayout = new QBoxLayout(direction);
     m_backActionLayout->setMargin(0);
     m_backActionLayout->setSpacing(0);
-
     // head spacer
     m_headSpacer = new QWidget();
-    if(m_direction == FancyTabBar::Horizontal){
+
+    if (m_direction == FancyTabBar::Horizontal) {
         m_headSpacer->setFixedWidth(5);
-    }else{
+    } else {
         m_headSpacer->setFixedHeight(25);
     }
 
     // split line
     m_splitLine = new QWidget();
-    if(m_direction == FancyTabBar::Horizontal){
+
+    if (m_direction == FancyTabBar::Horizontal) {
         m_splitLine->setFixedWidth(0);
-    }else{
+    } else {
         m_splitLine->setFixedHeight(1);
     }
+
     m_splitLine->setAutoFillBackground(true);
     m_splitLine->setBackgroundRole(QPalette::Dark);
-
     // main layout
     m_layout = new QBoxLayout(direction);
     m_layout->setMargin(0);
-    if(m_direction == FancyTabBar::Horizontal){
+
+    if (m_direction == FancyTabBar::Horizontal) {
         m_layout->setSpacing(5);
-    }else{
+    } else {
         m_layout->setSpacing(0);
     }
 
@@ -194,22 +189,31 @@ void FancyTabBarPrivate::init()
     m_layout->addSpacing(8);
     q->setLayout(m_layout);
 
-    if(m_direction == FancyTabBar::Horizontal){
+    if (m_direction == FancyTabBar::Horizontal) {
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    }else{
+    } else {
         q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
 }
 
 void FancyTabBarPrivate::switchTab()
 {
-    FancyTab *tab = qobject_cast<FancyTab*>(sender());
-    if(tab == nullptr) return;
+    FancyTab *tab = qobject_cast<FancyTab *>(sender());
+
+    if (tab == nullptr) {
+        return;
+    }
+
     int index = m_modeTabs.indexOf(tab);
-    if(index == m_currentIndex) return;
-    if(m_currentIndex != -1){
+
+    if (index == m_currentIndex) {
+        return;
+    }
+
+    if (m_currentIndex != -1) {
         m_modeTabs.at(m_currentIndex)->select(false);
     }
+
     m_currentIndex = index;
     m_modeTabs.at(m_currentIndex)->select(true);
     emit q->currentChanged(m_currentIndex);
@@ -217,25 +221,30 @@ void FancyTabBarPrivate::switchTab()
 
 void FancyTabBarPrivate::menuTriggered(QMouseEvent *e)
 {
-    FancyTab *tab = qobject_cast<FancyTab*>(sender());
-    if(tab == nullptr) return;
-    int index = m_modeTabs.indexOf(tab);
+    FancyTab *tab = qobject_cast<FancyTab *>(sender());
 
+    if (tab == nullptr) {
+        return;
+    }
+
+    int index = m_modeTabs.indexOf(tab);
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
-    if(m_direction == FancyTabBar::Vertical){
-        pos.setX(pos.x()-x+tab->width());
-        pos.setY(pos.y()-y);
-    }else if(m_direction == FancyTabBar::Horizontal){
-        pos.setX(pos.x()-x);
-        pos.setY(pos.y()-y+tab->height());
+
+    if (m_direction == FancyTabBar::Vertical) {
+        pos.setX(pos.x() - x + tab->width());
+        pos.setY(pos.y() - y);
+    } else if (m_direction == FancyTabBar::Horizontal) {
+        pos.setX(pos.x() - x);
+        pos.setY(pos.y() - y + tab->height());
     }
+
     emit q->menuTriggered(index, pos);
 }
 
 FancyTabBar::FancyTabBar(QWidget *parent)
-    : QWidget(parent),d(new FancyTabBarPrivate())
+    : QWidget(parent), d(new FancyTabBarPrivate())
 {
     d->q = this;
     d->init();
@@ -248,8 +257,10 @@ FancyTabBar::~FancyTabBar()
 
 void FancyTabBar::setDirection(FancyTabBar::Direction direction)
 {
-    if(d->m_direction == direction)
+    if (d->m_direction == direction) {
         return;
+    }
+
     d->m_direction = direction;
     d->updateTabBarPosition();
 }
@@ -263,15 +274,16 @@ void FancyTabBar::setTabEnabled(int index, bool enable)
 {
     Q_ASSERT(index < d->m_modeTabs.size());
     Q_ASSERT(index >= 0);
+
     if (index < d->m_modeTabs.size() && index >= 0) {
         FancyTab *tab = d->m_modeTabs[index];
         tab->setEnabled(enable);
         QFont font = tab->font();
         font.setItalic(!enable);
         tab->setFont(font);
-//        QIcon icon = tab->icon();
-//        icon.setIsMask(!enable);
-//        tab->setIcon(icon);
+        //        QIcon icon = tab->icon();
+        //        icon.setIsMask(!enable);
+        //        tab->setIcon(icon);
     }
 }
 
@@ -280,8 +292,9 @@ bool FancyTabBar::isTabEnabled(int index) const
     Q_ASSERT(index < d->m_modeTabs.size());
     Q_ASSERT(index >= 0);
 
-    if (index < d->m_modeTabs.size() && index >= 0)
+    if (index < d->m_modeTabs.size() && index >= 0) {
         return d->m_modeTabs[index]->isEnabled();
+    }
 
     return false;
 }
@@ -290,7 +303,8 @@ void FancyTabBar::setTabVisible(int index, bool visible)
 {
     Q_ASSERT(index < d->m_modeTabs.size());
     Q_ASSERT(index >= 0);
-    if (index < d->m_modeTabs.size() && index >= 0){
+
+    if (index < d->m_modeTabs.size() && index >= 0) {
         d->m_modeTabs[index]->setHidden(!visible);
     }
 }
@@ -308,20 +322,25 @@ void FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, 
     tab->setIcon(icon);
     tab->setText(label);
     tab->setHasMenu(hasMenu);
-    if(d->m_direction == Vertical){
+
+    if (d->m_direction == Vertical) {
         tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        tab->setShortcut(tr("Ctrl+%1").arg(index+1));
-    }else if(d->m_direction == Horizontal){
+        tab->setShortcut(tr("Ctrl+%1").arg(index + 1));
+    } else if (d->m_direction == Horizontal) {
         tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
+
     d->m_modeTabs.insert(index, tab);
     connect(tab, SIGNAL(clicked(bool)), d, SLOT(switchTab()));
-    connect(tab, SIGNAL(menuTriggered(QMouseEvent*)), d, SLOT(menuTriggered(QMouseEvent*)));
-    if(d->m_currentIndex >= index)
+    connect(tab, SIGNAL(menuTriggered(QMouseEvent *)), d, SLOT(menuTriggered(QMouseEvent *)));
+
+    if (d->m_currentIndex >= index) {
         d->m_currentIndex++;
-    if(hasMenu){
+    }
+
+    if (hasMenu) {
         d->m_menuModeLayout->addWidget(tab);
-    }else{
+    } else {
         d->m_modeLayout->insertWidget(index, tab);
     }
 }
@@ -329,21 +348,27 @@ void FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, 
 void FancyTabBar::removeTab(int index)
 {
     FancyTab *tab = d->m_modeTabs.takeAt(index);
-    if(tab->m_hasMenu){
+
+    if (tab->m_hasMenu) {
         d->m_menuModeLayout->removeWidget(tab);
-    }else{
+    } else {
         d->m_modeLayout->removeWidget(tab);
     }
+
     delete tab;
 }
 
 void FancyTabBar::setCurrentIndex(int index)
 {
-    if(!validIndex(index)) return;
-    if(isTabEnabled(index) && index != d->m_currentIndex){
-        if(validIndex(d->m_currentIndex)){
+    if (!validIndex(index)) {
+        return;
+    }
+
+    if (isTabEnabled(index) && index != d->m_currentIndex) {
+        if (validIndex(d->m_currentIndex)) {
             d->m_modeTabs.at(d->m_currentIndex)->select(false);
         }
+
         d->m_currentIndex = index;
         // to do
         d->m_modeTabs.at(d->m_currentIndex)->select(true);
@@ -358,28 +383,32 @@ int FancyTabBar::currentIndex() const
 
 void FancyTabBar::setTabToolTip(int index, QString toolTip)
 {
-    if(!validIndex(index))
+    if (!validIndex(index)) {
         return;
+    }
+
     d->m_modeTabs[index]->setToolTip(toolTip);
 }
 
 QString FancyTabBar::tabToolTip(int index) const
 {
-    if(!validIndex(index))
+    if (!validIndex(index)) {
         return QString("");
+    }
+
     return d->m_modeTabs[index]->toolTip();
 }
 
 void FancyTabBar::setTabStyle(FancyTabBar::TabType type, FancyTabBar::TabStyle style)
 {
-    if(type == Mode){
+    if (type == Mode) {
         d->m_modeStyle = style;
-        foreach (FancyTab *tab, d->m_modeTabs) {
+        foreach (FancyTab * tab, d->m_modeTabs) {
             tab->setToolButtonStyle((Qt::ToolButtonStyle)style);
         }
-    }else if(type == Action){
+    } else if (type == Action) {
         d->m_actionStyle = style;
-        foreach (FancyTab *tab, d->m_actionTabs) {
+        foreach (FancyTab * tab, d->m_actionTabs) {
             tab->setToolButtonStyle((Qt::ToolButtonStyle)style);
         }
     }
@@ -387,12 +416,12 @@ void FancyTabBar::setTabStyle(FancyTabBar::TabType type, FancyTabBar::TabStyle s
 
 void FancyTabBar::setTabFont(FancyTabBar::TabType type, QFont &font)
 {
-    if(type == Mode){
-        foreach (FancyTab *tab, d->m_modeTabs) {
+    if (type == Mode) {
+        foreach (FancyTab * tab, d->m_modeTabs) {
             tab->setFont(font);
         }
-    }else if(type == Action){
-        foreach (FancyTab *tab, d->m_actionTabs) {
+    } else if (type == Action) {
+        foreach (FancyTab * tab, d->m_actionTabs) {
             tab->setFont(font);
         }
     }
@@ -400,9 +429,9 @@ void FancyTabBar::setTabFont(FancyTabBar::TabType type, QFont &font)
 
 void FancyTabBar::setTabSpace(TabType type, int space)
 {
-    if(type == Mode){
+    if (type == Mode) {
         d->m_modeLayout->setSpacing(space);
-    }else if(type == Action){
+    } else if (type == Action) {
         d->m_frontActionLayout->setSpacing(space);
         d->m_middleActionLayout->setSpacing(space);
         d->m_backActionLayout->setSpacing(space);
@@ -411,10 +440,10 @@ void FancyTabBar::setTabSpace(TabType type, int space)
 
 void FancyTabBar::setTabIconSize(QSize size)
 {
-    foreach (FancyTab *tab, d->m_modeTabs) {
+    foreach (FancyTab * tab, d->m_modeTabs) {
         tab->setIconSize(size);
     }
-    foreach (FancyTab *tab, d->m_actionTabs) {
+    foreach (FancyTab * tab, d->m_actionTabs) {
         tab->setIconSize(size);
     }
 }
@@ -428,28 +457,36 @@ int FancyTabBar::addAction(QAction *action, FancyTabBar::ActionPosition position
     tab->setToolButtonStyle((Qt::ToolButtonStyle)d->m_actionStyle);
     tab->setToolTip(action->toolTip());
     tab->setDefaultAction(action);
-    if(d->m_direction == Vertical){
+
+    if (d->m_direction == Vertical) {
         tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    }else if(d->m_direction == Horizontal){
+    } else if (d->m_direction == Horizontal) {
         tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
+
     connect(tab, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
     d->m_actionTabs.append(tab);
     d->m_actionTabMap.insert(action, tab);
-    if(position == Front){
+
+    if (position == Front) {
         d->m_frontActionLayout->addWidget(tab);
-    }else if(position == Middle){
+    } else if (position == Middle) {
         d->m_middleActionLayout->addWidget(tab);
-    }else if(position == Back){
+    } else if (position == Back) {
         d->m_backActionLayout->addWidget(tab);
     }
+
     return d->m_actionTabs.count() - 1;
 }
 
 void FancyTabBar::removeAction(QAction *action)
 {
     FancyTab *tab = d->m_actionTabMap.value(action);
-    if(!tab) return;
+
+    if (!tab) {
+        return;
+    }
+
     d->m_actionTabs.removeAll(tab);
     d->m_actionTabMap.remove(action);
     d->m_frontActionLayout->removeWidget(tab);
@@ -461,7 +498,8 @@ void FancyTabBar::removeAction(QAction *action)
 void FancyTabBar::setActionStyle(QAction *action, FancyTabBar::TabStyle style)
 {
     FancyTab *tab = d->m_actionTabMap.value(action);
-    if(tab){
+
+    if (tab) {
         tab->setToolButtonStyle((Qt::ToolButtonStyle)style);
     }
 }
@@ -506,18 +544,25 @@ void FancyTabBar::setBackgroundColor(const QColor &color)
 
 void FancyTabBar::setHeadSpace(int space)
 {
-    if(space < 0 || space > 50) return;
-    d->m_headSpacer->resize(QSize(1,1));
-    if(d->m_direction == Vertical){
+    if (space < 0 || space > 50) {
+        return;
+    }
+
+    d->m_headSpacer->resize(QSize(1, 1));
+
+    if (d->m_direction == Vertical) {
         d->m_headSpacer->setFixedHeight(space);
-    }else{
+    } else {
         d->m_headSpacer->setFixedWidth(space);
     }
 }
 
 void FancyTabBar::hideMenu(int index)
 {
-    if(!validIndex(index)) return;
+    if (!validIndex(index)) {
+        return;
+    }
+
     d->m_modeTabs.at(index)->select(false);
 }
 

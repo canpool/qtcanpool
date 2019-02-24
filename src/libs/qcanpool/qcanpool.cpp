@@ -35,21 +35,23 @@ QColor QCanpool::argbToColor(const QString &argb)
     QColor color;
     bool ok = true;
     QRgb rgba = argb.toLongLong(&ok, 16);
-    if(ok){
+
+    if (ok) {
         color = QColor::fromRgba(rgba);
-    }else{
-        color = QColor(0,0,0);
+    } else {
+        color = QColor(0, 0, 0);
     }
+
     return color;
 }
 
 QString QCanpool::colorToArgb(const QColor &color)
 {
     QString argb =  QString("%1%2%3%4")
-            .arg(color.alpha(), 2, 16, QLatin1Char('0'))
-            .arg(color.red(), 2, 16, QLatin1Char('0'))
-            .arg(color.green(), 2, 16, QLatin1Char('0'))
-            .arg(color.blue(), 2, 16, QLatin1Char('0'));
+                    .arg(color.alpha(), 2, 16, QLatin1Char('0'))
+                    .arg(color.red(), 2, 16, QLatin1Char('0'))
+                    .arg(color.green(), 2, 16, QLatin1Char('0'))
+                    .arg(color.blue(), 2, 16, QLatin1Char('0'));
     return argb;
 }
 
@@ -58,12 +60,12 @@ void QCanpool::showInExplorer(QString fileName)
     Q_UNUSED(fileName);
 #if defined(Q_OS_WIN32)
 #if !defined(Q_CC_MSVC)
-        QString argsFile = QString("/select, %1").arg(fileName.replace("/","\\"));
-        QTextCodec *codec = QTextCodec::codecForName("GB18030");
-        ShellExecuteA(nullptr,"open","explorer.exe",codec->fromUnicode(argsFile).constData(),NULL,SW_SHOWDEFAULT);
+    QString argsFile = QString("/select, %1").arg(fileName.replace("/", "\\"));
+    QTextCodec *codec = QTextCodec::codecForName("GB18030");
+    ShellExecuteA(nullptr, "open", "explorer.exe", codec->fromUnicode(argsFile).constData(), NULL, SW_SHOWDEFAULT);
 #endif
 #else
-        QDesktopServices::openUrl(QUrl(QFileInfo(fileName).absolutePath(), QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl(QFileInfo(fileName).absolutePath(), QUrl::TolerantMode));
 #endif
 }
 

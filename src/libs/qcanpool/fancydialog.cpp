@@ -41,17 +41,16 @@ FancyDialogPrivate::FancyDialogPrivate(QObject *parent)
 }
 
 FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
-    : QDialog(parent),d(new FancyDialogPrivate(this))
+    : QDialog(parent), d(new FancyDialogPrivate(this))
 {
     setWindowFlags(Qt::FramelessWindowHint |
                    Qt::WindowSystemMenuHint |
                    Qt::WindowMinimizeButtonHint |
                    Qt::Dialog
-                   );
+                  );
     d->fancyBar = new FancyBar(this, Qt::Dialog | f);
     d->fancyBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     d->centralWidget = new QWidget();
-
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(1, 0, 1, 1);
     layout->setSpacing(0);
@@ -63,12 +62,11 @@ FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
 
 FancyDialog::~FancyDialog()
 {
-
 }
 
 void FancyDialog::setCentralWidget(QWidget *w)
 {
-    if(d->centralWidget){
+    if (d->centralWidget) {
         layout()->removeWidget(d->centralWidget);
         delete d->centralWidget;
         d->centralWidget = w;
@@ -94,15 +92,16 @@ void FancyDialog::addAdditionalControl(QAction *action)
 void FancyDialog::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-
     QSettings settings("Canpool", "qtcanpool");
     QString skinName = settings.value("skin").toString();
-    if(skinName.isEmpty()){
+
+    if (skinName.isEmpty()) {
         skinName = QString(":/skin/default");
     }
+
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::gray);
-    painter.drawPixmap(QRect(0,0,this->width(),this->height()),
+    painter.drawPixmap(QRect(0, 0, this->width(), this->height()),
                        QPixmap(skinName));
 }

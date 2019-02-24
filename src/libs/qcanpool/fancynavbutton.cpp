@@ -30,22 +30,16 @@ FancyNavButton::FancyNavButton(QWidget *parent)
     : QToolButton(parent)
 {
     setToolButtonStyle(Qt::ToolButtonTextOnly);
-
     setAutoRaise(false);
     setArrowType(Qt::NoArrow);
     setFocusPolicy(Qt::NoFocus);
-
-    setIconSize(QSize(16,16));
-
+    setIconSize(QSize(16, 16));
     m_isMouseOver = false;
     m_isMousePress = false;
     m_type = Button;
-
     m_hoverColor = QColor(255, 255, 255, 50);
     m_pressColor = QColor(0, 0, 0, 100);
-
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
 //    QPalette palette;
 //    palette.setColor(QPalette::WindowText,Qt::white);
 //    this->setPalette(palette);
@@ -62,14 +56,17 @@ void FancyNavButton::setTextColor(const QColor &color)
 {
     setStyleSheet(QString("QToolButton{background-color: transparent;border:none;color: rgba(%1,%2,%3,%4);}")
                   .arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha())
-                  );
+                 );
 }
 
 void FancyNavButton::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    if(!isEnabled())
+
+    if (!isEnabled()) {
         return;
+    }
+
     m_isMouseOver = true;
 }
 
@@ -81,37 +78,39 @@ void FancyNavButton::leaveEvent(QEvent *event)
 
 void FancyNavButton::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
-        if(m_type == Action){
+    if (event->button() == Qt::LeftButton) {
+        if (m_type == Action) {
             m_isMousePress = true;
             update();
-        }else{
-            if(this->isCheckable()){
-                if(this->isChecked()){
+        } else {
+            if (this->isCheckable()) {
+                if (this->isChecked()) {
                     m_isMousePress = false;
-                }else{
+                } else {
                     m_isMousePress = true;
                 }
+
                 this->setChecked(m_isMousePress);
                 update();
-            }else{
+            } else {
                 m_isMousePress = true;
                 emit clicked();
             }
         }
     }
+
     // added on 2018-4-30 17:17:32, cancel the sink
 //    QToolButton::mousePressEvent(event);
 }
 
 void FancyNavButton::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton){
-        if(m_type == Action){
+    if (event->button() == Qt::LeftButton) {
+        if (m_type == Action) {
             m_isMousePress = false; // add for action
             update();
-            if(this->rect().contains(event->pos())){ // don't emit when move out
+
+            if (this->rect().contains(event->pos())) { // don't emit when move out
                 emit clicked();
             }
         }
@@ -120,9 +119,9 @@ void FancyNavButton::mouseReleaseEvent(QMouseEvent *event)
 
 void FancyNavButton::paintEvent(QPaintEvent *event)
 {
-    if(m_isMousePress){
+    if (m_isMousePress) {
         painterInfo(m_pressColor);
-    }else if(m_isMouseOver){
+    } else if (m_isMouseOver) {
         painterInfo(m_hoverColor);
     }
 
@@ -134,7 +133,6 @@ void FancyNavButton::painterInfo(QColor &color)
     QPainter painter(this);
     QPen pen(Qt::NoBrush, 1);
     painter.setPen(pen);
-
     painter.setBrush(color);
     painter.drawRect(rect());
 }

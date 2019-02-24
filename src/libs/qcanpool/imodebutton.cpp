@@ -33,26 +33,20 @@
  *
  *******************************************************************************/
 IModeButton::IModeButton(const QIcon &icon, QWidget *parent)
-    :QToolButton(parent)
+    : QToolButton(parent)
 {
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
     setIcon(icon);
-    setIconSize(QSize(22,22));
-
+    setIconSize(QSize(22, 22));
     setAutoRaise(true);
-
     m_isMouseOver = false;
     m_isMousePress = false;
     m_type = Mode;
-
     m_hoverColor = QColor(255, 255, 255, 50);
     m_pressColor = QColor(0, 0, 0, 100);
-    m_textColor = QColor(255,255,255);
-    m_selectedTextColor = QColor(255,255,255);
-
+    m_textColor = QColor(255, 255, 255);
+    m_selectedTextColor = QColor(255, 255, 255);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-
 //    QPalette palette;
 //    palette.setColor(QPalette::WindowText,Qt::white);
 //    this->setPalette(palette);
@@ -61,15 +55,17 @@ IModeButton::IModeButton(const QIcon &icon, QWidget *parent)
 
 IModeButton::~IModeButton()
 {
-
 }
 
 
 void IModeButton::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    if(!isEnabled())
+
+    if (!isEnabled()) {
         return;
+    }
+
     m_isMouseOver = true;
 }
 
@@ -81,13 +77,12 @@ void IModeButton::leaveEvent(QEvent *event)
 
 void IModeButton::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
+    if (event->button() == Qt::LeftButton) {
 //        emit clicked();
-        if(m_type == Action){
+        if (m_type == Action) {
             m_isMousePress = true; // add for action
             update();
-        }else{
+        } else {
             emit clicked();
         }
     }
@@ -95,11 +90,12 @@ void IModeButton::mousePressEvent(QMouseEvent *event)
 
 void IModeButton::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton){
-        if(m_type == Action){
+    if (event->button() == Qt::LeftButton) {
+        if (m_type == Action) {
             m_isMousePress = false; // add for action
             update();
-            if(this->rect().contains(event->pos())){ // don't emit when move out
+
+            if (this->rect().contains(event->pos())) { // don't emit when move out
                 emit clicked();
             }
         }
@@ -127,18 +123,18 @@ void IModeButton::setColor(const QColor &color)
 {
     setStyleSheet(QString("QToolButton{background-color: transparent;color: rgba(%1,%2,%3,%4);}")
                   .arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha())
-                  );
+                 );
 }
 
 void IModeButton::paintEvent(QPaintEvent *event)
 {
-    if(m_isMousePress){
+    if (m_isMousePress) {
         painterInfo(m_pressColor);
         setColor(m_selectedTextColor);
-    }else if(m_isMouseOver){
+    } else if (m_isMouseOver) {
         painterInfo(m_hoverColor);
         setColor(m_selectedTextColor);
-    }else{
+    } else {
         setColor(m_textColor);
     }
 
@@ -164,7 +160,6 @@ void IModeButton::painterInfo(QColor &color)
     QPainter painter(this);
     QPen pen(Qt::NoBrush, 1);
     painter.setPen(pen);
-
     painter.setBrush(color);
     painter.drawRect(rect());
 }
