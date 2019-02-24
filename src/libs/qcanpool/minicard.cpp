@@ -60,20 +60,19 @@ private slots:
 MiniCardPrivate::MiniCardPrivate(QObject *parent)
     : QObject(parent)
 {
-    m_infoColor = QColor(255,255,255);
-    m_infoBkcolor = QColor(28,132,198);
-    m_spacerColor = QColor(230,230,230);
-    m_noteColor = QColor(28,132,198);
-    m_valueColor = QColor(50,50,50);
-    m_titleColor = QColor(50,50,50);
-    m_descColor = QColor(50,50,50);
-    m_backgroundColor = QColor(255,255,255);
+    m_infoColor = QColor(255, 255, 255);
+    m_infoBkcolor = QColor(28, 132, 198);
+    m_spacerColor = QColor(230, 230, 230);
+    m_noteColor = QColor(28, 132, 198);
+    m_valueColor = QColor(50, 50, 50);
+    m_titleColor = QColor(50, 50, 50);
+    m_descColor = QColor(50, 50, 50);
+    m_backgroundColor = QColor(255, 255, 255);
 }
 
 void MiniCardPrivate::init()
 {
     createWindow();
-
     q->setInfoColor(m_infoColor);
     q->setInfoBackgroundColor(m_infoBkcolor);
     q->setTitleColor(m_titleColor);
@@ -82,74 +81,61 @@ void MiniCardPrivate::init()
     q->setValueColor(m_valueColor);
     q->setDescColor(m_descColor);
     q->setBackgroundColor(m_backgroundColor);
-
     q->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 
 void MiniCardPrivate::createWindow()
 {
-    QFont font("Segoe UI",10);;
-
+    QFont font("Segoe UI", 10);;
     m_pTitleLabel = new QLabel(tr("Title"));
     font.setBold(true);
     font.setPointSize(12);
     m_pTitleLabel->setFont(font);
-
     m_pInfoButton = new QToolButton();
     connect(m_pInfoButton, SIGNAL(clicked(bool)), this, SLOT(slotInfoClicked()));
     m_pInfoButton->setText(tr("  Information  "));
     font.setPointSize(11);
     m_pInfoButton->setFont(font);
-
     m_pValueLabel = new QLabel(tr("Value"));
     font.setBold(false);
     font.setPointSize(24);
     m_pValueLabel->setFont(font);
-
     m_pNoteButton = new QToolButton();
     connect(m_pNoteButton, SIGNAL(clicked(bool)), this, SLOT(slotNoteClicked()));
     m_pNoteButton->setText(tr("Note"));
     font.setBold(true);
     font.setPointSize(10);
     m_pNoteButton->setFont(font);
-
     m_pDescLabel = new QLabel(tr("Description"));
     font.setBold(false);
     font.setPointSize(10);
     m_pDescLabel->setFont(font);
-
-
     QHBoxLayout *pTitleLayout = new QHBoxLayout();
     pTitleLayout->setSpacing(10);
-    pTitleLayout->setContentsMargins(12,15,12,10);
+    pTitleLayout->setContentsMargins(12, 15, 12, 10);
     pTitleLayout->addWidget(m_pTitleLabel);
     pTitleLayout->addStretch();
     pTitleLayout->addWidget(m_pInfoButton);
-
     QHBoxLayout *pValueLayout = new QHBoxLayout();
     pValueLayout->setSpacing(5);
-    pValueLayout->setContentsMargins(12,5,0,0);
+    pValueLayout->setContentsMargins(12, 5, 0, 0);
     pValueLayout->addWidget(m_pValueLabel);
     pValueLayout->addStretch();
-
     QHBoxLayout *pDescLayout = new QHBoxLayout();
     pDescLayout->setSpacing(5);
-    pDescLayout->setContentsMargins(12, 0, 12,15);
+    pDescLayout->setContentsMargins(12, 0, 12, 15);
     pDescLayout->addWidget(m_pDescLabel);
     pDescLayout->addStretch();
     pDescLayout->addWidget(m_pNoteButton);
-
     m_pSpacer = new QWidget();
     m_pSpacer->setFixedHeight(1);
-
     QVBoxLayout *pMainLayout = new QVBoxLayout();
     pMainLayout->setSpacing(0);
-    pMainLayout->setContentsMargins(0,0,0,0);
+    pMainLayout->setContentsMargins(0, 0, 0, 0);
     pMainLayout->addLayout(pTitleLayout);
     pMainLayout->addWidget(m_pSpacer);
     pMainLayout->addLayout(pValueLayout);
     pMainLayout->addLayout(pDescLayout);
-
     q->setLayout(pMainLayout);
 }
 
@@ -168,7 +154,7 @@ void MiniCardPrivate::slotInfoClicked()
 }
 
 MiniCard::MiniCard(QWidget *parent)
-    : QWidget(parent),d(new MiniCardPrivate(this))
+    : QWidget(parent), d(new MiniCardPrivate(this))
 {
     d->q = this;
     d->init();
@@ -208,9 +194,9 @@ void MiniCard::setInfoColor(const QColor &color)
 {
     d->m_infoColor = color;
     d->m_pInfoButton->setStyleSheet(QString("background-color:#%1; color:#%2;")
-                                .arg(QCanpool::colorToArgb(d->m_infoBkcolor))
-                                .arg(QCanpool::colorToArgb(d->m_infoColor))
-                                );
+                                    .arg(QCanpool::colorToArgb(d->m_infoBkcolor))
+                                    .arg(QCanpool::colorToArgb(d->m_infoColor))
+                                   );
 }
 
 void MiniCard::setInfoBackgroundColor(const QColor &color)
@@ -219,7 +205,7 @@ void MiniCard::setInfoBackgroundColor(const QColor &color)
     d->m_pInfoButton->setStyleSheet(QString("border:0px; background-color:#%1; color:#%2;")
                                     .arg(QCanpool::colorToArgb(d->m_infoBkcolor))
                                     .arg(QCanpool::colorToArgb(d->m_infoColor))
-                                    );
+                                   );
 }
 
 void MiniCard::setSpacerColor(const QColor &color)
@@ -227,7 +213,7 @@ void MiniCard::setSpacerColor(const QColor &color)
     d->m_spacerColor = color;
     d->m_pSpacer->setStyleSheet(QString("background-color:#%1;")
                                 .arg(QCanpool::colorToArgb(color))
-                                );
+                               );
 }
 
 void MiniCard::setNoteColor(const QColor &color)
@@ -235,7 +221,7 @@ void MiniCard::setNoteColor(const QColor &color)
     d->m_noteColor = color;
     d->m_pNoteButton->setStyleSheet(QString("background-color:transparent;color:#%1;")
                                     .arg(QCanpool::colorToArgb(color))
-                                        );
+                                   );
 }
 
 void MiniCard::setTitleColor(const QColor &color)
@@ -243,7 +229,7 @@ void MiniCard::setTitleColor(const QColor &color)
     d->m_titleColor = color;
     d->m_pTitleLabel->setStyleSheet(QString("background-color:transparent;color:#%1;")
                                     .arg(QCanpool::colorToArgb(color))
-                                    );
+                                   );
 }
 
 void MiniCard::setValueColor(const QColor &color)
@@ -251,15 +237,15 @@ void MiniCard::setValueColor(const QColor &color)
     d->m_valueColor = color;
     d->m_pValueLabel->setStyleSheet(QString("background-color:transparent;color:#%1;")
                                     .arg(QCanpool::colorToArgb(color))
-                                    );
+                                   );
 }
 
 void MiniCard::setDescColor(const QColor &color)
 {
     d->m_descColor = color;
     d->m_pDescLabel->setStyleSheet(QString("background-color:transparent;color:#%1;")
-                                .arg(QCanpool::colorToArgb(color))
-                                );
+                                   .arg(QCanpool::colorToArgb(color))
+                                  );
 }
 
 void MiniCard::setBackgroundColor(const QColor &color)

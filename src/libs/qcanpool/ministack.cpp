@@ -75,50 +75,40 @@ MiniStackPrivate::MiniStackPrivate(QObject *parent)
     : QObject(parent)
 {
     m_bExpand = true;
-
-    m_spacerColor = QColor(230,230,230);
-    m_titleColor = QColor(50,50,50);
-    m_backgroundColor = QColor(255,255,255);
-
-    m_tabBackgroundColor = QColor(35,198,200);
-    m_tabTextColor = QColor(255,255,255);
-    m_tabHoverBackgroundColor = QColor(71,218,222);
-    m_tabHoverTextColor = QColor(255,255,255);
-    m_tabSelectedBackgroundColor = QColor(28,156,159);
-    m_tabSelectedTextColor = QColor(255,255,255);
+    m_spacerColor = QColor(230, 230, 230);
+    m_titleColor = QColor(50, 50, 50);
+    m_backgroundColor = QColor(255, 255, 255);
+    m_tabBackgroundColor = QColor(35, 198, 200);
+    m_tabTextColor = QColor(255, 255, 255);
+    m_tabHoverBackgroundColor = QColor(71, 218, 222);
+    m_tabHoverTextColor = QColor(255, 255, 255);
+    m_tabSelectedBackgroundColor = QColor(28, 156, 159);
+    m_tabSelectedTextColor = QColor(255, 255, 255);
 }
 
 void MiniStackPrivate::init()
 {
     createWindow();
-
     q->setTitleColor(m_titleColor);
     q->setSpacerColor(m_spacerColor);
     q->setBackgroundColor(m_backgroundColor);
-
     setTabColor();
-
     q->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 }
 
 void MiniStackPrivate::createWindow()
 {
-    QFont font("Segoe UI",10);
-
+    QFont font("Segoe UI", 10);
     m_pTitleWidget = new QWidget();
-
     m_pTitleLabel = new QLabel(tr("Title"));
     font.setBold(true);
     font.setPointSize(12);
     m_pTitleLabel->setFont(font);
-
     m_pTabBar = new QTabBar();
     m_pToolBarWidgets = new QStackedWidget();
     m_pToolBarWidgets->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-
     m_pToolBar = new QToolBar();
-    m_pToolBar->setIconSize(QSize(20,20));
-
+    m_pToolBar->setIconSize(QSize(20, 20));
     QAction *action = new QAction(QIcon(":/tools/arrow_up"), tr("collapse"), this);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(slotExpand()));
     m_pExpandAction = action;
@@ -127,10 +117,9 @@ void MiniStackPrivate::createWindow()
     m_pSetupAction = action;
     m_pToolBar->addAction(m_pExpandAction);
     m_pToolBar->addAction(m_pSetupAction);
-
     QHBoxLayout *pTitleLayout = new QHBoxLayout();
     pTitleLayout->setSpacing(0);
-    pTitleLayout->setContentsMargins(5,1,5,1);
+    pTitleLayout->setContentsMargins(5, 1, 5, 1);
     pTitleLayout->addWidget(m_pTitleLabel);
     pTitleLayout->addSpacing(10);
     pTitleLayout->addWidget(m_pToolBarWidgets);
@@ -139,27 +128,22 @@ void MiniStackPrivate::createWindow()
     pTitleLayout->addSpacing(2);
     pTitleLayout->addWidget(m_pToolBar);
     m_pTitleWidget->setLayout(pTitleLayout);
-
     m_pSpacer = new QWidget();
     m_pSpacer->setFixedHeight(1);
-
     m_pBodyWidget = new QWidget();
     m_pStackedWidget = new QStackedWidget();
     QHBoxLayout *pBodyLayout = new QHBoxLayout();
     pBodyLayout->setSpacing(0);
-    pBodyLayout->setContentsMargins(5,5,5,5);
+    pBodyLayout->setContentsMargins(5, 5, 5, 5);
     pBodyLayout->addWidget(m_pStackedWidget);
     m_pBodyWidget->setLayout(pBodyLayout);
-
     QVBoxLayout *pMainLayout = new QVBoxLayout();
     pMainLayout->setSpacing(0);
-    pMainLayout->setContentsMargins(0,0,0,0);
+    pMainLayout->setContentsMargins(0, 0, 0, 0);
     pMainLayout->addWidget(m_pTitleWidget);
     pMainLayout->addWidget(m_pSpacer);
     pMainLayout->addWidget(m_pBodyWidget);
-
     q->setLayout(pMainLayout);
-
     connect(m_pTabBar, SIGNAL(currentChanged(int)), m_pStackedWidget, SLOT(setCurrentIndex(int)));
     connect(m_pTabBar, SIGNAL(currentChanged(int)), m_pToolBarWidgets, SLOT(setCurrentIndex(int)));
     connect(m_pTabBar, SIGNAL(currentChanged(int)), this, SLOT(slotCurrentChanged()));
@@ -168,35 +152,38 @@ void MiniStackPrivate::createWindow()
 void MiniStackPrivate::setTabColor()
 {
     q->setStyleSheet(QString(""
-                "QTabBar::tab {"
-                "    background-color: #%1;"
-                "    color: #%2;"
-                "    padding-left: 8px;"
-                "    padding-right: 8px;"
-                "    padding-top: 4px;"
-                "    padding-bottom: 4px;"
-                "}"
-                "QTabBar::tab:hover {"
-                "    background-color: #%3;"
-                "    color: #%4;"
-                "}"
-                "QTabBar::tab:selected {"
-                "    background-color: #%5;"
-                "    color: #%6;"
-                "}")
-                  .arg(QCanpool::colorToArgb(m_tabBackgroundColor))
-                  .arg(QCanpool::colorToArgb(m_tabTextColor))
-                  .arg(QCanpool::colorToArgb(m_tabHoverBackgroundColor))
-                  .arg(QCanpool::colorToArgb(m_tabHoverTextColor))
-                  .arg(QCanpool::colorToArgb(m_tabSelectedBackgroundColor))
-                  .arg(QCanpool::colorToArgb(m_tabSelectedTextColor))
-                  );
+                             "QTabBar::tab {"
+                             "    background-color: #%1;"
+                             "    color: #%2;"
+                             "    padding-left: 8px;"
+                             "    padding-right: 8px;"
+                             "    padding-top: 4px;"
+                             "    padding-bottom: 4px;"
+                             "}"
+                             "QTabBar::tab:hover {"
+                             "    background-color: #%3;"
+                             "    color: #%4;"
+                             "}"
+                             "QTabBar::tab:selected {"
+                             "    background-color: #%5;"
+                             "    color: #%6;"
+                             "}")
+                     .arg(QCanpool::colorToArgb(m_tabBackgroundColor))
+                     .arg(QCanpool::colorToArgb(m_tabTextColor))
+                     .arg(QCanpool::colorToArgb(m_tabHoverBackgroundColor))
+                     .arg(QCanpool::colorToArgb(m_tabHoverTextColor))
+                     .arg(QCanpool::colorToArgb(m_tabSelectedBackgroundColor))
+                     .arg(QCanpool::colorToArgb(m_tabSelectedTextColor))
+                    );
 }
 
 
 void MiniStackPrivate::addAction(QAction *action)
 {
-    if(action == NULL) return;
+    if (action == NULL) {
+        return;
+    }
+
     m_pToolBar->insertAction(m_pExpandAction, action);
 }
 
@@ -205,11 +192,12 @@ void MiniStackPrivate::slotExpand()
     m_bExpand = !m_bExpand;
     m_pBodyWidget->setHidden(!m_bExpand);
     m_pSpacer->setHidden(!m_bExpand);
-    if(m_bExpand){
+
+    if (m_bExpand) {
         m_pExpandAction->setIcon(QIcon(":/tools/arrow_up"));
         m_pExpandAction->setToolTip(tr("collapse"));
         q->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    }else{
+    } else {
         m_pExpandAction->setIcon(QIcon(":/tools/arrow_down"));
         m_pExpandAction->setToolTip(tr("expand"));
         q->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
@@ -218,13 +206,13 @@ void MiniStackPrivate::slotExpand()
 
 void MiniStackPrivate::slotCurrentChanged()
 {
-    if(!m_bExpand){
+    if (!m_bExpand) {
         slotExpand();
     }
 }
 
 MiniStack::MiniStack(QWidget *parent)
-    : QWidget(parent),d(new MiniStackPrivate(this))
+    : QWidget(parent), d(new MiniStackPrivate(this))
 {
     d->q = this;
     d->init();
@@ -234,11 +222,13 @@ void MiniStack::addTab(const QString &text, QWidget *widget, QWidget *appendix)
 {
     d->m_pTabBar->addTab(text);
     d->m_pStackedWidget->addWidget(widget);
-    if(appendix){
+
+    if (appendix) {
         d->m_pToolBarWidgets->addWidget(appendix);
-    }else{
+    } else {
         d->m_pToolBarWidgets->addWidget(new QWidget);
     }
+
     d->m_pTabBar->setVisible(d->m_pTabBar->count() > 1);
 }
 
@@ -259,7 +249,7 @@ void MiniStack::setBodySpacing(int spacing)
 
 void MiniStack::setBodyMargins(int left, int top, int right, int bottom)
 {
-    d->m_pBodyWidget->layout()->setContentsMargins(left,top,right,bottom);
+    d->m_pBodyWidget->layout()->setContentsMargins(left, top, right, bottom);
 }
 
 void MiniStack::setTitleSpacing(int spacing)
@@ -269,7 +259,7 @@ void MiniStack::setTitleSpacing(int spacing)
 
 void MiniStack::setTitleMargins(int left, int top, int right, int bottom)
 {
-    d->m_pTitleWidget->layout()->setContentsMargins(left,top,right,bottom);
+    d->m_pTitleWidget->layout()->setContentsMargins(left, top, right, bottom);
 }
 
 void MiniStack::setTitle(const QString &text)
@@ -281,16 +271,16 @@ void MiniStack::setTitleColor(const QColor &color)
 {
     d->m_titleColor = color;
     d->m_pTitleLabel->setStyleSheet(QString("background-color:transparent;color:#%1;")
-                                 .arg(QCanpool::colorToArgb(color))
-                                 );
+                                    .arg(QCanpool::colorToArgb(color))
+                                   );
 }
 
 void MiniStack::setSpacerColor(const QColor &color)
 {
     d->m_spacerColor = color;
     d->m_pSpacer->setStyleSheet(QString("background-color: #%1;")
-                             .arg(QCanpool::colorToArgb(color))
-                             );
+                                .arg(QCanpool::colorToArgb(color))
+                               );
 }
 
 void MiniStack::setBackgroundColor(const QColor &color)

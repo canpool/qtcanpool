@@ -48,9 +48,8 @@ SkinItemPrivate::SkinItemPrivate()
 }
 
 SkinItem::SkinItem(QWidget *parent)
-    : QWidget(parent),d(new SkinItemPrivate())
+    : QWidget(parent), d(new SkinItemPrivate())
 {
-
 }
 
 SkinItem::~SkinItem()
@@ -60,7 +59,10 @@ SkinItem::~SkinItem()
 
 void SkinItem::setPixmapName(const QString &name)
 {
-    if(d->m_pixmapName == name) return;
+    if (d->m_pixmapName == name) {
+        return;
+    }
+
     d->m_pixmapName = name;
     QPixmap pixmap(name);
     d->m_fitPixmap = pixmap.scaled(300, 200, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -79,18 +81,17 @@ void SkinItem::select(bool selected)
 
 void SkinItem::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
+    if (event->button() == Qt::LeftButton) {
         d->m_bMousePress = true;
     }
 }
 
 void SkinItem::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(d->m_bMousePress && (this->rect()).contains(event->pos()))
-    {
+    if (d->m_bMousePress && (this->rect()).contains(event->pos())) {
         emit clicked();
     }
+
     d->m_bMousePress = false;
 }
 
@@ -112,21 +113,20 @@ void SkinItem::paintEvent(QPaintEvent *)
     painter.save();
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::gray);
-    painter.drawPixmap(QRect(SHADOW_WIDTH,SHADOW_WIDTH,
-                             this->width()-2*SHADOW_WIDTH,
-                             this->height()-2*SHADOW_WIDTH),
+    painter.drawPixmap(QRect(SHADOW_WIDTH, SHADOW_WIDTH,
+                             this->width() - 2 * SHADOW_WIDTH,
+                             this->height() - 2 * SHADOW_WIDTH),
                        d->m_fitPixmap);
     painter.restore();
     painter.save();
-    if(d->m_bMouseEnter || d->m_isSelected)
-    {
+
+    if (d->m_bMouseEnter || d->m_isSelected) {
         QPen pen(BORDER_COLOR);
         pen.setWidth(5);
         painter.setPen(pen);
-        painter.drawRoundRect(0,0,this->width()-1, this->height()-1, 5, 5);
+        painter.drawRoundRect(0, 0, this->width() - 1, this->height() - 1, 5, 5);
 
-        if(d->m_isSelected)
-        {
+        if (d->m_isSelected) {
             QString state = QString(":/skin/state_ok");
             QPixmap pixmap(state);
             painter.drawPixmap(QRect(this->width() - pixmap.width() - 10,
@@ -136,6 +136,7 @@ void SkinItem::paintEvent(QPaintEvent *)
                                pixmap);
         }
     }
+
     painter.restore();
 }
 

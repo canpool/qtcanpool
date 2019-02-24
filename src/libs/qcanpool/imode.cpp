@@ -23,21 +23,25 @@ IMode::IMode(QObject *parent)
     : QObject(parent),
       m_isEnabled(true)
 {
-
 }
 
 IMode::~IMode()
 {
-    if (m_menu)
+    if (m_menu) {
         delete m_menu;
-    if (m_widget)
+    }
+
+    if (m_widget) {
         delete m_widget;
+    }
 }
 
 void IMode::setEnabled(bool enabled)
 {
-    if (m_isEnabled == enabled)
+    if (m_isEnabled == enabled) {
         return;
+    }
+
     m_isEnabled = enabled;
     emit enabledStateChanged(m_isEnabled);
 }
@@ -49,8 +53,9 @@ bool IMode::isEnabled() const
 
 QWidget *IMode::widget()
 {
-    if(!m_widget){
+    if (!m_widget) {
         m_widget = new QWidget();
     }
+
     return m_widget;
 }

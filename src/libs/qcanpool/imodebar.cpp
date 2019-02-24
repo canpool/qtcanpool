@@ -40,15 +40,12 @@ IModeBarPrivate::IModeBarPrivate(QObject *parent)
 //    m_modeButtons.clear();
     m_actionButtons.clear();
     m_actionMap.clear();
-
     m_modeStyle = Qt::ToolButtonTextUnderIcon;
     m_actionStyle = Qt::ToolButtonIconOnly;
-
     m_modeStack = nullptr;
     m_modeLayout = nullptr;
     m_frontActionLayout = nullptr;
     m_backActionLayout = nullptr;
-
     m_spacer = nullptr;
     m_line = nullptr;
 }
@@ -69,12 +66,13 @@ IModeBarPrivate::~IModeBarPrivate()
 void IModeBarPrivate::selectMode(IMode *mode)
 {
     IModeButton *pButton = m_modeMap.key(mode);
-    if(pButton){
-        foreach (IModeButton *button, m_modeMap.keys()) {
+
+    if (pButton) {
+        foreach (IModeButton * button, m_modeMap.keys()) {
             button->select(button == pButton);
         }
         m_modeStack->setCurrentWidget(mode->widget());
-    }else if(m_modes.count() > 0){
+    } else if (m_modes.count() > 0) {
         selectMode(m_modes.at(0));
     }
 }
@@ -82,7 +80,8 @@ void IModeBarPrivate::selectMode(IMode *mode)
 void IModeBarPrivate::setEnabled(IMode *mode, bool enable)
 {
     IModeButton *pButton = m_modeMap.key(mode);
-    if(pButton){
+
+    if (pButton) {
         pButton->setEnabled(enable);
         QFont font = pButton->font();
         font.setItalic(!enable);
@@ -98,7 +97,8 @@ void IModeBarPrivate::setEnabled(IMode *mode, bool enable)
 void IModeBarPrivate::setVisible(IMode *mode, bool visible)
 {
     IModeButton *pButton = m_modeMap.key(mode);
-    if(pButton){
+
+    if (pButton) {
         pButton->setVisible(visible);
         mode->widget()->setVisible(visible);
     }
@@ -108,8 +108,9 @@ void IModeBarPrivate::setVisible(IMode *mode, bool visible)
 void IModeBarPrivate::switchMode()
 {
     IModeButton *pButton = qobject_cast<IModeButton *>(sender());
-    if(pButton){
-        foreach (IModeButton *button, m_modeMap.keys()) {
+
+    if (pButton) {
+        foreach (IModeButton * button, m_modeMap.keys()) {
             button->select(button == pButton);
         }
         m_modeStack->setCurrentWidget(m_modeMap.value(pButton)->widget());
@@ -122,15 +123,15 @@ void IModeBarPrivate::switchMode()
  *
  *******************************************************************************/
 IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *parent)
-    : QWidget(parent),d(new IModeBarPrivate)
+    : QWidget(parent), d(new IModeBarPrivate)
 {
     d->m_modeStack = modeStack;
     m_direction = direction;
-
     QBoxLayout::Direction layoutDirection;
-    if(direction == Horizontal){
+
+    if (direction == Horizontal) {
         layoutDirection = QBoxLayout::LeftToRight;
-    }else{
+    } else {
         layoutDirection = QBoxLayout::TopToBottom;
     }
 
@@ -139,7 +140,6 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
 //    d->m_modeLayout->addStretch();
     d->m_modeLayout->setSpacing(0);
     d->m_modeLayout->setMargin(0);
-
 //    QScrollArea *pScrollArea = new QScrollArea();
 //    if(direction == Horizontal){
 //        pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -151,7 +151,6 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
 //        pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 //    }
 //    pScrollArea->setStyleSheet("background: transparent;");
-
 //    pScrollArea->setWidgetResizable(true);
 //    pScrollArea->setFrameShape(QFrame::NoFrame);
 //    QWidget *scrollWidget = new QWidget();
@@ -162,16 +161,13 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
 //    }
 //    scrollWidget->setLayout(d->m_modeLayout);
 //    pScrollArea->setWidget(scrollWidget);
-
     // front action layout
     d->m_frontActionLayout = new QBoxLayout(layoutDirection);
     d->m_frontActionLayout->setSpacing(0);
     d->m_frontActionLayout->setMargin(0);
-
     d->m_middleActionLayout = new QBoxLayout(layoutDirection);
     d->m_middleActionLayout->setSpacing(0);
     d->m_middleActionLayout->setMargin(0);
-
     // back action layout
     d->m_backActionLayout = new QBoxLayout(layoutDirection);
     d->m_backActionLayout->setSpacing(0);
@@ -182,46 +178,49 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
     spacerLayout->addSpacing(sbh);
     spacerLayout->setMargin(0);
     spacerLayout->setSpacing(0);
-
     d->m_spacer = new QWidget();
-    if(direction == Horizontal){
+
+    if (direction == Horizontal) {
         d->m_spacer->setFixedWidth(5);
-    }else{
+    } else {
         d->m_spacer->setFixedHeight(25);
     }
 
     d->m_line = new QWidget();
-    if(direction == Horizontal){
+
+    if (direction == Horizontal) {
         d->m_line->setFixedWidth(0);
-    }else{
+    } else {
         d->m_line->setFixedHeight(1);
     }
+
     d->m_line->setAutoFillBackground(true);
     d->m_line->setBackgroundRole(QPalette::Dark);
-
     QBoxLayout *pMainLayout = new QBoxLayout(layoutDirection);
     pMainLayout->addWidget(d->m_spacer);
     pMainLayout->addLayout(d->m_frontActionLayout);
     pMainLayout->addLayout(d->m_modeLayout);
-//    pMainLayout->addWidget(pScrollArea);
+    //    pMainLayout->addWidget(pScrollArea);
     pMainLayout->addLayout(d->m_middleActionLayout);
     pMainLayout->addStretch();
     pMainLayout->addWidget(d->m_line);
     pMainLayout->addLayout(spacerLayout);
-    if(direction == Horizontal){
+
+    if (direction == Horizontal) {
         pMainLayout->setSpacing(5);
-    }else{
+    } else {
         pMainLayout->setSpacing(0);
     }
-    pMainLayout->setContentsMargins(0, 0, 0, 0);
 
+    pMainLayout->setContentsMargins(0, 0, 0, 0);
     setLayout(pMainLayout);
 
-    if(direction == Horizontal){
+    if (direction == Horizontal) {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    }else{
+    } else {
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
+
     connect(d->m_modeStack, SIGNAL(currentChanged(int)), this, SIGNAL(currentChanged(int)));
 }
 
@@ -240,17 +239,22 @@ void IModeBar::addMode(IMode *mode)
     d->m_modes.append(mode);
     connect(pButton, SIGNAL(clicked()), d, SLOT(switchMode()));
     int index = d->m_modeStack->count();
-    if(index == 0) index++;
-    if(m_direction == Vertical){
+
+    if (index == 0) {
+        index++;
+    }
+
+    if (m_direction == Vertical) {
         pButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         pButton->setShortcut(tr("Ctrl+%1").arg(index));
         pButton->setToolTip(tr("Switch to <b>%1</b> mode\nCtrl+%2").arg(pButton->text()).arg(index));
-    }else if(m_direction == Horizontal){
+    } else if (m_direction == Horizontal) {
         pButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         pButton->setShortcut(tr("Alt+Ctrl+%1").arg(index));
         pButton->setToolTip(tr("Switch to <b>%1</b> mode\nAlt+Ctrl+%2").arg(pButton->text()).arg(index));
     }
-    d->m_modeLayout->insertWidget(index-1, pButton);
+
+    d->m_modeLayout->insertWidget(index - 1, pButton);
 }
 
 void IModeBar::selectMode(IMode *mode)
@@ -265,20 +269,22 @@ void IModeBar::setEnabled(IMode *mode, bool enable)
 
 void IModeBar::setVisible(IMode *mode, bool visible)
 {
-    d->setVisible(mode,visible);
+    d->setVisible(mode, visible);
     IMode *currentMode = d->m_modes.at(d->m_modeStack->currentIndex());
-    if(!visible){
-        if(mode == currentMode){
-            for(int i = 0; i < d->m_modeStack->count(); i++){
+
+    if (!visible) {
+        if (mode == currentMode) {
+            for (int i = 0; i < d->m_modeStack->count(); i++) {
                 IMode *tmpMode = d->m_modes.at(i);
                 IModeButton *button = d->m_modeMap.key(tmpMode);
-                if(button && !button->isHidden()){
+
+                if (button && !button->isHidden()) {
                     selectMode(tmpMode);
                 }
             }
         }
-    }else{
-        if(mode != currentMode){
+    } else {
+        if (mode != currentMode) {
             mode->widget()->setVisible(false);
         }
     }
@@ -286,14 +292,14 @@ void IModeBar::setVisible(IMode *mode, bool visible)
 
 void IModeBar::setButtonStyle(IModeBar::ButtonType type, Qt::ToolButtonStyle style)
 {
-    if(type == Mode){
+    if (type == Mode) {
         d->m_modeStyle = style;
-        foreach (IModeButton *button, d->m_modeMap.keys()) {
+        foreach (IModeButton * button, d->m_modeMap.keys()) {
             button->setToolButtonStyle(style);
         }
-    }else if(type == Action){
+    } else if (type == Action) {
         d->m_actionStyle = style;
-        foreach (IModeButton *button, d->m_actionButtons) {
+        foreach (IModeButton * button, d->m_actionButtons) {
             button->setToolButtonStyle(style);
         }
     }
@@ -301,12 +307,12 @@ void IModeBar::setButtonStyle(IModeBar::ButtonType type, Qt::ToolButtonStyle sty
 
 void IModeBar::setButtonFont(IModeBar::ButtonType type, QFont &font)
 {
-    if(type == Mode){
-        foreach (IModeButton *button, d->m_modeMap.keys()) {
+    if (type == Mode) {
+        foreach (IModeButton * button, d->m_modeMap.keys()) {
             button->setFont(font);
         }
-    }else if(type == Action){
-        foreach (IModeButton *button, d->m_actionButtons) {
+    } else if (type == Action) {
+        foreach (IModeButton * button, d->m_actionButtons) {
             button->setFont(font);
         }
     }
@@ -314,10 +320,10 @@ void IModeBar::setButtonFont(IModeBar::ButtonType type, QFont &font)
 
 void IModeBar::setIconSize(QSize size)
 {
-    foreach (IModeButton *button, d->m_modeMap.keys()) {
+    foreach (IModeButton * button, d->m_modeMap.keys()) {
         button->setIconSize(size);
     }
-    foreach (IModeButton *button, d->m_actionButtons) {
+    foreach (IModeButton * button, d->m_actionButtons) {
         button->setIconSize(size);
     }
 }
@@ -330,7 +336,8 @@ void IModeBar::setButtonSpace(int space)
 void IModeBar::setActionStyle(QAction *action, Qt::ToolButtonStyle style)
 {
     IModeButton *pButton = d->m_actionMap.value(action);
-    if(pButton){
+
+    if (pButton) {
         pButton->setToolButtonStyle(style);
     }
 }
@@ -338,11 +345,13 @@ void IModeBar::setActionStyle(QAction *action, Qt::ToolButtonStyle style)
 void IModeBar::addAction(QAction *action, ActionPosition position)
 {
     IModeButton *pButton = new IModeButton(action->icon());
-    if(m_direction == Vertical){
+
+    if (m_direction == Vertical) {
         pButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    }else if(m_direction == Horizontal){
+    } else if (m_direction == Horizontal) {
         pButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
+
     pButton->setType(IModeButton::Action);
     pButton->setText(action->text());
     pButton->setToolButtonStyle(d->m_actionStyle);
@@ -352,67 +361,74 @@ void IModeBar::addAction(QAction *action, ActionPosition position)
     d->m_actionMap.insert(action, pButton);
 //    connect(pButton, SIGNAL(clicked(bool)), action, SLOT(trigger()));
     connect(pButton, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
-    if(position == AP_Front){
+
+    if (position == AP_Front) {
         d->m_frontActionLayout->addWidget(pButton);
-    }else if(position == AP_Middle){
+    } else if (position == AP_Middle) {
         d->m_middleActionLayout->addWidget(pButton);
-    }else if(position == AP_Back){
+    } else if (position == AP_Back) {
         d->m_backActionLayout->addWidget(pButton);
     }
 }
 
 void IModeBar::setHoverColor(const QColor &color)
 {
-    foreach (IModeButton *button, d->m_modeMap.keys()) {
+    foreach (IModeButton * button, d->m_modeMap.keys()) {
         button->setHoverColor(color);
     }
-    foreach (IModeButton *button, d->m_actionButtons) {
+    foreach (IModeButton * button, d->m_actionButtons) {
         button->setHoverColor(color);
     }
 }
 
 QColor IModeBar::hoverColor() const
 {
-    if(d->m_modeMap.count() > 0){
+    if (d->m_modeMap.count() > 0) {
         return d->m_modeMap.keys().at(0)->hoverColor();
     }
-    if(d->m_actionButtons.count() > 0){
+
+    if (d->m_actionButtons.count() > 0) {
         return d->m_actionButtons.at(0)->hoverColor();
     }
+
     return QColor();
 }
 
 void IModeBar::setPressColor(const QColor &color)
 {
-    foreach (IModeButton *button, d->m_modeMap.keys()) {
+    foreach (IModeButton * button, d->m_modeMap.keys()) {
         button->setPressColor(color);
     }
-    foreach (IModeButton *button, d->m_actionButtons) {
+    foreach (IModeButton * button, d->m_actionButtons) {
         button->setPressColor(color);
     }
 }
 
 QColor IModeBar::pressColor() const
 {
-    if(d->m_modeMap.count() > 0){
+    if (d->m_modeMap.count() > 0) {
         return d->m_modeMap.keys().at(0)->pressColor();
     }
-    if(d->m_actionButtons.count() > 0){
+
+    if (d->m_actionButtons.count() > 0) {
         return d->m_actionButtons.at(0)->pressColor();
     }
+
     return QColor();
 }
 
-IMode* IModeBar::currentMode() const
+IMode *IModeBar::currentMode() const
 {
     IMode *mode = d->m_modes.at(d->m_modeStack->currentIndex());
     return mode;
 }
 
-IMode* IModeBar::mode(int index)
+IMode *IModeBar::mode(int index)
 {
-    if(index < 0 || index >= d->m_modes.count())
+    if (index < 0 || index >= d->m_modes.count()) {
         return nullptr;
+    }
+
     IMode *mode = d->m_modes.at(index);
     return mode;
 }
@@ -429,20 +445,20 @@ QWidget *IModeBar::line() const
 
 void IModeBar::setTextColor(const QColor &color)
 {
-    foreach (IModeButton *button, d->m_modeMap.keys()) {
+    foreach (IModeButton * button, d->m_modeMap.keys()) {
         button->setTextColor(color);
     }
-    foreach (IModeButton *button, d->m_actionButtons) {
+    foreach (IModeButton * button, d->m_actionButtons) {
         button->setTextColor(color);
     }
 }
 
 void IModeBar::setSelectedTextColor(const QColor &color)
 {
-    foreach (IModeButton *button, d->m_modeMap.keys()) {
+    foreach (IModeButton * button, d->m_modeMap.keys()) {
         button->setSelectedTextColor(color);
     }
-    foreach (IModeButton *button, d->m_actionButtons) {
+    foreach (IModeButton * button, d->m_actionButtons) {
         button->setSelectedTextColor(color);
     }
 }

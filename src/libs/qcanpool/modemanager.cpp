@@ -30,11 +30,13 @@ class ModeManagerPrivate : public QObject
     Q_OBJECT
 public:
     FancyTabWidget *m_modeStack;
-    QVector<IMode*> m_modes;
+    QVector<IMode *> m_modes;
     int m_oldCurrent;
     int m_menuIndex;
 
-    bool validIndex(int index) { return index >= 0 && index < m_modes.size();}
+    bool validIndex(int index) {
+        return index >= 0 && index < m_modes.size();
+    }
 
 public slots:
     void showMenu(int index, QPoint pos);
@@ -43,7 +45,7 @@ public slots:
 
 void ModeManagerPrivate::showMenu(int index, QPoint pos)
 {
-    if(m_modes.at(index)->menu()){
+    if (m_modes.at(index)->menu()) {
         m_menuIndex = index;
         m_modes.at(index)->menu()->popup(pos);
 //        d->m_modes.at(index)->menu()->popup(event->globalPos());
@@ -65,9 +67,8 @@ ModeManager::ModeManager(FancyTabWidget *modeStack, QObject *parent)
     d->m_oldCurrent = -1;
     d->m_menuIndex = -1;
     d->m_modes.clear();
-
     connect(d->m_modeStack, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
-    connect(d->m_modeStack, SIGNAL(menuTriggered(int,QPoint)), d, SLOT(showMenu(int,QPoint)));
+    connect(d->m_modeStack, SIGNAL(menuTriggered(int, QPoint)), d, SLOT(showMenu(int, QPoint)));
 }
 
 ModeManager::~ModeManager()
@@ -84,25 +85,30 @@ void ModeManager::setCurrentMode(IMode *mode)
 
 void ModeManager::setCurrentIndex(int index)
 {
-    if(index < 0 || index >= d->m_modes.count()){
+    if (index < 0 || index >= d->m_modes.count()) {
         return;
     }
+
     d->m_modeStack->setCurrentIndex(index);
 }
 
 IMode *ModeManager::currentMode() const
 {
     int currentIndex = d->m_modeStack->currentIndex();
-    if(currentIndex < 0){
+
+    if (currentIndex < 0) {
         return nullptr;
     }
+
     return d->m_modes.at(currentIndex);
 }
 
 IMode *ModeManager::mode(int index) const
 {
-    if(index >= 0 && index < d->m_modes.count())
+    if (index >= 0 && index < d->m_modes.count()) {
         return d->m_modes.at(index);
+    }
+
     return nullptr;
 }
 
@@ -121,27 +127,32 @@ void ModeManager::setVisible(IMode *mode, bool visible)
 void ModeManager::objectAdded(QObject *obj)
 {
     IMode *mode = qobject_cast<IMode *>(obj);
-    if (!mode)
+
+    if (!mode) {
         return;
+    }
 
     // Count the number of modes with a higher priority
     int index = 0;
-    foreach (const IMode *m, d->m_modes)
-        if (m->priority() >= mode->priority())
-            ++index;
+    foreach (const IMode * m, d->m_modes)
+
+    if (m->priority() >= mode->priority()) {
+        ++index;
+    }
 
     d->m_modes.insert(index, mode);
     d->m_modeStack->insertTab(index, mode->widget(), mode->icon(), mode->displayName(),
                               mode->menu() != nullptr);
     d->m_modeStack->setTabEnabled(index, mode->isEnabled());
-    if(!mode->menu()){
+
+    if (!mode->menu()) {
         d->m_modeStack->setTabToolTip(index, tr("Switch to <b>%1</b> mode\nCtrl+%2")
-                                      .arg(mode->displayName()).arg(index+1));
-    }else{
+                                      .arg(mode->displayName()).arg(index + 1));
+    } else {
         d->m_modeStack->setTabToolTip(index, mode->menu()->toolTip());
     }
 
-    if(mode->menu()){
+    if (mode->menu()) {
         connect(mode->menu(), SIGNAL(aboutToHide()), d, SLOT(hideMenu()));
     }
 }
@@ -149,23 +160,31 @@ void ModeManager::objectAdded(QObject *obj)
 void ModeManager::objectRemoved(QObject *obj)
 {
     IMode *mode = qobject_cast<IMode *>(obj);
-    if (!mode){
+
+    if (!mode) {
         return;
     }
+
     int index = d->m_modes.indexOf(mode);
-    if(index == -1) return;
+
+    if (index == -1) {
+        return;
+    }
+
     d->m_modes.remove(index);
     d->m_modeStack->removeTab(index);
 }
 
 void ModeManager::currentTabChanged(int index)
 {
-    if(d->validIndex(index) && index != d->m_oldCurrent){
+    if (d->validIndex(index) && index != d->m_oldCurrent) {
         IMode *mode = d->m_modes.at(index);
-
         IMode *oldMode = nullptr;
-        if(d->validIndex(d->m_oldCurrent))
+
+        if (d->validIndex(d->m_oldCurrent)) {
             oldMode = d->m_modes.at(d->m_oldCurrent);
+        }
+
         d->m_oldCurrent = index;
         emit currentModeChanged(mode ? mode : oldMode);
     }

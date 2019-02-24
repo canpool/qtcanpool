@@ -166,7 +166,7 @@ public:
     QAction *m_restoreAction;
     QAction *m_closeAction;
 
-    QList<FancyButton*> m_additionalButtons;
+    QList<FancyButton *> m_additionalButtons;
     QWidget *m_applicationWidget;
 
     QColor m_menuHoverColor;
@@ -184,11 +184,11 @@ private slots:
     void slotWindowButtonClicked();
     void aboutToShowSystemMenu();
     void aboutToHideSystemMenu();
-    void systemMenuTriggered(QMouseEvent* e);
+    void systemMenuTriggered(QMouseEvent *e);
     void aboutToShowMenu();
     void aboutToHideMenu();
-    void menuTriggered(QMouseEvent* e);
-    void applicationMenuTriggered(QMouseEvent* e);
+    void menuTriggered(QMouseEvent *e);
+    void applicationMenuTriggered(QMouseEvent *e);
 };
 
 FancyBarPrivate::FancyBarPrivate(QWidget *parent)
@@ -197,18 +197,14 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     m_isMaximized = false;
     m_isMinimized = false;
     m_bLeftButtonPressed = false;
-
     m_currentScreen = 0;
-
     m_bQuickAccessVisible = false;
     m_bMenuBarVisible = false;
-
     m_bEdgePressed = false;
     m_bCursorShapeChanged = false;
     m_bWidgetMovable = true;
     m_bWidgetResizable = true;
     m_bWidgetMaximizable = true;
-
     q = nullptr;
     m_logoLayout = nullptr;
     m_titleWidget = nullptr;
@@ -221,7 +217,6 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     m_minimizeButton = nullptr;
     m_closeButton = nullptr;
     m_systemGroup = nullptr;
-
     m_menuWidget = nullptr;
     m_applicationButton = nullptr;
     m_appButtonLayout = nullptr;
@@ -229,54 +224,53 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     m_menuAdditionalControlArea = nullptr;
     m_menuBarArea = nullptr;
     m_middleSpacerItem = nullptr;
-
     m_mainWidget = nullptr;
-
     m_menuButton = nullptr;
     m_additionalButtons.clear();
     m_applicationWidget = nullptr;
-
-    m_menuTextColor = QColor(250,250,250);
-    m_menuHoverColor = QColor(255,255,255,50);
-    m_menuPressColor = QColor(255,255,255,50);
-
+    m_menuTextColor = QColor(250, 250, 250);
+    m_menuHoverColor = QColor(255, 255, 255, 50);
+    m_menuPressColor = QColor(255, 255, 255, 50);
     m_titleBarHeight = TITLE_BAR_HEIGHT;
     m_menuBarHeight = MENU_BAR_HEIGHT;
-
     m_style = FancyBar::WindowStyle;
-
     QRect geom = QApplication::desktop()->availableGeometry();
-    m_normalRect = QRect(100,100, 2*geom.width()/3, 2*geom.height()/3);
+    m_normalRect = QRect(100, 100, 2 * geom.width() / 3, 2 * geom.height() / 3);
 }
 
 FancyBarPrivate::~FancyBarPrivate()
 {
-
 }
 
 void FancyBarPrivate::showQuickAccessBar(bool show)
 {
-    if(m_bQuickAccessVisible == show)
+    if (m_bQuickAccessVisible == show) {
         return;
+    }
+
     m_bQuickAccessVisible = show;
-    if(show){
+
+    if (show) {
         m_quickAccessBar->show();
-        m_leftSpacerItem->changeSize(0,0,QSizePolicy::Expanding, QSizePolicy::Minimum);
-    }else{
+        m_leftSpacerItem->changeSize(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    } else {
         m_quickAccessBar->hide();
-        m_leftSpacerItem->changeSize(0,0,QSizePolicy::Minimum, QSizePolicy::Minimum);
+        m_leftSpacerItem->changeSize(0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
     }
 }
 
 void FancyBarPrivate::showMenuBar(bool show)
 {
-    if(m_bMenuBarVisible == show)
+    if (m_bMenuBarVisible == show) {
         return;
+    }
+
     m_bMenuBarVisible = show;
     m_menuWidget->setVisible(show);
-    if(show){
+
+    if (show) {
         setFixedHeight(m_titleBarHeight + m_menuBarHeight);
-    }else{
+    } else {
         setFixedHeight(m_titleBarHeight);
     }
 }
@@ -303,21 +297,23 @@ void FancyBarPrivate::addAdditionalControl(QAction *action, FancyBar::Additional
     button->setToolTip(action->toolTip());
     button->setIcon(action->icon());
     button->setDefaultAction(action);
-    connect(button, SIGNAL(menuTriggered(QMouseEvent*)), this, SLOT(menuTriggered(QMouseEvent*)));
+    connect(button, SIGNAL(menuTriggered(QMouseEvent *)), this, SLOT(menuTriggered(QMouseEvent *)));
     connect(button, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
-    if(position == FancyBar::TitlePosition){
+
+    if (position == FancyBar::TitlePosition) {
         m_titleAdditionalControlArea->addWidget(button);
-    }else if(position == FancyBar::MenuPosition){
+    } else if (position == FancyBar::MenuPosition) {
         m_menuAdditionalControlArea->addWidget(button);
     }
+
     m_additionalButtons.append(button);
 }
 
 void FancyBarPrivate::addAdditionalControl(QWidget *widget, FancyBar::AdditionalControlPosition position)
 {
-    if(position == FancyBar::TitlePosition){
+    if (position == FancyBar::TitlePosition) {
         m_titleAdditionalControlArea->addWidget(widget);
-    }else if(position == FancyBar::MenuPosition){
+    } else if (position == FancyBar::MenuPosition) {
         m_menuAdditionalControlArea->addWidget(widget);
     }
 }
@@ -325,20 +321,17 @@ void FancyBarPrivate::addAdditionalControl(QWidget *widget, FancyBar::Additional
 void FancyBarPrivate::init()
 {
     m_logoLayout = new QHBoxLayout();
-    m_logoLayout->setContentsMargins(0,0,0,0);
+    m_logoLayout->setContentsMargins(0, 0, 0, 0);
     m_logoLayout->setSpacing(0);
-
     createTitleWidget();
     createMenuWidget();
-
     QVBoxLayout *rightLayout = new QVBoxLayout();
     rightLayout->setMargin(0);
     rightLayout->setSpacing(0);
     rightLayout->addWidget(m_titleWidget);
     rightLayout->addWidget(m_menuWidget);
-
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->setContentsMargins(1,1,1,0);
+    layout->setContentsMargins(1, 1, 1, 0);
     layout->setSpacing(0);
     layout->addLayout(m_logoLayout);
     layout->addLayout(rightLayout);
@@ -347,14 +340,14 @@ void FancyBarPrivate::init()
 
 void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
 {
-    if(m_style == style)
+    if (m_style == style) {
         return;
-    m_style = style;
+    }
 
+    m_style = style;
     // clear layout
     m_logoLayout->removeItem(m_appButtonLayout);
-
-    QHBoxLayout *titleLayout = qobject_cast<QHBoxLayout*>(m_titleWidget->layout());
+    QHBoxLayout *titleLayout = qobject_cast<QHBoxLayout *>(m_titleWidget->layout());
     titleLayout->removeWidget(m_logoButton);
     titleLayout->removeWidget(m_quickAccessBar);
     titleLayout->removeItem(m_appButtonLayout);
@@ -365,22 +358,20 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
     titleLayout->removeItem(m_titleAdditionalControlArea);
     titleLayout->removeItem(m_menuAdditionalControlArea);
     titleLayout->removeWidget(m_systemGroup);
-
-    QHBoxLayout *menuLayout = qobject_cast<QHBoxLayout*>(m_menuWidget->layout());
+    QHBoxLayout *menuLayout = qobject_cast<QHBoxLayout *>(m_menuWidget->layout());
     menuLayout->removeItem(m_appButtonLayout);
     menuLayout->removeItem(m_menuBarArea);
     menuLayout->removeItem(m_middleSpacerItem);
     menuLayout->removeItem(m_menuAdditionalControlArea);
-
     m_applicationButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    m_applicationButton->setIconSize(QSize(18,18));
+    m_applicationButton->setIconSize(QSize(18, 18));
     m_applicationButton->setRound(false);
     m_appButtonLayout->setContentsMargins(0, 0, 0, 0);
     m_logoButton->setVisible(false);
     showMenuBar(true);
 
     // set style
-    if(style == FancyBar::WindowStyle){
+    if (style == FancyBar::WindowStyle) {
         m_logoButton->setVisible(true);
         titleLayout->addWidget(m_logoButton/*,0,Qt::AlignVCenter*/);
         titleLayout->addWidget(m_quickAccessBar);
@@ -389,39 +380,34 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
         titleLayout->addItem(m_rightSpacerItem);
         titleLayout->addItem(m_titleAdditionalControlArea);
         titleLayout->addWidget(m_systemGroup);
-
         m_appButtonLayout->setContentsMargins(0, 2, 0, 2);
         menuLayout->addLayout(m_appButtonLayout);
         menuLayout->addLayout(m_menuBarArea);
         menuLayout->addItem(m_middleSpacerItem);
         menuLayout->addLayout(m_menuAdditionalControlArea);
-    }else if(style == FancyBar::DialogStyle){
+    } else if (style == FancyBar::DialogStyle) {
         m_logoButton->setVisible(true);
-
         titleLayout->addWidget(m_logoButton/*,0,Qt::AlignVCenter*/);
         titleLayout->addWidget(m_titleLabel);
         titleLayout->addItem(m_rightSpacerItem);
         titleLayout->addLayout(m_titleAdditionalControlArea);
         titleLayout->addWidget(m_systemGroup);
         showMenuBar(false);
-    }else if(style == FancyBar::ClassicStyle){
+    } else if (style == FancyBar::ClassicStyle) {
         m_applicationButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        m_applicationButton->setIconSize(QSize(48,48));
+        m_applicationButton->setIconSize(QSize(48, 48));
         m_applicationButton->setRound(true);
-
         m_logoLayout->addLayout(m_appButtonLayout);
-
         titleLayout->addWidget(m_quickAccessBar);
         titleLayout->addItem(m_leftSpacerItem);
         titleLayout->addWidget(m_titleLabel);
         titleLayout->addItem(m_rightSpacerItem);
         titleLayout->addLayout(m_titleAdditionalControlArea);
         titleLayout->addWidget(m_systemGroup);
-
         menuLayout->addLayout(m_menuBarArea);
         menuLayout->addItem(m_middleSpacerItem);
         menuLayout->addLayout(m_menuAdditionalControlArea);
-    }else if(style == FancyBar::MergedStyle){
+    } else if (style == FancyBar::MergedStyle) {
         m_applicationButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
         titleLayout->addLayout(m_appButtonLayout);
         titleLayout->addWidget(m_quickAccessBar);
@@ -432,29 +418,23 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
         titleLayout->addLayout(m_menuAdditionalControlArea);
         titleLayout->addLayout(m_titleAdditionalControlArea);
         titleLayout->addWidget(m_systemGroup);
-
         showMenuBar(false);
     }
-
 }
 
 void FancyBarPrivate::createTitleWidget()
 {
     m_titleWidget = new QWidget();
     m_titleWidget->setFixedHeight(m_titleBarHeight);
-
     createWindowButtons();
     m_leftSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_rightSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
     m_quickAccessBar = new QuickAccessBar();
     m_quickAccessBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     m_quickAccessBar->hide();
-
     m_titleAdditionalControlArea = new QHBoxLayout();
     m_titleAdditionalControlArea->setMargin(0);
     m_titleAdditionalControlArea->setSpacing(0);
-
     m_systemGroup = new QWidget();
     QHBoxLayout *systemButtonLayout = new QHBoxLayout();
     systemButtonLayout->setMargin(0);
@@ -463,9 +443,8 @@ void FancyBarPrivate::createTitleWidget()
     systemButtonLayout->addWidget(m_maximizeButton/*, 0, Qt::AlignTop*/);
     systemButtonLayout->addWidget(m_closeButton/*, 0, Qt::AlignTop*/);
     m_systemGroup->setLayout(systemButtonLayout);
-
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->setContentsMargins(1,0,0,0);
+    layout->setContentsMargins(1, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(m_logoButton/*,0,Qt::AlignVCenter*/);
     layout->addWidget(m_quickAccessBar);
@@ -482,38 +461,31 @@ void FancyBarPrivate::createMenuWidget()
     m_menuWidget = new QWidget();
     m_menuWidget->setFixedHeight(m_menuBarHeight);
     m_menuWidget->hide();
-
     m_applicationButton = new FancyButton();
     m_applicationButton->setHasMenu(true);
     m_applicationButton->setText(tr("Application"));
     m_applicationButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    m_applicationButton->setNormalColor(QColor(240,130,0));
-    connect(m_applicationButton, SIGNAL(menuTriggered(QMouseEvent*)), this, SLOT(applicationMenuTriggered(QMouseEvent*)));
-
+    m_applicationButton->setNormalColor(QColor(240, 130, 0));
+    connect(m_applicationButton, SIGNAL(menuTriggered(QMouseEvent *)), this, SLOT(applicationMenuTriggered(QMouseEvent *)));
     m_applicationWidget = new QWidget(this);
     QVBoxLayout *applicationLayout = new QVBoxLayout();
     applicationLayout->setMargin(0);
     applicationLayout->setSpacing(0);
     m_applicationWidget->setLayout(applicationLayout);
     m_applicationWidget->setWindowFlags(Qt::Popup);
-
     m_menuBarArea = new QHBoxLayout();
     m_menuBarArea->setMargin(0);
     m_menuBarArea->setSpacing(0);
-
     m_middleSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
     m_menuAdditionalControlArea = new QHBoxLayout();
     m_menuAdditionalControlArea->setMargin(0);
     m_menuAdditionalControlArea->setSpacing(0);
-
     m_appButtonLayout = new QHBoxLayout();
     m_appButtonLayout->setContentsMargins(0, 2, 0, 2);
     m_appButtonLayout->setSpacing(0);
     m_appButtonLayout->addWidget(m_applicationButton);
-
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->setContentsMargins(1,0,0,0);
+    layout->setContentsMargins(1, 0, 0, 0);
     layout->setSpacing(0);
     layout->addLayout(m_appButtonLayout);
     layout->addLayout(m_menuBarArea);
@@ -527,34 +499,29 @@ void FancyBarPrivate::createWindowButtons()
     m_logoButton = new FancyButton();
     m_logoButton->setHasMenu(true);
     m_logoButton->setIcon(QIcon(":/main/logo"));
-    connect(m_logoButton, SIGNAL(menuTriggered(QMouseEvent*)), this, SLOT(systemMenuTriggered(QMouseEvent*)));
-
+    connect(m_logoButton, SIGNAL(menuTriggered(QMouseEvent *)), this, SLOT(systemMenuTriggered(QMouseEvent *)));
     m_titleLabel = new QLabel();
     QFont font("Microsoft Yahei", 10);
     m_titleLabel->setFont(font);
     m_titleLabel->setAlignment(Qt::AlignCenter);
     m_titleLabel->setStyleSheet("color:white;");
-
     m_minimizeButton = new FancyButton();
     m_minimizeButton->setIcon(QIcon(":/main/min"));
     m_minimizeButton->setToolTip(tr("minimize"));
 //    m_minimizeButton->setIconSize(QSize(22,22));
     connect(m_minimizeButton, SIGNAL(clicked(bool)), this, SLOT(slotWindowButtonClicked()));
-
     m_maximizeButton = new FancyButton();
     m_maximizeButton->setIcon(QIcon(":/main/max"));
     m_maximizeButton->setToolTip(tr("maximize"));
 //    m_maximizeButton->setIconSize(QSize(22,22));
     connect(m_maximizeButton, SIGNAL(clicked(bool)), this, SLOT(slotWindowButtonClicked()));
-
     m_closeButton = new FancyButton();
     m_closeButton->setIcon(QIcon(":/main/close"));
     m_closeButton->setToolTip(tr("close"));
-    m_closeButton->setIconSize(QSize(22,22));
+    m_closeButton->setIconSize(QSize(22, 22));
     connect(m_closeButton, SIGNAL(clicked(bool)), this, SLOT(slotWindowButtonClicked()));
     m_closeButton->setHoverColor(QColor(207, 0, 0, 230));
     m_closeButton->setPressColor(QColor(207, 0, 0, 150));
-
     m_menu = new QMenu(this);
     connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowSystemMenu()));
     connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideSystemMenu()));
@@ -576,17 +543,20 @@ void FancyBarPrivate::createWindowButtons()
 
 void FancyBarPrivate::updateMenuColor()
 {
-    if(m_menuBar == nullptr) return;
+    if (m_menuBar == nullptr) {
+        return;
+    }
+
     m_menuBar->setStyleSheet(QString(
-                "QMenuBar{background-color: transparent;margin:1px;color: #%1;}"
-                "QMenuBar::item{background-color: transparent;}"
-                "QMenuBar::item:disabled{color: gray;}"
-                "QMenuBar::item:pressed{background:#%2;}"
-                "QMenuBar::item:hover{background:#%3;}"
-                )
-             .arg(QCanpool::colorToArgb(m_menuTextColor))
-             .arg(QCanpool::colorToArgb(m_menuPressColor))
-             .arg(QCanpool::colorToArgb(m_menuHoverColor)));
+                                 "QMenuBar{background-color: transparent;margin:1px;color: #%1;}"
+                                 "QMenuBar::item{background-color: transparent;}"
+                                 "QMenuBar::item:disabled{color: gray;}"
+                                 "QMenuBar::item:pressed{background:#%2;}"
+                                 "QMenuBar::item:hover{background:#%3;}"
+                             )
+                             .arg(QCanpool::colorToArgb(m_menuTextColor))
+                             .arg(QCanpool::colorToArgb(m_menuPressColor))
+                             .arg(QCanpool::colorToArgb(m_menuHoverColor)));
 }
 
 void FancyBarPrivate::registerWidget(QWidget *widget)
@@ -600,9 +570,7 @@ void FancyBarPrivate::registerWidget(QWidget *widget)
 void FancyBarPrivate::restoreWidget(QWidget *pWidget)
 {
     m_isMaximized = false;
-
     pWidget->setGeometry(m_normalRect);
-
     emit windowResizable(true);
 }
 
@@ -610,47 +578,48 @@ void FancyBarPrivate::maximizeWidget(QWidget *pWidget)
 {
     // 在窗体大小改变前更新值,因为事件过滤响应随机
     m_isMaximized = true;
-
     // 计算最大化所在屏幕
-    int x = pWidget->frameGeometry().x() + pWidget->frameGeometry().width()/2;
+    int x = pWidget->frameGeometry().x() + pWidget->frameGeometry().width() / 2;
     ScreenHelper sreen;
     m_currentScreen = sreen.currentScreen(x);
-
     // 创建QDesktopWidget对象
-    QDesktopWidget * desktopWidget = QApplication::desktop();
+    QDesktopWidget *desktopWidget = QApplication::desktop();
     QRect rect = desktopWidget->availableGeometry(m_currentScreen);
     pWidget->setGeometry(rect);
-
     emit windowResizable(false);
 }
 
 bool FancyBarPrivate::windowTitleChange(QObject *obj)
 {
     QWidget *pWidget = qobject_cast<QWidget *>(obj);
-    if (pWidget)
-    {
+
+    if (pWidget) {
         QFont font = QApplication::font();
         font.setPointSize(11);
         m_titleLabel->setText(pWidget->windowTitle());
         m_titleLabel->setFont(font);
         return true;
     }
+
     return false;
 }
 
 bool FancyBarPrivate::windowIconChange(QObject *obj)
 {
     QWidget *pWidget = qobject_cast<QWidget *>(obj);
-    if (pWidget)
-    {
+
+    if (pWidget) {
         QIcon icon = pWidget->windowIcon();
-//        m_pIconLabel->setPixmap(icon.pixmap(m_pIconLabel->size()).scaled(22,22));
-        if(!icon.isNull()){
+
+        //        m_pIconLabel->setPixmap(icon.pixmap(m_pIconLabel->size()).scaled(22,22));
+        if (!icon.isNull()) {
             m_logoButton->setIcon(icon);
             m_applicationButton->setIcon(icon);
         }
+
         return true;
     }
+
     return false;
 }
 
@@ -658,14 +627,15 @@ void FancyBarPrivate::windowSizeChange(QObject *obj)
 {
     QWidget *pWindow = qobject_cast<QWidget *>(obj);
 
-    if ( pWindow )
-    {
+    if (pWindow) {
         bool bMaximize = pWindow->isMaximized();
+
         if (bMaximize) {
             // 消除无边框最大化遮挡windows任务栏
             pWindow->setWindowState(pWindow->windowState() & ~Qt::WindowMaximized);
             this->maximizeWidget(pWindow);
         }
+
         windowStateChange(obj);
 //        m_maximizeButton->setStyle(QApplication::style());
     }
@@ -674,15 +644,17 @@ void FancyBarPrivate::windowSizeChange(QObject *obj)
 void FancyBarPrivate::windowStateChange(QObject *obj)
 {
     Q_UNUSED(obj);
-    if(m_isMaximized){
+
+    if (m_isMaximized) {
         m_maximizeButton->setToolTip(tr("restore"));
         m_maximizeButton->setProperty("maximizeProperty", "restore");
         m_maximizeButton->setIcon(QIcon(":/main/restore"));
-    }else{
+    } else {
         m_maximizeButton->setProperty("maximizeProperty", "maximize");
         m_maximizeButton->setToolTip(tr("maximize"));
         m_maximizeButton->setIcon(QIcon(":/main/max"));
     }
+
     m_maximizeAction->setEnabled(!m_isMaximized);
     m_restoreAction->setEnabled(m_isMaximized);
 }
@@ -690,65 +662,60 @@ void FancyBarPrivate::windowStateChange(QObject *obj)
 void FancyBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
 {
     Q_UNUSED(obj);
+
 //    m_mainWidget = qobject_cast<QWidget *>(obj);
-    switch (event->type())
-    {
+    switch (event->type()) {
     default:
         break;
+
     case QEvent::MouseButtonPress:
-        handleMousePressEvent(static_cast<QMouseEvent*>(event));
+        handleMousePressEvent(static_cast<QMouseEvent *>(event));
         break;
+
     case QEvent::MouseButtonRelease:
-        handleMouseReleaseEvent(static_cast<QMouseEvent*>(event));
+        handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
         break;
+
     case QEvent::MouseMove:
-        handleMouseMoveEvent(static_cast<QMouseEvent*>(event));
+        handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
         break;
+
     case QEvent::Leave:
-        handleLeaveEvent(static_cast<QMouseEvent*>(event));
+        handleLeaveEvent(static_cast<QMouseEvent *>(event));
         break;
+
     case QEvent::HoverMove:
-        handleHoverMoveEvent(static_cast<QHoverEvent*>(event));
+        handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
         break;
     }
 }
 
 void FancyBarPrivate::updateCursorShape(const QPoint &gMousePos)
 {
-    if (m_mainWidget->isFullScreen() || m_mainWidget->isMaximized() || m_isMaximized)
-    {
-        if (m_bCursorShapeChanged)
-        {
+    if (m_mainWidget->isFullScreen() || m_mainWidget->isMaximized() || m_isMaximized) {
+        if (m_bCursorShapeChanged) {
             m_mainWidget->unsetCursor();
         }
+
         return;
     }
+
     m_moveCursor.recalculate(gMousePos, m_mainWidget->frameGeometry());
 
-    if(m_moveCursor.m_bOnTopLeftEdge || m_moveCursor.m_bOnBottomRightEdge)
-    {
+    if (m_moveCursor.m_bOnTopLeftEdge || m_moveCursor.m_bOnBottomRightEdge) {
         m_mainWidget->setCursor( Qt::SizeFDiagCursor );
         m_bCursorShapeChanged = true;
-    }
-    else if(m_moveCursor.m_bOnTopRightEdge || m_moveCursor.m_bOnBottomLeftEdge)
-    {
+    } else if (m_moveCursor.m_bOnTopRightEdge || m_moveCursor.m_bOnBottomLeftEdge) {
         m_mainWidget->setCursor( Qt::SizeBDiagCursor );
         m_bCursorShapeChanged = true;
-    }
-    else if(m_moveCursor.m_bOnLeftEdge || m_moveCursor.m_bOnRightEdge)
-    {
+    } else if (m_moveCursor.m_bOnLeftEdge || m_moveCursor.m_bOnRightEdge) {
         m_mainWidget->setCursor( Qt::SizeHorCursor );
         m_bCursorShapeChanged = true;
-    }
-    else if(m_moveCursor.m_bOnTopEdge || m_moveCursor.m_bOnBottomEdge)
-    {
+    } else if (m_moveCursor.m_bOnTopEdge || m_moveCursor.m_bOnBottomEdge) {
         m_mainWidget->setCursor( Qt::SizeVerCursor );
         m_bCursorShapeChanged = true;
-    }
-    else
-    {
-        if (m_bCursorShapeChanged)
-        {
+    } else {
+        if (m_bCursorShapeChanged) {
             m_mainWidget->unsetCursor();
             m_bCursorShapeChanged = false;
         }
@@ -758,73 +725,56 @@ void FancyBarPrivate::updateCursorShape(const QPoint &gMousePos)
 void FancyBarPrivate::resizeWidget(const QPoint &gMousePos)
 {
     QRect origRect;
-
     origRect = m_mainWidget->frameGeometry();
-
     int left = origRect.left();
     int top = origRect.top();
     int right = origRect.right();
     int bottom = origRect.bottom();
     origRect.getCoords(&left, &top, &right, &bottom);
-
     int minWidth = m_mainWidget->minimumWidth();
     int minHeight = m_mainWidget->minimumHeight();
 
-    if (m_pressCursor.m_bOnTopLeftEdge)
-    {
+    if (m_pressCursor.m_bOnTopLeftEdge) {
         left = gMousePos.x();
         top = gMousePos.y();
-    }
-    else if (m_pressCursor.m_bOnBottomLeftEdge)
-    {
+    } else if (m_pressCursor.m_bOnBottomLeftEdge) {
         left = gMousePos.x();
         bottom = gMousePos.y();
-    }
-    else if (m_pressCursor.m_bOnTopRightEdge)
-    {
+    } else if (m_pressCursor.m_bOnTopRightEdge) {
         right = gMousePos.x();
         top = gMousePos.y();
-    }
-    else if (m_pressCursor.m_bOnBottomRightEdge)
-    {
+    } else if (m_pressCursor.m_bOnBottomRightEdge) {
         right = gMousePos.x();
         bottom = gMousePos.y();
-    }
-    else if (m_pressCursor.m_bOnLeftEdge)
-    {
+    } else if (m_pressCursor.m_bOnLeftEdge) {
         left = gMousePos.x();
-    }
-    else if (m_pressCursor.m_bOnRightEdge)
-    {
+    } else if (m_pressCursor.m_bOnRightEdge) {
         right = gMousePos.x();
-    }
-    else if (m_pressCursor.m_bOnTopEdge)
-    {
+    } else if (m_pressCursor.m_bOnTopEdge) {
         top = gMousePos.y();
-    }
-    else if (m_pressCursor.m_bOnBottomEdge)
-    {
+    } else if (m_pressCursor.m_bOnBottomEdge) {
         bottom = gMousePos.y();
     }
 
     QRect newRect(QPoint(left, top), QPoint(right, bottom));
 
-    if (newRect.isValid())
-    {
-        if (minWidth > newRect.width())
-        {
-            if (left != origRect.left())
+    if (newRect.isValid()) {
+        if (minWidth > newRect.width()) {
+            if (left != origRect.left()) {
                 newRect.setLeft(origRect.left());
-            else
+            } else {
                 newRect.setRight(origRect.right());
+            }
         }
-        if (minHeight > newRect.height())
-        {
-            if (top != origRect.top())
+
+        if (minHeight > newRect.height()) {
+            if (top != origRect.top()) {
                 newRect.setTop(origRect.top());
-            else
+            } else {
                 newRect.setBottom(origRect.bottom());
+            }
         }
+
         m_mainWidget->setGeometry(newRect);
     }
 }
@@ -836,23 +786,21 @@ void FancyBarPrivate::moveWidget(const QPoint &gMousePos)
 
 void FancyBarPrivate::handleMousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton && !m_isMaximized){ // add !m_isMaximized 2017-7-27 22:52:39
+    if (event->button() == Qt::LeftButton && !m_isMaximized) { // add !m_isMaximized 2017-7-27 22:52:39
         m_bEdgePressed = true;
         QRect frameRect = m_mainWidget->frameGeometry();
         m_pressCursor.recalculate(event->globalPos(), frameRect);
-
         m_dragPos = event->globalPos() - frameRect.topLeft();
     }
 }
 
 void FancyBarPrivate::handleMouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton)
-    {
+    if (event->button() == Qt::LeftButton) {
         m_bEdgePressed = false;
         m_pressCursor.reset();
-        if (m_bWidgetResizable)
-        {
+
+        if (m_bWidgetResizable) {
             updateCursorShape(event->globalPos());
         }
     }
@@ -860,19 +808,16 @@ void FancyBarPrivate::handleMouseReleaseEvent(QMouseEvent *event)
 
 void FancyBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
 {
-    if (m_bEdgePressed)
-    {
-        if (m_bWidgetResizable && m_pressCursor.m_bOnEdges)
-        {
+    if (m_bEdgePressed) {
+        if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
             resizeWidget(event->globalPos());
         }
+
 //        else if (d->m_bWidgetMovable && m_bLeftButtonTitlePressed)
 //        {
 //            moveWidget(event->globalPos());
 //        }
-    }
-    else if (m_bWidgetResizable)
-    {
+    } else if (m_bWidgetResizable) {
         updateCursorShape(event->globalPos());
     }
 }
@@ -880,16 +825,15 @@ void FancyBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
 void FancyBarPrivate::handleLeaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    if(!m_bEdgePressed)
-    {
+
+    if (!m_bEdgePressed) {
         m_mainWidget->unsetCursor();
     }
 }
 
 void FancyBarPrivate::handleHoverMoveEvent(QHoverEvent *event)
 {
-    if (!m_bEdgePressed && m_bWidgetResizable)
-    {
+    if (!m_bEdgePressed && m_bWidgetResizable) {
         updateCursorShape(m_mainWidget->mapToGlobal(event->pos()));
     }
 }
@@ -904,17 +848,20 @@ QPoint FancyBarPrivate::calcDragPoint(QWidget *pWindow, QMouseEvent *event) cons
     int maxWidth = rect.x() + rect.width();
     int screenX = rect.x();
     int orgWidth = m_normalRect.width();
-    if(orgWidth == 0){ // 初始最大化显示时,orgWidth记录为0
+
+    if (orgWidth == 0) { // 初始最大化显示时,orgWidth记录为0
         orgWidth = pWindow->minimumWidth();
     }
+
     QPoint point;
     point.setY(0);
-    if(mouseX - screenX < orgWidth/2){
+
+    if (mouseX - screenX < orgWidth / 2) {
         point.setX(screenX);
-    }else if(maxWidth - mouseX < orgWidth/2){
+    } else if (maxWidth - mouseX < orgWidth / 2) {
         point.setX(maxWidth - orgWidth);
-    }else{
-        point.setX(mouseX - orgWidth/2);
+    } else {
+        point.setX(mouseX - orgWidth / 2);
     }
 
     return point;
@@ -922,20 +869,21 @@ QPoint FancyBarPrivate::calcDragPoint(QWidget *pWindow, QMouseEvent *event) cons
 
 void FancyBarPrivate::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
-    {
+    if (event->button() == Qt::LeftButton) {
         m_bLeftButtonPressed = true;
 //        QWidget *pWindow = this->window();
         QWidget *pWindow = m_mainWidget;
-        if (pWindow->isTopLevel()){
-            if(m_isMaximized){
-                m_dragPoint = calcDragPoint(pWindow,event);
+
+        if (pWindow->isTopLevel()) {
+            if (m_isMaximized) {
+                m_dragPoint = calcDragPoint(pWindow, event);
                 m_movePoint = event->globalPos() - m_dragPoint;
-            }else{
+            } else {
                 m_movePoint = event->globalPos() - pWindow->pos();
             }
         }
     }
+
     event->ignore();
 }
 
@@ -944,15 +892,17 @@ void FancyBarPrivate::mouseReleaseEvent(QMouseEvent *event)
     m_bLeftButtonPressed = false;
 
     // maximize on the top of the screen
-    if(!m_isMaximized){
-        if(event->globalY() == 0){
+    if (!m_isMaximized) {
+        if (event->globalY() == 0) {
             m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
-            if(m_bWidgetMaximizable){
+
+            if (m_bWidgetMaximizable) {
                 emit m_maximizeButton->click();
             }
-        }else{
+        } else {
             int y = m_mainWidget->frameGeometry().y();
-            if(y < 0){
+
+            if (y < 0) {
                 m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
             }
         }
@@ -963,24 +913,23 @@ void FancyBarPrivate::mouseReleaseEvent(QMouseEvent *event)
 
 void FancyBarPrivate::mouseMoveEvent(QMouseEvent *event)
 {
-    if(m_bLeftButtonPressed)
-    {
+    if (m_bLeftButtonPressed) {
 //        QWidget *pWindow = this->window();
         QWidget *pWindow = m_mainWidget;
 
-        if (pWindow->isTopLevel()){
-            if(m_bWidgetMaximizable && m_isMaximized){
+        if (pWindow->isTopLevel()) {
+            if (m_bWidgetMaximizable && m_isMaximized) {
 //                restoreWidget(pWindow);
                 // modified on 2017-7-27 22:54:15 , drag on miximization
-                if(event->globalY() > 2*m_moveCursor.m_nBorderWidth){
-                    m_dragPoint = calcDragPoint(pWindow,event);
+                if (event->globalY() > 2 * m_moveCursor.m_nBorderWidth) {
+                    m_dragPoint = calcDragPoint(pWindow, event);
                     m_movePoint = event->globalPos() - m_dragPoint;
                     restoreWidget(pWindow);
                 }
-            }else{
-                if (m_bWidgetResizable && m_pressCursor.m_bOnEdges){
+            } else {
+                if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
                     event->ignore();
-                }else{
+                } else {
                     pWindow->move(event->globalPos() - m_movePoint);
                 }
             }
@@ -990,8 +939,8 @@ void FancyBarPrivate::mouseMoveEvent(QMouseEvent *event)
 
 void FancyBarPrivate::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if( event->button() == Qt::LeftButton ){
-        if(m_bWidgetMaximizable){
+    if ( event->button() == Qt::LeftButton ) {
+        if (m_bWidgetMaximizable) {
             emit m_maximizeButton->click();
         }
     }
@@ -1003,19 +952,20 @@ void FancyBarPrivate::slotWindowButtonClicked()
     //QWidget *pWindow = this->parentWidget()->parentWidget();
     QWidget *pWindow = m_mainWidget;
 
-    if (pWindow){
-        if (pButton == m_minimizeButton){
+    if (pWindow) {
+        if (pButton == m_minimizeButton) {
             pWindow->showMinimized();
             m_isMinimized = true;
-        }else if (pButton == m_maximizeButton){
-            if(m_isMaximized){
+        } else if (pButton == m_maximizeButton) {
+            if (m_isMaximized) {
                 restoreWidget(pWindow);
-            }else{
+            } else {
                 m_normalRect = pWindow->frameGeometry();
                 maximizeWidget(pWindow);
             }
+
             m_isMinimized = false;
-        }else if (pButton == m_closeButton) {
+        } else if (pButton == m_closeButton) {
             pWindow->close();
         }
     }
@@ -1033,62 +983,81 @@ void FancyBarPrivate::aboutToHideSystemMenu()
 
 void FancyBarPrivate::systemMenuTriggered(QMouseEvent *e)
 {
-    FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == nullptr) return;
+    FancyButton *button = qobject_cast<FancyButton *>(sender());
+
+    if (button == nullptr) {
+        return;
+    }
 
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
-    pos.setX(pos.x()-x);
-    pos.setY(pos.y()-y+button->height());
+    pos.setX(pos.x() - x);
+    pos.setY(pos.y() - y + button->height());
     m_menu->popup(pos);
 }
 
 void FancyBarPrivate::aboutToShowMenu()
 {
-    if(m_menuButton){
+    if (m_menuButton) {
         m_menuButton->select(true);
     }
 }
 
 void FancyBarPrivate::aboutToHideMenu()
 {
-    if(m_menuButton){
+    if (m_menuButton) {
         m_menuButton->select(false);
     }
 }
 
 void FancyBarPrivate::menuTriggered(QMouseEvent *e)
 {
-    FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == nullptr) return;
+    FancyButton *button = qobject_cast<FancyButton *>(sender());
+
+    if (button == nullptr) {
+        return;
+    }
+
     QAction *action = button->defaultAction();
     QMenu *menu = action->menu();
-    if(menu == nullptr) return;
+
+    if (menu == nullptr) {
+        return;
+    }
 
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
     connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
     m_menuButton = button;
-
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
-    pos.setX(pos.x()-x);
-    pos.setY(pos.y()-y+button->height());
+    pos.setX(pos.x() - x);
+    pos.setY(pos.y() - y + button->height());
     menu->popup(pos);
 }
 
 void FancyBarPrivate::applicationMenuTriggered(QMouseEvent *e)
 {
-    if(m_applicationWidget == nullptr) return;
-    if(m_applicationWidget->layout()->itemAt(0) == nullptr) return;
-    FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == nullptr) return;
+    if (m_applicationWidget == nullptr) {
+        return;
+    }
+
+    if (m_applicationWidget->layout()->itemAt(0) == nullptr) {
+        return;
+    }
+
+    FancyButton *button = qobject_cast<FancyButton *>(sender());
+
+    if (button == nullptr) {
+        return;
+    }
+
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
-    pos.setX(pos.x()-x);
-    pos.setY(pos.y()-y+button->height());
+    pos.setX(pos.x() - x);
+    pos.setY(pos.y() - y + button->height());
     m_applicationWidget->move(pos);
     m_applicationWidget->setWindowModality(Qt::WindowModal);
     m_applicationWidget->show();
@@ -1096,12 +1065,12 @@ void FancyBarPrivate::applicationMenuTriggered(QMouseEvent *e)
 }
 
 FancyBar::FancyBar(QWidget *parent, Qt::WindowFlags f)
-    : QWidget(parent),d(new FancyBarPrivate(this))
+    : QWidget(parent), d(new FancyBarPrivate(this))
 {
     d->q = this;
     d->init();
 
-    if(parent){
+    if (parent) {
         d->registerWidget(parent);
         parent->installEventFilter(this);
     }
@@ -1113,14 +1082,15 @@ FancyBar::FancyBar(QWidget *parent, Qt::WindowFlags f)
     setLayout(layout);
 
     //
-    if(f){
+    if (f) {
         d->m_maximizeButton->setHidden(!(f & Qt::WindowMaximizeButtonHint));
         d->m_minimizeButton->setHidden(!(f & Qt::WindowMinimizeButtonHint));
         d->setWidgetMaximizable(f & Qt::WindowMaximizeButtonHint);
 //        d->m_logoButton->setEnabled(false);
         d->m_logoButton->setHasMenu(false);
     }
-    if(s_backgroundColor.isValid()){
+
+    if (s_backgroundColor.isValid()) {
         setBackgroundColor(s_backgroundColor);
     }
 
@@ -1129,17 +1099,17 @@ FancyBar::FancyBar(QWidget *parent, Qt::WindowFlags f)
 
 FancyBar::~FancyBar()
 {
-
 }
 
 QMenuBar *FancyBar::menuBar() const
 {
-    if(d->m_menuBar == nullptr){
+    if (d->m_menuBar == nullptr) {
         d->m_menuBar = new QMenuBar();
         d->m_menuBar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         d->updateMenuColor();
         d->m_menuBarArea->addWidget(d->m_menuBar);
     }
+
     return d->m_menuBar;
 }
 
@@ -1170,7 +1140,7 @@ bool FancyBar::isQuickAccessVisible() const
 
 void FancyBar::setHoverColor(const QColor &color)
 {
-    foreach (FancyButton *button, d->m_additionalButtons) {
+    foreach (FancyButton * button, d->m_additionalButtons) {
         button->setHoverColor(color);
     }
     d->m_menuHoverColor = color;
@@ -1180,7 +1150,7 @@ void FancyBar::setHoverColor(const QColor &color)
 
 void FancyBar::setPressColor(const QColor &color)
 {
-    foreach (FancyButton *button, d->m_additionalButtons) {
+    foreach (FancyButton * button, d->m_additionalButtons) {
         button->setPressColor(color);
     }
     d->m_menuPressColor = color;
@@ -1190,7 +1160,7 @@ void FancyBar::setPressColor(const QColor &color)
 
 void FancyBar::setTextColor(const QColor &color)
 {
-    foreach (FancyButton *button, d->m_additionalButtons) {
+    foreach (FancyButton * button, d->m_additionalButtons) {
         button->setTextColor(color);
     }
     d->m_titleLabel->setStyleSheet(QString("color:#%1;").arg(QCanpool::colorToArgb(color)));
@@ -1240,10 +1210,11 @@ void FancyBar::setWidgetResizable(bool resizable)
 
 void FancyBar::setTitleBarHeight(int height)
 {
-    if(height > TITLE_BAR_HEIGHT && height <= TITLE_BAR_HEIGHT+15){
+    if (height > TITLE_BAR_HEIGHT && height <= TITLE_BAR_HEIGHT + 15) {
         d->m_titleBarHeight = height;
         d->m_titleWidget->setFixedHeight(d->m_titleBarHeight);
-        if(isMenuBarVisible()){
+
+        if (isMenuBarVisible()) {
             d->setFixedHeight(d->m_titleBarHeight + d->m_menuBarHeight);
         }
     }
@@ -1256,41 +1227,45 @@ void FancyBar::setFancyStyle(FancyBar::FancyStyle style)
 
 bool FancyBar::eventFilter(QObject *object, QEvent *event)
 {
-    switch (event->type())
-    {
-    case QEvent::WindowTitleChange:
-    {
-        if(d->windowTitleChange(object))
+    switch (event->type()) {
+    case QEvent::WindowTitleChange: {
+        if (d->windowTitleChange(object)) {
             return true;
-    }break;
-    case QEvent::WindowIconChange:
-    {
-        if(d->windowIconChange(object))
+        }
+    }
+    break;
+
+    case QEvent::WindowIconChange: {
+        if (d->windowIconChange(object)) {
             return true;
-    }break;
-    case QEvent::WindowStateChange:
-    {
+        }
+    }
+    break;
+
+    case QEvent::WindowStateChange: {
         d->windowStateChange(object);
         return true;
     }/*break*/;
-    case QEvent::Resize:
-    {
+
+    case QEvent::Resize: {
         d->windowSizeChange(object);
         return true;
     }/*break*/;
+
     case QEvent::MouseMove:
     case QEvent::HoverMove:
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-    {
-        d->handleWidgetMouseEvent(object,event);
+    case QEvent::MouseButtonDblClick: {
+        d->handleWidgetMouseEvent(object, event);
         return true;
     }/*break*/;
+
     default:
         break;
     }
-    return QObject::eventFilter(object,event);
+
+    return QObject::eventFilter(object, event);
 }
 
 #include "fancybar.moc"

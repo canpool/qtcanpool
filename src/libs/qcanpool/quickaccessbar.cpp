@@ -72,16 +72,12 @@ QuickAccessBarPrivate::QuickAccessBarPrivate(QWidget *parent)
     m_accessButton = nullptr;
     m_menu = nullptr;
     m_bAddEnable = true;
-
     m_checkActions.clear();
     m_actions.clear();
     m_actionButtons.clear();
-
     m_accessArea = nullptr;
-
     m_customizeAction = nullptr;
     m_separatorAction = nullptr;
-
     m_menuButton = nullptr;
 }
 
@@ -92,23 +88,19 @@ void QuickAccessBarPrivate::init()
     m_accessButton->setHasMenu(true);
     m_accessButton->setIcon(QIcon(":/main/arrow"));
     m_accessButton->setToolTip(tr("Quick Access Menu"));
-    connect(m_accessButton, SIGNAL(menuTriggered(QMouseEvent*)), this, SLOT(accessMenuTriggered(QMouseEvent*)));
-
+    connect(m_accessButton, SIGNAL(menuTriggered(QMouseEvent *)), this, SLOT(accessMenuTriggered(QMouseEvent *)));
     m_accessArea = new QHBoxLayout();
-    m_accessArea->setContentsMargins(2,0,0,0);
+    m_accessArea->setContentsMargins(2, 0, 0, 0);
     m_accessArea->setSpacing(0);
-
     m_customizeAction = new QAction(tr("Customize Quick Access Bar"), this);
     m_customizeAction->setCheckable(false);
     m_customizeAction->setIconVisibleInMenu(false);
     m_customizeAction->setEnabled(false);
-
     m_menu = new QMenu(this);
     connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowCustomizeMenu()));
     connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideCustomizeMenu()));
     m_menu->addAction(m_customizeAction);
     m_separatorAction = m_menu->addSeparator();
-
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setMargin(0);
     layout->setSpacing(0);
@@ -126,17 +118,13 @@ void QuickAccessBarPrivate::addAction(QAction *action)
     button->setToolTip(action->toolTip());
     button->setIcon(action->icon());
     button->setDefaultAction(action);
-    connect(button, SIGNAL(menuTriggered(QMouseEvent*)), this, SLOT(menuTriggered(QMouseEvent*)));
+    connect(button, SIGNAL(menuTriggered(QMouseEvent *)), this, SLOT(menuTriggered(QMouseEvent *)));
     connect(button, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
-
     checkAction->setCheckable(true);
     checkAction->setChecked(true);
-
     m_accessArea->addWidget(button/*, 0, Qt::AlignTop*/);
     m_menu->insertAction(m_separatorAction, checkAction);
-
     connect(checkAction, SIGNAL(toggled(bool)), button, SLOT(setVisible(bool)));
-
     m_actions.append(action);
     m_checkActions.append(checkAction);
     m_actionButtons.append(button);
@@ -154,60 +142,67 @@ void QuickAccessBarPrivate::aboutToHideCustomizeMenu()
 
 void QuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
 {
-    FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == nullptr) return;
+    FancyButton *button = qobject_cast<FancyButton *>(sender());
+
+    if (button == nullptr) {
+        return;
+    }
 
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
-    pos.setX(pos.x()-x);
-    pos.setY(pos.y()-y+button->height());
+    pos.setX(pos.x() - x);
+    pos.setY(pos.y() - y + button->height());
 //    emit q->menuTriggered(index, pos);
     m_menu->popup(pos);
 }
 
 void QuickAccessBarPrivate::menuTriggered(QMouseEvent *e)
 {
-    FancyButton *button = qobject_cast<FancyButton*>(sender());
-    if(button == nullptr) return;
+    FancyButton *button = qobject_cast<FancyButton *>(sender());
+
+    if (button == nullptr) {
+        return;
+    }
+
     QAction *action = button->defaultAction();
     QMenu *menu = action->menu();
-    if(menu == nullptr) return;
+
+    if (menu == nullptr) {
+        return;
+    }
 
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
     connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
     m_menuButton = button;
-
     int x = e->x();
     int y = e->y();
     QPoint pos = e->globalPos();
-    pos.setX(pos.x()-x);
-    pos.setY(pos.y()-y+button->height());
+    pos.setX(pos.x() - x);
+    pos.setY(pos.y() - y + button->height());
     menu->popup(pos);
 }
 
 void QuickAccessBarPrivate::aboutToShowMenu()
 {
-    if(m_menuButton){
+    if (m_menuButton) {
         m_menuButton->select(true);
     }
 }
 
 void QuickAccessBarPrivate::aboutToHideMenu()
 {
-    if(m_menuButton){
+    if (m_menuButton) {
         m_menuButton->select(false);
     }
 }
 
 QuickAccessBar::QuickAccessBar(QWidget *parent)
-    : QToolBar(parent),d(new QuickAccessBarPrivate(this))
+    : QToolBar(parent), d(new QuickAccessBarPrivate(this))
 {
     d->q = this;
     d->init();
-
     this->setStyleSheet("QToolBar{border:none;background-color: transparent;margin:0px;}");
-
     addWidget(d);
 }
 
@@ -219,70 +214,77 @@ QAction *QuickAccessBar::actionCustomizeButton() const
 void QuickAccessBar::setActionVisible(QAction *action, bool visible)
 {
     int index = d->m_actions.indexOf(action);
-    if(index == -1)return;
+
+    if (index == -1) {
+        return;
+    }
+
     d->m_checkActions.at(index)->setChecked(visible);
 }
 
 bool QuickAccessBar::isActionVisible(QAction *action) const
 {
     int index = d->m_actions.indexOf(action);
-    if(index == -1){
+
+    if (index == -1) {
         return false;
     }
+
     return d->m_checkActions.at(index)->isChecked();
 }
 
 int QuickAccessBar::visibleCount() const
 {
     int cnt = 0;
-    for(int i = 0; i < d->m_checkActions.count(); i++){
-        if(d->m_checkActions.at(i)->isChecked()){
+
+    for (int i = 0; i < d->m_checkActions.count(); i++) {
+        if (d->m_checkActions.at(i)->isChecked()) {
             cnt++;
         }
     }
+
     return cnt;
 }
 
 void QuickAccessBar::setHoverColor(const QColor &color)
 {
-    foreach (FancyButton *button, d->m_actionButtons) {
+    foreach (FancyButton * button, d->m_actionButtons) {
         button->setHoverColor(color);
     }
 }
 
 void QuickAccessBar::setPressColor(const QColor &color)
 {
-    foreach (FancyButton *button, d->m_actionButtons) {
+    foreach (FancyButton * button, d->m_actionButtons) {
         button->setPressColor(color);
     }
 }
 
 void QuickAccessBar::setTextColor(const QColor &color)
 {
-    foreach (FancyButton *button, d->m_actionButtons) {
+    foreach (FancyButton * button, d->m_actionButtons) {
         button->setTextColor(color);
     }
 }
 
 void QuickAccessBar::actionEvent(QActionEvent *event)
 {
-    if(d->m_bAddEnable){
+    if (d->m_bAddEnable) {
         d->m_bAddEnable = false;
         QToolBar::actionEvent(event);
         return;
     }
 
-    switch (event->type())
-    {
-    case QEvent::ActionAdded:
-    {
+    switch (event->type()) {
+    case QEvent::ActionAdded: {
         QAction *action = event->action();
         d->addAction(action);
-    }break;
+    }
+    break;
+
     default:
         break;
     }
-
 }
 
 #include "quickaccessbar.moc"

@@ -74,10 +74,9 @@ public slots:
 
 SimpleFilterPrivate::SimpleFilterPrivate(QObject *parent)
     : QObject(parent), m_table(nullptr), m_tree(nullptr),
-      m_view(nullptr) ,m_model(nullptr),
+      m_view(nullptr) , m_model(nullptr),
       m_lineEdit(nullptr),  q(nullptr), m_type(NoneType)
 {
-
 }
 
 void SimpleFilterPrivate::init()
@@ -87,7 +86,6 @@ void SimpleFilterPrivate::init()
     m_lineEdit->setPlaceholderText(tr("Filter"));
     m_lineEdit->setClearButtonEnabled(true);
     connect(m_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
-
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setMargin(0);
     layout->setSpacing(0);
@@ -97,7 +95,7 @@ void SimpleFilterPrivate::init()
 
 void SimpleFilterPrivate::showTreeItem(QTreeWidgetItem *item)
 {
-    for(int i = 0; i < item->childCount(); i++){
+    for (int i = 0; i < item->childCount(); i++) {
         QTreeWidgetItem *childItem = item->child(i);
         childItem->setHidden(false);
 //        childItem->setTextColor(0,Qt::black);
@@ -107,29 +105,33 @@ void SimpleFilterPrivate::showTreeItem(QTreeWidgetItem *item)
 
 void SimpleFilterPrivate::parentExpand(QTreeWidgetItem *item)
 {
-    if(item->parent() != nullptr){
+    if (item->parent() != nullptr) {
         QTreeWidgetItem *parentItem = item->parent();
-        if(parentItem->isHidden()){
+
+        if (parentItem->isHidden()) {
             parentItem->setHidden(false);
         }
-        if(!parentItem->isExpanded()){
+
+        if (!parentItem->isExpanded()) {
             parentItem->setExpanded(true);
         }
+
         parentExpand(parentItem);
     }
 }
 
 void SimpleFilterPrivate::search(QTreeWidgetItem *item, const QString &text)
 {
-    for(int i = 0; i < item->childCount(); ++i) {
+    for (int i = 0; i < item->childCount(); ++i) {
         QTreeWidgetItem *childItem = item->child(i);
+
         if (contentMatch(childItem->text(0), text)) {
             childItem->setExpanded(true);
             parentExpand(childItem);
 //            childItem->setTextColor(0,QColor(200,0,100));
             childItem->setHidden(false);
             searchChild(childItem, text);
-        }else{
+        } else {
 //            childItem->setBackground(0, m_itemBrush);
 //            childItem->setTextColor(0,Qt::black);
             childItem->setHidden(true);
@@ -140,44 +142,55 @@ void SimpleFilterPrivate::search(QTreeWidgetItem *item, const QString &text)
 
 void SimpleFilterPrivate::searchChild(QTreeWidgetItem *item, const QString &text)
 {
-    for(int i = 0; i < item->childCount(); ++i) {
+    for (int i = 0; i < item->childCount(); ++i) {
         QTreeWidgetItem *childItem = item->child(i);
         childItem->setHidden(false);
+
 //        childItem->setExpanded(true);
         if (contentMatch(childItem->text(0), text)) {
 //            childItem->setExpanded(true);
             parentExpand(childItem);
 //            childItem->setTextColor(0,QColor(200,0,100));
-        }else{
+        } else {
 //            childItem->setExpanded(false);
 //            childItem->setTextColor(0,Qt::black);
 //            childItem->setHidden(true); // 20171217
         }
+
         searchChild(childItem, text);
     }
 }
 
 void SimpleFilterPrivate::showTableItems()
 {
-    if(m_table == nullptr) return;
-    for(int i = 0; i < m_table->rowCount(); i++){
+    if (m_table == nullptr) {
+        return;
+    }
+
+    for (int i = 0; i < m_table->rowCount(); i++) {
         m_table->showRow(i);
     }
 }
 
 void SimpleFilterPrivate::search(const QString &text)
 {
-    if(m_table == nullptr) return;
-    for(int i = 0; i < m_table->rowCount(); i++){
+    if (m_table == nullptr) {
+        return;
+    }
+
+    for (int i = 0; i < m_table->rowCount(); i++) {
         int j;
-        for(j = 0; j < m_table->columnCount(); j++){
+
+        for (j = 0; j < m_table->columnCount(); j++) {
             QTableWidgetItem *item = m_table->item(i, j);
-            if(contentMatch(item->text(),text)){
+
+            if (contentMatch(item->text(), text)) {
                 m_table->showRow(i);
                 break;
             }
         }
-        if(j == m_table->columnCount()){
+
+        if (j == m_table->columnCount()) {
             m_table->hideRow(i);
         }
     }
@@ -185,7 +198,7 @@ void SimpleFilterPrivate::search(const QString &text)
 
 void SimpleFilterPrivate::showViewItem(const QModelIndex &index)
 {
-    for(int i = 0; i < m_model->rowCount(index); i++){
+    for (int i = 0; i < m_model->rowCount(index); i++) {
         m_view->setRowHidden(i, index, false);
         QModelIndex child = m_model->index(i, 0, index);
         showViewItem(child);
@@ -195,29 +208,37 @@ void SimpleFilterPrivate::showViewItem(const QModelIndex &index)
 void SimpleFilterPrivate::parentExpand(const QModelIndex &index)
 {
     QModelIndex parent = index.parent();
-    if(!parent.isValid()) return;
+
+    if (!parent.isValid()) {
+        return;
+    }
+
     m_view->expand(parent);
     QModelIndex root = parent.parent();
+
 //    if(!root.isValid()) return; // no need
-    if(m_view->isRowHidden(parent.row(), root)){
+    if (m_view->isRowHidden(parent.row(), root)) {
         m_view->setRowHidden(parent.row(), root, false);
     }
-    if(!m_view->isExpanded(parent)){
+
+    if (!m_view->isExpanded(parent)) {
         m_view->expand(parent);
     }
+
     parentExpand(parent);
 }
 
 void SimpleFilterPrivate::search(const QModelIndex &index, const QString &text)
 {
-    for(int i = 0; i < m_model->rowCount(index); i++){
+    for (int i = 0; i < m_model->rowCount(index); i++) {
         QModelIndex child = m_model->index(i, 0, index);
-        if(contentMatch(child.data().toString(), text)){
+
+        if (contentMatch(child.data().toString(), text)) {
             m_view->expand(child);
             parentExpand(child);
             m_view->setRowHidden(child.row(), index, false);
             searchChild(child, text);
-        }else{
+        } else {
             m_view->setRowHidden(child.row(), index, true);
             search(child, text);
         }
@@ -226,15 +247,17 @@ void SimpleFilterPrivate::search(const QModelIndex &index, const QString &text)
 
 void SimpleFilterPrivate::searchChild(const QModelIndex &index, const QString &text)
 {
-    for(int i = 0; i < m_model->rowCount(index); i++){
+    for (int i = 0; i < m_model->rowCount(index); i++) {
         QModelIndex child = m_model->index(i, 0, index);
         m_view->setRowHidden(child.row(), index, false);
-        if(contentMatch(child.data().toString(), text)){
+
+        if (contentMatch(child.data().toString(), text)) {
 //            m_view->expand(child);
             parentExpand(child);
-        }else{
+        } else {
 //            m_view->setRowHidden(child.row(), index, true);
         }
+
         searchChild(child, text);
     }
 }
@@ -246,85 +269,100 @@ bool SimpleFilterPrivate::contentMatch(const QString &source, const QString &tex
 //        return true;
 //    }
 //    return false;
-
     // complex
     QStringList keys = text.split("*");
     QString value = source;
     int count = 0;
     int index;
-    for(int i = 0; i < keys.count(); i++){
+
+    for (int i = 0; i < keys.count(); i++) {
         index = value.indexOf(keys.at(i), 0, Qt::CaseInsensitive);
-        if(index != -1){
+
+        if (index != -1) {
             count++;
-            value = value.mid(index+keys.at(i).count());
+            value = value.mid(index + keys.at(i).count());
         }
     }
-    if(count == keys.count()){
+
+    if (count == keys.count()) {
         return true;
     }
+
     return false;
 }
 
 void SimpleFilterPrivate::textChanged(QString text)
 {
-    if(m_table){
+    if (m_table) {
         showTableItems();
-        if(!text.isEmpty()){
+
+        if (!text.isEmpty()) {
             search(text);
         }
-    }else if(m_tree){
+    } else if (m_tree) {
         showTreeItem(m_tree->invisibleRootItem());
+
 //        m_tree->collapseAll();
-        if(!text.isEmpty()){
+        if (!text.isEmpty()) {
             search(m_tree->invisibleRootItem(), text);
         }
-    }else if(m_view){
+    } else if (m_view) {
         showViewItem(m_view->rootIndex());
         m_view->collapseAll();
-        if(!text.isEmpty()){
+
+        if (!text.isEmpty()) {
             search(m_view->rootIndex(), text);
         }
     }
 }
 
 SimpleFilter::SimpleFilter(QTableWidget *table, QWidget *parent)
-    : QWidget(parent),d(new SimpleFilterPrivate(this))
+    : QWidget(parent), d(new SimpleFilterPrivate(this))
 {
     d->m_table = table;
-    if(table){
+
+    if (table) {
         d->m_type = TableType;
     }
+
     d->q = this;
     d->init();
 }
 
 SimpleFilter::SimpleFilter(QTreeWidget *tree, QWidget *parent)
-    : QWidget(parent),d(new SimpleFilterPrivate(this))
+    : QWidget(parent), d(new SimpleFilterPrivate(this))
 {
     d->m_tree = tree;
-    if(tree){
+
+    if (tree) {
         d->m_type = TreeType;
     }
+
     d->q = this;
     d->init();
 }
 
 SimpleFilter::SimpleFilter(QTreeView *view, QWidget *parent)
-    : QWidget(parent),d(new SimpleFilterPrivate(this))
+    : QWidget(parent), d(new SimpleFilterPrivate(this))
 {
     d->m_view = view;
-    if(view){
+
+    if (view) {
         d->m_model = view->model();
         d->m_type = ViewType;
     }
+
     d->q = this;
     d->init();
 }
 
 void SimpleFilter::setTableWidget(QTableWidget *table)
 {
-    if(!table) return;
-    if(d->m_type == TableType || d->m_type == NoneType){
+    if (!table) {
+        return;
+    }
+
+    if (d->m_type == TableType || d->m_type == NoneType) {
         d->m_table = table;
         d->m_type = TableType;
     }
@@ -332,8 +370,11 @@ void SimpleFilter::setTableWidget(QTableWidget *table)
 
 void SimpleFilter::setTreeWidget(QTreeWidget *tree)
 {
-    if(!tree) return;
-    if(d->m_type == TreeType || d->m_type == NoneType){
+    if (!tree) {
+        return;
+    }
+
+    if (d->m_type == TreeType || d->m_type == NoneType) {
         d->m_tree = tree;
         d->m_type = TreeType;
     }
@@ -341,8 +382,11 @@ void SimpleFilter::setTreeWidget(QTreeWidget *tree)
 
 void SimpleFilter::setTreeView(QTreeView *view)
 {
-    if(!view) return;
-    if(d->m_type == ViewType || d->m_type == NoneType){
+    if (!view) {
+        return;
+    }
+
+    if (d->m_type == ViewType || d->m_type == NoneType) {
         d->m_view = view;
         d->m_model = view->model();
         d->m_type = ViewType;
