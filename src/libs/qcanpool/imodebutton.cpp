@@ -106,6 +106,9 @@ void IModeButton::mouseReleaseEvent(QMouseEvent *event)
 void IModeButton::select(bool selected)
 {
     this->m_isMousePress = selected;
+    if (!selected) {
+        this->m_isMouseOver = false;
+    }
     update();
 }
 

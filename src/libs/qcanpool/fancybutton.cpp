@@ -49,6 +49,9 @@ FancyButton::~FancyButton()
 void FancyButton::select(bool selected)
 {
     m_bMousePress = selected;
+    if (!selected) {
+        m_bMouseHover = false;
+    }
     update();
 }
 
