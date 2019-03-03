@@ -49,6 +49,9 @@ FancyNavButton::FancyNavButton(QWidget *parent)
 void FancyNavButton::select(bool selected)
 {
     m_isMousePress = selected;
+    if (!selected) {
+        this->m_isMouseOver = false;
+    }
     update();
 }
 
