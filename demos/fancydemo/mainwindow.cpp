@@ -42,13 +42,13 @@
 
 #define COMPANY_NAME    QString::fromUtf8("科技有限公司")
 
-MainWindow *MainWindow::m_instance = 0;
+MainWindow *MainWindow::m_instance = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : FancyWindow(parent)
 {
     m_instance = this;
-    m_styleAction = 0;
+    m_styleAction = nullptr;
     m_styleActions.clear();
 
     Theme::init();

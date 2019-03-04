@@ -32,6 +32,7 @@
 #include <QEvent>
 #include <QDesktopWidget>
 #include <QMainWindow>
+#include <QApplication>
 
 #define TITLE_BAR_HEIGHT    25
 #define MENU_BAR_HEIGHT     25
@@ -234,8 +235,7 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     m_titleBarHeight = TITLE_BAR_HEIGHT;
     m_menuBarHeight = MENU_BAR_HEIGHT;
     m_style = FancyBar::WindowStyle;
-    QRect geom = QApplication::desktop()->availableGeometry();
-    m_normalRect = QRect(100, 100, 2 * geom.width() / 3, 2 * geom.height() / 3);
+    m_normalRect = ScreenHelper::normalRect();
 }
 
 FancyBarPrivate::~FancyBarPrivate()
@@ -582,9 +582,7 @@ void FancyBarPrivate::maximizeWidget(QWidget *pWidget)
     int x = pWidget->frameGeometry().x() + pWidget->frameGeometry().width() / 2;
     ScreenHelper sreen;
     m_currentScreen = sreen.currentScreen(x);
-    // 创建QDesktopWidget对象
-    QDesktopWidget *desktopWidget = QApplication::desktop();
-    QRect rect = desktopWidget->availableGeometry(m_currentScreen);
+    QRect rect = sreen.screenRect(m_currentScreen);
     pWidget->setGeometry(rect);
     emit windowResizable(false);
 }

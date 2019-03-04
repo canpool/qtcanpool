@@ -62,7 +62,7 @@ void QCanpool::showInExplorer(QString fileName)
 #if !defined(Q_CC_MSVC)
     QString argsFile = QString("/select, %1").arg(fileName.replace("/", "\\"));
     QTextCodec *codec = QTextCodec::codecForName("GB18030");
-    ShellExecuteA(nullptr, "open", "explorer.exe", codec->fromUnicode(argsFile).constData(), NULL, SW_SHOWDEFAULT);
+    ShellExecuteA(nullptr, "open", "explorer.exe", codec->fromUnicode(argsFile).constData(), nullptr, SW_SHOWDEFAULT);
 #endif
 #else
     QDesktopServices::openUrl(QUrl(QFileInfo(fileName).absolutePath(), QUrl::TolerantMode));

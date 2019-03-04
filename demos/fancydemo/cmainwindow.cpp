@@ -27,13 +27,14 @@
 #include "qcanpool/fancytabwidget.h"
 #include "qcanpool/fancytabbar.h"
 #include "qcanpool/modemanager.h"
+#include "qcanpool/screenhelper.h"
 
 #include "licensedialog.h"
 #include "license/nrlicense.h"
 
 #define COMPANY_NAME    QString::fromUtf8("QT FRAMEWORK")
 
-CMainWindow *CMainWindow::m_instance = 0;
+CMainWindow *CMainWindow::m_instance = nullptr;
 
 CMainWindow::CMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -53,8 +54,8 @@ CMainWindow::CMainWindow(QWidget *parent)
     setMinimumSize(QSize(600,400));
     setMouseTracking(true);
 
-    QRect geom = QApplication::desktop()->availableGeometry();
-    resize(2 * geom.width() / 3, 2 * geom.height() / 3);
+    QRect geom = ScreenHelper::normalRect();
+    resize(geom.width(), geom.height());
     raise();
     activateWindow();
 }

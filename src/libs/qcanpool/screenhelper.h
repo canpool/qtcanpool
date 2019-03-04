@@ -20,25 +20,23 @@
 #ifndef SCREENHELPER_H
 #define SCREENHELPER_H
 
-#include <QApplication>
 #include <QRect>
+#include <QList>
+#include "qcanpool_global.h"
 
 /* on screen display */
-class ScreenHelper
+class QCANPOOL_SHARED_EXPORT ScreenHelper
 {
 public:
     ScreenHelper();
 
-    typedef struct
-    {
-        int no;
-        QRect rect;
-    }ScreenInfo;
-
     int currentScreen(const int x);
     QRect screenRect(const int current);
+
+    static QRect normalRect();
+
 private:
-    QList<ScreenInfo> m_screenInfoList;
+    QList<QRect> m_screenRects;
 };
 
 #endif // SCREENHELPER_H
