@@ -19,6 +19,7 @@
 ****************************************************************************/
 #include "fancywindow.h"
 #include "fancybar.h"
+#include "screenhelper.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -52,8 +53,8 @@ FancyWindow::FancyWindow(QWidget *parent)
     connect(d->fancyBar, SIGNAL(maximizationChanged(bool)), this, SIGNAL(resizable(bool)));
     setMenuWidget(d->fancyBar);
     setMouseTracking(true);
-    QRect geom = QApplication::desktop()->availableGeometry();
-    resize(2 * geom.width() / 3, 2 * geom.height() / 3);
+    QRect geom = ScreenHelper::normalRect();
+    resize(geom.width(), geom.height());
     raise();
     activateWindow();
 }

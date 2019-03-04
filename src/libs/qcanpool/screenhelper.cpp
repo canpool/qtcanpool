@@ -19,51 +19,67 @@
 ****************************************************************************/
 #include "screenhelper.h"
 
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
+#include <QApplication>
 #include <QDesktopWidget>
-#include <QDebug>
+#else
+#include <QGuiApplication>
+#include <QScreen>
+#endif
 
 ScreenHelper::ScreenHelper()
 {
+    m_screenRects.clear();
+
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
     QDesktopWidget *desktop = QApplication::desktop();
     int screenCnt = desktop->screenCount();
-    int primScreen = desktop->primaryScreen();
-    m_screenInfoList.clear();
 
     for (int i = 0; i < screenCnt; i++) {
-        ScreenInfo info;
-        info.no = primScreen + i;
-//      info.rect = desktop->screenGeometry(info.no);
-        info.rect = desktop->availableGeometry(info.no);
-        m_screenInfoList.append(info);
-//       qDebug()<<"screen no: "<<m_screenInfoList.at(i).no;
-//       qDebug()<<"x:"<<m_screenInfoList.at(i).rect.x()<<" y:"<<m_screenInfoList.at(i).rect.y()
-//             <<" width:"<<m_screenInfoList.at(i).rect.width()
-//            <<" height:"<<m_screenInfoList.at(i).rect.height();
+        QRect rect = desktop->availableGeometry(i);
+        m_screenRects.append(rect);
     }
+#else
+    QList<QScreen *> screenList = QGuiApplication::screens();
+    foreach (QScreen *screen, screenList) {
+        m_screenRects.append(screen->availableGeometry());
+    }
+#endif
 }
 
 int ScreenHelper::currentScreen(const int x)
 {
     int width;
 
-    for (int i = 0; i < m_screenInfoList.count(); i++) {
-        width = m_screenInfoList.at(i).rect.x() + m_screenInfoList.at(i).rect.width();
+    for (int i = 0; i < m_screenRects.count(); i++) {
+        width = m_screenRects.at(i).x() + m_screenRects.at(i).width();
 
         if (x > width) {
             continue;
-        } else {
-            return m_screenInfoList.at(i).no;
         }
+        return i;
     }
 
-    return m_screenInfoList.at(0).no;
+    return 0;
 }
 
 QRect ScreenHelper::screenRect(const int current)
 {
-    if (current >= m_screenInfoList.count()) {
-        return m_screenInfoList.at(0).rect;
+    if (current >= m_screenRects.count()) {
+        return m_screenRects.at(0);
     } else {
-        return m_screenInfoList.at(current).rect;
+        return m_screenRects.at(current);
     }
+}
+
+QRect ScreenHelper::normalRect()
+{
+    QRect geom;
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
+    geom = QApplication::desktop()->availableGeometry();
+#else
+    geom = QGuiApplication::primaryScreen()->availableGeometry();
+#endif
+    return QRect(geom.x() + 100, geom.y() + 100,
+                 2 * geom.width() / 3, 2 * geom.height() / 3);
 }
