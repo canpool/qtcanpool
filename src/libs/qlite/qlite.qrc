@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/qlite">
+        <file alias="close">resource/main/close.png</file>
+        <file alias="max">resource/main/max.png</file>
+        <file alias="min">resource/main/min.png</file>
+        <file alias="restore">resource/main/restore.png</file>
+    </qresource>
+</RCC>

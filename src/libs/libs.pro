@@ -6,7 +6,8 @@ SUBDIRS =   \
     qcanpool   \
     license \
     qexts \
-    qribbon
+    qribbon \
+    qlite
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
