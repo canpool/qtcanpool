@@ -30,7 +30,6 @@
 #include <QMenuBar>
 #include <QMouseEvent>
 #include <QEvent>
-#include <QDesktopWidget>
 #include <QMainWindow>
 #include <QApplication>
 
@@ -840,7 +839,6 @@ QPoint FancyBarPrivate::calcDragPoint(QWidget *pWindow, QMouseEvent *event) cons
 {
     // 最大化时，计算拖拽界面显示的坐标点
     int mouseX = event->globalX();
-    //int maxWidth = QApplication::desktop()->availableGeometry().width();
     ScreenHelper screen;
     QRect rect = screen.screenRect(m_currentScreen);
     int maxWidth = rect.x() + rect.width();
