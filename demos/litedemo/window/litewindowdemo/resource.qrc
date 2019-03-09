@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/qss">
+        <file alias="flatdark">resource/qss/flatdark.css</file>
+        <file alias="qlite_flatdark">resource/qss/qlite_flatdark.css</file>
+    </qresource>
+    <qresource prefix="/main">
+        <file alias="logo">resource/logo.png</file>
+    </qresource>
+</RCC>

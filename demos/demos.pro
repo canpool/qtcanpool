@@ -5,4 +5,5 @@ SUBDIRS +=  \
             fancydemo \
             qtoffice \
             qtqrcode \
-            qtitanribbon
+            qtitanribbon \
+            litedemo
