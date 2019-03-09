@@ -102,7 +102,7 @@ LiteWindow::LiteWindow(QWidget *parent, Qt::WindowFlags f)
     activateWindow();
 
     setObjectName(QLatin1String("qlite_window"));
-    setWindowIcon(QIcon(":/main/logo"));
+    setWindowIcon(QIcon(":/qlite/logo"));
 }
 
 LiteWindow::~LiteWindow()
