@@ -61,6 +61,7 @@ FancyWindow::FancyWindow(QWidget *parent)
 
 FancyWindow::~FancyWindow()
 {
+    delete d;
 }
 
 FancyBar *FancyWindow::fancyBar() const

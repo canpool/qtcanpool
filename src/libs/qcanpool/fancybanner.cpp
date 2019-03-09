@@ -40,7 +40,7 @@ class FancyBannerIndicator : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FancyBannerIndicator(QWidget *parent = 0);
+    explicit FancyBannerIndicator(QWidget *parent = nullptr);
     ~FancyBannerIndicator();
 
     void select(bool selected);
