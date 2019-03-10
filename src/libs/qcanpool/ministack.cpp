@@ -30,7 +30,7 @@ class MiniStackPrivate : public QObject
 {
     Q_OBJECT
 public:
-    MiniStackPrivate(QObject *parent = 0);
+    MiniStackPrivate(QObject *parent = nullptr);
     void init();
     void createWindow();
 
@@ -180,7 +180,7 @@ void MiniStackPrivate::setTabColor()
 
 void MiniStackPrivate::addAction(QAction *action)
 {
-    if (action == NULL) {
+    if (action == nullptr) {
         return;
     }
 

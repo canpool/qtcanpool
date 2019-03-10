@@ -39,7 +39,7 @@ public:
       WindowStyle, ClassicStyle, MergedStyle, DialogStyle
     };
 
-    explicit FancyBar(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+    explicit FancyBar(QWidget *parent);
     ~FancyBar();
 
     QMenuBar* menuBar() const;

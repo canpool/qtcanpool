@@ -440,7 +440,7 @@ void TinyTabBar::addTab(TinyTab *tab)
     m_tabs.append(tab);
     connect(tab, SIGNAL(clicked(bool)), this, SLOT(switchTab()));
     m_layout->insertWidget(m_tabs.count() - 1, tab);
-    //    m_layout->addWidget(tab);
+//    m_layout->addWidget(tab);
     m_tabs.at(0)->select(true);
     m_currentIndex = 0;
 }
@@ -457,6 +457,7 @@ void TinyTabBar::setCurrentIndex(int index)
 
     m_currentIndex = index;
     m_tabs.at(m_currentIndex)->select(true);
+    emit currentChanged(m_currentIndex);
 }
 
 void TinyTabBar::switchTab()
@@ -468,18 +469,7 @@ void TinyTabBar::switchTab()
     }
 
     int index = m_tabs.indexOf(tab);
-
-    if (index == m_currentIndex) {
-        return;
-    }
-
-    if (m_currentIndex != -1) {
-        m_tabs.at(m_currentIndex)->select(false);
-    }
-
-    m_currentIndex = index;
-    m_tabs.at(m_currentIndex)->select(true);
-    emit currentChanged(m_currentIndex);
+    setCurrentIndex(index);
 }
 
 ///////////////////////////////////////////////////////////////////////////

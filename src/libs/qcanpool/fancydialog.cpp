@@ -45,10 +45,10 @@ FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
 {
     setWindowFlags(Qt::FramelessWindowHint |
                    Qt::WindowSystemMenuHint |
-                   Qt::WindowMinimizeButtonHint |
-                   Qt::Dialog
+//                   Qt::WindowMinimizeButtonHint |
+                   Qt::Dialog | f
                   );
-    d->fancyBar = new FancyBar(this, Qt::Dialog | f);
+    d->fancyBar = new FancyBar(this);
     d->fancyBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     d->centralWidget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout();

@@ -140,27 +140,6 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
 //    d->m_modeLayout->addStretch();
     d->m_modeLayout->setSpacing(0);
     d->m_modeLayout->setMargin(0);
-//    QScrollArea *pScrollArea = new QScrollArea();
-//    if(direction == Horizontal){
-//        pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//        pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//        pScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-//    }else{
-//        pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//        pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//        pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-//    }
-//    pScrollArea->setStyleSheet("background: transparent;");
-//    pScrollArea->setWidgetResizable(true);
-//    pScrollArea->setFrameShape(QFrame::NoFrame);
-//    QWidget *scrollWidget = new QWidget();
-//    if(direction == Horizontal){
-//        scrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-//    }else{
-//        scrollWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-//    }
-//    scrollWidget->setLayout(d->m_modeLayout);
-//    pScrollArea->setWidget(scrollWidget);
     // front action layout
     d->m_frontActionLayout = new QBoxLayout(layoutDirection);
     d->m_frontActionLayout->setSpacing(0);
@@ -200,7 +179,7 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
     pMainLayout->addWidget(d->m_spacer);
     pMainLayout->addLayout(d->m_frontActionLayout);
     pMainLayout->addLayout(d->m_modeLayout);
-    //    pMainLayout->addWidget(pScrollArea);
+//    pMainLayout->addWidget(pScrollArea);
     pMainLayout->addLayout(d->m_middleActionLayout);
     pMainLayout->addStretch();
     pMainLayout->addWidget(d->m_line);

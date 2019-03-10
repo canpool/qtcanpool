@@ -35,6 +35,8 @@ public:
     void updateTabBarPosition();
     void init();
 
+    inline bool validIndex(int index) const { return index >= 0 && index < m_modeTabs.count(); }
+
     FancyTabBar::Direction m_direction;
 
     int m_currentIndex;
@@ -267,32 +269,23 @@ void FancyTabBar::setDirection(FancyTabBar::Direction direction)
 
 bool FancyTabBar::validIndex(int index) const
 {
-    return index >= 0 && index < d->m_modeTabs.count();
+    return d->validIndex(index);
 }
 
 void FancyTabBar::setTabEnabled(int index, bool enable)
 {
-    Q_ASSERT(index < d->m_modeTabs.size());
-    Q_ASSERT(index >= 0);
-
-    if (index < d->m_modeTabs.size() && index >= 0) {
+    if (d->validIndex(index)) {
         FancyTab *tab = d->m_modeTabs[index];
         tab->setEnabled(enable);
         QFont font = tab->font();
         font.setItalic(!enable);
         tab->setFont(font);
-        //        QIcon icon = tab->icon();
-        //        icon.setIsMask(!enable);
-        //        tab->setIcon(icon);
     }
 }
 
 bool FancyTabBar::isTabEnabled(int index) const
 {
-    Q_ASSERT(index < d->m_modeTabs.size());
-    Q_ASSERT(index >= 0);
-
-    if (index < d->m_modeTabs.size() && index >= 0) {
+    if (d->validIndex(index)) {
         return d->m_modeTabs[index]->isEnabled();
     }
 
@@ -301,22 +294,35 @@ bool FancyTabBar::isTabEnabled(int index) const
 
 void FancyTabBar::setTabVisible(int index, bool visible)
 {
-    Q_ASSERT(index < d->m_modeTabs.size());
-    Q_ASSERT(index >= 0);
-
-    if (index < d->m_modeTabs.size() && index >= 0) {
+    if (d->validIndex(index)) {
         d->m_modeTabs[index]->setHidden(!visible);
     }
 }
 
 bool FancyTabBar::isTabVisible(int index) const
 {
-    Q_ASSERT(index < d->m_modeTabs.size());
-    Q_ASSERT(index >= 0);
-    return d->m_modeTabs[index]->isVisible();
+    if (d->validIndex(index)) {
+        return d->m_modeTabs[index]->isVisible();
+    }
+    return false;
 }
 
-void FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, bool hasMenu)
+int FancyTabBar::addTab(const QString &label, bool hasMenu)
+{
+    return insertTab(-1, label, hasMenu);
+}
+
+int FancyTabBar::addTab(const QIcon &icon, const QString &label, bool hasMenu)
+{
+    return insertTab(-1, icon, label, hasMenu);
+}
+
+int FancyTabBar::insertTab(int index, const QString &label, bool hasMenu)
+{
+    return insertTab(index, QIcon(), label, hasMenu);
+}
+
+int FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, bool hasMenu)
 {
     FancyTab *tab = new FancyTab(this);
     tab->setIcon(icon);
@@ -330,11 +336,19 @@ void FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, 
         tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
 
-    d->m_modeTabs.insert(index, tab);
     connect(tab, SIGNAL(clicked(bool)), d, SLOT(switchTab()));
     connect(tab, SIGNAL(menuTriggered(QMouseEvent *)), d, SLOT(menuTriggered(QMouseEvent *)));
 
-    if (d->m_currentIndex >= index) {
+    if (d->validIndex(index)) {
+        d->m_modeTabs.insert(index, tab);
+    } else {
+        index = d->m_modeTabs.count();
+        d->m_modeTabs.append(tab);
+    }
+
+    if (d->m_modeTabs.count() == 1) {
+        setCurrentIndex(index);
+    } else if (d->m_currentIndex >= index) {
         d->m_currentIndex++;
     }
 
@@ -343,10 +357,13 @@ void FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, 
     } else {
         d->m_modeLayout->insertWidget(index, tab);
     }
+    return index;
 }
 
 void FancyTabBar::removeTab(int index)
 {
+    if (!d->validIndex(index)) return;
+
     FancyTab *tab = d->m_modeTabs.takeAt(index);
 
     if (tab->m_hasMenu) {
@@ -356,16 +373,30 @@ void FancyTabBar::removeTab(int index)
     }
 
     delete tab;
+
+    // note: disable tab
+    int count = d->m_modeTabs.count();
+    if (count == 0) {
+        d->m_currentIndex = -1;
+    } else if (index < d->m_currentIndex) {
+        d->m_currentIndex--;
+    } else if (index == d->m_currentIndex) {
+        d->m_currentIndex = -1;
+        if(index == count) {
+            index--;
+        }
+        setCurrentIndex(index);
+    }
 }
 
 void FancyTabBar::setCurrentIndex(int index)
 {
-    if (!validIndex(index)) {
+    if (!d->validIndex(index)) {
         return;
     }
 
     if (isTabEnabled(index) && index != d->m_currentIndex) {
-        if (validIndex(d->m_currentIndex)) {
+        if (d->validIndex(d->m_currentIndex)) {
             d->m_modeTabs.at(d->m_currentIndex)->select(false);
         }
 
@@ -383,20 +414,17 @@ int FancyTabBar::currentIndex() const
 
 void FancyTabBar::setTabToolTip(int index, QString toolTip)
 {
-    if (!validIndex(index)) {
-        return;
+    if (d->validIndex(index)) {
+        d->m_modeTabs[index]->setToolTip(toolTip);
     }
-
-    d->m_modeTabs[index]->setToolTip(toolTip);
 }
 
 QString FancyTabBar::tabToolTip(int index) const
 {
-    if (!validIndex(index)) {
-        return QString("");
+    if (d->validIndex(index)) {
+        return d->m_modeTabs[index]->toolTip();
     }
-
-    return d->m_modeTabs[index]->toolTip();
+    return QString("");
 }
 
 void FancyTabBar::setTabStyle(FancyTabBar::TabType type, FancyTabBar::TabStyle style)
@@ -404,12 +432,12 @@ void FancyTabBar::setTabStyle(FancyTabBar::TabType type, FancyTabBar::TabStyle s
     if (type == Mode) {
         d->m_modeStyle = style;
         foreach (FancyTab * tab, d->m_modeTabs) {
-            tab->setToolButtonStyle((Qt::ToolButtonStyle)style);
+            tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(style));
         }
     } else if (type == Action) {
         d->m_actionStyle = style;
         foreach (FancyTab * tab, d->m_actionTabs) {
-            tab->setToolButtonStyle((Qt::ToolButtonStyle)style);
+            tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(style));
         }
     }
 }
@@ -454,7 +482,7 @@ int FancyTabBar::addAction(QAction *action, FancyTabBar::ActionPosition position
     tab->setType(FancyTab::Action);
     tab->setText(action->text());
     tab->setIcon(action->icon());
-    tab->setToolButtonStyle((Qt::ToolButtonStyle)d->m_actionStyle);
+    tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(d->m_actionStyle));
     tab->setToolTip(action->toolTip());
     tab->setDefaultAction(action);
 
@@ -500,7 +528,7 @@ void FancyTabBar::setActionStyle(QAction *action, FancyTabBar::TabStyle style)
     FancyTab *tab = d->m_actionTabMap.value(action);
 
     if (tab) {
-        tab->setToolButtonStyle((Qt::ToolButtonStyle)style);
+        tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(style));
     }
 }
 
@@ -559,11 +587,9 @@ void FancyTabBar::setHeadSpace(int space)
 
 void FancyTabBar::hideMenu(int index)
 {
-    if (!validIndex(index)) {
-        return;
+    if (d->validIndex(index)) {
+        d->m_modeTabs.at(index)->select(false);
     }
-
-    d->m_modeTabs.at(index)->select(false);
 }
 
 #include "fancytabbar.moc"

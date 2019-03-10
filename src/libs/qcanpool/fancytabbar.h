@@ -39,7 +39,7 @@ public:
 
     void setDirection(Direction direction);
 
-    bool validIndex(int index) const;
+    bool validIndex(int index) const; // discarded
 
     void setTabEnabled(int index, bool enable);
     bool isTabEnabled(int index) const;
@@ -47,7 +47,11 @@ public:
     void setTabVisible(int index, bool visible);
     bool isTabVisible(int index) const;
 
-    void insertTab(int index, const QIcon &icon, const QString &label, bool hasMenu);
+    int addTab(const QString &label, bool hasMenu = false);
+    int addTab(const QIcon &icon, const QString &label, bool hasMenu = false);
+
+    int insertTab(int index, const QString &label, bool hasMenu = false);
+    int insertTab(int index, const QIcon &icon, const QString &label, bool hasMenu = false);
     void removeTab(int index);
 
     void setCurrentIndex(int index);

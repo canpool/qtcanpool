@@ -47,6 +47,7 @@ FancyWindow::FancyWindow(QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint
                    | Qt::WindowSystemMenuHint
                    | Qt::WindowMinimizeButtonHint
+                   | Qt::WindowMaximizeButtonHint
                    | Qt::Window
                   );
     d->fancyBar = new FancyBar(this);
