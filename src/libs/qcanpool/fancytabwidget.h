@@ -73,7 +73,12 @@ public:
     explicit FancyTabWidget(QWidget *parent = nullptr);
     ~FancyTabWidget();
 
-    void insertTab(int index, QWidget *tab, const QIcon &icon, const QString &label, bool hasMenu);
+    int addTab(QWidget *widget, const QString &label, bool hasMenu = false);
+    int addTab(QWidget *widget, const QIcon& icon, const QString &label, bool hasMenu = false);
+
+    int insertTab(int index, QWidget *widget, const QString &label, bool hasMenu = false);
+    int insertTab(int index, QWidget *widget, const QIcon &icon, const QString &label, bool hasMenu = false);
+
     void removeTab(int index);
 
     void setTabEnabled(int index, bool enable);

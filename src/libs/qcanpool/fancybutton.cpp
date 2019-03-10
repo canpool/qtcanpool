@@ -177,18 +177,9 @@ void FancyButton::painterInfo(QColor &color)
 bool FancyButton::actionHasMenu()
 {
     QAction *action = this->defaultAction();
-
-    if (action == nullptr) {
-        return false;
+    if (action && action->menu()) {
+        return true;
     }
 
-    QMenu *menu = action->menu();
-
-    if (menu == nullptr) {
-        return false;
-    }
-
-    return true;
+    return false;
 }
-
-

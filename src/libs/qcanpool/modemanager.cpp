@@ -57,7 +57,7 @@ void ModeManagerPrivate::hideMenu()
     m_modeStack->hideMenu(m_menuIndex);
 }
 
-ModeManagerPrivate *d = nullptr;
+static ModeManagerPrivate *d = nullptr;
 
 ModeManager::ModeManager(FancyTabWidget *modeStack, QObject *parent)
     : QObject(parent)
@@ -85,11 +85,9 @@ void ModeManager::setCurrentMode(IMode *mode)
 
 void ModeManager::setCurrentIndex(int index)
 {
-    if (index < 0 || index >= d->m_modes.count()) {
-        return;
+    if (d->validIndex(index)) {
+        d->m_modeStack->setCurrentIndex(index);
     }
-
-    d->m_modeStack->setCurrentIndex(index);
 }
 
 IMode *ModeManager::currentMode() const
@@ -105,7 +103,7 @@ IMode *ModeManager::currentMode() const
 
 IMode *ModeManager::mode(int index) const
 {
-    if (index >= 0 && index < d->m_modes.count()) {
+    if (d->validIndex(index)) {
         return d->m_modes.at(index);
     }
 
@@ -134,10 +132,10 @@ void ModeManager::objectAdded(QObject *obj)
 
     // Count the number of modes with a higher priority
     int index = 0;
-    foreach (const IMode * m, d->m_modes)
-
-    if (m->priority() >= mode->priority()) {
-        ++index;
+    foreach (const IMode * m, d->m_modes) {
+        if (m->priority() >= mode->priority()) {
+            ++index;
+        }
     }
 
     d->m_modes.insert(index, mode);
