@@ -34,7 +34,7 @@ PageSorter::PageSorter(int block, QWidget *parent)
     createWindow();
     m_maxPage = 0;
     setMaxPage(1);
-    // 分页组件的css,这个内容应该放到普通文件中然后加载
+
     QString qss = QString(".QLabel { color:black; padding: 1px; }")
                   + QString(".QLabel[page=\"true\"] { color:black; padding: 1px; }")
                   + QString(".QLabel[currentPage=\"true\"] { color: rgb(190, 0, 0);}")
@@ -145,7 +145,7 @@ void PageSorter::createWindow()
 
 void PageSorter::setBlock(int size)
 {
-    // 为了便于计算, block size 必须是奇数, 且最小为3
+    // To facilitate calculation, block size must be odd and at least 3
     size = qMax(size, 3);
 
     if (size % 2 == 0) {
@@ -196,24 +196,24 @@ void PageSorter::updatePageLabels()
     int centerStartPage = 0;
 
     if (c >= 1 && c <= n + n / 2 + 1) {
-        // 1. c ∈ [1, n + n/2 + 1]: 显示前 n * 2 个, 后 n 个: 只显示右边的分隔符
+        // 1. c ∈ [1, n + n/2 + 1]: Show first n * 2, last n: only show the right delimiter
         centerStartPage = n + 1;
         m_pRightSeparaterLabel->show();
     } else if (c >= m - n - n / 2 && c <= m) {
-        // 2. c ∈ [m - n - n/2, m]: 显示前 n 个, 后 n * 2 个: 只显示左边的分隔符
+        // 2. c ∈ [m - n - n/2, m]: Show first n, second n * 2: only show left delimiter
         centerStartPage = m - n - n + 1;
         m_pLeftSeparaterLabel->show();
     } else {
-        // 3. 显示[1, n], [c - n/2, c + n/2], [m - n + 1, m]: 两个分隔符都显示
+        // 3. show [1, n], [c - n/2, c + n/2], [m - n + 1, m]: Both delimiters are displayed
         centerStartPage = c - n / 2;
         m_pRightSeparaterLabel->show();
         m_pLeftSeparaterLabel->show();
     }
 
     for (int i = 0; i < n; ++i) {
-        m_pageLabels.at(i)->setText(QString::number(i + 1));                     // 前面 n 个
-        m_pageLabels.at(n + i)->setText(QString::number(centerStartPage + i));   // 中间 n 个
-        m_pageLabels.at(3 * n - i - 1)->setText(QString::number(m - i));         // 后面 n 个
+        m_pageLabels.at(i)->setText(QString::number(i + 1));                    // front
+        m_pageLabels.at(n + i)->setText(QString::number(centerStartPage + i));  // middle
+        m_pageLabels.at(3 * n - i - 1)->setText(QString::number(m - i));        // back
     }
 
     for (int i = 0; i < m_pageLabels.count(); ++i) {
