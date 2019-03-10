@@ -168,29 +168,86 @@ LiteTabBar::~LiteTabBar()
     delete d;
 }
 
-void LiteTabBar::addTab(const QString &label)
+int LiteTabBar::addTab(const QString &text)
 {
-    addTab(QIcon(), label);
+    return insertTab(-1, text);
 }
 
-void LiteTabBar::addTab(const QIcon &icon, const QString &label)
+int LiteTabBar::addTab(const QIcon &icon, const QString &text)
+{
+    return insertTab(-1, icon, text);
+}
+
+int LiteTabBar::insertTab(int index, const QString &text)
+{
+    return insertTab(index, QIcon(), text);
+}
+
+int LiteTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 {
     QToolButton *tab = new QToolButton();
     tab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     tab->setObjectName(QLatin1String("tab"));
     tab->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    tab->setText(label);
-    tab->setToolTip(label);
+    tab->setText(text);
+    tab->setToolTip(text);
     tab->setIcon(icon);
     tab->setIconSize(d->m_iconSize);
     tab->setCheckable(true);
     connect(tab, SIGNAL(clicked(bool)), d, SLOT(switchTab(bool)));
     connect(tab, SIGNAL(pressed()), d, SLOT(pressTab()));
-    d->m_tabs.append(tab);
-    d->m_tabLayout->addWidget(tab);
-    emit d->m_tabs.at(0)->clicked();
-    d->m_currentIndex = 0;
+
+    if (d->validIndex(index)){
+        d->m_tabs.insert(index, tab);
+        d->m_tabLayout->insertWidget(index, tab);
+    } else {
+        index = d->m_tabs.count();
+        d->m_tabs.append(tab);
+        d->m_tabLayout->addWidget(tab);
+    }
+
+    if (d->m_tabs.count() == 1) {
+        setCurrentIndex(index);
+    } else if (d->m_currentIndex >= index) {
+        d->m_currentIndex++;
+    }
     d->m_totalHeight += tab->sizeHint().height();
+    return index;
+}
+
+void LiteTabBar::removeTab(int index)
+{
+    if (!d->validIndex(index)) return;
+
+    QToolButton *tab = d->m_tabs.takeAt(index);
+    d->m_tabLayout->removeWidget(tab);
+    delete tab;
+
+    int count = d->m_tabs.count();
+    if (count == 0) {
+        d->m_currentIndex = -1;
+    } else if (index < d->m_currentIndex) {
+        d->m_currentIndex--;
+    } else if (index == d->m_currentIndex) {
+        d->m_currentIndex = -1;
+        if(index == count) {
+            index--;
+        }
+        setCurrentIndex(index);
+    }
+}
+
+int LiteTabBar::currentIndex() const
+{
+    if (d->validIndex(d->m_currentIndex)) {
+        return d->m_currentIndex;
+    }
+    return -1;
+}
+
+int LiteTabBar::count() const
+{
+    return d->m_tabs.count();
 }
 
 void LiteTabBar::addAction(QAction *action, LiteTabBar::ActionPosition position)

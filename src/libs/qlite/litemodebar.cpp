@@ -49,6 +49,8 @@ void LiteModeBarPrivate::init()
 LiteModeBar::LiteModeBar(QStackedWidget *modeStack, QWidget *parent)
     : LiteTabBar(parent), d(new LiteModeBarPrivate())
 {
+    Q_ASSERT(modeStack);
+
     d->m_stack = modeStack;
     d->q = this;
     d->init();
@@ -63,14 +65,50 @@ LiteModeBar::~LiteModeBar()
 
 int LiteModeBar::addMode(QWidget *widget, const QString &label)
 {
-    return addMode(widget, QIcon(), label);
+    return insertMode(-1, widget, label);
 }
 
 int LiteModeBar::addMode(QWidget *widget, const QIcon &icon, const QString &label)
 {
-    addTab(icon, label);
-    d->m_stack->addWidget(widget);
-    return (d->m_stack->count() - 1);
+    return insertMode(-1, widget, icon, label);
+}
+
+int LiteModeBar::insertMode(int index, QWidget *widget, const QString &label)
+{
+    return insertMode(index, widget, QIcon(), label);
+}
+
+int LiteModeBar::insertMode(int index, QWidget *widget, const QIcon &icon, const QString &label)
+{
+    if(!widget)
+        return -1;
+    index = d->m_stack->insertWidget(index, widget);
+    insertTab(index, icon, label);
+
+    return index;
+}
+
+void LiteModeBar::removeMode(int index)
+{
+    if (QWidget *w = d->m_stack->widget(index)) {
+        d->m_stack->removeWidget(w);
+        removeTab(index);
+    }
+}
+
+QWidget *LiteModeBar::currentMode() const
+{
+    return d->m_stack->currentWidget();
+}
+
+QWidget *LiteModeBar::Mode(int index) const
+{
+    return d->m_stack->widget(index);
+}
+
+int LiteModeBar::indexOf(QWidget *widget) const
+{
+    return d->m_stack->indexOf(widget);
 }
 
 void LiteModeBar::setModeEnabled(QWidget *widget, bool enable)

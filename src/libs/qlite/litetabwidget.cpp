@@ -106,14 +106,60 @@ LiteTabWidget::~LiteTabWidget()
 
 int LiteTabWidget::addTab(QWidget *widget, const QString &label)
 {
-    return addTab(widget, QIcon(), label);
+    return insertTab(-1, widget, label);
 }
 
 int LiteTabWidget::addTab(QWidget *widget, const QIcon &icon, const QString &label)
 {
-    d->m_tabBar->addTab(icon, label);
-    d->m_stack->addWidget(widget);
-    return (d->m_stack->count() - 1);
+    return insertTab(-1, widget, icon, label);
+}
+
+int LiteTabWidget::insertTab(int index, QWidget *widget, const QString &label)
+{
+    return insertTab(index, widget, QIcon(), label);
+}
+
+int LiteTabWidget::insertTab(int index, QWidget *widget, const QIcon &icon, const QString &label)
+{
+    if(!widget)
+        return -1;
+    index = d->m_stack->insertWidget(index, widget);
+    d->m_tabBar->insertTab(index, icon, label);
+
+    return index;
+}
+
+void LiteTabWidget::removeTab(int index)
+{
+    if (QWidget *w = d->m_stack->widget(index)) {
+        d->m_stack->removeWidget(w);
+        d->m_tabBar->removeTab(index);
+    }
+}
+
+int LiteTabWidget::currentIndex() const
+{
+    return d->m_stack->currentIndex();
+}
+
+QWidget *LiteTabWidget::currentWidget() const
+{
+    return d->m_stack->currentWidget();
+}
+
+QWidget *LiteTabWidget::widget(int index) const
+{
+    return d->m_stack->widget(index);
+}
+
+int LiteTabWidget::indexOf(QWidget *widget) const
+{
+    return d->m_stack->indexOf(widget);
+}
+
+int LiteTabWidget::count() const
+{
+    return d->m_tabBar->count();
 }
 
 void LiteTabWidget::setTabEnabled(QWidget *widget, bool enable)
