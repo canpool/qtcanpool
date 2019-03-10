@@ -21,8 +21,9 @@
 #define LITEWIDGET_H
 
 #include <QWidget>
+#include "qlite_global.h"
 
-class LiteWidget : public QWidget
+class QLITE_SHARED_EXPORT LiteWidget : public QWidget
 {
     Q_OBJECT
 public:
