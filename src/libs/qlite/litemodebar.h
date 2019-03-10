@@ -36,6 +36,15 @@ public:
     int addMode(QWidget *widget, const QString &);
     int addMode(QWidget *widget, const QIcon& icon, const QString &label);
 
+    int insertMode(int index, QWidget *widget, const QString &);
+    int insertMode(int index, QWidget *widget, const QIcon& icon, const QString &label);
+
+    void removeMode(int index);
+
+    QWidget *currentMode() const;
+    QWidget *Mode(int index) const;
+    int indexOf(QWidget *widget) const;
+
     void setModeEnabled(QWidget *widget, bool enable);
     void setModeVisible(QWidget *widget, bool visible);
 

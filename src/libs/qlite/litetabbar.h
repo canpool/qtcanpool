@@ -35,8 +35,16 @@ public:
     explicit LiteTabBar(QWidget *parent = nullptr);
     ~LiteTabBar();
 
-    void addTab(const QString &label);
-    void addTab(const QIcon &icon, const QString &label);
+    int addTab(const QString &text);
+    int addTab(const QIcon &icon, const QString &text);
+
+    int insertTab(int index, const QString &text);
+    int insertTab(int index, const QIcon&icon, const QString &text);
+
+    void removeTab(int index);
+
+    int currentIndex() const;
+    int count() const;
 
     void addAction(QAction *action, ActionPosition position = Middle);
 

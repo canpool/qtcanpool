@@ -38,6 +38,17 @@ public:
     int addTab(QWidget *widget, const QString &);
     int addTab(QWidget *widget, const QIcon& icon, const QString &label);
 
+    int insertTab(int index, QWidget *widget, const QString &);
+    int insertTab(int index, QWidget *widget, const QIcon& icon, const QString &label);
+
+    void removeTab(int index);
+
+    int currentIndex() const;
+    QWidget *currentWidget() const;
+    QWidget *widget(int index) const;
+    int indexOf(QWidget *widget) const;
+    int count() const;
+
     void setTabEnabled(QWidget *widget, bool enable);
     void setTabVisible(QWidget *widget, bool visible);
 
