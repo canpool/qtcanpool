@@ -13,7 +13,8 @@
 
 ### 环境
 - Qt 5.10.0 MinGW 32bit
-- Qt 5.10.0 MSVC2015 64bit
+- Qt 5.10.0/5.12.0 MSVC2015 64bit
+- Qt 5.12.0 MinGW 64bit
 
 ### 开源协议
 * 遵循GPLv3开源许可协议
