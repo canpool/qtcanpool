@@ -12,7 +12,8 @@ HEADERS += \
     $$PWD/litewidget.h \
     $$PWD/litewindow.h \
     $$PWD/qlite.h \
-    $$PWD/qlite_global.h
+    $$PWD/qlite_global.h \
+    $$PWD/liteboard.h
 
 SOURCES += \
     $$PWD/litebar.cpp \
@@ -23,4 +24,5 @@ SOURCES += \
     $$PWD/litetabwidget.cpp \
     $$PWD/litewidget.cpp \
     $$PWD/litewindow.cpp \
-    $$PWD/qlite.cpp
+    $$PWD/qlite.cpp \
+    $$PWD/liteboard.cpp
