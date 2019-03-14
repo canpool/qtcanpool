@@ -26,7 +26,8 @@ HEADERS += \
     $$PWD/imodebar_p.h \
     $$PWD/imodebutton.h \
     $$PWD/pagesorter.h \
-    $$PWD/fancybanner.h
+    $$PWD/fancybanner.h \
+    $$PWD/qcanpool_p.h
 
 SOURCES += \
     $$PWD/imode.cpp \
@@ -54,7 +55,8 @@ SOURCES += \
     $$PWD/imodebar.cpp \
     $$PWD/imodebutton.cpp \
     $$PWD/pagesorter.cpp \
-    $$PWD/fancybanner.cpp
+    $$PWD/fancybanner.cpp \
+    $$PWD/qcanpool_p.cpp
 
 RESOURCES += \
     $$PWD/qcanpool.qrc

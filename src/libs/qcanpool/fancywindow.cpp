@@ -20,6 +20,7 @@
 #include "fancywindow.h"
 #include "fancybar.h"
 #include "screenhelper.h"
+#include "qcanpool_p.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -73,7 +74,8 @@ FancyBar *FancyWindow::fancyBar() const
 void FancyWindow::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QSettings settings("Canpool", "qtcanpool");
+    QSettings settings(QCanpoolPrivate::g_settingsOrganization,
+                       QCanpoolPrivate::g_settingsApplication);
     QString skinName = settings.value("skin").toString();
 
     if (skinName.isEmpty()) {
