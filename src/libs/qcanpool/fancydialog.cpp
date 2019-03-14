@@ -19,29 +19,29 @@
 ****************************************************************************/
 #include "fancydialog.h"
 #include "fancybar.h"
+#include "qcanpool_p.h"
 
 #include <QVBoxLayout>
 #include <QSettings>
 #include <QPainter>
 
-class FancyDialogPrivate : public QObject
+class FancyDialogPrivate
 {
 public:
-    FancyDialogPrivate(QObject *parent = nullptr);
+    FancyDialogPrivate();
 
     FancyBar *fancyBar;
     QWidget *centralWidget;
 };
 
-FancyDialogPrivate::FancyDialogPrivate(QObject *parent)
-    : QObject(parent)
+FancyDialogPrivate::FancyDialogPrivate()
 {
     fancyBar = nullptr;
     centralWidget = nullptr;
 }
 
 FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
-    : QDialog(parent), d(new FancyDialogPrivate(this))
+    : QDialog(parent), d(new FancyDialogPrivate())
 {
     setWindowFlags(Qt::FramelessWindowHint |
                    Qt::WindowSystemMenuHint |
@@ -62,16 +62,21 @@ FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
 
 FancyDialog::~FancyDialog()
 {
+    delete d;
 }
 
 void FancyDialog::setCentralWidget(QWidget *w)
 {
+    if (d->centralWidget == w || w == nullptr) {
+        return;
+    }
     if (d->centralWidget) {
         layout()->removeWidget(d->centralWidget);
-        delete d->centralWidget;
-        d->centralWidget = w;
-        layout()->addWidget(d->centralWidget);
+        d->centralWidget->setParent(nullptr);
+        d->centralWidget->deleteLater();
     }
+    d->centralWidget = w;
+    layout()->addWidget(d->centralWidget);
 }
 
 void FancyDialog::setWidgetResizable(bool resizable)
@@ -92,7 +97,8 @@ void FancyDialog::addAdditionalControl(QAction *action)
 void FancyDialog::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QSettings settings("Canpool", "qtcanpool");
+    QSettings settings(QCanpoolPrivate::g_settingsOrganization,
+                       QCanpoolPrivate::g_settingsApplication);
     QString skinName = settings.value("skin").toString();
 
     if (skinName.isEmpty()) {

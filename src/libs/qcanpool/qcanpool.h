@@ -32,6 +32,9 @@ public:
 
     // file
     static void showInExplorer(QString fileName);
+
+    // settings
+    static void setSysSettings(const QString &organization, const QString &application);
 };
 
 #endif // QCANPOOL_H

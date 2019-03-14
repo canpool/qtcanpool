@@ -18,6 +18,7 @@
  **
 ****************************************************************************/
 #include "qcanpool.h"
+#include "qcanpool_p.h"
 #include <QColor>
 #include <QTextCodec>
 
@@ -65,5 +66,11 @@ void QCanpool::showInExplorer(QString fileName)
 #else
     QDesktopServices::openUrl(QUrl(QFileInfo(fileName).absolutePath(), QUrl::TolerantMode));
 #endif
+}
+
+void QCanpool::setSysSettings(const QString &organization, const QString &application)
+{
+    QCanpoolPrivate::g_settingsOrganization = organization;
+    QCanpoolPrivate::g_settingsApplication  = application;
 }
 
