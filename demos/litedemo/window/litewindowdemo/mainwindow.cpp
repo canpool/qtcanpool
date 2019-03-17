@@ -31,9 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     createWindow();
 
-    QString styleData = QLite::loadStyle(QString(":/qss/flatdark"));
-    styleData.append(QLite::loadStyle(QString(":/qss/qlite_flatdark")));
-    QLite::setStyle(styleData);
+//    QString styleData = QLite::loadStyle(QString(":/qss/flatdark"));
+//    QLite::setStyle(styleData);
 
     setWindowIcon(QIcon(":/main/logo"));
     setWindowTitle(tr("qlite window demo"));
@@ -110,12 +109,25 @@ void MainWindow::createWindow()
     menu->addAction(tr("test"));
     statusBar();
 
-    action = new QAction(QIcon(":/main/logo"), tr("skin"));
+    action = new QAction(QIcon(":/main/skin"), tr("skin"));
     menu = new QMenu(tr("skin"));
     action->setMenu(menu);
-    menu->addAction(tr("test"));
     liteBar()->addAction(action);
+    m_pActionGroup = new QActionGroup(this);
+    addSkinItem(menu->addAction(tr("flatdark")), QString(":/qss/flatdark"));
+    addSkinItem(menu->addAction(tr("blue")), QString(":/qss/blue"));
+    addSkinItem(menu->addAction(tr("green")), QString(":/qss/green"));
+    addSkinItem(menu->addAction(tr("darkgreen")), QString(":/qss/darkgreen"));
+    addSkinItem(menu->addAction(tr("red")), QString(":/qss/red"));
+    emit m_pActionGroup->actions().at(0)->trigger();
+}
 
+void MainWindow::addSkinItem(QAction *action, const QString &qss)
+{
+    m_pActionGroup->addAction(action);
+    action->setCheckable(true);
+    action->setData(QVariant(qss));
+    QObject::connect(action, SIGNAL(triggered()), this, SLOT(slotChangeSkin()));
 }
 
 void MainWindow::slotLiteDialog()
@@ -123,5 +135,13 @@ void MainWindow::slotLiteDialog()
     LiteDialog dlg;
 //    dlg.setFixedSize(400, 200);
     dlg.exec();
+}
+
+void MainWindow::slotChangeSkin()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action) {
+        QLite::setStyle(action->data().toString());
+    }
 }
 
