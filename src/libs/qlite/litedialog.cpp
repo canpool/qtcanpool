@@ -60,7 +60,7 @@ LiteDialog::LiteDialog(QWidget *parent, Qt::WindowFlags f)
     titleWidget->setObjectName(QLatin1String("titlebar"));
 
     QHBoxLayout *titleLayout = new QHBoxLayout();
-    titleLayout->setContentsMargins(2, 1, 2, 0);
+    titleLayout->setContentsMargins(2, 0, 2, 0);
     titleLayout->setSpacing(1);
     titleLayout->addWidget(d->m_liteBar->logoButton(), 0, Qt::AlignCenter);
     titleLayout->addWidget(d->m_liteBar->titleLabel(), 0, Qt::AlignCenter);

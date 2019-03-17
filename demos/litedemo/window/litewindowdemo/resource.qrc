@@ -1,9 +1,13 @@
 <RCC>
     <qresource prefix="/qss">
         <file alias="flatdark">resource/qss/flatdark.css</file>
-        <file alias="qlite_flatdark">resource/qss/qlite_flatdark.css</file>
+        <file alias="blue">resource/qss/blue.css</file>
+        <file alias="red">resource/qss/red.css</file>
+        <file alias="darkgreen">resource/qss/darkgreen.css</file>
+        <file alias="green">resource/qss/green.css</file>
     </qresource>
     <qresource prefix="/main">
         <file alias="logo">resource/logo.png</file>
+        <file alias="skin">resource/main/skin.png</file>
     </qresource>
 </RCC>
