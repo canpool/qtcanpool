@@ -677,28 +677,23 @@ void FancyBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
     Q_UNUSED(obj);
 
     switch (event->type()) {
-    default:
-        break;
-
-    case QEvent::MouseButtonPress:
-        handleMousePressEvent(static_cast<QMouseEvent *>(event));
-        break;
-
-    case QEvent::MouseButtonRelease:
-        handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
-        break;
-
-    case QEvent::MouseMove:
-        handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
-        break;
-
-    case QEvent::Leave:
-        handleLeaveEvent(static_cast<QMouseEvent *>(event));
-        break;
-
-    case QEvent::HoverMove:
-        handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
-        break;
+        case QEvent::MouseButtonPress:
+            handleMousePressEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::MouseButtonRelease:
+            handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::MouseMove:
+            handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::Leave:
+            handleLeaveEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::HoverMove:
+            handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
+            break;
+        default:
+            break;
     }
 }
 
@@ -1228,41 +1223,36 @@ void FancyBar::setFancyStyle(FancyBar::FancyStyle style)
 bool FancyBar::eventFilter(QObject *object, QEvent *event)
 {
     switch (event->type()) {
-    case QEvent::WindowTitleChange: {
-        if (d->windowTitleChange(object)) {
+        case QEvent::WindowTitleChange: {
+            if (d->windowTitleChange(object)) {
+                return true;
+            }
+            break;
+        }
+        case QEvent::WindowIconChange: {
+            if (d->windowIconChange(object)) {
+                return true;
+            }
+            break;
+        }
+        case QEvent::WindowStateChange: {
+            d->windowStateChange(object);
             return true;
         }
-    }
-    break;
-
-    case QEvent::WindowIconChange: {
-        if (d->windowIconChange(object)) {
+        case QEvent::Resize: {
+            d->windowSizeChange(object);
             return true;
         }
-    }
-    break;
-
-    case QEvent::WindowStateChange: {
-        d->windowStateChange(object);
-        return true;
-    }/*break*/;
-
-    case QEvent::Resize: {
-        d->windowSizeChange(object);
-        return true;
-    }/*break*/;
-
-    case QEvent::MouseMove:
-    case QEvent::HoverMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick: {
-        d->handleWidgetMouseEvent(object, event);
-        return true;
-    }/*break*/;
-
-    default:
-        break;
+        case QEvent::MouseMove:
+        case QEvent::HoverMove:
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick: {
+            d->handleWidgetMouseEvent(object, event);
+            return true;
+        }
+        default:
+            break;
     }
 
     return QObject::eventFilter(object, event);
