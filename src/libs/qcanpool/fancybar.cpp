@@ -677,9 +677,6 @@ void FancyBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
     Q_UNUSED(obj);
 
     switch (event->type()) {
-    default:
-        break;
-
     case QEvent::MouseButtonPress:
         handleMousePressEvent(static_cast<QMouseEvent *>(event));
         break;
@@ -698,6 +695,8 @@ void FancyBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
 
     case QEvent::HoverMove:
         handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
+        break;
+    default:
         break;
     }
 }
@@ -1264,8 +1263,7 @@ bool FancyBar::eventFilter(QObject *object, QEvent *event)
     default:
         break;
     }
-
-    return QObject::eventFilter(object, event);
+    return true;
 }
 
 #include "fancybar.moc"
