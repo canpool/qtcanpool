@@ -64,6 +64,9 @@ protected:
 
     void paintEvent(QPaintEvent *event);
 
+private:
+    void update();
+
 public:
     bool m_hasMenu = false;
 

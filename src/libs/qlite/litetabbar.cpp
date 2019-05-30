@@ -264,15 +264,18 @@ void LiteTabBar::addAction(QAction *action, LiteTabBar::ActionPosition position)
     d->m_actionTabMap.insert(action, pButton);
 
     switch (position) {
-    case LiteTabBar::Front:
-        d->m_frontActionLayout->addWidget(pButton);
-        break;
-    case LiteTabBar::Middle:
-        d->m_middleActionLayout->addWidget(pButton);
-        break;
-    case LiteTabBar::Back:
-        d->m_backActionLayout->addWidget(pButton);
-        break;
+        case LiteTabBar::Front: {
+            d->m_frontActionLayout->addWidget(pButton);
+            break;
+        }
+        case LiteTabBar::Middle: {
+            d->m_middleActionLayout->addWidget(pButton);
+            break;
+        }
+        case LiteTabBar::Back: {
+            d->m_backActionLayout->addWidget(pButton);
+            break;
+        }
     }
     d->m_totalHeight += pButton->sizeHint().height();
 }

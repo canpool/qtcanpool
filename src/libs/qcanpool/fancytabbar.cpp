@@ -100,22 +100,22 @@ void FancyTabBarPrivate::updateTabBarPosition()
     QBoxLayout::Direction direction;
 
     switch (m_direction) {
-    case FancyTabBar::Horizontal:
-        direction = QBoxLayout::LeftToRight;
-        m_headSpacer->setFixedWidth(5);
-        m_splitLine->setFixedWidth(0);
-        m_layout->setSpacing(5);
-        q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        break;
-
-    case FancyTabBar::Vertical:
-        /*default:*/
-        direction = QBoxLayout::TopToBottom;
-        m_headSpacer->setFixedHeight(25);
-        m_splitLine->setFixedHeight(1);
-        m_layout->setSpacing(0);
-        q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-        break;
+        case FancyTabBar::Horizontal: {
+            direction = QBoxLayout::LeftToRight;
+            m_headSpacer->setFixedWidth(5);
+            m_splitLine->setFixedWidth(0);
+            m_layout->setSpacing(5);
+            q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            break;
+        }
+        case FancyTabBar::Vertical: {
+            direction = QBoxLayout::TopToBottom;
+            m_headSpacer->setFixedHeight(25);
+            m_splitLine->setFixedHeight(1);
+            m_layout->setSpacing(0);
+            q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+            break;
+        }
     }
 
     m_layout->setDirection(direction);

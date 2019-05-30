@@ -276,14 +276,13 @@ void QuickAccessBar::actionEvent(QActionEvent *event)
     }
 
     switch (event->type()) {
-    case QEvent::ActionAdded: {
-        QAction *action = event->action();
-        d->addAction(action);
-    }
-    break;
-
-    default:
-        break;
+        case QEvent::ActionAdded: {
+            QAction *action = event->action();
+            d->addAction(action);
+            break;
+        }
+        default:
+            break;
     }
 }
 

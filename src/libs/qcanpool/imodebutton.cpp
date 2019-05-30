@@ -133,12 +133,8 @@ void IModeButton::paintEvent(QPaintEvent *event)
 {
     if (m_isMousePress) {
         painterInfo(m_pressColor);
-        setColor(m_selectedTextColor);
     } else if (m_isMouseOver) {
         painterInfo(m_hoverColor);
-        setColor(m_selectedTextColor);
-    } else {
-        setColor(m_textColor);
     }
 
     QToolButton::paintEvent(event);
@@ -165,4 +161,14 @@ void IModeButton::painterInfo(QColor &color)
     painter.setPen(pen);
     painter.setBrush(color);
     painter.drawRect(rect());
+}
+
+void IModeButton::update()
+{
+    QToolButton::update();
+    if (m_isMousePress || m_isMouseOver) {
+        setColor(m_selectedTextColor);
+    }else {
+        setColor(m_textColor);
+    }
 }

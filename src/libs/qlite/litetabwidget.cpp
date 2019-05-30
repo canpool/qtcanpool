@@ -73,22 +73,26 @@ void LiteTabWidgetPrivate::init()
 void LiteTabWidgetPrivate::updateTabBarPosition()
 {
     switch (m_pos) {
-    case LiteTabWidget::North:
-        m_layout->setDirection(QBoxLayout::TopToBottom);
-        m_tabBar->setDirection(LiteTabBar::Horizontal);
-        break;
-    case LiteTabWidget::South:
-        m_layout->setDirection(QBoxLayout::BottomToTop);
-        m_tabBar->setDirection(LiteTabBar::Horizontal);
-        break;
-    case LiteTabWidget::West:
-        m_layout->setDirection(QBoxLayout::LeftToRight);
-        m_tabBar->setDirection(LiteTabBar::Vertical);
-        break;
-    case LiteTabWidget::East:
-        m_layout->setDirection(QBoxLayout::RightToLeft);
-        m_tabBar->setDirection(LiteTabBar::Vertical);
-        break;
+        case LiteTabWidget::North: {
+            m_layout->setDirection(QBoxLayout::TopToBottom);
+            m_tabBar->setDirection(LiteTabBar::Horizontal);
+            break;
+        }
+        case LiteTabWidget::South: {
+            m_layout->setDirection(QBoxLayout::BottomToTop);
+            m_tabBar->setDirection(LiteTabBar::Horizontal);
+            break;
+        }
+        case LiteTabWidget::West: {
+            m_layout->setDirection(QBoxLayout::LeftToRight);
+            m_tabBar->setDirection(LiteTabBar::Vertical);
+            break;
+        }
+        case LiteTabWidget::East: {
+            m_layout->setDirection(QBoxLayout::RightToLeft);
+            m_tabBar->setDirection(LiteTabBar::Vertical);
+            break;
+        }
     }
 }
 

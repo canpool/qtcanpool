@@ -9,6 +9,8 @@
 //#include <QLocale>
 #include <QDebug>
 
+#define USE_LOG 0
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

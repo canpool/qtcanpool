@@ -75,6 +75,9 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
+    void update();
+
+private:
     bool m_bMouseHover;
     bool m_bMousePress;
 
@@ -166,21 +169,21 @@ void TinyTab::painterSlide(QColor &color)
     QPointF p2;
 
     switch (m_slidePos) {
-    case Left:
-        p1 = this->rect().topLeft();
-        p2 = this->rect().bottomLeft();
-        break;
-
-    case Bottom:
-        p1 = this->rect().bottomLeft();
-        p2 = this->rect().bottomRight();
-        break;
-
-    case Right:
-        p1 = this->rect().topRight();
-        p2 = this->rect().bottomRight();
-        break;
-        /*default:*/
+        case Left: {
+            p1 = this->rect().topLeft();
+            p2 = this->rect().bottomLeft();
+            break;
+        }
+        case Bottom: {
+            p1 = this->rect().bottomLeft();
+            p2 = this->rect().bottomRight();
+            break;
+        }
+        case Right: {
+            p1 = this->rect().topRight();
+            p2 = this->rect().bottomRight();
+            break;
+        }
     }
 
     painter.drawLine(p1, p2);
@@ -222,19 +225,26 @@ void TinyTab::paintEvent(QPaintEvent *event)
 {
     if (m_bMousePress) {
         painterInfo(m_pressColor);
-        setColor(m_selectedTextColor);
         painterSlide(m_slideColor);
     } else if (m_bMouseHover) {
         painterInfo(m_hoverColor);
-        setColor(m_selectedTextColor);
         painterSlide(m_slideColor);
     } else {
         painterInfo(m_normalColor);
-        setColor(m_textColor);
         painterSlide(m_normalColor);
     }
 
     QToolButton::paintEvent(event);
+}
+
+void TinyTab::update()
+{
+    QToolButton::update();
+    if (m_bMousePress || m_bMouseHover) {
+        setColor(m_selectedTextColor);
+    } else {
+        setColor(m_textColor);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -317,16 +327,16 @@ void TinyTabBar::setDirection(TinyTabBar::Direction direction)
     QBoxLayout::Direction layDirection;
 
     switch (m_direction) {
-    case Horizontal:
-        layDirection = QBoxLayout::LeftToRight;
-        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        break;
-
-    case Vertical:
-        /*default:*/
-        layDirection = QBoxLayout::TopToBottom;
-        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-        break;
+        case Horizontal: {
+            layDirection = QBoxLayout::LeftToRight;
+            setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            break;
+        }
+        case Vertical: {
+            layDirection = QBoxLayout::TopToBottom;
+            setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+            break;
+        }
     }
 
     m_layout->setDirection(layDirection);
@@ -501,30 +511,30 @@ TinyTabWidgetPrivate::TinyTabWidgetPrivate(QObject *parent)
 void TinyTabWidgetPrivate::updateTabBarPosition()
 {
     switch (m_pos) {
-    case TinyTabWidget::North:
-        m_tabBar->setDirection(TinyTabBar::Horizontal);
-        m_tabBar->setSlidePosition(TinyTab::Bottom);
-        m_layout->setDirection(QBoxLayout::TopToBottom);
-        break;
-
-    case TinyTabWidget::South:
-        m_tabBar->setDirection(TinyTabBar::Horizontal);
-        m_tabBar->setSlidePosition(TinyTab::Bottom);
-        m_layout->setDirection(QBoxLayout::BottomToTop);
-        break;
-
-    case TinyTabWidget::West:
-        m_tabBar->setDirection(TinyTabBar::Vertical);
-        m_tabBar->setSlidePosition(TinyTab::Left);
-        m_layout->setDirection(QBoxLayout::LeftToRight);
-        break;
-
-    case TinyTabWidget::East:
-        m_tabBar->setDirection(TinyTabBar::Vertical);
-        m_tabBar->setSlidePosition(TinyTab::Right);
-        m_layout->setDirection(QBoxLayout::RightToLeft);
-        break;
-        /*default:*/
+        case TinyTabWidget::North: {
+            m_tabBar->setDirection(TinyTabBar::Horizontal);
+            m_tabBar->setSlidePosition(TinyTab::Bottom);
+            m_layout->setDirection(QBoxLayout::TopToBottom);
+            break;
+        }
+        case TinyTabWidget::South: {
+            m_tabBar->setDirection(TinyTabBar::Horizontal);
+            m_tabBar->setSlidePosition(TinyTab::Bottom);
+            m_layout->setDirection(QBoxLayout::BottomToTop);
+            break;
+        }
+        case TinyTabWidget::West: {
+            m_tabBar->setDirection(TinyTabBar::Vertical);
+            m_tabBar->setSlidePosition(TinyTab::Left);
+            m_layout->setDirection(QBoxLayout::LeftToRight);
+            break;
+        }
+        case TinyTabWidget::East: {
+            m_tabBar->setDirection(TinyTabBar::Vertical);
+            m_tabBar->setSlidePosition(TinyTab::Right);
+            m_layout->setDirection(QBoxLayout::RightToLeft);
+            break;
+        }
     }
 }
 

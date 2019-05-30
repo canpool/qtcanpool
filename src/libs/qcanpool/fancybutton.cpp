@@ -86,6 +86,7 @@ void FancyButton::setHasMenu(bool has)
 void FancyButton::setHasBorder(bool has)
 {
     m_hasBorder = has;
+    setColor(m_textColor);
     update();
 }
 
@@ -148,8 +149,6 @@ void FancyButton::paintEvent(QPaintEvent *event)
     } else if (m_bMouseHover) {
         painterInfo(m_hoverColor);
     } else {
-        setColor(m_textColor);
-
         if (m_normalColor.isValid()) {
             painterInfo(m_normalColor);
         }

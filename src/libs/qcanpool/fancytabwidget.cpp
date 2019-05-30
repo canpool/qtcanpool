@@ -67,26 +67,26 @@ FancyTabWidgetPrivate::~FancyTabWidgetPrivate()
 void FancyTabWidgetPrivate::updateTabBarPosition()
 {
     switch (m_pos) {
-    case FancyTabWidget::North:
-        m_tabBar->setDirection(FancyTabBar::Horizontal);
-        m_layout->setDirection(QBoxLayout::TopToBottom);
-        break;
+        case FancyTabWidget::North:
+            m_tabBar->setDirection(FancyTabBar::Horizontal);
+            m_layout->setDirection(QBoxLayout::TopToBottom);
+            break;
 
-    case FancyTabWidget::South:
-        m_tabBar->setDirection(FancyTabBar::Horizontal);
-        m_layout->setDirection(QBoxLayout::BottomToTop);
-        break;
+        case FancyTabWidget::South:
+            m_tabBar->setDirection(FancyTabBar::Horizontal);
+            m_layout->setDirection(QBoxLayout::BottomToTop);
+            break;
 
-    case FancyTabWidget::West:
-        m_tabBar->setDirection(FancyTabBar::Vertical);
-        m_layout->setDirection(QBoxLayout::LeftToRight);
-        break;
+        case FancyTabWidget::West:
+            m_tabBar->setDirection(FancyTabBar::Vertical);
+            m_layout->setDirection(QBoxLayout::LeftToRight);
+            break;
 
-    case FancyTabWidget::East:
-        m_tabBar->setDirection(FancyTabBar::Vertical);
-        m_layout->setDirection(QBoxLayout::RightToLeft);
-        break;
-        /*default:*/
+        case FancyTabWidget::East:
+            m_tabBar->setDirection(FancyTabBar::Vertical);
+            m_layout->setDirection(QBoxLayout::RightToLeft);
+            break;
+            /*default:*/
     }
 }
 
@@ -328,27 +328,23 @@ QSplitter *FancyTabWidget::addCornerWidget(QWidget *widget, FancyTabWidget::Corn
     QSplitter *splitter = nullptr;
 
     switch (position) {
-    case Left: {
-        int count = d->m_leftSplitter->count();
-        d->m_leftSplitter->insertWidget(count - 1, widget);
-        splitter = d->m_leftSplitter;
-    }
-    break;
-
-    case Top:
-        d->m_topCorner->addWidget(widget);
-        break;
-
-    case Right:
-        d->m_rightSplitter->addWidget(widget);
-        splitter = d->m_rightSplitter;
-        break;
-
-    case Bottom:
-        d->m_bottomSplitter->addWidget(widget);
-        splitter = d->m_bottomSplitter;
-        break;
-        /*default:*/
+        case Left: {
+            int count = d->m_leftSplitter->count();
+            d->m_leftSplitter->insertWidget(count - 1, widget);
+            splitter = d->m_leftSplitter;
+            break;
+        }
+        case Top:
+            d->m_topCorner->addWidget(widget);
+            break;
+        case Right:
+            d->m_rightSplitter->addWidget(widget);
+            splitter = d->m_rightSplitter;
+            break;
+        case Bottom:
+            d->m_bottomSplitter->addWidget(widget);
+            splitter = d->m_bottomSplitter;
+            break;
     }
 
     return splitter;

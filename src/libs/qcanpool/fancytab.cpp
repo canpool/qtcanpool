@@ -157,12 +157,8 @@ void FancyTab::paintEvent(QPaintEvent *event)
 {
     if (m_bMousePress) {
         painterInfo(s_pressColor);
-        setColor(s_selectedTextColor);
     } else if (m_bMouseHover) {
         painterInfo(s_hoverColor);
-        setColor(s_selectedTextColor);
-    } else {
-        setColor(s_textColor);
     }
 
     if (m_hasMenu) {
@@ -174,6 +170,16 @@ void FancyTab::paintEvent(QPaintEvent *event)
     }
 
     QToolButton::paintEvent(event);
+}
+
+void FancyTab::update()
+{
+    QToolButton::update();
+    if (m_bMousePress || m_bMouseHover) {
+        setColor(s_selectedTextColor);
+    } else {
+        setColor(s_textColor);
+    }
 }
 
 void FancyTab::painterInfo(QColor &color)

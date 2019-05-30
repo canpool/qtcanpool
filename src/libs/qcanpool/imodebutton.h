@@ -65,6 +65,9 @@ protected:
     void painterInfo(QColor &color);
 
 private:
+    void update();
+
+private:
     bool m_isMouseOver;
     bool m_isMousePress;
     ButtonType m_type;
