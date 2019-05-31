@@ -145,9 +145,7 @@ void LiteBarPrivate::init()
     connect(m_maximizeAction, SIGNAL(triggered()), this, SLOT(slotSysButtonClicked()));
     connect(m_closeAction, SIGNAL(triggered()), this, SLOT(slotSysButtonClicked()));
 
-    m_maximizeAction->setVisible(m_windowFlags & Qt::WindowMaximizeButtonHint);
-    m_minimizeAction->setVisible(m_windowFlags & Qt::WindowMinimizeButtonHint);
-    q->setWidgetMaximizable(m_windowFlags & Qt::WindowMaximizeButtonHint);
+    updateWindowButtons();
 }
 
 void LiteBarPrivate::installWidget(QWidget *w)
@@ -241,6 +239,13 @@ void LiteBarPrivate::windowStateChange(QObject *obj)
         m_maximizeAction->setToolTip(tr("maximize"));
         m_maximizeAction->setIcon(QIcon(":/qlite/max"));
     }
+}
+
+void LiteBarPrivate::updateWindowButtons()
+{
+    m_maximizeAction->setVisible(m_windowFlags & Qt::WindowMaximizeButtonHint);
+    m_minimizeAction->setVisible(m_windowFlags & Qt::WindowMinimizeButtonHint);
+    q->setWidgetMaximizable(m_windowFlags & Qt::WindowMaximizeButtonHint);
 }
 
 void LiteBarPrivate::handleMousePressEvent(QMouseEvent *event)
@@ -688,6 +693,12 @@ void LiteBar::setWidgetMovable(bool movable)
 void LiteBar::setWidgetMaximizable(bool maximizable)
 {
     d->m_bWidgetMaximizable = maximizable;
+}
+
+void LiteBar::updateWidgetFlags()
+{
+    d->m_windowFlags = d->m_mainWidget->windowFlags();
+    d->updateWindowButtons();
 }
 
 bool LiteBar::eventFilter(QObject *object, QEvent *event)

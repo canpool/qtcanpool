@@ -60,15 +60,15 @@ public:
     void init();
     void installWidget(QWidget *w);
 
-public:
     void handleWidgetMouseEvent(QObject *obj, QEvent *event);
 
-public:
     // window
     bool windowTitleChange(QObject *obj);
     bool windowIconChange(QObject *obj);
     void windowSizeChange(QObject *obj);
     void windowStateChange(QObject *obj);
+
+    void updateWindowButtons();
 
 private:
     // mouse event

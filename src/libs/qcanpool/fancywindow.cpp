@@ -45,7 +45,7 @@ FancyWindowPrivate::FancyWindowPrivate()
 FancyWindow::FancyWindow(QWidget *parent)
     : QMainWindow(parent), d(new FancyWindowPrivate())
 {
-    setWindowFlags(Qt::FramelessWindowHint
+    QMainWindow::setWindowFlags(Qt::FramelessWindowHint
                    | Qt::WindowSystemMenuHint
                    | Qt::WindowMinimizeButtonHint
                    | Qt::WindowMaximizeButtonHint
@@ -69,6 +69,33 @@ FancyWindow::~FancyWindow()
 FancyBar *FancyWindow::fancyBar() const
 {
     return d->fancyBar;
+}
+
+void FancyWindow::setFixedSize(const QSize &s)
+{
+    setFixedSize(s.width(), s.height());
+}
+
+void FancyWindow::setFixedSize(int w, int h)
+{
+    d->fancyBar->setWidgetResizable(false);
+    QWidget::setFixedSize(w, h);
+}
+
+void FancyWindow::setFixedWidth(int w)
+{
+    setFixedSize(w, this->height());
+}
+
+void FancyWindow::setFixedHeight(int h)
+{
+    setFixedSize(this->width(), h);
+}
+
+void FancyWindow::setWindowFlags(Qt::WindowFlags type)
+{
+    QMainWindow::setWindowFlags(type);
+    d->fancyBar->updateWidgetFlags();
 }
 
 void FancyWindow::paintEvent(QPaintEvent *event)

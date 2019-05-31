@@ -46,9 +46,7 @@ public:
     void setFixedWidth(int w);
     void setFixedHeight(int h);
 
-signals:
-
-public slots:
+    void setWindowFlags(Qt::WindowFlags type);
 
 private:
     LiteWindowPrivate *d;

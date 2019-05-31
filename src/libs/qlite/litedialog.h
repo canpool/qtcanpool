@@ -38,14 +38,12 @@ public:
     QLayout *layout() const;
     void setLayout(QLayout *layout);
 
-    void setFixedSize(const QSize &);
+    void setFixedSize(const QSize &s);
     void setFixedSize(int w, int h);
     void setFixedWidth(int w);
     void setFixedHeight(int h);
 
-signals:
-
-public slots:
+    void setWindowFlags(Qt::WindowFlags type);
 
 private:
     LiteDialogPrivate *d;

@@ -64,6 +64,7 @@ public:
     void setTitleBarHeight(int height);
 
     void setFancyStyle(FancyStyle style);
+    void updateWidgetFlags();
 
 signals:
     void maximizationChanged(bool maximized);

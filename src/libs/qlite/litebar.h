@@ -49,16 +49,15 @@ public:
     void setMaximizeIcon(QIcon &icon);
     void setMinimizeIcon(QIcon &icon);
 
-public:
     void setWidgetResizable(bool resizable);
     void setWidgetMovable(bool movable);
     void setWidgetMaximizable(bool maximizable);
 
+    void updateWidgetFlags();
+
 signals:
     void sigWidgetResizable(bool resizable);
     void sigWidgetMovable(bool movable);
-
-public slots:
 
 protected:
     virtual bool eventFilter(QObject* object, QEvent* event);

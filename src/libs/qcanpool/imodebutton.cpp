@@ -168,7 +168,7 @@ void IModeButton::update()
     QToolButton::update();
     if (m_isMousePress || m_isMouseOver) {
         setColor(m_selectedTextColor);
-    }else {
+    } else {
         setColor(m_textColor);
     }
 }

@@ -175,4 +175,10 @@ void LiteWindow::setFixedHeight(int h)
     setFixedSize(this->width(), h);
 }
 
+void LiteWindow::setWindowFlags(Qt::WindowFlags type)
+{
+    QMainWindow::setWindowFlags(type);
+    d->m_liteBar->updateWidgetFlags();
+}
+
 #include "litewindow.moc"

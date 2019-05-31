@@ -43,7 +43,7 @@ FancyDialogPrivate::FancyDialogPrivate()
 FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent), d(new FancyDialogPrivate())
 {
-    setWindowFlags(Qt::FramelessWindowHint |
+    QDialog::setWindowFlags(Qt::FramelessWindowHint |
                    Qt::WindowSystemMenuHint |
 //                   Qt::WindowMinimizeButtonHint |
                    Qt::Dialog | f
@@ -92,6 +92,33 @@ void FancyDialog::setTitleBarHeight(int height)
 void FancyDialog::addAdditionalControl(QAction *action)
 {
     d->fancyBar->addAdditionalControl(action, FancyBar::TitlePosition);
+}
+
+void FancyDialog::setFixedSize(const QSize &s)
+{
+    setFixedSize(s.width(), s.height());
+}
+
+void FancyDialog::setFixedSize(int w, int h)
+{
+    d->fancyBar->setWidgetResizable(false);
+    QWidget::setFixedSize(w, h);
+}
+
+void FancyDialog::setFixedWidth(int w)
+{
+    setFixedSize(w, this->height());
+}
+
+void FancyDialog::setFixedHeight(int h)
+{
+    setFixedSize(this->width(), h);
+}
+
+void FancyDialog::setWindowFlags(Qt::WindowFlags type)
+{
+    QDialog::setWindowFlags(type);
+    d->fancyBar->updateWidgetFlags();
 }
 
 void FancyDialog::paintEvent(QPaintEvent *event)

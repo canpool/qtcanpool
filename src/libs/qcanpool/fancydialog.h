@@ -37,6 +37,13 @@ public:
 
     void addAdditionalControl(QAction *action);
 
+    void setFixedSize(const QSize &s);
+    void setFixedSize(int w, int h);
+    void setFixedWidth(int w);
+    void setFixedHeight(int h);
+
+    void setWindowFlags(Qt::WindowFlags type);
+
 protected:
     virtual void paintEvent(QPaintEvent *event);
 

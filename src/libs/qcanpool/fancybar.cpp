@@ -61,6 +61,7 @@ public:
     void createMenuWidget();
     void createWindowButtons();
     void updateMenuColor();
+    void updateWindowButtons();
 
 public:
     void registerWidget(QWidget *widget);
@@ -335,6 +336,8 @@ void FancyBarPrivate::init()
     layout->addLayout(m_logoLayout);
     layout->addLayout(rightLayout);
     setLayout(layout);
+
+    updateWindowButtons();
 }
 
 void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
@@ -576,6 +579,20 @@ void FancyBarPrivate::updateMenuColor()
                              .arg(QCanpool::colorToArgb(m_menuHoverColor)));
 }
 
+void FancyBarPrivate::updateWindowButtons()
+{
+    m_maximizeButton->setVisible(m_windowFlags & Qt::WindowMaximizeButtonHint);
+    m_minimizeButton->setVisible(m_windowFlags & Qt::WindowMinimizeButtonHint);
+
+    m_maximizeAction->setEnabled(m_windowFlags & Qt::WindowMaximizeButtonHint);
+    m_minimizeAction->setEnabled(m_windowFlags & Qt::WindowMinimizeButtonHint);
+
+    m_restoreAction->setEnabled(false);
+
+    setWidgetMaximizable(m_windowFlags & Qt::WindowMaximizeButtonHint);
+//    m_logoButton->setHasMenu((m_windowFlags & Qt::Dialog) != Qt::Dialog);
+}
+
 void FancyBarPrivate::registerWidget(QWidget *widget)
 {
     m_mainWidget = widget;
@@ -668,8 +685,13 @@ void FancyBarPrivate::windowStateChange(QObject *obj)
         m_maximizeButton->setIcon(QIcon(":/main/max"));
     }
 
-    m_maximizeAction->setEnabled(!m_isMaximized);
-    m_restoreAction->setEnabled(m_isMaximized);
+    if (m_windowFlags & Qt::WindowMaximizeButtonHint) {
+        m_maximizeAction->setEnabled(!m_isMaximized);
+        m_restoreAction->setEnabled(m_isMaximized);
+    } else {
+        m_maximizeAction->setEnabled(false);
+        m_restoreAction->setEnabled(false);
+    }
 }
 
 void FancyBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
@@ -1083,12 +1105,6 @@ FancyBar::FancyBar(QWidget *parent)
     layout->addWidget(d);
     setLayout(layout);
 
-    d->m_maximizeButton->setVisible(d->m_windowFlags & Qt::WindowMaximizeButtonHint);
-    d->m_minimizeButton->setVisible(d->m_windowFlags & Qt::WindowMinimizeButtonHint);
-    d->setWidgetMaximizable(d->m_windowFlags & Qt::WindowMaximizeButtonHint);
-//    d->m_logoButton->setEnabled(false);
-    d->m_logoButton->setHasMenu(d->m_windowFlags & Qt::Window);
-
     if (s_backgroundColor.isValid()) {
         setBackgroundColor(s_backgroundColor);
     }
@@ -1218,6 +1234,12 @@ void FancyBar::setTitleBarHeight(int height)
 void FancyBar::setFancyStyle(FancyBar::FancyStyle style)
 {
     d->setFancyStyle(style);
+}
+
+void FancyBar::updateWidgetFlags()
+{
+    d->m_windowFlags = d->m_mainWidget->windowFlags();
+    d->updateWindowButtons();
 }
 
 bool FancyBar::eventFilter(QObject *object, QEvent *event)

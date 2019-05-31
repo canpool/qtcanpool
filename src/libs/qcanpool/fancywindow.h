@@ -34,6 +34,13 @@ public:
 
     FancyBar* fancyBar() const;
 
+    void setFixedSize(const QSize &s);
+    void setFixedSize(int w, int h);
+    void setFixedWidth(int w);
+    void setFixedHeight(int h);
+
+    void setWindowFlags(Qt::WindowFlags type);
+
 signals:
     void resizable(bool resizable);
 

@@ -46,7 +46,7 @@ LiteDialogPrivate::LiteDialogPrivate()
 LiteDialog::LiteDialog(QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent), d(new LiteDialogPrivate())
 {
-    setWindowFlags(Qt::FramelessWindowHint |
+    QDialog::setWindowFlags(Qt::FramelessWindowHint |
                    Qt::WindowSystemMenuHint |
 //                   Qt::WindowMinimizeButtonHint |
                    Qt::Dialog | f
@@ -125,6 +125,12 @@ void LiteDialog::setFixedWidth(int w)
 void LiteDialog::setFixedHeight(int h)
 {
     setFixedSize(this->width(), h);
+}
+
+void LiteDialog::setWindowFlags(Qt::WindowFlags type)
+{
+    QDialog::setWindowFlags(type);
+    d->m_liteBar->updateWidgetFlags();
 }
 
 #include "litedialog.moc"
