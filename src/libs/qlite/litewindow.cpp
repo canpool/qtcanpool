@@ -68,7 +68,7 @@ void LiteWindowPrivate::slotResizable(bool resizable)
 LiteWindow::LiteWindow(QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent), d(new LiteWindowPrivate())
 {
-    setWindowFlags(Qt::FramelessWindowHint |
+    QMainWindow::setWindowFlags(Qt::FramelessWindowHint |
                    Qt::WindowSystemMenuHint |
                    Qt::WindowMinimizeButtonHint |
                    Qt::WindowMaximizeButtonHint |
