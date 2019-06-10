@@ -25,28 +25,33 @@
 
 #include "litetabbar.h"
 
-class LiteTabWidgetPrivate : public QObject
+using namespace QLite;
+
+namespace QLite
 {
-    Q_OBJECT
-public:
-    LiteTabWidgetPrivate();
-    void init();
-    void updateTabBarPosition();
+    class LiteTabWidgetPrivate : public QObject
+    {
+        Q_OBJECT
+    public:
+        LiteTabWidgetPrivate();
+        void init();
+        void updateTabBarPosition();
 
 
-    LiteTabBar *m_tabBar;
-    QStackedWidget *m_stack;
-    QBoxLayout *m_layout;
+        LiteTabBar *m_tabBar;
+        QStackedWidget *m_stack;
+        QBoxLayout *m_layout;
 
-    LiteTabWidget *q;
-    LiteTabWidget::TabPosition m_pos;
-};
+        LiteTabWidget *q;
+        LiteTabWidget::TabPosition m_pos;
+    };
+}
 
 LiteTabWidgetPrivate::LiteTabWidgetPrivate()
     : m_tabBar(nullptr), m_stack(nullptr),
-      m_layout(nullptr), q(nullptr)
+      m_layout(nullptr), q(nullptr),
+      m_pos(LiteTabWidget::North)
 {
-    m_pos = LiteTabWidget::North;
 }
 
 void LiteTabWidgetPrivate::init()

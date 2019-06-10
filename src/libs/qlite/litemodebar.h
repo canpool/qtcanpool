@@ -24,32 +24,36 @@
 #include "qlite_global.h"
 
 class QStackedWidget;
-class LiteModeBarPrivate;
 
-class QLITE_SHARED_EXPORT LiteModeBar : public LiteTabBar
+namespace QLite
 {
-    Q_OBJECT
-public:
-    explicit LiteModeBar(QStackedWidget *modeStack, QWidget *parent = nullptr);
-    ~LiteModeBar();
+    class LiteModeBarPrivate;
 
-    int addMode(QWidget *widget, const QString &);
-    int addMode(QWidget *widget, const QIcon& icon, const QString &label);
+    class QLITE_SHARED_EXPORT LiteModeBar : public LiteTabBar
+    {
+        Q_OBJECT
+    public:
+        explicit LiteModeBar(QStackedWidget *modeStack, QWidget *parent = nullptr);
+        ~LiteModeBar();
 
-    int insertMode(int index, QWidget *widget, const QString &);
-    int insertMode(int index, QWidget *widget, const QIcon& icon, const QString &label);
+        int addMode(QWidget *widget, const QString &);
+        int addMode(QWidget *widget, const QIcon& icon, const QString &label);
 
-    void removeMode(int index);
+        int insertMode(int index, QWidget *widget, const QString &);
+        int insertMode(int index, QWidget *widget, const QIcon& icon, const QString &label);
 
-    QWidget *currentMode() const;
-    QWidget *Mode(int index) const;
-    int indexOf(QWidget *widget) const;
+        void removeMode(int index);
 
-    void setModeEnabled(QWidget *widget, bool enable);
-    void setModeVisible(QWidget *widget, bool visible);
+        QWidget *currentMode() const;
+        QWidget *Mode(int index) const;
+        int indexOf(QWidget *widget) const;
 
-private:
-    LiteModeBarPrivate *d;
-};
+        void setModeEnabled(QWidget *widget, bool enable);
+        void setModeVisible(QWidget *widget, bool visible);
+
+    private:
+        LiteModeBarPrivate *d;
+    };
+}
 
 #endif // LITEMODEBAR_H

@@ -25,6 +25,8 @@
 #include <QColor>
 #include <QPalette>
 
+using namespace QLite;
+
 void QLite::setStyle(const QString &style)
 {
     QFile file(style);
@@ -40,7 +42,7 @@ void QLite::setStyle(const QString &style)
 QString QLite::loadStyle(const QString &filename)
 {
     QFile stylefile(filename);
-    if(stylefile.open(QFile::ReadOnly)) {
+    if (stylefile.open(QFile::ReadOnly)) {
         QTextStream stream(&stylefile);
         QString stylesheet = stream.readAll();
         return stylesheet;

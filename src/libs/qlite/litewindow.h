@@ -23,33 +23,36 @@
 #include <QMainWindow>
 #include "qlite_global.h"
 
-class LiteBar;
-class LiteWindowPrivate;
-
-class QLITE_SHARED_EXPORT LiteWindow : public QMainWindow
+namespace QLite
 {
-    Q_OBJECT
-public:
-    explicit LiteWindow(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~LiteWindow();
+    class LiteBar;
+    class LiteWindowPrivate;
 
-    LiteBar *liteBar() const;
+    class QLITE_SHARED_EXPORT LiteWindow : public QMainWindow
+    {
+        Q_OBJECT
+    public:
+        explicit LiteWindow(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+        ~LiteWindow();
 
-    QMenuBar *menuBar() const;
-    void setMenuBar(QMenuBar *menuBar);
+        LiteBar *liteBar() const;
 
-    QStatusBar *statusBar() const;
-    void setStatusBar(QStatusBar *statusbar);
+        QMenuBar *menuBar() const;
+        void setMenuBar(QMenuBar *menuBar);
 
-    void setFixedSize(const QSize &);
-    void setFixedSize(int w, int h);
-    void setFixedWidth(int w);
-    void setFixedHeight(int h);
+        QStatusBar *statusBar() const;
+        void setStatusBar(QStatusBar *statusbar);
 
-    void setWindowFlags(Qt::WindowFlags type);
+        void setFixedSize(const QSize &);
+        void setFixedSize(int w, int h);
+        void setFixedWidth(int w);
+        void setFixedHeight(int h);
 
-private:
-    LiteWindowPrivate *d;
-};
+        void setWindowFlags(Qt::WindowFlags type);
+
+    private:
+        LiteWindowPrivate *d;
+    };
+}
 
 #endif // LITEWINDOW_H

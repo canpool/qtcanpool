@@ -23,53 +23,56 @@
 #include "litewidget.h"
 #include "qlite_global.h"
 
-class LiteTabBarPrivate;
-
-class QLITE_SHARED_EXPORT LiteTabBar : public LiteWidget
+namespace QLite
 {
-    Q_OBJECT
-public:
-    enum Direction { Horizontal, Vertical };
-    enum ActionPosition { Front, Middle, Back };
+    class LiteTabBarPrivate;
 
-    explicit LiteTabBar(QWidget *parent = nullptr);
-    ~LiteTabBar();
+    class QLITE_SHARED_EXPORT LiteTabBar : public LiteWidget
+    {
+        Q_OBJECT
+    public:
+        enum Direction { Horizontal, Vertical };
+        enum ActionPosition { Front, Middle, Back };
 
-    int addTab(const QString &text);
-    int addTab(const QIcon &icon, const QString &text);
+        explicit LiteTabBar(QWidget *parent = nullptr);
+        virtual ~LiteTabBar();
 
-    int insertTab(int index, const QString &text);
-    int insertTab(int index, const QIcon&icon, const QString &text);
+        int addTab(const QString &text);
+        int addTab(const QIcon &icon, const QString &text);
 
-    void removeTab(int index);
+        int insertTab(int index, const QString &text);
+        int insertTab(int index, const QIcon&icon, const QString &text);
 
-    int currentIndex() const;
-    int count() const;
+        void removeTab(int index);
 
-    void addAction(QAction *action, ActionPosition position = Middle);
+        int currentIndex() const;
+        int count() const;
 
-    void setTabEnabled(int index, bool enable);
-    void setTabVisible(int index, bool visible);
+        void addAction(QAction *action, ActionPosition position = Middle);
 
-    void setTabButtonStyle(Qt::ToolButtonStyle style);
-    void setActionStyle(QAction *action, Qt::ToolButtonStyle style);
-    void setTabSpacing(int spacing);
+        void setTabEnabled(int index, bool enable);
+        void setTabVisible(int index, bool visible);
 
-    void setIconSize(QSize size);
+        void setTabButtonStyle(Qt::ToolButtonStyle style);
+        void setActionStyle(QAction *action, Qt::ToolButtonStyle style);
+        void setTabSpacing(int spacing);
 
-    void setDirection(Direction direction);
+        void setIconSize(QSize size);
 
-signals:
-    void currentChanged(int index);
+        void setDirection(Direction direction);
 
-public slots:
-    void setCurrentIndex(int index);
+    signals:
+        void currentChanged(int index);
 
-protected:
-    void resizeEvent(QResizeEvent *event);
+    public slots:
+        void setCurrentIndex(int index);
 
-private:
-    LiteTabBarPrivate *d;
-};
+    protected:
+        void resizeEvent(QResizeEvent *event);
+
+    private:
+        LiteTabBarPrivate *d;
+    };
+}
 
 #endif // LITETABBAR_H

@@ -29,41 +29,44 @@ class QToolButton;
 class QToolBar;
 class QAction;
 
-class LiteBarPrivate;
-
-class QLITE_SHARED_EXPORT LiteBar : public QObject
+namespace QLite
 {
-    Q_OBJECT
-public:
-    explicit LiteBar(QWidget *parent);
-    ~LiteBar();
+    class LiteBarPrivate;
 
-    QWidget *mainWidget() const;
-    QLabel *titleLabel() const;
-    QToolButton *logoButton() const;
-    QWidget *sysToolBar() const;
+    class QLITE_SHARED_EXPORT LiteBar : public QObject
+    {
+        Q_OBJECT
+    public:
+        explicit LiteBar(QWidget *parent);
+        ~LiteBar();
 
-    void addAction(QAction *action);
+        QWidget *mainWidget() const;
+        QLabel *titleLabel() const;
+        QToolButton *logoButton() const;
+        QWidget *sysToolBar() const;
 
-    void setCloseIcon(QIcon &icon);
-    void setMaximizeIcon(QIcon &icon);
-    void setMinimizeIcon(QIcon &icon);
+        void addAction(QAction *action);
 
-    void setWidgetResizable(bool resizable);
-    void setWidgetMovable(bool movable);
-    void setWidgetMaximizable(bool maximizable);
+        void setCloseIcon(QIcon &icon);
+        void setMaximizeIcon(QIcon &icon);
+        void setMinimizeIcon(QIcon &icon);
 
-    void updateWidgetFlags();
+        void setWidgetResizable(bool resizable);
+        void setWidgetMovable(bool movable);
+        void setWidgetMaximizable(bool maximizable);
 
-signals:
-    void sigWidgetResizable(bool resizable);
-    void sigWidgetMovable(bool movable);
+        void updateWidgetFlags();
 
-protected:
-    virtual bool eventFilter(QObject* object, QEvent* event);
+    signals:
+        void sigWidgetResizable(bool resizable);
+        void sigWidgetMovable(bool movable);
 
-private:
-    LiteBarPrivate *d;
-};
+    protected:
+        virtual bool eventFilter(QObject* object, QEvent* event);
+
+    private:
+        LiteBarPrivate *d;
+    };
+}
 
 #endif // LITEBAR_H

@@ -25,61 +25,61 @@
 #include <QAction>
 #include <QResizeEvent>
 
-class LiteTabBarPrivate : public QObject
+using namespace QLite;
+
+namespace QLite
 {
-    Q_OBJECT
-public:
-    LiteTabBarPrivate();
-    ~LiteTabBarPrivate();
+    class LiteTabBarPrivate : public QObject
+    {
+        Q_OBJECT
+    public:
+        LiteTabBarPrivate();
+        ~LiteTabBarPrivate();
 
-    void init();
+        void init();
 
-    QToolButton *at(int index);
+        QToolButton *at(int index);
 
-    inline bool validIndex(int index) const { return index >= 0 && index < m_tabs.count(); }
-    void setIconSize(QSize size);
+        inline bool validIndex(int index) const { return index >= 0 && index < m_tabs.count(); }
+        void setIconSize(QSize size);
 
-public:
-    QList<QToolButton *> m_tabs;
-    QList<QToolButton *> m_actionButtons;
-    QMap<QAction*, QToolButton*> m_actionTabMap;
+    public:
+        QList<QToolButton *> m_tabs;
+        QList<QToolButton *> m_actionButtons;
+        QMap<QAction*, QToolButton*> m_actionTabMap;
 
-    int m_currentIndex;
-    LiteTabBar::Direction m_direction;
-    int m_spacing;
-    int m_totalHeight;
-    QSize m_iconSize;
+        int m_currentIndex;
+        LiteTabBar::Direction m_direction;
+        int m_spacing;
+        int m_totalHeight;
+        QSize m_iconSize;
 
-    QBoxLayout *m_frontActionLayout;
-    QBoxLayout *m_middleActionLayout;
-    QBoxLayout *m_backActionLayout;
-    QBoxLayout *m_tabLayout;
-    QBoxLayout *m_mainLayout;
-    LiteTabBar *q;
+        QBoxLayout *m_frontActionLayout;
+        QBoxLayout *m_middleActionLayout;
+        QBoxLayout *m_backActionLayout;
+        QBoxLayout *m_tabLayout;
+        QBoxLayout *m_mainLayout;
+        LiteTabBar *q;
 
-public slots:
-    void switchTab(bool checked);
-    void pressTab();
-};
+    public slots:
+        void switchTab(bool checked);
+        void pressTab();
+    };
+}
 
 LiteTabBarPrivate::LiteTabBarPrivate()
+    : m_currentIndex(-1),
+      m_direction(LiteTabBar::Horizontal),
+      m_spacing(2),
+      m_totalHeight(0),
+      m_iconSize(QSize(22, 22)),
+      m_frontActionLayout(nullptr),
+      m_middleActionLayout(nullptr),
+      m_backActionLayout(nullptr),
+      m_tabLayout(nullptr),
+      m_mainLayout(nullptr),
+      q(nullptr)
 {
-    m_tabs.clear();
-    m_actionButtons.clear();
-    m_actionTabMap.clear();
-
-    m_currentIndex = -1;
-    m_direction = LiteTabBar::Horizontal;
-    m_spacing = 2;
-    m_totalHeight = 0;
-    m_iconSize = QSize(22, 22);
-
-    m_frontActionLayout = nullptr;
-    m_middleActionLayout = nullptr;
-    m_backActionLayout = nullptr;
-    m_tabLayout = nullptr;
-    m_mainLayout = nullptr;
-    q = nullptr;
 }
 
 LiteTabBarPrivate::~LiteTabBarPrivate()

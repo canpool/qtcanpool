@@ -21,18 +21,23 @@
 
 #include <QMouseEvent>
 
-class LiteBoardPrivate
-{
-public:
-    LiteBoardPrivate();
+using namespace QLite;
 
-    QPoint m_movePoint;
-    bool m_bPressed;
-};
+namespace QLite
+{
+    class LiteBoardPrivate
+    {
+    public:
+        LiteBoardPrivate();
+
+        QPoint m_movePoint;
+        bool m_bPressed;
+    };
+}
 
 LiteBoardPrivate::LiteBoardPrivate()
+    : m_bPressed(false)
 {
-    m_bPressed = false;
 }
 
 LiteBoard::LiteBoard(QWidget *parent)

@@ -3,14 +3,17 @@
 
 #include "litewindow.h"
 
-class LiteModeBar;
-class LiteTabWidget;
-class LiteTabBar;
-
 class QStackedWidget;
 class QActionGroup;
 
-class MainWindow : public LiteWindow
+namespace QLite
+{
+    class LiteModeBar;
+    class LiteTabWidget;
+    class LiteTabBar;
+}
+
+class MainWindow : public QLite::LiteWindow
 {
     Q_OBJECT
 
@@ -28,11 +31,11 @@ private slots:
     void slotChangeSkin();
 
 private:
-    LiteModeBar *m_pModeBar;
+    QLite::LiteModeBar *m_pModeBar;
     QStackedWidget *m_pStackedWidget;
 
-    LiteTabWidget *m_pTabWidget;
-    LiteTabBar *m_pTabBar;
+    QLite::LiteTabWidget *m_pTabWidget;
+    QLite::LiteTabBar *m_pTabBar;
 
     QActionGroup *m_pActionGroup;
 };

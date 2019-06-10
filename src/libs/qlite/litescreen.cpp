@@ -27,6 +27,8 @@
 #include <QScreen>
 #endif
 
+using namespace QLite;
+
 LiteScreen::LiteScreen()
 {
     m_screenRects.clear();

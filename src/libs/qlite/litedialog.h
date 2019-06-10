@@ -23,30 +23,33 @@
 #include <QDialog>
 #include "qlite_global.h"
 
-class LiteBar;
-class LiteDialogPrivate;
-
-class QLITE_SHARED_EXPORT LiteDialog : public QDialog
+namespace QLite
 {
-    Q_OBJECT
-public:
-    explicit LiteDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~LiteDialog();
+    class LiteBar;
+    class LiteDialogPrivate;
 
-    LiteBar *liteBar() const;
+    class QLITE_SHARED_EXPORT LiteDialog : public QDialog
+    {
+        Q_OBJECT
+    public:
+        explicit LiteDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+        ~LiteDialog();
 
-    QLayout *layout() const;
-    void setLayout(QLayout *layout);
+        LiteBar *liteBar() const;
 
-    void setFixedSize(const QSize &s);
-    void setFixedSize(int w, int h);
-    void setFixedWidth(int w);
-    void setFixedHeight(int h);
+        QLayout *layout() const;
+        void setLayout(QLayout *layout);
 
-    void setWindowFlags(Qt::WindowFlags type);
+        void setFixedSize(const QSize &s);
+        void setFixedSize(int w, int h);
+        void setFixedWidth(int w);
+        void setFixedHeight(int h);
 
-private:
-    LiteDialogPrivate *d;
-};
+        void setWindowFlags(Qt::WindowFlags type);
+
+    private:
+        LiteDialogPrivate *d;
+    };
+}
 
 #endif // LITEDIALOG_H

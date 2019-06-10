@@ -22,23 +22,27 @@
 #include <QStackedWidget>
 #include <QIcon>
 
-class LiteModeBarPrivate : public QObject
+using namespace QLite;
+
+namespace QLite
 {
-    Q_OBJECT
-public:
-    LiteModeBarPrivate();
-    void init();
+    class LiteModeBarPrivate : public QObject
+    {
+        Q_OBJECT
+    public:
+        LiteModeBarPrivate();
+        void init();
 
-public:
-    LiteModeBar *q;
+    public:
+        LiteModeBar *q;
 
-    QStackedWidget *m_stack;
-};
+        QStackedWidget *m_stack;
+    };
+}
 
 LiteModeBarPrivate::LiteModeBarPrivate()
+    : q(nullptr), m_stack(nullptr)
 {
-    q = nullptr;
-    m_stack = nullptr;
 }
 
 void LiteModeBarPrivate::init()

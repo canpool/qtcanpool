@@ -27,20 +27,24 @@
 #include <QHBoxLayout>
 #include <QLayout>
 
-class LiteDialogPrivate : public QObject
-{
-    Q_OBJECT
-public:
-    LiteDialogPrivate();
+using namespace QLite;
 
-    LiteBar *m_liteBar;
-    QWidget *m_centralWidget;
-};
+namespace QLite
+{
+    class LiteDialogPrivate : public QObject
+    {
+        Q_OBJECT
+    public:
+        LiteDialogPrivate();
+
+        LiteBar *m_liteBar;
+        QWidget *m_centralWidget;
+    };
+}
 
 LiteDialogPrivate::LiteDialogPrivate()
+    : m_liteBar(nullptr), m_centralWidget(nullptr)
 {
-    m_liteBar = nullptr;
-    m_centralWidget = nullptr;
 }
 
 LiteDialog::LiteDialog(QWidget *parent, Qt::WindowFlags f)

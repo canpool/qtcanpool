@@ -23,22 +23,25 @@
 #include <QDialog>
 #include "qlite_global.h"
 
-class LiteBoardPrivate;
-
-class QLITE_SHARED_EXPORT LiteBoard : public QDialog
+namespace QLite
 {
-    Q_OBJECT
-public:
-    explicit LiteBoard(QWidget *parent = nullptr);
-    ~LiteBoard();
+    class LiteBoardPrivate;
 
-protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    class QLITE_SHARED_EXPORT LiteBoard : public QDialog
+    {
+        Q_OBJECT
+    public:
+        explicit LiteBoard(QWidget *parent = nullptr);
+        ~LiteBoard();
 
-private:
-    LiteBoardPrivate *d;
-};
+    protected:
+        void mousePressEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event);
+        void mouseMoveEvent(QMouseEvent *event);
+
+    private:
+        LiteBoardPrivate *d;
+    };
+}
 
 #endif // LITEBOARD_H

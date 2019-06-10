@@ -28,107 +28,110 @@ class QLabel;
 class QToolButton;
 class QToolBar;
 
-class LiteBar;
-
-class LiteCursor
+namespace QLite
 {
-public:
-    LiteCursor();
+    class LiteBar;
 
-    void reset();
-    void recalculate(const QPoint &gMousePos, const QRect &frameRect);
+    class LiteCursor
+    {
+    public:
+        LiteCursor();
 
-public:
-    bool m_bOnEdges              : true;
-    bool m_bOnLeftEdge           : true;
-    bool m_bOnRightEdge          : true;
-    bool m_bOnTopEdge            : true;
-    bool m_bOnBottomEdge         : true;
-    bool m_bOnTopLeftEdge        : true;
-    bool m_bOnBottomLeftEdge     : true;
-    bool m_bOnTopRightEdge       : true;
-    bool m_bOnBottomRightEdge    : true;
+        void reset();
+        void recalculate(const QPoint &gMousePos, const QRect &frameRect);
 
-    int m_nBorderWidth          : 5;
-};
+    public:
+        bool m_bOnEdges              : true;
+        bool m_bOnLeftEdge           : true;
+        bool m_bOnRightEdge          : true;
+        bool m_bOnTopEdge            : true;
+        bool m_bOnBottomEdge         : true;
+        bool m_bOnTopLeftEdge        : true;
+        bool m_bOnBottomLeftEdge     : true;
+        bool m_bOnTopRightEdge       : true;
+        bool m_bOnBottomRightEdge    : true;
 
-class LiteBarPrivate : public QObject
-{
-    Q_OBJECT
-public:
-    LiteBarPrivate();
-    void init();
-    void installWidget(QWidget *w);
+        int m_nBorderWidth          : 5;
+    };
 
-    void handleWidgetMouseEvent(QObject *obj, QEvent *event);
+    class LiteBarPrivate : public QObject
+    {
+        Q_OBJECT
+    public:
+        LiteBarPrivate();
+        void init();
+        void installWidget(QWidget *w);
 
-    // window
-    bool windowTitleChange(QObject *obj);
-    bool windowIconChange(QObject *obj);
-    void windowSizeChange(QObject *obj);
-    void windowStateChange(QObject *obj);
+        void handleWidgetMouseEvent(QObject *obj, QEvent *event);
 
-    void updateWindowButtons();
+        // window
+        bool windowTitleChange(QObject *obj);
+        bool windowIconChange(QObject *obj);
+        void windowSizeChange(QObject *obj);
+        void windowStateChange(QObject *obj);
 
-private:
-    // mouse event
-    void handleMousePressEvent(QMouseEvent *event);
-    void handleMouseReleaseEvent(QMouseEvent *event);
-    void handleMouseMoveEvent(QMouseEvent *event);
-    void handleLeaveEvent(QEvent *event);
-    void handleHoverMoveEvent(QHoverEvent *event);
-    void handleMouseDblClickEvent(QMouseEvent *event);
+        void updateWindowButtons();
 
-    // widget action
-    void restoreWidget(QWidget *pWidget);
-    void maximizeWidget(QWidget *pWidget);
-    void resizeWidget(const QPoint &gMousePos);
-    void moveWidget(const QPoint &gMousePos);
+    private:
+        // mouse event
+        void handleMousePressEvent(QMouseEvent *event);
+        void handleMouseReleaseEvent(QMouseEvent *event);
+        void handleMouseMoveEvent(QMouseEvent *event);
+        void handleLeaveEvent(QEvent *event);
+        void handleHoverMoveEvent(QHoverEvent *event);
+        void handleMouseDblClickEvent(QMouseEvent *event);
 
-    void doubleMoveWidget();
+        // widget action
+        void restoreWidget(QWidget *pWidget);
+        void maximizeWidget(QWidget *pWidget);
+        void resizeWidget(const QPoint &gMousePos);
+        void moveWidget(const QPoint &gMousePos);
 
-    // mouse shape
-    void updateCursorShape(const QPoint &gMousePos);
-    QPoint calcDragPoint(QWidget *pWindow, QMouseEvent *event) const;
+        void doubleMoveWidget();
 
-    QRect validDragRect();
+        // mouse shape
+        void updateCursorShape(const QPoint &gMousePos);
+        QPoint calcDragPoint(QWidget *pWindow, QMouseEvent *event) const;
 
-private slots:
-    void slotSysButtonClicked();
+        QRect validDragRect();
 
-public:
-    LiteBar *q;
+    private slots:
+        void slotSysButtonClicked();
 
-    QToolButton *m_logoButton;
-    QLabel *m_titleLabel;
-    QToolBar *m_toolBar;
-    QAction *m_closeAction;
-    QAction *m_maximizeAction;
-    QAction *m_minimizeAction;
+    public:
+        LiteBar *q;
 
-    QWidget *m_mainWidget;
-    QPoint m_dragPos;
-    LiteCursor m_pressCursor;
-    LiteCursor m_moveCursor;
-    bool m_bEdgePressed;
-    bool m_bCursorShapeChanged;
-    Qt::WindowFlags m_windowFlags;
-    bool m_bWidgetResizable;
-    bool m_bWidgetMovable;
-    bool m_bWidgetMaximizable;
+        QToolButton *m_logoButton;
+        QLabel *m_titleLabel;
+        QToolBar *m_toolBar;
+        QAction *m_closeAction;
+        QAction *m_maximizeAction;
+        QAction *m_minimizeAction;
 
-    bool m_isMaximized;
-    bool m_isMinimized;
+        QWidget *m_mainWidget;
+        QPoint m_dragPos;
+        LiteCursor m_pressCursor;
+        LiteCursor m_moveCursor;
+        bool m_bEdgePressed;
+        bool m_bCursorShapeChanged;
+        Qt::WindowFlags m_windowFlags;
+        bool m_bWidgetResizable;
+        bool m_bWidgetMovable;
+        bool m_bWidgetMaximizable;
 
-    // screen
-    int m_currentScreen;
+        bool m_isMaximized;
+        bool m_isMinimized;
 
-    QRect m_normalRect;
-    QPoint m_movePoint;
-    QPoint m_dragPoint;
-    QPoint m_mousePoint;
-    bool m_bLeftButtonPressed;
-    bool m_bLeftButtonDbClicked;
-};
+        // screen
+        int m_currentScreen;
+
+        QRect m_normalRect;
+        QPoint m_movePoint;
+        QPoint m_dragPoint;
+        QPoint m_mousePoint;
+        bool m_bLeftButtonPressed;
+        bool m_bLeftButtonDbClicked;
+    };
+}
 
 #endif // LITEBAR_P_H

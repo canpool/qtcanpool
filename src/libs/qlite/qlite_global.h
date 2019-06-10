@@ -28,6 +28,4 @@
 #  define QLITE_SHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-
-
 #endif // QLITE_GLOBAL_H

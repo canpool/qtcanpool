@@ -23,14 +23,10 @@
 #include <QObject>
 #include "qlite_global.h"
 
-class QLITE_SHARED_EXPORT QLite : public QObject
+namespace QLite
 {
-    Q_OBJECT
-public:
-
-    static void setStyle(const QString &style);
-    static QString loadStyle(const QString &filename);
-
-};
+    QLITE_SHARED_EXPORT void setStyle(const QString &style);
+    QLITE_SHARED_EXPORT QString loadStyle(const QString &filename);
+}
 
 #endif // QTLITE_H

@@ -27,6 +27,8 @@
 
 #include "litescreen.h"
 
+using namespace QLite;
+
 LiteCursor::LiteCursor()
 {
     m_nBorderWidth = 5;

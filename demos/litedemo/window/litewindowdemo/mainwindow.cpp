@@ -20,6 +20,8 @@
 #include "litedialog.h"
 #include "litebar.h"
 
+using namespace QLite;
+
 MainWindow::MainWindow(QWidget *parent)
     : LiteWindow(parent)
 {

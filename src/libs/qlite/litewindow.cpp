@@ -29,28 +29,33 @@
 #include "litebar.h"
 #include "litescreen.h"
 
-class LiteWindowPrivate : public QObject
+using namespace QLite;
+
+namespace QLite
 {
-    Q_OBJECT
-public:
-    LiteWindowPrivate();
-    ~LiteWindowPrivate();
+    class LiteWindowPrivate : public QObject
+    {
+        Q_OBJECT
+    public:
+        LiteWindowPrivate();
+        ~LiteWindowPrivate();
 
-    LiteBar *m_liteBar;
-    QStatusBar *m_statusBar;
-    QMenuBar *m_menuBar;
-    QHBoxLayout *m_layout;
+        LiteBar *m_liteBar;
+        QStatusBar *m_statusBar;
+        QMenuBar *m_menuBar;
+        QHBoxLayout *m_layout;
 
-public slots:
-    void slotResizable(bool resizable);
-};
+    public slots:
+        void slotResizable(bool resizable);
+    };
+}
 
 LiteWindowPrivate::LiteWindowPrivate()
+    : m_liteBar(nullptr),
+      m_statusBar(nullptr),
+      m_menuBar(nullptr),
+      m_layout(nullptr)
 {
-    m_liteBar = nullptr;
-    m_statusBar = nullptr;
-    m_menuBar = nullptr;
-    m_layout = nullptr;
 }
 
 LiteWindowPrivate::~LiteWindowPrivate()

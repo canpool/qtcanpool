@@ -22,6 +22,8 @@
 #include <QStyleOption>
 #include <QPainter>
 
+using namespace QLite;
+
 LiteWidget::LiteWidget(QWidget *parent)
     : QWidget(parent)
 {

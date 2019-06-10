@@ -23,14 +23,17 @@
 #include <QWidget>
 #include "qlite_global.h"
 
-class QLITE_SHARED_EXPORT LiteWidget : public QWidget
+namespace QLite
 {
-    Q_OBJECT
-public:
-    explicit LiteWidget(QWidget *parent = nullptr);
+    class QLITE_SHARED_EXPORT LiteWidget : public QWidget
+    {
+        Q_OBJECT
+    public:
+        explicit LiteWidget(QWidget *parent = nullptr);
 
-protected:
-    void paintEvent(QPaintEvent *e);
-};
+    protected:
+        void paintEvent(QPaintEvent *e);
+    };
+}
 
 #endif // LITEWIDGET_H
