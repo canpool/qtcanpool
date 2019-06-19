@@ -41,10 +41,10 @@ public:
 };
 
 SkinItemPrivate::SkinItemPrivate()
+    : m_bMousePress(false),
+      m_bMouseEnter(false),
+      m_isSelected(false)
 {
-    m_bMousePress = false;
-    m_bMouseEnter = false;
-    m_isSelected = false;
 }
 
 SkinItem::SkinItem(QWidget *parent)
@@ -110,6 +110,8 @@ void SkinItem::leaveEvent(QEvent *)
 void SkinItem::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
     painter.save();
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::gray);

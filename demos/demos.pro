@@ -6,4 +6,5 @@ SUBDIRS +=  \
             qtoffice \
             qtqrcode \
             qtitanribbon \
-            litedemo
+            litedemo \
+            controldemo

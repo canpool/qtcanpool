@@ -5,7 +5,6 @@ HEADERS += \
     $$PWD/ctablewidget.h \
     $$PWD/custommode.h \
     $$PWD/menumode.h \
-    $$PWD/paintmode.h \
     $$PWD/skindialog.h \
     $$PWD/theme.h \
     $$PWD/explorer.h \
@@ -18,7 +17,6 @@ SOURCES += \
     $$PWD/custommode.cpp \
     $$PWD/main.cpp \
     $$PWD/menumode.cpp \
-    $$PWD/paintmode.cpp \
     $$PWD/skindialog.cpp\
     $$PWD/theme.cpp \
     $$PWD/explorer.cpp \

@@ -22,7 +22,6 @@
 #include "chartsmode.h"
 #include "custommode.h"
 #include "menumode.h"
-#include "paintmode.h"
 
 #include "qcanpool/fancytabwidget.h"
 #include "qcanpool/fancytabbar.h"
@@ -304,11 +303,9 @@ void MainWindow::createModeBar()
 
     m_pChartsMode = new ChartsMode();
     m_pCustomMode = new CustomMode();
-    m_pPaintMode = new PaintMode();
     m_pMenuMode = new MenuMode();
 
     m_modeManager->objectAdded(m_pCustomMode);
-    m_modeManager->objectAdded(m_pPaintMode);
     m_modeManager->objectAdded(m_pChartsMode);
     m_modeManager->objectAdded(m_pMenuMode);
 
