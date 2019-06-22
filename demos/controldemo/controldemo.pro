@@ -30,11 +30,13 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    progressbarwidget.cpp
+    progressbarwidget.cpp \
+    gaugewidget.cpp
 
 HEADERS += \
     mainwindow.h \
-    progressbarwidget.h
+    progressbarwidget.h \
+    gaugewidget.h
 
 include($$TOPDIR/src/modules/modules.pri)
 

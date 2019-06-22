@@ -1,3 +1,5 @@
+INCLUDEPATH += $$PWD
+
 HEADERS += \
     $$PWD/QtRoundProgressBar.h \
     $$PWD/QtColorProgressBar.h \

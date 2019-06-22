@@ -191,7 +191,7 @@ void ProgressBarWidget::createWindow()
 
     QtColorProgressBar *colorProgressBar1 = new QtColorProgressBar();
     colorProgressBar1->setTextPosition(QtColorProgressBar::TextInBar);
-    colorProgressBar1->setDecimal(0);
+    colorProgressBar1->setDecimals(0);
     colorProgressBar1->setBarBackColor(QColor(Qt::gray));
     colorProgressBar1->setBarForeColor(QColor(100, 184, 255));
     colorProgressBar1->setTextForeColor(QColor(Qt::white));
@@ -200,7 +200,7 @@ void ProgressBarWidget::createWindow()
     connect(slider, SIGNAL(valueChanged(int)), colorProgressBar1, SLOT(setValue(int)));
 
     QtColorProgressBar *colorProgressBar2 = new QtColorProgressBar(QtColorProgressBar::StyleSegmented);
-    colorProgressBar2->setDecimal(1);
+    colorProgressBar2->setDecimals(1);
     colorProgressBar2->setBarBackColor(QColor(Qt::white));
     colorProgressBar2->setBarForeColor(QColor(200, 10, 150));
     colorProgressBar2->setBarForeAlternateColor(QColor(255, 107, 107));
@@ -211,7 +211,7 @@ void ProgressBarWidget::createWindow()
 
     QtColorProgressBar *colorProgressBar3 = new QtColorProgressBar(QtColorProgressBar::StyleSegmented);
     colorProgressBar3->setTextPosition(QtColorProgressBar::TextOutBar);
-    colorProgressBar3->setDecimal(1);
+    colorProgressBar3->setDecimals(1);
     colorProgressBar3->setBarBackColor(QColor(250, 250, 250));
     colorProgressBar3->setBarForeColor(QColor(24, 189, 155));
     colorProgressBar3->setBarForeAlternateColor(QColor(242, 242, 242));
@@ -226,7 +226,7 @@ void ProgressBarWidget::createWindow()
     colorGradientPoints << QGradientStop(0, Qt::green) << QGradientStop(0.5, Qt::yellow) << QGradientStop(1, Qt::red);
     QtColorProgressBar *colorProgressBar4 = new QtColorProgressBar(QtColorProgressBar::StyleGradual);
     colorProgressBar4->setTextPosition(QtColorProgressBar::TextOnBar);
-    colorProgressBar4->setDecimal(1);
+    colorProgressBar4->setDecimals(1);
     colorProgressBar4->setBarBackColor(QColor(250, 250, 250));
     colorProgressBar4->setTextForeColor(Qt::white);
     colorProgressBar4->setTextBackColor(QColor(24, 189, 155));

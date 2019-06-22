@@ -1,5 +1,5 @@
 INCLUDEPATH += $$PWD
 
-INCLUDEPATH += $$PWD/progressbar
 include($$PWD/progressbar/progressbar.pri)
+include($$PWD/gaugewidget/gaugewidget.pri)
 

@@ -7,7 +7,7 @@ class QtStateProgressBar : public QWidget
 {
     Q_OBJECT
 public:
-    enum Type{ NACK, ACK };
+    enum Type { NACK, ACK };
     explicit QtStateProgressBar(QWidget *parent = nullptr);
 
     void setTip(QString tip);

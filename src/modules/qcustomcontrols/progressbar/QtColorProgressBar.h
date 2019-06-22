@@ -59,7 +59,7 @@ public:
 
     void setBarStep(int space, int delta, int size = 2);
 
-    void setDecimal(int decimal);
+    void setDecimals(int count);
     void setRadius(int radius);
 
     void setTextPosition(TextPosition position);
@@ -94,7 +94,7 @@ private:
     QColor m_textForeColor;
     QColor m_textBackColor;
 
-    int m_decimal;
+    int m_decimals;
     int m_radius;
 
     TextPosition m_textPosition;

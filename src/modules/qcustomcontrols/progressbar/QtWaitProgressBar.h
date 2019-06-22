@@ -26,7 +26,7 @@ class QtWaitProgressBar : public QWidget
 {
     Q_OBJECT
 public:
-    enum WaitType { Line, Pie, Donut, Circle, Taichi, Petal, Bearing, Bubble, Infinite};
+    enum WaitType { Line, Pie, Donut, Circle, Taichi, Petal, Bearing, Bubble, Infinite };
 
     QtWaitProgressBar(WaitType type = Line, QWidget *parent = nullptr);
 

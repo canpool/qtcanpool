@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 
 #include "progressbarwidget.h"
+#include "gaugewidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -27,6 +28,8 @@ void MainWindow::createWindow()
     m_pStackedWidget = new QStackedWidget();
     connect(m_pTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(slotItemClicked(QTreeWidgetItem *, int)));
 
+    GaugeWidget *gaugeWidget = new GaugeWidget();
+    addWidget(tr("Gauge"), gaugeWidget);
     ProgressBarWidget *progressBarWidget = new ProgressBarWidget();
     addWidget(tr("ProgressBar"), progressBarWidget);
 

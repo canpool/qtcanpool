@@ -237,7 +237,8 @@ void QtWaitProgressBar::drawInfiniteWait(QPainter &p)
 
     // x * |cos(a)| = 50
     // side = x / sqrt(2) = 50 / sqrt(2) / |cos(a)|
-    double cosA = qCos(m_rotateAngle%45 * (M_PI/180)); // a mapTo [0, 45]
+    double mapAngle = m_rotateAngle % 45; // a mapTo [0, 45]
+    double cosA = qCos(qDegreesToRadians(mapAngle));
     cosA = qAbs(cosA);
     double side = 50 / M_SQRT2;
     if (!qFuzzyCompare(cosA, 0)) {

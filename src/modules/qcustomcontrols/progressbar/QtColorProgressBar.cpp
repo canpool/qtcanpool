@@ -28,7 +28,7 @@ QtColorProgressBar::QtColorProgressBar(BarStyle style, QWidget *parent)
       m_barBackColor(Qt::white),
       m_textForeColor(Qt::black),
       m_textBackColor(Qt::white),
-      m_decimal(0),
+      m_decimals(0),
       m_radius(10),
       m_textPosition(TextOutBar),
       m_barStyle(style)
@@ -102,10 +102,10 @@ void QtColorProgressBar::setBarStep(int space, int delta, int size)
     }
 }
 
-void QtColorProgressBar::setDecimal(int decimal)
+void QtColorProgressBar::setDecimals(int count)
 {
-    if (decimal != m_decimal) {
-        m_decimal = decimal;
+    if (count != m_decimals) {
+        m_decimals = count;
         update();
     }
 }
@@ -185,7 +185,7 @@ void QtColorProgressBar::drawBar(QPainter &p, QRectF &barRect, QRectF &textRect)
 {
     double scale = (m_value - m_min) / (m_max - m_min);
     double percent = scale * 100.0;
-    QString strValue = QString("%1%").arg(QString::number(percent, 'f', m_decimal));
+    QString strValue = QString("%1%").arg(QString::number(percent, 'f', m_decimals));
     QFontMetricsF fm = QFontMetricsF(p.font());
     QSizeF size = fm.size(Qt::TextSingleLine, strValue);
 
@@ -333,7 +333,7 @@ void QtColorProgressBar::drawBarStep(QPainter &p, const QRectF &barRect)
 void QtColorProgressBar::drawText(QPainter &p, QRectF &textRect)
 {
     double percent = (m_value - m_min) / (m_max - m_min) * 100.0;
-    QString strValue = QString("%1%").arg(QString::number(percent, 'f', m_decimal));
+    QString strValue = QString("%1%").arg(QString::number(percent, 'f', m_decimals));
 
     /* draw text value */
     p.save();
