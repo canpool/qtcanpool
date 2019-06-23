@@ -23,54 +23,55 @@
 #include "litewidget.h"
 #include "qlite_global.h"
 
-namespace QLite
+namespace QLite {
+
+class LiteTabBar;
+class LiteTabWidgetPrivate;
+
+class QLITE_SHARED_EXPORT LiteTabWidget : public LiteWidget
 {
-    class LiteTabBar;
-    class LiteTabWidgetPrivate;
+    Q_OBJECT
 
-    class QLITE_SHARED_EXPORT LiteTabWidget : public LiteWidget
-    {
-        Q_OBJECT
+    Q_PROPERTY(TabPosition tabPosition READ tabPosition WRITE setTabPosition)
+public:
+    explicit LiteTabWidget(QWidget *parent = nullptr);
+    ~LiteTabWidget();
 
-        Q_PROPERTY(TabPosition tabPosition READ tabPosition WRITE setTabPosition)
-    public:
-        explicit LiteTabWidget(QWidget *parent = nullptr);
-        ~LiteTabWidget();
+    int addTab(QWidget *widget, const QString &);
+    int addTab(QWidget *widget, const QIcon& icon, const QString &label);
 
-        int addTab(QWidget *widget, const QString &);
-        int addTab(QWidget *widget, const QIcon& icon, const QString &label);
+    int insertTab(int index, QWidget *widget, const QString &);
+    int insertTab(int index, QWidget *widget, const QIcon& icon, const QString &label);
 
-        int insertTab(int index, QWidget *widget, const QString &);
-        int insertTab(int index, QWidget *widget, const QIcon& icon, const QString &label);
+    void removeTab(int index);
 
-        void removeTab(int index);
+    int currentIndex() const;
+    QWidget *currentWidget() const;
+    QWidget *widget(int index) const;
+    int indexOf(QWidget *widget) const;
+    int count() const;
 
-        int currentIndex() const;
-        QWidget *currentWidget() const;
-        QWidget *widget(int index) const;
-        int indexOf(QWidget *widget) const;
-        int count() const;
+    void setTabEnabled(QWidget *widget, bool enable);
+    void setTabVisible(QWidget *widget, bool visible);
 
-        void setTabEnabled(QWidget *widget, bool enable);
-        void setTabVisible(QWidget *widget, bool visible);
+    LiteTabBar *tabBar(void) const;
 
-        LiteTabBar *tabBar(void) const;
+    enum TabPosition { North, South, West, East };
+    Q_ENUM(TabPosition)
+    TabPosition tabPosition() const;
+    void setTabPosition(TabPosition);
 
-        enum TabPosition { North, South, West, East };
-        Q_ENUM(TabPosition)
-        TabPosition tabPosition() const;
-        void setTabPosition(TabPosition);
+    void setTabButtonStyle(Qt::ToolButtonStyle style);
+    void setTabSpacing(int spacing);
 
-        void setTabButtonStyle(Qt::ToolButtonStyle style);
-        void setTabSpacing(int spacing);
+signals:
 
-    signals:
+public slots:
 
-    public slots:
+private:
+    LiteTabWidgetPrivate *d;
+};
 
-    private:
-        LiteTabWidgetPrivate *d;
-    };
-}
+} // namespace QLite
 
 #endif // LITETABWIDGET_H

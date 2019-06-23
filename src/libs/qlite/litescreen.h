@@ -24,21 +24,22 @@
 #include <QList>
 #include "qlite_global.h"
 
-namespace QLite
+namespace QLite {
+
+class QLITE_SHARED_EXPORT LiteScreen
 {
-    class QLITE_SHARED_EXPORT LiteScreen
-    {
-    public:
-        LiteScreen();
+public:
+    LiteScreen();
 
-        int currentScreen(const int x);
-        QRect screenRect(const int current);
+    int currentScreen(const int x);
+    QRect screenRect(const int current);
 
-        static QRect normalRect();
+    static QRect normalRect();
 
-    private:
-        QList<QRect> m_screenRects;
-    };
-}
+private:
+    QList<QRect> m_screenRects;
+};
+
+} // namespace QLite
 
 #endif // LITESCREEN_H
