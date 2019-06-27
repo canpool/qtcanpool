@@ -13,12 +13,12 @@
 
 #include <QDebug>
 
-#include "qlite.h"
-#include "litemodebar.h"
-#include "litetabwidget.h"
-#include "litetabbar.h"
-#include "litedialog.h"
-#include "litebar.h"
+#include "qlite/qlite.h"
+#include "qlite/litemodebar.h"
+#include "qlite/litetabwidget.h"
+#include "qlite/litetabbar.h"
+#include "qlite/litedialog.h"
+#include "qlite/litebar.h"
 
 using namespace QLite;
 

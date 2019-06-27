@@ -3,8 +3,7 @@
 # Project created by QtCreator 2019-06-13T21:20:28
 #
 #-------------------------------------------------
-TOPDIR = ../..
-include($$TOPDIR/qtproject.pri)
+include(../../qtproject.pri)
 
 QT       += core gui
 
@@ -38,7 +37,7 @@ HEADERS += \
     progressbarwidget.h \
     gaugewidget.h
 
-include($$TOPDIR/src/modules/modules.pri)
+include($$QTCANPOOL_ROOT/src/modules/modules.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

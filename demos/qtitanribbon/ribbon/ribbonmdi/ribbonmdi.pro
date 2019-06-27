@@ -1,9 +1,5 @@
-TEMPLATE = app
-
 QTITANDIR = $$quote($$PWD/../..)
-
-TOPDIR = ../../../..
-include($$TOPDIR/qtproject.pri)
+include(../../../../qtproject.pri)
 
 QT       += core gui
 
@@ -14,7 +10,7 @@ DESTDIR = $$IDE_APP_PATH
 
 LIBS *= -l$$qtLibraryNameVersion(qribbon, 3)
 
-INCLUDEPATH += $$TOPDIR/src/libs/qribbon/include
+INCLUDEPATH += $$QTCANPOOL_ROOT/src/libs/qribbon/include
 
 HEADERS       = mainwindow.h \
                 texteditchild.h \

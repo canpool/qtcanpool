@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "litewindow.h"
+#include "qlite/litewindow.h"
 
 class QStackedWidget;
 class QActionGroup;

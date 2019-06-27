@@ -3,8 +3,7 @@
 # Project created by QtCreator 2019-03-09T14:40:01
 #
 #-------------------------------------------------
-TOPDIR = ../../../..
-include($$TOPDIR/qtproject.pri)
+include(../../../../qtproject.pri)
 
 QT       += core gui
 
@@ -27,12 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-include($$TOPDIR/src/rpath.pri)
+include($$QTCANPOOL_ROOT/src/rpath.pri)
 
 # lib
 LIBS *= -l$$qtLibraryNameVersion(qlite, 1)
 
-INCLUDEPATH += .. $$TOPDIR/src/libs/qlite
+INCLUDEPATH += ..
 
 SOURCES += \
         main.cpp \

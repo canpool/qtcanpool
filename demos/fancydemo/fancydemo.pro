@@ -3,8 +3,7 @@
 # Project created by QtCreator 2017-10-22T21:14:13
 #
 #-------------------------------------------------
-TOPDIR = ../..
-include($$TOPDIR/qtproject.pri)
+include(../../qtproject.pri)
 
 QT       += core gui xml
 
@@ -25,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-include($$TOPDIR/src/rpath.pri)
+include($$QTCANPOOL_ROOT/src/rpath.pri)
 
 # lib
 LIBS *= -l$$qtLibraryName(qcanpool)
@@ -33,7 +32,7 @@ LIBS *= -l$$qtLibraryName(qcanpool)
 INCLUDEPATH += .. $$TOPDIR/src/libs
 
 include(fancydemo-src.pri)
-include($$TOPDIR/src/modules/modules.pri)
+include($$QTCANPOOL_ROOT/src/modules/modules.pri)
 
 win32{
     DEFINES	+= WIN32
