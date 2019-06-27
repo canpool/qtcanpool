@@ -1,10 +1,25 @@
 !isEmpty(QTPROJECT_PRI_INCLUDED):error("qtproject.pri already included")
 QTPROJECT_PRI_INCLUDED = 1
 
-QTPROJECT_VERSION = 1.0.0
-QTPROJECT_COMPAT_VERSION = 1.0.0
+QTCANPOOL_ROOT = $$PWD
+
+# config variables
+isEmpty(QTPROJECT_VERSION):         QTPROJECT_VERSION = 1.0.1
+isEmpty(QTPROJECT_COMPAT_VERSION):  QTPROJECT_COMPAT_VERSION = 1.0.1
 VERSION = $$QTPROJECT_VERSION
-BINARY_ARTIFACTS_BRANCH = 1.0
+isEmpty(QTPROJECT_DISPLAY_VERSION): QTPROJECT_DISPLAY_VERSION = 1.1.0-rc1
+isEmpty(QTPROJECT_COPYRIGHT_YEAR):  QTPROJECT_COPYRIGHT_YEAR = 2019
+isEmpty(BINARY_ARTIFACTS_BRANCH):   BINARY_ARTIFACTS_BRANCH = 1.1
+
+isEmpty(QTPROJECT_OUT_PWD):         QTPROJECT_OUT_PWD = $$OUT_PWD
+isEmpty(QTPROJECT_PRO_FILE_PWD):    QTPROJECT_PRO_FILE_PWD = $$_PRO_FILE_PWD_
+isEmpty(QTPROJECT_PRO_FILE):        QTPROJECT_PRO_FILE = $$_PRO_FILE_
+
+isEmpty(IDE_DISPLAY_NAME):          IDE_DISPLAY_NAME = Qt Canpool
+isEmpty(IDE_ID):                    IDE_ID = qtcanpool
+isEmpty(IDE_CASED_ID):              IDE_CASED_ID = QtCanpool
+
+isEmpty(PRODUCT_BUNDLE_IDENTIFIER): PRODUCT_BUNDLE_IDENTIFIER = org.qt-project.$$IDE_ID
 
 defineReplace(qtLibraryTargetName) {
    unset(LIBRARY_NAME)
@@ -67,7 +82,7 @@ defineTest(minQtVersion) {
 
 # For use in custom compilers which just copy files
 defineReplace(stripSrcDir) {
-    return($$relative_path($$absolute_path($$1, $$OUT_PWD), $$_PRO_FILE_PWD_))
+    return($$relative_path($$absolute_path($$1, $$QTPROJECT_OUT_PWD), $$QTPROJECT_PRO_FILE_PWD))
 }
 
 QTC_BUILD_TESTS = $$(QTC_BUILD_TESTS)
@@ -90,22 +105,31 @@ equals(TEST, 1) {
     DEFINES += WITH_TESTS
 }
 
-IDE_SOURCE_TREE = $$PWD
+# config IDE_SOURCE_TREE
+isEmpty(QTPROJECT_DIR) {
+    IDE_SOURCE_TREE = $$PWD
+} else {
+    IDE_SOURCE_TREE = $$QTPROJECT_DIR
+}
+
 isEmpty(IDE_BUILD_TREE) {
-    sub_dir = $$_PRO_FILE_PWD_
-    sub_dir ~= s,^$$re_escape($$PWD),,
-#    IDE_BUILD_TREE = $$clean_path($$OUT_PWD) // qt5
-    IDE_BUILD_TREE = $$OUT_PWD  #qt4
+    sub_dir = $$QTPROJECT_PRO_FILE_PWD
+    sub_dir ~= s,^$$re_escape($$IDE_SOURCE_TREE),,
+    greaterThan(QT_MAJOR_VERSION, 4) {
+        IDE_BUILD_TREE = $$clean_path($$QTPROJECT_OUT_PWD) # qt5
+    } else {
+        IDE_BUILD_TREE = $$QTPROJECT_OUT_PWD  # qt4
+    }
     IDE_BUILD_TREE ~= s,$$re_escape($$sub_dir)$,,
 }
 
 IDE_APP_PATH = $$IDE_BUILD_TREE/bin
 osx {
-    IDE_APP_TARGET   = "Qt Canpool"
+    IDE_APP_TARGET   = "$$IDE_DISPLAY_NAME"
 
     # check if IDE_BUILD_TREE is actually an existing Qt Canpool.app,
     # for building against a binary package
-    exists($$IDE_BUILD_TREE/Contents/MacOS/Qt Canpool): IDE_APP_BUNDLE = $$IDE_BUILD_TREE
+    exists($$IDE_BUILD_TREE/Contents/MacOS/$$IDE_APP_TARGET): IDE_APP_BUNDLE = $$IDE_BUILD_TREE
     else: IDE_APP_BUNDLE = $$IDE_APP_PATH/$${IDE_APP_TARGET}.app
 
     # set output path if not set manually
@@ -131,7 +155,7 @@ osx {
     INSTALL_APP_PATH     = $$QTC_PREFIX/
 } else {
     contains(TEMPLATE, vc.*):vcproj = 1
-    IDE_APP_TARGET   = qtcanpool
+    IDE_APP_TARGET   = $$IDE_ID
 
     # target output path if not set manually
     isEmpty(IDE_OUTPUT_PATH): IDE_OUTPUT_PATH = $$IDE_BUILD_TREE
@@ -162,6 +186,17 @@ osx {
     INSTALL_APP_PATH     = $$QTC_PREFIX/bin
 }
 
+gcc:!clang: QMAKE_CXXFLAGS += -Wno-noexcept-type
+
+RELATIVE_PLUGIN_PATH = $$relative_path($$IDE_PLUGIN_PATH, $$IDE_BIN_PATH)
+RELATIVE_LIBEXEC_PATH = $$relative_path($$IDE_LIBEXEC_PATH, $$IDE_BIN_PATH)
+RELATIVE_DATA_PATH = $$relative_path($$IDE_DATA_PATH, $$IDE_BIN_PATH)
+RELATIVE_DOC_PATH = $$relative_path($$IDE_DOC_PATH, $$IDE_BIN_PATH)
+DEFINES += $$shell_quote(RELATIVE_PLUGIN_PATH=\"$$RELATIVE_PLUGIN_PATH\")
+DEFINES += $$shell_quote(RELATIVE_LIBEXEC_PATH=\"$$RELATIVE_LIBEXEC_PATH\")
+DEFINES += $$shell_quote(RELATIVE_DATA_PATH=\"$$RELATIVE_DATA_PATH\")
+DEFINES += $$shell_quote(RELATIVE_DOC_PATH=\"$$RELATIVE_DOC_PATH\")
+
 INCLUDEPATH += \
     $$IDE_BUILD_TREE/src \ # for <app/app_version.h> in case of actual build directory
     $$IDE_SOURCE_TREE/src \ # for <app/app_version.h> in case of binary package with dev package
@@ -177,7 +212,20 @@ win32:exists($$IDE_SOURCE_TREE/lib/qtproject) {
 QTC_PLUGIN_DIRS_FROM_ENVIRONMENT = $$(QTC_PLUGIN_DIRS)
 QTC_PLUGIN_DIRS += $$split(QTC_PLUGIN_DIRS_FROM_ENVIRONMENT, $$QMAKE_DIRLIST_SEP)
 QTC_PLUGIN_DIRS += $$IDE_SOURCE_TREE/src/plugins
+!isEqual($$IDE_SOURCE_TREE, $$QTCANPOOL_ROOT) {
+    QTC_PLUGIN_DIRS += $$QTCANPOOL_ROOT/src/plugins
+}
 for(dir, QTC_PLUGIN_DIRS) {
+    INCLUDEPATH += $$dir
+}
+
+QTC_LIB_DIRS_FROM_ENVIRONMENT = $$(QTC_LIB_DIRS)
+QTC_LIB_DIRS += $$split(QTC_LIB_DIRS_FROM_ENVIRONMENT, $$QMAKE_DIRLIST_SEP)
+QTC_LIB_DIRS += $$IDE_SOURCE_TREE/src/libs
+!isEqual($$IDE_SOURCE_TREE, $$QTCANPOOL_ROOT) {
+    QTC_LIB_DIRS += $$QTCANPOOL_ROOT/src/libs
+}
+for(dir, QTC_LIB_DIRS) {
     INCLUDEPATH += $$dir
 }
 
@@ -194,18 +242,23 @@ exists($$IDE_LIBRARY_PATH): LIBS *= -L$$IDE_LIBRARY_PATH  # library path from ou
     DEFINES += IDE_LIBRARY_BASENAME=\\\"$$IDE_LIBRARY_BASENAME\\\"
 }
 
-DEFINES += QT_CREATOR QT_NO_CAST_TO_ASCII QT_RESTRICTED_CAST_FROM_ASCII
-!macx:DEFINES += QT_USE_FAST_OPERATOR_PLUS QT_USE_FAST_CONCATENATION
+DEFINES += \
+    QT_CREATOR \
+    QT_NO_CAST_TO_ASCII \
+    QT_RESTRICTED_CAST_FROM_ASCII \
+    QT_DISABLE_DEPRECATED_BEFORE=0x050900 \
+    QT_USE_FAST_OPERATOR_PLUS \
+    QT_USE_FAST_CONCATENATION
 
 unix {
-    CONFIG(debug, debug|release):OBJECTS_DIR = $${OUT_PWD}/.obj/debug-shared
-    CONFIG(release, debug|release):OBJECTS_DIR = $${OUT_PWD}/.obj/release-shared
+    CONFIG(debug, debug|release):OBJECTS_DIR = $${QTPROJECT_OUT_PWD}/.obj/debug-shared
+    CONFIG(release, debug|release):OBJECTS_DIR = $${QTPROJECT_OUT_PWD}/.obj/release-shared
 
-    CONFIG(debug, debug|release):MOC_DIR = $${OUT_PWD}/.moc/debug-shared
-    CONFIG(release, debug|release):MOC_DIR = $${OUT_PWD}/.moc/release-shared
+    CONFIG(debug, debug|release):MOC_DIR = $${QTPROJECT_OUT_PWD}/.moc/debug-shared
+    CONFIG(release, debug|release):MOC_DIR = $${QTPROJECT_OUT_PWD}/.moc/release-shared
 
-    RCC_DIR = $${OUT_PWD}/.rcc
-    UI_DIR = $${OUT_PWD}/.uic
+    RCC_DIR = $${QTPROJECT_OUT_PWD}/.rcc
+    UI_DIR = $${QTPROJECT_OUT_PWD}/.uic
 }
 
 msvc {
@@ -221,7 +274,7 @@ qt {
     contains(QT, gui): QT += widgets
 }
 
-QBSFILE = $$replace(_PRO_FILE_, \\.pro$, .qbs)
+QBSFILE = $$replace(QTPROJECT_PRO_FILE, \\.pro$, .qbs)
 exists($$QBSFILE):DISTFILES += $$QBSFILE
 
 !isEmpty(QTC_PLUGIN_DEPENDS) {
@@ -259,7 +312,16 @@ for(ever) {
         break()
     done_libs += $$QTC_LIB_DEPENDS
     for(dep, QTC_LIB_DEPENDS) {
-        include($$PWD/src/libs/$$dep/$${dep}_dependencies.pri)
+        dependencies_file =
+        for(dir, QTC_LIB_DIRS) {
+            exists($$dir/$$dep/$${dep}_dependencies.pri) {
+                dependencies_file = $$dir/$$dep/$${dep}_dependencies.pri
+                break()
+            }
+        }
+        isEmpty(dependencies_file): \
+            error("Library dependency $$dep not found")
+        include($$dependencies_file)
         LIBS += -l$$qtLibraryName($$QTC_LIB_NAME)
     }
     QTC_LIB_DEPENDS = $$unique(QTC_LIB_DEPENDS)
