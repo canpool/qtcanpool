@@ -1,0 +1,7 @@
+<defines>
+PBKDF2 -> 20180902
+</defines>
+
+<requires>
+hmac
+</requires>

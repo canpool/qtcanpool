@@ -1,0 +1,13 @@
+<defines>
+PBKDF -> 20180902
+</defines>
+
+<requires>
+mac
+hash
+</requires>
+
+<header:public>
+pwdhash.h
+pbkdf.h
+</header:public>
