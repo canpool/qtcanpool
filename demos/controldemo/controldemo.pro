@@ -30,12 +30,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     progressbarwidget.cpp \
-    gaugewidget.cpp
+    gaugewidget.cpp \
+    viewwidget.cpp
 
 HEADERS += \
     mainwindow.h \
     progressbarwidget.h \
-    gaugewidget.h
+    gaugewidget.h \
+    viewwidget.h
 
 include($$QTCANPOOL_ROOT/src/modules/modules.pri)
 
@@ -43,3 +45,6 @@ include($$QTCANPOOL_ROOT/src/modules/modules.pri)
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource.qrc

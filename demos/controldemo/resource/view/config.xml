@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <layout>
+        <Node label="qtcanpool" info="Qt"></Node>
+        <Node label="demos" collapse="0">
+            <Node label="controldemo" info="1024"></Node>
+            <Node label="fancydemo" info="test22"></Node>
+            <Node label="litedemo"></Node>
+            <Node label="qtitanribbon"></Node>
+            <Node label="qtoffice"></Node>
+            <Node label="qtqrcode"></Node>
+        </Node>
+        <Node label="doc" collapse="0">
+            <Node label="pics"></Node>
+            <Node label="help"></Node>
+        </Node>
+        <Node label="projects" collapse="0">
+            <Node label="template"></Node>
+            <Node label="qtcreator"></Node>
+        </Node>
+        <Node label="share">
+        </Node>
+        <Node label="src">
+            <Node label="libs"></Node>
+            <Node label="modules"></Node>
+            <Node label="plugins"></Node>
+            <Node label="shared"></Node>
+            <Node label="tools"></Node>
+        </Node>
+    </layout>
+</root>
