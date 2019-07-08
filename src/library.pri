@@ -1,9 +1,9 @@
-include(../qtproject.pri)
-
 isEmpty(QTLIBRARY_PRO_FILE_PWD):    QTLIBRARY_PRO_FILE_PWD = $$_PRO_FILE_PWD_
 
 include($$replace(QTLIBRARY_PRO_FILE_PWD, ([^/]+$), \\1/\\1_dependencies.pri))
 TARGET = $$QTC_LIB_NAME
+
+include(../qtproject.pri)
 
 # use precompiled header for libraries by default
 isEmpty(PRECOMPILED_HEADER):PRECOMPILED_HEADER = $$PWD/shared/qtproject_pch.h

@@ -250,8 +250,8 @@ static QFont qtn_LOGFONTtoQFont(LOGFONT& lf, bool dpiaware)
     int lfh = qAbs(lf.lfHeight);
 
     double factor = 64.0;
-    if (QSysInfo::windowsVersion() <= QSysInfo::WV_XP) 
-        factor = 72.0;
+//    if (QSysInfo::windowsVersion() <= QSysInfo::WV_XP)
+//        factor = 72.0;
 
     HDC displayDC = GetDC(0);
     double currentlogPixel = (double)GetDeviceCaps(displayDC, LOGPIXELSY);
@@ -687,7 +687,7 @@ void RibbonStyle::unpolish(QWidget* widget)
 /*! \reimp */
 void RibbonStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
 {
-    int qtnElement = element;
+    unsigned int qtnElement = element;
 
     switch (qtnElement)
     {
@@ -745,7 +745,7 @@ void RibbonStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* op
 /*! \reimp */
 void RibbonStyle::drawControl(ControlElement element, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
 {
-    switch (element)
+    switch (uint(element))
     {
         case CE_RibbonTabShapeLabel:
                 drawTabShapeLabel(opt, p, widget);
@@ -810,7 +810,7 @@ int RibbonStyle::pixelMetric(PixelMetric pm, const QStyleOption* option, const Q
 {
     int ret = 0;
     QTN_D(const RibbonStyle);
-    switch(pm) 
+    switch(uint(pm))
     {
         case PM_ButtonIconSize:
         case PM_SmallIconSize:
@@ -874,6 +874,7 @@ int RibbonStyle::pixelMetric(PixelMetric pm, const QStyleOption* option, const Q
                 ret = qMax(ret, qMax(wid, rcSrc.width()));
                 break;
             }
+            break;
         case PM_RibbonHeightGroup :
             {
                 ret = d.m_rowHeight*3;
