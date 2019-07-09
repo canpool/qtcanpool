@@ -1,9 +1,4 @@
-include($$PWD/../../library.pri)
+include(../../library.pri)
+include(aggregation-lib.pri)
 
-DEFINES += AGGREGATION_LIBRARY
-
-HEADERS = aggregate.h \
-    aggregation_global.h
-
-SOURCES = aggregate.cpp
 
