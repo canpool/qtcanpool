@@ -6,7 +6,7 @@ SOURCES		+= $$PWD/qtsingleapplication.cpp $$PWD/qtlocalpeer.cpp
 QT *= network widgets
 
 gotqtlockedfile = $$find(HEADERS, .*qtlockedfile.h)
-isEmpty(gotqtlockedfile):include(../qtlockedfile/qtlockedfile.pri)
+isEmpty(gotqtlockedfile):include($$PWD/../qtlockedfile/qtlockedfile.pri)
 
 
 win32:contains(TEMPLATE, lib):contains(CONFIG, shared) {
