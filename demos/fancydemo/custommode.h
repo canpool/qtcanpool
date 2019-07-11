@@ -16,15 +16,9 @@ private:
     void createWindow();
     void createCards();
 
-signals:
-
-public slots:
-
-
 private:
     TinyTabWidget *m_pTabWidget;
     QList<MiniCard *> m_infoCards;
-
 };
 
 #endif // CUSTOMMODE_H

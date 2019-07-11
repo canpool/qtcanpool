@@ -29,7 +29,7 @@ include($$QTCANPOOL_ROOT/src/rpath.pri)
 # lib
 LIBS *= -l$$qtLibraryName(qcanpool)
 
-INCLUDEPATH += .. $$TOPDIR/src/libs
+INCLUDEPATH += ..
 
 include(fancydemo-src.pri)
 include($$QTCANPOOL_ROOT/src/modules/modules.pri)

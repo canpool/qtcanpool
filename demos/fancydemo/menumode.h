@@ -7,11 +7,7 @@ class MenuMode : public IMode
 {
     Q_OBJECT
 public:
-    explicit MenuMode(QWidget *parent = 0);
-
-signals:
-
-public slots:
+    explicit MenuMode(QWidget *parent = nullptr);
 };
 
 #endif // MENUMODE_H

@@ -7,11 +7,7 @@ class ChartsMode : public IMode
 {
     Q_OBJECT
 public:
-    explicit ChartsMode(QWidget *parent = 0);
-
-signals:
-
-public slots:
+    explicit ChartsMode(QWidget *parent = nullptr);
 };
 
 #endif // CHARTSMODE_H
