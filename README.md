@@ -1,3 +1,5 @@
+[![Build Status](https://www.travis-ci.org/canpool/qtcanpool.svg?branch=develop)](https://www.travis-ci.org/canpool/qtcanpool)
+
 ### 简介
 本项目是根据QtCreator源码结构总结出的一套通用的项目管理模板。核心库为基于QtWidgets的qcanpool，同时，集成常用组件和第三方类库。
 
