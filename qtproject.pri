@@ -21,6 +21,8 @@ isEmpty(IDE_CASED_ID):              IDE_CASED_ID = QtCanpool
 
 isEmpty(PRODUCT_BUNDLE_IDENTIFIER): PRODUCT_BUNDLE_IDENTIFIER = org.qt-project.$$IDE_ID
 
+CONFIG += c++14
+
 defineReplace(qtLibraryTargetName) {
    unset(LIBRARY_NAME)
    LIBRARY_NAME = $$1
@@ -331,3 +333,5 @@ for(ever) {
 CONFIG(release, debug|release){
     DEFINES     += QT_MESSAGELOGCONTEXT
 }
+
+INCLUDEPATH += $$PWD/include

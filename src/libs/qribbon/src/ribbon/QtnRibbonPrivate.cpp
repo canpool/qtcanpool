@@ -702,7 +702,7 @@ RibbonGroupOption::~RibbonGroupOption()
 
 QString RibbonGroupOption::text() const
 {
-    return "";
+    return QString("");
 }
 
 QSize RibbonGroupOption::sizeHint() const

@@ -3,8 +3,11 @@ CONFIG += ordered
 
 SUBDIRS +=  \
     fancydemo \
-    qtoffice \
     qtqrcode \
     qtitanribbon \
     litedemo \
     controldemo
+
+win32 {
+SUBDIRS += qtoffice
+}
