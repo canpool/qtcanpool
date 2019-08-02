@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -40,7 +41,7 @@
 #include "QtnRibbonStyle.h"
 #include "QtnRibbonPage.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 static const int hMargin = 4;
 
@@ -49,27 +50,26 @@ static int showKeyTipEventNumber = -1;
 static int hideKeyTipEventNumber = -1;
 static int minimizedEventNumber = -1;
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* ExWidgetWrapperPrivate */
+class ExWidgetWrapperPrivate : public QObject
 {
-    /* ExWidgetWrapperPrivate */
-    class ExWidgetWrapperPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(ExWidgetWrapper)
-    public:
-        explicit ExWidgetWrapperPrivate();
+public:
+    QTN_DECLARE_PUBLIC(ExWidgetWrapper)
+public:
+    explicit ExWidgetWrapperPrivate();
 
-    public:
-        void init(QWidget* widget);
+public:
+    void init(QWidget* widget);
 
-    public:
-        QIcon m_icon;
-        QWidget* m_widget;
-        QString m_labelText;
-        int m_length;
-        bool m_align;
-    };
-}; //namespace Qtitan
+public:
+    QIcon m_icon;
+    QWidget* m_widget;
+    QString m_labelText;
+    int m_length;
+    bool m_align;
+};
+QTITAN_END_NAMESPACE
 
 /* ExWidgetWrapperPrivate */
 ExWidgetWrapperPrivate::ExWidgetWrapperPrivate()

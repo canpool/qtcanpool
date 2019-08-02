@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -41,7 +42,7 @@
 #include "QtnOfficeDefines.h"
 #include "QtnRibbonButton.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 static QToolButton* findButtonByAction(const QWidget* parent, const QAction* action)
 {
@@ -91,22 +92,21 @@ static QLayout* qtnfindLayout(QLayout* lay, QWidget* wd)
     return Q_NULL;
 }
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+class StatusButton : public QToolButton
 {
-    class StatusButton : public QToolButton
-    {
-    public:
-        StatusButton(QWidget* parent = Q_NULL);
-    public:
-        virtual QSize sizeHint() const;
-    public:
-        void initStyleOptionButton(QStyleOptionToolButton& option) const;
+public:
+    StatusButton(QWidget* parent = Q_NULL);
+public:
+    virtual QSize sizeHint() const;
+public:
+    void initStyleOptionButton(QStyleOptionToolButton& option) const;
 
-    protected:
-        virtual bool event(QEvent* event);
-        virtual void paintEvent(QPaintEvent*);
-    };
+protected:
+    virtual bool event(QEvent* event);
+    virtual void paintEvent(QPaintEvent*);
 };
+QTITAN_END_NAMESPACE
 
 StatusButton::StatusButton(QWidget* parent)
     : QToolButton(parent)
@@ -161,22 +161,21 @@ void StatusButton::paintEvent(QPaintEvent* event)
     style()->drawComplexControl(QStyle::CC_ToolButton, &opt, &p, this);
 }
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+class StatusSeparator : public QToolButton
 {
-    class StatusSeparator : public QToolButton
-    {
-    public:
-        StatusSeparator(QWidget* parent = Q_NULL);
-    public:
-        virtual QSize sizeHint() const;
+public:
+    StatusSeparator(QWidget* parent = Q_NULL);
+public:
+    virtual QSize sizeHint() const;
 
-    protected:
-        void initStyleOption(QStyleOption* option) const;
+protected:
+    void initStyleOption(QStyleOption* option) const;
 
-    protected:
-        virtual void paintEvent(QPaintEvent*);
-    };
+protected:
+    virtual void paintEvent(QPaintEvent*);
 };
+QTITAN_END_NAMESPACE
 
 StatusSeparator::StatusSeparator(QWidget* parent)
     : QToolButton(parent)
@@ -208,23 +207,22 @@ void StatusSeparator::paintEvent(QPaintEvent* event)
     style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, &p, parentWidget());
 }
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonStatusBarSwitchGroupPrivate */
+class RibbonStatusBarSwitchGroupPrivate : public QObject
 {
-    /* RibbonStatusBarSwitchGroupPrivate */
-    class RibbonStatusBarSwitchGroupPrivate : public QObject
-    {
-        QTN_DECLARE_PUBLIC(RibbonStatusBarSwitchGroup)
-    public:
-        explicit RibbonStatusBarSwitchGroupPrivate();
-    public:
-        void init();
-        StatusButton* createButton(QAction* action) const;
-        void updateIndexesButtons();
+    QTN_DECLARE_PUBLIC(RibbonStatusBarSwitchGroup)
+public:
+    explicit RibbonStatusBarSwitchGroupPrivate();
+public:
+    void init();
+    StatusButton* createButton(QAction* action) const;
+    void updateIndexesButtons();
 
-    public:
-        QHBoxLayout* m_layout;
-    };
-}
+public:
+    QHBoxLayout* m_layout;
+};
+QTITAN_END_NAMESPACE
 
 RibbonStatusBarSwitchGroupPrivate::RibbonStatusBarSwitchGroupPrivate()
 {
@@ -325,33 +323,31 @@ void RibbonStatusBarSwitchGroup::clear()
 }
 
 
-
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonStatusBarPrivate */
+class RibbonStatusBarPrivate : public QObject
 {
-    /* RibbonStatusBarPrivate */
-    class RibbonStatusBarPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonStatusBar)
+public:
+    QTN_DECLARE_PUBLIC(RibbonStatusBar)
 
-    public:
-        explicit RibbonStatusBarPrivate();
+public:
+    explicit RibbonStatusBarPrivate();
 
-    public:
-        QLayout* findLayout();
-        QRect childrenPermanentRect() const;
-        StatusButton* createButton(QAction* action) const;
-        StatusSeparator* createSeparator(QAction* action) const;
+public:
+    QLayout* findLayout();
+    QRect childrenPermanentRect() const;
+    StatusButton* createButton(QAction* action) const;
+    StatusSeparator* createSeparator(QAction* action) const;
 
-    public:
-        bool m_dirty;
-        bool m_addPermanentAction;
-        int  m_indexGroupAction;
-        QSizeGrip* m_sizeGripWidget;
-        QList<QWidget*> m_widgets;
-        QList<QWidget*> m_permanentWidgets;
-    };
-}
+public:
+    bool m_dirty;
+    bool m_addPermanentAction;
+    int  m_indexGroupAction;
+    QSizeGrip* m_sizeGripWidget;
+    QList<QWidget*> m_widgets;
+    QList<QWidget*> m_permanentWidgets;
+};
+QTITAN_END_NAMESPACE
 
 RibbonStatusBarPrivate::RibbonStatusBarPrivate()
 {

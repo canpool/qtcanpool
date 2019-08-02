@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -43,8 +44,7 @@
 #include "QtnRibbonGallery.h"
 #include "QtnRibbonGalleryPrivate.h"
 
-using namespace Qtitan;
-
+QTITAN_USE_NAMESPACE
 
 /*!
 \class Qtitan::qtn_galleryitem_rect

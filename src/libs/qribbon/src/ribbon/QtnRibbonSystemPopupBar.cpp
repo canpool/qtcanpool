@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -40,51 +41,51 @@
 #include "QtnStyleHelpers.h"
 #include "QtnRibbonStyle.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 static const int splitActionPopupWidth  = 20; // Split button drop down width in popups
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+
+/* QtnEventParent */
+class QtnEventParent : public QEvent
 {
-    /* QtnEventParent */
-    class QtnEventParent : public QEvent
-    {
-    public:
-        QtnEventParent(QWidget* parent) : QEvent(QEvent::ParentChange) { m_parent = parent; }
-        QWidget* m_parent;
-    };
-
-
-    /* RibbonSystemButtonPrivate */
-    class RibbonSystemButtonPrivate: public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonSystemButton)
-
-    public:
-        explicit RibbonSystemButtonPrivate() { m_widget = Q_NULL; m_colorBackground = QColor(QColor::Invalid); }
-
-    public:
-        QWidget* m_widget;
-        QColor m_colorBackground;
-    };
-
-    /* SysPopupRibbonButton */
-    class SysPopupRibbonButton : public QToolButton
-    {
-    public:
-        SysPopupRibbonButton(QWidget* parent);
-        virtual ~SysPopupRibbonButton();
-
-    protected:
-        virtual bool event(QEvent* event);
-        virtual void paintEvent(QPaintEvent* event);
-
-    private:
-        Q_DISABLE_COPY(SysPopupRibbonButton);
-    };
-
+public:
+    QtnEventParent(QWidget* parent) : QEvent(QEvent::ParentChange) { m_parent = parent; }
+    QWidget* m_parent;
 };
+
+
+/* RibbonSystemButtonPrivate */
+class RibbonSystemButtonPrivate: public QObject
+{
+public:
+    QTN_DECLARE_PUBLIC(RibbonSystemButton)
+
+public:
+    explicit RibbonSystemButtonPrivate() { m_widget = Q_NULL; m_colorBackground = QColor(QColor::Invalid); }
+
+public:
+    QWidget* m_widget;
+    QColor m_colorBackground;
+};
+
+/* SysPopupRibbonButton */
+class SysPopupRibbonButton : public QToolButton
+{
+public:
+    SysPopupRibbonButton(QWidget* parent);
+    virtual ~SysPopupRibbonButton();
+
+protected:
+    virtual bool event(QEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
+
+private:
+    Q_DISABLE_COPY(SysPopupRibbonButton);
+};
+
+QTITAN_END_NAMESPACE
 
 
 /* RibbonSystemButton */
@@ -245,22 +246,21 @@ void SysPopupRibbonButton::paintEvent(QPaintEvent* event)
     QToolButton::paintEvent(event);
 }
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonSystemPopupBarPrivate */
+class RibbonSystemPopupBarPrivate : public QObject
 {
-    /* RibbonSystemPopupBarPrivate */
-    class RibbonSystemPopupBarPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonSystemPopupBar)
+public:
+    QTN_DECLARE_PUBLIC(RibbonSystemPopupBar)
 
-    public:
-        explicit RibbonSystemPopupBarPrivate();
-    public:
-        QRect m_rcBorders;
-        QList<SysPopupRibbonButton*>  m_systemButtonList;
-        QList<QWidget*>  m_pageList;
-    };
+public:
+    explicit RibbonSystemPopupBarPrivate();
+public:
+    QRect m_rcBorders;
+    QList<SysPopupRibbonButton*>  m_systemButtonList;
+    QList<QWidget*>  m_pageList;
 };
+QTITAN_END_NAMESPACE
 
 RibbonSystemPopupBarPrivate::RibbonSystemPopupBarPrivate()
 {
@@ -659,34 +659,33 @@ void RibbonPageSystemPopupListCaption::paintEvent(QPaintEvent* event)
 }
 
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonPageSystemRecentFileListPrivate */
+class RibbonPageSystemRecentFileListPrivate : public QObject
 {
-    /* RibbonPageSystemRecentFileListPrivate */
-    class RibbonPageSystemRecentFileListPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonPageSystemRecentFileList)
-    public:
-        explicit RibbonPageSystemRecentFileListPrivate();
+public:
+    QTN_DECLARE_PUBLIC(RibbonPageSystemRecentFileList)
+public:
+    explicit RibbonPageSystemRecentFileListPrivate();
 
-    public:
-        void updateActionRects() const;
-        void initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const;
-        QAction* actionAt(const QPoint& p) const;
-        QRect actionRect(QAction* act) const;
-        void setCurrentAction(QAction* currentAction);
-        void activateAction(QAction* action, QAction::ActionEvent action_e, bool self = true);
+public:
+    void updateActionRects() const;
+    void initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const;
+    QAction* actionAt(const QPoint& p) const;
+    QRect actionRect(QAction* act) const;
+    void setCurrentAction(QAction* currentAction);
+    void activateAction(QAction* action, QAction::ActionEvent action_e, bool self = true);
 
-    public:
-        bool m_itemsDirty;
-        bool m_mouseDown;
-        QAction* m_currentAction;
-        QList<QAction*> m_recentFileActs; // contents of the MRU list 
+public:
+    bool m_itemsDirty;
+    bool m_mouseDown;
+    QAction* m_currentAction;
+    QList<QAction*> m_recentFileActs; // contents of the MRU list
 
-        mutable bool m_hasCheckableItems;
-        mutable QVector<QRect> m_actionRects;
-    };
+    mutable bool m_hasCheckableItems;
+    mutable QVector<QRect> m_actionRects;
 };
+QTITAN_END_NAMESPACE
 
 RibbonPageSystemRecentFileListPrivate::RibbonPageSystemRecentFileListPrivate()
 {

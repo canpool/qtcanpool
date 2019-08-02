@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2011 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -39,7 +40,7 @@
 #include "QtnRibbonStyle.h"
 #include "QtnRibbonBar.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 const int commandGap = 6;
 const int textGap = 15;
@@ -69,22 +70,20 @@ Qt::Orientation RibbonBackstageSeparator::orientation() const
 }
 
 
-
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonBackstageViewPrivate */
+class RibbonBackstageButtonPrivate : public QObject
 {
-    /* RibbonBackstageViewPrivate */
-    class RibbonBackstageButtonPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonBackstageButton)
-    public:
-        explicit RibbonBackstageButtonPrivate();
-        virtual ~RibbonBackstageButtonPrivate();
-    public:
-        bool m_tabStyle;
-        bool m_flatStyle;
-    };
+public:
+    QTN_DECLARE_PUBLIC(RibbonBackstageButton)
+public:
+    explicit RibbonBackstageButtonPrivate();
+    virtual ~RibbonBackstageButtonPrivate();
+public:
+    bool m_tabStyle;
+    bool m_flatStyle;
 };
+QTITAN_END_NAMESPACE
 
 RibbonBackstageButtonPrivate::RibbonBackstageButtonPrivate()
 {
@@ -710,8 +709,9 @@ void RibbonBackstageView::actionEvent(QActionEvent* event)
     else if (event->type() == QEvent::ActionChanged)
     {
     }
-    // duanb 从计价增加过来
-    // 解决action增删改之后actionRects_不刷新引起的报错问题
+	
+    // Solve error reporting problem caused by actionRects_ not refreshing
+    // after action addition, deletion and modification
     d.itemsDirty_ = true;
 }
 

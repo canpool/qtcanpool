@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2011 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -42,24 +43,23 @@
 #include "QtnOfficePopupWindow.h"
 #include "../styles/QtnPopupHelpers.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* TitleBar */
+class TitleBar : public QWidget
 {
-    /* TitleBar */ 
-    class TitleBar : public QWidget
-    {
-    public:
-        TitleBar(QWidget* parent = Q_NULL);
-        virtual ~TitleBar();
+public:
+    TitleBar(QWidget* parent = Q_NULL);
+    virtual ~TitleBar();
 
-    public:
-        QHBoxLayout* horizontalMainLayout;
-        QHBoxLayout* horizontalLayout;
-        QLabel* labelIcon;
-        QLabel* labelTitle;
-    };
-}
+public:
+    QHBoxLayout* horizontalMainLayout;
+    QHBoxLayout* horizontalLayout;
+    QLabel* labelIcon;
+    QLabel* labelTitle;
+};
+QTITAN_END_NAMESPACE
 
 TitleBar::TitleBar(QWidget* parent)
     : QWidget(parent)
@@ -88,33 +88,33 @@ TitleBar::~TitleBar()
 }
 
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* ManagerPopup */
+class ManagerPopup
 {
-    /* ManagerPopup */
-    class ManagerPopup
+public:
+    static ManagerPopup& getMngPopup()
     {
-    public:
-        static ManagerPopup& getMngPopup()
-        {
-            static ManagerPopup mngPopup;
-            return mngPopup;
-        }
+        static ManagerPopup mngPopup;
+        return mngPopup;
+    }
 
-    protected:
-        ManagerPopup() { m_ptPopup = QPoint(-1, -1); }
-        virtual ~ManagerPopup() {}
+protected:
+    ManagerPopup() { m_ptPopup = QPoint(-1, -1); }
+    virtual ~ManagerPopup() {}
 
-    public:
-        void appendPopup(OfficePopupWindow* popup);
-        void removePopup(OfficePopupWindow* popup);
-        QPoint findBestPosition(OfficePopupWindow* popup);
+public:
+    void appendPopup(OfficePopupWindow* popup);
+    void removePopup(OfficePopupWindow* popup);
+    QPoint findBestPosition(OfficePopupWindow* popup);
 
-    protected:
-        QList<QPointer<OfficePopupWindow> > m_listPopup;
-    public:
-        QPoint m_ptPopup;
-    };
-}
+protected:
+    QList<QPointer<OfficePopupWindow> > m_listPopup;
+public:
+    QPoint m_ptPopup;
+};
+QTITAN_END_NAMESPACE
+
 
 void ManagerPopup::appendPopup(OfficePopupWindow* popup)
 {
@@ -163,93 +163,92 @@ QPoint ManagerPopup::findBestPosition(OfficePopupWindow* popup)
 }
 
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+enum PopupState
 {
-    enum PopupState
+    PopupStateClosed,
+    PopupStateExpanding,
+    PopupStateShow,
+    PopupStateCollapsing
+};
+
+/* OfficePopupWindowPrivate */
+class OfficePopupWindowPrivate : public QObject
+{
+public:
+    struct InfoState
     {
-        PopupStateClosed,
-        PopupStateExpanding,
-        PopupStateShow,
-        PopupStateCollapsing
+        QRect rcPopup;
+        int transparency;
     };
+public:
+    QTN_DECLARE_PUBLIC(OfficePopupWindow)
+public:
+    explicit OfficePopupWindowPrivate();
+    virtual ~OfficePopupWindowPrivate();
+    void init();
 
-    /* OfficePopupWindowPrivate */
-    class OfficePopupWindowPrivate : public QObject
-    {
-    public:
-        struct InfoState
-        {
-            QRect rcPopup;
-            int transparency;
-        };
-    public:
-        QTN_DECLARE_PUBLIC(OfficePopupWindow)
-    public:
-        explicit OfficePopupWindowPrivate();
-        virtual ~OfficePopupWindowPrivate();
-        void init();
+public:
+    void onCollapsing();
+    void onExpanding(bool updateCurrent);
 
-    public:
-        void onCollapsing();
-        void onExpanding(bool updateCurrent);
+    void updateState(bool repaint);
+    bool closePopup();
+    void showPopup();
+    void animate(int step);
 
-        void updateState(bool repaint);
-        bool closePopup();
-        void showPopup();
-        void animate(int step);
+    void handleMousePressEvent(QMouseEvent* event);
+    void handleMouseReleaseEvent(QMouseEvent* event);
+    void handleMouseMoveEvent(QMouseEvent* event);
 
-        void handleMousePressEvent(QMouseEvent* event);
-        void handleMouseReleaseEvent(QMouseEvent* event);
-        void handleMouseMoveEvent(QMouseEvent* event);
+    void initTitleBarStyleOption(StyleOptionPopupTitleBar* option) const;
+    void initFormStyleOption(QStyleOptionFrame* option) const;
 
-        void initTitleBarStyleOption(StyleOptionPopupTitleBar* option) const;
-        void initFormStyleOption(QStyleOptionFrame* option) const;
+    void setPopupState(PopupState popupState);
+    PopupState getPopupState() const;
+    void createStyle();
+    void calclayout();
 
-        void setPopupState(PopupState popupState);
-        PopupState getPopupState() const;
-        void createStyle();
-        void calclayout();
+public:
+    int m_transparency;
+    uint m_showDelay;
+    uint m_animationSpeed;
+    uint m_animationInterval;
+    int m_step;
 
-    public:
-        int m_transparency;
-        uint m_showDelay;
-        uint m_animationSpeed;
-        uint m_animationInterval;
-        int m_step;
+    bool m_capture;
+    bool m_allowMove;
+    bool m_dragging;
 
-        bool m_capture;
-        bool m_allowMove;
-        bool m_dragging;
+    QPoint m_positionPopup;
+    QPoint m_dragPressPosition;
 
-        QPoint m_positionPopup;
-        QPoint m_dragPressPosition;
+    PopupLocation m_popupLocation;
+    PopupAnimation m_popupAnimation;
+    PopupState m_popupState;
 
-        PopupLocation m_popupLocation;
-        PopupAnimation m_popupAnimation;
-        PopupState m_popupState;
+    InfoState m_stateTarget;
+    InfoState m_stateCurrent;
 
-        InfoState m_stateTarget;
-        InfoState m_stateCurrent;
+    QTimer m_showDelayTimer;
+    QTimer m_collapsingTimer;
+    QTimer m_expandingTimer;
 
-        QTimer m_showDelayTimer;
-        QTimer m_collapsingTimer;
-        QTimer m_expandingTimer;
-
-        QWidget* m_form;
-        TitleBar* m_title;
-        QFont m_titleFont;
-        QIcon m_titleIcon;
-        QString m_titleTxt;
-        QString m_titleTxtRef;
-        QString m_bodyTxtRef;
-        QPixmap m_closePixmap;
-        QPalette m_titlePalette;
-        QStyle::SubControl m_buttonDown;
-        bool m_pressed;
-        bool m_closeButton;
-        bool m_notCloseTimer;
-    };
-}
+    QWidget* m_form;
+    TitleBar* m_title;
+    QFont m_titleFont;
+    QIcon m_titleIcon;
+    QString m_titleTxt;
+    QString m_titleTxtRef;
+    QString m_bodyTxtRef;
+    QPixmap m_closePixmap;
+    QPalette m_titlePalette;
+    QStyle::SubControl m_buttonDown;
+    bool m_pressed;
+    bool m_closeButton;
+    bool m_notCloseTimer;
+};
+QTITAN_END_NAMESPACE
 
 OfficePopupWindowPrivate::OfficePopupWindowPrivate()
 {

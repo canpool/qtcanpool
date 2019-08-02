@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -31,41 +32,39 @@
 
 #include "QtitanDef.h"
 
+QTITAN_BEGIN_NAMESPACE
 
-namespace Qtitan
+class RibbonQuickAccessBarPrivate;
+/* RibbonQuickAccessBar */
+class QTITAN_EXPORT RibbonQuickAccessBar : public QToolBar
 {
-    class RibbonQuickAccessBarPrivate;
-    /* RibbonQuickAccessBar */
-    class QTITAN_EXPORT RibbonQuickAccessBar : public QToolBar
-    {
-        Q_OBJECT
-    public:
-        RibbonQuickAccessBar(QWidget* parent = Q_NULL);
-        virtual ~RibbonQuickAccessBar();
+    Q_OBJECT
+public:
+    RibbonQuickAccessBar(QWidget* parent = Q_NULL);
+    virtual ~RibbonQuickAccessBar();
 
-    public:
-        QAction* actionCustomizeButton() const;
-        void setActionVisible(QAction* action, bool visible);
-        bool isActionVisible(QAction* action) const;
-        int getVisibleCount() const; 
-        void deleteAction(QAction *action);
-    public:
-        virtual QSize sizeHint() const;
+public:
+    QAction* actionCustomizeButton() const;
+    void setActionVisible(QAction* action, bool visible);
+    bool isActionVisible(QAction* action) const;
+    int getVisibleCount() const;
+    void deleteAction(QAction *action);
+public:
+    virtual QSize sizeHint() const;
 
-    protected slots:
-        void customizeAction(QAction*);
+protected slots:
+    void customizeAction(QAction*);
 
-    protected:
-        virtual bool event(QEvent* event);
-        virtual void actionEvent(QActionEvent*);
-        virtual void paintEvent(QPaintEvent*);
+protected:
+    virtual bool event(QEvent* event);
+    virtual void actionEvent(QActionEvent*);
+    virtual void paintEvent(QPaintEvent*);
 
-    private:
-        QTN_DECLARE_PRIVATE(RibbonQuickAccessBar)
-        Q_DISABLE_COPY(RibbonQuickAccessBar)
-    };
+private:
+    QTN_DECLARE_PRIVATE(RibbonQuickAccessBar)
+    Q_DISABLE_COPY(RibbonQuickAccessBar)
+};
 
-}; //namespace Qtitan
-
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONQUICKACCESSBAR_H

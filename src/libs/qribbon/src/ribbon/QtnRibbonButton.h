@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -33,60 +34,62 @@
 #include "QtitanDef.h"
 
 class QStyleOption;
-namespace Qtitan
+
+QTITAN_BEGIN_NAMESPACE
+
+/* RibbonButton */
+class RibbonButton : public QToolButton
 {
-    /* RibbonButton */
-    class RibbonButton : public QToolButton
-    {
-        Q_OBJECT
-    public:
-        RibbonButton(QWidget* parent = Q_NULL);
-        virtual ~RibbonButton();
+    Q_OBJECT
+public:
+    RibbonButton(QWidget* parent = Q_NULL);
+    virtual ~RibbonButton();
 
-    public:
-        virtual QSize sizeHint() const;
-    private:
-        Q_DISABLE_COPY(RibbonButton)
-    };
+public:
+    virtual QSize sizeHint() const;
+private:
+    Q_DISABLE_COPY(RibbonButton)
+};
 
-    /* RibbonSeparator */
-    class RibbonSeparator : public QWidget
-    {
-        Q_OBJECT
-    public:
-        explicit RibbonSeparator(QWidget* parent = Q_NULL);
+/* RibbonSeparator */
+class RibbonSeparator : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit RibbonSeparator(QWidget* parent = Q_NULL);
 
-    public:
-        virtual QSize sizeHint() const;
+public:
+    virtual QSize sizeHint() const;
 
-    protected:
-        virtual void paintEvent(QPaintEvent*);
+protected:
+    virtual void paintEvent(QPaintEvent*);
 
-    protected:
-        void initStyleOption(QStyleOption* option) const;
+protected:
+    void initStyleOption(QStyleOption* option) const;
 
-    private:
-        Q_DISABLE_COPY(RibbonSeparator)
-    };
+private:
+    Q_DISABLE_COPY(RibbonSeparator)
+};
 
 
-    /* RibbonTitleButton */
-    class RibbonTitleButton : public QToolButton
-    {
-        Q_OBJECT
-    public:
-        RibbonTitleButton(QWidget* parent, QStyle::SubControl subControl);
-        virtual ~RibbonTitleButton();
+/* RibbonTitleButton */
+class RibbonTitleButton : public QToolButton
+{
+    Q_OBJECT
+public:
+    RibbonTitleButton(QWidget* parent, QStyle::SubControl subControl);
+    virtual ~RibbonTitleButton();
 
-    public:
-        QStyle::SubControl getSubControl() const;
+public:
+    QStyle::SubControl getSubControl() const;
 
-    protected:
-        virtual void paintEvent(QPaintEvent*);
+protected:
+    virtual void paintEvent(QPaintEvent*);
 
-    private:
-        QStyle::SubControl m_subControl;
-    };
-}; //namespace Qtitan
+private:
+    QStyle::SubControl m_subControl;
+};
+
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONBUTTON_H

@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -31,58 +32,56 @@
 
 #include "QtitanDef.h"
 
+QTITAN_BEGIN_NAMESPACE
 
-namespace Qtitan
+class RibbonStatusBarSwitchGroupPrivate;
+/* RibbonStatusBarSwitchGroup */
+class QTITAN_EXPORT RibbonStatusBarSwitchGroup : public QWidget
 {
-    class RibbonStatusBarSwitchGroupPrivate;
-    /* RibbonStatusBarSwitchGroup */
-    class QTITAN_EXPORT RibbonStatusBarSwitchGroup : public QWidget
-    {
-        Q_OBJECT
-    public:
-        explicit RibbonStatusBarSwitchGroup();
-        virtual ~RibbonStatusBarSwitchGroup();
+    Q_OBJECT
+public:
+    explicit RibbonStatusBarSwitchGroup();
+    virtual ~RibbonStatusBarSwitchGroup();
 
-    public:
-        void clear();
+public:
+    void clear();
 
-    protected:
-        virtual void actionEvent(QActionEvent* event);
-    private:
-        QTN_DECLARE_PRIVATE(RibbonStatusBarSwitchGroup)
-        Q_DISABLE_COPY(RibbonStatusBarSwitchGroup)
-    };
+protected:
+    virtual void actionEvent(QActionEvent* event);
+private:
+    QTN_DECLARE_PRIVATE(RibbonStatusBarSwitchGroup)
+    Q_DISABLE_COPY(RibbonStatusBarSwitchGroup)
+};
 
-    class RibbonStatusBarPrivate;
-    /* RibbonStatusBar */
-    class QTITAN_EXPORT RibbonStatusBar : public QStatusBar
-    {
-        Q_OBJECT
-    public:
-        explicit RibbonStatusBar(QWidget* parent = Q_NULL);
-        virtual ~RibbonStatusBar();
+class RibbonStatusBarPrivate;
+/* RibbonStatusBar */
+class QTITAN_EXPORT RibbonStatusBar : public QStatusBar
+{
+    Q_OBJECT
+public:
+    explicit RibbonStatusBar(QWidget* parent = Q_NULL);
+    virtual ~RibbonStatusBar();
 
-    public:
-        QAction* addAction(const QString& text);
-        QAction* addSeparator();
+public:
+    QAction* addAction(const QString& text);
+    QAction* addSeparator();
 
-        void addPermanentAction(QAction* action);
+    void addPermanentAction(QAction* action);
 
-        QRect childrenPermanentRect() const;
+    QRect childrenPermanentRect() const;
 
-    public:
-        using QWidget::addAction;
+public:
+    using QWidget::addAction;
 
-    protected:
-        virtual bool event(QEvent* event);
-        virtual void actionEvent(QActionEvent* event);
+protected:
+    virtual bool event(QEvent* event);
+    virtual void actionEvent(QActionEvent* event);
 
-    private:
-        QTN_DECLARE_PRIVATE(RibbonStatusBar)
-        Q_DISABLE_COPY(RibbonStatusBar)
-    };
+private:
+    QTN_DECLARE_PRIVATE(RibbonStatusBar)
+    Q_DISABLE_COPY(RibbonStatusBar)
+};
 
-}; //namespace Qtitan
-
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONSTATUSBAR_H

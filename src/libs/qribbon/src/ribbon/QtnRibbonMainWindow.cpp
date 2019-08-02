@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -36,23 +37,22 @@
 
 #include "QtnOfficeFrameHelper.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonMainWindowPrivate */
+class RibbonMainWindowPrivate : public QObject
 {
-    /* RibbonMainWindowPrivate */
-    class RibbonMainWindowPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonMainWindow)
-    public:
-        explicit RibbonMainWindowPrivate();
-    public:
-        OfficeFrameHelper* m_frameHelper;
-        bool m_attrOpaquePaintEvent;
-        bool m_attrNoSystemBackground;
-    };
+public:
+    QTN_DECLARE_PUBLIC(RibbonMainWindow)
+public:
+    explicit RibbonMainWindowPrivate();
+public:
+    OfficeFrameHelper* m_frameHelper;
+    bool m_attrOpaquePaintEvent;
+    bool m_attrNoSystemBackground;
 };
+QTITAN_END_NAMESPACE
 
 RibbonMainWindowPrivate::RibbonMainWindowPrivate()
 {

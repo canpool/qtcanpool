@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -53,7 +54,7 @@
 #include "QtnRibbonStyle.h"
 #include "QtnOfficeFrameHelper_win.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -801,7 +802,7 @@ void OfficeFrameHelperWin::drawTitleBar(QPainter* painter, const StyleOptionTitl
     int len = ::GetWindowTextLengthW(m_hwndFrame);
     wchar_t* text = new wchar_t[++len];
     ::GetWindowTextW(m_hwndFrame, text, len + 1);
-    drawDwmCaptionText(painter, opt.rcTitleText, text[0] != Q_NULL ? QString::fromWCharArray(text) : opt.text, opt.state & QStyle::State_Active);
+    drawDwmCaptionText(painter, opt.rcTitleText, text[0] != NULL ? QString::fromWCharArray(text) : opt.text, opt.state & QStyle::State_Active);
     delete[] text;
 
     if (opt.drawIcon && !opt.icon.isNull()) 

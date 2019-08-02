@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -31,50 +32,50 @@
 
 #include "QtitanDef.h"
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+
+class RibbonSliderPanePrivate;
+
+/* RibbonSliderPane */
+class QTITAN_EXPORT RibbonSliderPane : public QWidget
 {
-    class RibbonSliderPanePrivate;
+    Q_OBJECT
+    Q_PROPERTY(int singleStep READ singleStep WRITE setSingleStep)
+    Q_PROPERTY(int value READ value WRITE setValue NOTIFY valueChanged USER true)
+    Q_PROPERTY(int sliderPosition READ sliderPosition WRITE setSliderPosition NOTIFY sliderMoved)
 
-    /* RibbonSliderPane */
-    class QTITAN_EXPORT RibbonSliderPane : public QWidget
-    {
-        Q_OBJECT
-        Q_PROPERTY(int singleStep READ singleStep WRITE setSingleStep)
-        Q_PROPERTY(int value READ value WRITE setValue NOTIFY valueChanged USER true)
-        Q_PROPERTY(int sliderPosition READ sliderPosition WRITE setSliderPosition NOTIFY sliderMoved)
+public:
+    RibbonSliderPane(QWidget* parent = Q_NULL);
+    virtual ~RibbonSliderPane();
 
-    public:
-        RibbonSliderPane(QWidget* parent = Q_NULL);
-        virtual ~RibbonSliderPane();
+public:
+    void setRange(int min, int max);
+    void setScrollButtons(bool on);
 
-    public:
-        void setRange(int min, int max);
-        void setScrollButtons(bool on);
+    void setSliderPosition(int);
+    int sliderPosition() const;
 
-        void setSliderPosition(int);
-        int sliderPosition() const;
+    void setSingleStep(int);
+    int singleStep() const;
 
-        void setSingleStep(int);
-        int singleStep() const;
+    int value() const;
 
-        int value() const;
+public Q_SLOTS:
+    void setValue(int);
 
-    public Q_SLOTS:
-        void setValue(int);
+Q_SIGNALS:
+    void valueChanged(int value);
+    void sliderMoved(int position);
 
-    Q_SIGNALS:
-        void valueChanged(int value);
-        void sliderMoved(int position);
+protected Q_SLOTS:
+    void increment();
+    void decrement();
 
-    protected Q_SLOTS:
-        void increment();
-        void decrement();
+private:
+    QTN_DECLARE_PRIVATE(RibbonSliderPane)
+    Q_DISABLE_COPY(RibbonSliderPane)
+};
 
-    private:
-        QTN_DECLARE_PRIVATE(RibbonSliderPane)
-        Q_DISABLE_COPY(RibbonSliderPane)
-    };
-
-}; //namespace Qtitan
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONSLIDERPANE_H

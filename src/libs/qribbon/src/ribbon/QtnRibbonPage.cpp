@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -41,63 +42,61 @@
 #include <qt_windows.h>
 #endif // Q_OS_WIN
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 
-
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonPagePrivate */
+class RibbonPagePrivate : public QObject
 {
-    /* RibbonPagePrivate */
-    class RibbonPagePrivate : public QObject
+public:
+    QTN_DECLARE_PUBLIC(RibbonPage)
+
+    struct InfoGroup
     {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonPage)
-
-        struct InfoGroup
+        QSize maxSize;
+        QSize minSize;
+        RibbonGroupWrapper* group;
+        bool bReduced;
+        bool visible;
+        InfoGroup()
         {
-            QSize maxSize;
-            QSize minSize;
-            RibbonGroupWrapper* group;
-            bool bReduced;
-            bool visible;
-            InfoGroup()
-            {
-                bReduced = false;
-                visible = true;
-                group = Q_NULL;
-            }
-        };
-    public:
-        explicit RibbonPagePrivate();
-
-    public:
-        int calcReducedSumWidth(QList<InfoGroup>& infoGroups) const;
-        void calcReducedGroups(int widthPage, QList<InfoGroup>& infoGroups);
-        int calcSumWidthGroups(int* widths);
-        void reduceLayoutGroups(int* pWidth, int width);
-        void layoutGroups();
-        bool validIndex(int index) const { return index >= 0 && index < m_listGroups.count(); }
-
-        void removeGroup(int index);
-        int getIndexGroup(RibbonGroup* page) const;
-
-        virtual bool eventFilter(QObject*, QEvent* event);
-
-    public:
-        QList<RibbonGroupWrapper*> m_listGroups;
-        QList<QAction*> m_listShortcuts;
-        RibbonTab* m_associativeTab;
-        QBasicTimer m_timer;
-        QString m_title;
-        QString m_contextTitle;
-        QSize m_sizeGroups;
-        int m_groupsHeight;
-        bool m_minimazeRibbon : 1;
-        bool m_doVisiblePage  : 1;
-        bool m_allowPress     : 1; 
-        bool m_doPopupPage    : 1;
+            bReduced = false;
+            visible = true;
+            group = Q_NULL;
+        }
     };
-}
+public:
+    explicit RibbonPagePrivate();
+
+public:
+    int calcReducedSumWidth(QList<InfoGroup>& infoGroups) const;
+    void calcReducedGroups(int widthPage, QList<InfoGroup>& infoGroups);
+    int calcSumWidthGroups(int* widths);
+    void reduceLayoutGroups(int* pWidth, int width);
+    void layoutGroups();
+    bool validIndex(int index) const { return index >= 0 && index < m_listGroups.count(); }
+
+    void removeGroup(int index);
+    int getIndexGroup(RibbonGroup* page) const;
+
+    virtual bool eventFilter(QObject*, QEvent* event);
+
+public:
+    QList<RibbonGroupWrapper*> m_listGroups;
+    QList<QAction*> m_listShortcuts;
+    RibbonTab* m_associativeTab;
+    QBasicTimer m_timer;
+    QString m_title;
+    QString m_contextTitle;
+    QSize m_sizeGroups;
+    int m_groupsHeight;
+    bool m_minimazeRibbon : 1;
+    bool m_doVisiblePage  : 1;
+    bool m_allowPress     : 1;
+    bool m_doPopupPage    : 1;
+};
+QTITAN_END_NAMESPACE
 
 RibbonPagePrivate::RibbonPagePrivate()
 {

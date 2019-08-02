@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -40,77 +41,75 @@
 #include "QtnRibbonQuickAccessBar.h"
 #include "QtnRibbonSystemPopupBar.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
-namespace Qtitan
-{
+
 /*!
 \class Qtitan::ContextHeader
 \internal
 */
-    ContextHeader::ContextHeader(RibbonTab* tab)
-    {
-        Q_ASSERT(tab);
-        if (!tab)
-            return;
-
-        lastTab = firstTab = tab;
-        color = firstTab->getContextColor();
-        strTitle = firstTab->contextTextTab();
-        rcRect = QRect();
-        firstTab->setContextHeader(this);
-    }
-    ContextHeader::~ContextHeader()
-    {
-        firstTab->setContextHeader(Q_NULL);
-    }
-};
-
-namespace Qtitan
+ContextHeader::ContextHeader(RibbonTab* tab)
 {
-    /* RibbonTabPrivate */
-    class RibbonTabPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonTab)
+    Q_ASSERT(tab);
+    if (!tab)
+        return;
 
-    public:
-        explicit RibbonTabPrivate();
+    lastTab = firstTab = tab;
+    color = firstTab->getContextColor();
+    strTitle = firstTab->contextTextTab();
+    rcRect = QRect();
+    firstTab->setContextHeader(this);
+}
+ContextHeader::~ContextHeader()
+{
+    firstTab->setContextHeader(Q_NULL);
+}
 
-    public:
-        void init();
-        QSize sizeForWidth(int w) const;
-        void updateLabel();
-        QRect documentRect() const;
-        QRectF layoutRect() const;
+QTITAN_BEGIN_NAMESPACE
 
-    public:
-        mutable bool m_valid_hints;
-        mutable QSize m_sh;
-        mutable QSizePolicy m_sizePolicy;
-        mutable QSize m_msh;
+/* RibbonTabPrivate */
+class RibbonTabPrivate : public QObject
+{
+public:
+    QTN_DECLARE_PUBLIC(RibbonTab)
 
-        bool m_select;
-        bool m_tracking;
-        bool m_minimizeDblClick;
-        int m_margin;
-        Qt::Alignment m_align;
-        short m_indent;
-        short m_frameWidth;
-        QString m_text;
-        QString m_contextText;
-        ContextColor m_contextColor;
-        ContextHeader* m_contextHeader;
-        QAction* m_defaultAction;
+public:
+    explicit RibbonTabPrivate();
 
-        int m_shortcutId;
+public:
+    void init();
+    QSize sizeForWidth(int w) const;
+    void updateLabel();
+    QRect documentRect() const;
+    QRectF layoutRect() const;
 
-        mutable uint m_isTextLabel     : 1;
-        mutable uint m_textLayoutDirty : 1;
-        mutable uint m_textDirty       : 1;
-        mutable uint m_tabMouseOver    : 1;
-    };
-};//namespace Qtitan
+public:
+    mutable bool m_valid_hints;
+    mutable QSize m_sh;
+    mutable QSizePolicy m_sizePolicy;
+    mutable QSize m_msh;
+
+    bool m_select;
+    bool m_tracking;
+    bool m_minimizeDblClick;
+    int m_margin;
+    Qt::Alignment m_align;
+    short m_indent;
+    short m_frameWidth;
+    QString m_text;
+    QString m_contextText;
+    ContextColor m_contextColor;
+    ContextHeader* m_contextHeader;
+    QAction* m_defaultAction;
+
+    int m_shortcutId;
+
+    mutable uint m_isTextLabel     : 1;
+    mutable uint m_textLayoutDirty : 1;
+    mutable uint m_textDirty       : 1;
+    mutable uint m_tabMouseOver    : 1;
+};
+QTITAN_END_NAMESPACE
 
 RibbonTabPrivate::RibbonTabPrivate()
     : m_shortcutId(0)
@@ -612,37 +611,36 @@ void RibbonTab::mouseDoubleClickEvent(QMouseEvent* event)
 
 
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonTabBarPrivate */
+class RibbonTabBarPrivate : public QObject
 {
-    /* RibbonTabBarPrivate */
-    class RibbonTabBarPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonTabBar)
+public:
+    QTN_DECLARE_PUBLIC(RibbonTabBar)
 
-    public:
-        explicit RibbonTabBarPrivate();
+public:
+    explicit RibbonTabBarPrivate();
 
-    public:
-        void layoutWidgets();
-        bool compressTabs();
-        bool validIndex(int index) const { return index >= 0 && index < m_tabList.count(); }
-        bool validWidth() const;
+public:
+    void layoutWidgets();
+    bool compressTabs();
+    bool validIndex(int index) const { return index >= 0 && index < m_tabList.count(); }
+    bool validWidth() const;
 
-        RibbonBar* getRibbonBar() const;
+    RibbonBar* getRibbonBar() const;
 
-    public:
-        QList<RibbonTab*> m_tabList;
-        QList<QWidget*> m_controls;
-        QList<QWidget*> m_listEnabledWidgets;
-        RibbonSystemButton* m_controlSystemButton;
-        QAction* m_actionSystemPopupBar;
-        bool m_validRect;
-        int m_currentIndex;
-        int m_margin;
-        RibbonTabBar::SelectionBehavior selectionBehaviorOnRemove;
-    };
+public:
+    QList<RibbonTab*> m_tabList;
+    QList<QWidget*> m_controls;
+    QList<QWidget*> m_listEnabledWidgets;
+    RibbonSystemButton* m_controlSystemButton;
+    QAction* m_actionSystemPopupBar;
+    bool m_validRect;
+    int m_currentIndex;
+    int m_margin;
+    RibbonTabBar::SelectionBehavior selectionBehaviorOnRemove;
 };
+QTITAN_END_NAMESPACE
 
 RibbonTabBarPrivate::RibbonTabBarPrivate()
     : m_controlSystemButton(Q_NULL)

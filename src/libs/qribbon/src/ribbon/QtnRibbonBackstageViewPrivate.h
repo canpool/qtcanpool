@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2011 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -36,55 +37,55 @@
 class QStyleOptionMenuItem;
 class QWidgetAction;
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+
+class RibbonBar;
+class HackFilter;
+/* RibbonBackstageViewPrivate */
+class RibbonBackstageViewPrivate : public QObject
 {
-    class RibbonBar;
-    class HackFilter;
-    /* RibbonBackstageViewPrivate */
-    class RibbonBackstageViewPrivate : public QObject
-    {
-    public:
-        Q_OBJECT
-        QTN_DECLARE_PUBLIC(RibbonBackstageView)
-    public:
-        explicit RibbonBackstageViewPrivate();
-        virtual ~RibbonBackstageViewPrivate();
+public:
+    Q_OBJECT
+    QTN_DECLARE_PUBLIC(RibbonBackstageView)
+public:
+    explicit RibbonBackstageViewPrivate();
+    virtual ~RibbonBackstageViewPrivate();
 
-    public:
-        void init(QWidget* parent);
-        void initStyleOption(QStyleOptionMenuItem* option, const QAction* action) const;
-        void layoutBackstage();
-        void updateActionRects() const;
-        void updateGeometryPage(QWidget* widget);
+public:
+    void init(QWidget* parent);
+    void initStyleOption(QStyleOptionMenuItem* option, const QAction* action) const;
+    void layoutBackstage();
+    void updateActionRects() const;
+    void updateGeometryPage(QWidget* widget);
 
-        void setCurrentAction(QAction *action);
-        QAction* currentAction() const;
+    void setCurrentAction(QAction *action);
+    QAction* currentAction() const;
 
-        QRect actionRect(QAction* act) const;
+    QRect actionRect(QAction* act) const;
 
-        QWidgetAction* getAction(QWidget* w) const;
-        QAction* actionAt(const QPoint& p) const;
+    QWidgetAction* getAction(QWidget* w) const;
+    QAction* actionAt(const QPoint& p) const;
 
-    protected slots:
-        void trackMouseEvent();
+protected slots:
+    void trackMouseEvent();
 
-    public:
-        RibbonBar* ribbon_; 
-        QWidget* activePage_;
-        QAction* currentAction_;
+public:
+    RibbonBar* ribbon_;
+    QWidget* activePage_;
+    QAction* currentAction_;
 
-        bool mouseDown_;
-        bool closePrevented_;
+    bool mouseDown_;
+    bool closePrevented_;
 
-        QTimer timer_;
-        mutable bool itemsDirty_;
-        mutable int menuWidth_;
-        mutable int maxIconWidth_;
-        mutable QVector<QRect> actionRects_;
-        mutable QHash<QAction*, QWidget*> widgetItems_;
-    };
-}; //namespace Qtitan
+    QTimer timer_;
+    mutable bool itemsDirty_;
+    mutable int menuWidth_;
+    mutable int maxIconWidth_;
+    mutable QVector<QRect> actionRects_;
+    mutable QHash<QAction*, QWidget*> widgetItems_;
+};
 
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONBACKSTAGEPVIEWRIVATE_H
 

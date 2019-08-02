@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -31,34 +32,34 @@
 
 #include "QtitanDef.h"
 
-
 class QStyleOption;
-namespace Qtitan
+
+QTITAN_BEGIN_NAMESPACE
+
+/* PopupColorButton */
+class QTITAN_EXPORT PopupColorButton : public QToolButton
 {
-    /* PopupColorButton */
-    class QTITAN_EXPORT PopupColorButton : public QToolButton
-    {
-        Q_OBJECT
-        Q_PROPERTY(QColor color READ color WRITE setColor)
-    public:
-        PopupColorButton(QWidget* parent = Q_NULL);
-        virtual ~PopupColorButton();
+    Q_OBJECT
+    Q_PROPERTY(QColor color READ color WRITE setColor)
+public:
+    PopupColorButton(QWidget* parent = Q_NULL);
+    virtual ~PopupColorButton();
 
-    public:
-        QColor color() const;
-        void setColor(const QColor& color);
+public:
+    QColor color() const;
+    void setColor(const QColor& color);
 
-    Q_SIGNALS:
-        void colorChanged(const QColor& color);
+Q_SIGNALS:
+    void colorChanged(const QColor& color);
 
-    protected:
-        virtual void paintEvent     (QPaintEvent* event);
-        virtual void mousePressEvent(QMouseEvent* event);
+protected:
+    virtual void paintEvent     (QPaintEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
 
-    protected:
-        QColor m_color;
-    };
+protected:
+    QColor m_color;
+};
 
-}; //namespace Qtitan
+QTITAN_END_NAMESPACE
 
 #endif // QTN_POPUPCOLORBUTTON_H

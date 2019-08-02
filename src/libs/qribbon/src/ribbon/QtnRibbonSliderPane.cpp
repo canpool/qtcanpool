@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -35,28 +36,27 @@
 #include "QtnRibbonSliderPane.h"
 #include "QtnRibbonStyle.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonSliderButton */
+class RibbonSliderButton : public QPushButton
 {
-    /* RibbonSliderButton */
-    class RibbonSliderButton : public QPushButton
-    {
-    public:
-        RibbonSliderButton(QWidget* parent, QStyle::PrimitiveElement typeBut = QStyle::PE_IndicatorArrowUp);
-        ~RibbonSliderButton();
+public:
+    RibbonSliderButton(QWidget* parent, QStyle::PrimitiveElement typeBut = QStyle::PE_IndicatorArrowUp);
+    ~RibbonSliderButton();
 
-    protected:
-        virtual void  paintEvent(QPaintEvent* event);
-        virtual QSize sizeHint() const;
+protected:
+    virtual void  paintEvent(QPaintEvent* event);
+    virtual QSize sizeHint() const;
 
-    protected:
-        QStyle::PrimitiveElement m_typeBut;
+protected:
+    QStyle::PrimitiveElement m_typeBut;
 
-    private:
-        Q_DISABLE_COPY(RibbonSliderButton)
-    };
-}; //namespace Qtitan
+private:
+    Q_DISABLE_COPY(RibbonSliderButton)
+};
+QTITAN_END_NAMESPACE
 
 /* RibbonSliderButton */
 RibbonSliderButton::RibbonSliderButton(QWidget* parent, QStyle::PrimitiveElement typeBut)
@@ -89,26 +89,25 @@ QSize RibbonSliderButton::sizeHint() const
     return sz;
 }
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonSliderPanePrivate */
+class RibbonSliderPanePrivate : QObject
 {
-    /* RibbonSliderPanePrivate */
-    class RibbonSliderPanePrivate : QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonSliderPane)
-    public:
-        explicit RibbonSliderPanePrivate();
+public:
+    QTN_DECLARE_PUBLIC(RibbonSliderPane)
+public:
+    explicit RibbonSliderPanePrivate();
 
-    public:
-        void initSlider();
+public:
+    void initSlider();
 
-    public:
-        QSlider* m_slider;
-        RibbonSliderButton* m_buttonUp;
-        RibbonSliderButton* m_buttonDown;
-        QHBoxLayout* m_layout;
-    };
-};//namespace Qtitan
+public:
+    QSlider* m_slider;
+    RibbonSliderButton* m_buttonUp;
+    RibbonSliderButton* m_buttonDown;
+    QHBoxLayout* m_layout;
+};
+QTITAN_END_NAMESPACE
 
 /* RibbonSliderPanePrivate */
 RibbonSliderPanePrivate::RibbonSliderPanePrivate()

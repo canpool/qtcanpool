@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -32,21 +33,22 @@
 #include "QtitanDef.h"
 
 class QAction;
-namespace Qtitan
-{
-    /* GroupLayout */
-    class QTITAN_EXPORT GroupLayout : public QLayout
-    {
-        Q_OBJECT
-    public:
-        GroupLayout(QWidget* parent = Q_NULL);
-        virtual ~GroupLayout();
-    public:
-        virtual void insertAction(int index, QAction* action) = 0;
-        virtual int indexOf(QAction* action) const = 0;
-        virtual int indexOf(QWidget* widget) const { return QLayout::indexOf(widget); }
-    };
 
-}; //namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+
+/* GroupLayout */
+class QTITAN_EXPORT GroupLayout : public QLayout
+{
+    Q_OBJECT
+public:
+    GroupLayout(QWidget* parent = Q_NULL);
+    virtual ~GroupLayout();
+public:
+    virtual void insertAction(int index, QAction* action) = 0;
+    virtual int indexOf(QAction* action) const = 0;
+    virtual int indexOf(QWidget* widget) const { return QLayout::indexOf(widget); }
+};
+
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONGROUPLAYOUT_H

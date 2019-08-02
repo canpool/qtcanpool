@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2011 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -32,114 +33,112 @@
 
 #include "QtitanDef.h"
 
+QTITAN_BEGIN_NAMESPACE
 
-namespace Qtitan
+/* RibbonBackstageSeparator */
+class QTITAN_EXPORT RibbonBackstageSeparator : public QFrame
 {
-    /* RibbonBackstageSeparator */
-    class QTITAN_EXPORT RibbonBackstageSeparator : public QFrame
-    {
-        Q_OBJECT
-        Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation)
-    public:
-        RibbonBackstageSeparator(QWidget* parent);
-        virtual ~RibbonBackstageSeparator();
+    Q_OBJECT
+    Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation)
+public:
+    RibbonBackstageSeparator(QWidget* parent);
+    virtual ~RibbonBackstageSeparator();
 
-    public:
-        void setOrientation(Qt::Orientation orient);
-        Qt::Orientation orientation() const;
+public:
+    void setOrientation(Qt::Orientation orient);
+    Qt::Orientation orientation() const;
 
-    private:
-        Q_DISABLE_COPY(RibbonBackstageSeparator)
-    };
+private:
+    Q_DISABLE_COPY(RibbonBackstageSeparator)
+};
 
-    class RibbonBackstageButtonPrivate;
-    /* RibbonBackstagePage */
-    class QTITAN_EXPORT RibbonBackstageButton : public QToolButton
-    {
-        Q_OBJECT
-        Q_PROPERTY(bool tabStyle READ tabStyle WRITE setTabStyle)
-        Q_PROPERTY(bool flatStyle READ flatStyle WRITE setFlatStyle)
-    public:
-        RibbonBackstageButton(QWidget* parent);
-        virtual ~RibbonBackstageButton();
+class RibbonBackstageButtonPrivate;
+/* RibbonBackstagePage */
+class QTITAN_EXPORT RibbonBackstageButton : public QToolButton
+{
+    Q_OBJECT
+    Q_PROPERTY(bool tabStyle READ tabStyle WRITE setTabStyle)
+    Q_PROPERTY(bool flatStyle READ flatStyle WRITE setFlatStyle)
+public:
+    RibbonBackstageButton(QWidget* parent);
+    virtual ~RibbonBackstageButton();
 
-    public:
-        bool tabStyle() const;
-        void setTabStyle(bool style);
+public:
+    bool tabStyle() const;
+    void setTabStyle(bool style);
 
-        bool flatStyle();
-        void setFlatStyle(bool flat);
+    bool flatStyle();
+    void setFlatStyle(bool flat);
 
-    protected:
-        virtual void paintEvent(QPaintEvent* event);
+protected:
+    virtual void paintEvent(QPaintEvent* event);
 
-    private:
-        QTN_DECLARE_PRIVATE(RibbonBackstageButton)
-        Q_DISABLE_COPY(RibbonBackstageButton)
-    };
+private:
+    QTN_DECLARE_PRIVATE(RibbonBackstageButton)
+    Q_DISABLE_COPY(RibbonBackstageButton)
+};
 
 
-    /* RibbonBackstagePage */
-    class QTITAN_EXPORT RibbonBackstagePage : public QWidget
-    {
-        Q_OBJECT
-    public:
-        RibbonBackstagePage(QWidget* parent);
-        virtual ~RibbonBackstagePage();
+/* RibbonBackstagePage */
+class QTITAN_EXPORT RibbonBackstagePage : public QWidget
+{
+    Q_OBJECT
+public:
+    RibbonBackstagePage(QWidget* parent);
+    virtual ~RibbonBackstagePage();
 
-    protected:
-        virtual void paintEvent(QPaintEvent* event);
+protected:
+    virtual void paintEvent(QPaintEvent* event);
 
-    private:
-        Q_DISABLE_COPY(RibbonBackstagePage)
-    };
+private:
+    Q_DISABLE_COPY(RibbonBackstagePage)
+};
 
 
-    class RibbonBackstageViewPrivate;
-    /* RibbonBackstageView */
-    class QTITAN_EXPORT RibbonBackstageView : public QWidget
-    {
-        Q_OBJECT
-    public:
-        RibbonBackstageView(QWidget* parent = Q_NULL);
-        virtual ~RibbonBackstageView();
+class RibbonBackstageViewPrivate;
+/* RibbonBackstageView */
+class QTITAN_EXPORT RibbonBackstageView : public QWidget
+{
+    Q_OBJECT
+public:
+    RibbonBackstageView(QWidget* parent = Q_NULL);
+    virtual ~RibbonBackstageView();
 
-    public:
-        bool isClosePrevented() const;
-        void setClosePrevented(bool prevent);
+public:
+    bool isClosePrevented() const;
+    void setClosePrevented(bool prevent);
 
-        QAction* addAction(const QIcon& icon, const QString& text);
-        QAction* addPage(QWidget* widget);
+    QAction* addAction(const QIcon& icon, const QString& text);
+    QAction* addPage(QWidget* widget);
 
-        void setActivePage(QWidget* widget);
-        QWidget* getActivePage() const;
+    void setActivePage(QWidget* widget);
+    QWidget* getActivePage() const;
 
-        QRect actionGeometry(QAction* ) const;
+    QRect actionGeometry(QAction* ) const;
 
-        using QWidget::addAction;
+    using QWidget::addAction;
 
-    public Q_SLOTS:
-        void open();
+public Q_SLOTS:
+    void open();
 
-    Q_SIGNALS:
-        void aboutToShow();
-        void aboutToHide();
+Q_SIGNALS:
+    void aboutToShow();
+    void aboutToHide();
 
-    protected:
-        virtual bool event(QEvent* event);
-        virtual bool eventFilter(QObject* object, QEvent* event);
-        virtual void paintEvent(QPaintEvent* event);
-        virtual void actionEvent(QActionEvent* event);
-        virtual void mousePressEvent(QMouseEvent* event);
-        virtual void mouseMoveEvent(QMouseEvent* event);
-        virtual void mouseReleaseEvent(QMouseEvent* event);
+protected:
+    virtual bool event(QEvent* event);
+    virtual bool eventFilter(QObject* object, QEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
+    virtual void actionEvent(QActionEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseMoveEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
 
-    private:
-        QTN_DECLARE_PRIVATE(RibbonBackstageView)
-        Q_DISABLE_COPY(RibbonBackstageView)
-    };
+private:
+    QTN_DECLARE_PRIVATE(RibbonBackstageView)
+    Q_DISABLE_COPY(RibbonBackstageView)
+};
 
-}; //namespace Qtitan
-
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONBACKSTAGEVIEW_H

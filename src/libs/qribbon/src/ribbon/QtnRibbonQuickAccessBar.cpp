@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -34,27 +35,26 @@
 #include "QtnRibbonStyle.h"
 #include "QtnRibbonQuickAccessBar.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonQuickAccessButton */
+class RibbonQuickAccessButton : public QToolButton
 {
-    /* RibbonQuickAccessButton */
-    class RibbonQuickAccessButton : public QToolButton
-    {
-    public:
-        RibbonQuickAccessButton(QWidget* parent = Q_NULL);
-        virtual ~RibbonQuickAccessButton();
+public:
+    RibbonQuickAccessButton(QWidget* parent = Q_NULL);
+    virtual ~RibbonQuickAccessButton();
 
-    public:
-        virtual QSize sizeHint() const;
+public:
+    virtual QSize sizeHint() const;
 
-    protected:
-        virtual void paintEvent(QPaintEvent*);
+protected:
+    virtual void paintEvent(QPaintEvent*);
 
-    private:
-        Q_DISABLE_COPY(RibbonQuickAccessButton)
-    };
+private:
+    Q_DISABLE_COPY(RibbonQuickAccessButton)
 };
+QTITAN_END_NAMESPACE
 
 RibbonQuickAccessButton::RibbonQuickAccessButton(QWidget* parent)
     : QToolButton(parent)
@@ -85,76 +85,71 @@ void RibbonQuickAccessButton::paintEvent(QPaintEvent* event)
 }
 
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* ActionWrapper */
+class ActionWrapper : public QAction
 {
-    /* ActionWrapper */
-    class ActionWrapper : public QAction
+public:
+    ActionWrapper(QObject* p, QAction* srcAction)
+        : QAction(srcAction->text(), p)
+        , m_srcAction(srcAction)
     {
-    public:
-        ActionWrapper(QObject* p, QAction* srcAction)
-            : QAction(srcAction->text(), p)
-            , m_srcAction(srcAction)
-        {
-            setCheckable(true);
-            QToolBar* toolBar = qobject_cast<QToolBar*>(parent());
-            Q_ASSERT(toolBar);
-            setChecked(toolBar->widgetForAction(srcAction));
-        }
-        void update()
-        {
-            QToolBar* toolBar = qobject_cast<QToolBar*>(parent());
-            Q_ASSERT(toolBar);
-            setChecked(toolBar->widgetForAction(m_srcAction));
-            setText(m_srcAction->text());
-        }
-
-    public:
-        QAction* m_srcAction;
-    };
-
-    /* ActionInvisible */
-    class ActionInvisible : public QAction
+        setCheckable(true);
+        QToolBar* toolBar = qobject_cast<QToolBar*>(parent());
+        Q_ASSERT(toolBar);
+        setChecked(toolBar->widgetForAction(srcAction));
+    }
+    void update()
     {
-    public:
-        ActionInvisible(QObject* p, QActionGroup* data)
-            : QAction(p)
-        {
-            m_data = data;
-            setVisible(false);
-        }
-    public:
-        QActionGroup* m_data;
-    };
+        QToolBar* toolBar = qobject_cast<QToolBar*>(parent());
+        Q_ASSERT(toolBar);
+        setChecked(toolBar->widgetForAction(m_srcAction));
+        setText(m_srcAction->text());
+    }
+
+public:
+    QAction* m_srcAction;
 };
 
-
-namespace Qtitan
+/* ActionInvisible */
+class ActionInvisible : public QAction
 {
-    /* RibbonBarPrivate */
-    class RibbonQuickAccessBarPrivate : public QObject
+public:
+    ActionInvisible(QObject* p, QActionGroup* data)
+        : QAction(p)
     {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonQuickAccessBar)
-    public:
-        explicit RibbonQuickAccessBarPrivate();
-    
-    public:
-        void init();
-        ActionWrapper* findWrapper(QAction* action) const;
-        QAction* findBeforeAction(QAction* action) const;
-        void updateAction(QAction* action);
-        void setActionVisible(QAction* action, bool visible);
-        void deleteAction(QAction *action);
-    public:
-        RibbonQuickAccessButton* m_accessPopup;
-        QMenu* m_menu;
-        QAction* m_actionAccessPopup;
-        QActionGroup* m_customizeGroupAction;
-        
-        bool m_removeAction    : 1;
-        bool m_customizeAction : 1;
-    };
+        m_data = data;
+        setVisible(false);
+    }
+public:
+    QActionGroup* m_data;
 };
+
+/* RibbonBarPrivate */
+class RibbonQuickAccessBarPrivate : public QObject
+{
+public:
+    QTN_DECLARE_PUBLIC(RibbonQuickAccessBar)
+public:
+    explicit RibbonQuickAccessBarPrivate();
+
+public:
+    void init();
+    ActionWrapper* findWrapper(QAction* action) const;
+    QAction* findBeforeAction(QAction* action) const;
+    void updateAction(QAction* action);
+    void setActionVisible(QAction* action, bool visible);
+    void deleteAction(QAction *action);
+public:
+    RibbonQuickAccessButton* m_accessPopup;
+    QMenu* m_menu;
+    QAction* m_actionAccessPopup;
+    QActionGroup* m_customizeGroupAction;
+
+    bool m_removeAction    : 1;
+    bool m_customizeAction : 1;
+};
+QTITAN_END_NAMESPACE
 
 RibbonQuickAccessBarPrivate::RibbonQuickAccessBarPrivate()
 {

@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -35,36 +36,35 @@
 #include "QtnOfficeDefines.h"
 #include "QtnOfficePopupMenu.h"
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 
 /*!
 \property Qtitan::OfficePopupMenu::gripVisible
 */
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* OfficePopupMenuPrivate */
+class OfficePopupMenuPrivate : public QObject
 {
-    /* OfficePopupMenuPrivate */
-    class OfficePopupMenuPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(OfficePopupMenu)
-    public:
-        explicit OfficePopupMenuPrivate();
+public:
+    QTN_DECLARE_PUBLIC(OfficePopupMenu)
+public:
+    explicit OfficePopupMenuPrivate();
 
-    public:
-        void init();
-        int calcMinimumHeight();
-        QWidget* findWidget(const char* nameWidget) const;
+public:
+    void init();
+    int calcMinimumHeight();
+    QWidget* findWidget(const char* nameWidget) const;
 
-    public:
-        QWidget* m_widgetPopup; 
-        bool m_resizable      : 1;
-        bool m_pressSizeGrip  : 1;
-        bool m_showGrip       : 1;
-        int m_lastWidth;
-    };
+public:
+    QWidget* m_widgetPopup;
+    bool m_resizable      : 1;
+    bool m_pressSizeGrip  : 1;
+    bool m_showGrip       : 1;
+    int m_lastWidth;
 };
+QTITAN_END_NAMESPACE
 
 OfficePopupMenuPrivate::OfficePopupMenuPrivate()
 {

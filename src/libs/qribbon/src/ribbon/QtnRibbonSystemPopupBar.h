@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -32,156 +33,156 @@
 
 #include "QtitanDef.h"
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+
+class RibbonBackstageView;
+class RibbonSystemButtonPrivate;
+
+/* RibbonSystemButton */
+class QTITAN_EXPORT RibbonSystemButton : public QToolButton
 {
-    class RibbonBackstageView;
-    class RibbonSystemButtonPrivate;
+    Q_OBJECT
+    Q_PROPERTY(Qt::ToolButtonStyle toolButtonStyle READ toolButtonStyle WRITE setToolButtonStyle)
+public:
+    RibbonSystemButton(QWidget* parent);
+    virtual ~RibbonSystemButton();
 
-    /* RibbonSystemButton */
-    class QTITAN_EXPORT RibbonSystemButton : public QToolButton
-    {
-        Q_OBJECT
-        Q_PROPERTY(Qt::ToolButtonStyle toolButtonStyle READ toolButtonStyle WRITE setToolButtonStyle)
-    public:
-        RibbonSystemButton(QWidget* parent);
-        virtual ~RibbonSystemButton();
+public:
+    void setBackstage(RibbonBackstageView* backstage);
+    RibbonBackstageView* backstage() const;
 
-    public:
-        void setBackstage(RibbonBackstageView* backstage);
-        RibbonBackstageView* backstage() const;
+    void setBackgroundColor(const QColor& color);
+    QColor backgroundColor() const;
 
-        void setBackgroundColor(const QColor& color);
-        QColor backgroundColor() const;
+public:
+    virtual QSize sizeHint() const;
 
-    public:
-        virtual QSize sizeHint() const;
+protected:
+    virtual void paintEvent(QPaintEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
 
-    protected:
-        virtual void paintEvent(QPaintEvent* event);
-        virtual void mousePressEvent(QMouseEvent* event);
-
-    private:
-        Q_DISABLE_COPY(RibbonSystemButton)
-        QTN_DECLARE_PRIVATE(RibbonSystemButton)
-    };
+private:
+    Q_DISABLE_COPY(RibbonSystemButton)
+    QTN_DECLARE_PRIVATE(RibbonSystemButton)
+};
 
 
-    class RibbonPageSystemRecentFileList;
-    class RibbonPageSystemPopup;
-    class RibbonSystemPopupBarPrivate;
+class RibbonPageSystemRecentFileList;
+class RibbonPageSystemPopup;
+class RibbonSystemPopupBarPrivate;
 
-    /* RibbonSystemPopupBar */
-    class QTITAN_EXPORT RibbonSystemPopupBar : public QMenu
-    {
-        Q_OBJECT
-    public:
-        RibbonSystemPopupBar(QWidget* parent);
-        virtual ~RibbonSystemPopupBar();
+/* RibbonSystemPopupBar */
+class QTITAN_EXPORT RibbonSystemPopupBar : public QMenu
+{
+    Q_OBJECT
+public:
+    RibbonSystemPopupBar(QWidget* parent);
+    virtual ~RibbonSystemPopupBar();
 
-    public:
-        QAction* addPopupBarAction(const QString& text);
-        void addPopupBarAction(QAction* action, Qt::ToolButtonStyle style = Qt::ToolButtonTextOnly);
+public:
+    QAction* addPopupBarAction(const QString& text);
+    void addPopupBarAction(QAction* action, Qt::ToolButtonStyle style = Qt::ToolButtonTextOnly);
 
-        RibbonPageSystemRecentFileList* addPageRecentFile(const QString& caption);
-        RibbonPageSystemPopup* addPageSystemPopup(const QString& caption, QAction* defaultAction, bool splitAction);
+    RibbonPageSystemRecentFileList* addPageRecentFile(const QString& caption);
+    RibbonPageSystemPopup* addPageSystemPopup(const QString& caption, QAction* defaultAction, bool splitAction);
 
-    public:
-        virtual QSize sizeHint() const;
-        
-    protected:
-        virtual void showEvent(QShowEvent* event);
-        virtual void paintEvent(QPaintEvent* event);
-        virtual void mousePressEvent(QMouseEvent* event);
-        virtual void mouseReleaseEvent(QMouseEvent* event);
-        virtual void keyPressEvent(QKeyEvent* event);
-        virtual void resizeEvent(QResizeEvent* event);
+public:
+    virtual QSize sizeHint() const;
 
-    private:
-        friend class RibbonPageSystemPopup;
-        Q_DISABLE_COPY(RibbonSystemPopupBar)
-        QTN_DECLARE_PRIVATE(RibbonSystemPopupBar)
-    };
+protected:
+    virtual void showEvent(QShowEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event);
+    virtual void resizeEvent(QResizeEvent* event);
 
-    /* RibbonSystemRecentFileList */
-    class QTITAN_EXPORT RibbonPageSystemPopupListCaption : public QWidget
-    {
-        Q_OBJECT
-    public:
-        RibbonPageSystemPopupListCaption(const QString& caption);
-        virtual ~RibbonPageSystemPopupListCaption();
+private:
+    friend class RibbonPageSystemPopup;
+    Q_DISABLE_COPY(RibbonSystemPopupBar)
+    QTN_DECLARE_PRIVATE(RibbonSystemPopupBar)
+};
 
-    public:
-        virtual QSize sizeHint() const;
+/* RibbonSystemRecentFileList */
+class QTITAN_EXPORT RibbonPageSystemPopupListCaption : public QWidget
+{
+    Q_OBJECT
+public:
+    RibbonPageSystemPopupListCaption(const QString& caption);
+    virtual ~RibbonPageSystemPopupListCaption();
 
-    protected:
-        virtual void drawEvent(QPaintEvent* event, QPainter* p);
+public:
+    virtual QSize sizeHint() const;
 
-    protected:
-        virtual void paintEvent(QPaintEvent* event);
+protected:
+    virtual void drawEvent(QPaintEvent* event, QPainter* p);
 
-    private:
-        friend class RibbonSystemPopupBar;
-        Q_DISABLE_COPY(RibbonPageSystemPopupListCaption)
-    };
+protected:
+    virtual void paintEvent(QPaintEvent* event);
 
-    class RibbonPageSystemRecentFileListPrivate;
-    /* RibbonSystemRecentFileList */
-    class QTITAN_EXPORT RibbonPageSystemRecentFileList : public RibbonPageSystemPopupListCaption
-    {
-        Q_OBJECT
-    public:
-        RibbonPageSystemRecentFileList(const QString& caption);
-        virtual ~RibbonPageSystemRecentFileList();
-        virtual QSize sizeHint() const;
+private:
+    friend class RibbonSystemPopupBar;
+    Q_DISABLE_COPY(RibbonPageSystemPopupListCaption)
+};
 
-    public:
-        void setSize(int size);
-        int getSize() const; 
+class RibbonPageSystemRecentFileListPrivate;
+/* RibbonSystemRecentFileList */
+class QTITAN_EXPORT RibbonPageSystemRecentFileList : public RibbonPageSystemPopupListCaption
+{
+    Q_OBJECT
+public:
+    RibbonPageSystemRecentFileList(const QString& caption);
+    virtual ~RibbonPageSystemRecentFileList();
+    virtual QSize sizeHint() const;
 
-        QAction* getCurrentAction() const;
+public:
+    void setSize(int size);
+    int getSize() const;
 
-    public Q_SLOTS:
-        void updateRecentFileActions(const QStringList& files);
+    QAction* getCurrentAction() const;
 
-    Q_SIGNALS:
-        void openRecentFile(const QString& file);
+public Q_SLOTS:
+    void updateRecentFileActions(const QStringList& files);
 
-    protected:
-        virtual void drawEvent(QPaintEvent* event, QPainter* p);
+Q_SIGNALS:
+    void openRecentFile(const QString& file);
 
-    protected:
-        virtual void mousePressEvent(QMouseEvent* event);
-        virtual void mouseMoveEvent(QMouseEvent* event);
-        virtual void mouseReleaseEvent(QMouseEvent* event);
-        virtual void enterEvent(QEvent* event);
-        virtual void leaveEvent(QEvent* event);
-        virtual void keyPressEvent(QKeyEvent* event);
+protected:
+    virtual void drawEvent(QPaintEvent* event, QPainter* p);
 
-        virtual void resizeEvent(QResizeEvent* event);
+protected:
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseMoveEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
+    virtual void enterEvent(QEvent* event);
+    virtual void leaveEvent(QEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event);
 
-    private:
-        Q_DISABLE_COPY(RibbonPageSystemRecentFileList)
-        QTN_DECLARE_PRIVATE(RibbonPageSystemRecentFileList)
-    };
+    virtual void resizeEvent(QResizeEvent* event);
 
-    class RibbonPageSystemPopupPrivate;
-    /* RibbonPageSystemPopup */
-    class QTITAN_EXPORT RibbonPageSystemPopup : public QMenu
-    {
-        Q_OBJECT
-    public:
-        RibbonPageSystemPopup(const QString& caption);
-        virtual ~RibbonPageSystemPopup();
+private:
+    Q_DISABLE_COPY(RibbonPageSystemRecentFileList)
+    QTN_DECLARE_PRIVATE(RibbonPageSystemRecentFileList)
+};
 
-    protected:
-        virtual bool event(QEvent* event);
-        virtual void paintEvent(QPaintEvent* event);
+class RibbonPageSystemPopupPrivate;
+/* RibbonPageSystemPopup */
+class QTITAN_EXPORT RibbonPageSystemPopup : public QMenu
+{
+    Q_OBJECT
+public:
+    RibbonPageSystemPopup(const QString& caption);
+    virtual ~RibbonPageSystemPopup();
 
-    private:
-        Q_DISABLE_COPY(RibbonPageSystemPopup)
-        QTN_DECLARE_PRIVATE(RibbonPageSystemPopup)
-    };
+protected:
+    virtual bool event(QEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
 
-}; //namespace Qtitan
+private:
+    Q_DISABLE_COPY(RibbonPageSystemPopup)
+    QTN_DECLARE_PRIVATE(RibbonPageSystemPopup)
+};
+
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONSYSTEMPOPUPBAR_H

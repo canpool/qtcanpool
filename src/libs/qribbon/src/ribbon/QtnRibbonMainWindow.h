@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -31,52 +32,50 @@
 
 #include "QtitanDef.h"
 
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+
+class StatusBar;
+class RibbonBar;
+class OfficeFrameHelper;
+class RibbonMainWindowPrivate;
+
+/* RibbonMainWindow */
+class QTITAN_EXPORT RibbonMainWindow : public QMainWindow
 {
-    class StatusBar;
-    class RibbonBar;
-    class OfficeFrameHelper;
-    class RibbonMainWindowPrivate;
+    Q_OBJECT
+public:
+    explicit RibbonMainWindow(QWidget* parent = Q_NULL, Qt::WindowFlags flags = 0);
+    ~RibbonMainWindow();
 
-    /* RibbonMainWindow */
-    class QTITAN_EXPORT RibbonMainWindow : public QMainWindow
-    {
-        Q_OBJECT
-    public:
-        explicit RibbonMainWindow(QWidget* parent = Q_NULL, Qt::WindowFlags flags = 0);
-        ~RibbonMainWindow();
-
-    public:
-        RibbonBar* ribbonBar() const;
-        void setRibbonBar(RibbonBar* ribbonBar);
+public:
+    RibbonBar* ribbonBar() const;
+    void setRibbonBar(RibbonBar* ribbonBar);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        using QMainWindow::setCentralWidget;
-        void setCentralWidget(QStyle* style);
+    using QMainWindow::setCentralWidget;
+    void setCentralWidget(QStyle* style);
 #endif
 
-    protected:
-        void setFrameHelper(OfficeFrameHelper* helper);
+protected:
+    void setFrameHelper(OfficeFrameHelper* helper);
 
-    protected:
-        virtual void paintEvent(QPaintEvent* event);
+protected:
+    virtual void paintEvent(QPaintEvent* event);
 
 #ifdef Q_OS_WIN
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        virtual bool nativeEvent(const QByteArray& eventType, void *message, long *result);
+    virtual bool nativeEvent(const QByteArray& eventType, void *message, long *result);
 #else
-        virtual bool winEvent(MSG* message, long* result);
+    virtual bool winEvent(MSG* message, long* result);
 #endif
 #endif // Q_OS_WIN
 
-    private:
-        friend class OfficeFrameHelperWin;
-        QTN_DECLARE_PRIVATE(RibbonMainWindow)
-        Q_DISABLE_COPY(RibbonMainWindow)
-    };
+private:
+    friend class OfficeFrameHelperWin;
+    QTN_DECLARE_PRIVATE(RibbonMainWindow)
+    Q_DISABLE_COPY(RibbonMainWindow)
+};
 
-}; //namespace Qtitan
-
-
+QTITAN_END_NAMESPACE
 
 #endif // QTN_RIBBONMAINWINDOW_H

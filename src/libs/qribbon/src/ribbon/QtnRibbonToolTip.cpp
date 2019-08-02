@@ -3,6 +3,7 @@
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
 ** 
 ** Copyright (c) 2009-2013 Developer Machines (http://www.devmachines.com)
+** Copyright (c) 2019 MaMinJie <canpool@163.com>
 **           ALL RIGHTS RESERVED
 ** 
 **  The entire contents of this file is protected by copyright law and
@@ -40,7 +41,7 @@
 #include "QtnRibbonPrivate.h"
 
 
-using namespace Qtitan;
+QTITAN_USE_NAMESPACE
 
 struct QEffects
 {
@@ -57,39 +58,35 @@ struct QEffects
 extern void Q_GUI_EXPORT qScrollEffect(QWidget*, QEffects::DirFlags dir = QEffects::DownScroll, int time = -1);
 extern void Q_GUI_EXPORT qFadeEffect(QWidget*, int time = -1);
 
-
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonToolTipPrivate */
+class RibbonToolTipPrivate : public QObject
 {
+public:
+    QTN_DECLARE_PUBLIC(RibbonToolTip)
+public:
+    explicit RibbonToolTipPrivate();
 
-    /* RibbonToolTipPrivate */
-    class RibbonToolTipPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonToolTip)
-    public:
-        explicit RibbonToolTipPrivate();
+public:
+    void updateTool();
 
-    public:
-        void updateTool();
-
-    public:
-        int m_margin;
-        int m_indent;
-        int m_nMaxTipWidth;
-        QBasicTimer m_hideTimer, m_expireTimer;
-        bool m_fadingOut;
-        QWidget* m_widget;
-        QRect m_rect;
-        QString m_text;
-        QString m_textTitle;
-        QIcon m_icon;
-        static RibbonToolTip* m_instance;
-        static RibbonToolTip::WrapMode m_wrapMode;
-        static bool m_showIcon;
-        QLabel* m_label;
-
-    };
+public:
+    int m_margin;
+    int m_indent;
+    int m_nMaxTipWidth;
+    QBasicTimer m_hideTimer, m_expireTimer;
+    bool m_fadingOut;
+    QWidget* m_widget;
+    QRect m_rect;
+    QString m_text;
+    QString m_textTitle;
+    QIcon m_icon;
+    static RibbonToolTip* m_instance;
+    static RibbonToolTip::WrapMode m_wrapMode;
+    static bool m_showIcon;
+    QLabel* m_label;
 };
+QTITAN_END_NAMESPACE
 
 RibbonToolTip* RibbonToolTipPrivate::m_instance = Q_NULL;
 RibbonToolTip::WrapMode RibbonToolTipPrivate::m_wrapMode = RibbonToolTip::NoWrap;
@@ -668,30 +665,28 @@ bool RibbonToolTip::fadingOut() const
     return d.m_fadingOut;
 }
 
-
-namespace Qtitan
+QTITAN_BEGIN_NAMESPACE
+/* RibbonKeyTipPrivate */
+class RibbonKeyTipPrivate : public QObject
 {
-    /* RibbonKeyTipPrivate */
-    class RibbonKeyTipPrivate : public QObject
-    {
-    public:
-        QTN_DECLARE_PUBLIC(RibbonKeyTip)
-    public:
-        explicit RibbonKeyTipPrivate();
-    public:
-        QString strTip_;
-        QString strCaption_;
-        QString strPrefix_;
-        QWidget* owner_;
-        QAction* action_;
-        QPoint pt_;
-        bool enabled_;
-        bool visible_;
-        QWidget* bars_;
-        uint align_;
-        bool explicit_;
-    };
+public:
+    QTN_DECLARE_PUBLIC(RibbonKeyTip)
+public:
+    explicit RibbonKeyTipPrivate();
+public:
+    QString strTip_;
+    QString strCaption_;
+    QString strPrefix_;
+    QWidget* owner_;
+    QAction* action_;
+    QPoint pt_;
+    bool enabled_;
+    bool visible_;
+    QWidget* bars_;
+    uint align_;
+    bool explicit_;
 };
+QTITAN_END_NAMESPACE
 
 RibbonKeyTipPrivate::RibbonKeyTipPrivate()
 {
@@ -871,4 +866,3 @@ void RibbonKeyTip::resizeEvent(QResizeEvent* event)
     p.end();
     setMask(maskBitmap);
 }
-
