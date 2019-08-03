@@ -1,4 +1,1 @@
 QTC_LIB_NAME = qlite
-#QTC_LIB_DEPENDS +=
-
-INCLUDEPATH += $$QTCANPOOL_ROOT/src/libs/qlite
