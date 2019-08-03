@@ -275,9 +275,7 @@ equals(TEST, 1) {
 }
 
 DISTFILES += \
-    $$PWD/app/app_version.h.in \
     $$PWD/Core.json.in
 
 QMAKE_SUBSTITUTES += \
-    $$PWD/app/app_version.h.in \
     $$PWD/Core.json.in
