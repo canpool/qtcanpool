@@ -1,27 +1,33 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **
- **  This program is free software: you can redistribute it and/or modify
- **  it under the terms of the GNU General Public License as published by
- **  the Free Software Foundation, either version 3 of the License, or
- **  (at your option) any later version.
+ **  GNU Lesser General Public License Usage
+ **  Alternatively, this file may be used under the terms of the GNU Lesser
+ **  General Public License version 3 as published by the Free Software
+ **  Foundation and appearing in the file LICENSE.LGPL3 included in the
+ **  packaging of this file. Please review the following information to
+ **  ensure the GNU Lesser General Public License version 3 requirements
+ **  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
  **
- **  This program is distributed in the hope that it will be useful,
- **  but WITHOUT ANY WARRANTY; without even the implied warranty of
- **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- **  GNU General Public License for more details.
- **
- **  You should have received a copy of the GNU General Public License
- **  along with this program.  If not, see http://www.gnu.org/licenses/.
+ **  GNU General Public License Usage
+ **  Alternatively, this file may be used under the terms of the GNU
+ **  General Public License version 2.0 or (at your option) the GNU General
+ **  Public license version 3 or any later version approved by the KDE Free
+ **  Qt Foundation. The licenses are as published by the Free Software
+ **  Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
+ **  included in the packaging of this file. Please review the following
+ **  information to ensure the GNU General Public License requirements will
+ **  be met: https://www.gnu.org/licenses/gpl-2.0.html and
+ **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
 #include "fancybar.h"
 #include "fancybutton.h"
 #include "quickaccessbar.h"
-#include "cursor.h"
-#include "screenhelper.h"
+#include "fancycursor.h"
+#include "fancyscreen.h"
 #include "qcanpool.h"
 
 #include <QLabel>
@@ -142,8 +148,8 @@ public:
     // main window
     QWidget *m_mainWidget;
     QPoint m_dragPos;
-    Cursor m_pressCursor;
-    Cursor m_moveCursor;
+    FancyCursor m_pressCursor;
+    FancyCursor m_moveCursor;
     bool m_bEdgePressed;
     bool m_bCursorShapeChanged;
     Qt::WindowFlags m_windowFlags;
@@ -235,7 +241,7 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     m_titleBarHeight = TITLE_BAR_HEIGHT;
     m_menuBarHeight = MENU_BAR_HEIGHT;
     m_style = FancyBar::WindowStyle;
-    m_normalRect = ScreenHelper::normalRect();
+    m_normalRect = FancyScreen::normalRect();
 }
 
 FancyBarPrivate::~FancyBarPrivate()
@@ -614,7 +620,7 @@ void FancyBarPrivate::maximizeWidget(QWidget *pWidget)
     m_isMaximized = true;
     // 计算最大化所在屏幕
     int x = pWidget->frameGeometry().x() + pWidget->frameGeometry().width() / 2;
-    ScreenHelper sreen;
+    FancyScreen sreen;
     m_currentScreen = sreen.currentScreen(x);
     QRect rect = sreen.screenRect(m_currentScreen);
     pWidget->setGeometry(rect);
@@ -871,7 +877,7 @@ QPoint FancyBarPrivate::calcDragPoint(QWidget *pWindow, QMouseEvent *event) cons
 {
     // 最大化时，计算拖拽界面显示的坐标点
     int mouseX = event->globalX();
-    ScreenHelper screen;
+    FancyScreen screen;
     QRect rect = screen.screenRect(m_currentScreen);
     int maxWidth = rect.x() + rect.width();
     int screenX = rect.x();

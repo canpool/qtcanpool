@@ -23,38 +23,34 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#ifndef FANCYWINDOW_H
-#define FANCYWINDOW_H
+#ifndef FANCYCURSOR_H
+#define FANCYCURSOR_H
 
-#include <QMainWindow>
-#include "qcanpool_global.h"
 
-class FancyBar;
-class FancyWindowPrivate;
-class QCANPOOL_SHARED_EXPORT FancyWindow : public QMainWindow
+#include <QWidget>
+/*****
+ * CursorPosCalculator
+ * 计算鼠标是否位于左、上、右、下、左上角、左下角、右上角、右下角
+*****/
+class FancyCursor
 {
-    Q_OBJECT
 public:
-    explicit FancyWindow(QWidget *parent = nullptr);
-    ~FancyWindow();
+    FancyCursor();
+    void reset();
+    void recalculate(const QPoint &globalMousePos, const QRect &frameRect);
 
-    FancyBar* fancyBar() const;
+public:
+    bool m_bOnEdges              : true;
+    bool m_bOnLeftEdge           : true;
+    bool m_bOnRightEdge          : true;
+    bool m_bOnTopEdge            : true;
+    bool m_bOnBottomEdge         : true;
+    bool m_bOnTopLeftEdge        : true;
+    bool m_bOnBottomLeftEdge     : true;
+    bool m_bOnTopRightEdge       : true;
+    bool m_bOnBottomRightEdge    : true;
 
-    void setFixedSize(const QSize &s);
-    void setFixedSize(int w, int h);
-    void setFixedWidth(int w);
-    void setFixedHeight(int h);
-
-    void setWindowFlags(Qt::WindowFlags type);
-
-signals:
-    void resizable(bool resizable);
-
-protected:
-    virtual void paintEvent(QPaintEvent *event);
-
-private:
-    FancyWindowPrivate *d;
+    int m_nBorderWidth          : 5;
 };
 
-#endif // FANCYWINDOW_H
+#endif // FANCYCURSOR_H

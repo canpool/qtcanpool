@@ -39,8 +39,8 @@ HEADERS += \
     $$PWD/fancybar.h \
     $$PWD/quickaccessbar.h \
     $$PWD/fancybutton.h \
-    $$PWD/cursor.h \
-    $$PWD/screenhelper.h \
+    $$PWD/fancycursor.h \
+    $$PWD/fancyscreen.h \
     $$PWD/fancywindow.h \
     $$PWD/fancydialog.h \
     $$PWD/skinitem.h \
@@ -69,8 +69,8 @@ SOURCES += \
     $$PWD/fancybar.cpp \
     $$PWD/quickaccessbar.cpp \
     $$PWD/fancybutton.cpp \
-    $$PWD/cursor.cpp \
-    $$PWD/screenhelper.cpp \
+    $$PWD/fancycursor.cpp \
+    $$PWD/fancyscreen.cpp \
     $$PWD/fancywindow.cpp \
     $$PWD/fancydialog.cpp \
     $$PWD/skinitem.cpp \
