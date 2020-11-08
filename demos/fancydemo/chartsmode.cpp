@@ -2,7 +2,7 @@
 #include "cwidgets.h"
 
 ChartsMode::ChartsMode(QWidget *parent)
-    : IMode(parent)
+    : FancyMode(parent)
 {
     setObjectName(QLatin1String("ChartsMode"));
     setDisplayName(tr("Charts"));

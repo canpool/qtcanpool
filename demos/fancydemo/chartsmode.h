@@ -1,9 +1,9 @@
 #ifndef CHARTSMODE_H
 #define CHARTSMODE_H
 
-#include "qcanpool/imode.h"
+#include "qcanpool/fancymode.h"
 
-class ChartsMode : public IMode
+class ChartsMode : public FancyMode
 {
     Q_OBJECT
 public:

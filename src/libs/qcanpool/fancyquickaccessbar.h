@@ -23,68 +23,35 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#ifndef FANCYBUTTON_H
-#define FANCYBUTTON_H
+#ifndef FANCYQUICKACCESSBAR_H
+#define FANCYQUICKACCESSBAR_H
 
-#include <QToolButton>
+#include "qcanpool_global.h"
+#include <QToolBar>
+#include <QMenu>
 
-class FancyButtonPrivate;
-class FancyButton : public QToolButton
+class FancyQuickAccessBarPrivate;
+class QCANPOOL_SHARED_EXPORT FancyQuickAccessBar : public QToolBar
 {
     Q_OBJECT
 public:
-    explicit FancyButton(QWidget *parent = nullptr);
-    ~FancyButton();
-
-    void select(bool selected);
-
-    void setHoverColor(const QColor &color) { m_hoverColor = color;}
-    QColor hoverColor() const { return m_hoverColor;}
-
-    void setPressColor(const QColor &color) { m_pressColor = color;}
-    QColor pressColor() const { return m_pressColor;}
-
-    void setTextColor(const QColor &color);
-    QColor textColor() const { return m_textColor; }
-
-    void setColor(const QColor &color);
-
-    void setNormalColor(const QColor &color);
-    QColor normalColor() const { return m_normalColor; }
-
-    void setHasMenu(bool has);
-    void setHasBorder(bool has);
-    void setRound(bool round);
-
-private:
-    void painterInfo(QColor &color);
-
-    bool actionHasMenu();
-
-signals:
-    void menuTriggered(QMouseEvent *e);
-
-protected:
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-
-    void paintEvent(QPaintEvent *event);
+    explicit FancyQuickAccessBar(QWidget *parent = nullptr);
 
 public:
-    bool m_hasMenu = false;
+    QAction* actionCustomizeButton() const;
+    void setActionVisible(QAction* action, bool visible);
+    bool isActionVisible(QAction* action) const;
+    int visibleCount() const;
+
+    void setHoverColor(const QColor &color);
+    void setPressColor(const QColor &color);
+    void setTextColor(const QColor &color);
+
+protected:
+    virtual void actionEvent(QActionEvent*);
 
 private:
-    bool m_bMouseHover;
-    bool m_bMousePress;
-    bool m_hasBorder;
-    bool m_bRound;
-
-    QColor m_hoverColor;
-    QColor m_pressColor;
-    QColor m_textColor;
-    QColor m_normalColor;
+    FancyQuickAccessBarPrivate *d;
 };
 
-#endif // FANCYBUTTON_H
+#endif // FANCYQUICKACCESSBAR_H

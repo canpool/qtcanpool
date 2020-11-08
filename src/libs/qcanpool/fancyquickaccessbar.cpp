@@ -1,23 +1,29 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **
- **  This program is free software: you can redistribute it and/or modify
- **  it under the terms of the GNU General Public License as published by
- **  the Free Software Foundation, either version 3 of the License, or
- **  (at your option) any later version.
+ **  GNU Lesser General Public License Usage
+ **  Alternatively, this file may be used under the terms of the GNU Lesser
+ **  General Public License version 3 as published by the Free Software
+ **  Foundation and appearing in the file LICENSE.LGPL3 included in the
+ **  packaging of this file. Please review the following information to
+ **  ensure the GNU Lesser General Public License version 3 requirements
+ **  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
  **
- **  This program is distributed in the hope that it will be useful,
- **  but WITHOUT ANY WARRANTY; without even the implied warranty of
- **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- **  GNU General Public License for more details.
- **
- **  You should have received a copy of the GNU General Public License
- **  along with this program.  If not, see http://www.gnu.org/licenses/.
+ **  GNU General Public License Usage
+ **  Alternatively, this file may be used under the terms of the GNU
+ **  General Public License version 2.0 or (at your option) the GNU General
+ **  Public license version 3 or any later version approved by the KDE Free
+ **  Qt Foundation. The licenses are as published by the Free Software
+ **  Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
+ **  included in the packaging of this file. Please review the following
+ **  information to ensure the GNU General Public License requirements will
+ **  be met: https://www.gnu.org/licenses/gpl-2.0.html and
+ **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#include "quickaccessbar.h"
+#include "fancyquickaccessbar.h"
 
 #include <QApplication>
 #include <QStyleOption>
@@ -30,17 +36,17 @@
 #include "fancybar.h"
 #include "fancybutton.h"
 
-class QuickAccessBarPrivate : public QWidget
+class FancyQuickAccessBarPrivate : public QWidget
 {
     Q_OBJECT
 public:
-    QuickAccessBarPrivate(QWidget *parent = nullptr);
+    FancyQuickAccessBarPrivate(QWidget *parent = nullptr);
     void init();
 
     void addAction(QAction *action);
 
 public:
-    QuickAccessBar *q;
+    FancyQuickAccessBar *q;
 
     FancyButton *m_accessButton;
     QMenu       *m_menu;
@@ -65,7 +71,7 @@ private Q_SLOTS:
     void aboutToHideMenu();
 };
 
-QuickAccessBarPrivate::QuickAccessBarPrivate(QWidget *parent)
+FancyQuickAccessBarPrivate::FancyQuickAccessBarPrivate(QWidget *parent)
     : QWidget(parent)
 {
     q = nullptr;
@@ -81,7 +87,7 @@ QuickAccessBarPrivate::QuickAccessBarPrivate(QWidget *parent)
     m_menuButton = nullptr;
 }
 
-void QuickAccessBarPrivate::init()
+void FancyQuickAccessBarPrivate::init()
 {
     m_accessButton = new FancyButton();
     m_accessButton->setHasBorder(false);
@@ -109,7 +115,7 @@ void QuickAccessBarPrivate::init()
     setLayout(layout);
 }
 
-void QuickAccessBarPrivate::addAction(QAction *action)
+void FancyQuickAccessBarPrivate::addAction(QAction *action)
 {
     QAction *checkAction = new QAction(action->text(), this);
     FancyButton *button = new FancyButton();
@@ -130,17 +136,17 @@ void QuickAccessBarPrivate::addAction(QAction *action)
     m_actionButtons.append(button);
 }
 
-void QuickAccessBarPrivate::aboutToShowCustomizeMenu()
+void FancyQuickAccessBarPrivate::aboutToShowCustomizeMenu()
 {
     m_accessButton->select(true);
 }
 
-void QuickAccessBarPrivate::aboutToHideCustomizeMenu()
+void FancyQuickAccessBarPrivate::aboutToHideCustomizeMenu()
 {
     m_accessButton->select(false);
 }
 
-void QuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
+void FancyQuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton *>(sender());
 
@@ -157,7 +163,7 @@ void QuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
     m_menu->popup(pos);
 }
 
-void QuickAccessBarPrivate::menuTriggered(QMouseEvent *e)
+void FancyQuickAccessBarPrivate::menuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton *>(sender());
 
@@ -183,22 +189,22 @@ void QuickAccessBarPrivate::menuTriggered(QMouseEvent *e)
     menu->popup(pos);
 }
 
-void QuickAccessBarPrivate::aboutToShowMenu()
+void FancyQuickAccessBarPrivate::aboutToShowMenu()
 {
     if (m_menuButton) {
         m_menuButton->select(true);
     }
 }
 
-void QuickAccessBarPrivate::aboutToHideMenu()
+void FancyQuickAccessBarPrivate::aboutToHideMenu()
 {
     if (m_menuButton) {
         m_menuButton->select(false);
     }
 }
 
-QuickAccessBar::QuickAccessBar(QWidget *parent)
-    : QToolBar(parent), d(new QuickAccessBarPrivate(this))
+FancyQuickAccessBar::FancyQuickAccessBar(QWidget *parent)
+    : QToolBar(parent), d(new FancyQuickAccessBarPrivate(this))
 {
     d->q = this;
     d->init();
@@ -206,12 +212,12 @@ QuickAccessBar::QuickAccessBar(QWidget *parent)
     addWidget(d);
 }
 
-QAction *QuickAccessBar::actionCustomizeButton() const
+QAction *FancyQuickAccessBar::actionCustomizeButton() const
 {
     return d->m_customizeAction;
 }
 
-void QuickAccessBar::setActionVisible(QAction *action, bool visible)
+void FancyQuickAccessBar::setActionVisible(QAction *action, bool visible)
 {
     int index = d->m_actions.indexOf(action);
 
@@ -222,7 +228,7 @@ void QuickAccessBar::setActionVisible(QAction *action, bool visible)
     d->m_checkActions.at(index)->setChecked(visible);
 }
 
-bool QuickAccessBar::isActionVisible(QAction *action) const
+bool FancyQuickAccessBar::isActionVisible(QAction *action) const
 {
     int index = d->m_actions.indexOf(action);
 
@@ -233,7 +239,7 @@ bool QuickAccessBar::isActionVisible(QAction *action) const
     return d->m_checkActions.at(index)->isChecked();
 }
 
-int QuickAccessBar::visibleCount() const
+int FancyQuickAccessBar::visibleCount() const
 {
     int cnt = 0;
 
@@ -246,28 +252,28 @@ int QuickAccessBar::visibleCount() const
     return cnt;
 }
 
-void QuickAccessBar::setHoverColor(const QColor &color)
+void FancyQuickAccessBar::setHoverColor(const QColor &color)
 {
     foreach (FancyButton * button, d->m_actionButtons) {
         button->setHoverColor(color);
     }
 }
 
-void QuickAccessBar::setPressColor(const QColor &color)
+void FancyQuickAccessBar::setPressColor(const QColor &color)
 {
     foreach (FancyButton * button, d->m_actionButtons) {
         button->setPressColor(color);
     }
 }
 
-void QuickAccessBar::setTextColor(const QColor &color)
+void FancyQuickAccessBar::setTextColor(const QColor &color)
 {
     foreach (FancyButton * button, d->m_actionButtons) {
         button->setTextColor(color);
     }
 }
 
-void QuickAccessBar::actionEvent(QActionEvent *event)
+void FancyQuickAccessBar::actionEvent(QActionEvent *event)
 {
     if (d->m_bAddEnable) {
         d->m_bAddEnable = false;
@@ -286,4 +292,4 @@ void QuickAccessBar::actionEvent(QActionEvent *event)
     }
 }
 
-#include "quickaccessbar.moc"
+#include "fancyquickaccessbar.moc"

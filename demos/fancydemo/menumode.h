@@ -1,9 +1,9 @@
 #ifndef MENUMODE_H
 #define MENUMODE_H
 
-#include "qcanpool/imode.h"
+#include "qcanpool/fancymode.h"
 
-class MenuMode : public IMode
+class MenuMode : public FancyMode
 {
     Q_OBJECT
 public:

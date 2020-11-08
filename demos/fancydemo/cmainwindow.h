@@ -33,7 +33,7 @@ class ChartsMode;
 class CustomMode;
 class MenuMode;
 class FancyTabWidget;
-class ModeManager;
+class FancyModeManager;
 
 class CMainWindow : public QMainWindow
 {
@@ -63,7 +63,7 @@ private:
 
 private:
     static CMainWindow *m_instance;
-    ModeManager *m_modeManager;
+    FancyModeManager *m_modeManager;
     FancyTabWidget *m_modeStack;
     QStatusBar *m_statusBar;
 

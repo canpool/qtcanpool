@@ -11,7 +11,7 @@
 #include "qcustomchart.h"
 
 CustomMode::CustomMode(QWidget *parent)
-    : IMode(parent)
+    : FancyMode(parent)
 {
     setObjectName(QLatin1String("CustomMode"));
     setDisplayName(tr("Custom"));

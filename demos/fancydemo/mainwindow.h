@@ -33,7 +33,7 @@ class CustomMode;
 class PaintMode;
 class MenuMode;
 class FancyTabWidget;
-class ModeManager;
+class FancyModeManager;
 class FancyNavBar;
 
 class MainWindow : public FancyWindow
@@ -78,7 +78,7 @@ private slots:
 
 private:
     static MainWindow *m_instance;
-    ModeManager *m_modeManager;
+    FancyModeManager *m_modeManager;
     FancyTabWidget *m_modeStack;
     QStatusBar *m_statusBar;
     FancyNavBar *m_pNavBar;

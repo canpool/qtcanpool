@@ -23,68 +23,49 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#ifndef FANCYBUTTON_H
-#define FANCYBUTTON_H
+#ifndef FANCYMODE_H
+#define FANCYMODE_H
 
-#include <QToolButton>
+#include <QWidget>
 
-class FancyButtonPrivate;
-class FancyButton : public QToolButton
+#include <QIcon>
+#include <QMenu>
+
+#include "qcanpool_global.h"
+
+class QCANPOOL_SHARED_EXPORT FancyMode : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
 public:
-    explicit FancyButton(QWidget *parent = nullptr);
-    ~FancyButton();
+    explicit FancyMode(QObject *parent = nullptr);
+    ~FancyMode();
 
-    void select(bool selected);
+    QString displayName() const { return m_displayName;}
+    QIcon icon() const { return m_icon;}
+    int priority() const { return m_priority; }
+    bool isEnabled() const;
+    QMenu *menu() const { return m_menu; }
+    void setWidget(QWidget *widget) { m_widget = widget; }
+    QWidget* widget();
 
-    void setHoverColor(const QColor &color) { m_hoverColor = color;}
-    QColor hoverColor() const { return m_hoverColor;}
-
-    void setPressColor(const QColor &color) { m_pressColor = color;}
-    QColor pressColor() const { return m_pressColor;}
-
-    void setTextColor(const QColor &color);
-    QColor textColor() const { return m_textColor; }
-
-    void setColor(const QColor &color);
-
-    void setNormalColor(const QColor &color);
-    QColor normalColor() const { return m_normalColor; }
-
-    void setHasMenu(bool has);
-    void setHasBorder(bool has);
-    void setRound(bool round);
-
-private:
-    void painterInfo(QColor &color);
-
-    bool actionHasMenu();
+    void setEnabled(bool enabled);
+    void setDisplayName(const QString &displayName) { m_displayName = displayName;}
+    void setIcon(const QIcon &icon) { m_icon = icon;}
+    void setPriority(int priority) { m_priority = priority; }
+    void setMenu(QMenu *menu) { m_menu = menu; }
 
 signals:
-    void menuTriggered(QMouseEvent *e);
-
-protected:
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-
-    void paintEvent(QPaintEvent *event);
-
-public:
-    bool m_hasMenu = false;
+    void enabledStateChanged(bool enabled);
 
 private:
-    bool m_bMouseHover;
-    bool m_bMousePress;
-    bool m_hasBorder;
-    bool m_bRound;
+    QString m_displayName;
+    QIcon m_icon;
+    QMenu *m_menu = nullptr;
+    QWidget *m_widget = nullptr;
+    int m_priority = -1;
+    bool m_isEnabled;
 
-    QColor m_hoverColor;
-    QColor m_pressColor;
-    QColor m_textColor;
-    QColor m_normalColor;
 };
 
-#endif // FANCYBUTTON_H
+#endif // FANCYMODE_H

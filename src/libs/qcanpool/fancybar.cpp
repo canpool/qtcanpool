@@ -25,7 +25,7 @@
 ****************************************************************************/
 #include "fancybar.h"
 #include "fancybutton.h"
-#include "quickaccessbar.h"
+#include "fancyquickaccessbar.h"
 #include "fancycursor.h"
 #include "fancyscreen.h"
 #include "qcanpool.h"
@@ -121,7 +121,7 @@ public:
     // title widget
     QWidget         *m_titleWidget;
     FancyButton     *m_logoButton;
-    QuickAccessBar  *m_quickAccessBar;
+    FancyQuickAccessBar  *m_quickAccessBar;
     QSpacerItem     *m_leftSpacerItem;
     QSpacerItem     *m_rightSpacerItem;
     QLabel          *m_titleLabel;
@@ -439,7 +439,7 @@ void FancyBarPrivate::createTitleWidget()
     m_leftSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_rightSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    m_quickAccessBar = new QuickAccessBar();
+    m_quickAccessBar = new FancyQuickAccessBar();
     m_quickAccessBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     m_quickAccessBar->hide();
 
@@ -1144,7 +1144,7 @@ bool FancyBar::isMenuBarVisible() const
     return d->m_bMenuBarVisible;
 }
 
-QuickAccessBar *FancyBar::quickAccessBar() const
+FancyQuickAccessBar *FancyBar::quickAccessBar() const
 {
     return d->m_quickAccessBar;
 }

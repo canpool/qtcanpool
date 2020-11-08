@@ -24,24 +24,32 @@
 #include <QPen>
 #include <QAction>
 
-static QColor s_hoverColor = QColor(255, 255, 255, 50);
-static QColor s_pressColor = QColor(0, 0, 0, 100);
-static QColor s_textColor = QColor(255, 255, 255);
-static QColor s_selectedTextColor = QColor(255, 255, 255);
-
 FancyTab::FancyTab(QWidget *parent)
-    : QToolButton(parent)
+    : FancyButton(parent)
+{
+    init();
+}
+
+FancyTab::FancyTab(const QIcon &icon, QWidget *parent)
+    : FancyButton(parent)
+{
+    setIcon(icon);
+    init();
+}
+
+
+void FancyTab::init()
 {
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     setIconSize(QSize(24, 24));
     setAutoRaise(true);
     m_bMouseHover = false;
     m_bMousePress = false;
+    m_selectedTextColor = QColor(255, 255, 255);
     m_type = Mode;
+
+    setPressColor(QColor(0, 0, 0, 100));
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-//    QPalette palette;
-//    palette.setColor(QPalette::WindowText,Qt::white);
-//    this->setPalette(palette);
     setStyleSheet("QToolButton{background-color: transparent;color: white;}");
 }
 
@@ -58,46 +66,16 @@ void FancyTab::select(bool selected)
     update();
 }
 
-void FancyTab::setHoverColor(const QColor &color)
-{
-    s_hoverColor = color;
-}
-
-QColor FancyTab::hoverColor()
-{
-    return s_hoverColor;
-}
-
-void FancyTab::setPressColor(const QColor &color)
-{
-    s_pressColor = color;
-}
-
-QColor FancyTab::pressColor()
-{
-    return s_pressColor;
-}
-
-void FancyTab::setTextColor(const QColor &color)
-{
-    s_textColor = color;
-}
-
 void FancyTab::setSelectedTextColor(const QColor &color)
 {
-    s_selectedTextColor = color;
+    m_selectedTextColor = color;
 }
 
 void FancyTab::setColor(const QColor &color)
 {
     setStyleSheet(QString("QToolButton{background-color: transparent;color: rgba(%1,%2,%3,%4);}")
                   .arg(color.red()).arg(color.green()).arg(color.blue()).arg(color.alpha())
-                 );
-}
-
-void FancyTab::setHasMenu(bool has)
-{
-    m_hasMenu = has;
+                  );
 }
 
 void FancyTab::enterEvent(QEvent *event)
@@ -156,16 +134,16 @@ void FancyTab::mouseReleaseEvent(QMouseEvent *event)
 void FancyTab::paintEvent(QPaintEvent *event)
 {
     if (m_bMousePress) {
-        painterInfo(s_pressColor);
+        painterInfo(pressColor());
     } else if (m_bMouseHover) {
-        painterInfo(s_hoverColor);
+        painterInfo(hoverColor());
     }
 
     if (m_hasMenu) {
         if (m_bMousePress || m_bMouseHover) {
-            painterArrow(s_selectedTextColor);
+            painterArrow(m_selectedTextColor);
         } else {
-            painterArrow(s_textColor);
+            painterArrow(textColor());
         }
     }
 
@@ -176,13 +154,13 @@ void FancyTab::update()
 {
     QToolButton::update();
     if (m_bMousePress || m_bMouseHover) {
-        setColor(s_selectedTextColor);
+        setColor(m_selectedTextColor);
     } else {
-        setColor(s_textColor);
+        setColor(textColor());
     }
 }
 
-void FancyTab::painterInfo(QColor &color)
+void FancyTab::painterInfo(const QColor &color)
 {
     QPainter painter(this);
     QPen pen(Qt::NoBrush, 1);
@@ -191,7 +169,7 @@ void FancyTab::painterInfo(QColor &color)
     painter.drawRect(rect());
 }
 
-void FancyTab::painterArrow(QColor &color)
+void FancyTab::painterArrow(const QColor &color)
 {
     QPainter painter(this);
     painter.setBrush(QBrush(color));

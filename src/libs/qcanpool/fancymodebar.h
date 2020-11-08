@@ -23,63 +23,63 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#ifndef FANCYBAR_H
-#define FANCYBAR_H
+#ifndef FANCYMODEBAR_H
+#define FANCYMODEBAR_H
 
 #include <QWidget>
 #include "qcanpool_global.h"
 
-class QMenuBar;
-class FancyQuickAccessBar;
-class FancyBarPrivate;
+class QStackedWidget;
+class FancyMode;
+class QAction;
+class FancyModeBarPrivate;
 
-class QCANPOOL_SHARED_EXPORT FancyBar : public QWidget
+class QCANPOOL_SHARED_EXPORT FancyModeBar : public QWidget
 {
     Q_OBJECT
+    Q_ENUMS(Direction)
 public:
-    enum AdditionalControlPosition {
-        TitlePosition, MenuPosition
-    };
+    enum Direction { Horizontal, Vertical };
+    enum ActionPosition { AP_Front, AP_Middle, AP_Back };
+    enum ButtonType { Mode, Action };
 
-    enum FancyStyle{
-        WindowStyle, ClassicStyle, MergedStyle, DialogStyle
-    };
+    explicit FancyModeBar(QStackedWidget *modeStack, Direction direction = Vertical, QWidget *parent = nullptr);
+    ~FancyModeBar();
 
-    explicit FancyBar(QWidget *parent);
-    ~FancyBar();
+    void addMode(FancyMode *mode);
+    void selectMode(FancyMode *mode);
+    void setEnabled(FancyMode *mode, bool enable);
+    void setVisible(FancyMode *mode, bool visible);
 
-    QMenuBar* menuBar() const;
-    void showMenuBar(bool show = false);
-    bool isMenuBarVisible() const;
+    void setButtonStyle(ButtonType type, Qt::ToolButtonStyle style);
+    void setButtonFont(ButtonType type, QFont &font);
+    void setIconSize(QSize size);
+    void setButtonSpace(int space);
+    void setActionStyle(QAction* action, Qt::ToolButtonStyle style);
 
-    FancyQuickAccessBar* quickAccessBar() const;
-    void showQuickAccess(bool show = true);
-    bool isQuickAccessVisible() const;
+    void addAction(QAction *action, ActionPosition position = AP_Back);
 
     void setHoverColor(const QColor &color);
+    QColor hoverColor() const;
+
     void setPressColor(const QColor &color);
+    QColor pressColor() const;
+
+    FancyMode* currentMode() const;
+    FancyMode* mode(int);
+
+    QWidget* spacer() const;
+    QWidget* line() const;
+
     void setTextColor(const QColor &color);
-    void setBackgroundColor(const QColor &color);
-
-    void addAdditionalControl(QAction *action, AdditionalControlPosition position);
-    void addAdditionalControl(QWidget *widget, AdditionalControlPosition position);
-    void setApplicationWidget(const QString &label, QWidget *widget);
-    void setApplicationButtonBkColor(const QColor &color);
-
-    void setWidgetResizable(bool resizable);
-    void setTitleBarHeight(int height);
-
-    void setFancyStyle(FancyStyle style);
-    void updateWidgetFlags();
+    void setSelectedTextColor(const QColor &color);
 
 signals:
-    void maximizationChanged(bool maximized);
-
-protected:
-    virtual bool eventFilter(QObject* object, QEvent* event);
+    void currentChanged(int);
 
 private:
-    FancyBarPrivate *d;
+    FancyModeBarPrivate *d;
+    Direction m_direction;
 };
 
-#endif // FANCYBAR_H
+#endif // FANCYMODEBAR_H

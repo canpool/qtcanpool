@@ -24,11 +24,9 @@ TRANSLATIONS += resource/qm/qcanpool_zh_CN.ts
 
 HEADERS += \
     $$PWD/qcanpool_global.h \
-    $$PWD/imode.h \
     $$PWD/fancytabwidget.h \
     $$PWD/fancytabbar.h \
     $$PWD/fancytab.h \
-    $$PWD/modemanager.h \
     $$PWD/minisplitter.h \
     $$PWD/simplefilter.h \
     $$PWD/minicard.h \
@@ -37,7 +35,6 @@ HEADERS += \
     $$PWD/centralarea.h \
     $$PWD/tinytabwidget.h \
     $$PWD/fancybar.h \
-    $$PWD/quickaccessbar.h \
     $$PWD/fancybutton.h \
     $$PWD/fancycursor.h \
     $$PWD/fancyscreen.h \
@@ -46,19 +43,19 @@ HEADERS += \
     $$PWD/skinitem.h \
     $$PWD/fancynavbar.h \
     $$PWD/fancynavbutton.h \
-    $$PWD/imodebar.h \
-    $$PWD/imodebar_p.h \
-    $$PWD/imodebutton.h \
     $$PWD/pagesorter.h \
     $$PWD/fancybanner.h \
-    $$PWD/qcanpool_p.h
+    $$PWD/qcanpool_p.h \
+    $$PWD/fancymodebar.h \
+    $$PWD/fancymodebar_p.h \
+    $$PWD/fancymode.h \
+    $$PWD/fancyquickaccessbar.h \
+    $$PWD/fancymodemanager.h
 
 SOURCES += \
-    $$PWD/imode.cpp \
     $$PWD/fancytabwidget.cpp \
     $$PWD/fancytabbar.cpp \
     $$PWD/fancytab.cpp \
-    $$PWD/modemanager.cpp \
     $$PWD/minisplitter.cpp \
     $$PWD/simplefilter.cpp \
     $$PWD/minicard.cpp \
@@ -67,7 +64,6 @@ SOURCES += \
     $$PWD/centralarea.cpp \
     $$PWD/tinytabwidget.cpp \
     $$PWD/fancybar.cpp \
-    $$PWD/quickaccessbar.cpp \
     $$PWD/fancybutton.cpp \
     $$PWD/fancycursor.cpp \
     $$PWD/fancyscreen.cpp \
@@ -76,11 +72,13 @@ SOURCES += \
     $$PWD/skinitem.cpp \
     $$PWD/fancynavbar.cpp \
     $$PWD/fancynavbutton.cpp \
-    $$PWD/imodebar.cpp \
-    $$PWD/imodebutton.cpp \
     $$PWD/pagesorter.cpp \
     $$PWD/fancybanner.cpp \
-    $$PWD/qcanpool_p.cpp
+    $$PWD/qcanpool_p.cpp \
+    $$PWD/fancymodebar.cpp \
+    $$PWD/fancymode.cpp \
+    $$PWD/fancyquickaccessbar.cpp \
+    $$PWD/fancymodemanager.cpp
 
 RESOURCES += \
     $$PWD/qcanpool.qrc

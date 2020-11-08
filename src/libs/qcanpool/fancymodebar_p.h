@@ -23,53 +23,51 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#ifndef FANCYTAB_H
-#define FANCYTAB_H
+#ifndef FANCYMODEBAR_P_H
+#define FANCYMODEBAR_P_H
 
-#include "fancybutton.h"
-#include <QColor>
-#include <QIcon>
+#include <QObject>
+#include <QMap>
 
-class FancyTab : public FancyButton
+class QStackedWidget;
+class QBoxLayout;
+class QAction;
+class FancyModeBar;
+class FancyTab;
+class FancyMode;
+
+class FancyModeBarPrivate : public QObject
 {
     Q_OBJECT
 public:
-    enum TabType { Mode, Action };
-    explicit FancyTab(QWidget *parent = nullptr);
-    FancyTab(const QIcon &icon, QWidget *parent = nullptr);
-    ~FancyTab();
+    explicit FancyModeBarPrivate(QObject *parent = nullptr);
+    ~FancyModeBarPrivate();
 
-    void select(bool selected);
+    void selectMode(FancyMode *mode);
+    void setEnabled(FancyMode *mode, bool enable);
+    void setVisible(FancyMode *mode, bool visible);
 
-    void setType(TabType type) { m_type = type; }
-    TabType type() const { return m_type; }
+public:
+    QMap<FancyTab*, FancyMode*> m_modeMap;
+//    QList<FancyTab*> m_modeButtons;
+    QList<FancyMode*> m_modes;
+    QList<FancyTab *> m_actionButtons;
+    QMap<QAction*, FancyTab*> m_actionMap;
+    QStackedWidget *m_modeStack;
+    QBoxLayout *m_modeLayout;
+    QBoxLayout *m_frontActionLayout;
+    QBoxLayout *m_middleActionLayout;
+    QBoxLayout *m_backActionLayout;
 
-    void setSelectedTextColor(const QColor &color);
+    QWidget *m_spacer;
+    QWidget *m_line;
 
-    void setColor(const QColor &color);
+    Qt::ToolButtonStyle m_modeStyle;
+    Qt::ToolButtonStyle m_actionStyle;
 
-private:
-    void init(void);
-    void painterInfo(const QColor &color);
-    void painterArrow(const QColor &color);
+private slots:
+    void switchMode();
 
-protected:
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-
-    void paintEvent(QPaintEvent *event);
-
-private:
-    void update();
-
-private:
-    bool m_bMouseHover;
-    bool m_bMousePress;
-    QColor m_selectedTextColor;
-
-    TabType m_type;
 };
 
-#endif // FANCYTAB_H
+#endif // FANCYMODEBAR_P_H

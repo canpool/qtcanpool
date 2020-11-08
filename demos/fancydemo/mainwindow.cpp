@@ -25,9 +25,9 @@
 
 #include "qcanpool/fancytabwidget.h"
 #include "qcanpool/fancytabbar.h"
-#include "qcanpool/modemanager.h"
+#include "qcanpool/fancymodemanager.h"
 #include "qcanpool/fancybar.h"
-#include "qcanpool/quickaccessbar.h"
+#include "qcanpool/fancyquickaccessbar.h"
 #include "qcanpool/fancydialog.h"
 #include "qcanpool/fancynavbar.h"
 #include "qcanpool/pagesorter.h"
@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     Theme::init();
 
     m_modeStack = new FancyTabWidget(this);
-    m_modeManager = new ModeManager(m_modeStack);
+    m_modeManager = new FancyModeManager(m_modeStack);
     m_statusBar = m_modeStack->statusBar();
 
     createWindow();
@@ -93,7 +93,7 @@ void MainWindow::createWindow()
 
 void MainWindow::createQuickAccessBar()
 {
-    if (QuickAccessBar* quickAccessBar = fancyBar()->quickAccessBar())
+    if (FancyQuickAccessBar* quickAccessBar = fancyBar()->quickAccessBar())
     {
         QAction* action = quickAccessBar->actionCustomizeButton();
         action->setToolTip(tr("Customize Quick Access Bar"));

@@ -1,12 +1,12 @@
 #ifndef CUSTOMMODE_H
 #define CUSTOMMODE_H
 
-#include "qcanpool/imode.h"
+#include "qcanpool/fancymode.h"
 
 class MiniCard;
 class TinyTabWidget;
 
-class CustomMode : public IMode
+class CustomMode : public FancyMode
 {
     Q_OBJECT
 public:

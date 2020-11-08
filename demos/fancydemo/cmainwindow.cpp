@@ -32,7 +32,7 @@
 
 #include "qcanpool/fancytabwidget.h"
 #include "qcanpool/fancytabbar.h"
-#include "qcanpool/modemanager.h"
+#include "qcanpool/fancymodemanager.h"
 #include "qcanpool/fancyscreen.h"
 
 #define COMPANY_NAME    QString::fromUtf8("QT FRAMEWORK")
@@ -45,7 +45,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     m_instance = this;
 
     m_modeStack = new FancyTabWidget(this);
-    m_modeManager = new ModeManager(m_modeStack);
+    m_modeManager = new FancyModeManager(m_modeStack);
     m_statusBar = m_modeStack->statusBar();
 
     createWindow();

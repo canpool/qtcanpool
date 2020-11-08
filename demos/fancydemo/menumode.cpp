@@ -1,7 +1,7 @@
 #include "menumode.h"
 
 MenuMode::MenuMode(QWidget *parent)
-    : IMode(parent)
+    : FancyMode(parent)
 {
     setObjectName(QLatin1String("MenuMode"));
     setDisplayName(tr("Tools"));

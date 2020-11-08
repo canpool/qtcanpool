@@ -1,38 +1,40 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **
- **  This program is free software: you can redistribute it and/or modify
- **  it under the terms of the GNU General Public License as published by
- **  the Free Software Foundation, either version 3 of the License, or
- **  (at your option) any later version.
+ **  GNU Lesser General Public License Usage
+ **  Alternatively, this file may be used under the terms of the GNU Lesser
+ **  General Public License version 3 as published by the Free Software
+ **  Foundation and appearing in the file LICENSE.LGPL3 included in the
+ **  packaging of this file. Please review the following information to
+ **  ensure the GNU Lesser General Public License version 3 requirements
+ **  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
  **
- **  This program is distributed in the hope that it will be useful,
- **  but WITHOUT ANY WARRANTY; without even the implied warranty of
- **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- **  GNU General Public License for more details.
- **
- **  You should have received a copy of the GNU General Public License
- **  along with this program.  If not, see http://www.gnu.org/licenses/.
+ **  GNU General Public License Usage
+ **  Alternatively, this file may be used under the terms of the GNU
+ **  General Public License version 2.0 or (at your option) the GNU General
+ **  Public license version 3 or any later version approved by the KDE Free
+ **  Qt Foundation. The licenses are as published by the Free Software
+ **  Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
+ **  included in the packaging of this file. Please review the following
+ **  information to ensure the GNU General Public License requirements will
+ **  be met: https://www.gnu.org/licenses/gpl-2.0.html and
+ **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#include "imodebar.h"
-#include "imodebar_p.h"
-#include "imode.h"
-#include "imodebutton.h"
+#include "fancymodebar.h"
+#include "fancymodebar_p.h"
+#include "fancymode.h"
+#include "fancybar.h"
+#include "fancytab.h"
 
 #include <QAction>
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QScrollArea>
 
-/********************************************************************************
- * class :
- *      IModeBar
- *
- *******************************************************************************/
-IModeBarPrivate::IModeBarPrivate(QObject *parent)
+FancyModeBarPrivate::FancyModeBarPrivate(QObject *parent)
     : QObject(parent)
 {
     m_modeMap.clear();
@@ -50,7 +52,7 @@ IModeBarPrivate::IModeBarPrivate(QObject *parent)
     m_line = nullptr;
 }
 
-IModeBarPrivate::~IModeBarPrivate()
+FancyModeBarPrivate::~FancyModeBarPrivate()
 {
     qDeleteAll(m_modeMap);
     m_modeMap.clear();
@@ -63,12 +65,12 @@ IModeBarPrivate::~IModeBarPrivate()
     m_actionMap.clear();
 }
 
-void IModeBarPrivate::selectMode(IMode *mode)
+void FancyModeBarPrivate::selectMode(FancyMode *mode)
 {
-    IModeButton *pButton = m_modeMap.key(mode);
+    FancyTab *pButton = m_modeMap.key(mode);
 
     if (pButton) {
-        foreach (IModeButton * button, m_modeMap.keys()) {
+        foreach (FancyTab * button, m_modeMap.keys()) {
             button->select(button == pButton);
         }
         m_modeStack->setCurrentWidget(mode->widget());
@@ -77,9 +79,9 @@ void IModeBarPrivate::selectMode(IMode *mode)
     }
 }
 
-void IModeBarPrivate::setEnabled(IMode *mode, bool enable)
+void FancyModeBarPrivate::setEnabled(FancyMode *mode, bool enable)
 {
-    IModeButton *pButton = m_modeMap.key(mode);
+    FancyTab *pButton = m_modeMap.key(mode);
 
     if (pButton) {
         pButton->setEnabled(enable);
@@ -94,9 +96,9 @@ void IModeBarPrivate::setEnabled(IMode *mode, bool enable)
     }
 }
 
-void IModeBarPrivate::setVisible(IMode *mode, bool visible)
+void FancyModeBarPrivate::setVisible(FancyMode *mode, bool visible)
 {
-    IModeButton *pButton = m_modeMap.key(mode);
+    FancyTab *pButton = m_modeMap.key(mode);
 
     if (pButton) {
         pButton->setVisible(visible);
@@ -105,12 +107,12 @@ void IModeBarPrivate::setVisible(IMode *mode, bool visible)
 }
 
 // slots
-void IModeBarPrivate::switchMode()
+void FancyModeBarPrivate::switchMode()
 {
-    IModeButton *pButton = qobject_cast<IModeButton *>(sender());
+    FancyTab *pButton = qobject_cast<FancyTab *>(sender());
 
     if (pButton) {
-        foreach (IModeButton * button, m_modeMap.keys()) {
+        foreach (FancyTab * button, m_modeMap.keys()) {
             button->select(button == pButton);
         }
         m_modeStack->setCurrentWidget(m_modeMap.value(pButton)->widget());
@@ -119,11 +121,11 @@ void IModeBarPrivate::switchMode()
 
 /********************************************************************************
  * class :
- *      IModeBar
+ *      FancyModeBar
  *
  *******************************************************************************/
-IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *parent)
-    : QWidget(parent), d(new IModeBarPrivate)
+FancyModeBar::FancyModeBar(QStackedWidget *modeStack, Direction direction, QWidget *parent)
+    : QWidget(parent), d(new FancyModeBarPrivate)
 {
     d->m_modeStack = modeStack;
     m_direction = direction;
@@ -203,14 +205,14 @@ IModeBar::IModeBar(QStackedWidget *modeStack, Direction direction, QWidget *pare
     connect(d->m_modeStack, SIGNAL(currentChanged(int)), this, SIGNAL(currentChanged(int)));
 }
 
-IModeBar::~IModeBar()
+FancyModeBar::~FancyModeBar()
 {
     delete d;
 }
 
-void IModeBar::addMode(IMode *mode)
+void FancyModeBar::addMode(FancyMode *mode)
 {
-    IModeButton *pButton = new IModeButton(mode->icon());
+    FancyTab *pButton = new FancyTab(mode->icon());
     pButton->setText(mode->displayName());
     pButton->setToolButtonStyle(d->m_modeStyle);
     d->m_modeStack->addWidget(mode->widget());
@@ -236,26 +238,26 @@ void IModeBar::addMode(IMode *mode)
     d->m_modeLayout->insertWidget(index - 1, pButton);
 }
 
-void IModeBar::selectMode(IMode *mode)
+void FancyModeBar::selectMode(FancyMode *mode)
 {
     d->selectMode(mode);
 }
 
-void IModeBar::setEnabled(IMode *mode, bool enable)
+void FancyModeBar::setEnabled(FancyMode *mode, bool enable)
 {
     d->setEnabled(mode, enable);
 }
 
-void IModeBar::setVisible(IMode *mode, bool visible)
+void FancyModeBar::setVisible(FancyMode *mode, bool visible)
 {
     d->setVisible(mode, visible);
-    IMode *currentMode = d->m_modes.at(d->m_modeStack->currentIndex());
+    FancyMode *currentMode = d->m_modes.at(d->m_modeStack->currentIndex());
 
     if (!visible) {
         if (mode == currentMode) {
             for (int i = 0; i < d->m_modeStack->count(); i++) {
-                IMode *tmpMode = d->m_modes.at(i);
-                IModeButton *button = d->m_modeMap.key(tmpMode);
+                FancyMode *tmpMode = d->m_modes.at(i);
+                FancyTab *button = d->m_modeMap.key(tmpMode);
 
                 if (button && !button->isHidden()) {
                     selectMode(tmpMode);
@@ -269,61 +271,61 @@ void IModeBar::setVisible(IMode *mode, bool visible)
     }
 }
 
-void IModeBar::setButtonStyle(IModeBar::ButtonType type, Qt::ToolButtonStyle style)
+void FancyModeBar::setButtonStyle(FancyModeBar::ButtonType type, Qt::ToolButtonStyle style)
 {
     if (type == Mode) {
         d->m_modeStyle = style;
-        foreach (IModeButton * button, d->m_modeMap.keys()) {
+        foreach (FancyTab * button, d->m_modeMap.keys()) {
             button->setToolButtonStyle(style);
         }
     } else if (type == Action) {
         d->m_actionStyle = style;
-        foreach (IModeButton * button, d->m_actionButtons) {
+        foreach (FancyTab * button, d->m_actionButtons) {
             button->setToolButtonStyle(style);
         }
     }
 }
 
-void IModeBar::setButtonFont(IModeBar::ButtonType type, QFont &font)
+void FancyModeBar::setButtonFont(FancyModeBar::ButtonType type, QFont &font)
 {
     if (type == Mode) {
-        foreach (IModeButton * button, d->m_modeMap.keys()) {
+        foreach (FancyTab * button, d->m_modeMap.keys()) {
             button->setFont(font);
         }
     } else if (type == Action) {
-        foreach (IModeButton * button, d->m_actionButtons) {
+        foreach (FancyTab * button, d->m_actionButtons) {
             button->setFont(font);
         }
     }
 }
 
-void IModeBar::setIconSize(QSize size)
+void FancyModeBar::setIconSize(QSize size)
 {
-    foreach (IModeButton * button, d->m_modeMap.keys()) {
+    foreach (FancyTab * button, d->m_modeMap.keys()) {
         button->setIconSize(size);
     }
-    foreach (IModeButton * button, d->m_actionButtons) {
+    foreach (FancyTab * button, d->m_actionButtons) {
         button->setIconSize(size);
     }
 }
 
-void IModeBar::setButtonSpace(int space)
+void FancyModeBar::setButtonSpace(int space)
 {
     d->m_modeLayout->setSpacing(space);
 }
 
-void IModeBar::setActionStyle(QAction *action, Qt::ToolButtonStyle style)
+void FancyModeBar::setActionStyle(QAction *action, Qt::ToolButtonStyle style)
 {
-    IModeButton *pButton = d->m_actionMap.value(action);
+    FancyTab *pButton = d->m_actionMap.value(action);
 
     if (pButton) {
         pButton->setToolButtonStyle(style);
     }
 }
 
-void IModeBar::addAction(QAction *action, ActionPosition position)
+void FancyModeBar::addAction(QAction *action, ActionPosition position)
 {
-    IModeButton *pButton = new IModeButton(action->icon());
+    FancyTab *pButton = new FancyTab(action->icon());
 
     if (m_direction == Vertical) {
         pButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -331,7 +333,7 @@ void IModeBar::addAction(QAction *action, ActionPosition position)
         pButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
 
-    pButton->setType(IModeButton::Action);
+    pButton->setType(FancyTab::Action);
     pButton->setText(action->text());
     pButton->setToolButtonStyle(d->m_actionStyle);
     pButton->setToolTip(action->toolTip());
@@ -350,17 +352,17 @@ void IModeBar::addAction(QAction *action, ActionPosition position)
     }
 }
 
-void IModeBar::setHoverColor(const QColor &color)
+void FancyModeBar::setHoverColor(const QColor &color)
 {
-    foreach (IModeButton * button, d->m_modeMap.keys()) {
+    foreach (FancyTab * button, d->m_modeMap.keys()) {
         button->setHoverColor(color);
     }
-    foreach (IModeButton * button, d->m_actionButtons) {
+    foreach (FancyTab * button, d->m_actionButtons) {
         button->setHoverColor(color);
     }
 }
 
-QColor IModeBar::hoverColor() const
+QColor FancyModeBar::hoverColor() const
 {
     if (d->m_modeMap.count() > 0) {
         return d->m_modeMap.keys().at(0)->hoverColor();
@@ -373,17 +375,17 @@ QColor IModeBar::hoverColor() const
     return QColor();
 }
 
-void IModeBar::setPressColor(const QColor &color)
+void FancyModeBar::setPressColor(const QColor &color)
 {
-    foreach (IModeButton * button, d->m_modeMap.keys()) {
+    foreach (FancyTab * button, d->m_modeMap.keys()) {
         button->setPressColor(color);
     }
-    foreach (IModeButton * button, d->m_actionButtons) {
+    foreach (FancyTab * button, d->m_actionButtons) {
         button->setPressColor(color);
     }
 }
 
-QColor IModeBar::pressColor() const
+QColor FancyModeBar::pressColor() const
 {
     if (d->m_modeMap.count() > 0) {
         return d->m_modeMap.keys().at(0)->pressColor();
@@ -396,48 +398,48 @@ QColor IModeBar::pressColor() const
     return QColor();
 }
 
-IMode *IModeBar::currentMode() const
+FancyMode *FancyModeBar::currentMode() const
 {
-    IMode *mode = d->m_modes.at(d->m_modeStack->currentIndex());
+    FancyMode *mode = d->m_modes.at(d->m_modeStack->currentIndex());
     return mode;
 }
 
-IMode *IModeBar::mode(int index)
+FancyMode *FancyModeBar::mode(int index)
 {
     if (index < 0 || index >= d->m_modes.count()) {
         return nullptr;
     }
 
-    IMode *mode = d->m_modes.at(index);
+    FancyMode *mode = d->m_modes.at(index);
     return mode;
 }
 
-QWidget *IModeBar::spacer() const
+QWidget *FancyModeBar::spacer() const
 {
     return d->m_spacer;
 }
 
-QWidget *IModeBar::line() const
+QWidget *FancyModeBar::line() const
 {
     return d->m_line;
 }
 
-void IModeBar::setTextColor(const QColor &color)
+void FancyModeBar::setTextColor(const QColor &color)
 {
-    foreach (IModeButton * button, d->m_modeMap.keys()) {
+    foreach (FancyTab * button, d->m_modeMap.keys()) {
         button->setTextColor(color);
     }
-    foreach (IModeButton * button, d->m_actionButtons) {
+    foreach (FancyTab * button, d->m_actionButtons) {
         button->setTextColor(color);
     }
 }
 
-void IModeBar::setSelectedTextColor(const QColor &color)
+void FancyModeBar::setSelectedTextColor(const QColor &color)
 {
-    foreach (IModeButton * button, d->m_modeMap.keys()) {
+    foreach (FancyTab * button, d->m_modeMap.keys()) {
         button->setSelectedTextColor(color);
     }
-    foreach (IModeButton * button, d->m_actionButtons) {
+    foreach (FancyTab * button, d->m_actionButtons) {
         button->setSelectedTextColor(color);
     }
 }

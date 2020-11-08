@@ -534,32 +534,64 @@ void FancyTabBar::setActionStyle(QAction *action, FancyTabBar::TabStyle style)
 
 void FancyTabBar::setHoverColor(const QColor &color)
 {
-    FancyTab::setHoverColor(color);
+    foreach (FancyTab * tab, d->m_modeTabs) {
+        tab->setHoverColor(color);
+    }
+    foreach (FancyTab * tab, d->m_actionTabs) {
+        tab->setHoverColor(color);
+    }
 }
 
 QColor FancyTabBar::hoverColor() const
 {
-    return FancyTab::hoverColor();
+    if (d->m_modeTabs.count()) {
+        return d->m_modeTabs.at(0)->hoverColor();
+    }
+    if (d->m_actionTabs.count()) {
+        return d->m_actionTabs.at(0)->hoverColor();
+    }
+    return QColor();
 }
 
 void FancyTabBar::setPressColor(const QColor &color)
 {
-    FancyTab::setPressColor(color);
+    foreach (FancyTab * tab, d->m_modeTabs) {
+        tab->setPressColor(color);
+    }
+    foreach (FancyTab * tab, d->m_actionTabs) {
+        tab->setPressColor(color);
+    }
 }
 
 QColor FancyTabBar::pressColor() const
 {
-    return FancyTab::pressColor();
+    if (d->m_modeTabs.count()) {
+        return d->m_modeTabs.at(0)->pressColor();
+    }
+    if (d->m_actionTabs.count()) {
+        return d->m_actionTabs.at(0)->pressColor();
+    }
+    return QColor();
 }
 
 void FancyTabBar::setTextColor(const QColor &color)
 {
-    FancyTab::setTextColor(color);
+    foreach (FancyTab * tab, d->m_modeTabs) {
+        tab->setTextColor(color);
+    }
+    foreach (FancyTab * tab, d->m_actionTabs) {
+        tab->setTextColor(color);
+    }
 }
 
 void FancyTabBar::setSelectedTextColor(const QColor &color)
 {
-    FancyTab::setSelectedTextColor(color);
+    foreach (FancyTab * tab, d->m_modeTabs) {
+        tab->setSelectedTextColor(color);
+    }
+    foreach (FancyTab * tab, d->m_actionTabs) {
+        tab->setSelectedTextColor(color);
+    }
 }
 
 void FancyTabBar::setBackgroundColor(const QColor &color)
