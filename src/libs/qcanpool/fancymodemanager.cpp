@@ -194,4 +194,4 @@ void FancyModeManager::currentTabChanged(int index)
     }
 }
 
-#include "modemanager.moc"
+#include "fancymodemanager.moc"
