@@ -72,10 +72,6 @@ public:
 public:
     void registerWidget(QWidget *widget);
 
-private:
-    void restoreWidget(QWidget *pWidget);
-    void maximizeWidget(QWidget *pWidget);
-
 public:
     // window
     bool windowTitleChange(QObject *obj);
@@ -85,24 +81,23 @@ public:
 
     // mouse event
     void handleWidgetMouseEvent(QObject *obj, QEvent *event);
-    // 更新鼠标样式
-    void updateCursorShape(const QPoint &gMousePos);
-    // 重置窗体大小
-    void resizeWidget(const QPoint &gMousePos);
-    // 移动窗体
-    void moveWidget(const QPoint &gMousePos);
-    // 处理鼠标按下
+
+private:
+    // mouse event
     void handleMousePressEvent(QMouseEvent *event);
-    // 处理鼠标释放
     void handleMouseReleaseEvent(QMouseEvent *event);
-    // 处理鼠标移动
     void handleMouseMoveEvent(QMouseEvent *event);
-    // 处理鼠标离开
     void handleLeaveEvent(QEvent *event);
-    // 处理鼠标进入
     void handleHoverMoveEvent(QHoverEvent *event);
 
-    QPoint calcDragPoint(QWidget *pWindow, QMouseEvent *event) const;
+    // widget action
+    void restoreWidget(QWidget *pWidget);
+    void maximizeWidget(QWidget *pWidget);
+    void resizeWidget(const QPoint &gMousePos);
+
+    // mouse shape
+    void updateCursorShape(const QPoint &gMousePos);
+    QPoint calcStartPoint(QWidget *pWindow, QMouseEvent *event) const;
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -147,7 +142,6 @@ public:
 
     // main window
     QWidget *m_mainWidget;
-    QPoint m_dragPos;
     FancyCursor m_pressCursor;
     FancyCursor m_moveCursor;
     bool m_bEdgePressed;
@@ -159,7 +153,6 @@ public:
     ///
     QRect m_normalRect;
     QPoint m_movePoint;
-    QPoint m_dragPoint;
     bool m_bLeftButtonPressed;
 
     bool m_isMaximized;
@@ -616,14 +609,17 @@ void FancyBarPrivate::restoreWidget(QWidget *pWidget)
 
 void FancyBarPrivate::maximizeWidget(QWidget *pWidget)
 {
-    // 在窗体大小改变前更新值,因为事件过滤响应随机
+    // Update the value before the window size changes,
+    // because the event filter response may be random
     m_isMaximized = true;
-    // 计算最大化所在屏幕
+
+    // support multi-screen
     int x = pWidget->frameGeometry().x() + pWidget->frameGeometry().width() / 2;
     FancyScreen sreen;
     m_currentScreen = sreen.currentScreen(x);
     QRect rect = sreen.screenRect(m_currentScreen);
     pWidget->setGeometry(rect);
+
     emit windowResizable(false);
 }
 
@@ -664,16 +660,14 @@ void FancyBarPrivate::windowSizeChange(QObject *obj)
     QWidget *pWindow = qobject_cast<QWidget *>(obj);
 
     if (pWindow) {
-        bool bMaximize = pWindow->isMaximized();
-
-        if (bMaximize) {
-            // 消除无边框最大化遮挡windows任务栏
+        if (pWindow->isMaximized()) {
+            // Mask the maximized state, because the frameless window
+            // will cover the windows taskbar when maximized
             pWindow->setWindowState(pWindow->windowState() & ~Qt::WindowMaximized);
             this->maximizeWidget(pWindow);
         }
 
         windowStateChange(obj);
-//        m_maximizeButton->setStyle(QApplication::style());
     }
 }
 
@@ -730,24 +724,24 @@ void FancyBarPrivate::updateCursorShape(const QPoint &gMousePos)
     if (m_mainWidget->isFullScreen() || m_mainWidget->isMaximized() || m_isMaximized) {
         if (m_bCursorShapeChanged) {
             m_mainWidget->unsetCursor();
+            m_bCursorShapeChanged = false;
         }
-
         return;
     }
 
     m_moveCursor.recalculate(gMousePos, m_mainWidget->frameGeometry());
 
     if (m_moveCursor.m_bOnTopLeftEdge || m_moveCursor.m_bOnBottomRightEdge) {
-        m_mainWidget->setCursor( Qt::SizeFDiagCursor );
+        m_mainWidget->setCursor(Qt::SizeFDiagCursor);
         m_bCursorShapeChanged = true;
     } else if (m_moveCursor.m_bOnTopRightEdge || m_moveCursor.m_bOnBottomLeftEdge) {
-        m_mainWidget->setCursor( Qt::SizeBDiagCursor );
+        m_mainWidget->setCursor(Qt::SizeBDiagCursor);
         m_bCursorShapeChanged = true;
     } else if (m_moveCursor.m_bOnLeftEdge || m_moveCursor.m_bOnRightEdge) {
-        m_mainWidget->setCursor( Qt::SizeHorCursor );
+        m_mainWidget->setCursor(Qt::SizeHorCursor);
         m_bCursorShapeChanged = true;
     } else if (m_moveCursor.m_bOnTopEdge || m_moveCursor.m_bOnBottomEdge) {
-        m_mainWidget->setCursor( Qt::SizeVerCursor );
+        m_mainWidget->setCursor(Qt::SizeVerCursor);
         m_bCursorShapeChanged = true;
     } else {
         if (m_bCursorShapeChanged) {
@@ -759,13 +753,13 @@ void FancyBarPrivate::updateCursorShape(const QPoint &gMousePos)
 
 void FancyBarPrivate::resizeWidget(const QPoint &gMousePos)
 {
-    QRect origRect;
-    origRect = m_mainWidget->frameGeometry();
-    int left = origRect.left();
-    int top = origRect.top();
-    int right = origRect.right();
-    int bottom = origRect.bottom();
-    origRect.getCoords(&left, &top, &right, &bottom);
+    // original rect
+    QRect oriRect = m_mainWidget->frameGeometry();
+    int left = oriRect.left();
+    int top = oriRect.top();
+    int right = oriRect.right();
+    int bottom = oriRect.bottom();
+    oriRect.getCoords(&left, &top, &right, &bottom);
     int minWidth = m_mainWidget->minimumWidth();
     int minHeight = m_mainWidget->minimumHeight();
 
@@ -795,18 +789,18 @@ void FancyBarPrivate::resizeWidget(const QPoint &gMousePos)
 
     if (newRect.isValid()) {
         if (minWidth > newRect.width()) {
-            if (left != origRect.left()) {
-                newRect.setLeft(origRect.left());
+            if (left != oriRect.left()) {
+                newRect.setLeft(oriRect.left());
             } else {
-                newRect.setRight(origRect.right());
+                newRect.setRight(oriRect.right());
             }
         }
 
         if (minHeight > newRect.height()) {
-            if (top != origRect.top()) {
-                newRect.setTop(origRect.top());
+            if (top != oriRect.top()) {
+                newRect.setTop(oriRect.top());
             } else {
-                newRect.setBottom(origRect.bottom());
+                newRect.setBottom(oriRect.bottom());
             }
         }
 
@@ -814,18 +808,13 @@ void FancyBarPrivate::resizeWidget(const QPoint &gMousePos)
     }
 }
 
-void FancyBarPrivate::moveWidget(const QPoint &gMousePos)
-{
-    m_mainWidget->move(gMousePos - m_dragPos);
-}
-
 void FancyBarPrivate::handleMousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton && !m_isMaximized) { // add !m_isMaximized 2017-7-27 22:52:39
+    // add !m_isMaximized 2017-7-27 22:52:39
+    if (event->button() == Qt::LeftButton && !m_isMaximized) {
         m_bEdgePressed = true;
         QRect frameRect = m_mainWidget->frameGeometry();
         m_pressCursor.recalculate(event->globalPos(), frameRect);
-        m_dragPos = event->globalPos() - frameRect.topLeft();
     }
 }
 
@@ -847,11 +836,6 @@ void FancyBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
         if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
             resizeWidget(event->globalPos());
         }
-
-//        else if (d->m_bWidgetMovable && m_bLeftButtonTitlePressed)
-//        {
-//            moveWidget(event->globalPos());
-//        }
     } else if (m_bWidgetResizable) {
         updateCursorShape(event->globalPos());
     }
@@ -873,29 +857,52 @@ void FancyBarPrivate::handleHoverMoveEvent(QHoverEvent *event)
     }
 }
 
-QPoint FancyBarPrivate::calcDragPoint(QWidget *pWindow, QMouseEvent *event) const
+/**
+ * Calculate the starting position of the window from maximized to normal size
+ *
+ *  |-------------------|       |---------|
+ *  |                   |  ==>  |         |
+ *  |                   |       |---------|
+ *  |                   |
+ *  |-------------------|
+ *
+ *  1) y coordinate is fixed to 0
+ *  2) x coordinate is:
+ *      a) screen x coordinate, when the drag point is left half (Align screen left)
+ *          |--*-------------|
+ *          |-------|
+ *          `-> screenX
+ *      b) maxwidth - oriWidth, when the dragpoint is right half (Align screen right)
+ *          |-------------*--|
+ *                   |-------|
+ *                   `-> maxWidth - oriWidth
+ *      c) mouseX - oriWidth/2
+ *          |---------*------|
+ *                |-------|
+ *                `-> mouseX - oriWidth/2
+ */
+QPoint FancyBarPrivate::calcStartPoint(QWidget *pWindow, QMouseEvent *event) const
 {
-    // 最大化时，计算拖拽界面显示的坐标点
     int mouseX = event->globalX();
     FancyScreen screen;
     QRect rect = screen.screenRect(m_currentScreen);
     int maxWidth = rect.x() + rect.width();
     int screenX = rect.x();
-    int orgWidth = m_normalRect.width();
+    int oriWidth = m_normalRect.width();
 
-    if (orgWidth == 0) { // 初始最大化显示时,orgWidth记录为0
-        orgWidth = pWindow->minimumWidth();
+    if (oriWidth == 0) {
+        oriWidth = pWindow->minimumWidth();
     }
 
     QPoint point;
     point.setY(0);
 
-    if (mouseX - screenX < orgWidth / 2) {
-        point.setX(screenX);
-    } else if (maxWidth - mouseX < orgWidth / 2) {
-        point.setX(maxWidth - orgWidth);
+    if (mouseX - screenX < oriWidth / 2) {
+        point.setX(screenX); // Align screen left
+    } else if (maxWidth - mouseX < oriWidth / 2) {
+        point.setX(maxWidth - oriWidth); // Align screen right
     } else {
-        point.setX(mouseX - orgWidth / 2);
+        point.setX(mouseX - oriWidth / 2);
     }
 
     return point;
@@ -909,8 +916,7 @@ void FancyBarPrivate::mousePressEvent(QMouseEvent *event)
 
         if (pWindow->isTopLevel()) {
             if (m_isMaximized) {
-                m_dragPoint = calcDragPoint(pWindow, event);
-                m_movePoint = event->globalPos() - m_dragPoint;
+                m_movePoint = event->globalPos() - calcStartPoint(pWindow, event);
             } else {
                 m_movePoint = event->globalPos() - pWindow->pos();
             }
@@ -951,11 +957,9 @@ void FancyBarPrivate::mouseMoveEvent(QMouseEvent *event)
 
         if (pWindow->isTopLevel()) {
             if (m_bWidgetMaximizable && m_isMaximized) {
-//                restoreWidget(pWindow);
                 // modified on 2017-7-27 22:54:15 , drag on miximization
                 if (event->globalY() > 2 * m_moveCursor.m_nBorderWidth) {
-                    m_dragPoint = calcDragPoint(pWindow, event);
-                    m_movePoint = event->globalPos() - m_dragPoint;
+                    m_movePoint = event->globalPos() - calcStartPoint(pWindow, event);
                     restoreWidget(pWindow);
                 }
             } else {
