@@ -1,2 +1,2 @@
 include(../../library.pri)
-include($$PWD/../../../../../src/libs/qlite/qlite-lib.pri)
+include($$QTCANPOOL_DIR/src/libs/qlite/qlite-lib.pri)

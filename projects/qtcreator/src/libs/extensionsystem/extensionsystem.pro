@@ -1,3 +1,3 @@
 include(../../library.pri)
-include($$PWD/../../../../../src/libs/extensionsystem/extensionsystem-lib.pri)
+include($$QTCANPOOL_DIR/src/libs/extensionsystem/extensionsystem-lib.pri)
 

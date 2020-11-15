@@ -1,2 +1,2 @@
 include(config.pri)
-include(../../qtproject.pri)
+include($$QTCANPOOL_DIR/qtproject.pri)

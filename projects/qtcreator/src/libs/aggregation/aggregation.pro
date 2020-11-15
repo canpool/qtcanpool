@@ -1,3 +1,3 @@
 include(../../library.pri)
-include($$PWD/../../../../../src/libs/aggregation/aggregation-lib.pri)
+include($$QTCANPOOL_DIR/src/libs/aggregation/aggregation-lib.pri)
 
