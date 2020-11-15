@@ -932,7 +932,7 @@ void FancyBarPrivate::mouseReleaseEvent(QMouseEvent *event)
 
     // maximize on the top of the screen
     if (!m_isMaximized) {
-        if (event->globalY() == 0) {
+        if (event->globalY() <= 3) {
             m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
 
             if (m_bWidgetMaximizable) {
@@ -1130,6 +1130,8 @@ QMenuBar *FancyBar::menuBar() const
 {
     if (d->m_menuBar == nullptr) {
         d->m_menuBar = new QMenuBar();
+        d->m_menuBar->setNativeMenuBar(false);
+        d->m_menuBar->setVisible(true);
         d->m_menuBar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
         d->updateMenuColor();
         d->m_menuBarArea->addWidget(d->m_menuBar);
