@@ -23,60 +23,57 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
-#ifndef FANCYBAR_H
-#define FANCYBAR_H
+#ifndef FANCYTITLEBAR_H
+#define FANCYTITLEBAR_H
 
-#include <QWidget>
+#include <QObject>
 #include "qcanpool_global.h"
 
-class QMenuBar;
-class FancyQuickAccessBar;
-class FancyBarPrivate;
+class QMouseEvent;
+class QLabel;
+class QToolButton;
+class QToolBar;
+class QAction;
 
-class QCANPOOL_SHARED_EXPORT FancyBar : public QWidget
+class FancyTitleBarPrivate;
+class QCANPOOL_SHARED_EXPORT FancyTitleBar : public QObject
 {
     Q_OBJECT
 public:
-    enum AdditionalControlPosition {
-        TitlePosition, MenuPosition
-    };
+    explicit FancyTitleBar(QObject *parent = nullptr);
+    ~FancyTitleBar();
 
-    enum FancyStyle{
-        WindowStyle, ClassicStyle, MergedStyle, DialogStyle
-    };
+    QWidget *mainWidget() const;
+    QLabel *titleLabel() const;
+    QToolButton *logoButton() const;
+    QWidget *systemGroup() const;
 
-    explicit FancyBar(QWidget *parent);
-    ~FancyBar();
-
-    QMenuBar* menuBar() const;
-    void showMenuBar(bool show = false);
-    bool isMenuBarVisible() const;
-
-    FancyQuickAccessBar* quickAccessBar() const;
-    void showQuickAccess(bool show = true);
-    bool isQuickAccessVisible() const;
-
-    void setHoverColor(const QColor &color);
-    void setPressColor(const QColor &color);
-    void setTextColor(const QColor &color);
-    void setBackgroundColor(const QColor &color);
-
-    void addAdditionalControl(QAction *action, AdditionalControlPosition position);
-    void addAdditionalControl(QWidget *widget, AdditionalControlPosition position);
-    void setApplicationWidget(const QString &label, QWidget *widget);
-    void setApplicationButtonBkColor(const QColor &color);
+    void setCloseIcon(QIcon &icon);
+    void setMaximizeIcon(QIcon &icon);
+    void setMinimizeIcon(QIcon &icon);
 
     void setWidgetResizable(bool resizable);
-    void setTitleBarHeight(int height);
+    void setWidgetMovable(bool movable);
+    void setWidgetMaximizable(bool maximizable);
 
-    void setFancyStyle(FancyStyle style);
     void updateWidgetFlags();
 
+public:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+
 signals:
-    void maximizationChanged(bool maximized);
+    void windowResizable(bool resizable);
+    void windowMovable(bool movable);
+    void windowIconChanged(QIcon &icon);
+
+protected:
+    virtual bool eventFilter(QObject* object, QEvent* event);
 
 private:
-    FancyBarPrivate *d;
+    FancyTitleBarPrivate *d;
 };
 
-#endif // FANCYBAR_H
+#endif // FANCYTITLEBAR_H

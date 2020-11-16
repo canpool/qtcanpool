@@ -50,7 +50,8 @@ HEADERS += \
     $$PWD/fancymodebar_p.h \
     $$PWD/fancymode.h \
     $$PWD/fancyquickaccessbar.h \
-    $$PWD/fancymodemanager.h
+    $$PWD/fancymodemanager.h \
+    $$PWD/fancytitlebar.h
 
 SOURCES += \
     $$PWD/fancytabwidget.cpp \
@@ -78,7 +79,8 @@ SOURCES += \
     $$PWD/fancymodebar.cpp \
     $$PWD/fancymode.cpp \
     $$PWD/fancyquickaccessbar.cpp \
-    $$PWD/fancymodemanager.cpp
+    $$PWD/fancymodemanager.cpp \
+    $$PWD/fancytitlebar.cpp
 
 RESOURCES += \
     $$PWD/qcanpool.qrc
