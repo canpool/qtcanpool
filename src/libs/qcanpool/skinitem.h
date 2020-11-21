@@ -23,6 +23,8 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class SkinItemPrivate;
 class QCANPOOL_SHARED_EXPORT SkinItem : public QWidget
 {
@@ -49,5 +51,7 @@ protected:
 private:
     SkinItemPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // SKINITEM_H

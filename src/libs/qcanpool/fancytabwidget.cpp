@@ -28,6 +28,8 @@
 #include <QStackedLayout>
 #include <QIcon>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTabWidgetPrivate : public QObject
 {
 public:
@@ -396,3 +398,4 @@ void FancyTabWidget::hideMenu(int index)
     d->m_tabBar->hideMenu(index);
 }
 
+QCANPOOL_END_NAMESPACE

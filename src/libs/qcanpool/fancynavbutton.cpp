@@ -26,6 +26,8 @@
 #include <QStackedWidget>
 #include <QAction>
 
+QCANPOOL_USE_NAMESPACE
+
 FancyNavButton::FancyNavButton(QWidget *parent)
     : QToolButton(parent)
 {

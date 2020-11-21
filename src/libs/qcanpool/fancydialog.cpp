@@ -25,6 +25,8 @@
 #include <QSettings>
 #include <QPainter>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyDialogPrivate
 {
 public:
@@ -138,3 +140,5 @@ void FancyDialog::paintEvent(QPaintEvent *event)
     painter.drawPixmap(QRect(0, 0, this->width(), this->height()),
                        QPixmap(skinName));
 }
+
+QCANPOOL_END_NAMESPACE

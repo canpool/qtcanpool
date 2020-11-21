@@ -21,13 +21,17 @@
 #define QCANPOOL_P_H
 
 #include <QString>
+#include "qcanpool_global.h"
+
+QCANPOOL_BEGIN_NAMESPACE
 
 class QCanpoolPrivate
 {
 public:
-
     static QString g_settingsOrganization;
     static QString g_settingsApplication;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // QCANPOOL_P_H

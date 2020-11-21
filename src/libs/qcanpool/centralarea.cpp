@@ -21,6 +21,8 @@
 
 #include <QVBoxLayout>
 
+QCANPOOL_USE_NAMESPACE
+
 CentralArea::CentralArea(QWidget *parent)
     : QScrollArea(parent)
 {

@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "fancycursor.h"
 
+QCANPOOL_USE_NAMESPACE
+
 FancyCursor::FancyCursor()
 {
     m_nBorderWidth = 5;

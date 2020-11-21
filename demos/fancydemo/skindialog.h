@@ -23,8 +23,13 @@
 #include "qcanpool/fancydialog.h"
 #include <QMap>
 
+QCANPOOL_USE_NAMESPACE
+
+QCANPOOL_BEGIN_NAMESPACE
 class TinyTabWidget;
 class SkinItem;
+QCANPOOL_END_NAMESPACE
+
 class QComboBox;
 class SkinDialog : public FancyDialog
 {

@@ -26,9 +26,11 @@
 #ifndef FANCYQUICKACCESSBAR_H
 #define FANCYQUICKACCESSBAR_H
 
-#include "qcanpool_global.h"
 #include <QToolBar>
 #include <QMenu>
+#include "qcanpool_global.h"
+
+QCANPOOL_BEGIN_NAMESPACE
 
 class FancyQuickAccessBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyQuickAccessBar : public QToolBar
@@ -53,5 +55,7 @@ protected:
 private:
     FancyQuickAccessBarPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYQUICKACCESSBAR_H

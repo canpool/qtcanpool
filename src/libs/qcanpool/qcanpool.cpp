@@ -31,7 +31,7 @@
 #include <QUrl>
 #endif
 
-QColor QCanpool::argbToColor(const QString &argb)
+QColor QCANPOOL_PREPEND_NAMESPACE(argbToColor)(const QString &argb)
 {
     QColor color;
     bool ok = true;
@@ -46,7 +46,7 @@ QColor QCanpool::argbToColor(const QString &argb)
     return color;
 }
 
-QString QCanpool::colorToArgb(const QColor &color)
+QString QCANPOOL_PREPEND_NAMESPACE(colorToArgb)(const QColor &color)
 {
     QString argb =  QString("%1%2%3%4")
                     .arg(color.alpha(), 2, 16, QLatin1Char('0'))
@@ -56,7 +56,7 @@ QString QCanpool::colorToArgb(const QColor &color)
     return argb;
 }
 
-void QCanpool::showInExplorer(QString fileName)
+void QCANPOOL_PREPEND_NAMESPACE(showInExplorer)(QString fileName)
 {
     Q_UNUSED(fileName);
 #if defined(Q_OS_WIN32) && !defined(Q_CC_MSVC)
@@ -68,7 +68,7 @@ void QCanpool::showInExplorer(QString fileName)
 #endif
 }
 
-void QCanpool::setSysSettings(const QString &organization, const QString &application)
+void QCANPOOL_PREPEND_NAMESPACE(setSysSettings)(const QString &organization, const QString &application)
 {
     QCanpoolPrivate::g_settingsOrganization = organization;
     QCanpoolPrivate::g_settingsApplication  = application;

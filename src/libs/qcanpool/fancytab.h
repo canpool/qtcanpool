@@ -30,6 +30,8 @@
 #include <QColor>
 #include <QIcon>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTab : public FancyButton
 {
     Q_OBJECT
@@ -71,5 +73,7 @@ private:
 
     TabType m_type;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYTAB_H

@@ -29,6 +29,8 @@
 #include <QMainWindow>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyBar;
 class FancyWindowPrivate;
 class QCANPOOL_SHARED_EXPORT FancyWindow : public QMainWindow
@@ -56,5 +58,7 @@ protected:
 private:
     FancyWindowPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYWINDOW_H

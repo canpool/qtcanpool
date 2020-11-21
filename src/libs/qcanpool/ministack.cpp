@@ -26,6 +26,8 @@
 
 #include "qcanpool.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class MiniStackPrivate : public QObject
 {
     Q_OBJECT
@@ -327,5 +329,7 @@ void MiniStack::setTabSelectedTextColor(const QColor &color)
     d->m_tabSelectedTextColor = color;
     d->setTabColor();
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "ministack.moc"

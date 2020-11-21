@@ -26,6 +26,8 @@
 #include <QMenu>
 #include <QMouseEvent>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTabBarPrivate : public QObject
 {
     Q_OBJECT
@@ -623,5 +625,7 @@ void FancyTabBar::hideMenu(int index)
         d->m_modeTabs.at(index)->select(false);
     }
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "fancytabbar.moc"

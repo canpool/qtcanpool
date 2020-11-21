@@ -24,6 +24,8 @@
 #include <QAction>
 #include "qcanpool.h"
 
+QCANPOOL_USE_NAMESPACE
+
 FancyButton::FancyButton(QWidget *parent)
     : QToolButton(parent)
 {

@@ -19,5 +19,7 @@
 ****************************************************************************/
 #include "qcanpool_p.h"
 
+QCANPOOL_USE_NAMESPACE
+
 QString QCanpoolPrivate::g_settingsOrganization = QString("Canpool");
 QString QCanpoolPrivate::g_settingsApplication = QString("qtcanpool");

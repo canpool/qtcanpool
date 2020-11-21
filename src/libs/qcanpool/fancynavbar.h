@@ -23,8 +23,11 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
-class FancyNavBarPrivate;
 class QSplitter;
+
+QCANPOOL_BEGIN_NAMESPACE
+
+class FancyNavBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyNavBar : public QWidget
 {
     Q_OBJECT
@@ -55,5 +58,7 @@ public slots:
 private:
     FancyNavBarPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYNAVBAR_H

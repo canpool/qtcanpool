@@ -30,6 +30,8 @@
 #include <QTimer>
 #include <QStackedLayout>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 static QColor s_frontColor = QColor(220, 0, 0);
 static QColor s_backColor = QColor(200, 200, 200);
 
@@ -721,5 +723,6 @@ void FancyBanner::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 }
 
-#include "fancybanner.moc"
+QCANPOOL_END_NAMESPACE
 
+#include "fancybanner.moc"

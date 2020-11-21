@@ -27,6 +27,8 @@ class QLabel;
 class QLineEdit;
 class QIntValidator;
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class QCANPOOL_SHARED_EXPORT PageSorter : public QWidget
 {
     Q_OBJECT
@@ -51,8 +53,6 @@ private:
 signals:
     void currentPageChanged(int page);
 
-public slots:
-
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
 
@@ -74,5 +74,7 @@ private:
     int m_currentPage;
     int m_block;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // PAGESORTER_H

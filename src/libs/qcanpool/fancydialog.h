@@ -23,6 +23,8 @@
 #include <QDialog>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyDialogPrivate;
 class QCANPOOL_SHARED_EXPORT FancyDialog : public QDialog
 {
@@ -50,5 +52,7 @@ protected:
 private:
     FancyDialogPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYDIALOG_H

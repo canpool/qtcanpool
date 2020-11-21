@@ -24,6 +24,8 @@
 #include <QPen>
 #include <QAction>
 
+QCANPOOL_USE_NAMESPACE
+
 FancyTab::FancyTab(QWidget *parent)
     : FancyButton(parent)
 {

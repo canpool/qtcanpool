@@ -26,6 +26,8 @@
 #include <QPainter>
 #include <QPen>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 ////////////////////////////////////////////////////////////////////////
 /// \brief The TinyTab class
 ///
@@ -674,5 +676,7 @@ void TinyTabWidget::setCurrentWidget(QWidget *widget)
 {
     d->m_stack->setCurrentWidget(widget);
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "tinytabwidget.moc"

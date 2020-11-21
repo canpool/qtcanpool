@@ -36,6 +36,8 @@
 #include "fancybar.h"
 #include "fancybutton.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyQuickAccessBarPrivate : public QWidget
 {
     Q_OBJECT
@@ -291,5 +293,7 @@ void FancyQuickAccessBar::actionEvent(QActionEvent *event)
             break;
     }
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "fancyquickaccessbar.moc"

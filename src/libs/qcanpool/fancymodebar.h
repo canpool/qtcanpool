@@ -30,8 +30,11 @@
 #include "qcanpool_global.h"
 
 class QStackedWidget;
-class FancyMode;
 class QAction;
+
+QCANPOOL_BEGIN_NAMESPACE
+
+class FancyMode;
 class FancyModeBarPrivate;
 
 class QCANPOOL_SHARED_EXPORT FancyModeBar : public QWidget
@@ -81,5 +84,7 @@ private:
     FancyModeBarPrivate *d;
     Direction m_direction;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYMODEBAR_H

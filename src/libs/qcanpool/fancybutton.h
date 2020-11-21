@@ -27,6 +27,9 @@
 #define FANCYBUTTON_H
 
 #include <QToolButton>
+#include "qcanpool_global.h"
+
+QCANPOOL_BEGIN_NAMESPACE
 
 class FancyButtonPrivate;
 class FancyButton : public QToolButton
@@ -86,5 +89,7 @@ private:
     QColor m_textColor;
     QColor m_normalColor;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYBUTTON_H

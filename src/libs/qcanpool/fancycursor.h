@@ -26,12 +26,11 @@
 #ifndef FANCYCURSOR_H
 #define FANCYCURSOR_H
 
-
 #include <QWidget>
-/*****
- * CursorPosCalculator
- * 计算鼠标是否位于左、上、右、下、左上角、左下角、右上角、右下角
-*****/
+#include "qcanpool_global.h"
+
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyCursor
 {
 public:
@@ -52,5 +51,7 @@ public:
 
     int m_nBorderWidth          : 5;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYCURSOR_H

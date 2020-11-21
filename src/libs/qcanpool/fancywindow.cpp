@@ -34,6 +34,8 @@
 #include <QSettings>
 #include <QPainter>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyWindowPrivate
 {
 public:
@@ -122,3 +124,4 @@ void FancyWindow::paintEvent(QPaintEvent *event)
                        QPixmap(skinName));
 }
 
+QCANPOOL_END_NAMESPACE

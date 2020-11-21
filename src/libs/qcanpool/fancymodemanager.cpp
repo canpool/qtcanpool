@@ -31,6 +31,8 @@
 #include <QMouseEvent>
 #include <QVector>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class ModeManagerPrivate : public QObject
 {
     Q_OBJECT
@@ -193,5 +195,7 @@ void FancyModeManager::currentTabChanged(int index)
         emit currentModeChanged(mode ? mode : oldMode);
     }
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "fancymodemanager.moc"

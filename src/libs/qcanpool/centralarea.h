@@ -23,11 +23,15 @@
 #include <QScrollArea>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class QCANPOOL_SHARED_EXPORT CentralArea : public QScrollArea
 {
     Q_OBJECT
 public:
     explicit CentralArea(QWidget *parent = nullptr);
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // CENTRALAREA_H

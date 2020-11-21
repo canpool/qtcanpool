@@ -22,6 +22,9 @@
 
 #include <QMainWindow>
 #include <QTime>
+#include "qcanpool/qcanpool_global.h"
+
+QCANPOOL_USE_NAMESPACE
 
 class QMenu;
 class QLabel;
@@ -32,8 +35,11 @@ class QStackedWidget;
 class ChartsMode;
 class CustomMode;
 class MenuMode;
-class FancyTabWidget;
+
+QCANPOOL_BEGIN_NAMESPACE
 class FancyModeManager;
+class FancyTabWidget;
+QCANPOOL_END_NAMESPACE
 
 class CMainWindow : public QMainWindow
 {

@@ -57,10 +57,12 @@
 #include "qcanpool_global.h"
 
 class QStatusBar;
-class FancyTabBar;
-class FancyTabWidgetPrivate;
 class QSplitter;
 
+QCANPOOL_BEGIN_NAMESPACE
+
+class FancyTabBar;
+class FancyTabWidgetPrivate;
 class QCANPOOL_SHARED_EXPORT FancyTabWidget : public QWidget
 {
     Q_OBJECT
@@ -132,5 +134,7 @@ public slots:
 private:
     FancyTabWidgetPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYTABWIDGET_H

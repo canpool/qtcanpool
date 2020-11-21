@@ -3,6 +3,8 @@
 
 #include "qcanpool/fancymode.h"
 
+QCANPOOL_USE_NAMESPACE
+
 class MenuMode : public FancyMode
 {
     Q_OBJECT

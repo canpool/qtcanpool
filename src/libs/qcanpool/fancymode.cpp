@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "fancymode.h"
 
+QCANPOOL_USE_NAMESPACE
+
 FancyMode::FancyMode(QObject *parent)
     : QObject(parent),
       m_isEnabled(true)

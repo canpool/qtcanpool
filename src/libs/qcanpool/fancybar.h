@@ -30,6 +30,9 @@
 #include "qcanpool_global.h"
 
 class QMenuBar;
+
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyQuickAccessBar;
 class FancyBarPrivate;
 
@@ -78,5 +81,7 @@ signals:
 private:
     FancyBarPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYBAR_H

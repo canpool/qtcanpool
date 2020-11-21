@@ -22,6 +22,8 @@
 
 #include "qcanpool/fancywindow.h"
 
+QCANPOOL_USE_NAMESPACE
+
 class QMenu;
 class QLabel;
 class QToolBar;
@@ -32,9 +34,12 @@ class ChartsMode;
 class CustomMode;
 class PaintMode;
 class MenuMode;
+
+QCANPOOL_BEGIN_NAMESPACE
 class FancyTabWidget;
 class FancyModeManager;
 class FancyNavBar;
+QCANPOOL_END_NAMESPACE
 
 class MainWindow : public FancyWindow
 {

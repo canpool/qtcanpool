@@ -40,6 +40,8 @@
 #include <QMainWindow>
 #include <QApplication>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 #define TITLE_BAR_HEIGHT    25
 #define MENU_BAR_HEIGHT     25
 
@@ -662,6 +664,6 @@ void FancyBar::updateWidgetFlags()
     d->m_titleBar->updateWidgetFlags();
 }
 
+QCANPOOL_END_NAMESPACE
+
 #include "fancybar.moc"
-
-

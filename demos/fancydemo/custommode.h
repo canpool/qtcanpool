@@ -3,8 +3,12 @@
 
 #include "qcanpool/fancymode.h"
 
+QCANPOOL_USE_NAMESPACE
+
+QCANPOOL_BEGIN_NAMESPACE
 class MiniCard;
 class TinyTabWidget;
+QCANPOOL_END_NAMESPACE
 
 class CustomMode : public FancyMode
 {

@@ -34,6 +34,8 @@
 #include <QStackedWidget>
 #include <QScrollArea>
 
+QCANPOOL_USE_NAMESPACE
+
 FancyModeBarPrivate::FancyModeBarPrivate(QObject *parent)
     : QObject(parent)
 {

@@ -29,6 +29,8 @@
 #include <QObject>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTabWidget;
 class FancyMode;
 
@@ -55,5 +57,7 @@ public slots:
     void objectRemoved(QObject *obj);
     void currentTabChanged(int index);
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYMODEMANAGER_H

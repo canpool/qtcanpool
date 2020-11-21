@@ -23,18 +23,18 @@
 #include <QObject>
 #include "qcanpool_global.h"
 
-class QCANPOOL_SHARED_EXPORT QCanpool
-{
-public:
-    /// color
-    static QColor argbToColor(const QString &argb);
-    static QString colorToArgb(const QColor &color); /// ffaabbcc
+QCANPOOL_BEGIN_NAMESPACE
 
-    // file
-    static void showInExplorer(QString fileName);
+// color
+QCANPOOL_SHARED_EXPORT QColor argbToColor(const QString &argb);
+QCANPOOL_SHARED_EXPORT QString colorToArgb(const QColor &color); /// ffaabbcc
 
-    // settings
-    static void setSysSettings(const QString &organization, const QString &application);
-};
+// file
+QCANPOOL_SHARED_EXPORT void showInExplorer(QString fileName);
+
+// settings
+QCANPOOL_SHARED_EXPORT void setSysSettings(const QString &organization, const QString &application);
+
+QCANPOOL_END_NAMESPACE
 
 #endif // QCANPOOL_H

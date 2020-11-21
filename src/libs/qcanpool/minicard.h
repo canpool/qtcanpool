@@ -43,8 +43,9 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
-class MiniCardPrivate;
+QCANPOOL_BEGIN_NAMESPACE
 
+class MiniCardPrivate;
 class QCANPOOL_SHARED_EXPORT MiniCard : public QWidget
 {
     Q_OBJECT
@@ -74,7 +75,8 @@ signals:
 
 private:
     MiniCardPrivate *d;
-
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // MINICARD_H

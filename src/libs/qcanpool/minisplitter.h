@@ -27,6 +27,8 @@ QT_BEGIN_NAMESPACE
 class QSplitterHandle;
 QT_END_NAMESPACE
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class QCANPOOL_SHARED_EXPORT MiniSplitter : public QSplitter
 {
     Q_OBJECT
@@ -42,5 +44,7 @@ protected:
 private:
     SplitterStyle m_style;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // MINISPLITTER_H

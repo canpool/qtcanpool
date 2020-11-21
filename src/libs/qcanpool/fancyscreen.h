@@ -30,6 +30,8 @@
 #include <QList>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 /* on screen display */
 class QCANPOOL_SHARED_EXPORT FancyScreen
 {
@@ -44,5 +46,7 @@ public:
 private:
     QList<QRect> m_screenRects;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYSCREEN_H

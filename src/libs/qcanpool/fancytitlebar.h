@@ -35,6 +35,8 @@ class QToolButton;
 class QToolBar;
 class QAction;
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTitleBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyTitleBar : public QObject
 {
@@ -75,5 +77,7 @@ protected:
 private:
     FancyTitleBarPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYTITLEBAR_H

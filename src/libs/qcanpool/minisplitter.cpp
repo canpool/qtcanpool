@@ -22,6 +22,8 @@
 #include <QPainter>
 #include <QSplitterHandle>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class MiniSplitterHandle : public QSplitterHandle
 {
 public:
@@ -86,3 +88,5 @@ MiniSplitter::MiniSplitter(Qt::Orientation orientation, SplitterStyle style)
     setChildrenCollapsible(false);
     setProperty("minisplitter", true);
 }
+
+QCANPOOL_END_NAMESPACE

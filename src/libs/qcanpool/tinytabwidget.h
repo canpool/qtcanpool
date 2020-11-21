@@ -23,6 +23,8 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class TinyTabWidgetPrivate;
 class QCANPOOL_SHARED_EXPORT TinyTabWidget : public QWidget
 {
@@ -68,5 +70,7 @@ public slots:
 private:
     TinyTabWidgetPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // TINYTABWIDGET_H

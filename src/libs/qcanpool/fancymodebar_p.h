@@ -28,10 +28,14 @@
 
 #include <QObject>
 #include <QMap>
+#include "qcanpool_global.h"
 
 class QStackedWidget;
 class QBoxLayout;
 class QAction;
+
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyModeBar;
 class FancyTab;
 class FancyMode;
@@ -67,7 +71,8 @@ public:
 
 private slots:
     void switchMode();
-
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYMODEBAR_P_H

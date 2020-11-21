@@ -29,6 +29,8 @@
 #include <QLabel>
 #include <QSplitter>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyNavBarPrivate : public QObject
 {
     Q_OBJECT
@@ -445,5 +447,7 @@ void FancyNavBar::setTextColor(const QColor &color)
         button->setTextColor(color);
     }
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "fancynavbar.moc"

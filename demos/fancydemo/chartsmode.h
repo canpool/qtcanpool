@@ -3,6 +3,8 @@
 
 #include "qcanpool/fancymode.h"
 
+QCANPOOL_USE_NAMESPACE
+
 class ChartsMode : public FancyMode
 {
     Q_OBJECT

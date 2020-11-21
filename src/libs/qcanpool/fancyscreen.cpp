@@ -33,6 +33,8 @@
 #include <QScreen>
 #endif
 
+QCANPOOL_USE_NAMESPACE
+
 FancyScreen::FancyScreen()
 {
     m_screenRects.clear();

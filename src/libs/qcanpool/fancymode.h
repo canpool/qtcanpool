@@ -33,6 +33,8 @@
 
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class QCANPOOL_SHARED_EXPORT FancyMode : public QObject
 {
     Q_OBJECT
@@ -65,7 +67,8 @@ private:
     QWidget *m_widget = nullptr;
     int m_priority = -1;
     bool m_isEnabled;
-
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYMODE_H

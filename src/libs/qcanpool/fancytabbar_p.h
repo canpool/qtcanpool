@@ -6,6 +6,9 @@
 #include "fancytabbar.h"
 
 class QBoxLayout;
+
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTab;
 
 class FancyTabBarPrivate : public QObject
@@ -39,11 +42,11 @@ public:
 
     FancyTabBar *q;
 
-signals:
-
 public slots:
     void switchTab();
     void menuTriggered(QMouseEvent *e);
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYTABBAR_P_H

@@ -21,6 +21,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 #ifndef SHADOW_WIDTH
 #define SHADOW_WIDTH    5
 #endif
@@ -142,4 +144,4 @@ void SkinItem::paintEvent(QPaintEvent *)
     painter.restore();
 }
 
-
+QCANPOOL_END_NAMESPACE

@@ -23,6 +23,8 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyBannerPrivate;
 class QCANPOOL_SHARED_EXPORT FancyBanner : public QWidget
 {
@@ -43,13 +45,13 @@ public:
 signals:
     void currentClicked(int index);
 
-public slots:
-
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     FancyBannerPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYBANNER_H

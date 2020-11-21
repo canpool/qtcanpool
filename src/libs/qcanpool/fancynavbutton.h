@@ -23,6 +23,9 @@
 #include <QToolButton>
 #include <QIcon>
 #include <QColor>
+#include "qcanpool_global.h"
+
+QCANPOOL_BEGIN_NAMESPACE
 
 class FancyNavButton : public QToolButton
 {
@@ -62,5 +65,7 @@ private:
     QColor m_hoverColor;
     QColor m_pressColor;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYNAVBUTTON_H

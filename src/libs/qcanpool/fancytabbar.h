@@ -23,8 +23,9 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
-class FancyTabBarPrivate;
+QCANPOOL_BEGIN_NAMESPACE
 
+class FancyTabBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyTabBar : public QWidget
 {
     Q_OBJECT
@@ -92,5 +93,7 @@ public slots:
 private:
     FancyTabBarPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // FANCYTABBAR_H

@@ -24,6 +24,8 @@
 #include <QVBoxLayout>
 #include "qcanpool.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class MiniCardPrivate : public QObject
 {
     Q_OBJECT
@@ -256,5 +258,7 @@ void MiniCard::setBackgroundColor(const QColor &color)
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "minicard.moc"

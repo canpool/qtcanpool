@@ -26,6 +26,8 @@
 #include <QHBoxLayout>
 #include <QTreeView>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 enum Type {
     NoneType,
     TableType,
@@ -398,6 +400,6 @@ void SimpleFilter::clear()
     d->m_lineEdit->clear();
 }
 
-
+QCANPOOL_END_NAMESPACE
 
 #include "simplefilter.moc"

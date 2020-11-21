@@ -37,6 +37,8 @@
 #include <QPoint>
 #include <QApplication>
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class FancyTitleBarPrivate : public QObject
 {
     Q_OBJECT
@@ -805,5 +807,7 @@ bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)
 
     return QObject::eventFilter(object, event);
 }
+
+QCANPOOL_END_NAMESPACE
 
 #include "fancytitlebar.moc"

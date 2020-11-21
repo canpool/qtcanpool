@@ -54,6 +54,8 @@
 #include <QWidget>
 #include "qcanpool_global.h"
 
+QCANPOOL_BEGIN_NAMESPACE
+
 class MiniStackPrivate;
 class QCANPOOL_SHARED_EXPORT MiniStack : public QWidget
 {
@@ -92,5 +94,7 @@ signals:
 private:
     MiniStackPrivate *d;
 };
+
+QCANPOOL_END_NAMESPACE
 
 #endif // MINISTACK_H

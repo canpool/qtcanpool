@@ -26,6 +26,8 @@
 #include <QEvent>
 #include <QKeyEvent>
 
+QCANPOOL_USE_NAMESPACE
+
 PageSorter::PageSorter(int block, QWidget *parent)
     : QWidget(parent)
 {
