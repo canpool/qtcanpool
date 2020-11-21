@@ -3,23 +3,24 @@ QTPROJECT_PRI_INCLUDED = 1
 
 QTCANPOOL_ROOT = $$PWD
 
-# config variables
-isEmpty(QTPROJECT_VERSION):         QTPROJECT_VERSION = 1.0.1
+# config branding and variables
+isEmpty(QTPROJECT_VERSION):         QTPROJECT_VERSION = 1.0.2
 isEmpty(QTPROJECT_COMPAT_VERSION):  QTPROJECT_COMPAT_VERSION = 1.0.1
-VERSION = $$QTPROJECT_VERSION
 isEmpty(QTPROJECT_DISPLAY_VERSION): QTPROJECT_DISPLAY_VERSION = 1.1.0-rc1
-isEmpty(QTPROJECT_COPYRIGHT_YEAR):  QTPROJECT_COPYRIGHT_YEAR = 2019
+isEmpty(QTPROJECT_COPYRIGHT_YEAR):  QTPROJECT_COPYRIGHT_YEAR = 2020
 isEmpty(BINARY_ARTIFACTS_BRANCH):   BINARY_ARTIFACTS_BRANCH = 1.1
-
-isEmpty(QTPROJECT_OUT_PWD):         QTPROJECT_OUT_PWD = $$OUT_PWD
-isEmpty(QTPROJECT_PRO_FILE_PWD):    QTPROJECT_PRO_FILE_PWD = $$_PRO_FILE_PWD_
-isEmpty(QTPROJECT_PRO_FILE):        QTPROJECT_PRO_FILE = $$_PRO_FILE_
 
 isEmpty(IDE_DISPLAY_NAME):          IDE_DISPLAY_NAME = Qt Canpool
 isEmpty(IDE_ID):                    IDE_ID = qtcanpool
 isEmpty(IDE_CASED_ID):              IDE_CASED_ID = QtCanpool
 
 isEmpty(PRODUCT_BUNDLE_IDENTIFIER): PRODUCT_BUNDLE_IDENTIFIER = org.qt-project.$$IDE_ID
+
+VERSION = $$QTPROJECT_VERSION
+
+isEmpty(QTPROJECT_OUT_PWD):         QTPROJECT_OUT_PWD = $$OUT_PWD
+isEmpty(QTPROJECT_PRO_FILE_PWD):    QTPROJECT_PRO_FILE_PWD = $$_PRO_FILE_PWD_
+isEmpty(QTPROJECT_PRO_FILE):        QTPROJECT_PRO_FILE = $$_PRO_FILE_
 
 CONFIG += c++14
 
@@ -85,6 +86,12 @@ defineTest(minQtVersion) {
 # For use in custom compilers which just copy files
 defineReplace(stripSrcDir) {
     return($$relative_path($$absolute_path($$1, $$QTPROJECT_OUT_PWD), $$QTPROJECT_PRO_FILE_PWD))
+}
+
+darwin:!minQtVersion(5, 7, 0) {
+    # Qt 5.6 still sets deployment target 10.7, which does not work
+    # with all C++11/14 features (e.g. std::future)
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.8
 }
 
 QTC_BUILD_TESTS = $$(QTC_BUILD_TESTS)
