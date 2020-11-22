@@ -254,6 +254,11 @@ QString FancyTabWidget::tabToolTip(int index) const
     return d->m_tabBar->tabToolTip(index);
 }
 
+void FancyTabWidget::setTabShortcut(int index, const QString &shortcut)
+{
+    d->m_tabBar->setTabShortcut(index, shortcut);
+}
+
 FancyTabWidget::TabPosition FancyTabWidget::tabPosition() const
 {
     return d->m_pos;

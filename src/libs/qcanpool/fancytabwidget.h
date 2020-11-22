@@ -92,6 +92,8 @@ public:
     void setTabToolTip(int index, QString toolTip);
     QString tabToolTip(int index) const;
 
+    void setTabShortcut(int index, const QString &shortcut);
+
     enum TabPosition { North, South, West, East };
     Q_ENUM(TabPosition)
     TabPosition tabPosition() const;

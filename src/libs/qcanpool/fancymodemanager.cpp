@@ -154,6 +154,7 @@ void FancyModeManager::objectAdded(QObject *obj)
     if (!mode->menu()) {
         d->m_modeStack->setTabToolTip(index, tr("Switch to <b>%1</b> mode\nCtrl+%2")
                                       .arg(mode->displayName()).arg(index + 1));
+        d->m_modeStack->setTabShortcut(index, tr("Ctrl+%1").arg(index + 1));
     } else {
         d->m_modeStack->setTabToolTip(index, mode->menu()->toolTip());
     }

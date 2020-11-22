@@ -61,6 +61,8 @@ public:
     void setTabToolTip(int index, QString toolTip);
     QString tabToolTip(int index) const;
 
+    void setTabShortcut(int index, const QString &shortcut);
+
     void setTabStyle(TabType type, TabStyle style);
     void setTabFont(TabType type, QFont &font);
     void setTabSpace(TabType type, int space);

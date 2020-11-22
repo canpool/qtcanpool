@@ -333,7 +333,6 @@ int FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, b
 
     if (d->m_direction == Vertical) {
         tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        tab->setShortcut(tr("Ctrl+%1").arg(index + 1));
     } else if (d->m_direction == Horizontal) {
         tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
@@ -427,6 +426,13 @@ QString FancyTabBar::tabToolTip(int index) const
         return d->m_modeTabs[index]->toolTip();
     }
     return QString("");
+}
+
+void FancyTabBar::setTabShortcut(int index, const QString &shortcut)
+{
+    if (d->validIndex(index)) {
+        d->m_modeTabs[index]->setShortcut(shortcut);
+    }
 }
 
 void FancyTabBar::setTabStyle(FancyTabBar::TabType type, FancyTabBar::TabStyle style)
