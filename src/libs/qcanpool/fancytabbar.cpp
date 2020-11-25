@@ -34,11 +34,15 @@ class FancyTabBarPrivate : public QObject
 public:
     FancyTabBarPrivate();
     ~FancyTabBarPrivate();
+
     void updateTabBarPosition();
     void init();
 
     inline bool validIndex(int index) const { return index >= 0 && index < m_modeTabs.count(); }
 
+    void setTabAttribute(FancyTab *tab);
+
+public:
     FancyTabBar::Direction m_direction;
 
     int m_currentIndex;
@@ -61,7 +65,13 @@ public:
 
     FancyTabBar *q;
 
-signals:
+    QSize m_tabIconSize;
+    QColor m_tabHoverColor;
+    QColor m_tabPressColor;
+    QColor m_tabTextColor;
+    QColor m_tabSelectedTextColor;
+    QColor m_backgroudColor;
+
 
 public slots:
     void switchTab();
@@ -69,23 +79,17 @@ public slots:
 };
 
 FancyTabBarPrivate::FancyTabBarPrivate()
+    : m_direction(FancyTabBar::Vertical)
+    , m_currentIndex(-1)
+    , m_modeStyle(FancyTabBar::TextUnderIcon)
+    , m_actionStyle(FancyTabBar::IconOnly)
+    , m_tabIconSize(QSize(24, 24))
+    , m_tabHoverColor(QColor(255, 255, 255, 50))
+    , m_tabPressColor(QColor(0, 0, 0, 100))
+    , m_tabTextColor(QColor(255, 255, 255))
+    , m_tabSelectedTextColor(QColor(255, 255, 255))
+    , m_backgroudColor(QColor())
 {
-    m_direction = FancyTabBar::Vertical;
-    m_currentIndex = -1;
-    m_modeTabs.clear();
-    m_actionTabs.clear();
-    m_actionTabMap.clear();
-    m_layout = nullptr;
-    m_modeLayout = nullptr;
-    m_menuModeLayout = nullptr;
-    m_frontActionLayout = nullptr;
-    m_middleActionLayout = nullptr;
-    m_backActionLayout = nullptr;
-    m_headSpacer = nullptr;
-    m_splitLine = nullptr;
-    m_modeStyle = FancyTabBar::TextUnderIcon;
-    m_actionStyle = FancyTabBar::IconOnly;
-    q = nullptr;
 }
 
 FancyTabBarPrivate::~FancyTabBarPrivate()
@@ -198,6 +202,15 @@ void FancyTabBarPrivate::init()
     } else {
         q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
+}
+
+void FancyTabBarPrivate::setTabAttribute(FancyTab *tab)
+{
+    tab->setIconSize(m_tabIconSize);
+    tab->setHoverColor(m_tabHoverColor);
+    tab->setPressColor(m_tabPressColor);
+    tab->setTextColor(m_tabTextColor);
+    tab->setSelectedTextColor(m_tabSelectedTextColor);
 }
 
 void FancyTabBarPrivate::switchTab()
@@ -331,10 +344,12 @@ int FancyTabBar::insertTab(int index, const QIcon &icon, const QString &label, b
     tab->setText(label);
     tab->setHasMenu(hasMenu);
 
+    d->setTabAttribute(tab);
+
     if (d->m_direction == Vertical) {
         tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     } else if (d->m_direction == Horizontal) {
-        tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
 
     connect(tab, SIGNAL(clicked(bool)), d, SLOT(switchTab()));
@@ -476,6 +491,7 @@ void FancyTabBar::setTabSpace(TabType type, int space)
 
 void FancyTabBar::setTabIconSize(QSize size)
 {
+    d->m_tabIconSize = size;
     foreach (FancyTab * tab, d->m_modeTabs) {
         tab->setIconSize(size);
     }
@@ -494,10 +510,12 @@ int FancyTabBar::addAction(QAction *action, FancyTabBar::ActionPosition position
     tab->setToolTip(action->toolTip());
     tab->setDefaultAction(action);
 
+    d->setTabAttribute(tab);
+
     if (d->m_direction == Vertical) {
         tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     } else if (d->m_direction == Horizontal) {
-        tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     }
 
     connect(tab, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
@@ -542,6 +560,7 @@ void FancyTabBar::setActionStyle(QAction *action, FancyTabBar::TabStyle style)
 
 void FancyTabBar::setHoverColor(const QColor &color)
 {
+    d->m_tabHoverColor = color;
     foreach (FancyTab * tab, d->m_modeTabs) {
         tab->setHoverColor(color);
     }
@@ -552,17 +571,12 @@ void FancyTabBar::setHoverColor(const QColor &color)
 
 QColor FancyTabBar::hoverColor() const
 {
-    if (d->m_modeTabs.count()) {
-        return d->m_modeTabs.at(0)->hoverColor();
-    }
-    if (d->m_actionTabs.count()) {
-        return d->m_actionTabs.at(0)->hoverColor();
-    }
-    return QColor();
+    return d->m_tabHoverColor;
 }
 
 void FancyTabBar::setPressColor(const QColor &color)
 {
+    d->m_tabPressColor = color;
     foreach (FancyTab * tab, d->m_modeTabs) {
         tab->setPressColor(color);
     }
@@ -573,17 +587,12 @@ void FancyTabBar::setPressColor(const QColor &color)
 
 QColor FancyTabBar::pressColor() const
 {
-    if (d->m_modeTabs.count()) {
-        return d->m_modeTabs.at(0)->pressColor();
-    }
-    if (d->m_actionTabs.count()) {
-        return d->m_actionTabs.at(0)->pressColor();
-    }
-    return QColor();
+    return d->m_tabPressColor;
 }
 
 void FancyTabBar::setTextColor(const QColor &color)
 {
+    d->m_tabTextColor = color;
     foreach (FancyTab * tab, d->m_modeTabs) {
         tab->setTextColor(color);
     }
@@ -594,6 +603,7 @@ void FancyTabBar::setTextColor(const QColor &color)
 
 void FancyTabBar::setSelectedTextColor(const QColor &color)
 {
+    d->m_tabSelectedTextColor = color;
     foreach (FancyTab * tab, d->m_modeTabs) {
         tab->setSelectedTextColor(color);
     }
@@ -623,6 +633,14 @@ void FancyTabBar::setHeadSpace(int space)
     } else {
         d->m_headSpacer->setFixedWidth(space);
     }
+}
+
+void FancyTabBar::unselectCurrent()
+{
+    if (d->validIndex(d->m_currentIndex)) {
+        d->m_modeTabs.at(d->m_currentIndex)->select(false);
+    }
+    d->m_currentIndex = -1;
 }
 
 void FancyTabBar::hideMenu(int index)

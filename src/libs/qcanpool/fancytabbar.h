@@ -36,7 +36,7 @@ public:
     enum TabStyle {IconOnly, TextOnly, TextBesideIcon, TextUnderIcon};
 
     explicit FancyTabBar(QWidget *parent = nullptr);
-    ~FancyTabBar();
+    virtual ~FancyTabBar();
 
     void setDirection(Direction direction);
 
@@ -84,6 +84,8 @@ public:
     void setBackgroundColor(const QColor &color);
 
     void setHeadSpace(int space);
+
+    void unselectCurrent();
 
 signals:
     void currentChanged(int index);
