@@ -24,35 +24,93 @@
 #include <QPen>
 #include <QAction>
 
-QCANPOOL_USE_NAMESPACE
+QCANPOOL_BEGIN_NAMESPACE
+
+class FancyTabPrivate
+{
+public:
+    FancyTabPrivate();
+    ~FancyTabPrivate();
+
+    void init(void);
+    void painterInfo(const QColor &color);
+    void painterArrow(const QColor &color);
+
+public:
+    FancyTab *q;
+
+    QColor m_selectedTextColor;
+    bool m_bMouseHover;
+    bool m_bMousePress;
+
+    FancyTab::TabType m_type;
+};
+
+FancyTabPrivate::FancyTabPrivate()
+    : m_selectedTextColor(QColor(255, 255, 255))
+    , m_bMouseHover(false)
+    , m_bMousePress(false)
+    , m_type(FancyTab::Mode)
+{
+}
+
+FancyTabPrivate::~FancyTabPrivate()
+{
+}
+
+
+void FancyTabPrivate::init()
+{
+    q->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    q->setIconSize(QSize(24, 24));
+    q->setAutoRaise(true);
+
+    q->setPressColor(QColor(0, 0, 0, 100));
+    q->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    q->setStyleSheet("QToolButton{background-color: transparent;color: white;}");
+}
+
+void FancyTabPrivate::painterInfo(const QColor &color)
+{
+    QPainter painter(q);
+    QPen pen(Qt::NoBrush, 1);
+    painter.setPen(pen);
+    painter.setBrush(color);
+    painter.drawRect(q->rect());
+}
+
+void FancyTabPrivate::painterArrow(const QColor &color)
+{
+    QPainter painter(q);
+    painter.setBrush(QBrush(color));
+    QPolygonF polygonf;
+    QPointF pt;
+    QPoint pos = q->rect().center();
+    pos.setX(pos.x() + q->rect().width() / 2);
+    pt = QPointF(pos.x() - 6, pos.y());
+    polygonf.append(pt);
+    pt = QPointF(pos.x() - 10, pos.y() + 4);
+    polygonf.append(pt);
+    pt = QPointF(pos.x() - 10, pos.y() - 4);
+    polygonf.append(pt);
+    painter.drawPolygon(polygonf);
+}
 
 FancyTab::FancyTab(QWidget *parent)
     : FancyButton(parent)
+    , d(new FancyTabPrivate())
 {
-    init();
+    d->q = this;
+    d->init();
 }
 
 FancyTab::FancyTab(const QIcon &icon, QWidget *parent)
     : FancyButton(parent)
+    , d(new FancyTabPrivate())
 {
+    d->q = this;
+    d->init();
     setIcon(icon);
-    init();
-}
-
-
-void FancyTab::init()
-{
-    setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    setIconSize(QSize(24, 24));
-    setAutoRaise(true);
-    m_bMouseHover = false;
-    m_bMousePress = false;
-    m_selectedTextColor = QColor(255, 255, 255);
-    m_type = Mode;
-
-    setPressColor(QColor(0, 0, 0, 100));
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    setStyleSheet("QToolButton{background-color: transparent;color: white;}");
 }
 
 FancyTab::~FancyTab()
@@ -61,16 +119,26 @@ FancyTab::~FancyTab()
 
 void FancyTab::select(bool selected)
 {
-    m_bMousePress = selected;
+    d->m_bMousePress = selected;
     if (!selected) {
-        m_bMouseHover = false;
+        d->m_bMouseHover = false;
     }
     update();
 }
 
+void FancyTab::setType(FancyTab::TabType type)
+{
+    d->m_type = type;
+}
+
+FancyTab::TabType FancyTab::type() const
+{
+    return d->m_type;
+}
+
 void FancyTab::setSelectedTextColor(const QColor &color)
 {
-    m_selectedTextColor = color;
+    d->m_selectedTextColor = color;
 }
 
 void FancyTab::setColor(const QColor &color)
@@ -88,13 +156,13 @@ void FancyTab::enterEvent(QEvent *event)
         return;
     }
 
-    m_bMouseHover = true;
+    d->m_bMouseHover = true;
 }
 
 void FancyTab::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    m_bMouseHover = false;
+    d->m_bMouseHover = false;
 }
 
 void FancyTab::mousePressEvent(QMouseEvent *event)
@@ -104,12 +172,12 @@ void FancyTab::mousePressEvent(QMouseEvent *event)
     }
 
     if (event->button() == Qt::LeftButton) {
-        if (m_type == Action) {
-            m_bMousePress = true; // add for action
+        if (d->m_type == Action) {
+            d->m_bMousePress = true; // add for action
             update();
         } else {
-            if (m_hasMenu) {
-                m_bMousePress = true; // add for action
+            if (hasMenu()) {
+                d->m_bMousePress = true;
                 update();
                 emit menuTriggered(event);
             } else {
@@ -122,8 +190,8 @@ void FancyTab::mousePressEvent(QMouseEvent *event)
 void FancyTab::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        if (m_type == Action) {
-            m_bMousePress = false; // add for action
+        if (d->m_type == Action) {
+            d->m_bMousePress = false; // add for action
             update();
 
             if (this->rect().contains(event->pos())) { // don't emit when move out
@@ -135,17 +203,17 @@ void FancyTab::mouseReleaseEvent(QMouseEvent *event)
 
 void FancyTab::paintEvent(QPaintEvent *event)
 {
-    if (m_bMousePress) {
-        painterInfo(pressColor());
-    } else if (m_bMouseHover) {
-        painterInfo(hoverColor());
+    if (d->m_bMousePress) {
+        d->painterInfo(pressColor());
+    } else if (d->m_bMouseHover) {
+        d->painterInfo(hoverColor());
     }
 
-    if (m_hasMenu) {
-        if (m_bMousePress || m_bMouseHover) {
-            painterArrow(m_selectedTextColor);
+    if (hasMenu()) {
+        if (d->m_bMousePress || d->m_bMouseHover) {
+            d->painterArrow(d->m_selectedTextColor);
         } else {
-            painterArrow(textColor());
+            d->painterArrow(textColor());
         }
     }
 
@@ -155,35 +223,11 @@ void FancyTab::paintEvent(QPaintEvent *event)
 void FancyTab::update()
 {
     QToolButton::update();
-    if (m_bMousePress || m_bMouseHover) {
-        setColor(m_selectedTextColor);
+    if (d->m_bMousePress || d->m_bMouseHover) {
+        setColor(d->m_selectedTextColor);
     } else {
         setColor(textColor());
     }
 }
 
-void FancyTab::painterInfo(const QColor &color)
-{
-    QPainter painter(this);
-    QPen pen(Qt::NoBrush, 1);
-    painter.setPen(pen);
-    painter.setBrush(color);
-    painter.drawRect(rect());
-}
-
-void FancyTab::painterArrow(const QColor &color)
-{
-    QPainter painter(this);
-    painter.setBrush(QBrush(color));
-    QPolygonF polygonf;
-    QPointF pt;
-    QPoint pos = rect().center();
-    pos.setX(pos.x() + rect().width() / 2);
-    pt = QPointF(pos.x() - 6, pos.y());
-    polygonf.append(pt);
-    pt = QPointF(pos.x() - 10, pos.y() + 4);
-    polygonf.append(pt);
-    pt = QPointF(pos.x() - 10, pos.y() - 4);
-    polygonf.append(pt);
-    painter.drawPolygon(polygonf);
-}
+QCANPOOL_END_NAMESPACE

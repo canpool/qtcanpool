@@ -24,47 +24,135 @@
 #include <QAction>
 #include "qcanpool.h"
 
-QCANPOOL_USE_NAMESPACE
+QCANPOOL_BEGIN_NAMESPACE
+
+class FancyButtonPrivate
+{
+public:
+    FancyButtonPrivate();
+    ~FancyButtonPrivate();
+
+public:
+    void painterInfo(QColor &color);
+    bool actionHasMenu();
+
+public:
+    FancyButton *q;
+
+    QColor m_hoverColor;
+    QColor m_pressColor;
+    QColor m_textColor;
+    QColor m_normalColor;
+
+    bool m_bMouseHover;
+    bool m_bMousePress;
+    bool m_hasBorder;
+    bool m_bRound;
+    bool m_hasMenu;
+};
+
+FancyButtonPrivate::FancyButtonPrivate()
+    : m_hoverColor(QColor(255, 255, 255, 50))
+    , m_pressColor(QColor(0, 0, 0, 50))
+    , m_textColor(QColor(255, 255, 255))
+    , m_normalColor(QColor())
+    , m_bMouseHover(false)
+    , m_bMousePress(false)
+    , m_hasBorder(true)
+    , m_bRound(false)
+    , m_hasMenu(false)
+{
+}
+
+FancyButtonPrivate::~FancyButtonPrivate()
+{
+}
+
+void FancyButtonPrivate::painterInfo(QColor &color)
+{
+    QPainter painter(q);
+    QPen pen(Qt::NoBrush, 1);
+    painter.setPen(pen);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setBrush(color);
+
+    if (m_bRound) {
+        int r = qMin(q->width(), q->height()) / 2;
+        painter.drawEllipse(QPointF(q->width() / 2, q->height() / 2), r, r);
+    } else {
+        painter.drawRect(q->rect());
+    }
+}
+
+bool FancyButtonPrivate::actionHasMenu()
+{
+    QAction *action = q->defaultAction();
+    if (action && action->menu()) {
+        return true;
+    }
+
+    return false;
+}
 
 FancyButton::FancyButton(QWidget *parent)
     : QToolButton(parent)
+    , d(new FancyButtonPrivate())
 {
+    d->q = this;
+
     setToolButtonStyle(Qt::ToolButtonIconOnly);
-//    setIconSize(QSize(18,18));
     setAutoRaise(true);
-    m_bMouseHover = false;
-    m_bMousePress = false;
-    m_hasBorder = true;
-    m_bRound = false;
-    m_hoverColor = QColor(255, 255, 255, 50);
-    m_pressColor = QColor(0, 0, 0, 50);
-    m_textColor = QColor(255, 255, 255);
-    m_normalColor = QColor();
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setColor(Qt::white);
 }
 
 FancyButton::~FancyButton()
 {
+    delete d;
 }
 
 void FancyButton::select(bool selected)
 {
-    m_bMousePress = selected;
+    d->m_bMousePress = selected;
     if (!selected) {
-        m_bMouseHover = false;
+        d->m_bMouseHover = false;
     }
     update();
 }
 
+void FancyButton::setHoverColor(const QColor &color)
+{
+    d->m_hoverColor = color;
+}
+
+QColor FancyButton::hoverColor() const
+{
+    return d->m_hoverColor;
+}
+
+void FancyButton::setPressColor(const QColor &color)
+{
+    d->m_pressColor = color;
+}
+
+QColor FancyButton::pressColor() const
+{
+    return d->m_pressColor;
+}
+
 void FancyButton::setTextColor(const QColor &color)
 {
-    m_textColor = color;
+    d->m_textColor = color;
+}
+
+QColor FancyButton::textColor() const
+{
+    return d->m_textColor;
 }
 
 void FancyButton::setColor(const QColor &color)
 {
-    if (m_hasBorder) {
+    if (d->m_hasBorder) {
         setStyleSheet(QString("QToolButton::menu-indicator { image: None; }"
                               "QToolButton{background-color: transparent;color: #%1;}")
                       .arg(QCanpool::colorToArgb(color)));
@@ -77,24 +165,34 @@ void FancyButton::setColor(const QColor &color)
 
 void FancyButton::setNormalColor(const QColor &color)
 {
-    m_normalColor = color;
+    d->m_normalColor = color;
+}
+
+QColor FancyButton::normalColor() const
+{
+    return d->m_normalColor;
 }
 
 void FancyButton::setHasMenu(bool has)
 {
-    m_hasMenu = has;
+    d->m_hasMenu = has;
+}
+
+bool FancyButton::hasMenu()
+{
+    return d->m_hasMenu;
 }
 
 void FancyButton::setHasBorder(bool has)
 {
-    m_hasBorder = has;
-    setColor(m_textColor);
+    d->m_hasBorder = has;
+    setColor(d->m_textColor);
     update();
 }
 
 void FancyButton::setRound(bool round)
 {
-    m_bRound = round;
+    d->m_bRound = round;
 }
 
 void FancyButton::enterEvent(QEvent *event)
@@ -105,13 +203,13 @@ void FancyButton::enterEvent(QEvent *event)
         return;
     }
 
-    m_bMouseHover = true;
+    d->m_bMouseHover = true;
 }
 
 void FancyButton::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    m_bMouseHover = false;
+    d->m_bMouseHover = false;
 }
 
 void FancyButton::mousePressEvent(QMouseEvent *event)
@@ -121,9 +219,9 @@ void FancyButton::mousePressEvent(QMouseEvent *event)
     }
 
     if (event->button() == Qt::LeftButton) {
-        m_bMousePress = true;
+        d->m_bMousePress = true;
 
-        if (m_hasMenu || actionHasMenu()) {
+        if (d->m_hasMenu || d->actionHasMenu()) {
             emit menuTriggered(event);
         }
 
@@ -131,10 +229,21 @@ void FancyButton::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void FancyButton::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (!isEnabled()) {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton) {
+        emit doubleClicked();
+    }
+}
+
 void FancyButton::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        m_bMousePress = false;
+        d->m_bMousePress = false;
         update();
 
         // don't emit when move out
@@ -146,41 +255,17 @@ void FancyButton::mouseReleaseEvent(QMouseEvent *event)
 
 void FancyButton::paintEvent(QPaintEvent *event)
 {
-    if (m_bMousePress) {
-        painterInfo(m_pressColor);
-    } else if (m_bMouseHover) {
-        painterInfo(m_hoverColor);
+    if (d->m_bMousePress) {
+        d->painterInfo(d->m_pressColor);
+    } else if (d->m_bMouseHover) {
+        d->painterInfo(d->m_hoverColor);
     } else {
-        if (m_normalColor.isValid()) {
-            painterInfo(m_normalColor);
+        if (d->m_normalColor.isValid()) {
+            d->painterInfo(d->m_normalColor);
         }
     }
 
     QToolButton::paintEvent(event);
 }
 
-void FancyButton::painterInfo(QColor &color)
-{
-    QPainter painter(this);
-    QPen pen(Qt::NoBrush, 1);
-    painter.setPen(pen);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setBrush(color);
-
-    if (m_bRound) {
-        int r = qMin(width(), height()) / 2;
-        painter.drawEllipse(QPointF(width() / 2, height() / 2), r, r);
-    } else {
-        painter.drawRect(rect());
-    }
-}
-
-bool FancyButton::actionHasMenu()
-{
-    QAction *action = this->defaultAction();
-    if (action && action->menu()) {
-        return true;
-    }
-
-    return false;
-}
+QCANPOOL_END_NAMESPACE

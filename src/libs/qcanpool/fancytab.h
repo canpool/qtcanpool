@@ -27,51 +27,42 @@
 #define FANCYTAB_H
 
 #include "fancybutton.h"
-#include <QColor>
-#include <QIcon>
 
 QCANPOOL_BEGIN_NAMESPACE
 
+class FancyTabPrivate;
 class FancyTab : public FancyButton
 {
     Q_OBJECT
 public:
     enum TabType { Mode, Action };
+
     explicit FancyTab(QWidget *parent = nullptr);
     FancyTab(const QIcon &icon, QWidget *parent = nullptr);
-    ~FancyTab();
+    virtual ~FancyTab();
 
     void select(bool selected);
 
-    void setType(TabType type) { m_type = type; }
-    TabType type() const { return m_type; }
+    void setType(TabType type);
+    TabType type() const;
 
     void setSelectedTextColor(const QColor &color);
 
     void setColor(const QColor &color);
 
-private:
-    void init(void);
-    void painterInfo(const QColor &color);
-    void painterArrow(const QColor &color);
-
 protected:
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    virtual void enterEvent(QEvent *event);
+    virtual void leaveEvent(QEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
 
-    void paintEvent(QPaintEvent *event);
+    virtual void paintEvent(QPaintEvent *event);
 
 private:
     void update();
 
 private:
-    bool m_bMouseHover;
-    bool m_bMousePress;
-    QColor m_selectedTextColor;
-
-    TabType m_type;
+    FancyTabPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE

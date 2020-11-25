@@ -37,57 +37,45 @@ class FancyButton : public QToolButton
     Q_OBJECT
 public:
     explicit FancyButton(QWidget *parent = nullptr);
-    ~FancyButton();
+    virtual ~FancyButton();
 
     void select(bool selected);
 
-    void setHoverColor(const QColor &color) { m_hoverColor = color;}
-    QColor hoverColor() const { return m_hoverColor;}
+    void setHoverColor(const QColor &color);
+    QColor hoverColor() const;
 
-    void setPressColor(const QColor &color) { m_pressColor = color;}
-    QColor pressColor() const { return m_pressColor;}
+    void setPressColor(const QColor &color);
+    QColor pressColor() const;
 
     void setTextColor(const QColor &color);
-    QColor textColor() const { return m_textColor; }
+    QColor textColor() const;
 
     void setColor(const QColor &color);
 
     void setNormalColor(const QColor &color);
-    QColor normalColor() const { return m_normalColor; }
+    QColor normalColor() const;
 
     void setHasMenu(bool has);
+    bool hasMenu();
+
     void setHasBorder(bool has);
     void setRound(bool round);
 
-private:
-    void painterInfo(QColor &color);
-
-    bool actionHasMenu();
-
 signals:
     void menuTriggered(QMouseEvent *e);
+    void doubleClicked();
 
 protected:
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    virtual void enterEvent(QEvent *event);
+    virtual void leaveEvent(QEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
 
-    void paintEvent(QPaintEvent *event);
-
-public:
-    bool m_hasMenu = false;
+    virtual void paintEvent(QPaintEvent *event);
 
 private:
-    bool m_bMouseHover;
-    bool m_bMousePress;
-    bool m_hasBorder;
-    bool m_bRound;
-
-    QColor m_hoverColor;
-    QColor m_pressColor;
-    QColor m_textColor;
-    QColor m_normalColor;
+    FancyButtonPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE

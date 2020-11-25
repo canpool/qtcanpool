@@ -367,7 +367,7 @@ void FancyTabBar::removeTab(int index)
 
     FancyTab *tab = d->m_modeTabs.takeAt(index);
 
-    if (tab->m_hasMenu) {
+    if (tab->hasMenu()) {
         d->m_menuModeLayout->removeWidget(tab);
     } else {
         d->m_modeLayout->removeWidget(tab);
