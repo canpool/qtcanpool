@@ -3,6 +3,7 @@ CONFIG += ordered
 
 SUBDIRS +=  \
     fancydemo \
+    fancyribbon \
     qtqrcode \
     qtitanribbon \
     litedemo \
