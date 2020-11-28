@@ -40,8 +40,7 @@ public:
 
     void setDirection(Direction direction);
 
-    bool validIndex(int index) const; // discarded
-
+    /* tab */
     void setTabEnabled(int index, bool enable);
     bool isTabEnabled(int index) const;
 
@@ -55,8 +54,12 @@ public:
     int insertTab(int index, const QIcon &icon, const QString &label, bool hasMenu = false);
     void removeTab(int index);
 
+    QWidget *tabWidget(int index) const;
+
     void setCurrentIndex(int index);
     int currentIndex() const;
+
+    void unselectCurrent();
 
     void setTabToolTip(int index, QString toolTip);
     QString tabToolTip(int index) const;
@@ -68,10 +71,16 @@ public:
     void setTabSpace(TabType type, int space);
     void setTabIconSize(QSize size);
 
+    /* action */
     int addAction(QAction *action, ActionPosition position = Back);
+    int insertAction(int index, QAction *action);
+    int insertAction(QAction *before, QAction *action);
     void removeAction(QAction *action);
     void setActionStyle(QAction *action, TabStyle style);
 
+    QWidget *widgetForAction(QAction *action) const;
+
+    /* color */
     void setHoverColor(const QColor &color);
     QColor hoverColor() const;
 
@@ -84,8 +93,6 @@ public:
     void setBackgroundColor(const QColor &color);
 
     void setHeadSpace(int space);
-
-    void unselectCurrent();
 
 signals:
     void currentChanged(int index);

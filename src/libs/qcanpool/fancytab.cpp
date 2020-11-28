@@ -42,6 +42,7 @@ public:
     QColor m_selectedTextColor;
     bool m_bMouseHover;
     bool m_bMousePress;
+    bool m_bSelected;
 
     FancyTab::TabType m_type;
 };
@@ -50,6 +51,7 @@ FancyTabPrivate::FancyTabPrivate()
     : m_selectedTextColor(QColor(255, 255, 255))
     , m_bMouseHover(false)
     , m_bMousePress(false)
+    , m_bSelected(false)
     , m_type(FancyTab::Mode)
 {
 }
@@ -126,6 +128,11 @@ void FancyTab::select(bool selected)
     update();
 }
 
+bool FancyTab::isSelected()
+{
+    return d->m_bSelected; // was set in update()
+}
+
 void FancyTab::setType(FancyTab::TabType type)
 {
     d->m_type = type;
@@ -170,11 +177,13 @@ void FancyTab::mousePressEvent(QMouseEvent *event)
     if (!isEnabled()) {
         return;
     }
-
     if (event->button() == Qt::LeftButton) {
         if (d->m_type == Action) {
             d->m_bMousePress = true; // add for action
             update();
+            if (hasMenu()) {
+                emit menuTriggered(event);
+            }
         } else {
             if (hasMenu()) {
                 d->m_bMousePress = true;
@@ -193,8 +202,8 @@ void FancyTab::mouseReleaseEvent(QMouseEvent *event)
         if (d->m_type == Action) {
             d->m_bMousePress = false; // add for action
             update();
-
-            if (this->rect().contains(event->pos())) { // don't emit when move out
+            // don't emit when move out
+            if (rect().contains(event->pos()) && !hasMenu()) {
                 emit clicked();
             }
         }
@@ -209,7 +218,7 @@ void FancyTab::paintEvent(QPaintEvent *event)
         d->painterInfo(hoverColor());
     }
 
-    if (hasMenu()) {
+    if (hasMenu() && d->m_type != Action) {
         if (d->m_bMousePress || d->m_bMouseHover) {
             d->painterArrow(d->m_selectedTextColor);
         } else {
@@ -228,6 +237,7 @@ void FancyTab::update()
     } else {
         setColor(textColor());
     }
+    d->m_bSelected = d->m_bMousePress;
 }
 
 QCANPOOL_END_NAMESPACE

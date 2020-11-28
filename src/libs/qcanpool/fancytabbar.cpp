@@ -38,9 +38,18 @@ public:
     void updateTabBarPosition();
     void init();
 
-    inline bool validIndex(int index) const { return index >= 0 && index < m_modeTabs.count(); }
+    inline bool validIndex(int index) const
+    { return index >= 0 && index < m_modeTabs.count(); }
+
+    inline bool validActionIndex(int index) const
+    { return index >= 0 && index < m_actionTabs.count(); }
 
     void setTabAttribute(FancyTab *tab);
+    void setCurrentIndex(int index);
+
+    FancyTab *addAction(QAction *action);
+    int addAction(QAction *action, FancyTabBar::ActionPosition position);
+    int insertAction(FancyTab *before, QAction *action);
 
 public:
     FancyTabBar::Direction m_direction;
@@ -213,27 +222,90 @@ void FancyTabBarPrivate::setTabAttribute(FancyTab *tab)
     tab->setSelectedTextColor(m_tabSelectedTextColor);
 }
 
+void FancyTabBarPrivate::setCurrentIndex(int index)
+{
+    if (index == m_currentIndex && m_modeTabs.at(index)->isSelected()) {
+        return;
+    }
+    if (index != m_currentIndex) {
+        if (validIndex(m_currentIndex)) {
+            m_modeTabs.at(m_currentIndex)->select(false);
+        }
+        m_currentIndex = index;
+    }
+    m_modeTabs.at(index)->select(true);
+    emit q->currentChanged(index);
+}
+
+FancyTab *FancyTabBarPrivate::addAction(QAction *action)
+{
+    FancyTab *tab = new FancyTab();
+    tab->setType(FancyTab::Action);
+    tab->setText(action->text());
+    tab->setIcon(action->icon());
+    tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(m_actionStyle));
+    tab->setToolTip(action->toolTip());
+    tab->setDefaultAction(action);
+
+    setTabAttribute(tab);
+
+    if (m_direction == FancyTabBar::Vertical) {
+        tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    } else if (m_direction == FancyTabBar::Horizontal) {
+        tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    }
+
+    connect(tab, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
+
+    return tab;
+}
+
+int FancyTabBarPrivate::addAction(QAction *action, FancyTabBar::ActionPosition position)
+{
+    FancyTab *tab = addAction(action);
+
+    m_actionTabs.append(tab);
+    m_actionTabMap.insert(action, tab);
+
+    if (position == FancyTabBar::Front) {
+        m_frontActionLayout->addWidget(tab);
+    } else if (position == FancyTabBar::Middle) {
+        m_middleActionLayout->addWidget(tab);
+    } else if (position == FancyTabBar::Back) {
+        m_backActionLayout->addWidget(tab);
+    }
+
+    return m_actionTabs.count() - 1;
+}
+
+int FancyTabBarPrivate::insertAction(FancyTab *before, QAction *action)
+{
+    FancyTab *tab = addAction(action);
+
+    int index = m_actionTabs.indexOf(before);
+    m_actionTabs.insert(index, tab);
+    m_actionTabMap.insert(action, tab);
+
+    int idx = -1;
+    if ((idx = m_frontActionLayout->indexOf(before)) != -1) {
+        m_frontActionLayout->insertWidget(idx, tab);
+    } else if ((idx = m_middleActionLayout->indexOf(before)) != -1) {
+        m_middleActionLayout->insertWidget(idx, tab);
+    } else if ((idx = m_backActionLayout->indexOf(before)) != -1) {
+        m_backActionLayout->insertWidget(idx, tab);
+    }
+
+    return index;
+}
+
 void FancyTabBarPrivate::switchTab()
 {
     FancyTab *tab = qobject_cast<FancyTab *>(sender());
-
     if (tab == nullptr) {
         return;
     }
-
     int index = m_modeTabs.indexOf(tab);
-
-    if (index == m_currentIndex) {
-        return;
-    }
-
-    if (m_currentIndex != -1) {
-        m_modeTabs.at(m_currentIndex)->select(false);
-    }
-
-    m_currentIndex = index;
-    m_modeTabs.at(m_currentIndex)->select(true);
-    emit q->currentChanged(m_currentIndex);
+    setCurrentIndex(index);
 }
 
 void FancyTabBarPrivate::menuTriggered(QMouseEvent *e)
@@ -280,11 +352,6 @@ void FancyTabBar::setDirection(FancyTabBar::Direction direction)
 
     d->m_direction = direction;
     d->updateTabBarPosition();
-}
-
-bool FancyTabBar::validIndex(int index) const
-{
-    return d->validIndex(index);
 }
 
 void FancyTabBar::setTabEnabled(int index, bool enable)
@@ -405,27 +472,32 @@ void FancyTabBar::removeTab(int index)
     }
 }
 
+QWidget *FancyTabBar::tabWidget(int index) const
+{
+    if (d->validIndex(index)) {
+        return d->m_modeTabs.at(index);
+    }
+    return nullptr;
+}
+
 void FancyTabBar::setCurrentIndex(int index)
 {
-    if (!d->validIndex(index)) {
+    if (!d->validIndex(index) || !isTabEnabled(index)) {
         return;
     }
-
-    if (isTabEnabled(index) && index != d->m_currentIndex) {
-        if (d->validIndex(d->m_currentIndex)) {
-            d->m_modeTabs.at(d->m_currentIndex)->select(false);
-        }
-
-        d->m_currentIndex = index;
-        // to do
-        d->m_modeTabs.at(d->m_currentIndex)->select(true);
-        emit currentChanged(d->m_currentIndex);
-    }
+    d->setCurrentIndex(index);
 }
 
 int FancyTabBar::currentIndex() const
 {
     return d->m_currentIndex;
+}
+
+void FancyTabBar::unselectCurrent()
+{
+    if (d->validIndex(d->m_currentIndex)) {
+        d->m_modeTabs.at(d->m_currentIndex)->select(false);
+    }
 }
 
 void FancyTabBar::setTabToolTip(int index, QString toolTip)
@@ -502,35 +574,31 @@ void FancyTabBar::setTabIconSize(QSize size)
 
 int FancyTabBar::addAction(QAction *action, FancyTabBar::ActionPosition position)
 {
-    FancyTab *tab = new FancyTab();
-    tab->setType(FancyTab::Action);
-    tab->setText(action->text());
-    tab->setIcon(action->icon());
-    tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(d->m_actionStyle));
-    tab->setToolTip(action->toolTip());
-    tab->setDefaultAction(action);
-
-    d->setTabAttribute(tab);
-
-    if (d->m_direction == Vertical) {
-        tab->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    } else if (d->m_direction == Horizontal) {
-        tab->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    if (action == nullptr) {
+        return -1;
     }
+    return d->addAction(action, position);
+}
 
-    connect(tab, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
-    d->m_actionTabs.append(tab);
-    d->m_actionTabMap.insert(action, tab);
-
-    if (position == Front) {
-        d->m_frontActionLayout->addWidget(tab);
-    } else if (position == Middle) {
-        d->m_middleActionLayout->addWidget(tab);
-    } else if (position == Back) {
-        d->m_backActionLayout->addWidget(tab);
+int FancyTabBar::insertAction(int index, QAction *action)
+{
+    if (!d->validActionIndex(index) || action == nullptr) {
+        return -1;
     }
+    FancyTab *tab = d->m_actionTabs.at(index);
+    return d->insertAction(tab, action);
+}
 
-    return d->m_actionTabs.count() - 1;
+int FancyTabBar::insertAction(QAction *before, QAction *action)
+{
+    if (before == nullptr || action == nullptr) {
+        return -1;
+    }
+    FancyTab *tab = d->m_actionTabMap.value(before, nullptr);
+    if (tab == nullptr) {
+        return -1;
+    }
+    return d->insertAction(tab, action);
 }
 
 void FancyTabBar::removeAction(QAction *action)
@@ -556,6 +624,14 @@ void FancyTabBar::setActionStyle(QAction *action, FancyTabBar::TabStyle style)
     if (tab) {
         tab->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(style));
     }
+}
+
+QWidget *FancyTabBar::widgetForAction(QAction *action) const
+{
+    if (action == nullptr) {
+        return nullptr;
+    }
+    return d->m_actionTabMap.value(action, nullptr);
 }
 
 void FancyTabBar::setHoverColor(const QColor &color)
@@ -633,14 +709,6 @@ void FancyTabBar::setHeadSpace(int space)
     } else {
         d->m_headSpacer->setFixedWidth(space);
     }
-}
-
-void FancyTabBar::unselectCurrent()
-{
-    if (d->validIndex(d->m_currentIndex)) {
-        d->m_modeTabs.at(d->m_currentIndex)->select(false);
-    }
-    d->m_currentIndex = -1;
 }
 
 void FancyTabBar::hideMenu(int index)

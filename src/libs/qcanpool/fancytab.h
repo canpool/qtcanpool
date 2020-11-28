@@ -41,7 +41,8 @@ public:
     FancyTab(const QIcon &icon, QWidget *parent = nullptr);
     virtual ~FancyTab();
 
-    void select(bool selected);
+    virtual void select(bool selected);
+    bool isSelected();
 
     void setType(TabType type);
     TabType type() const;

@@ -39,7 +39,7 @@ public:
     explicit FancyButton(QWidget *parent = nullptr);
     virtual ~FancyButton();
 
-    void select(bool selected);
+    virtual void select(bool selected);
 
     void setHoverColor(const QColor &color);
     QColor hoverColor() const;
