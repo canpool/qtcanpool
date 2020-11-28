@@ -21,7 +21,6 @@
         <file alias="close">resource/tools/close.png</file>
     </qresource>
     <qresource prefix="/skin">
-        <file alias="default">resource/skin/0.jpg</file>
         <file alias="state_ok">resource/skin/state_ok.png</file>
     </qresource>
 </RCC>
