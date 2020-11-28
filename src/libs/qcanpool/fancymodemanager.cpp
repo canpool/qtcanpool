@@ -56,7 +56,6 @@ void ModeManagerPrivate::showMenu(int index, QPoint pos)
     if (m_modes.at(index)->menu()) {
         m_menuIndex = index;
         m_modes.at(index)->menu()->popup(pos);
-//        d->m_modes.at(index)->menu()->popup(event->globalPos());
     }
 }
 
@@ -101,11 +100,9 @@ void FancyModeManager::setCurrentIndex(int index)
 FancyMode *FancyModeManager::currentMode() const
 {
     int currentIndex = d->m_modeStack->currentIndex();
-
     if (currentIndex < 0) {
         return nullptr;
     }
-
     return d->m_modes.at(currentIndex);
 }
 
@@ -114,7 +111,6 @@ FancyMode *FancyModeManager::mode(int index) const
     if (d->validIndex(index)) {
         return d->m_modes.at(index);
     }
-
     return nullptr;
 }
 
@@ -133,7 +129,6 @@ void FancyModeManager::setVisible(FancyMode *mode, bool visible)
 void FancyModeManager::objectAdded(QObject *obj)
 {
     FancyMode *mode = qobject_cast<FancyMode *>(obj);
-
     if (!mode) {
         return;
     }
@@ -167,17 +162,13 @@ void FancyModeManager::objectAdded(QObject *obj)
 void FancyModeManager::objectRemoved(QObject *obj)
 {
     FancyMode *mode = qobject_cast<FancyMode *>(obj);
-
     if (!mode) {
         return;
     }
-
     int index = d->m_modes.indexOf(mode);
-
     if (index == -1) {
         return;
     }
-
     d->m_modes.remove(index);
     d->m_modeStack->removeTab(index);
 }

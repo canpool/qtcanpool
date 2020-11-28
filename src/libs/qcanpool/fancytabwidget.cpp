@@ -43,10 +43,7 @@ public:
     QStatusBar *m_statusBar;
     QWidget *m_center;
 
-//    QVBoxLayout *m_leftCorner;
-//    QVBoxLayout *m_rightCorner;
     QHBoxLayout *m_topCorner;
-//    QHBoxLayout *m_bottomCorner;
 
     FancyTabWidget *q;
 
@@ -132,7 +129,6 @@ void FancyTabWidgetPrivate::init()
     m_stack = new QStackedWidget(q);
     m_stack->setObjectName(QLatin1String("qcanpool_modestack"));
     m_stack->setLineWidth(0);
-    //    m_stack->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred, QSizePolicy::TabWidget));
     QPalette palette;
     palette.setColor(QPalette::Background, QColor(240, 240, 240, 240));
     m_stack->setPalette(palette);
@@ -269,7 +265,6 @@ void FancyTabWidget::setTabPosition(FancyTabWidget::TabPosition pos)
     if (d->m_pos == pos) {
         return;
     }
-
     d->m_pos = pos;
     d->updateTabBarPosition();
 }
@@ -285,7 +280,6 @@ QStatusBar *FancyTabWidget::statusBar() const
         d->m_statusBar = new QStatusBar;
         d->m_center->layout()->addWidget(d->m_statusBar);
     }
-
     return d->m_statusBar;
 }
 
@@ -394,7 +388,6 @@ void FancyTabWidget::setBackgroundColor(const QColor &color)
 
 void FancyTabWidget::setCurrentIndex(int index)
 {
-//    d->m_stack->setCurrentIndex(index);
     d->m_tabBar->setCurrentIndex(index);
 }
 

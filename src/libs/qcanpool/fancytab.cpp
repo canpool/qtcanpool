@@ -158,11 +158,9 @@ void FancyTab::setColor(const QColor &color)
 void FancyTab::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-
     if (!isEnabled()) {
         return;
     }
-
     d->m_bMouseHover = true;
 }
 

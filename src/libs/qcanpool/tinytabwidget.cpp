@@ -452,7 +452,6 @@ void TinyTabBar::addTab(TinyTab *tab)
     m_tabs.append(tab);
     connect(tab, SIGNAL(clicked(bool)), this, SLOT(switchTab()));
     m_layout->insertWidget(m_tabs.count() - 1, tab);
-//    m_layout->addWidget(tab);
     m_tabs.at(0)->select(true);
     m_currentIndex = 0;
 }
@@ -594,7 +593,6 @@ void TinyTabWidget::setTabPosition(TinyTabWidget::TabPosition pos)
     if (d->m_pos == pos) {
         return;
     }
-
     d->m_pos = pos;
     d->updateTabBarPosition();
 }

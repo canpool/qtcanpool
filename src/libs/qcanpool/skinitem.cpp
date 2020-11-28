@@ -64,7 +64,6 @@ void SkinItem::setPixmapName(const QString &name)
     if (d->m_pixmapName == name) {
         return;
     }
-
     d->m_pixmapName = name;
     QPixmap pixmap(name);
     d->m_fitPixmap = pixmap.scaled(300, 200, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);

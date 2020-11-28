@@ -56,9 +56,6 @@ void MiniSplitterHandle::resizeEvent(QResizeEvent *event)
 void MiniSplitterHandle::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-//    const QColor color = Utils::creatorTheme()->color(
-//                m_lightColored ? Utils::Theme::FancyToolBarSeparatorColor
-//                               : Utils::Theme::SplitterColor);
     bool ok = true;
     QString scolor = m_lightColored ? QString("60ffffff") : QString("ff151515");
     const QRgb rgba = scolor.toLongLong(&ok, 16);

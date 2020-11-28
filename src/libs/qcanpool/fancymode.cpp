@@ -38,7 +38,6 @@ FancyMode::~FancyMode()
     if (m_menu) {
         delete m_menu;
     }
-
     if (m_widget) {
         delete m_widget;
     }
@@ -49,7 +48,6 @@ void FancyMode::setEnabled(bool enabled)
     if (m_isEnabled == enabled) {
         return;
     }
-
     m_isEnabled = enabled;
     emit enabledStateChanged(m_isEnabled);
 }
@@ -64,6 +62,5 @@ QWidget *FancyMode::widget()
     if (!m_widget) {
         m_widget = new QWidget();
     }
-
     return m_widget;
 }

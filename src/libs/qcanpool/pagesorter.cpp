@@ -264,7 +264,6 @@ bool PageSorter::eventFilter(QObject *watched, QEvent *event)
 
         if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
             setCurrentPage(m_pPageLineEdit->text().toInt(), true);
-            //setMaxPage(ui->pageLineEdit->text().toInt()); // 测试生成多个页码
             return true;
         }
     }

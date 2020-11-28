@@ -41,7 +41,6 @@ FancyModeBarPrivate::FancyModeBarPrivate(QObject *parent)
 {
     m_modeMap.clear();
     m_modes.clear();
-//    m_modeButtons.clear();
     m_actionButtons.clear();
     m_actionMap.clear();
     m_modeStyle = Qt::ToolButtonTextUnderIcon;
@@ -58,10 +57,7 @@ FancyModeBarPrivate::~FancyModeBarPrivate()
 {
     qDeleteAll(m_modeMap);
     m_modeMap.clear();
-//    qDeleteAll(m_modes);
     m_modes.clear();
-//    qDeleteAll(m_modeButtons);
-//    m_modeButtons.clear();
     qDeleteAll(m_actionButtons);
     m_actionButtons.clear();
     m_actionMap.clear();
@@ -90,11 +86,6 @@ void FancyModeBarPrivate::setEnabled(FancyMode *mode, bool enable)
         QFont font = pButton->font();
         font.setItalic(!enable);
         pButton->setFont(font);
-//        if(enable){
-//            pButton->setIcon(mode->icon());
-//        }else{
-//            pButton->setIcon(mode->disIcon());
-//        }
     }
 }
 
@@ -141,7 +132,6 @@ FancyModeBar::FancyModeBar(QStackedWidget *modeStack, Direction direction, QWidg
 
     // mode layout
     d->m_modeLayout = new QBoxLayout(layoutDirection);
-//    d->m_modeLayout->addStretch();
     d->m_modeLayout->setSpacing(0);
     d->m_modeLayout->setMargin(0);
     // front action layout
@@ -183,7 +173,6 @@ FancyModeBar::FancyModeBar(QStackedWidget *modeStack, Direction direction, QWidg
     pMainLayout->addWidget(d->m_spacer);
     pMainLayout->addLayout(d->m_frontActionLayout);
     pMainLayout->addLayout(d->m_modeLayout);
-//    pMainLayout->addWidget(pScrollArea);
     pMainLayout->addLayout(d->m_middleActionLayout);
     pMainLayout->addStretch();
     pMainLayout->addWidget(d->m_line);
@@ -222,11 +211,9 @@ void FancyModeBar::addMode(FancyMode *mode)
     d->m_modes.append(mode);
     connect(pButton, SIGNAL(clicked()), d, SLOT(switchMode()));
     int index = d->m_modeStack->count();
-
     if (index == 0) {
         index++;
     }
-
     if (m_direction == Vertical) {
         pButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         pButton->setShortcut(tr("Ctrl+%1").arg(index));
@@ -342,7 +329,6 @@ void FancyModeBar::addAction(QAction *action, ActionPosition position)
     pButton->setDefaultAction(action);
     d->m_actionButtons.append(pButton);
     d->m_actionMap.insert(action, pButton);
-//    connect(pButton, SIGNAL(clicked(bool)), action, SLOT(trigger()));
     connect(pButton, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
 
     if (position == AP_Front) {

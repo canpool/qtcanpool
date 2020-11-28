@@ -42,9 +42,6 @@ FancyNavButton::FancyNavButton(QWidget *parent)
     m_hoverColor = QColor(255, 255, 255, 50);
     m_pressColor = QColor(0, 0, 0, 100);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-//    QPalette palette;
-//    palette.setColor(QPalette::WindowText,Qt::white);
-//    this->setPalette(palette);
     setStyleSheet("QToolButton{background-color: transparent;border:none;color: white;}");
 }
 
@@ -71,7 +68,6 @@ void FancyNavButton::enterEvent(QEvent *event)
     if (!isEnabled()) {
         return;
     }
-
     m_isMouseOver = true;
 }
 
@@ -103,9 +99,6 @@ void FancyNavButton::mousePressEvent(QMouseEvent *event)
             }
         }
     }
-
-    // added on 2018-4-30 17:17:32, cancel the sink
-//    QToolButton::mousePressEvent(event);
 }
 
 void FancyNavButton::mouseReleaseEvent(QMouseEvent *event)

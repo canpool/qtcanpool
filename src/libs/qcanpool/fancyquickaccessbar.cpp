@@ -161,25 +161,20 @@ void FancyQuickAccessBarPrivate::accessMenuTriggered(QMouseEvent *e)
     QPoint pos = e->globalPos();
     pos.setX(pos.x() - x);
     pos.setY(pos.y() - y + button->height());
-//    emit q->menuTriggered(index, pos);
     m_menu->popup(pos);
 }
 
 void FancyQuickAccessBarPrivate::menuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton *>(sender());
-
     if (button == nullptr) {
         return;
     }
-
     QAction *action = button->defaultAction();
     QMenu *menu = action->menu();
-
     if (menu == nullptr) {
         return;
     }
-
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
     connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
     m_menuButton = button;
@@ -222,35 +217,29 @@ QAction *FancyQuickAccessBar::actionCustomizeButton() const
 void FancyQuickAccessBar::setActionVisible(QAction *action, bool visible)
 {
     int index = d->m_actions.indexOf(action);
-
     if (index == -1) {
         return;
     }
-
     d->m_checkActions.at(index)->setChecked(visible);
 }
 
 bool FancyQuickAccessBar::isActionVisible(QAction *action) const
 {
     int index = d->m_actions.indexOf(action);
-
     if (index == -1) {
         return false;
     }
-
     return d->m_checkActions.at(index)->isChecked();
 }
 
 int FancyQuickAccessBar::visibleCount() const
 {
     int cnt = 0;
-
     for (int i = 0; i < d->m_checkActions.count(); i++) {
         if (d->m_checkActions.at(i)->isChecked()) {
             cnt++;
         }
     }
-
     return cnt;
 }
 
@@ -287,10 +276,10 @@ void FancyQuickAccessBar::actionEvent(QActionEvent *event)
         case QEvent::ActionAdded: {
             QAction *action = event->action();
             d->addAction(action);
-            break;
         }
+        break;
         default:
-            break;
+        break;
     }
 }
 

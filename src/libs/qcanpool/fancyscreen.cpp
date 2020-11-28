@@ -65,13 +65,11 @@ int FancyScreen::currentScreen(const int x)
 
     for (int i = 0; i < m_screenRects.count(); i++) {
         width = m_screenRects.at(i).x() + m_screenRects.at(i).width();
-
         if (x > width) {
             continue;
         }
         return i;
     }
-
     return 0;
 }
 
