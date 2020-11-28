@@ -24,6 +24,7 @@
     </qresource>
     <qresource prefix="/skin">
         <file alias="state_ok">resource/skin/state_ok.png</file>
+        <file alias="default">resource/skin/default.jpg</file>
     </qresource>
     <qresource prefix="/ribbon">
         <file alias="option">resource/ribbon/option.png</file>
