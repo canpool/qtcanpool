@@ -32,7 +32,7 @@ HEADERS += \
     $$PWD/minicard.h \
     $$PWD/ministack.h \
     $$PWD/qcanpool.h \
-    $$PWD/centralarea.h \
+    $$PWD/minicentralarea.h \
     $$PWD/tinytabwidget.h \
     $$PWD/fancybar.h \
     $$PWD/fancybutton.h \
@@ -66,7 +66,7 @@ SOURCES += \
     $$PWD/minicard.cpp \
     $$PWD/ministack.cpp \
     $$PWD/qcanpool.cpp \
-    $$PWD/centralarea.cpp \
+    $$PWD/minicentralarea.cpp \
     $$PWD/tinytabwidget.cpp \
     $$PWD/fancybar.cpp \
     $$PWD/fancybutton.cpp \

@@ -17,21 +17,21 @@
  **  along with this program.  If not, see http://www.gnu.org/licenses/.
  **
 ****************************************************************************/
-#ifndef CENTRALAREA_H
-#define CENTRALAREA_H
+#ifndef MINICENTRALAREA_H
+#define MINICENTRALAREA_H
 
 #include <QScrollArea>
 #include "qcanpool_global.h"
 
 QCANPOOL_BEGIN_NAMESPACE
 
-class QCANPOOL_SHARED_EXPORT CentralArea : public QScrollArea
+class QCANPOOL_SHARED_EXPORT MiniCentralArea : public QScrollArea
 {
     Q_OBJECT
 public:
-    explicit CentralArea(QWidget *parent = nullptr);
+    explicit MiniCentralArea(QWidget *parent = nullptr);
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // CENTRALAREA_H
+#endif // MINICENTRALAREA_H

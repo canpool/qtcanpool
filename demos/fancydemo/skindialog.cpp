@@ -24,7 +24,7 @@
 
 #include "qcanpool/tinytabwidget.h"
 #include "qcanpool/skinitem.h"
-#include "qcanpool/centralarea.h"
+#include "qcanpool/minicentralarea.h"
 
 #define SKIN_NUM           15
 #define SKIN_RES_NAME(n)   QString(":/skin/%1").arg(n)
@@ -58,7 +58,7 @@ void SkinDialog::createWindow()
     m_pTabWidget->setNormalColor(Theme::g_tinyTabNormalColor);
     m_pTabWidget->setSlideColor(Theme::g_tinyTabSlideColor);
 
-    CentralArea *area = new CentralArea();
+    MiniCentralArea *area = new MiniCentralArea();
     m_pTabWidget->addTab(area, tr("All page"));
 
     QWidget *allPageWidget = new QWidget();

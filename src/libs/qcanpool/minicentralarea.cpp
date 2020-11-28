@@ -17,13 +17,13 @@
  **  along with this program.  If not, see http://www.gnu.org/licenses/.
  **
 ****************************************************************************/
-#include "centralarea.h"
+#include "minicentralarea.h"
 
 #include <QVBoxLayout>
 
 QCANPOOL_USE_NAMESPACE
 
-CentralArea::CentralArea(QWidget *parent)
+MiniCentralArea::MiniCentralArea(QWidget *parent)
     : QScrollArea(parent)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
