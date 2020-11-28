@@ -34,6 +34,7 @@ QCANPOOL_BEGIN_NAMESPACE
 class FancyTabWidget;
 class FancyMode;
 
+/* FancyTabWidget + FancyMode */
 class QCANPOOL_SHARED_EXPORT FancyModeManager : public QObject
 {
     Q_OBJECT
@@ -41,13 +42,15 @@ public:
     explicit FancyModeManager(FancyTabWidget *modeStack, QObject *parent = nullptr);
     ~FancyModeManager();
 
+    void addMode(FancyMode *mode);
+    void removeMode(FancyMode *mode);
     void setCurrentMode(FancyMode *mode);
     void setCurrentIndex(int index);
-    FancyMode* currentMode() const;
-    FancyMode* mode(int index) const;
+    FancyMode *currentMode() const;
+    FancyMode *mode(int index) const;
 
-    void setEnabled(FancyMode *mode, bool enable);
-    void setVisible(FancyMode *mode, bool visible);
+    void setModeEnabled(FancyMode *mode, bool enable);
+    void setModeVisible(FancyMode *mode, bool visible);
 
 signals:
     void currentModeChanged(FancyMode *mode);

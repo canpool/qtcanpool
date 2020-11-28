@@ -118,13 +118,13 @@ void CMainWindow::createModeBar()
     m_pCustomMode = new CustomMode();
     m_pMenuMode = new MenuMode();
 
-    m_modeManager->objectAdded(m_pCustomMode);
-    m_modeManager->objectAdded(m_pChartsMode);
-    m_modeManager->objectAdded(m_pMenuMode);
+    m_modeManager->addMode(m_pCustomMode);
+    m_modeManager->addMode(m_pChartsMode);
+    m_modeManager->addMode(m_pMenuMode);
 
     m_modeManager->setCurrentMode(m_pCustomMode);
 
-//    m_modeManager->setEnabled(m_pChartsMode, false);
+//    m_modeManager->setModeEnabled(m_pChartsMode, false);
 
     // mode action
     QAction *action = new QAction(QIcon(":/tools/start"), tr("Start"),this);

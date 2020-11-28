@@ -26,63 +26,35 @@
 #ifndef FANCYMODEBAR_H
 #define FANCYMODEBAR_H
 
-#include <QWidget>
+#include "fancytabbar.h"
 #include "qcanpool_global.h"
 
 class QStackedWidget;
-class QAction;
 
 QCANPOOL_BEGIN_NAMESPACE
 
 class FancyMode;
 class FancyModeBarPrivate;
 
-class QCANPOOL_SHARED_EXPORT FancyModeBar : public QWidget
+/* FancyTabBar + QStackedWidget + FancyMode */
+class QCANPOOL_SHARED_EXPORT FancyModeBar : public FancyTabBar
 {
     Q_OBJECT
-    Q_ENUMS(Direction)
 public:
-    enum Direction { Horizontal, Vertical };
-    enum ActionPosition { AP_Front, AP_Middle, AP_Back };
-    enum ButtonType { Mode, Action };
-
-    explicit FancyModeBar(QStackedWidget *modeStack, Direction direction = Vertical, QWidget *parent = nullptr);
+    explicit FancyModeBar(QStackedWidget *modeStack, QWidget *parent = nullptr);
     ~FancyModeBar();
 
     void addMode(FancyMode *mode);
-    void selectMode(FancyMode *mode);
-    void setEnabled(FancyMode *mode, bool enable);
-    void setVisible(FancyMode *mode, bool visible);
+    void removeMode(FancyMode *mode);
+    void setCurrentMode(FancyMode *mode);
+    FancyMode *currentMode() const;
+    FancyMode* mode(int index) const;
 
-    void setButtonStyle(ButtonType type, Qt::ToolButtonStyle style);
-    void setButtonFont(ButtonType type, QFont &font);
-    void setIconSize(QSize size);
-    void setButtonSpace(int space);
-    void setActionStyle(QAction* action, Qt::ToolButtonStyle style);
-
-    void addAction(QAction *action, ActionPosition position = AP_Back);
-
-    void setHoverColor(const QColor &color);
-    QColor hoverColor() const;
-
-    void setPressColor(const QColor &color);
-    QColor pressColor() const;
-
-    FancyMode* currentMode() const;
-    FancyMode* mode(int);
-
-    QWidget* spacer() const;
-    QWidget* line() const;
-
-    void setTextColor(const QColor &color);
-    void setSelectedTextColor(const QColor &color);
-
-signals:
-    void currentChanged(int);
+    void setModeEnabled(FancyMode *mode, bool enable);
+    void setModeVisible(FancyMode *mode, bool visible);
 
 private:
     FancyModeBarPrivate *d;
-    Direction m_direction;
 };
 
 QCANPOOL_END_NAMESPACE

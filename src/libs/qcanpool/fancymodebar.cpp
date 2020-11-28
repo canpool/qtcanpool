@@ -24,176 +24,73 @@
  **
 ****************************************************************************/
 #include "fancymodebar.h"
-#include "fancymodebar_p.h"
 #include "fancymode.h"
-#include "fancybar.h"
-#include "fancytab.h"
 
-#include <QAction>
-#include <QBoxLayout>
 #include <QStackedWidget>
-#include <QScrollArea>
 
-QCANPOOL_USE_NAMESPACE
+QCANPOOL_BEGIN_NAMESPACE
 
-FancyModeBarPrivate::FancyModeBarPrivate(QObject *parent)
-    : QObject(parent)
+/* FancyModeBarPrivate */
+class FancyModeBarPrivate : public QObject
 {
-    m_modeMap.clear();
-    m_modes.clear();
-    m_actionButtons.clear();
-    m_actionMap.clear();
-    m_modeStyle = Qt::ToolButtonTextUnderIcon;
-    m_actionStyle = Qt::ToolButtonIconOnly;
-    m_modeStack = nullptr;
-    m_modeLayout = nullptr;
-    m_frontActionLayout = nullptr;
-    m_backActionLayout = nullptr;
-    m_spacer = nullptr;
-    m_line = nullptr;
+    Q_OBJECT
+public:
+    FancyModeBarPrivate();
+    virtual ~FancyModeBarPrivate();
+
+    inline bool validIndex(int index)
+    { return index >= 0 && index < m_modes.size(); }
+
+    void init();
+
+public slots:
+    void showMenu(int index, QPoint pos);
+    void hideMenu();
+
+public:
+    FancyModeBar *q;
+    QStackedWidget *m_modeStack;
+    QList<FancyMode *> m_modes;
+    int m_menuIndex;
+};
+
+FancyModeBarPrivate::FancyModeBarPrivate()
+    : m_menuIndex(-1)
+{
 }
 
 FancyModeBarPrivate::~FancyModeBarPrivate()
+{}
+
+void FancyModeBarPrivate::init()
 {
-    qDeleteAll(m_modeMap);
-    m_modeMap.clear();
-    m_modes.clear();
-    qDeleteAll(m_actionButtons);
-    m_actionButtons.clear();
-    m_actionMap.clear();
+    connect(q, SIGNAL(currentChanged(int)), m_modeStack, SLOT(setCurrentIndex(int)));
+    connect(q, SIGNAL(menuTriggered(int, QPoint)), this, SLOT(showMenu(int, QPoint)));
 }
 
-void FancyModeBarPrivate::selectMode(FancyMode *mode)
+void FancyModeBarPrivate::showMenu(int index, QPoint pos)
 {
-    FancyTab *pButton = m_modeMap.key(mode);
-
-    if (pButton) {
-        foreach (FancyTab * button, m_modeMap.keys()) {
-            button->select(button == pButton);
-        }
-        m_modeStack->setCurrentWidget(mode->widget());
-    } else if (m_modes.count() > 0) {
-        selectMode(m_modes.at(0));
+    if (m_modes.at(index)->menu()) {
+        m_menuIndex = index;
+        m_modes.at(index)->menu()->popup(pos);
     }
 }
 
-void FancyModeBarPrivate::setEnabled(FancyMode *mode, bool enable)
+void FancyModeBarPrivate::hideMenu()
 {
-    FancyTab *pButton = m_modeMap.key(mode);
-
-    if (pButton) {
-        pButton->setEnabled(enable);
-        QFont font = pButton->font();
-        font.setItalic(!enable);
-        pButton->setFont(font);
-    }
+    q->hideMenu(m_menuIndex);
 }
 
-void FancyModeBarPrivate::setVisible(FancyMode *mode, bool visible)
+/* FancyModeBar */
+FancyModeBar::FancyModeBar(QStackedWidget *modeStack, QWidget *parent)
+    : FancyTabBar(parent)
+    , d(new FancyModeBarPrivate())
 {
-    FancyTab *pButton = m_modeMap.key(mode);
+    Q_ASSERT(modeStack);
 
-    if (pButton) {
-        pButton->setVisible(visible);
-        mode->widget()->setVisible(visible);
-    }
-}
-
-// slots
-void FancyModeBarPrivate::switchMode()
-{
-    FancyTab *pButton = qobject_cast<FancyTab *>(sender());
-
-    if (pButton) {
-        foreach (FancyTab * button, m_modeMap.keys()) {
-            button->select(button == pButton);
-        }
-        m_modeStack->setCurrentWidget(m_modeMap.value(pButton)->widget());
-    }
-}
-
-/********************************************************************************
- * class :
- *      FancyModeBar
- *
- *******************************************************************************/
-FancyModeBar::FancyModeBar(QStackedWidget *modeStack, Direction direction, QWidget *parent)
-    : QWidget(parent), d(new FancyModeBarPrivate)
-{
+    d->q = this;
     d->m_modeStack = modeStack;
-    m_direction = direction;
-    QBoxLayout::Direction layoutDirection;
-
-    if (direction == Horizontal) {
-        layoutDirection = QBoxLayout::LeftToRight;
-    } else {
-        layoutDirection = QBoxLayout::TopToBottom;
-    }
-
-    // mode layout
-    d->m_modeLayout = new QBoxLayout(layoutDirection);
-    d->m_modeLayout->setSpacing(0);
-    d->m_modeLayout->setMargin(0);
-    // front action layout
-    d->m_frontActionLayout = new QBoxLayout(layoutDirection);
-    d->m_frontActionLayout->setSpacing(0);
-    d->m_frontActionLayout->setMargin(0);
-    d->m_middleActionLayout = new QBoxLayout(layoutDirection);
-    d->m_middleActionLayout->setSpacing(0);
-    d->m_middleActionLayout->setMargin(0);
-    // back action layout
-    d->m_backActionLayout = new QBoxLayout(layoutDirection);
-    d->m_backActionLayout->setSpacing(0);
-    d->m_backActionLayout->setMargin(0);
-    QBoxLayout *spacerLayout = new QBoxLayout(layoutDirection);
-    spacerLayout->addLayout(d->m_backActionLayout);
-    int sbh = 8;
-    spacerLayout->addSpacing(sbh);
-    spacerLayout->setMargin(0);
-    spacerLayout->setSpacing(0);
-    d->m_spacer = new QWidget();
-
-    if (direction == Horizontal) {
-        d->m_spacer->setFixedWidth(5);
-    } else {
-        d->m_spacer->setFixedHeight(25);
-    }
-
-    d->m_line = new QWidget();
-
-    if (direction == Horizontal) {
-        d->m_line->setFixedWidth(0);
-    } else {
-        d->m_line->setFixedHeight(1);
-    }
-
-    d->m_line->setAutoFillBackground(true);
-    d->m_line->setBackgroundRole(QPalette::Dark);
-    QBoxLayout *pMainLayout = new QBoxLayout(layoutDirection);
-    pMainLayout->addWidget(d->m_spacer);
-    pMainLayout->addLayout(d->m_frontActionLayout);
-    pMainLayout->addLayout(d->m_modeLayout);
-    pMainLayout->addLayout(d->m_middleActionLayout);
-    pMainLayout->addStretch();
-    pMainLayout->addWidget(d->m_line);
-    pMainLayout->addLayout(spacerLayout);
-
-    if (direction == Horizontal) {
-        pMainLayout->setSpacing(5);
-    } else {
-        pMainLayout->setSpacing(0);
-    }
-
-    pMainLayout->setContentsMargins(0, 0, 0, 0);
-    setLayout(pMainLayout);
-
-    if (direction == Horizontal) {
-        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    } else {
-        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    }
-
-    connect(d->m_modeStack, SIGNAL(currentChanged(int)), this, SIGNAL(currentChanged(int)));
+    d->init();
 }
 
 FancyModeBar::~FancyModeBar()
@@ -203,232 +100,73 @@ FancyModeBar::~FancyModeBar()
 
 void FancyModeBar::addMode(FancyMode *mode)
 {
-    FancyTab *pButton = new FancyTab(mode->icon());
-    pButton->setText(mode->displayName());
-    pButton->setToolButtonStyle(d->m_modeStyle);
-    d->m_modeStack->addWidget(mode->widget());
-    d->m_modeMap.insert(pButton, mode);
-    d->m_modes.append(mode);
-    connect(pButton, SIGNAL(clicked()), d, SLOT(switchMode()));
-    int index = d->m_modeStack->count();
-    if (index == 0) {
-        index++;
+    if (mode == nullptr) {
+        return;
     }
-    if (m_direction == Vertical) {
-        pButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        pButton->setShortcut(tr("Ctrl+%1").arg(index));
-        pButton->setToolTip(tr("Switch to <b>%1</b> mode\nCtrl+%2").arg(pButton->text()).arg(index));
-    } else if (m_direction == Horizontal) {
-        pButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        pButton->setShortcut(tr("Alt+Ctrl+%1").arg(index));
-        pButton->setToolTip(tr("Switch to <b>%1</b> mode\nAlt+Ctrl+%2").arg(pButton->text()).arg(index));
-    }
-
-    d->m_modeLayout->insertWidget(index - 1, pButton);
-}
-
-void FancyModeBar::selectMode(FancyMode *mode)
-{
-    d->selectMode(mode);
-}
-
-void FancyModeBar::setEnabled(FancyMode *mode, bool enable)
-{
-    d->setEnabled(mode, enable);
-}
-
-void FancyModeBar::setVisible(FancyMode *mode, bool visible)
-{
-    d->setVisible(mode, visible);
-    FancyMode *currentMode = d->m_modes.at(d->m_modeStack->currentIndex());
-
-    if (!visible) {
-        if (mode == currentMode) {
-            for (int i = 0; i < d->m_modeStack->count(); i++) {
-                FancyMode *tmpMode = d->m_modes.at(i);
-                FancyTab *button = d->m_modeMap.key(tmpMode);
-
-                if (button && !button->isHidden()) {
-                    selectMode(tmpMode);
-                }
-            }
-        }
-    } else {
-        if (mode != currentMode) {
-            mode->widget()->setVisible(false);
+    int index = 0;
+    foreach (const FancyMode * m, d->m_modes) {
+        if (m->priority() >= mode->priority()) {
+            ++index;
         }
     }
-}
+    d->m_modes.insert(index, mode);
+    d->m_modeStack->insertWidget(index, mode->widget());
+    insertTab(index, mode->icon(), mode->displayName(), mode->menu() != nullptr);
+    setTabEnabled(index, mode->isEnabled());
 
-void FancyModeBar::setButtonStyle(FancyModeBar::ButtonType type, Qt::ToolButtonStyle style)
-{
-    if (type == Mode) {
-        d->m_modeStyle = style;
-        foreach (FancyTab * button, d->m_modeMap.keys()) {
-            button->setToolButtonStyle(style);
-        }
-    } else if (type == Action) {
-        d->m_actionStyle = style;
-        foreach (FancyTab * button, d->m_actionButtons) {
-            button->setToolButtonStyle(style);
-        }
+    if (mode->menu()) {
+        connect(mode->menu(), SIGNAL(aboutToHide()), d, SLOT(hideMenu()));
     }
 }
 
-void FancyModeBar::setButtonFont(FancyModeBar::ButtonType type, QFont &font)
+void FancyModeBar::removeMode(FancyMode *mode)
 {
-    if (type == Mode) {
-        foreach (FancyTab * button, d->m_modeMap.keys()) {
-            button->setFont(font);
-        }
-    } else if (type == Action) {
-        foreach (FancyTab * button, d->m_actionButtons) {
-            button->setFont(font);
-        }
+    if (mode == nullptr) {
+        return;
     }
+    int index = d->m_modes.indexOf(mode);
+    if (index == -1) {
+        return;
+    }
+    d->m_modes.removeAt(index);
+    removeTab(index);
 }
 
-void FancyModeBar::setIconSize(QSize size)
+void FancyModeBar::setCurrentMode(FancyMode *mode)
 {
-    foreach (FancyTab * button, d->m_modeMap.keys()) {
-        button->setIconSize(size);
-    }
-    foreach (FancyTab * button, d->m_actionButtons) {
-        button->setIconSize(size);
-    }
-}
-
-void FancyModeBar::setButtonSpace(int space)
-{
-    d->m_modeLayout->setSpacing(space);
-}
-
-void FancyModeBar::setActionStyle(QAction *action, Qt::ToolButtonStyle style)
-{
-    FancyTab *pButton = d->m_actionMap.value(action);
-
-    if (pButton) {
-        pButton->setToolButtonStyle(style);
-    }
-}
-
-void FancyModeBar::addAction(QAction *action, ActionPosition position)
-{
-    FancyTab *pButton = new FancyTab(action->icon());
-
-    if (m_direction == Vertical) {
-        pButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    } else if (m_direction == Horizontal) {
-        pButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    }
-
-    pButton->setType(FancyTab::Action);
-    pButton->setText(action->text());
-    pButton->setToolButtonStyle(d->m_actionStyle);
-    pButton->setToolTip(action->toolTip());
-    pButton->setDefaultAction(action);
-    d->m_actionButtons.append(pButton);
-    d->m_actionMap.insert(action, pButton);
-    connect(pButton, SIGNAL(clicked(bool)), action, SIGNAL(triggered(bool)));
-
-    if (position == AP_Front) {
-        d->m_frontActionLayout->addWidget(pButton);
-    } else if (position == AP_Middle) {
-        d->m_middleActionLayout->addWidget(pButton);
-    } else if (position == AP_Back) {
-        d->m_backActionLayout->addWidget(pButton);
-    }
-}
-
-void FancyModeBar::setHoverColor(const QColor &color)
-{
-    foreach (FancyTab * button, d->m_modeMap.keys()) {
-        button->setHoverColor(color);
-    }
-    foreach (FancyTab * button, d->m_actionButtons) {
-        button->setHoverColor(color);
-    }
-}
-
-QColor FancyModeBar::hoverColor() const
-{
-    if (d->m_modeMap.count() > 0) {
-        return d->m_modeMap.keys().at(0)->hoverColor();
-    }
-
-    if (d->m_actionButtons.count() > 0) {
-        return d->m_actionButtons.at(0)->hoverColor();
-    }
-
-    return QColor();
-}
-
-void FancyModeBar::setPressColor(const QColor &color)
-{
-    foreach (FancyTab * button, d->m_modeMap.keys()) {
-        button->setPressColor(color);
-    }
-    foreach (FancyTab * button, d->m_actionButtons) {
-        button->setPressColor(color);
-    }
-}
-
-QColor FancyModeBar::pressColor() const
-{
-    if (d->m_modeMap.count() > 0) {
-        return d->m_modeMap.keys().at(0)->pressColor();
-    }
-
-    if (d->m_actionButtons.count() > 0) {
-        return d->m_actionButtons.at(0)->pressColor();
-    }
-
-    return QColor();
+    int index = d->m_modes.indexOf(mode);
+    setCurrentIndex(index);
 }
 
 FancyMode *FancyModeBar::currentMode() const
 {
-    FancyMode *mode = d->m_modes.at(d->m_modeStack->currentIndex());
-    return mode;
-}
-
-FancyMode *FancyModeBar::mode(int index)
-{
-    if (index < 0 || index >= d->m_modes.count()) {
+    int currentIndex = d->m_modeStack->currentIndex();
+    if (currentIndex < 0) {
         return nullptr;
     }
-
-    FancyMode *mode = d->m_modes.at(index);
-    return mode;
+    return d->m_modes.at(currentIndex);
 }
 
-QWidget *FancyModeBar::spacer() const
+FancyMode *FancyModeBar::mode(int index) const
 {
-    return d->m_spacer;
+    if (d->validIndex(index)) {
+        return d->m_modes.at(index);
+    }
+    return nullptr;
 }
 
-QWidget *FancyModeBar::line() const
+void FancyModeBar::setModeEnabled(FancyMode *mode, bool enable)
 {
-    return d->m_line;
+    int index = d->m_modes.indexOf(mode);
+    setTabEnabled(index, enable);
 }
 
-void FancyModeBar::setTextColor(const QColor &color)
+void FancyModeBar::setModeVisible(FancyMode *mode, bool visible)
 {
-    foreach (FancyTab * button, d->m_modeMap.keys()) {
-        button->setTextColor(color);
-    }
-    foreach (FancyTab * button, d->m_actionButtons) {
-        button->setTextColor(color);
-    }
+    int index = d->m_modes.indexOf(mode);
+    setTabVisible(index, visible);
 }
 
-void FancyModeBar::setSelectedTextColor(const QColor &color)
-{
-    foreach (FancyTab * button, d->m_modeMap.keys()) {
-        button->setSelectedTextColor(color);
-    }
-    foreach (FancyTab * button, d->m_actionButtons) {
-        button->setSelectedTextColor(color);
-    }
-}
+QCANPOOL_END_NAMESPACE
 
+#include "fancymodebar.moc"

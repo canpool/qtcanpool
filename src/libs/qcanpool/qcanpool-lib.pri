@@ -47,7 +47,6 @@ HEADERS += \
     $$PWD/fancybanner.h \
     $$PWD/qcanpool_p.h \
     $$PWD/fancymodebar.h \
-    $$PWD/fancymodebar_p.h \
     $$PWD/fancymode.h \
     $$PWD/fancyquickaccessbar.h \
     $$PWD/fancymodemanager.h \

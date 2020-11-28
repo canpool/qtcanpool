@@ -84,6 +84,50 @@ FancyModeManager::~FancyModeManager()
     d = nullptr;
 }
 
+void FancyModeManager::addMode(FancyMode *mode)
+{
+    if (mode == nullptr) {
+        return;
+    }
+    // Count the number of modes with a higher priority
+    int index = 0;
+    foreach (const FancyMode * m, d->m_modes) {
+        if (m->priority() >= mode->priority()) {
+            ++index;
+        }
+    }
+
+    d->m_modes.insert(index, mode);
+    d->m_modeStack->insertTab(index, mode->widget(), mode->icon(), mode->displayName(),
+                              mode->menu() != nullptr);
+    d->m_modeStack->setTabEnabled(index, mode->isEnabled());
+
+    if (!mode->menu()) {
+        d->m_modeStack->setTabToolTip(index, tr("Switch to <b>%1</b> mode\nCtrl+%2")
+                                      .arg(mode->displayName()).arg(index + 1));
+        d->m_modeStack->setTabShortcut(index, tr("Ctrl+%1").arg(index + 1));
+    } else {
+        d->m_modeStack->setTabToolTip(index, mode->menu()->toolTip());
+    }
+
+    if (mode->menu()) {
+        connect(mode->menu(), SIGNAL(aboutToHide()), d, SLOT(hideMenu()));
+    }
+}
+
+void FancyModeManager::removeMode(FancyMode *mode)
+{
+    if (mode == nullptr) {
+        return;
+    }
+    int index = d->m_modes.indexOf(mode);
+    if (index == -1) {
+        return;
+    }
+    d->m_modes.remove(index);
+    d->m_modeStack->removeTab(index);
+}
+
 void FancyModeManager::setCurrentMode(FancyMode *mode)
 {
     int index = d->m_modes.indexOf(mode);
@@ -114,13 +158,13 @@ FancyMode *FancyModeManager::mode(int index) const
     return nullptr;
 }
 
-void FancyModeManager::setEnabled(FancyMode *mode, bool enable)
+void FancyModeManager::setModeEnabled(FancyMode *mode, bool enable)
 {
     int index = d->m_modes.indexOf(mode);
     d->m_modeStack->setTabEnabled(index, enable);
 }
 
-void FancyModeManager::setVisible(FancyMode *mode, bool visible)
+void FancyModeManager::setModeVisible(FancyMode *mode, bool visible)
 {
     int index = d->m_modes.indexOf(mode);
     d->m_modeStack->setTabVisible(index, visible);
@@ -129,48 +173,13 @@ void FancyModeManager::setVisible(FancyMode *mode, bool visible)
 void FancyModeManager::objectAdded(QObject *obj)
 {
     FancyMode *mode = qobject_cast<FancyMode *>(obj);
-    if (!mode) {
-        return;
-    }
-
-    // Count the number of modes with a higher priority
-    int index = 0;
-    foreach (const FancyMode * m, d->m_modes) {
-        if (m->priority() >= mode->priority()) {
-            ++index;
-        }
-    }
-
-    d->m_modes.insert(index, mode);
-    d->m_modeStack->insertTab(index, mode->widget(), mode->icon(), mode->displayName(),
-                              mode->menu() != nullptr);
-    d->m_modeStack->setTabEnabled(index, mode->isEnabled());
-
-    if (!mode->menu()) {
-        d->m_modeStack->setTabToolTip(index, tr("Switch to <b>%1</b> mode\nCtrl+%2")
-                                      .arg(mode->displayName()).arg(index + 1));
-        d->m_modeStack->setTabShortcut(index, tr("Ctrl+%1").arg(index + 1));
-    } else {
-        d->m_modeStack->setTabToolTip(index, mode->menu()->toolTip());
-    }
-
-    if (mode->menu()) {
-        connect(mode->menu(), SIGNAL(aboutToHide()), d, SLOT(hideMenu()));
-    }
+    addMode(mode);
 }
 
 void FancyModeManager::objectRemoved(QObject *obj)
 {
     FancyMode *mode = qobject_cast<FancyMode *>(obj);
-    if (!mode) {
-        return;
-    }
-    int index = d->m_modes.indexOf(mode);
-    if (index == -1) {
-        return;
-    }
-    d->m_modes.remove(index);
-    d->m_modeStack->removeTab(index);
+    removeMode(mode);
 }
 
 void FancyModeManager::currentTabChanged(int index)
