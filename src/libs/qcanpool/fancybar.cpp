@@ -29,6 +29,7 @@
 #include "fancycursor.h"
 #include "fancyscreen.h"
 #include "fancytitlebar.h"
+#include "fancyapplicationwidget.h"
 #include "qcanpool.h"
 
 #include <QLabel>
@@ -82,7 +83,6 @@ private slots:
     void aboutToShowMenu();
     void aboutToHideMenu();
     void menuTriggered(QMouseEvent *e);
-    void applicationMenuTriggered(QMouseEvent *e);
     void slotWindowIconChange(QIcon &icon);
 
 public:
@@ -110,10 +110,9 @@ public:
     QSpacerItem         *m_middleSpacerItem;
 
     QList<FancyButton *> m_additionalButtons;
-    QWidget             *m_applicationWidget;
+    FancyApplicationWidget *m_applicationWidget;
 
     FancyButton         *m_menuButton;
-
 
     FancyBar::FancyStyle m_style;
 
@@ -151,9 +150,7 @@ void FancyBarPrivate::showQuickAccessBar(bool show)
     if (m_bQuickAccessVisible == show) {
         return;
     }
-
     m_bQuickAccessVisible = show;
-
     if (show) {
         m_quickAccessBar->show();
         m_leftSpacerItem->changeSize(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -168,10 +165,8 @@ void FancyBarPrivate::showMenuBar(bool show)
     if (m_bMenuBarVisible == show) {
         return;
     }
-
     m_bMenuBarVisible = show;
     m_menuWidget->setVisible(show);
-
     if (show) {
         setFixedHeight(m_titleBarHeight + m_menuBarHeight);
     } else {
@@ -232,7 +227,6 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
     if (m_style == style) {
         return;
     }
-
     m_style = style;
     // clear layout
     m_logoLayout->removeItem(m_appButtonLayout);
@@ -350,18 +344,10 @@ void FancyBarPrivate::createMenuWidget()
     m_menuWidget->setFixedHeight(m_menuBarHeight);
     m_menuWidget->hide();
 
-    m_applicationButton = new FancyButton();
-    m_applicationButton->setHasMenu(true);
+    m_applicationWidget = new FancyApplicationWidget(this);
+    m_applicationButton = qobject_cast<FancyButton *>(m_applicationWidget->appButton());
     m_applicationButton->setText(tr("Application"));
-    m_applicationButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     m_applicationButton->setNormalColor(QColor(240, 130, 0));
-    connect(m_applicationButton, SIGNAL(menuTriggered(QMouseEvent *)), this, SLOT(applicationMenuTriggered(QMouseEvent *)));
-    m_applicationWidget = new QWidget(this);
-    QVBoxLayout *applicationLayout = new QVBoxLayout();
-    applicationLayout->setMargin(0);
-    applicationLayout->setSpacing(0);
-    m_applicationWidget->setLayout(applicationLayout);
-    m_applicationWidget->setWindowFlags(Qt::Popup);
 
     m_menuBarArea = new QHBoxLayout();
     m_menuBarArea->setMargin(0);
@@ -393,7 +379,6 @@ void FancyBarPrivate::updateMenuColor()
     if (m_menuBar == nullptr) {
         return;
     }
-
     m_menuBar->setStyleSheet(QString(
                                  "QMenuBar{background-color: transparent;margin:1px;color: #%1;}"
                                  "QMenuBar::item{background-color: transparent;}"
@@ -454,18 +439,14 @@ void FancyBarPrivate::aboutToHideMenu()
 void FancyBarPrivate::menuTriggered(QMouseEvent *e)
 {
     FancyButton *button = qobject_cast<FancyButton *>(sender());
-
     if (button == nullptr) {
         return;
     }
-
     QAction *action = button->defaultAction();
     QMenu *menu = action->menu();
-
     if (menu == nullptr) {
         return;
     }
-
     connect(menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowMenu()));
     connect(menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideMenu()));
     m_menuButton = button;
@@ -475,33 +456,6 @@ void FancyBarPrivate::menuTriggered(QMouseEvent *e)
     pos.setX(pos.x() - x);
     pos.setY(pos.y() - y + button->height());
     menu->popup(pos);
-}
-
-void FancyBarPrivate::applicationMenuTriggered(QMouseEvent *e)
-{
-    if (m_applicationWidget == nullptr) {
-        return;
-    }
-
-    if (m_applicationWidget->layout()->itemAt(0) == nullptr) {
-        return;
-    }
-
-    FancyButton *button = qobject_cast<FancyButton *>(sender());
-
-    if (button == nullptr) {
-        return;
-    }
-
-    int x = e->x();
-    int y = e->y();
-    QPoint pos = e->globalPos();
-    pos.setX(pos.x() - x);
-    pos.setY(pos.y() - y + button->height());
-    m_applicationWidget->move(pos);
-    m_applicationWidget->setWindowModality(Qt::WindowModal);
-    m_applicationWidget->show();
-    m_applicationButton->select(false);
 }
 
 void FancyBarPrivate::slotWindowIconChange(QIcon &icon)
@@ -629,7 +583,7 @@ void FancyBar::addAdditionalControl(QWidget *widget, FancyBar::AdditionalControl
 void FancyBar::setApplicationWidget(const QString &label, QWidget *widget)
 {
     d->m_applicationButton->setText(label);
-    d->m_applicationWidget->layout()->addWidget(widget);
+    d->m_applicationWidget->setAppWidget(widget);
 }
 
 void FancyBar::setApplicationButtonBkColor(const QColor &color)
