@@ -51,7 +51,11 @@ HEADERS += \
     $$PWD/fancymode.h \
     $$PWD/fancyquickaccessbar.h \
     $$PWD/fancymodemanager.h \
-    $$PWD/fancytitlebar.h
+    $$PWD/fancytitlebar.h \
+    $$PWD/fancyribbon.h \
+    $$PWD/fancyribbonpage.h \
+    $$PWD/fancyribbongroup.h \
+    $$PWD/fancypopupwidget.h
 
 SOURCES += \
     $$PWD/fancytabwidget.cpp \
@@ -80,7 +84,11 @@ SOURCES += \
     $$PWD/fancymode.cpp \
     $$PWD/fancyquickaccessbar.cpp \
     $$PWD/fancymodemanager.cpp \
-    $$PWD/fancytitlebar.cpp
+    $$PWD/fancytitlebar.cpp \
+    $$PWD/fancyribbon.cpp \
+    $$PWD/fancyribbonpage.cpp \
+    $$PWD/fancyribbongroup.cpp \
+    $$PWD/fancypopupwidget.cpp
 
 RESOURCES += \
     $$PWD/qcanpool.qrc

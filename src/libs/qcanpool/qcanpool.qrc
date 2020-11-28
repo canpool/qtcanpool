@@ -9,6 +9,8 @@
         <file alias="max2">resource/main/max2.png</file>
         <file alias="min2">resource/main/min2.png</file>
         <file alias="restore2">resource/main/restore2.png</file>
+        <file alias="hide">resource/main/hide.png</file>
+        <file alias="show">resource/main/show.png</file>
     </qresource>
     <qresource prefix="/tools">
         <file alias="setup">resource/tools/setup.png</file>
@@ -22,5 +24,8 @@
     </qresource>
     <qresource prefix="/skin">
         <file alias="state_ok">resource/skin/state_ok.png</file>
+    </qresource>
+    <qresource prefix="/ribbon">
+        <file alias="option">resource/ribbon/option.png</file>
     </qresource>
 </RCC>
