@@ -6,12 +6,11 @@
 class QStackedWidget;
 class QActionGroup;
 
-namespace QLite
-{
-    class LiteModeBar;
-    class LiteTabWidget;
-    class LiteTabBar;
-}
+QLITE_BEGIN_NAMESPACE
+class LiteModeBar;
+class LiteTabWidget;
+class LiteTabBar;
+QLITE_END_NAMESPACE
 
 class MainWindow : public QLite::LiteWindow
 {

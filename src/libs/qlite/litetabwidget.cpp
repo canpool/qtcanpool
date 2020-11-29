@@ -25,27 +25,24 @@
 
 #include "litetabbar.h"
 
-using namespace QLite;
+QLITE_BEGIN_NAMESPACE
 
-namespace QLite
+class LiteTabWidgetPrivate : public QObject
 {
-    class LiteTabWidgetPrivate : public QObject
-    {
-        Q_OBJECT
-    public:
-        LiteTabWidgetPrivate();
-        void init();
-        void updateTabBarPosition();
+    Q_OBJECT
+public:
+    LiteTabWidgetPrivate();
+    void init();
+    void updateTabBarPosition();
 
 
-        LiteTabBar *m_tabBar;
-        QStackedWidget *m_stack;
-        QBoxLayout *m_layout;
+    LiteTabBar *m_tabBar;
+    QStackedWidget *m_stack;
+    QBoxLayout *m_layout;
 
-        LiteTabWidget *q;
-        LiteTabWidget::TabPosition m_pos;
-    };
-}
+    LiteTabWidget *q;
+    LiteTabWidget::TabPosition m_pos;
+};
 
 LiteTabWidgetPrivate::LiteTabWidgetPrivate()
     : m_tabBar(nullptr), m_stack(nullptr),
@@ -210,5 +207,7 @@ void LiteTabWidget::setTabSpacing(int spacing)
 {
     d->m_tabBar->setTabSpacing(spacing);
 }
+
+QLITE_END_NAMESPACE
 
 #include "litetabwidget.moc"

@@ -23,11 +23,11 @@
 #include <QObject>
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 QLITE_SHARED_EXPORT void setStyle(const QString &style);
 QLITE_SHARED_EXPORT QString loadStyle(const QString &filename);
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // QTLITE_H

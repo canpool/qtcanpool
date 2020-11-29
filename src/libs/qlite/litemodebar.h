@@ -25,7 +25,7 @@
 
 class QStackedWidget;
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteModeBarPrivate;
 
@@ -55,6 +55,6 @@ private:
     LiteModeBarPrivate *d;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEMODEBAR_H

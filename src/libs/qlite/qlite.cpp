@@ -25,9 +25,7 @@
 #include <QColor>
 #include <QPalette>
 
-using namespace QLite;
-
-void QLite::setStyle(const QString &style)
+void QLITE_PREPEND_NAMESPACE(setStyle)(const QString &style)
 {
     QFile file(style);
     if (file.open(QFile::ReadOnly)) {
@@ -39,7 +37,7 @@ void QLite::setStyle(const QString &style)
     }
 }
 
-QString QLite::loadStyle(const QString &filename)
+QString QLITE_PREPEND_NAMESPACE(loadStyle)(const QString &filename)
 {
     QFile stylefile(filename);
     if (stylefile.open(QFile::ReadOnly)) {

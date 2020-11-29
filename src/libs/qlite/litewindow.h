@@ -23,7 +23,7 @@
 #include <QMainWindow>
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteBar;
 class LiteWindowPrivate;
@@ -54,6 +54,6 @@ private:
     LiteWindowPrivate *d;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEWINDOW_H

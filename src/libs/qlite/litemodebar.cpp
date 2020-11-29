@@ -22,23 +22,20 @@
 #include <QStackedWidget>
 #include <QIcon>
 
-using namespace QLite;
+QLITE_BEGIN_NAMESPACE
 
-namespace QLite
+class LiteModeBarPrivate : public QObject
 {
-    class LiteModeBarPrivate : public QObject
-    {
-        Q_OBJECT
-    public:
-        LiteModeBarPrivate();
-        void init();
+    Q_OBJECT
+public:
+    LiteModeBarPrivate();
+    void init();
 
-    public:
-        LiteModeBar *q;
+public:
+    LiteModeBar *q;
 
-        QStackedWidget *m_stack;
-    };
-}
+    QStackedWidget *m_stack;
+};
 
 LiteModeBarPrivate::LiteModeBarPrivate()
     : q(nullptr), m_stack(nullptr)
@@ -126,5 +123,7 @@ void LiteModeBar::setModeVisible(QWidget *widget, bool visible)
     int index = d->m_stack->indexOf(widget);
     setTabVisible(index, visible);
 }
+
+QLITE_END_NAMESPACE
 
 #include "litemodebar.moc"

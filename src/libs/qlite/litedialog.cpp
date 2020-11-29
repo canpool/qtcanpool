@@ -27,20 +27,17 @@
 #include <QHBoxLayout>
 #include <QLayout>
 
-using namespace QLite;
+QLITE_BEGIN_NAMESPACE
 
-namespace QLite
+class LiteDialogPrivate : public QObject
 {
-    class LiteDialogPrivate : public QObject
-    {
-        Q_OBJECT
-    public:
-        LiteDialogPrivate();
+    Q_OBJECT
+public:
+    LiteDialogPrivate();
 
-        LiteBar *m_liteBar;
-        QWidget *m_centralWidget;
-    };
-}
+    LiteBar *m_liteBar;
+    QWidget *m_centralWidget;
+};
 
 LiteDialogPrivate::LiteDialogPrivate()
     : m_liteBar(nullptr), m_centralWidget(nullptr)
@@ -137,5 +134,6 @@ void LiteDialog::setWindowFlags(Qt::WindowFlags type)
     d->m_liteBar->updateWidgetFlags();
 }
 
-#include "litedialog.moc"
+QLITE_END_NAMESPACE
 
+#include "litedialog.moc"

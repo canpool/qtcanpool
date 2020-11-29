@@ -23,7 +23,7 @@
 #include <QWidget>
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class QLITE_SHARED_EXPORT LiteWidget : public QWidget
 {
@@ -35,6 +35,6 @@ protected:
     void paintEvent(QPaintEvent *e);
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEWIDGET_H

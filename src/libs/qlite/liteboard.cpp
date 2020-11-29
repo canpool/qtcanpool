@@ -21,19 +21,16 @@
 
 #include <QMouseEvent>
 
-using namespace QLite;
+QLITE_BEGIN_NAMESPACE
 
-namespace QLite
+class LiteBoardPrivate
 {
-    class LiteBoardPrivate
-    {
-    public:
-        LiteBoardPrivate();
+public:
+    LiteBoardPrivate();
 
-        QPoint m_movePoint;
-        bool m_bPressed;
-    };
-}
+    QPoint m_movePoint;
+    bool m_bPressed;
+};
 
 LiteBoardPrivate::LiteBoardPrivate()
     : m_bPressed(false)
@@ -79,3 +76,5 @@ void LiteBoard::mouseMoveEvent(QMouseEvent *event)
         move(movePos - d->m_movePoint);
     }
 }
+
+QLITE_END_NAMESPACE

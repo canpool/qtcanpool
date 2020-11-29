@@ -20,7 +20,7 @@
 #include "qlite/litedialog.h"
 #include "qlite/litebar.h"
 
-using namespace QLite;
+QLITE_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *parent)
     : LiteWindow(parent)

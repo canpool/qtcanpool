@@ -27,7 +27,7 @@
 
 #include "litescreen.h"
 
-using namespace QLite;
+QLITE_USE_NAMESPACE
 
 LiteCursor::LiteCursor()
 {

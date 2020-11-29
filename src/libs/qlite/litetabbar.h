@@ -23,7 +23,7 @@
 #include "litewidget.h"
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteTabBarPrivate;
 
@@ -74,6 +74,6 @@ private:
     LiteTabBarPrivate *d;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITETABBAR_H

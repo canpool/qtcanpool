@@ -29,7 +29,7 @@ class QToolButton;
 class QToolBar;
 class QAction;
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteBarPrivate;
 
@@ -68,6 +68,6 @@ private:
     LiteBarPrivate *d;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEBAR_H

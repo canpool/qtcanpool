@@ -24,7 +24,7 @@
 #include <QList>
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class QLITE_SHARED_EXPORT LiteScreen
 {
@@ -40,6 +40,6 @@ private:
     QList<QRect> m_screenRects;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITESCREEN_H

@@ -27,7 +27,7 @@
 #include <QScreen>
 #endif
 
-using namespace QLite;
+QLITE_USE_NAMESPACE
 
 LiteScreen::LiteScreen()
 {

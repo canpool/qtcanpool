@@ -23,7 +23,7 @@
 #include <QDialog>
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteBar;
 class LiteDialogPrivate;
@@ -51,6 +51,6 @@ private:
     LiteDialogPrivate *d;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEDIALOG_H

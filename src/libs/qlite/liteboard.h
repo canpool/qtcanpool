@@ -23,7 +23,7 @@
 #include <QDialog>
 #include "qlite_global.h"
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteBoardPrivate;
 
@@ -43,6 +43,6 @@ private:
     LiteBoardPrivate *d;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEBOARD_H

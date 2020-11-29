@@ -22,7 +22,7 @@
 #include <QStyleOption>
 #include <QPainter>
 
-using namespace QLite;
+QLITE_USE_NAMESPACE
 
 LiteWidget::LiteWidget(QWidget *parent)
     : QWidget(parent)

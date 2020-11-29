@@ -23,12 +23,13 @@
 #include <QObject>
 #include <QMouseEvent>
 #include <QHoverEvent>
+#include "qlite_global.h"
 
 class QLabel;
 class QToolButton;
 class QToolBar;
 
-namespace QLite {
+QLITE_BEGIN_NAMESPACE
 
 class LiteBar;
 
@@ -133,6 +134,6 @@ public:
     bool m_bLeftButtonDbClicked;
 };
 
-} // namespace QLite
+QLITE_END_NAMESPACE
 
 #endif // LITEBAR_P_H
