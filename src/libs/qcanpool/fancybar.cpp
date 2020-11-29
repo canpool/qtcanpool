@@ -75,10 +75,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
-signals:
-    void windowResizable(bool resizable);
-    void windowMovable(bool movable);
-
 private slots:
     void aboutToShowMenu();
     void aboutToHideMenu();
@@ -395,8 +391,7 @@ void FancyBarPrivate::registerWidget(QWidget *widget)
 {
     m_titleBar = new FancyTitleBar(widget);
 
-    connect(m_titleBar, SIGNAL(windowResizable(bool)), this, SIGNAL(windowResizable(bool)));
-    connect(m_titleBar, SIGNAL(windowMovable(bool)), this, SIGNAL(windowMovable(bool)));
+    connect(m_titleBar, SIGNAL(windowResizable(bool)), q, SIGNAL(maximizationChanged(bool)));
     connect(m_titleBar, SIGNAL(windowIconChanged(QIcon &)), this, SLOT(slotWindowIconChange(QIcon &)));
 }
 
@@ -483,8 +478,6 @@ FancyBar::FancyBar(QWidget *parent)
     if (s_backgroundColor.isValid()) {
         setBackgroundColor(s_backgroundColor);
     }
-
-    connect(d, SIGNAL(windowResizable(bool)), this, SIGNAL(maximizationChanged(bool)));
 }
 
 FancyBar::~FancyBar()

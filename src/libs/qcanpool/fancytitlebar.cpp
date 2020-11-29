@@ -88,10 +88,6 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
-signals:
-    void windowResizable(bool resizable);
-    void windowMovable(bool movable);
-
 private slots:
     void slotSysButtonClicked();
     void aboutToShowSystemMenu();
@@ -396,7 +392,7 @@ void FancyTitleBarPrivate::restoreWidget(QWidget *pWidget)
 {
     m_isMaximized = false;
     pWidget->setGeometry(m_normalRect);
-    emit windowResizable(true);
+    emit q->windowResizable(true);
 }
 
 void FancyTitleBarPrivate::maximizeWidget(QWidget *pWidget)
@@ -412,7 +408,7 @@ void FancyTitleBarPrivate::maximizeWidget(QWidget *pWidget)
     QRect rect = sreen.screenRect(m_currentScreen);
     pWidget->setGeometry(rect);
 
-    emit windowResizable(false);
+    emit q->windowResizable(false);
 }
 
 void FancyTitleBarPrivate::resizeWidget(const QPoint &gMousePos)
