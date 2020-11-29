@@ -43,7 +43,6 @@ HEADERS += \
     $$PWD/skinitem.h \
     $$PWD/fancynavbar.h \
     $$PWD/fancynavbutton.h \
-    $$PWD/pagesorter.h \
     $$PWD/fancybanner.h \
     $$PWD/qcanpool_p.h \
     $$PWD/fancymodebar.h \
@@ -77,7 +76,6 @@ SOURCES += \
     $$PWD/skinitem.cpp \
     $$PWD/fancynavbar.cpp \
     $$PWD/fancynavbutton.cpp \
-    $$PWD/pagesorter.cpp \
     $$PWD/fancybanner.cpp \
     $$PWD/qcanpool_p.cpp \
     $$PWD/fancymodebar.cpp \

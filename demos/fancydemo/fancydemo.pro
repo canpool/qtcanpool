@@ -32,7 +32,7 @@ LIBS *= -l$$qtLibraryName(qcanpool)
 INCLUDEPATH += ..
 
 include(fancydemo-src.pri)
-include($$QTCANPOOL_ROOT/src/modules/modules.pri)
+include(modules.pri)
 
 win32{
     DEFINES	+= WIN32

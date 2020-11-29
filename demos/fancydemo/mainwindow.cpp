@@ -30,9 +30,9 @@
 #include "qcanpool/fancyquickaccessbar.h"
 #include "qcanpool/fancydialog.h"
 #include "qcanpool/fancynavbar.h"
-#include "qcanpool/pagesorter.h"
 #include "qcanpool/fancybanner.h"
 
+#include "pagesorter.h"
 #include "skindialog.h"
 #include "theme.h"
 

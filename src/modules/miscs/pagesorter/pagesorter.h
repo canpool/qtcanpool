@@ -21,15 +21,12 @@
 #define PAGESORTER_H
 
 #include <QWidget>
-#include "qcanpool_global.h"
 
 class QLabel;
 class QLineEdit;
 class QIntValidator;
 
-QCANPOOL_BEGIN_NAMESPACE
-
-class QCANPOOL_SHARED_EXPORT PageSorter : public QWidget
+class PageSorter : public QWidget
 {
     Q_OBJECT
 public:
@@ -74,7 +71,5 @@ private:
     int m_currentPage;
     int m_block;
 };
-
-QCANPOOL_END_NAMESPACE
 
 #endif // PAGESORTER_H
