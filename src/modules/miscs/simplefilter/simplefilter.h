@@ -21,16 +21,13 @@
 #define SIMPLEFILTER_H
 
 #include <QWidget>
-#include "qcanpool_global.h"
 
 class QTreeWidget;
 class QTableWidget;
 class QTreeView;
 
-QCANPOOL_BEGIN_NAMESPACE
-
 class SimpleFilterPrivate;
-class QCANPOOL_SHARED_EXPORT SimpleFilter : public QWidget
+class SimpleFilter : public QWidget
 {
     Q_OBJECT
 public:
@@ -47,7 +44,5 @@ public:
 private:
     SimpleFilterPrivate *d;
 };
-
-QCANPOOL_END_NAMESPACE
 
 #endif // SIMPLEFILTER_H

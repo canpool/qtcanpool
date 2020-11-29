@@ -1,13 +1,13 @@
 #include "custommode.h"
 #include "qcanpool/minisplitter.h"
 #include "qcanpool/ministack.h"
-#include "qcanpool/minicard.h"
-#include "qcanpool/simplefilter.h"
 #include "qcanpool/tinytabwidget.h"
 
 #include "cwidgets.h"
 #include "ctablewidget.h"
 
+#include "minicard.h"
+#include "simplefilter.h"
 #include "qcustomchart.h"
 
 CustomMode::CustomMode(QWidget *parent)

@@ -28,8 +28,6 @@ HEADERS += \
     $$PWD/fancytabbar.h \
     $$PWD/fancytab.h \
     $$PWD/minisplitter.h \
-    $$PWD/simplefilter.h \
-    $$PWD/minicard.h \
     $$PWD/ministack.h \
     $$PWD/qcanpool.h \
     $$PWD/minicentralarea.h \
@@ -61,8 +59,6 @@ SOURCES += \
     $$PWD/fancytabbar.cpp \
     $$PWD/fancytab.cpp \
     $$PWD/minisplitter.cpp \
-    $$PWD/simplefilter.cpp \
-    $$PWD/minicard.cpp \
     $$PWD/ministack.cpp \
     $$PWD/qcanpool.cpp \
     $$PWD/minicentralarea.cpp \
