@@ -2,6 +2,7 @@
  **
  **  Copyright (C) 2020 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
+ **           https://gitee.com/icanpool
  **
  **  GNU Lesser General Public License Usage
  **  Alternatively, this file may be used under the terms of the GNU Lesser
