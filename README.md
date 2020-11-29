@@ -3,6 +3,8 @@
 ### 简介
 本项目是根据QtCreator源码结构总结出的一套通用的项目管理模板。核心库为基于QtWidgets的qcanpool，同时，集成常用组件和第三方类库。
 
+qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、优质的控件……
+
 ### 仓库
 - [github](https://github.com/canpool/qtcanpool)
 - [码云](https://gitee.com/icanpool/qtcanpool)
@@ -12,6 +14,7 @@
 - [配套附件](https://pan.baidu.com/s/1o3d_IV2KWgcrnftaGVxFKA)
 - [初学教程](https://blog.csdn.net/liang19890820/article/details/50277095#qt%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7)
 - [学习之路](https://www.devbean.net/category/qt-study-road-2/)
+- [Wiki](https://gitee.com/icanpool/qtcanpool/wikis)
 
 ### 目录
 |一级目录|二级目录|说明|
@@ -33,7 +36,7 @@
 - Qt 5.12.0 MinGW 64bit
 
 ### 开源协议
-* 遵循GPLv3开源许可协议
+* 遵循GPLv3/LGPLv3开源许可协议
 
 ### 编码规范
 * [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)
@@ -46,9 +49,6 @@
 
 ### 交流
 * QQ群：831617934
-
-### 捐赠
-![支付宝](./doc/pics/alipay.png)
 
 ### 例子
 - <font size=4>fancyDemo</font>
