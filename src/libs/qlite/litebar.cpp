@@ -297,7 +297,7 @@ void LiteBarPrivate::handleMouseReleaseEvent(QMouseEvent *event)
     m_bLeftButtonPressed = false;
     // maximize on the top of the screen
     if (!m_isMaximized && !m_bLeftButtonDbClicked) {
-        if (event->globalY() == 0) {
+        if (event->globalY() <= 3) {
             m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
 
             if (m_bWidgetMaximizable) {
@@ -322,10 +322,6 @@ void LiteBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
         if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
             resizeWidget(event->globalPos());
         }
-//        else if (d->m_bWidgetMovable && m_bLeftButtonTitlePressed)
-//        {
-//            moveWidget(event->globalPos());
-//        }
     } else if (m_bWidgetResizable) {
         updateCursorShape(event->globalPos());
     }

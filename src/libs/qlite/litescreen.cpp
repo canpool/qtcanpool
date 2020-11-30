@@ -51,7 +51,11 @@ LiteScreen::LiteScreen()
 #else
     QList<QScreen *> screenList = QGuiApplication::screens();
     foreach (QScreen *screen, screenList) {
+#if defined(Q_OS_WIN)
         m_screenRects.append(screen->availableGeometry());
+#else
+        m_screenRects.append(screen->virtualGeometry());
+#endif
     }
 #endif
 }
@@ -87,7 +91,11 @@ QRect LiteScreen::normalRect()
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
     geom = QApplication::desktop()->availableGeometry();
 #else
+#if defined(Q_OS_WIN)
     geom = QGuiApplication::primaryScreen()->availableGeometry();
+#else
+    geom = QGuiApplication::primaryScreen()->virtualGeometry();
+#endif
 #endif
     return QRect(geom.x() + 100, geom.y() + 100,
                  2 * geom.width() / 3, 2 * geom.height() / 3);

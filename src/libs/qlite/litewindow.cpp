@@ -128,6 +128,10 @@ QMenuBar *LiteWindow::menuBar() const
 {
     if (d->m_menuBar == nullptr) {
         d->m_menuBar = new QMenuBar();
+#if !defined(Q_OS_WIN)
+        d->m_menuBar->setNativeMenuBar(false);
+        d->m_menuBar->setVisible(true);
+#endif
         d->m_layout->addWidget(d->m_menuBar, 0, Qt::AlignCenter);
         d->m_layout->addStretch();
     }
@@ -149,6 +153,10 @@ void LiteWindow::setMenuBar(QMenuBar *menuBar)
         d->m_layout->addWidget(d->m_menuBar, 0, Qt::AlignCenter);
         d->m_layout->addStretch();
     }
+#if !defined(Q_OS_WIN)
+    d->m_menuBar->setNativeMenuBar(false);
+    d->m_menuBar->setVisible(true);
+#endif
 }
 
 QStatusBar *LiteWindow::statusBar() const
