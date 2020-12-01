@@ -52,6 +52,7 @@ public:
     QList<QToolButton *> m_tabs;
     QList<QToolButton *> m_actionButtons;
     QMap<QAction*, QToolButton*> m_actionTabMap;
+    QMap<QToolButton*, int> m_tabHeights;
 
     int m_currentIndex;
     LiteTabBar::Direction m_direction;
@@ -93,6 +94,7 @@ LiteTabBarPrivate::~LiteTabBarPrivate()
     qDeleteAll(m_actionButtons);
     m_actionButtons.clear();
     m_actionTabMap.clear();
+    m_tabHeights.clear();
 }
 
 void LiteTabBarPrivate::init()
@@ -216,6 +218,7 @@ int LiteTabBar::insertTab(int index, const QIcon &icon, const QString &text)
         d->m_currentIndex++;
     }
     d->m_totalHeight += tab->sizeHint().height();
+    d->m_tabHeights.insert(tab, tab->sizeHint().height());
     return index;
 }
 
@@ -225,6 +228,8 @@ void LiteTabBar::removeTab(int index)
 
     QToolButton *tab = d->m_tabs.takeAt(index);
     d->m_tabLayout->removeWidget(tab);
+    d->m_totalHeight -= d->m_tabHeights.value(tab);
+    d->m_tabHeights.remove(tab);
     delete tab;
 
     int count = d->m_tabs.count();
@@ -367,7 +372,9 @@ void LiteTabBar::setCurrentIndex(int index)
 
 void LiteTabBar::resizeEvent(QResizeEvent *event)
 {
-    if (event->size().height() <= d->m_totalHeight + d->m_iconSize.height()) {
+    // Because of padding and border-width are set in qss,
+    // so + 2 * icon.heigth
+    if (event->size().height() <= d->m_totalHeight + d->m_iconSize.height() * 2) {
         d->setIconSize(QSize(0, 0));
     } else {
         d->setIconSize(d->m_iconSize);
