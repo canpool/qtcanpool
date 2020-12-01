@@ -100,7 +100,7 @@ LiteWindow::LiteWindow(QWidget *parent, Qt::WindowFlags f)
     mainLayout->addStretch();
     mainLayout->addWidget(d->m_liteBar->sysToolBar(), 0, Qt::AlignTop);
     menuWidget->setLayout(mainLayout);
-    menuWidget->setObjectName(QLatin1String("titlebar"));
+    menuWidget->setObjectName(QLatin1String("qlite_titlebar"));
 
     setMenuWidget(menuWidget);
 

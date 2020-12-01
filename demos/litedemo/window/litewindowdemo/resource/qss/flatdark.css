@@ -528,82 +528,82 @@ QLCDNumber {
     author 	: maminjie (canpool@163.com)
 *****************************************************/
 
-LiteModeBar {
+QWidget#qlite_modebar {
 }
 
-LiteModeBar QToolButton#tab {
-    border-width: 0px 2px 0px 2px;
+QWidget#qlite_modebar QToolButton#tab {
+    border-width: 1px 2px 0px 2px;
     border-style: solid;
     border-color: transparent;
 }
 
-LiteModeBar QToolButton#tab:pressed,
-LiteModeBar QToolButton#tab:checked {
+QWidget#qlite_modebar QToolButton#tab:pressed,
+QWidget#qlite_modebar QToolButton#tab:checked {
     border-left-color: red;
 }
 
-LiteTabWidget[tabPosition="3"] {
+QWidget#qlite_tabwidget[tabPosition="3"] {
 }
 
-LiteTabWidget[tabPosition="0"] QToolButton#tab,
-LiteTabWidget[tabPosition="1"] QToolButton#tab {
+QWidget#qlite_tabwidget[tabPosition="0"] QToolButton#tab,
+QWidget#qlite_tabwidget[tabPosition="1"] QToolButton#tab {
     border-width: 2px 0px 2px 0px;
     border-style: solid;
     border-color: transparent;
 }
 
-LiteTabWidget[tabPosition="0"] QToolButton#tab:pressed,
-LiteTabWidget[tabPosition="0"] QToolButton#tab:checked {
+QWidget#qlite_tabwidget[tabPosition="0"] QToolButton#tab:pressed,
+QWidget#qlite_tabwidget[tabPosition="0"] QToolButton#tab:checked {
     border-top-color: red;
 }
 
-LiteTabWidget[tabPosition="1"] QToolButton#tab:pressed,
-LiteTabWidget[tabPosition="1"] QToolButton#tab:checked {
+QWidget#qlite_tabwidget[tabPosition="1"] QToolButton#tab:pressed,
+QWidget#qlite_tabwidget[tabPosition="1"] QToolButton#tab:checked {
     border-bottom-color: red;
 }
 
-LiteTabWidget[tabPosition="2"] QToolButton#tab,
-LiteTabWidget[tabPosition="3"] QToolButton#tab {
+QWidget#qlite_tabwidget[tabPosition="2"] QToolButton#tab,
+QWidget#qlite_tabwidget[tabPosition="3"] QToolButton#tab {
     border-width: 0px 2px 0px 2px;
     border-style: solid;
     border-color: transparent;
 }
 
-LiteTabWidget[tabPosition="2"] QToolButton#tab:pressed,
-LiteTabWidget[tabPosition="2"] QToolButton#tab:checked {
+QWidget#qlite_tabwidget[tabPosition="2"] QToolButton#tab:pressed,
+QWidget#qlite_tabwidget[tabPosition="2"] QToolButton#tab:checked {
     border-left-color: red;
 }
 
-LiteTabWidget[tabPosition="3"] QToolButton#tab:pressed,
-LiteTabWidget[tabPosition="3"] QToolButton#tab:checked {
+QWidget#qlite_tabwidget[tabPosition="3"] QToolButton#tab:pressed,
+QWidget#qlite_tabwidget[tabPosition="3"] QToolButton#tab:checked {
     border-right-color: red;
 }
 
-QWidget#titlebar QToolButton {
+QWidget#qlite_titlebar QToolButton {
     width: 22px;
     height: 18px;
 }
 
-QWidget#titlebar QToolButton#close,
-QWidget#titlebar QToolButton#minimize,
-QWidget#titlebar QToolButton#maximize {
+QWidget#qlite_titlebar QToolButton#close,
+QWidget#qlite_titlebar QToolButton#minimize,
+QWidget#qlite_titlebar QToolButton#maximize {
     width: 32px;
     height: 18px;
 }
 
-QWidget#titlebar QToolButton#close:hover {
+QWidget#qlite_titlebar QToolButton#close:hover {
     background: rgba(207, 0, 0, 230);
 }
 
-QWidget#titlebar QToolButton#close:pressed {
+QWidget#qlite_titlebar QToolButton#close:pressed {
     background: rgba(207, 0, 0, 150);
 }
 
-QWidget#titlebar QToolButton::menu-button {
+QWidget#qlite_titlebar QToolButton::menu-button {
 /*    image: none;*/
 }
 
-LiteDialog QWidget#centerwidget:active {
+QWidget#qlite_dialog QWidget#centerwidget:active {
     background: #2e2f30;
     border-width: 0px 1px 1px 1px;
     border-style: solid;
