@@ -58,6 +58,7 @@ public:
 
     void showQuickAccessBar(bool show);
     void showMenuBar(bool show);
+    void showMenuWidget(bool show);
 
     void addAdditionalControl(QAction *action, FancyBar::AdditionalControlPosition position);
     void addAdditionalControl(QWidget *widget, FancyBar::AdditionalControlPosition position);
@@ -75,6 +76,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
+    QSize sizeHint() const;
 
 private slots:
     void aboutToShowMenu();
@@ -118,10 +120,10 @@ public:
     QColor  m_menuPressColor;
 
     int     m_titleBarHeight;
-    int     m_menuBarHeight;
 
     bool    m_bQuickAccessVisible;
     bool    m_bMenuBarVisible;
+    bool    m_bMenuWidgetVisible;
 };
 
 FancyBarPrivate::FancyBarPrivate(QWidget *parent)
@@ -133,9 +135,9 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     , m_menuHoverColor(QColor(255, 255, 255, 50))
     , m_menuPressColor(QColor(255, 255, 255, 50))
     , m_titleBarHeight(TITLE_BAR_HEIGHT)
-    , m_menuBarHeight(MENU_BAR_HEIGHT)
     , m_bQuickAccessVisible(false)
     , m_bMenuBarVisible(false)
+    , m_bMenuWidgetVisible(false)
 {
 }
 
@@ -163,12 +165,23 @@ void FancyBarPrivate::showMenuBar(bool show)
         return;
     }
     m_bMenuBarVisible = show;
-    m_menuWidget->setVisible(show);
-    if (show) {
-        setFixedHeight(m_titleBarHeight + m_menuBarHeight);
-    } else {
-        setFixedHeight(m_titleBarHeight);
+    if (m_menuBar) {
+        m_menuBar->setVisible(show);
     }
+
+    if (m_style == FancyBar::WindowStyle ||
+            m_style == FancyBar::ClassicStyle) {
+        showMenuWidget(show);
+    }
+}
+
+void FancyBarPrivate::showMenuWidget(bool show)
+{
+    if (m_bMenuWidgetVisible == show) {
+        return;
+    }
+    m_bMenuWidgetVisible = show;
+    m_menuWidget->setVisible(show);
 }
 
 void FancyBarPrivate::addAdditionalControl(QAction *action, FancyBar::AdditionalControlPosition position)
@@ -248,7 +261,7 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
     m_applicationButton->setRound(false);
     m_appButtonLayout->setContentsMargins(0, 0, 0, 0);
     m_logoButton->setVisible(false);
-    showMenuBar(true);
+    showMenuWidget(true);
 
     // set style
     if (style == FancyBar::WindowStyle) {
@@ -272,7 +285,7 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
         titleLayout->addItem(m_rightSpacerItem);
         titleLayout->addLayout(m_titleAdditionalControlArea);
         titleLayout->addWidget(m_systemGroup);
-        showMenuBar(false);
+        showMenuWidget(false);
     } else if (style == FancyBar::ClassicStyle) {
         m_applicationButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
         m_applicationButton->setIconSize(QSize(48, 48));
@@ -298,14 +311,14 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
         titleLayout->addLayout(m_menuAdditionalControlArea);
         titleLayout->addLayout(m_titleAdditionalControlArea);
         titleLayout->addWidget(m_systemGroup);
-        showMenuBar(false);
+        showMenuWidget(false);
     }
 }
 
 void FancyBarPrivate::createTitleWidget()
 {
     m_titleWidget = new QWidget();
-    m_titleWidget->setFixedHeight(m_titleBarHeight);
+    m_titleWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
     m_leftSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
     m_rightSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -338,7 +351,7 @@ void FancyBarPrivate::createTitleWidget()
 void FancyBarPrivate::createMenuWidget()
 {
     m_menuWidget = new QWidget();
-    m_menuWidget->setFixedHeight(m_menuBarHeight);
+    m_menuWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_menuWidget->hide();
 
     m_applicationWidget = new FancyApplicationWidget(this);
@@ -416,6 +429,27 @@ void FancyBarPrivate::mouseMoveEvent(QMouseEvent *event)
 void FancyBarPrivate::mouseDoubleClickEvent(QMouseEvent *event)
 {
     m_titleBar->mouseDoubleClickEvent(event);
+}
+
+QSize FancyBarPrivate::sizeHint() const
+{
+    int ht = 0;
+    int hm = 0;
+    if (m_menuBar && m_bMenuBarVisible) {
+        hm = qMax(m_menuBar->sizeHint().height(), MENU_BAR_HEIGHT);
+        if (m_bMenuWidgetVisible) {
+            m_menuWidget->setFixedHeight(hm);
+            ht = m_titleBarHeight;
+        } else {
+            ht = qMax(hm, m_titleBarHeight);
+            hm = 0;
+        }
+    } else {
+        ht = m_titleBarHeight;
+    }
+    m_titleWidget->setFixedHeight(ht);
+
+    return QSize(width(), ht + hm);
 }
 
 void FancyBarPrivate::aboutToShowMenu()
@@ -594,11 +628,6 @@ void FancyBar::setTitleBarHeight(int height)
 {
     if (height > TITLE_BAR_HEIGHT && height <= TITLE_BAR_HEIGHT + 15) {
         d->m_titleBarHeight = height;
-        d->m_titleWidget->setFixedHeight(d->m_titleBarHeight);
-
-        if (isMenuBarVisible()) {
-            d->setFixedHeight(d->m_titleBarHeight + d->m_menuBarHeight);
-        }
     }
 }
 
