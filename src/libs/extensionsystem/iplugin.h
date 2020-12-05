@@ -28,7 +28,6 @@
 #include "extensionsystem_global.h"
 
 #include <QObject>
-#include <QtPlugin>
 
 namespace ExtensionSystem {
 
@@ -54,13 +53,13 @@ public:
     ~IPlugin() override;
 
     virtual bool initialize(const QStringList &arguments, QString *errorString) = 0;
-    virtual void extensionsInitialized() = 0;
+    virtual void extensionsInitialized() {}
     virtual bool delayedInitialize() { return false; }
     virtual ShutdownFlag aboutToShutdown() { return SynchronousShutdown; }
     virtual QObject *remoteCommand(const QStringList & /* options */,
                                    const QString & /* workingDirectory */,
                                    const QStringList & /* arguments */) { return nullptr; }
-    virtual QList<QObject *> createTestObjects() const;
+    virtual QVector<QObject *> createTestObjects() const;
 
     PluginSpec *pluginSpec() const;
 

@@ -58,20 +58,30 @@ public:
     void addEntry(DocumentModel::Entry *entry);
     void removeDocument(int idx);
 
-    Utils::optional<int> indexOfFilePath(const Utils::FileName &filePath) const;
+    Utils::optional<int> indexOfFilePath(const Utils::FilePath &filePath) const;
     Utils::optional<int> indexOfDocument(IDocument *document) const;
 
     bool disambiguateDisplayNames(DocumentModel::Entry *entry);
 
+    static void setPinned(DocumentModel::Entry *entry, bool pinned);
+
     static QIcon lockedIcon();
+    static QIcon pinnedIcon();
     static void addEditor(IEditor *editor, bool *isNewDocument);
-    static void addSuspendedDocument(const QString &fileName, const QString &displayName, Id id);
+    static DocumentModel::Entry *addSuspendedDocument(const QString &fileName,
+                                                      const QString &displayName,
+                                                      Utils::Id id);
     static DocumentModel::Entry *firstSuspendedEntry();
     static DocumentModel::Entry *removeEditor(IEditor *editor);
     static void removeEntry(DocumentModel::Entry *entry);
-    static void removeAllSuspendedEntries();
+    enum PinnedFileRemovalPolicy {
+        DoNotRemovePinnedFiles,
+        RemovePinnedFiles
+    };
+    static void removeAllSuspendedEntries(PinnedFileRemovalPolicy pinnedFileRemovalPolicy
+                                          = RemovePinnedFiles);
 
-    void itemChanged();
+    void itemChanged(IDocument *document);
 
     class DynamicEntry
     {

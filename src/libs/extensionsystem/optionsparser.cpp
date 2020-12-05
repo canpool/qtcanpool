@@ -42,6 +42,7 @@ const char *OptionsParser::LOAD_OPTION = "-load";
 const char *OptionsParser::TEST_OPTION = "-test";
 const char *OptionsParser::NOTEST_OPTION = "-notest";
 const char *OptionsParser::PROFILE_OPTION = "-profile";
+const char *OptionsParser::NO_CRASHCHECK_OPTION = "-no-crashcheck";
 
 OptionsParser::OptionsParser(const QStringList &args,
         const QMap<QString, bool> &appOptions,
@@ -63,6 +64,7 @@ OptionsParser::OptionsParser(const QStringList &args,
     if (m_foundAppOptions)
         m_foundAppOptions->clear();
     m_pmPrivate->arguments.clear();
+    m_pmPrivate->argumentsForRestart.clear();
 }
 
 bool OptionsParser::parse()
@@ -77,6 +79,8 @@ bool OptionsParser::parse()
         if (checkForNoLoadOption())
             continue;
         if (checkForProfilingOption())
+            continue;
+        if (checkForNoCrashcheckOption())
             continue;
 #ifdef WITH_TESTS
         if (checkForTestOptions())
@@ -115,10 +119,10 @@ bool OptionsParser::checkForTestOptions()
     if (m_currentArg == QLatin1String(TEST_OPTION)) {
         if (nextToken(RequiredToken)) {
             if (m_currentArg == QLatin1String("all")) {
-                m_pmPrivate->testSpecs =
-                        Utils::transform(m_pmPrivate->loadQueue(), [](PluginSpec *spec) {
-                            return PluginManagerPrivate::TestSpec(spec);
-                        });
+                m_pmPrivate->testSpecs
+                    = Utils::transform<std::vector>(m_pmPrivate->loadQueue(), [](PluginSpec *spec) {
+                          return PluginManagerPrivate::TestSpec(spec);
+                      });
             } else {
                 QStringList args = m_currentArg.split(QLatin1Char(','));
                 const QString pluginName = args.takeFirst();
@@ -129,7 +133,7 @@ bool OptionsParser::checkForTestOptions()
                                                                          "The plugin \"%1\" is specified twice for testing.").arg(pluginName);
                         m_hasError = true;
                     } else {
-                        m_pmPrivate->testSpecs.append(PluginManagerPrivate::TestSpec(spec, args));
+                        m_pmPrivate->testSpecs.emplace_back(spec, args);
                     }
                 } else  {
                     if (m_errorString)
@@ -169,7 +173,7 @@ bool OptionsParser::checkForLoadOption()
         return false;
     if (nextToken(RequiredToken)) {
         if (m_currentArg == QLatin1String("all")) {
-            foreach (PluginSpec *spec, m_pmPrivate->pluginSpecs)
+            for (PluginSpec *spec : qAsConst(m_pmPrivate->pluginSpecs))
                 spec->d->setForceEnabled(true);
             m_isDependencyRefreshNeeded = true;
         } else {
@@ -185,6 +189,7 @@ bool OptionsParser::checkForLoadOption()
                 m_isDependencyRefreshNeeded = true;
             }
         }
+        m_pmPrivate->argumentsForRestart << QLatin1String(LOAD_OPTION) << m_currentArg;
     }
     return true;
 }
@@ -195,7 +200,7 @@ bool OptionsParser::checkForNoLoadOption()
         return false;
     if (nextToken(RequiredToken)) {
         if (m_currentArg == QLatin1String("all")) {
-            foreach (PluginSpec *spec, m_pmPrivate->pluginSpecs)
+            for (PluginSpec *spec : qAsConst(m_pmPrivate->pluginSpecs))
                 spec->d->setForceDisabled(true);
             m_isDependencyRefreshNeeded = true;
         } else {
@@ -208,11 +213,12 @@ bool OptionsParser::checkForNoLoadOption()
             } else {
                 spec->d->setForceDisabled(true);
                 // recursively disable all plugins that require this plugin
-                foreach (PluginSpec *dependantSpec, PluginManager::pluginsRequiringPlugin(spec))
+                for (PluginSpec *dependantSpec : PluginManager::pluginsRequiringPlugin(spec))
                     dependantSpec->d->setForceDisabled(true);
                 m_isDependencyRefreshNeeded = true;
             }
         }
+        m_pmPrivate->argumentsForRestart << QLatin1String(NO_LOAD_OPTION) << m_currentArg;
     }
     return true;
 }
@@ -240,6 +246,14 @@ bool OptionsParser::checkForProfilingOption()
     return true;
 }
 
+bool OptionsParser::checkForNoCrashcheckOption()
+{
+    if (m_currentArg != QLatin1String(NO_CRASHCHECK_OPTION))
+        return false;
+    m_pmPrivate->enableCrashCheck = false;
+    return true;
+}
+
 bool OptionsParser::checkForPluginOption()
 {
     bool requiresParameter;
@@ -247,8 +261,11 @@ bool OptionsParser::checkForPluginOption()
     if (!spec)
         return false;
     spec->addArgument(m_currentArg);
-    if (requiresParameter && nextToken(RequiredToken))
+    m_pmPrivate->argumentsForRestart << m_currentArg;
+    if (requiresParameter && nextToken(RequiredToken)) {
         spec->addArgument(m_currentArg);
+        m_pmPrivate->argumentsForRestart << m_currentArg;
+    }
     return true;
 }
 
@@ -265,7 +282,7 @@ bool OptionsParser::checkForUnknownOption()
 
 void OptionsParser::forceDisableAllPluginsExceptTestedAndForceEnabled()
 {
-    for (const PluginManagerPrivate::TestSpec &testSpec : qAsConst(m_pmPrivate->testSpecs))
+    for (const PluginManagerPrivate::TestSpec &testSpec : m_pmPrivate->testSpecs)
         testSpec.pluginSpec->d->setForceEnabled(true);
     for (PluginSpec *spec : qAsConst(m_pmPrivate->pluginSpecs)) {
         if (!spec->isForceEnabled() && !spec->isRequired())

@@ -521,7 +521,7 @@ void ModelTest::data()
  */
 void ModelTest::rowsAboutToBeInserted(const QModelIndex &parent, int start, int end)
 {
-    Q_UNUSED(end);
+    Q_UNUSED(end)
     Changing c;
     c.parent = parent;
     c.oldSize = model->rowCount(parent);
@@ -628,22 +628,22 @@ int TreeItem::indexOf(const TreeItem *item) const
 
 QVariant TreeItem::data(int column, int role) const
 {
-    Q_UNUSED(column);
-    Q_UNUSED(role);
+    Q_UNUSED(column)
+    Q_UNUSED(role)
     return QVariant();
 }
 
 bool TreeItem::setData(int column, const QVariant &data, int role)
 {
-    Q_UNUSED(column);
-    Q_UNUSED(data);
-    Q_UNUSED(role);
+    Q_UNUSED(column)
+    Q_UNUSED(data)
+    Q_UNUSED(role)
     return false;
 }
 
 Qt::ItemFlags TreeItem::flags(int column) const
 {
-    Q_UNUSED(column);
+    Q_UNUSED(column)
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
@@ -748,7 +748,8 @@ void TreeItem::update()
 {
     if (m_model) {
         QModelIndex idx = index();
-        m_model->dataChanged(idx.sibling(idx.row(), 0), idx.sibling(idx.row(), m_model->m_columnCount - 1));
+        emit m_model->dataChanged(idx.sibling(idx.row(), 0),
+                                  idx.sibling(idx.row(), m_model->m_columnCount - 1));
     }
 }
 
@@ -756,7 +757,7 @@ void TreeItem::updateAll()
 {
     if (m_model) {
         QModelIndex idx = index();
-        m_model->dataChanged(idx, idx.sibling(idx.row(), m_model->m_columnCount - 1));
+        emit m_model->dataChanged(idx, idx.sibling(idx.row(), m_model->m_columnCount - 1));
         for (TreeItem *item : *this)
             item->updateAll();
     }
@@ -766,7 +767,7 @@ void TreeItem::updateColumn(int column)
 {
     if (m_model) {
         QModelIndex idx = index();
-        m_model->dataChanged(idx.sibling(idx.row(), column), idx.sibling(idx.row(), column));
+        emit m_model->dataChanged(idx.sibling(idx.row(), column), idx.sibling(idx.row(), column));
     }
 }
 
@@ -893,13 +894,13 @@ void TreeItem::removeItemAt(int pos)
 void TreeItem::expand()
 {
     QTC_ASSERT(m_model, return);
-    m_model->requestExpansion(index());
+    emit m_model->requestExpansion(index());
 }
 
 void TreeItem::collapse()
 {
     QTC_ASSERT(m_model, return);
-    m_model->requestCollapse(index());
+    emit m_model->requestCollapse(index());
 }
 
 void TreeItem::propagateModel(BaseTreeModel *m)
@@ -1036,7 +1037,7 @@ bool BaseTreeModel::hasChildren(const QModelIndex &idx) const
 Qt::ItemFlags BaseTreeModel::flags(const QModelIndex &idx) const
 {
     if (!idx.isValid())
-        return nullptr;
+        return {};
     TreeItem *item = itemForIndex(idx);
     return item ? item->flags(idx.column())
                 : (Qt::ItemIsEnabled|Qt::ItemIsSelectable);
@@ -1194,7 +1195,7 @@ QVariant StaticTreeItem::data(int column, int role) const
 
 Qt::ItemFlags StaticTreeItem::flags(int column) const
 {
-    Q_UNUSED(column);
+    Q_UNUSED(column)
     return Qt::ItemIsEnabled;
 }
 

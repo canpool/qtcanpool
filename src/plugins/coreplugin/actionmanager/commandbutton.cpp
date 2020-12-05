@@ -26,14 +26,17 @@
 #include "commandbutton.h"
 #include "actionmanager.h"
 #include "command.h"
-#include "../id.h"
+
 
 #include <utils/proxyaction.h>
 
 using namespace Core;
+using namespace Utils;
 
 /*!
     \class Core::CommandButton
+    \inheaderfile coreplugin/actionmanager/commandbutton.h
+    \inmodule QtCreator
 
     \brief The CommandButton class is a tool button associated with one of
     the registered Command objects.
@@ -42,12 +45,23 @@ using namespace Core;
     key sequence which is automatically updated when user changes it.
  */
 
+/*!
+    \property CommandButton::toolTipBase
+    \brief The tool tip base for the command button.
+*/
+
+/*!
+    \internal
+*/
 CommandButton::CommandButton(QWidget *parent)
     : QToolButton(parent)
     , m_command(nullptr)
 {
 }
 
+/*!
+    \internal
+*/
 CommandButton::CommandButton(Id id, QWidget *parent)
     : QToolButton(parent)
     , m_command(nullptr)
@@ -55,6 +69,9 @@ CommandButton::CommandButton(Id id, QWidget *parent)
     setCommandId(id);
 }
 
+/*!
+    Sets the ID of the command associated with this tool button to \a id.
+*/
 void CommandButton::setCommandId(Id id)
 {
     if (m_command)

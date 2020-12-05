@@ -24,14 +24,21 @@
 ****************************************************************************/
 
 #include "messagemanager.h"
+
 #include "messageoutputwindow.h"
 
 #include <extensionsystem/pluginmanager.h>
+#include <utils/qtcassert.h>
+
+#include <QFont>
+#include <QThread>
+#include <QTime>
+#include <QTimer>
 
 using namespace Core;
 
 static MessageManager *m_instance = nullptr;
-Internal::MessageOutputWindow *m_messageOutputWindow = nullptr;
+static Internal::MessageOutputWindow *m_messageOutputWindow = nullptr;
 
 MessageManager *MessageManager::instance()
 {
@@ -40,8 +47,8 @@ MessageManager *MessageManager::instance()
 
 void MessageManager::showOutputPane(Core::MessageManager::PrintToOutputPaneFlags flags)
 {
-    if (!m_messageOutputWindow)
-        return;
+    QTC_ASSERT(m_messageOutputWindow, return);
+
     if (flags & Flash) {
         m_messageOutputWindow->flash();
     } else if (flags & Silent) {
@@ -73,11 +80,43 @@ void MessageManager::init()
     ExtensionSystem::PluginManager::addObject(m_messageOutputWindow);
 }
 
-void MessageManager::write(const QString &text, PrintToOutputPaneFlags flags)
+void MessageManager::setFont(const QFont &font)
 {
-    if (!m_messageOutputWindow)
-        return;
-    showOutputPane(flags);
-    m_messageOutputWindow->append(text + QLatin1Char('\n'));
+    QTC_ASSERT(m_messageOutputWindow, return);
+
+    m_messageOutputWindow->setFont(font);
 }
 
+void MessageManager::setWheelZoomEnabled(bool enabled)
+{
+    QTC_ASSERT(m_messageOutputWindow, return);
+
+    m_messageOutputWindow->setWheelZoomEnabled(enabled);
+}
+
+void MessageManager::writeMessages(const QStringList &messages, PrintToOutputPaneFlags flags)
+{
+    write(messages.join('\n'), flags);
+}
+
+void MessageManager::write(const QString &text, PrintToOutputPaneFlags flags)
+{
+    if (QThread::currentThread() == instance()->thread())
+        doWrite(text, flags);
+    else
+        QTimer::singleShot(0, instance(), [text, flags] { doWrite(text, flags); });
+}
+
+void MessageManager::writeWithTime(const QString &text, PrintToOutputPaneFlags flags)
+{
+    const QString timeStamp = QTime::currentTime().toString("HH:mm:ss ");
+    write(timeStamp + text, flags);
+}
+
+void MessageManager::doWrite(const QString &text, PrintToOutputPaneFlags flags)
+{
+    QTC_ASSERT(m_messageOutputWindow, return);
+
+    showOutputPane(flags);
+    m_messageOutputWindow->append(text + '\n');
+}

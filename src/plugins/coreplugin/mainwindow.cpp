@@ -24,9 +24,9 @@
 ****************************************************************************/
 
 #include "mainwindow.h"
+
 #include "icore.h"
 #include "jsexpander.h"
-#include "toolsettings.h"
 #include "mimetypesettings.h"
 #include "fancytabwidget.h"
 #include "documentmanager.h"
@@ -55,6 +55,7 @@
 #include <coreplugin/actionmanager/actionmanager.h>
 #include <coreplugin/actionmanager/actionmanager_p.h>
 #include <coreplugin/actionmanager/command.h>
+#include <coreplugin/dialogs/externaltoolconfig.h>
 #include <coreplugin/dialogs/newdialog.h>
 #include <coreplugin/dialogs/shortcutsettings.h>
 #include <coreplugin/editormanager/editormanager.h>
@@ -75,6 +76,7 @@
 #include <utils/stringutils.h>
 #include <utils/utilsicons.h>
 
+#include <QActionGroup>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QColorDialog>
@@ -99,25 +101,26 @@ namespace Internal {
 
 enum { debugMainWindow = 0 };
 
-MainWindow::MainWindow() :
-    AppMainWindow(),
-    m_coreImpl(new ICore(this)),
-    m_lowPrioAdditionalContexts(Constants::C_GLOBAL),
-    m_settingsDatabase(new SettingsDatabase(QFileInfo(PluginManager::settings()->fileName()).path(),
-                                            QLatin1String(Constants::IDE_CASED_ID),
-                                            this)),
-    m_progressManager(new ProgressManagerPrivate),
-    m_jsExpander(new JsExpander),
-    m_vcsManager(new VcsManager),
-    m_modeStack(new FancyTabWidget(this)),
-    m_generalSettings(new GeneralSettings),
-    m_systemSettings(new SystemSettings),
-    m_shortcutSettings(new ShortcutSettings),
-    m_toolSettings(new ToolSettings),
-    m_mimeTypeSettings(new MimeTypeSettings),
-    m_systemEditor(new SystemEditor),
-    m_toggleLeftSideBarButton(new QToolButton),
-    m_toggleRightSideBarButton(new QToolButton)
+MainWindow::MainWindow()
+    : AppMainWindow()
+    , m_coreImpl(new ICore(this))
+    , m_lowPrioAdditionalContexts(Constants::C_GLOBAL)
+    , m_settingsDatabase(
+          new SettingsDatabase(QFileInfo(PluginManager::settings()->fileName()).path(),
+                               QLatin1String(Constants::IDE_CASED_ID),
+                               this))
+    , m_progressManager(new ProgressManagerPrivate)
+    , m_jsExpander(JsExpander::createGlobalJsExpander())
+    , m_vcsManager(new VcsManager)
+    , m_modeStack(new FancyTabWidget(this))
+    , m_generalSettings(new GeneralSettings)
+    , m_systemSettings(new SystemSettings)
+    , m_shortcutSettings(new ShortcutSettings)
+    , m_toolSettings(new ToolSettings)
+    , m_mimeTypeSettings(new MimeTypeSettings)
+    , m_systemEditor(new SystemEditor)
+    , m_toggleLeftSideBarButton(new QToolButton)
+    , m_toggleRightSideBarButton(new QToolButton)
 {
     (void) new DocumentManager(this);
 
@@ -126,9 +129,6 @@ MainWindow::MainWindow() :
     setWindowTitle(Constants::IDE_DISPLAY_NAME);
     if (HostOsInfo::isLinuxHost())
         QApplication::setWindowIcon(Icons::QTCREATORLOGO_BIG.icon());
-    QCoreApplication::setApplicationName(QLatin1String(Constants::IDE_CASED_ID));
-    QCoreApplication::setApplicationVersion(QLatin1String(Constants::IDE_VERSION_LONG));
-    QCoreApplication::setOrganizationName(QLatin1String(Constants::IDE_SETTINGSVARIANT_STR));
     QString baseName = QApplication::style()->objectName();
     // Sometimes we get the standard windows 95 style as a fallback
     if (HostOsInfo::isAnyUnixHost() && !HostOsInfo::isMacHost()
@@ -147,6 +147,8 @@ MainWindow::MainWindow() :
     }
 
     QApplication::setStyle(new ManhattanStyle(baseName));
+    m_generalSettings->setShowShortcutsInContextMenu(
+        m_generalSettings->showShortcutsInContextMenu());
 
     setDockNestingEnabled(true);
 
@@ -311,8 +313,24 @@ void MainWindow::extensionsInitialized()
     QTimer::singleShot(0, m_coreImpl, &ICore::coreOpened);
 }
 
+static void setRestart(bool restart)
+{
+    qApp->setProperty("restart", restart);
+}
+
+void MainWindow::restart()
+{
+    setRestart(true);
+    exit();
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    const auto cancelClose = [event] {
+        event->ignore();
+        setRestart(false);
+    };
+
     // work around QTBUG-43344
     static bool alreadyClosed = false;
     if (alreadyClosed) {
@@ -320,17 +338,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
-    ICore::saveSettings();
+    ICore::saveSettings(ICore::MainWindowClosing);
 
     // Save opened files
     if (!DocumentManager::saveAllModifiedDocuments()) {
-        event->ignore();
+        cancelClose();
         return;
     }
 
     foreach (const std::function<bool()> &listener, m_preCloseListeners) {
         if (!listener()) {
-            event->ignore();
+            cancelClose();
             return;
         }
     }
@@ -361,6 +379,11 @@ IContext *MainWindow::currentContextObject() const
 QStatusBar *MainWindow::statusBar() const
 {
     return m_modeStack->statusBar();
+}
+
+InfoBar *MainWindow::infoBar() const
+{
+    return m_modeStack->infoBar();
 }
 
 void MainWindow::registerDefaultContainers()
@@ -402,6 +425,12 @@ void MainWindow::registerDefaultContainers()
     medit->appendGroup(Constants::G_EDIT_FIND);
     medit->appendGroup(Constants::G_EDIT_OTHER);
 
+    ActionContainer *mview = ActionManager::createMenu(Constants::M_VIEW);
+    menubar->addMenu(mview, Constants::G_VIEW);
+    mview->menu()->setTitle(tr("&View"));
+    mview->appendGroup(Constants::G_VIEW_VIEWS);
+    mview->appendGroup(Constants::G_VIEW_PANES);
+
     // Tools Menu
     ActionContainer *ac = ActionManager::createMenu(Constants::M_TOOLS);
     menubar->addMenu(ac, Constants::G_TOOLS);
@@ -412,8 +441,6 @@ void MainWindow::registerDefaultContainers()
     menubar->addMenu(mwindow, Constants::G_WINDOW);
     mwindow->menu()->setTitle(tr("&Window"));
     mwindow->appendGroup(Constants::G_WINDOW_SIZE);
-    mwindow->appendGroup(Constants::G_WINDOW_VIEWS);
-    mwindow->appendGroup(Constants::G_WINDOW_PANES);
     mwindow->appendGroup(Constants::G_WINDOW_SPLIT);
     mwindow->appendGroup(Constants::G_WINDOW_NAVIGATE);
     mwindow->appendGroup(Constants::G_WINDOW_LIST);
@@ -427,12 +454,23 @@ void MainWindow::registerDefaultContainers()
     ac->appendGroup(Constants::G_HELP_SUPPORT);
     ac->appendGroup(Constants::G_HELP_ABOUT);
     ac->appendGroup(Constants::G_HELP_UPDATES);
+
+    // macOS touch bar
+    ac = ActionManager::createTouchBar(Constants::TOUCH_BAR,
+                                       QIcon(),
+                                       "Main TouchBar" /*never visible*/);
+    ac->appendGroup(Constants::G_TOUCHBAR_HELP);
+    ac->appendGroup(Constants::G_TOUCHBAR_EDITOR);
+    ac->appendGroup(Constants::G_TOUCHBAR_NAVIGATION);
+    ac->appendGroup(Constants::G_TOUCHBAR_OTHER);
+    ac->touchBar()->setApplicationTouchBar();
 }
 
 void MainWindow::registerDefaultActions()
 {
     ActionContainer *mfile = ActionManager::actionContainer(Constants::M_FILE);
     ActionContainer *medit = ActionManager::actionContainer(Constants::M_EDIT);
+    ActionContainer *mview = ActionManager::actionContainer(Constants::M_VIEW);
     ActionContainer *mtools = ActionManager::actionContainer(Constants::M_TOOLS);
     ActionContainer *mwindow = ActionManager::actionContainer(Constants::M_WINDOW);
     ActionContainer *mhelp = ActionManager::actionContainer(Constants::M_HELP);
@@ -512,11 +550,7 @@ void MainWindow::registerDefaultActions()
     mfile->addAction(cmd, Constants::G_FILE_SAVE);
 
     // SaveAll Action
-    m_saveAllAction = new QAction(tr("Save A&ll"), this);
-    cmd = ActionManager::registerAction(m_saveAllAction, Constants::SAVEALL);
-    cmd->setDefaultKeySequence(QKeySequence(useMacShortcuts ? QString() : tr("Ctrl+Shift+S")));
-    mfile->addAction(cmd, Constants::G_FILE_SAVE);
-    connect(m_saveAllAction, &QAction::triggered, this, &MainWindow::saveAll);
+    DocumentManager::registerSaveAllAction();
 
     // Print Action
     icon = QIcon::fromTheme(QLatin1String("document-print"));
@@ -608,7 +642,10 @@ void MainWindow::registerDefaultActions()
                                            : Utils::Icons::ZOOMOUT_TOOLBAR.icon();
     tmpaction = new QAction(icon, tr("Zoom Out"), this);
     cmd = ActionManager::registerAction(tmpaction, Constants::ZOOM_OUT);
-    cmd->setDefaultKeySequence(QKeySequence(tr("Ctrl+-")));
+    if (useMacShortcuts)
+        cmd->setDefaultKeySequences({QKeySequence(tr("Ctrl+-")), QKeySequence(tr("Ctrl+Shift+-"))});
+    else
+        cmd->setDefaultKeySequence(QKeySequence(tr("Ctrl+-")));
     tmpaction->setEnabled(false);
 
     // Zoom Reset Action
@@ -682,7 +719,7 @@ void MainWindow::registerDefaultActions()
     ProxyAction *toggleLeftSideBarProxyAction =
             ProxyAction::proxyActionWithIcon(cmd->action(), Utils::Icons::TOGGLE_LEFT_SIDEBAR_TOOLBAR.icon());
     m_toggleLeftSideBarButton->setDefaultAction(toggleLeftSideBarProxyAction);
-    mwindow->addAction(cmd, Constants::G_WINDOW_VIEWS);
+    mview->addAction(cmd, Constants::G_VIEW_VIEWS);
     m_toggleLeftSideBarAction->setEnabled(false);
 
     // Show Right Sidebar Action
@@ -698,14 +735,14 @@ void MainWindow::registerDefaultActions()
     ProxyAction *toggleRightSideBarProxyAction =
             ProxyAction::proxyActionWithIcon(cmd->action(), Utils::Icons::TOGGLE_RIGHT_SIDEBAR_TOOLBAR.icon());
     m_toggleRightSideBarButton->setDefaultAction(toggleRightSideBarProxyAction);
-    mwindow->addAction(cmd, Constants::G_WINDOW_VIEWS);
+    mview->addAction(cmd, Constants::G_VIEW_VIEWS);
     m_toggleRightSideBarButton->setEnabled(false);
 
     registerModeSelectorStyleActions();
 
     // Window->Views
-    ActionContainer *mviews = ActionManager::createMenu(Constants::M_WINDOW_VIEWS);
-    mwindow->addMenu(mviews, Constants::G_WINDOW_VIEWS);
+    ActionContainer *mviews = ActionManager::createMenu(Constants::M_VIEW_VIEWS);
+    mview->addMenu(mviews, Constants::G_VIEW_VIEWS);
     mviews->menu()->setTitle(tr("&Views"));
 
     // "Help" separators
@@ -749,7 +786,7 @@ void MainWindow::registerDefaultActions()
 
 void MainWindow::registerModeSelectorStyleActions()
 {
-    ActionContainer *mwindow = ActionManager::actionContainer(Constants::M_WINDOW);
+    ActionContainer *mview = ActionManager::actionContainer(Constants::M_VIEW);
 
     // Cycle Mode Selector Styles
     m_cycleModeSelectorStyleAction = new QAction(tr("Cycle Mode Selector Styles"), this);
@@ -760,8 +797,8 @@ void MainWindow::registerModeSelectorStyleActions()
     });
 
     // Mode Selector Styles
-    ActionContainer *mmodeLayouts = ActionManager::createMenu(Constants::M_WINDOW_MODESTYLES);
-    mwindow->addMenu(mmodeLayouts, Constants::G_WINDOW_VIEWS);
+    ActionContainer *mmodeLayouts = ActionManager::createMenu(Constants::M_VIEW_MODESTYLES);
+    mview->addMenu(mmodeLayouts, Constants::G_VIEW_VIEWS);
     QMenu *styleMenu = mmodeLayouts->menu();
     styleMenu->setTitle(tr("Mode Selector Style"));
     auto *stylesGroup = new QActionGroup(styleMenu);
@@ -797,7 +834,9 @@ static IDocumentFactory *findDocumentFactory(const QList<IDocumentFactory*> &fil
     });
 }
 
-/*! Either opens \a fileNames with editors or loads a project.
+/*!
+ * \internal
+ * Either opens \a fileNames with editors or loads a project.
  *
  *  \a flags can be used to stop on first failure, indicate that a file name
  *  might include line numbers and/or switch mode to edit mode.
@@ -805,7 +844,7 @@ static IDocumentFactory *findDocumentFactory(const QList<IDocumentFactory*> &fil
  *  \a workingDirectory is used when files are opened by a remote client, since
  *  the file names are relative to the client working directory.
  *
- *  \returns the first opened document. Required to support the -block flag
+ *  Returns the first opened document. Required to support the \c -block flag
  *  for client mode.
  *
  *  \sa IPlugin::remoteArguments()
@@ -855,11 +894,6 @@ void MainWindow::setFocusToEditor()
     EditorManagerPrivate::doEscapeKeyFocusMoveMagic();
 }
 
-void MainWindow::saveAll()
-{
-    DocumentManager::saveAllModifiedDocumentsSilently();
-}
-
 void MainWindow::exit()
 {
     // this function is most likely called from a user action
@@ -884,9 +918,10 @@ void MainWindow::openFileWith()
     }
 }
 
-IContext *MainWindow::contextObject(QWidget *widget)
+IContext *MainWindow::contextObject(QWidget *widget) const
 {
-    return m_contextWidgets.value(widget);
+    const auto it = m_contextWidgets.find(widget);
+    return it == m_contextWidgets.end() ? nullptr : it->second;
 }
 
 void MainWindow::addContextObject(IContext *context)
@@ -894,10 +929,11 @@ void MainWindow::addContextObject(IContext *context)
     if (!context)
         return;
     QWidget *widget = context->widget();
-    if (m_contextWidgets.contains(widget))
+    if (m_contextWidgets.find(widget) != m_contextWidgets.end())
         return;
 
-    m_contextWidgets.insert(widget, context);
+    m_contextWidgets.insert(std::make_pair(widget, context));
+    connect(context, &QObject::destroyed, this, [this, context] { removeContextObject(context); });
 }
 
 void MainWindow::removeContextObject(IContext *context)
@@ -905,11 +941,17 @@ void MainWindow::removeContextObject(IContext *context)
     if (!context)
         return;
 
-    QWidget *widget = context->widget();
-    if (!m_contextWidgets.contains(widget))
+    disconnect(context, &QObject::destroyed, this, nullptr);
+
+    const auto it = std::find_if(m_contextWidgets.cbegin(),
+                                 m_contextWidgets.cend(),
+                                 [context](const std::pair<QWidget *, IContext *> &v) {
+                                     return v.second == context;
+                                 });
+    if (it == m_contextWidgets.cend())
         return;
 
-    m_contextWidgets.remove(widget);
+    m_contextWidgets.erase(it);
     if (m_activeContext.removeAll(context) > 0)
         updateContextObject(m_activeContext);
 }
@@ -926,7 +968,7 @@ void MainWindow::updateFocusWidget(QWidget *old, QWidget *now)
     if (QWidget *p = QApplication::focusWidget()) {
         IContext *context = nullptr;
         while (p) {
-            context = m_contextWidgets.value(p);
+            context = contextObject(p);
             if (context)
                 newContext.append(context);
             p = p->parentWidget();

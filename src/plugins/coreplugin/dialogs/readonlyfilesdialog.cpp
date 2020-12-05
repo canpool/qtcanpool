@@ -33,6 +33,7 @@
 #include <coreplugin/iversioncontrol.h>
 #include <coreplugin/vcsmanager.h>
 
+#include <utils/algorithm.h>
 #include <utils/fileutils.h>
 #include <utils/hostosinfo.h>
 #include <utils/stringutils.h>
@@ -44,6 +45,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
+
+using namespace Utils;
 
 namespace Core {
 namespace Internal {
@@ -65,8 +68,8 @@ public:
         NumberOfColumns
     };
 
-    void initDialog(const QStringList &fileNames);
-    void promptFailWarning(const QStringList &files, ReadOnlyFilesDialog::ReadOnlyResult type) const;
+    void initDialog(const FilePaths &filePaths);
+    void promptFailWarning(const FilePaths &files, ReadOnlyFilesDialog::ReadOnlyResult type) const;
     QRadioButton *createRadioButtonForItem(QTreeWidgetItem *item, QButtonGroup *group, ReadOnlyFilesTreeColumn type);
 
     void setAll(int index);
@@ -77,14 +80,14 @@ public:
     // Buttongroups containing the operation for one file.
     struct ButtonGroupForFile
     {
-        QString fileName;
+        FilePath filePath;
         QButtonGroup *group;
     };
     QList <ButtonGroupForFile> buttonGroups;
 
     QMap <int, int> setAllIndexForOperation;
     // The version control systems for every file, if the file isn't in VCS the value is 0.
-    QHash <QString, IVersionControl*> versionControls;
+    QHash<FilePath, IVersionControl*> versionControls;
 
     // Define if some specific operations should be allowed to make the files writable.
     const bool useSaveAs;
@@ -130,29 +133,44 @@ ReadOnlyFilesDialogPrivate::~ReadOnlyFilesDialogPrivate()
 using namespace Internal;
 
 /*!
- * \class ReadOnlyFilesDialog
+ * \class Core::ReadOnlyFilesDialog
+ * \inmodule QtCreator
+ * \internal
  * \brief The ReadOnlyFilesDialog class implements a dialog to show a set of
  * files that are classified as not writable.
  *
  * Automatically checks which operations are allowed to make the file writable. These operations
- * are Make Writable which tries to set the file permissions in the file system,
- * Open With Version Control System if the open operation is allowed by the version control system
- * and Save As which is used to save the changes to a document in another file.
+ * are \c MakeWritable (RO_MakeWritable), which tries to set the file permissions in the file system,
+ * \c OpenWithVCS (RO_OpenVCS) if the open operation is allowed by the version control system,
+ * and \c SaveAs (RO_SaveAs), which is used to save the changes to a document under another file
+ * name.
  */
 
-ReadOnlyFilesDialog::ReadOnlyFilesDialog(const QList<QString> &fileNames, QWidget *parent)
+/*! \enum ReadOnlyFilesDialog::ReadOnlyResult
+    This enum holds the operations that are allowed to make the file writable.
+
+     \value RO_Cancel
+            Cancels the operation.
+     \value RO_OpenVCS
+            Opens the file under control of the version control system.
+     \value RO_MakeWritable
+            Sets the file permissions in the file system.
+     \value RO_SaveAs
+            Saves changes to a document under another file name.
+*/
+
+ReadOnlyFilesDialog::ReadOnlyFilesDialog(const Utils::FilePaths &filePaths, QWidget *parent)
     : QDialog(parent)
     , d(new ReadOnlyFilesDialogPrivate(this))
 {
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-    d->initDialog(fileNames);
+    d->initDialog(filePaths);
 }
 
-ReadOnlyFilesDialog::ReadOnlyFilesDialog(const QString &fileName, QWidget *parent)
+ReadOnlyFilesDialog::ReadOnlyFilesDialog(const Utils::FilePath &filePath, QWidget *parent)
     : QDialog(parent)
     , d(new ReadOnlyFilesDialogPrivate(this))
 {
-    d->initDialog(QStringList(fileName));
+    d->initDialog({filePath});
 }
 
 ReadOnlyFilesDialog::ReadOnlyFilesDialog(IDocument *document, QWidget *parent,
@@ -160,16 +178,16 @@ ReadOnlyFilesDialog::ReadOnlyFilesDialog(IDocument *document, QWidget *parent,
     : QDialog(parent)
     , d(new ReadOnlyFilesDialogPrivate(this, document, displaySaveAs))
 {
-    d->initDialog(QStringList(document->filePath().toString()));
+    d->initDialog({document->filePath()});
 }
 
 ReadOnlyFilesDialog::ReadOnlyFilesDialog(const QList<IDocument *> &documents, QWidget *parent)
     : QDialog(parent)
     , d(new ReadOnlyFilesDialogPrivate(this))
 {
-    QStringList files;
-    foreach (IDocument *document, documents)
-        files << document->filePath().toString();
+    FilePaths files;
+    for (IDocument *document : documents)
+        files << document->filePath();
     d->initDialog(files);
 }
 
@@ -202,7 +220,7 @@ void ReadOnlyFilesDialog::setShowFailWarning(bool show, const QString &warning)
  * Opens a message box with an error description according to the type.
  * \internal
  */
-void ReadOnlyFilesDialogPrivate::promptFailWarning(const QStringList &files, ReadOnlyFilesDialog::ReadOnlyResult type) const
+void ReadOnlyFilesDialogPrivate::promptFailWarning(const FilePaths &files, ReadOnlyFilesDialog::ReadOnlyResult type) const
 {
     if (files.isEmpty())
         return;
@@ -210,7 +228,7 @@ void ReadOnlyFilesDialogPrivate::promptFailWarning(const QStringList &files, Rea
     QString message;
     QString details;
     if (files.count() == 1) {
-        const QString file = files.first();
+        const FilePath file = files.first();
         switch (type) {
         case ReadOnlyFilesDialog::RO_OpenVCS: {
             if (IVersionControl *vc = versionControls[file]) {
@@ -218,31 +236,31 @@ void ReadOnlyFilesDialogPrivate::promptFailWarning(const QStringList &files, Rea
                 title = tr("Failed to %1 File").arg(openText);
                 message = tr("%1 file %2 from version control system %3 failed.")
                         .arg(openText)
-                        .arg(QDir::toNativeSeparators(file))
+                        .arg(file.toUserOutput())
                         .arg(vc->displayName())
-                    + QLatin1Char('\n')
+                    + '\n'
                     + failWarning;
             } else {
                 title = tr("No Version Control System Found");
                 message = tr("Cannot open file %1 from version control system.\n"
                              "No version control system found.")
-                        .arg(QDir::toNativeSeparators(file))
-                    + QLatin1Char('\n')
-                    + failWarning;;
+                        .arg(file.toUserOutput())
+                    + '\n'
+                    + failWarning;
             }
             break;
         }
         case ReadOnlyFilesDialog::RO_MakeWritable:
             title = tr("Cannot Set Permissions");
             message = tr("Cannot set permissions for %1 to writable.")
-                    .arg(QDir::toNativeSeparators(file))
-                + QLatin1Char('\n')
+                    .arg(file.toUserOutput())
+                + '\n'
                 + failWarning;
             break;
         case ReadOnlyFilesDialog::RO_SaveAs:
             title = tr("Cannot Save File");
-            message = tr("Cannot save file %1").arg(QDir::toNativeSeparators(file))
-                + QLatin1Char('\n')
+            message = tr("Cannot save file %1").arg(file.toUserOutput())
+                + '\n'
                 + failWarning;
             break;
         default:
@@ -254,7 +272,7 @@ void ReadOnlyFilesDialogPrivate::promptFailWarning(const QStringList &files, Rea
         title = tr("Could Not Change Permissions on Some Files");
         message = failWarning + QLatin1Char('\n')
                 + tr("See details for a complete list of files.");
-        details = files.join(QLatin1Char('\n'));
+        details = Utils::transform(files, &FilePath::toString).join('\n');
     }
     QMessageBox msgBox(QMessageBox::Warning, title, message,
                        QMessageBox::Ok, ICore::dialogParent());
@@ -278,34 +296,35 @@ int ReadOnlyFilesDialog::exec()
         return RO_Cancel;
 
     ReadOnlyResult result = RO_Cancel;
-    QStringList failedToMakeWritable;
-    foreach (ReadOnlyFilesDialogPrivate::ButtonGroupForFile buttongroup, d->buttonGroups) {
+    FilePaths failedToMakeWritable;
+    for (const ReadOnlyFilesDialogPrivate::ButtonGroupForFile &buttongroup
+         : qAsConst(d->buttonGroups)) {
         result = static_cast<ReadOnlyResult>(buttongroup.group->checkedId());
         switch (result) {
         case RO_MakeWritable:
-            if (!Utils::FileUtils::makeWritable(Utils::FileName(QFileInfo(buttongroup.fileName)))) {
-                failedToMakeWritable << buttongroup.fileName;
+            if (!Utils::FileUtils::makeWritable(buttongroup.filePath)) {
+                failedToMakeWritable << buttongroup.filePath;
                 continue;
             }
             break;
         case RO_OpenVCS:
-            if (!d->versionControls[buttongroup.fileName]->vcsOpen(buttongroup.fileName)) {
-                failedToMakeWritable << buttongroup.fileName;
+            if (!d->versionControls[buttongroup.filePath]->vcsOpen(buttongroup.filePath.toString())) {
+                failedToMakeWritable << buttongroup.filePath;
                 continue;
             }
             break;
         case RO_SaveAs:
             if (!EditorManagerPrivate::saveDocumentAs(d->document)) {
-                failedToMakeWritable << buttongroup.fileName;
+                failedToMakeWritable << buttongroup.filePath;
                 continue;
             }
             break;
         default:
-            failedToMakeWritable << buttongroup.fileName;
+            failedToMakeWritable << buttongroup.filePath;
             continue;
         }
-        if (!QFileInfo(buttongroup.fileName).isWritable())
-            failedToMakeWritable << buttongroup.fileName;
+        if (!buttongroup.filePath.toFileInfo().isWritable())
+            failedToMakeWritable << buttongroup.filePath;
     }
     if (!failedToMakeWritable.isEmpty()) {
         if (d->showWarnings)
@@ -381,11 +400,11 @@ void ReadOnlyFilesDialogPrivate::updateSelectAll()
 /*!
  * Adds files to the dialog and checks for a possible operation to make the file
  * writable.
- * \a fileNames contains the list of the files that should be added to the
+ * \a filePaths contains the list of the files that should be added to the
  * dialog.
  * \internal
  */
-void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
+void ReadOnlyFilesDialogPrivate::initDialog(const FilePaths &filePaths)
 {
     ui.setupUi(q);
     ui.buttonBox->addButton(tr("Change &Permission"), QDialogButtonBox::AcceptRole);
@@ -394,16 +413,16 @@ void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
     QString vcsOpenTextForAll;
     QString vcsMakeWritableTextForAll;
     bool useMakeWritable = false;
-    foreach (const QString &fileName, fileNames) {
-        const QFileInfo info = QFileInfo(fileName);
+    for (const FilePath &filePath : filePaths) {
+        const QFileInfo info = filePath.toFileInfo();
         const QString visibleName = info.fileName();
         const QString directory = info.absolutePath();
 
         // Setup a default entry with filename folder and make writable radio button.
         auto item = new QTreeWidgetItem(ui.treeWidget);
         item->setText(FileName, visibleName);
-        item->setIcon(FileName, FileIconProvider::icon(fileName));
-        item->setText(Folder, Utils::FileUtils::shortNativePath(Utils::FileName(QFileInfo(directory))));
+        item->setIcon(FileName, FileIconProvider::icon(info));
+        item->setText(Folder, Utils::FilePath::fromFileInfo(directory).shortNativePath());
         auto radioButtonGroup = new QButtonGroup;
 
         // Add a button for opening the file with a version control system
@@ -411,7 +430,7 @@ void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
         IVersionControl *versionControlForFile =
                 VcsManager::findVersionControlForDirectory(directory);
         const bool fileManagedByVCS = versionControlForFile
-                && versionControlForFile->openSupportMode(fileName) != IVersionControl::NoOpen;
+                && versionControlForFile->openSupportMode(filePath.toString()) != IVersionControl::NoOpen;
         if (fileManagedByVCS) {
             const QString vcsOpenTextForFile =
                     Utils::stripAccelerator(versionControlForFile->vcsOpenText());
@@ -429,7 +448,7 @@ void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
                     vcsMakeWritableTextForAll.clear();
             }
             // Add make writable if it is supported by the reposetory.
-            if (versionControlForFile->openSupportMode(fileName) == IVersionControl::OpenOptional) {
+            if (versionControlForFile->openSupportMode(filePath.toString()) == IVersionControl::OpenOptional) {
                 useMakeWritable = true;
                 createRadioButtonForItem(item, radioButtonGroup, MakeWritable);
             }
@@ -442,15 +461,12 @@ void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
         if (useSaveAs)
             createRadioButtonForItem(item, radioButtonGroup, SaveAs);
         // If the file is managed by a version control system save the vcs for this file.
-        versionControls[fileName] = fileManagedByVCS ? versionControlForFile : nullptr;
+        versionControls[filePath] = fileManagedByVCS ? versionControlForFile : nullptr;
 
         // Also save the buttongroup for every file to get the result for each entry.
-        ReadOnlyFilesDialogPrivate::ButtonGroupForFile groupForFile;
-        groupForFile.fileName = fileName;
-        groupForFile.group = radioButtonGroup;
-        buttonGroups.append(groupForFile);
-        QObject::connect(radioButtonGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
-                [this](int) { updateSelectAll(); });
+        buttonGroups.append({filePath, radioButtonGroup});
+        QObject::connect(radioButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
+                         [this] { updateSelectAll(); });
     }
 
     // Apply the Mac file dialog style.
@@ -474,7 +490,7 @@ void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
     }
 
     // If there is just one file entry, there is no need to show the select all combo box
-    if (fileNames.count() < 2) {
+    if (filePaths.count() < 2) {
         ui.setAll->setVisible(false);
         ui.setAllLabel->setVisible(false);
         ui.verticalLayout->removeItem(ui.setAllLayout);
@@ -508,7 +524,7 @@ void ReadOnlyFilesDialogPrivate::initDialog(const QStringList &fileNames)
         ui.setAll->addItem(saveAsText);
         setAllIndexForOperation[SaveAs] = ui.setAll->count() - 1;
     }
-    QObject::connect(ui.setAll, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
+    QObject::connect(ui.setAll, QOverload<int>::of(&QComboBox::activated),
                      [this](int index) { setAll(index); });
 
     // Filter which columns should be visible and resize them to content.

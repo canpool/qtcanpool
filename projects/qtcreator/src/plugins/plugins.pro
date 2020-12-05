@@ -12,3 +12,4 @@ for(p, SUBDIRS) {
     $$pv = $$QTC_PLUGIN_DEPENDS
 }
 
+QMAKE_EXTRA_TARGETS += deployqt # dummy

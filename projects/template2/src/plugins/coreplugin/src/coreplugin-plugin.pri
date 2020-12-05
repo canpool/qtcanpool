@@ -3,8 +3,6 @@ DEFINES += CORE_LIBRARY
 QT += \
     printsupport \
 
-include(base-plugin.pri)
-
 HEADERS += \
     $$PWD/core_global.h \
     $$PWD/coreplugin.h \
@@ -20,9 +18,3 @@ SOURCES += \
 
 RESOURCES += \
     $$PWD/core.qrc
-
-DISTFILES += \
-    $$PWD/Core.json.in
-
-QMAKE_SUBSTITUTES += \
-    $$PWD/Core.json.in

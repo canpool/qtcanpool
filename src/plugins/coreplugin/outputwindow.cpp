@@ -26,15 +26,31 @@
 #include "outputwindow.h"
 
 #include "actionmanager/actionmanager.h"
+#include "editormanager/editormanager.h"
 #include "coreconstants.h"
+#include "coreplugin.h"
 #include "icore.h"
 
 #include <utils/outputformatter.h>
-#include <utils/synchronousprocess.h>
+#include <utils/qtcassert.h>
 
 #include <QAction>
+#include <QCursor>
+#include <QElapsedTimer>
+#include <QMimeData>
+#include <QPointer>
+#include <QRegularExpression>
 #include <QScrollBar>
 #include <QTextBlock>
+#include <QTimer>
+
+#ifdef WITH_TESTS
+#include <QtTest>
+#endif
+
+#include <numeric>
+
+const int chunkSize = 10000;
 
 using namespace Utils;
 
@@ -45,35 +61,38 @@ namespace Internal {
 class OutputWindowPrivate
 {
 public:
-    OutputWindowPrivate(QTextDocument *document)
+    explicit OutputWindowPrivate(QTextDocument *document)
         : cursor(document)
     {
     }
 
-    ~OutputWindowPrivate()
-    {
-        ICore::removeContextObject(outputWindowContext);
-        delete outputWindowContext;
-    }
+    QString settingsKey;
+    OutputFormatter formatter;
+    QList<QPair<QString, OutputFormat>> queuedOutput;
+    QTimer queueTimer;
 
-    IContext *outputWindowContext = nullptr;
-    Utils::OutputFormatter *formatter = nullptr;
-
-    bool enforceNewline = false;
+    bool flushRequested = false;
     bool scrollToBottom = true;
     bool linksActive = true;
-    Qt::MouseButton mouseButtonPressed = Qt::NoButton;
-    bool m_zoomEnabled = false;
-    float m_originalFontSize = 0.;
+    bool zoomEnabled = false;
+    float originalFontSize = 0.;
+    bool originalReadOnly = false;
     int maxCharCount = Core::Constants::DEFAULT_MAX_CHAR_COUNT;
+    Qt::MouseButton mouseButtonPressed = Qt::NoButton;
     QTextCursor cursor;
+    QString filterText;
+    int lastFilteredBlockNumber = -1;
+    QPalette originalPalette;
+    OutputWindow::FilterModeFlags filterMode = OutputWindow::FilterModeFlag::Default;
+    QTimer scrollTimer;
+    QElapsedTimer lastMessage;
 };
 
 } // namespace Internal
 
 /*******************/
 
-OutputWindow::OutputWindow(Context context, QWidget *parent)
+OutputWindow::OutputWindow(Context context, const QString &settingsKey, QWidget *parent)
     : QPlainTextEdit(parent)
     , d(new Internal::OutputWindowPrivate(document()))
 {
@@ -82,11 +101,18 @@ OutputWindow::OutputWindow(Context context, QWidget *parent)
     setFrameShape(QFrame::NoFrame);
     setMouseTracking(true);
     setUndoRedoEnabled(false);
+    d->formatter.setPlainTextEdit(this);
 
-    d->outputWindowContext = new IContext;
-    d->outputWindowContext->setContext(context);
-    d->outputWindowContext->setWidget(this);
-    ICore::addContextObject(d->outputWindowContext);
+    d->queueTimer.setSingleShot(true);
+    d->queueTimer.setInterval(10);
+    connect(&d->queueTimer, &QTimer::timeout, this, &OutputWindow::handleNextOutputChunk);
+
+    d->settingsKey = settingsKey;
+
+    auto outputWindowContext = new IContext(this);
+    outputWindowContext->setContext(context);
+    outputWindowContext->setWidget(this);
+    ICore::addContextObject(outputWindowContext);
 
     auto undoAction = new QAction(this);
     auto redoAction = new QAction(this);
@@ -108,24 +134,42 @@ OutputWindow::OutputWindow(Context context, QWidget *parent)
     connect(copyAction, &QAction::triggered, this, &QPlainTextEdit::copy);
     connect(pasteAction, &QAction::triggered, this, &QPlainTextEdit::paste);
     connect(selectAllAction, &QAction::triggered, this, &QPlainTextEdit::selectAll);
+    connect(this, &QPlainTextEdit::blockCountChanged, this, [this] {
+        if (!d->filterText.isEmpty())
+            filterNewContent();
+    });
 
     connect(this, &QPlainTextEdit::undoAvailable, undoAction, &QAction::setEnabled);
     connect(this, &QPlainTextEdit::redoAvailable, redoAction, &QAction::setEnabled);
     connect(this, &QPlainTextEdit::copyAvailable, cutAction, &QAction::setEnabled);  // OutputWindow never read-only
     connect(this, &QPlainTextEdit::copyAvailable, copyAction, &QAction::setEnabled);
+    connect(Core::ICore::instance(), &Core::ICore::saveSettingsRequested, this, [this] {
+        if (!d->settingsKey.isEmpty())
+            Core::ICore::settings()->setValue(d->settingsKey, fontZoom());
+    });
+
+    connect(outputFormatter(), &OutputFormatter::openInEditorRequested, this,
+            [](const Utils::FilePath &fp, int line, int column) {
+        EditorManager::openEditorAt(fp.toString(), line, column);
+    });
 
     undoAction->setEnabled(false);
     redoAction->setEnabled(false);
     cutAction->setEnabled(false);
     copyAction->setEnabled(false);
 
-    m_scrollTimer.setInterval(10);
-    m_scrollTimer.setSingleShot(true);
-    connect(&m_scrollTimer, &QTimer::timeout,
+    d->scrollTimer.setInterval(10);
+    d->scrollTimer.setSingleShot(true);
+    connect(&d->scrollTimer, &QTimer::timeout,
             this, &OutputWindow::scrollToBottom);
-    m_lastMessage.start();
+    d->lastMessage.start();
 
-    d->m_originalFontSize = font().pointSizeF();
+    d->originalFontSize = font().pointSizeF();
+
+    if (!d->settingsKey.isEmpty()) {
+        float zoom = Core::ICore::settings()->value(d->settingsKey).toFloat();
+        setFontZoom(zoom);
+    }
 }
 
 OutputWindow::~OutputWindow()
@@ -133,19 +177,23 @@ OutputWindow::~OutputWindow()
     delete d;
 }
 
-void OutputWindow::mousePressEvent(QMouseEvent * e)
+void OutputWindow::mousePressEvent(QMouseEvent *e)
 {
     d->mouseButtonPressed = e->button();
     QPlainTextEdit::mousePressEvent(e);
 }
 
+void OutputWindow::handleLink(const QPoint &pos)
+{
+    const QString href = anchorAt(pos);
+    if (!href.isEmpty())
+        d->formatter.handleLink(href);
+}
+
 void OutputWindow::mouseReleaseEvent(QMouseEvent *e)
 {
-    if (d->linksActive && d->mouseButtonPressed == Qt::LeftButton) {
-        const QString href = anchorAt(e->pos());
-        if (d->formatter)
-            d->formatter->handleLink(href);
-    }
+    if (d->linksActive && d->mouseButtonPressed == Qt::LeftButton)
+        handleLink(e->pos());
 
     // Mouse was released, activate links again
     d->linksActive = true;
@@ -188,16 +236,15 @@ void OutputWindow::keyPressEvent(QKeyEvent *ev)
         verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);
 }
 
-OutputFormatter *OutputWindow::formatter() const
+void OutputWindow::setLineParsers(const QList<OutputLineParser *> &parsers)
 {
-    return d->formatter;
+    reset();
+    d->formatter.setLineParsers(parsers);
 }
 
-void OutputWindow::setFormatter(OutputFormatter *formatter)
+OutputFormatter *OutputWindow::outputFormatter() const
 {
-    d->formatter = formatter;
-    if (d->formatter)
-        d->formatter->setPlainTextEdit(this);
+    return &d->formatter;
 }
 
 void OutputWindow::showEvent(QShowEvent *e)
@@ -210,9 +257,15 @@ void OutputWindow::showEvent(QShowEvent *e)
 
 void OutputWindow::wheelEvent(QWheelEvent *e)
 {
-    if (d->m_zoomEnabled) {
+    if (d->zoomEnabled) {
         if (e->modifiers() & Qt::ControlModifier) {
             float delta = e->angleDelta().y() / 120.f;
+
+            // Workaround for QTCREATORBUG-22721, remove when properly fixed in Qt
+            const float newSize = float(font().pointSizeF()) + delta;
+            if (delta < 0.f && newSize < 4.f)
+                return;
+
             zoomInF(delta);
             emit wheelZoom();
             return;
@@ -225,70 +278,144 @@ void OutputWindow::wheelEvent(QWheelEvent *e)
 void OutputWindow::setBaseFont(const QFont &newFont)
 {
     float zoom = fontZoom();
-    d->m_originalFontSize = newFont.pointSizeF();
+    d->originalFontSize = newFont.pointSizeF();
     QFont tmp = newFont;
-    float newZoom = qMax(d->m_originalFontSize + zoom, 4.0f);
+    float newZoom = qMax(d->originalFontSize + zoom, 4.0f);
     tmp.setPointSizeF(newZoom);
     setFont(tmp);
 }
 
 float OutputWindow::fontZoom() const
 {
-    return font().pointSizeF() - d->m_originalFontSize;
+    return font().pointSizeF() - d->originalFontSize;
 }
 
 void OutputWindow::setFontZoom(float zoom)
 {
     QFont f = font();
-    if (f.pointSizeF() == d->m_originalFontSize + zoom)
+    if (f.pointSizeF() == d->originalFontSize + zoom)
         return;
-    float newZoom = qMax(d->m_originalFontSize + zoom, 4.0f);
+    float newZoom = qMax(d->originalFontSize + zoom, 4.0f);
     f.setPointSizeF(newZoom);
     setFont(f);
 }
 
 void OutputWindow::setWheelZoomEnabled(bool enabled)
 {
-    d->m_zoomEnabled = enabled;
+    d->zoomEnabled = enabled;
 }
 
-QString OutputWindow::doNewlineEnforcement(const QString &out)
+void OutputWindow::updateFilterProperties(
+        const QString &filterText,
+        Qt::CaseSensitivity caseSensitivity,
+        bool isRegexp,
+        bool isInverted
+        )
 {
-    d->scrollToBottom = true;
-    QString s = out;
-    if (d->enforceNewline) {
-        s.prepend(QLatin1Char('\n'));
-        d->enforceNewline = false;
+    FilterModeFlags flags;
+    flags.setFlag(FilterModeFlag::CaseSensitive, caseSensitivity == Qt::CaseSensitive)
+            .setFlag(FilterModeFlag::RegExp, isRegexp)
+            .setFlag(FilterModeFlag::Inverted, isInverted);
+    if (d->filterMode == flags && d->filterText == filterText)
+        return;
+    d->lastFilteredBlockNumber = -1;
+    if (d->filterText != filterText) {
+        const bool filterTextWasEmpty = d->filterText.isEmpty();
+        d->filterText = filterText;
+
+        // Update textedit's background color
+        if (filterText.isEmpty() && !filterTextWasEmpty) {
+            setPalette(d->originalPalette);
+            setReadOnly(d->originalReadOnly);
+        }
+        if (!filterText.isEmpty() && filterTextWasEmpty) {
+            d->originalReadOnly = isReadOnly();
+            setReadOnly(true);
+            const auto newBgColor = [this] {
+                const QColor currentColor = palette().color(QPalette::Base);
+                const int factor = 120;
+                return currentColor.value() < 128 ? currentColor.lighter(factor)
+                                                  : currentColor.darker(factor);
+            };
+            QPalette p = palette();
+            p.setColor(QPalette::Base, newBgColor());
+            setPalette(p);
+        }
+    }
+    d->filterMode = flags;
+    filterNewContent();
+}
+
+void OutputWindow::filterNewContent()
+{
+    bool atBottom = isScrollbarAtBottom();
+
+    QTextBlock lastBlock = document()->findBlockByNumber(d->lastFilteredBlockNumber);
+    if (!lastBlock.isValid())
+        lastBlock = document()->begin();
+
+    const bool invert = d->filterMode.testFlag(FilterModeFlag::Inverted);
+    if (d->filterMode.testFlag(OutputWindow::FilterModeFlag::RegExp)) {
+        QRegularExpression regExp(d->filterText);
+        if (!d->filterMode.testFlag(OutputWindow::FilterModeFlag::CaseSensitive))
+            regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+
+        for (; lastBlock != document()->end(); lastBlock = lastBlock.next())
+            lastBlock.setVisible(d->filterText.isEmpty()
+                                 || regExp.match(lastBlock.text()).hasMatch() != invert);
+    } else {
+        if (d->filterMode.testFlag(OutputWindow::FilterModeFlag::CaseSensitive)) {
+            for (; lastBlock != document()->end(); lastBlock = lastBlock.next())
+                lastBlock.setVisible(d->filterText.isEmpty()
+                                     || lastBlock.text().contains(d->filterText) != invert);
+        } else {
+            for (; lastBlock != document()->end(); lastBlock = lastBlock.next()) {
+                lastBlock.setVisible(d->filterText.isEmpty() || lastBlock.text().toLower()
+                                     .contains(d->filterText.toLower()) != invert);
+            }
+        }
     }
 
-    if (s.endsWith(QLatin1Char('\n'))) {
-        d->enforceNewline = true; // make appendOutputInline put in a newline next time
-        s.chop(1);
+    d->lastFilteredBlockNumber = document()->lastBlock().blockNumber();
+
+    // FIXME: Why on earth is this necessary? We should probably do something else instead...
+    setDocument(document());
+
+    if (atBottom)
+        scrollToBottom();
+}
+
+void OutputWindow::handleNextOutputChunk()
+{
+    QTC_ASSERT(!d->queuedOutput.isEmpty(), return);
+    auto &chunk = d->queuedOutput.first();
+    if (chunk.first.size() <= chunkSize) {
+        handleOutputChunk(chunk.first, chunk.second);
+        d->queuedOutput.removeFirst();
+    } else {
+        handleOutputChunk(chunk.first.left(chunkSize), chunk.second);
+        chunk.first.remove(0, chunkSize);
     }
-
-    return s;
+    if (!d->queuedOutput.isEmpty())
+        d->queueTimer.start();
+    else if (d->flushRequested) {
+        d->formatter.flush();
+        d->flushRequested = false;
+    }
 }
 
-void OutputWindow::setMaxCharCount(int count)
+void OutputWindow::handleOutputChunk(const QString &output, OutputFormat format)
 {
-    d->maxCharCount = count;
-    setMaximumBlockCount(count / 100);
-}
-
-int OutputWindow::maxCharCount() const
-{
-    return d->maxCharCount;
-}
-
-void OutputWindow::appendMessage(const QString &output, OutputFormat format)
-{
-    QString out = SynchronousProcess::normalizeNewlines(output);
-
+    QString out = output;
     if (out.size() > d->maxCharCount) {
-        // Current line alone exceeds limit, we need to cut it.
-        out.truncate(d->maxCharCount);
-        out.append("[...]");
-        setMaximumBlockCount(1);
+        // Current chunk alone exceeds limit, we need to cut it.
+        const int elided = out.size() - d->maxCharCount;
+        out = out.left(d->maxCharCount / 2)
+                + "[[[... "
+                + tr("Elided %n characters due to Application Output settings", nullptr, elided)
+                + " ...]]]"
+                + out.right(d->maxCharCount / 2);
+        setMaximumBlockCount(out.count('\n') + 1);
     } else {
         int plannedChars = document()->characterCount() + out.size();
         if (plannedChars > d->maxCharCount) {
@@ -305,81 +432,42 @@ void OutputWindow::appendMessage(const QString &output, OutputFormat format)
         }
     }
 
-    const bool atBottom = isScrollbarAtBottom() || m_scrollTimer.isActive();
-
-    if (format == ErrorMessageFormat || format == NormalMessageFormat) {
-        if (d->formatter)
-            d->formatter->appendMessage(doNewlineEnforcement(out), format);
-    } else {
-
-        bool sameLine = format == StdOutFormatSameLine
-                     || format == StdErrFormatSameLine;
-
-        if (sameLine) {
-            d->scrollToBottom = true;
-
-            int newline = -1;
-            bool enforceNewline = d->enforceNewline;
-            d->enforceNewline = false;
-
-            if (!enforceNewline) {
-                newline = out.indexOf(QLatin1Char('\n'));
-                moveCursor(QTextCursor::End);
-                if (newline != -1 && d->formatter)
-                    d->formatter->appendMessage(out.left(newline), format);// doesn't enforce new paragraph like appendPlainText
-            }
-
-            QString s = out.mid(newline+1);
-            if (s.isEmpty()) {
-                d->enforceNewline = true;
-            } else {
-                if (s.endsWith(QLatin1Char('\n'))) {
-                    d->enforceNewline = true;
-                    s.chop(1);
-                }
-                if (d->formatter)
-                    d->formatter->appendMessage(QLatin1Char('\n') + s, format);
-            }
-        } else {
-            if (d->formatter)
-                d->formatter->appendMessage(doNewlineEnforcement(out), format);
-        }
-    }
+    const bool atBottom = isScrollbarAtBottom() || d->scrollTimer.isActive();
+    d->scrollToBottom = true;
+    d->formatter.appendMessage(out, format);
 
     if (atBottom) {
-        if (m_lastMessage.elapsed() < 5) {
-            m_scrollTimer.start();
+        if (d->lastMessage.elapsed() < 5) {
+            d->scrollTimer.start();
         } else {
-            m_scrollTimer.stop();
+            d->scrollTimer.stop();
             scrollToBottom();
         }
     }
 
-    m_lastMessage.start();
+    d->lastMessage.start();
     enableUndoRedo();
 }
 
-// TODO rename
-void OutputWindow::appendText(const QString &textIn, const QTextCharFormat &format)
+void OutputWindow::setMaxCharCount(int count)
 {
-    const QString text = SynchronousProcess::normalizeNewlines(textIn);
-    if (d->maxCharCount > 0 && document()->characterCount() >= d->maxCharCount)
-        return;
-    const bool atBottom = isScrollbarAtBottom();
-    if (!d->cursor.atEnd())
-        d->cursor.movePosition(QTextCursor::End);
-    d->cursor.beginEditBlock();
-    d->cursor.insertText(doNewlineEnforcement(text), format);
+    d->maxCharCount = count;
+    setMaximumBlockCount(count / 100);
+}
 
-    if (d->maxCharCount > 0 && document()->characterCount() >= d->maxCharCount) {
-        QTextCharFormat tmp;
-        tmp.setFontWeight(QFont::Bold);
-        d->cursor.insertText(doNewlineEnforcement(tr("Additional output omitted") + QLatin1Char('\n')), tmp);
-    }
+int OutputWindow::maxCharCount() const
+{
+    return d->maxCharCount;
+}
 
-    d->cursor.endEditBlock();
-    if (atBottom)
-        scrollToBottom();
+void OutputWindow::appendMessage(const QString &output, OutputFormat format)
+{
+    if (d->queuedOutput.isEmpty() || d->queuedOutput.last().second != format)
+        d->queuedOutput << qMakePair(output, format);
+    else
+        d->queuedOutput.last().first.append(output);
+    if (!d->queueTimer.isActive())
+        d->queueTimer.start();
 }
 
 bool OutputWindow::isScrollbarAtBottom() const
@@ -387,12 +475,64 @@ bool OutputWindow::isScrollbarAtBottom() const
     return verticalScrollBar()->value() == verticalScrollBar()->maximum();
 }
 
+QMimeData *OutputWindow::createMimeDataFromSelection() const
+{
+    const auto mimeData = new QMimeData;
+    QString content;
+    const int selStart = textCursor().selectionStart();
+    const int selEnd = textCursor().selectionEnd();
+    const QTextBlock firstBlock = document()->findBlock(selStart);
+    const QTextBlock lastBlock = document()->findBlock(selEnd);
+    for (QTextBlock curBlock = firstBlock; curBlock != lastBlock; curBlock = curBlock.next()) {
+        if (!curBlock.isVisible())
+            continue;
+        if (curBlock == firstBlock)
+            content += curBlock.text().mid(selStart - firstBlock.position());
+        else
+            content += curBlock.text();
+        content += '\n';
+    }
+    if (lastBlock.isValid() && lastBlock.isVisible()) {
+        if (firstBlock == lastBlock)
+            content = textCursor().selectedText();
+        else
+            content += lastBlock.text().mid(0, selEnd - lastBlock.position());
+    }
+    mimeData->setText(content);
+    return mimeData;
+}
+
 void OutputWindow::clear()
 {
-    d->enforceNewline = false;
-    QPlainTextEdit::clear();
-    if (d->formatter)
-        d->formatter->clear();
+    d->formatter.clear();
+}
+
+void OutputWindow::flush()
+{
+    const int totalQueuedSize = std::accumulate(d->queuedOutput.cbegin(), d->queuedOutput.cend(), 0,
+            [](int val,  const QPair<QString, OutputFormat> &c) { return val + c.first.size(); });
+    if (totalQueuedSize > 5 * chunkSize) {
+        d->flushRequested = true;
+        return;
+    }
+    d->queueTimer.stop();
+    for (const auto &chunk : d->queuedOutput)
+        handleOutputChunk(chunk.first, chunk.second);
+    d->queuedOutput.clear();
+    d->formatter.flush();
+}
+
+void OutputWindow::reset()
+{
+    flush();
+    d->queueTimer.stop();
+    d->formatter.reset();
+    if (!d->queuedOutput.isEmpty()) {
+        d->queuedOutput.clear();
+        d->formatter.appendMessage(tr("[Discarding excessive amount of pending output.]\n"),
+                                   ErrorMessageFormat);
+    }
+    d->flushRequested = false;
 }
 
 void OutputWindow::scrollToBottom()
@@ -441,4 +581,84 @@ void OutputWindow::setWordWrapEnabled(bool wrap)
         setWordWrapMode(QTextOption::NoWrap);
 }
 
+#ifdef WITH_TESTS
+
+// Handles all lines starting with "A" and the following ones up to and including the next
+// one starting with "A".
+class TestFormatterA : public OutputLineParser
+{
+private:
+    Result handleLine(const QString &text, OutputFormat) override
+    {
+        static const QString replacement = "handled by A";
+        if (m_handling) {
+            if (text.startsWith("A")) {
+                m_handling = false;
+                return {Status::Done, {}, replacement};
+            }
+            return {Status::InProgress, {}, replacement};
+        }
+        if (text.startsWith("A")) {
+            m_handling = true;
+            return {Status::InProgress, {}, replacement};
+        }
+        return Status::NotHandled;
+    }
+
+    bool m_handling = false;
+};
+
+// Handles all lines starting with "B". No continuation logic.
+class TestFormatterB : public OutputLineParser
+{
+private:
+    Result handleLine(const QString &text, OutputFormat) override
+    {
+        if (text.startsWith("B"))
+            return {Status::Done, {}, QString("handled by B")};
+        return Status::NotHandled;
+    }
+};
+
+void Internal::CorePlugin::testOutputFormatter()
+{
+    const QString input =
+            "B to be handled by B\r\n"
+            "not to be handled\n\n\n\n"
+            "A to be handled by A\n"
+            "continuation for A\r\n"
+            "B looks like B, but still continuation for A\r\n"
+            "A end of A\n"
+            "A next A\n"
+            "A end of next A\n"
+            " A trick\r\n"
+            "line with \r embedded carriage return\n"
+            "B to be handled by B\n";
+    const QString output =
+            "handled by B\n"
+            "not to be handled\n\n\n\n"
+            "handled by A\n"
+            "handled by A\n"
+            "handled by A\n"
+            "handled by A\n"
+            "handled by A\n"
+            "handled by A\n"
+            " A trick\n"
+            " embedded carriage return\n"
+            "handled by B\n";
+
+    // Stress-test the implementation by providing the input in chunks, splitting at all possible
+    // offsets.
+    for (int i = 0; i < input.length(); ++i) {
+        OutputFormatter formatter;
+        QPlainTextEdit textEdit;
+        formatter.setPlainTextEdit(&textEdit);
+        formatter.setLineParsers({new TestFormatterB, new TestFormatterA});
+        formatter.appendMessage(input.left(i), StdOutFormat);
+        formatter.appendMessage(input.mid(i), StdOutFormat);
+        formatter.flush();
+        QCOMPARE(textEdit.toPlainText(), output);
+    }
+}
+#endif // WITH_TESTS
 } // namespace Core

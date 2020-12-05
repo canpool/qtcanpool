@@ -30,11 +30,13 @@
 #include <utils/algorithm.h>
 #include <utils/qtcassert.h>
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QRegularExpression>
 #include <QSet>
+#include <QTime>
 
 #include <limits.h>
 
@@ -136,6 +138,7 @@ bool AbstractMacroExpander::expandNestedMacros(const QString &str, int *pos, QSt
     QString *currArg = &varName;
     QChar prev;
     QChar c;
+    QChar replacementChar;
     bool replaceAll = false;
 
     int i = *pos;
@@ -143,7 +146,7 @@ bool AbstractMacroExpander::expandNestedMacros(const QString &str, int *pos, QSt
     varName.reserve(strLen - i);
     for (; i < strLen; prev = c) {
         c = str.at(i++);
-        if (c == '\\' && i < strLen && validateVarName(varName)) {
+        if (c == '\\' && i < strLen) {
             c = str.at(i++);
             // For the replacement, do not skip the escape sequence when followed by a digit.
             // This is needed for enabling convenient capture group replacement,
@@ -192,13 +195,14 @@ bool AbstractMacroExpander::expandNestedMacros(const QString &str, int *pos, QSt
         } else if (currArg == &varName && c == '-' && prev == ':' && validateVarName(varName)) {
             varName.chop(1);
             currArg = &defaultValue;
-        } else if (currArg == &varName && c == '/' && validateVarName(varName)) {
+        } else if (currArg == &varName && (c == '/' || c == '#') && validateVarName(varName)) {
+            replacementChar = c;
             currArg = &pattern;
-            if (i < strLen && str.at(i) == '/') {
+            if (i < strLen && str.at(i) == replacementChar) {
                 ++i;
                 replaceAll = true;
             }
-        } else if (currArg == &pattern && c == '/') {
+        } else if (currArg == &pattern && c == replacementChar) {
             currArg = &replace;
         } else {
             *currArg += c;
@@ -257,7 +261,7 @@ QTCREATOR_UTILS_EXPORT bool readMultiLineString(const QJsonValue &value, QString
     } else if (value.isArray()) {
         QJsonArray array = value.toArray();
         QStringList lines;
-        foreach (const QJsonValue &v, array) {
+        for (const QJsonValue &v : array) {
             if (!v.isString())
                 return false;
             lines.append(v.toString());
@@ -379,6 +383,14 @@ QString quoteAmpersands(const QString &text)
 {
     QString result = text;
     return result.replace("&", "&&");
+}
+
+QString formatElapsedTime(qint64 elapsed)
+{
+    elapsed += 500; // round up
+    const QString format = QString::fromLatin1(elapsed >= 3600000 ? "h:mm:ss" : "mm:ss");
+    const QString time = QTime(0, 0).addMSecs(elapsed).toString(format);
+    return QCoreApplication::translate("StringUtils", "Elapsed time: %1.").arg(time);
 }
 
 } // namespace Utils

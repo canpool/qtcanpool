@@ -33,32 +33,36 @@
 #include <QVariant>
 #include <QVBoxLayout>
 
-#ifndef Q_MOC_RUN
 namespace Utils {
 namespace Internal {
-#endif
 
-// Please do not change the name of this class. Detailed comments in tooltip.h.
-class QTipLabel : public QLabel
+int screenNumber(const QPoint &pos, QWidget *w);
+QRect screenGeometry(const QPoint &pos, QWidget *w);
+
+class TipLabel : public QLabel
 {
-    Q_OBJECT
 public:
-    QTipLabel(QWidget *parent);
+    TipLabel(QWidget *parent);
 
     virtual void setContent(const QVariant &content) = 0;
     virtual bool isInteractive() const { return false; }
     virtual int showTime() const = 0;
     virtual void configure(const QPoint &pos, QWidget *w) = 0;
     virtual bool canHandleContentReplacement(int typeId) const = 0;
-    virtual bool equals(int typeId, const QVariant &other, const QString &helpId) const = 0;
-    virtual void setHelpId(const QString &id);
-    virtual QString helpId() const;
+    virtual bool equals(int typeId, const QVariant &other, const QVariant &contextHelp) const = 0;
+    virtual void setContextHelp(const QVariant &help);
+    virtual QVariant contextHelp() const;
+
+protected:
+    const QMetaObject *metaObject() const override;
 
 private:
-    QString m_helpId;
+    QVariant m_contextHelp;
 };
 
-class TextTip : public QTipLabel
+using TextItem = std::pair<QString, Qt::TextFormat>;
+
+class TextTip : public TipLabel
 {
 public:
     TextTip(QWidget *parent);
@@ -68,15 +72,16 @@ public:
     void configure(const QPoint &pos, QWidget *w) override;
     bool canHandleContentReplacement(int typeId) const override;
     int showTime() const override;
-    bool equals(int typeId, const QVariant &other, const QString &otherHelpId) const override;
+    bool equals(int typeId, const QVariant &other, const QVariant &otherContextHelp) const override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
 private:
     QString m_text;
+    Qt::TextFormat m_format = Qt::AutoText;
 };
 
-class ColorTip : public QTipLabel
+class ColorTip : public TipLabel
 {
 public:
     ColorTip(QWidget *parent);
@@ -85,7 +90,7 @@ public:
     void configure(const QPoint &pos, QWidget *w) override;
     bool canHandleContentReplacement(int typeId) const override;
     int showTime() const override { return 4000; }
-    bool equals(int typeId, const QVariant &other, const QString &otherHelpId) const override;
+    bool equals(int typeId, const QVariant &other, const QVariant &otherContextHelp) const override;
     void paintEvent(QPaintEvent *event) override;
 
 private:
@@ -93,7 +98,7 @@ private:
     QPixmap m_tilePixmap;
 };
 
-class WidgetTip : public QTipLabel
+class WidgetTip : public TipLabel
 {
     Q_OBJECT
 
@@ -105,7 +110,7 @@ public:
     void configure(const QPoint &pos, QWidget *w) override;
     bool canHandleContentReplacement(int typeId) const override;
     int showTime() const override { return 30000; }
-    bool equals(int typeId, const QVariant &other, const QString &otherHelpId) const override;
+    bool equals(int typeId, const QVariant &other, const QVariant &otherContextHelp) const override;
     bool isInteractive() const override { return true; }
 
 private:
@@ -113,7 +118,7 @@ private:
     QVBoxLayout *m_layout;
 };
 
-#ifndef Q_MOC_RUN
 } // namespace Internal
 } // namespace Utils
-#endif
+
+Q_DECLARE_METATYPE(Utils::Internal::TextItem)

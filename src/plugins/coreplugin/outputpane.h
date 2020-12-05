@@ -25,7 +25,9 @@
 
 #pragma once
 
-#include "id.h"
+#include "core_global.h"
+
+#include <utils/id.h>
 
 #include <QWidget>
 
@@ -42,7 +44,7 @@ class CORE_EXPORT OutputPanePlaceHolder : public QWidget
     Q_OBJECT
 
 public:
-    explicit OutputPanePlaceHolder(Id mode, QSplitter *parent = nullptr);
+    explicit OutputPanePlaceHolder(Utils::Id mode, QSplitter *parent = nullptr);
     ~OutputPanePlaceHolder() override;
 
     static OutputPanePlaceHolder *getCurrent();
@@ -53,13 +55,16 @@ public:
     void ensureSizeHintAsMinimum();
     int nonMaximizedSize() const;
 
+signals:
+    void visibilityChangeRequested(bool visible);
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void showEvent(QShowEvent *) override;
 
 private:
     void setHeight(int height);
-    void currentModeChanged(Id mode);
+    void currentModeChanged(Utils::Id mode);
 
     OutputPanePlaceHolderPrivate *d;
 };

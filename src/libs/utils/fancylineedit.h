@@ -34,6 +34,7 @@
 
 QT_BEGIN_NAMESPACE
 class QEvent;
+class QKeySequence;
 QT_END_NAMESPACE
 
 namespace Utils {
@@ -72,15 +73,13 @@ class QTCREATOR_UTILS_EXPORT FancyLineEdit : public CompletingLineEdit
     Q_OBJECT
     Q_ENUMS(Side)
 
-    // Validation.
-    Q_PROPERTY(QColor errorColor READ errorColor WRITE setErrorColor DESIGNABLE true)
-    Q_PROPERTY(QColor okColor READ okColor WRITE setOkColor DESIGNABLE true)
-
 public:
     enum Side {Left = 0, Right = 1};
 
     explicit FancyLineEdit(QWidget *parent = nullptr);
     ~FancyLineEdit() override;
+
+    void setTextKeepingActiveCursor(const QString &text);
 
     QIcon buttonIcon(Side side) const;
     void setButtonIcon(Side side, const QIcon &icon);
@@ -128,20 +127,18 @@ public:
     bool isValid() const;
     QString errorMessage() const;
 
-    QColor errorColor() const;
-    void setErrorColor(const  QColor &c);
-
-    QColor okColor() const;
-    void setOkColor(const  QColor &c);
-
     void setValidationFunction(const ValidationFunction &fn);
     static ValidationFunction defaultValidationFunction();
     void validate();
     void onEditingFinished();
 
+    static void setCamelCaseNavigationEnabled(bool enabled);
+    static void setCompletionShortcut(const QKeySequence &shortcut);
+
 protected:
     // Custom behaviour can be added here.
     virtual void handleChanged(const QString &) {}
+    void keyPressEvent(QKeyEvent *event) override;
 
 signals:
     void buttonClicked(Utils::FancyLineEdit::Side side);
@@ -168,6 +165,8 @@ private:
 
     void updateMargins();
     void updateButtonPositions();
+    bool camelCaseBackward(bool mark);
+    bool camelCaseForward(bool mark);
     friend class FancyLineEditPrivate;
 
     FancyLineEditPrivate *d;

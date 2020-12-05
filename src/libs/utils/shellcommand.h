@@ -46,7 +46,7 @@ QT_END_NAMESPACE
 
 namespace Utils {
 
-class FileName;
+class CommandLine;
 namespace Internal { class ShellCommandPrivate; }
 
 class QTCREATOR_UTILS_EXPORT ProgressParser
@@ -79,8 +79,7 @@ signals:
     void append(const QString &text);
     void appendSilently(const QString &text);
     void appendError(const QString &text);
-    void appendCommand(const QString &workingDirectory, const Utils::FileName &binary,
-                       const QStringList &args);
+    void appendCommand(const QString &workingDirectory, const Utils::CommandLine &command);
     void appendMessage(const QString &text);
 };
 
@@ -112,10 +111,12 @@ public:
     QString displayName() const;
     void setDisplayName(const QString &name);
 
-    void addJob(const FileName &binary, const QStringList &arguments,
-                const QString &workingDirectory = QString(), const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);
-    void addJob(const FileName &binary, const QStringList &arguments, int timeoutS,
-                const QString &workingDirectory = QString(), const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);
+    void addJob(const CommandLine &command,
+                const QString &workingDirectory = QString(),
+                const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);
+    void addJob(const CommandLine &command, int timeoutS,
+                const QString &workingDirectory = QString(),
+                const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);
     void execute(); // Execute tasks asynchronously!
     void abort();
     bool lastExecutionSuccess() const;
@@ -145,7 +146,7 @@ public:
     // This is called once per job in a thread.
     // When called from the UI thread it will execute fully synchronously, so no signals will
     // be triggered!
-    virtual SynchronousProcessResponse runCommand(const FileName &binary, const QStringList &arguments,
+    virtual SynchronousProcessResponse runCommand(const CommandLine &command,
                                                   int timeoutS,
                                                   const QString &workingDirectory = QString(),
                                                   const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);
@@ -171,12 +172,12 @@ private:
     void run(QFutureInterface<void> &future);
 
     // Run without a event loop in fully blocking mode. No signals will be delivered.
-    SynchronousProcessResponse runFullySynchronous(const FileName &binary, const QStringList &arguments,
+    SynchronousProcessResponse runFullySynchronous(const CommandLine &cmd,
                                                    QSharedPointer<OutputProxy> proxy,
                                                    int timeoutS, const QString &workingDirectory,
                                                    const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);
     // Run with an event loop. Signals will be delivered.
-    SynchronousProcessResponse runSynchronous(const FileName &binary, const QStringList &arguments,
+    SynchronousProcessResponse runSynchronous(const CommandLine &cmd,
                                               QSharedPointer<OutputProxy> proxy,
                                               int timeoutS, const QString &workingDirectory,
                                               const ExitCodeInterpreter &interpreter = defaultExitCodeInterpreter);

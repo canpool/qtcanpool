@@ -25,6 +25,8 @@
 
 #include "corejsextensions.h"
 
+#include <app/app_version.h>
+
 #include <utils/fileutils.h>
 #include <utils/mimetypes/mimedatabase.h>
 #include <utils/qtcassert.h>
@@ -35,6 +37,16 @@
 
 namespace Core {
 namespace Internal {
+
+QString UtilsJsExtension::qtVersion() const
+{
+    return QLatin1String(qVersion());
+}
+
+QString UtilsJsExtension::qtCreatorVersion() const
+{
+    return QLatin1String(Constants::IDE_VERSION_DISPLAY);
+}
 
 QString UtilsJsExtension::toNativeSeparators(const QString &in) const
 {
@@ -118,7 +130,7 @@ QString UtilsJsExtension::preferredSuffix(const QString &mimetype) const
 
 QString UtilsJsExtension::fileName(const QString &path, const QString &extension) const
 {
-    return Utils::FileName::fromString(path, extension).toString();
+    return Utils::FilePath::fromStringWithExtension(path, extension).toString();
 }
 
 QString UtilsJsExtension::mktemp(const QString &pattern) const

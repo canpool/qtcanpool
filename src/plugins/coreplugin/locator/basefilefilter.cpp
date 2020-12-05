@@ -26,6 +26,7 @@
 #include "basefilefilter.h"
 
 #include <coreplugin/editormanager/editormanager.h>
+#include <utils/algorithm.h>
 #include <utils/fileutils.h>
 #include <utils/qtcassert.h>
 
@@ -33,7 +34,6 @@
 #include <QRegularExpression>
 #include <QTimer>
 
-using namespace Core;
 using namespace Utils;
 
 namespace Core {
@@ -46,13 +46,11 @@ public:
     {
         iterator.clear();
         previousResultPaths.clear();
-        previousResultNames.clear();
         previousEntry.clear();
     }
 
     QSharedPointer<BaseFileFilter::Iterator> iterator;
-    QStringList previousResultPaths;
-    QStringList previousResultNames;
+    FilePaths previousResultPaths;
     bool forceNewSearchList;
     QString previousEntry;
 };
@@ -65,74 +63,107 @@ public:
 };
 
 } // Internal
-} // Core
+
+/*!
+    \class Core::BaseFileFilter
+    \inheaderfile coreplugin/locator/basefilefilter.h
+    \inmodule QtCreator
+
+    \brief The BaseFileFilter class is a base class for locator filter classes.
+*/
+
+/*!
+    \class Core::BaseFileFilter::Iterator
+    \inmodule QtCreator
+    \internal
+*/
+
+/*!
+    \class Core::BaseFileFilter::ListIterator
+    \inmodule QtCreator
+    \internal
+*/
 
 BaseFileFilter::Iterator::~Iterator() = default;
 
+/*!
+    \internal
+*/
 BaseFileFilter::BaseFileFilter()
   : d(new Internal::BaseFileFilterPrivate)
 {
     d->m_data.forceNewSearchList = true;
-    setFileIterator(new ListIterator(QStringList()));
+    setFileIterator(new ListIterator({}));
 }
 
+/*!
+    \internal
+*/
 BaseFileFilter::~BaseFileFilter()
 {
     delete d;
 }
 
+/*!
+    \reimp
+*/
 void BaseFileFilter::prepareSearch(const QString &entry)
 {
     Q_UNUSED(entry)
     d->m_current.iterator = d->m_data.iterator;
     d->m_current.previousResultPaths = d->m_data.previousResultPaths;
-    d->m_current.previousResultNames = d->m_data.previousResultNames;
     d->m_current.forceNewSearchList = d->m_data.forceNewSearchList;
     d->m_current.previousEntry = d->m_data.previousEntry;
     d->m_data.forceNewSearchList = false;
 }
 
-static int matchLevelFor(const QRegularExpressionMatch &match, const QString &matchText)
+ILocatorFilter::MatchLevel BaseFileFilter::matchLevelFor(const QRegularExpressionMatch &match,
+                                                         const QString &matchText) const
 {
     const int consecutivePos = match.capturedStart(1);
     if (consecutivePos == 0)
-        return 0;
+        return MatchLevel::Best;
     if (consecutivePos > 0) {
         const QChar prevChar = matchText.at(consecutivePos - 1);
         if (prevChar == '_' || prevChar == '.')
-            return 1;
+            return MatchLevel::Better;
     }
     if (match.capturedStart() == 0)
-        return 2;
-    return 3;
+        return MatchLevel::Good;
+    return MatchLevel::Normal;
 }
 
+/*!
+    \reimp
+*/
 QList<LocatorFilterEntry> BaseFileFilter::matchesFor(QFutureInterface<LocatorFilterEntry> &future, const QString &origEntry)
 {
-    QList<LocatorFilterEntry> entries[4];
-    const QString entry = QDir::fromNativeSeparators(origEntry);
+    QList<LocatorFilterEntry> entries[int(MatchLevel::Count)];
+    // If search string contains spaces, treat them as wildcard '*' and search in full path
+    const QString entry = QDir::fromNativeSeparators(origEntry).replace(' ', '*');
     const EditorManager::FilePathInfo fp = EditorManager::splitLineAndColumnNumber(entry);
 
     const QRegularExpression regexp = createRegExp(fp.filePath);
     if (!regexp.isValid()) {
         d->m_current.clear(); // free memory
-        return entries[0];
+        return {};
     }
-    const QChar pathSeparator('/');
-    const bool hasPathSeparator = fp.filePath.contains(pathSeparator);
+    auto containsPathSeparator = [](const QString &candidate) {
+        return candidate.contains('/') || candidate.contains('*');
+    };
+
+    const bool hasPathSeparator = containsPathSeparator(fp.filePath);
     const bool containsPreviousEntry = !d->m_current.previousEntry.isEmpty()
             && fp.filePath.contains(d->m_current.previousEntry);
-    const bool pathSeparatorAdded = !d->m_current.previousEntry.contains(pathSeparator)
-            && fp.filePath.contains(pathSeparator);
+    const bool pathSeparatorAdded = !containsPathSeparator(d->m_current.previousEntry)
+            && hasPathSeparator;
     const bool searchInPreviousResults = !d->m_current.forceNewSearchList && containsPreviousEntry
             && !pathSeparatorAdded;
     if (searchInPreviousResults)
-        d->m_current.iterator.reset(new ListIterator(d->m_current.previousResultPaths,
-                                                     d->m_current.previousResultNames));
+        d->m_current.iterator.reset(new ListIterator(d->m_current.previousResultPaths));
 
     QTC_ASSERT(d->m_current.iterator.data(), return QList<LocatorFilterEntry>());
     d->m_current.previousResultPaths.clear();
-    d->m_current.previousResultNames.clear();
     d->m_current.previousEntry = fp.filePath;
     d->m_current.iterator->toFront();
     bool canceled = false;
@@ -143,18 +174,17 @@ QList<LocatorFilterEntry> BaseFileFilter::matchesFor(QFutureInterface<LocatorFil
         }
 
         d->m_current.iterator->next();
-        QString path = d->m_current.iterator->filePath();
-        QString name = d->m_current.iterator->fileName();
-        QString matchText = hasPathSeparator ? path : name;
+        FilePath path = d->m_current.iterator->filePath();
+        QString matchText = hasPathSeparator ? path.toString() : path.fileName();
         QRegularExpressionMatch match = regexp.match(matchText);
 
         if (match.hasMatch()) {
-            QFileInfo fi(path);
-            LocatorFilterEntry filterEntry(this, fi.fileName(), QString(path + fp.postfix));
-            filterEntry.fileName = path;
-            filterEntry.extraInfo = FileUtils::shortNativePath(FileName(fi));
+            QFileInfo fi(path.toString());
+            LocatorFilterEntry filterEntry(this, fi.fileName(), QString(path.toString() + fp.postfix));
+            filterEntry.fileName = path.toString();
+            filterEntry.extraInfo = FilePath::fromFileInfo(fi).shortNativePath();
 
-            const int matchLevel = matchLevelFor(match, matchText);
+            const MatchLevel matchLevel = matchLevelFor(match, matchText);
             if (hasPathSeparator) {
                 match = regexp.match(filterEntry.extraInfo);
                 filterEntry.highlightInfo =
@@ -163,9 +193,8 @@ QList<LocatorFilterEntry> BaseFileFilter::matchesFor(QFutureInterface<LocatorFil
                 filterEntry.highlightInfo = highlightInfo(match);
             }
 
-            entries[matchLevel].append(filterEntry);
+            entries[int(matchLevel)].append(filterEntry);
             d->m_current.previousResultPaths.append(path);
-            d->m_current.previousResultNames.append(name);
         }
     }
 
@@ -178,9 +207,18 @@ QList<LocatorFilterEntry> BaseFileFilter::matchesFor(QFutureInterface<LocatorFil
         d->m_current.iterator.clear();
         QTimer::singleShot(0, this, &BaseFileFilter::updatePreviousResultData);
     }
-    return entries[0] + entries[1] + entries[2] + entries[3];
+
+    for (auto &entry : entries) {
+        if (entry.size() < 1000)
+            Utils::sort(entry, Core::LocatorFilterEntry::compareLexigraphically);
+    }
+
+    return std::accumulate(std::begin(entries), std::end(entries), QList<LocatorFilterEntry>());
 }
 
+/*!
+    \reimp
+*/
 void BaseFileFilter::accept(LocatorFilterEntry selection,
                             QString *newText, int *selectionStart, int *selectionLength) const
 {
@@ -203,6 +241,9 @@ void BaseFileFilter::setFileIterator(BaseFileFilter::Iterator *iterator)
     d->m_data.iterator.reset(iterator);
 }
 
+/*!
+    Returns the file iterator.
+*/
 QSharedPointer<BaseFileFilter::Iterator> BaseFileFilter::fileIterator()
 {
     return d->m_data.iterator;
@@ -214,32 +255,18 @@ void BaseFileFilter::updatePreviousResultData()
         return; // do not update with the new result list etc
     d->m_data.previousEntry = d->m_current.previousEntry;
     d->m_data.previousResultPaths = d->m_current.previousResultPaths;
-    d->m_data.previousResultNames = d->m_current.previousResultNames;
     // forceNewSearchList was already reset in prepareSearch
 }
 
-BaseFileFilter::ListIterator::ListIterator(const QStringList &filePaths)
+BaseFileFilter::ListIterator::ListIterator(const FilePaths  &filePaths)
 {
     m_filePaths = filePaths;
-    for (const QString &path : filePaths) {
-        QFileInfo fi(path);
-        m_fileNames.append(fi.fileName());
-    }
-    toFront();
-}
-
-BaseFileFilter::ListIterator::ListIterator(const QStringList &filePaths,
-                                           const QStringList &fileNames)
-{
-    m_filePaths = filePaths;
-    m_fileNames = fileNames;
     toFront();
 }
 
 void BaseFileFilter::ListIterator::toFront()
 {
     m_pathPosition = m_filePaths.constBegin() - 1;
-    m_namePosition = m_fileNames.constBegin() - 1;
 }
 
 bool BaseFileFilter::ListIterator::hasNext() const
@@ -248,25 +275,18 @@ bool BaseFileFilter::ListIterator::hasNext() const
     return m_pathPosition + 1 != m_filePaths.constEnd();
 }
 
-QString BaseFileFilter::ListIterator::next()
+FilePath BaseFileFilter::ListIterator::next()
 {
-    QTC_ASSERT(m_pathPosition != m_filePaths.constEnd(), return QString());
-    QTC_ASSERT(m_namePosition != m_fileNames.constEnd(), return QString());
+    QTC_ASSERT(m_pathPosition != m_filePaths.constEnd(), return {});
     ++m_pathPosition;
-    ++m_namePosition;
-    QTC_ASSERT(m_pathPosition != m_filePaths.constEnd(), return QString());
-    QTC_ASSERT(m_namePosition != m_fileNames.constEnd(), return QString());
+    QTC_ASSERT(m_pathPosition != m_filePaths.constEnd(), return {});
     return *m_pathPosition;
 }
 
-QString BaseFileFilter::ListIterator::filePath() const
+FilePath BaseFileFilter::ListIterator::filePath() const
 {
-    QTC_ASSERT(m_pathPosition != m_filePaths.constEnd(), return QString());
+    QTC_ASSERT(m_pathPosition != m_filePaths.constEnd(), return {});
     return *m_pathPosition;
 }
 
-QString BaseFileFilter::ListIterator::fileName() const
-{
-    QTC_ASSERT(m_namePosition != m_fileNames.constEnd(), return QString());
-    return *m_namePosition;
-}
+} // Core

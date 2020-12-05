@@ -27,7 +27,7 @@
 
 #include <QClipboard>
 #include <QGuiApplication>
-#include <QScriptEngine>
+#include <QJSEngine>
 
 namespace Core {
 namespace Internal {
@@ -48,8 +48,8 @@ JavaScriptFilter::JavaScriptFilter()
     m_abortTimer.setInterval(1000);
     connect(&m_abortTimer, &QTimer::timeout, this, [this] {
         m_aborted = true;
-        if (m_engine && m_engine->isEvaluating())
-            m_engine->abortEvaluation();
+        if (m_engine)
+            m_engine->setInterrupted(true);
     });
 }
 
@@ -59,10 +59,11 @@ JavaScriptFilter::~JavaScriptFilter()
 
 void JavaScriptFilter::prepareSearch(const QString &entry)
 {
-    Q_UNUSED(entry);
+    Q_UNUSED(entry)
 
     if (!m_engine)
         setupEngine();
+    m_engine->setInterrupted(false);
     m_aborted = false;
     m_abortTimer.start();
 }
@@ -70,7 +71,7 @@ void JavaScriptFilter::prepareSearch(const QString &entry)
 QList<LocatorFilterEntry> JavaScriptFilter::matchesFor(
         QFutureInterface<Core::LocatorFilterEntry> &future, const QString &entry)
 {
-    Q_UNUSED(future);
+    Q_UNUSED(future)
 
     QList<LocatorFilterEntry> entries;
     if (entry.trimmed().isEmpty()) {
@@ -94,9 +95,9 @@ QList<LocatorFilterEntry> JavaScriptFilter::matchesFor(
 void JavaScriptFilter::accept(Core::LocatorFilterEntry selection, QString *newText,
                               int *selectionStart, int *selectionLength) const
 {
-    Q_UNUSED(newText);
-    Q_UNUSED(selectionStart);
-    Q_UNUSED(selectionLength);
+    Q_UNUSED(newText)
+    Q_UNUSED(selectionStart)
+    Q_UNUSED(selectionLength)
 
     if (selection.internalData.isNull())
         return;
@@ -112,13 +113,13 @@ void JavaScriptFilter::accept(Core::LocatorFilterEntry selection, QString *newTe
 
 void JavaScriptFilter::refresh(QFutureInterface<void> &future)
 {
-    Q_UNUSED(future);
+    Q_UNUSED(future)
     // Nothing to refresh
 }
 
 void JavaScriptFilter::setupEngine()
 {
-    m_engine.reset(new QScriptEngine);
+    m_engine.reset(new QJSEngine);
     m_engine->evaluate(
                 "function abs(x) { return Math.abs(x); }\n"
                 "function acos(x) { return Math.acos(x); }\n"

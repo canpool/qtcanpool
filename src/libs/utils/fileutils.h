@@ -30,14 +30,17 @@
 #include "hostosinfo.h"
 
 #include <QCoreApplication>
-#include <QXmlStreamWriter> // Mac.
+#include <QDir>
+#include <QFileInfo>
 #include <QMetaType>
 #include <QStringList>
+#include <QUrl>
+#include <QXmlStreamWriter> // Mac.
 
 #include <functional>
 #include <memory>
 
-namespace Utils {class FileName; }
+namespace Utils { class FilePath; }
 
 QT_BEGIN_NAMESPACE
 class QDataStream;
@@ -49,7 +52,7 @@ class QTemporaryFile;
 class QTextStream;
 class QWidget;
 
-QTCREATOR_UTILS_EXPORT QDebug operator<<(QDebug dbg, const Utils::FileName &c);
+QTCREATOR_UTILS_EXPORT QDebug operator<<(QDebug dbg, const Utils::FilePath &c);
 
 // for withNtfsPermissions
 #ifdef Q_OS_WIN
@@ -60,77 +63,180 @@ QT_END_NAMESPACE
 
 namespace Utils {
 
-class QTCREATOR_UTILS_EXPORT FileName : private QString
+class QTCREATOR_UTILS_EXPORT FilePath
 {
 public:
-    FileName();
-    explicit FileName(const QFileInfo &info);
-    QFileInfo toFileInfo() const;
-    static FileName fromString(const QString &filename);
-    static FileName fromString(const QString &filename, const QString &defaultExtension);
-    static FileName fromLatin1(const QByteArray &filename);
-    static FileName fromUserInput(const QString &filename);
-    static FileName fromUtf8(const char *filename, int filenameSize = -1);
+    FilePath();
+
+    static FilePath fromString(const QString &filepath);
+    static FilePath fromFileInfo(const QFileInfo &info);
+    static FilePath fromStringWithExtension(const QString &filepath, const QString &defaultExtension);
+    static FilePath fromUserInput(const QString &filepath);
+    static FilePath fromUtf8(const char *filepath, int filepathSize = -1);
+    static FilePath fromVariant(const QVariant &variant);
+
     const QString &toString() const;
+    QFileInfo toFileInfo() const;
+    QVariant toVariant() const;
+
     QString toUserOutput() const;
-    QString fileName(int pathComponents = 0) const;
+    QString shortNativePath() const;
+
+    QString fileName() const;
+    QString fileNameWithPathComponents(int pathComponents) const;
     bool exists() const;
+    bool isWritablePath() const;
 
-    FileName parentDir() const;
+    FilePath parentDir() const;
+    FilePath absolutePath() const;
 
-    bool operator==(const FileName &other) const;
-    bool operator!=(const FileName &other) const;
-    bool operator<(const FileName &other) const;
-    bool operator<=(const FileName &other) const;
-    bool operator>(const FileName &other) const;
-    bool operator>=(const FileName &other) const;
-    FileName operator+(const QString &s) const;
+    bool operator==(const FilePath &other) const;
+    bool operator!=(const FilePath &other) const;
+    bool operator<(const FilePath &other) const;
+    bool operator<=(const FilePath &other) const;
+    bool operator>(const FilePath &other) const;
+    bool operator>=(const FilePath &other) const;
+    FilePath operator+(const QString &s) const;
 
-    bool isChildOf(const FileName &s) const;
+    bool isChildOf(const FilePath &s) const;
     bool isChildOf(const QDir &dir) const;
+    bool startsWith(const QString &s) const;
     bool endsWith(const QString &s) const;
 
-    FileName relativeChildPath(const FileName &parent) const;
-    FileName &appendPath(const QString &s);
-    FileName &appendString(const QString &str);
-    FileName &appendString(QChar str);
+    bool isDir() const;
+    bool isNewerThan(const QDateTime &timeStamp) const;
 
-    using QString::chop;
-    using QString::clear;
-    using QString::count;
-    using QString::isEmpty;
-    using QString::isNull;
-    using QString::length;
-    using QString::size;
+    FilePath relativeChildPath(const FilePath &parent) const;
+    FilePath pathAppended(const QString &str) const;
+    FilePath stringAppended(const QString &str) const;
+    FilePath resolvePath(const QString &fileName) const;
+
+    FilePath canonicalPath() const;
+
+    FilePath operator/(const QString &str) const;
+
+    void clear() { m_data.clear(); }
+    bool isEmpty() const { return m_data.isEmpty(); }
+
+    uint hash(uint seed) const;
+
+    // NOTE: FilePath operations on FilePath created from URL currenly
+    // do not work except for .toVariant() and .toUrl().
+    static FilePath fromUrl(const QUrl &url);
+    QUrl toUrl() const;
+
 private:
-    FileName(const QString &string);
+    QString m_data;
+    QUrl m_url;
 };
 
-QTCREATOR_UTILS_EXPORT QTextStream &operator<<(QTextStream &s, const FileName &fn);
+QTCREATOR_UTILS_EXPORT QTextStream &operator<<(QTextStream &s, const FilePath &fn);
 
-using FileNameList = QList<FileName>;
+using FilePaths = QList<FilePath>;
+
+class QTCREATOR_UTILS_EXPORT CommandLine
+{
+public:
+    enum RawType { Raw };
+
+    CommandLine();
+    explicit CommandLine(const QString &executable);
+    explicit CommandLine(const FilePath &executable);
+    CommandLine(const QString &exe, const QStringList &args);
+    CommandLine(const FilePath &exe, const QStringList &args);
+    CommandLine(const FilePath &exe, const QString &unparsedArgs, RawType);
+
+    void addArg(const QString &arg, OsType osType = HostOsInfo::hostOs());
+    void addArgs(const QStringList &inArgs, OsType osType = HostOsInfo::hostOs());
+
+    void addArgs(const QString &inArgs, RawType);
+
+    QString toUserOutput() const;
+
+    FilePath executable() const { return m_executable; }
+    QString arguments() const { return m_arguments; }
+    QStringList splitArguments(OsType osType = HostOsInfo::hostOs()) const;
+
+private:
+    FilePath m_executable;
+    QString m_arguments;
+};
 
 class QTCREATOR_UTILS_EXPORT FileUtils {
 public:
-    static bool removeRecursively(const FileName &filePath, QString *error = nullptr);
-    static bool copyRecursively(
-            const FileName &srcFilePath, const FileName &tgtFilePath, QString *error = nullptr,
-            const std::function<bool (QFileInfo, QFileInfo, QString *)> &copyHelper = nullptr);
-    static bool isFileNewerThan(const FileName &filePath, const QDateTime &timeStamp);
-    static FileName resolveSymlinks(const FileName &path);
-    static FileName canonicalPath(const FileName &path);
-    static QString shortNativePath(const FileName &path);
+#ifdef QT_GUI_LIB
+    class QTCREATOR_UTILS_EXPORT CopyAskingForOverwrite
+    {
+    public:
+        CopyAskingForOverwrite(QWidget *dialogParent);
+        bool operator()(const QFileInfo &src, const QFileInfo &dest, QString *error);
+        QStringList files() const;
+
+    private:
+        QWidget *m_parent;
+        QStringList m_files;
+        bool m_overwriteAll = false;
+        bool m_skipAll = false;
+    };
+#endif // QT_GUI_LIB
+
+    static bool removeRecursively(const FilePath &filePath, QString *error = nullptr);
+    static bool copyRecursively(const FilePath &srcFilePath,
+                                const FilePath &tgtFilePath,
+                                QString *error = nullptr);
+    template<typename T>
+    static bool copyRecursively(const FilePath &srcFilePath,
+                                const FilePath &tgtFilePath,
+                                QString *error,
+                                T &&copyHelper);
+    static FilePath resolveSymlinks(const FilePath &path);
     static QString fileSystemFriendlyName(const QString &name);
     static int indexOfQmakeUnfriendly(const QString &name, int startpos = 0);
     static QString qmakeFriendlyName(const QString &name);
-    static bool makeWritable(const FileName &path);
+    static bool makeWritable(const FilePath &path);
     static QString normalizePathName(const QString &name);
 
     static bool isRelativePath(const QString &fileName);
     static bool isAbsolutePath(const QString &fileName) { return !isRelativePath(fileName); }
-    static QString resolvePath(const QString &baseDir, const QString &fileName);
-    static FileName commonPath(const FileName &oldCommonPath, const FileName &fileName);
+    static FilePath commonPath(const FilePath &oldCommonPath, const FilePath &fileName);
+    static QByteArray fileId(const FilePath &fileName);
 };
+
+template<typename T>
+bool FileUtils::copyRecursively(const FilePath &srcFilePath,
+                                const FilePath &tgtFilePath,
+                                QString *error,
+                                T &&copyHelper)
+{
+    const QFileInfo srcFileInfo = srcFilePath.toFileInfo();
+    if (srcFileInfo.isDir()) {
+        if (!tgtFilePath.exists()) {
+            QDir targetDir(tgtFilePath.toString());
+            targetDir.cdUp();
+            if (!targetDir.mkdir(tgtFilePath.fileName())) {
+                if (error) {
+                    *error = QCoreApplication::translate("Utils::FileUtils",
+                                                         "Failed to create directory \"%1\".")
+                                 .arg(tgtFilePath.toUserOutput());
+                }
+                return false;
+            }
+        }
+        const QDir sourceDir(srcFilePath.toString());
+        const QStringList fileNames = sourceDir.entryList(
+            QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+        for (const QString &fileName : fileNames) {
+            const FilePath newSrcFilePath = srcFilePath / fileName;
+            const FilePath newTgtFilePath = tgtFilePath / fileName;
+            if (!copyRecursively(newSrcFilePath, newTgtFilePath, error, copyHelper))
+                return false;
+        }
+    } else {
+        if (!copyHelper(srcFileInfo, tgtFilePath.toFileInfo(), error))
+            return false;
+    }
+    return true;
+}
 
 // for actually finding out if e.g. directories are writable on Windows
 #ifdef Q_OS_WIN
@@ -240,24 +346,18 @@ private:
     bool m_autoRemove = true;
 };
 
+inline uint qHash(const Utils::FilePath &a, uint seed = 0) { return a.hash(seed); }
+
 } // namespace Utils
 
-QT_BEGIN_NAMESPACE
-QTCREATOR_UTILS_EXPORT uint qHash(const Utils::FileName &a);
-QT_END_NAMESPACE
-
 namespace std {
-template<> struct hash<Utils::FileName>
+template<> struct QTCREATOR_UTILS_EXPORT hash<Utils::FilePath>
 {
-    using argument_type = Utils::FileName;
+    using argument_type = Utils::FilePath;
     using result_type = size_t;
-    result_type operator()(const argument_type &fn) const
-    {
-        if (Utils::HostOsInfo::fileNameCaseSensitivity() == Qt::CaseInsensitive)
-            return hash<string>()(fn.toString().toUpper().toStdString());
-        return hash<string>()(fn.toString().toStdString());
-    }
+    result_type operator()(const argument_type &fn) const;
 };
 } // namespace std
 
-Q_DECLARE_METATYPE(Utils::FileName)
+Q_DECLARE_METATYPE(Utils::FilePath)
+Q_DECLARE_METATYPE(Utils::CommandLine)

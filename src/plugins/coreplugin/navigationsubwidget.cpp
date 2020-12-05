@@ -43,6 +43,8 @@
 
 Q_DECLARE_METATYPE(Core::INavigationWidgetFactory *)
 
+using namespace Utils;
+
 namespace Core {
 namespace Internal {
 
@@ -65,7 +67,7 @@ NavigationSubWidget::NavigationSubWidget(NavigationWidget *parentWidget, int pos
 
     m_toolBar = new Utils::StyledBar(this);
     auto toolBarLayout = new QHBoxLayout;
-    toolBarLayout->setMargin(0);
+    toolBarLayout->setContentsMargins(0, 0, 0, 0);
     toolBarLayout->setSpacing(0);
     m_toolBar->setLayout(toolBarLayout);
     toolBarLayout->addWidget(m_navigationComboBox);
@@ -87,7 +89,7 @@ NavigationSubWidget::NavigationSubWidget(NavigationWidget *parentWidget, int pos
     toolBarLayout->addWidget(m_closeButton);
 
     auto lay = new QVBoxLayout();
-    lay->setMargin(0);
+    lay->setContentsMargins(0, 0, 0, 0);
     lay->setSpacing(0);
     setLayout(lay);
     lay->addWidget(m_toolBar);
@@ -97,7 +99,7 @@ NavigationSubWidget::NavigationSubWidget(NavigationWidget *parentWidget, int pos
     setFactoryIndex(factoryIndex);
 
     connect(m_navigationComboBox,
-            static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &NavigationSubWidget::comboBoxIndexChanged);
 
     comboBoxIndexChanged(factoryIndex);

@@ -25,8 +25,9 @@
 
 #pragma once
 
-#include <utils/fileutils.h>
 #include <utils/environment.h>
+#include <utils/fileutils.h>
+#include <utils/id.h>
 
 #include <QObject>
 #include <QStringList>
@@ -67,7 +68,9 @@ public:
     QString arguments() const;
     QString input() const;
     QString workingDirectory() const;
-    QList<Utils::EnvironmentItem> environment() const;
+    Utils::Id baseEnvironmentProviderId() const;
+    Utils::Environment baseEnvironment() const;
+    Utils::EnvironmentItems environmentUserChanges() const;
 
     void setFileName(const QString &fileName);
     void setPreset(QSharedPointer<ExternalTool> preset);
@@ -96,7 +99,8 @@ public:
     void setArguments(const QString &arguments);
     void setInput(const QString &input);
     void setWorkingDirectory(const QString &workingDirectory);
-    void setEnvironment(const QList<Utils::EnvironmentItem> &items);
+    void setBaseEnvironmentProviderId(Utils::Id id);
+    void setEnvironmentUserChanges(const Utils::EnvironmentItems &items);
 
 private:
     QString m_id;
@@ -108,7 +112,8 @@ private:
     QString m_arguments;
     QString m_input;
     QString m_workingDirectory;
-    QList<Utils::EnvironmentItem> m_environment;
+    Utils::Id m_baseEnvironmentProviderId;
+    Utils::EnvironmentItems m_environment;
     OutputHandling m_outputHandling = ShowInPane;
     OutputHandling m_errorHandling = ShowInPane;
     bool m_modifiesCurrentDocument = false;
@@ -139,7 +144,7 @@ private:
     bool resolve();
 
     const ExternalTool *m_tool; // is a copy of the tool that was passed in
-    Utils::FileName m_resolvedExecutable;
+    Utils::FilePath m_resolvedExecutable;
     QString m_resolvedArguments;
     QString m_resolvedInput;
     QString m_resolvedWorkingDirectory;

@@ -25,22 +25,31 @@
 
 #include "plugindialog.h"
 
-#include <extensionsystem/pluginmanager.h>
-#include <extensionsystem/pluginview.h>
+#include "icore.h"
+
+#include "dialogs/restartdialog.h"
+#include "plugininstallwizard.h"
+
+#include <app/app_version.h>
+
 #include <extensionsystem/plugindetailsview.h>
 #include <extensionsystem/pluginerrorview.h>
+#include <extensionsystem/pluginmanager.h>
 #include <extensionsystem/pluginspec.h>
+#include <extensionsystem/pluginview.h>
 
 #include <utils/fancylineedit.h>
 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QCheckBox>
+#include <QDebug>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QPushButton>
+#include <QHBoxLayout>
 #include <QLabel>
-#include <QDebug>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+using namespace Utils;
 
 namespace Core {
 namespace Internal {
@@ -51,8 +60,6 @@ PluginDialog::PluginDialog(QWidget *parent)
     : QDialog(parent),
       m_view(new ExtensionSystem::PluginView(this))
 {
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
     auto vl = new QVBoxLayout(this);
 
     auto filterLayout = new QHBoxLayout;
@@ -62,20 +69,13 @@ PluginDialog::PluginDialog(QWidget *parent)
     connect(filterEdit, &Utils::FancyLineEdit::filterChanged,
             m_view, &ExtensionSystem::PluginView::setFilter);
     filterLayout->addWidget(filterEdit);
-    m_view->setShowHidden(false);
-    auto showHidden = new QCheckBox(tr("Show all"));
-    showHidden->setToolTip(tr("Show all installed plugins, including base plugins "
-                              "and plugins that are not available on this platform."));
-    showHidden->setChecked(m_view->isShowingHidden());
-    connect(showHidden, &QCheckBox::stateChanged,
-            m_view, &ExtensionSystem::PluginView::setShowHidden);
-    filterLayout->addWidget(showHidden);
 
     vl->addWidget(m_view);
 
     m_detailsButton = new QPushButton(tr("Details"), this);
     m_errorDetailsButton = new QPushButton(tr("Error Details"), this);
     m_closeButton = new QPushButton(tr("Close"), this);
+    m_installButton = new QPushButton(tr("Install Plugin..."), this);
     m_detailsButton->setEnabled(false);
     m_errorDetailsButton->setEnabled(false);
     m_closeButton->setEnabled(true);
@@ -88,6 +88,7 @@ PluginDialog::PluginDialog(QWidget *parent)
     auto hl = new QHBoxLayout;
     hl->addWidget(m_detailsButton);
     hl->addWidget(m_errorDetailsButton);
+    hl->addWidget(m_installButton);
     hl->addSpacing(10);
     hl->addWidget(m_restartRequired);
     hl->addStretch(5);
@@ -108,15 +109,26 @@ PluginDialog::PluginDialog(QWidget *parent)
             [this]  { openDetails(m_view->currentPlugin()); });
     connect(m_errorDetailsButton, &QAbstractButton::clicked,
             this, &PluginDialog::openErrorDetails);
-    connect(m_closeButton, &QAbstractButton::clicked,
-            this, &PluginDialog::closeDialog);
+    connect(m_installButton, &QAbstractButton::clicked, this, &PluginDialog::showInstallWizard);
+    connect(m_closeButton, &QAbstractButton::clicked, this, &PluginDialog::closeDialog);
     updateButtons();
 }
 
 void PluginDialog::closeDialog()
 {
     ExtensionSystem::PluginManager::writeSettings();
+    if (s_isRestartRequired) {
+        RestartDialog restartDialog(ICore::dialogParent(),
+                                    tr("Plugin changes will take effect after restart."));
+        restartDialog.exec();
+    }
     accept();
+}
+
+void PluginDialog::showInstallWizard()
+{
+    if (PluginInstallWizard::exec())
+        updateRestartRequired();
 }
 
 void PluginDialog::updateRestartRequired()

@@ -41,6 +41,7 @@
 #include <QMenu>
 
 using namespace Core::Internal;
+using namespace Utils;
 
 namespace Core {
 
@@ -98,11 +99,8 @@ ExternalToolManager::ExternalToolManager()
                    true);
 
     QMap<QString, QList<ExternalTool *> > categoryMap;
-    QMapIterator<QString, QMultiMap<int, ExternalTool*> > it(categoryPriorityMap);
-    while (it.hasNext()) {
-        it.next();
+    for (auto it = categoryPriorityMap.cbegin(), end = categoryPriorityMap.cend(); it != end; ++it)
         categoryMap.insert(it.key(), it.value().values());
-    }
 
     // read renamed categories and custom order
     readSettings(tools, &categoryMap);
@@ -177,9 +175,7 @@ void ExternalToolManager::setToolsByCategory(const QMap<QString, QList<ExternalT
     // delete old tools and create list of new ones
     QMap<QString, ExternalTool *> newTools;
     QMap<QString, QAction *> newActions;
-    QMapIterator<QString, QList<ExternalTool *> > it(tools);
-    while (it.hasNext()) {
-        it.next();
+    for (auto it = tools.cbegin(), end = tools.cend(); it != end; ++it) {
         foreach (ExternalTool *tool, it.value()) {
             const QString id = tool->id();
             if (d->m_tools.value(id) == tool) {
@@ -192,10 +188,9 @@ void ExternalToolManager::setToolsByCategory(const QMap<QString, QList<ExternalT
         }
     }
     qDeleteAll(d->m_tools);
-    QMapIterator<QString, QAction *> remainingActions(d->m_actions);
     const Id externalToolsPrefix = "Tools.External.";
-    while (remainingActions.hasNext()) {
-        remainingActions.next();
+    for (auto remainingActions = d->m_actions.cbegin(), end = d->m_actions.cend();
+            remainingActions != end; ++remainingActions) {
         ActionManager::unregisterAction(remainingActions.value(),
             externalToolsPrefix.withSuffix(remainingActions.key()));
         delete remainingActions.value();
@@ -208,9 +203,7 @@ void ExternalToolManager::setToolsByCategory(const QMap<QString, QList<ExternalT
     // create menu structure and remove no-longer used containers
     // add all the category menus, QMap is nicely sorted
     QMap<QString, ActionContainer *> newContainers;
-    it.toFront();
-    while (it.hasNext()) {
-        it.next();
+    for (auto it = tools.cbegin(), end = tools.cend(); it != end; ++it) {
         ActionContainer *container = nullptr;
         const QString &containerName = it.key();
         if (containerName.isEmpty()) { // no displayCategory, so put into external tools menu directly
@@ -235,7 +228,7 @@ void ExternalToolManager::setToolsByCategory(const QMap<QString, QList<ExternalT
             } else {
                 action = new QAction(tool->displayName(), m_instance);
                 d->m_actions.insert(toolId, action);
-                connect(action, &QAction::triggered, [tool] {
+                connect(action, &QAction::triggered, tool, [tool] {
                     auto runner = new ExternalToolRunner(tool);
                     if (runner->hasError())
                         MessageManager::write(runner->errorString());
@@ -302,9 +295,7 @@ static void writeSettings()
     settings->remove(QLatin1String(""));
 
     settings->beginGroup(QLatin1String("OverrideCategories"));
-    QMapIterator<QString, QList<ExternalTool *> > it(d->m_categoryMap);
-    while (it.hasNext()) {
-        it.next();
+    for (auto it = d->m_categoryMap.cbegin(), end = d->m_categoryMap.cend(); it != end; ++it) {
         QString category = it.key();
         if (category.isEmpty())
             category = QLatin1String(kSpecialUncategorizedSetting);

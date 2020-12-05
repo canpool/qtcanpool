@@ -33,7 +33,7 @@
 #include <QXmlStreamWriter>
 #include <QDateTime>
 #include <QTextStream>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QRect>
 
 #ifdef QT_GUI_LIB
@@ -46,17 +46,25 @@
 static QString rectangleToString(const QRect &r)
 {
     QString result;
-    QTextStream(&result) << r.width() << 'x' << r.height() << forcesign << r.x() << r.y();
+    QTextStream str(&result);
+    str << r.width() << 'x' << r.height();
+    if (r.x() >= 0)
+        str << '+';
+    str << r.x();
+    if (r.y() >= 0)
+        str << '+';
+    str << r.y();
     return result;
 }
 
 static QRect stringToRectangle(const QString &v)
 {
-    static QRegExp pattern(QLatin1String("(\\d+)x(\\d+)([-+]\\d+)([-+]\\d+)"));
+    static QRegularExpression pattern("^(\\d+)x(\\d+)([-+]\\d+)([-+]\\d+)$");
     Q_ASSERT(pattern.isValid());
-    return pattern.exactMatch(v) ?
-        QRect(QPoint(pattern.cap(3).toInt(), pattern.cap(4).toInt()),
-              QSize(pattern.cap(1).toInt(), pattern.cap(2).toInt())) :
+    const QRegularExpressionMatch match = pattern.match(v);
+    return match.hasMatch() ?
+        QRect(QPoint(match.captured(3).toInt(), match.captured(4).toInt()),
+              QSize(match.captured(1).toInt(), match.captured(2).toInt())) :
         QRect();
 }
 
@@ -321,7 +329,7 @@ QVariant ParseContext::readSimpleValue(QXmlStreamReader &r, const QXmlStreamAttr
     }
     QVariant value;
     value.setValue(text);
-    value.convert(QMetaType::type(type.toLatin1().data()));
+    value.convert(QMetaType::type(type.toLatin1().constData()));
     return value;
 }
 
@@ -341,7 +349,7 @@ QVariantMap PersistentSettingsReader::restoreValues() const
     return m_valueMap;
 }
 
-bool PersistentSettingsReader::load(const FileName &fileName)
+bool PersistentSettingsReader::load(const FilePath &fileName)
 {
     m_valueMap.clear();
 
@@ -367,15 +375,17 @@ static void writeVariantValue(QXmlStreamWriter &w, const Context &ctx,
 {
     switch (static_cast<int>(variant.type())) {
     case static_cast<int>(QVariant::StringList):
-    case static_cast<int>(QVariant::List):
+    case static_cast<int>(QVariant::List): {
         w.writeStartElement(ctx.valueListElement);
         w.writeAttribute(ctx.typeAttribute, QLatin1String(QVariant::typeToName(QVariant::List)));
         if (!key.isEmpty())
             w.writeAttribute(ctx.keyAttribute, key);
-        foreach (const QVariant &var, variant.toList())
+        const QList<QVariant> list = variant.toList();
+        for (const QVariant &var : list)
             writeVariantValue(w, ctx, var);
         w.writeEndElement();
         break;
+    }
     case static_cast<int>(QVariant::Map): {
         w.writeStartElement(ctx.valueMapElement);
         w.writeAttribute(ctx.typeAttribute, QLatin1String(QVariant::typeToName(QVariant::Map)));
@@ -409,7 +419,7 @@ static void writeVariantValue(QXmlStreamWriter &w, const Context &ctx,
     }
 }
 
-PersistentSettingsWriter::PersistentSettingsWriter(const FileName &fileName, const QString &docType) :
+PersistentSettingsWriter::PersistentSettingsWriter(const FilePath &fileName, const QString &docType) :
     m_fileName(fileName), m_docType(docType)
 { }
 
@@ -438,7 +448,7 @@ bool PersistentSettingsWriter::save(const QVariantMap &data, QWidget *parent) co
 }
 #endif // QT_GUI_LIB
 
-FileName PersistentSettingsWriter::fileName() const
+FilePath PersistentSettingsWriter::fileName() const
 { return m_fileName; }
 
 //** * @brief Set contents of file (e.g. from data read from it). */

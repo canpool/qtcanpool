@@ -69,7 +69,7 @@ void FileUtils::showInGraphicalShell(QWidget *parent, const QString &pathIn)
     const QFileInfo fileInfo(pathIn);
     // Mac, Windows support folder or file.
     if (HostOsInfo::isWindowsHost()) {
-        const FileName explorer = Environment::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
+        const FilePath explorer = Environment::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
         if (explorer.isEmpty()) {
             QMessageBox::warning(parent,
                                  QApplication::translate("Core::Internal",
@@ -135,11 +135,20 @@ QString FileUtils::msgGraphicalShellAction()
     return QApplication::translate("Core::Internal", "Show Containing Folder");
 }
 
-QString FileUtils::msgTerminalAction()
+QString FileUtils::msgTerminalHereAction()
 {
     if (HostOsInfo::isWindowsHost())
         return QApplication::translate("Core::Internal", "Open Command Prompt Here");
     return QApplication::translate("Core::Internal", "Open Terminal Here");
+}
+
+QString FileUtils::msgTerminalWithAction()
+{
+    if (HostOsInfo::isWindowsHost())
+        return QApplication::translate("Core::Internal", "Open Command Prompt With",
+                        "Opens a submenu for choosing an environment, such as \"Run Environment\"");
+    return QApplication::translate("Core::Internal", "Open Terminal With",
+                        "Opens a submenu for choosing an environment, such as \"Run Environment\"");
 }
 
 void FileUtils::removeFile(const QString &filePath, bool deleteFromFS)
@@ -154,7 +163,7 @@ void FileUtils::removeFile(const QString &filePath, bool deleteFromFS)
         if (file.exists()) {
             // could have been deleted by vc
             if (!file.remove())
-                QMessageBox::warning(ICore::mainWindow(),
+                QMessageBox::warning(ICore::dialogParent(),
                     QApplication::translate("Core::Internal", "Deleting File Failed"),
                     QApplication::translate("Core::Internal", "Could not delete file %1.").arg(filePath));
         }

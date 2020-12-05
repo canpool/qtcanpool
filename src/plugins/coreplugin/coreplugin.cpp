@@ -27,8 +27,8 @@
 #include "designmode.h"
 #include "editmode.h"
 #include "helpmanager.h"
+#include "icore.h"
 #include "idocument.h"
-#include "infobar.h"
 #include "iwizardfactory.h"
 #include "mainwindow.h"
 #include "modemanager.h"
@@ -49,20 +49,22 @@
 #include <extensionsystem/pluginmanager.h>
 #include <extensionsystem/pluginspec.h>
 #include <utils/algorithm.h>
-#include <utils/pathchooser.h>
+#include <utils/infobar.h>
 #include <utils/macroexpander.h>
 #include <utils/mimetypes/mimedatabase.h>
+#include <utils/pathchooser.h>
 #include <utils/savefile.h>
 #include <utils/stringutils.h>
 #include <utils/theme/theme.h>
 #include <utils/theme/theme_p.h>
 
-#include <QtPlugin>
-
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QJsonObject>
 #include <QMenu>
+#include <QMessageBox>
+#include <QSettings>
 #include <QUuid>
 
 #include <cstdlib>
@@ -77,6 +79,8 @@ CorePlugin::CorePlugin()
 {
     qRegisterMetaType<Id>();
     qRegisterMetaType<Core::Search::TextPosition>();
+    qRegisterMetaType<Utils::CommandLine>();
+    qRegisterMetaType<Utils::FilePath>();
     m_instance = this;
 }
 
@@ -146,6 +150,7 @@ bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
     Theme *themeFromArg = ThemeEntry::createTheme(args.themeId);
     setCreatorTheme(themeFromArg ? themeFromArg
                                  : ThemeEntry::createTheme(ThemeEntry::themeSetting()));
+    InfoBar::initialize(ICore::settings(), creatorTheme());
     new ActionManager(this);
     ActionManager::setPresentationModeEnabled(args.presentationMode);
     m_mainWindow = new MainWindow;
@@ -156,7 +161,6 @@ bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
     m_mainWindow->init();
     m_editMode = new EditMode;
     ModeManager::activateMode(m_editMode->id());
-    InfoBar::initialize(ICore::settings(), creatorTheme());
 
     IWizardFactory::initialize();
 
@@ -176,9 +180,11 @@ bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
     expander->registerVariable("CurrentTime:RFC", tr("The current time (RFC2822)."),
                                []() { return QTime::currentTime().toString(Qt::RFC2822Date); });
     expander->registerVariable("CurrentDate:Locale", tr("The current date (Locale)."),
-                               []() { return QDate::currentDate().toString(Qt::DefaultLocaleShortDate); });
+                               []() { return QLocale::system()
+                                        .toString(QDate::currentDate(), QLocale::ShortFormat); });
     expander->registerVariable("CurrentTime:Locale", tr("The current time (Locale)."),
-                               []() { return QTime::currentTime().toString(Qt::DefaultLocaleShortDate); });
+                               []() { return QLocale::system()
+                                        .toString(QTime::currentTime(), QLocale::ShortFormat); });
     expander->registerVariable("Config:DefaultProjectDirectory", tr("The configured default directory for projects."),
                                []() { return DocumentManager::projectsDirectory().toString(); });
     expander->registerVariable("Config:LastFileDialogDirectory", tr("The directory last visited in a file dialog."),
@@ -232,6 +238,7 @@ void CorePlugin::extensionsInitialized()
         errorOverview->setModal(true);
         errorOverview->show();
     }
+    checkSettings();
 }
 
 bool CorePlugin::delayedInitialize()
@@ -269,23 +276,23 @@ void CorePlugin::addToPathChooserContextMenu(Utils::PathChooser *pathChooser, QM
     QList<QAction*> actions = menu->actions();
     QAction *firstAction = actions.isEmpty() ? nullptr : actions.first();
 
-    if (QDir().exists(pathChooser->path())) {
+    if (QDir().exists(pathChooser->filePath().toString())) {
         auto *showInGraphicalShell = new QAction(Core::FileUtils::msgGraphicalShellAction(), menu);
         connect(showInGraphicalShell, &QAction::triggered, pathChooser, [pathChooser]() {
-            Core::FileUtils::showInGraphicalShell(pathChooser, pathChooser->path());
+            Core::FileUtils::showInGraphicalShell(pathChooser, pathChooser->filePath().toString());
         });
         menu->insertAction(firstAction, showInGraphicalShell);
 
-        auto *showInTerminal = new QAction(Core::FileUtils::msgTerminalAction(), menu);
+        auto *showInTerminal = new QAction(Core::FileUtils::msgTerminalHereAction(), menu);
         connect(showInTerminal, &QAction::triggered, pathChooser, [pathChooser]() {
-            Core::FileUtils::openTerminal(pathChooser->path());
+            Core::FileUtils::openTerminal(pathChooser->filePath().toString());
         });
         menu->insertAction(firstAction, showInTerminal);
 
     } else {
         auto *mkPathAct = new QAction(tr("Create Folder"), menu);
         connect(mkPathAct, &QAction::triggered, pathChooser, [pathChooser]() {
-            QDir().mkpath(pathChooser->path());
+            QDir().mkpath(pathChooser->filePath().toString());
             pathChooser->triggerChanged();
         });
         menu->insertAction(firstAction, mkPathAct);
@@ -293,6 +300,45 @@ void CorePlugin::addToPathChooserContextMenu(Utils::PathChooser *pathChooser, QM
 
     if (firstAction)
         menu->insertSeparator(firstAction);
+}
+
+void CorePlugin::checkSettings()
+{
+    const auto showMsgBox = [this](const QString &msg, QMessageBox::Icon icon) {
+        connect(ICore::instance(), &ICore::coreOpened, this, [msg, icon]() {
+            QMessageBox msgBox(ICore::dialogParent());
+            msgBox.setWindowTitle(tr("Settings File Error"));
+            msgBox.setText(msg);
+            msgBox.setIcon(icon);
+            msgBox.exec();
+        }, Qt::QueuedConnection);
+    };
+    const QSettings * const userSettings = ICore::settings();
+    QString errorDetails;
+    switch (userSettings->status()) {
+    case QSettings::NoError: {
+        const QFileInfo fi(userSettings->fileName());
+        if (fi.exists() && !fi.isWritable()) {
+            const QString errorMsg = tr("The settings file \"%1\" is not writable.\n"
+                    "You will not be able to store any %2 settings.")
+                    .arg(QDir::toNativeSeparators(userSettings->fileName()),
+                         QLatin1String(Core::Constants::IDE_DISPLAY_NAME));
+            showMsgBox(errorMsg, QMessageBox::Warning);
+        }
+        return;
+    }
+    case QSettings::AccessError:
+        errorDetails = tr("The file is not readable.");
+        break;
+    case QSettings::FormatError:
+        errorDetails = tr("The file is invalid.");
+        break;
+    }
+    const QString errorMsg = tr("Error reading settings file \"%1\": %2\n"
+            "You will likely experience further problems using this instance of %3.")
+            .arg(QDir::toNativeSeparators(userSettings->fileName()), errorDetails,
+                 QLatin1String(Core::Constants::IDE_DISPLAY_NAME));
+    showMsgBox(errorMsg, QMessageBox::Critical);
 }
 
 ExtensionSystem::IPlugin::ShutdownFlag CorePlugin::aboutToShutdown()

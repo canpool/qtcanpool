@@ -26,8 +26,8 @@
 #pragma once
 
 #include "core_global.h"
-#include "id.h"
 
+#include <utils/id.h>
 #include <utils/fileutils.h>
 
 #include <QDateTime>
@@ -35,6 +35,8 @@
 #include <QHash>
 #include <QObject>
 #include <QString>
+
+QT_FORWARD_DECLARE_CLASS(QMenu);
 
 namespace Core {
 
@@ -86,11 +88,11 @@ public:
 
     };
 
-    explicit IVersionControl(TopicCache *topicCache = nullptr) : m_topicCache(topicCache) {}
+    IVersionControl();
     ~IVersionControl() override;
 
     virtual QString displayName() const = 0;
-    virtual Id id() const = 0;
+    virtual Utils::Id id() const = 0;
 
     /*!
      * \brief isVcsFileOrDirectory
@@ -103,7 +105,7 @@ public:
      *
      * This method needs to be thread safe!
      */
-    virtual bool isVcsFileOrDirectory(const Utils::FileName &fileName) const = 0;
+    virtual bool isVcsFileOrDirectory(const Utils::FilePath &fileName) const = 0;
 
     /*!
      * Returns whether files in this directory should be managed with this
@@ -122,6 +124,15 @@ public:
      * top level). \a fileName is expected to be relative to workingDirectory.
      */
     virtual bool managesFile(const QString &workingDirectory, const QString &fileName) const = 0;
+
+    /*!
+     * Returns the subset of \a filePaths that is not managed by this version control.
+     *
+     * \a workingDirectory is assumed to be part of a valid repository (not necessarily its
+     * top level). The \a filePaths are expected to be absolute paths.
+     */
+    virtual QStringList unmanagedFiles(const QString &workingDir,
+                                       const QStringList &filePaths) const;
 
     /*!
      * Returns true is the VCS is configured to run.
@@ -151,7 +162,7 @@ public:
      * Returns settings.
      */
 
-    virtual SettingsFlags settingsFlags() const { return nullptr; }
+    virtual SettingsFlags settingsFlags() const { return {}; }
 
     /*!
      * Called after a file has been added to a project If the version control
@@ -188,7 +199,7 @@ public:
     /*!
      * Display annotation for a file and scroll to line
      */
-    virtual bool vcsAnnotate(const QString &file, int line) = 0;
+    virtual void vcsAnnotate(const QString &file, int line) = 0;
 
     /*!
      * Display text for Open operation
@@ -199,6 +210,11 @@ public:
      * Display text for Make Writable
      */
     virtual QString vcsMakeWritableText() const;
+
+    /*!
+     * Display details of reference
+     */
+    virtual void vcsDescribe(const QString &workingDirectory, const QString &reference) = 0;
 
     /*!
      * Return a list of paths where tools that came with the VCS may be installed.
@@ -213,9 +229,30 @@ public:
      * \a extraArgs are passed on to the command being run.
      */
     virtual ShellCommand *createInitialCheckoutCommand(const QString &url,
-                                                       const Utils::FileName &baseDirectory,
+                                                       const Utils::FilePath &baseDirectory,
                                                        const QString &localName,
                                                        const QStringList &extraArgs);
+
+    virtual void fillLinkContextMenu(QMenu *menu,
+                                     const QString &workingDirectory,
+                                     const QString &reference);
+
+    virtual bool handleLink(const QString &workingDirectory, const QString &reference);
+
+    class CORE_EXPORT RepoUrl {
+    public:
+        RepoUrl(const QString &location);
+
+        QString protocol;
+        QString userName;
+        QString host;
+        QString path;
+        quint16 port = 0;
+        bool isValid = false;
+    };
+    virtual RepoUrl getRepoUrl(const QString &location) const;
+
+    void setTopicCache(TopicCache *topicCache);
 
 signals:
     void repositoryChanged(const QString &repository);
@@ -223,12 +260,12 @@ signals:
     void configurationChanged();
 
 private:
-    TopicCache *m_topicCache;
+    TopicCache *m_topicCache = nullptr;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Core::IVersionControl::SettingsFlags)
-
 } // namespace Core
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Core::IVersionControl::SettingsFlags)
 
 #if defined(WITH_TESTS)
 
@@ -240,13 +277,13 @@ class CORE_EXPORT TestVersionControl : public IVersionControl
 {
     Q_OBJECT
 public:
-    TestVersionControl(Id id, const QString &name) :
+    TestVersionControl(Utils::Id id, const QString &name) :
         m_id(id), m_displayName(name)
     { }
     ~TestVersionControl() override;
 
-    bool isVcsFileOrDirectory(const Utils::FileName &fileName) const final
-    { Q_UNUSED(fileName); return false; }
+    bool isVcsFileOrDirectory(const Utils::FilePath &fileName) const final
+    { Q_UNUSED(fileName) return false; }
 
     void setManagedDirectories(const QHash<QString, QString> &dirs);
     void setManagedFiles(const QSet<QString> &files);
@@ -256,7 +293,7 @@ public:
 
     // IVersionControl interface
     QString displayName() const override { return m_displayName; }
-    Id id() const override { return m_id; }
+    Utils::Id id() const override { return m_id; }
     bool managesDirectory(const QString &filename, QString *topLevel) const override;
     bool managesFile(const QString &workingDirectory, const QString &fileName) const override;
     bool isConfigured() const override { return true; }
@@ -266,10 +303,11 @@ public:
     bool vcsDelete(const QString &) override { return false; }
     bool vcsMove(const QString &, const QString &) override { return false; }
     bool vcsCreateRepository(const QString &) override { return false; }
-    bool vcsAnnotate(const QString &, int) override { return false; }
+    void vcsAnnotate(const QString &, int) override {}
+    void vcsDescribe(const QString &, const QString &) override {}
 
 private:
-    Id m_id;
+    Utils::Id m_id;
     QString m_displayName;
     QHash<QString, QString> m_managedDirs;
     QSet<QString> m_managedFiles;
@@ -278,4 +316,5 @@ private:
 };
 
 } // namespace Core
+
 #endif

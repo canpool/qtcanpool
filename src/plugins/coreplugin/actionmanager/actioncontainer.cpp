@@ -28,9 +28,7 @@
 
 #include <coreplugin/coreconstants.h>
 #include <coreplugin/icontext.h>
-#include <coreplugin/id.h>
 
-#include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 
 #include <QDebug>
@@ -40,46 +38,51 @@
 
 Q_DECLARE_METATYPE(Core::Internal::MenuActionContainer*)
 
+using namespace Utils;
+
 namespace Core {
-namespace Internal {
 
 /*!
-    \class ActionContainer
-    \mainclass
+    \class Core::ActionContainer
+    \inheaderfile coreplugin/actionmanager/actioncontainer.h
+    \ingroup mainclasses
+    \inmodule QtCreator
 
-    \brief The ActionContainer class represents a menu or menu bar in Qt Creator.
+    \brief The ActionContainer class represents a menu or menu bar in \QC.
 
     You don't create instances of this class directly, but instead use the
-    \l{ActionManager::createMenu()}
-    and \l{ActionManager::createMenuBar()} functions.
+    \l{ActionManager::createMenu()}, \l{ActionManager::createMenuBar()} and
+    \l{ActionManager::createTouchBar()} functions.
     Retrieve existing action containers for an ID with
     \l{ActionManager::actionContainer()}.
 
     Within a menu or menu bar you can group menus and items together by defining groups
     (the order of the groups is defined by the order of the \l{ActionContainer::appendGroup()} calls), and
-    adding menus/actions to these groups. If no custom groups are defined, an action container
+    adding menus or actions to these groups. If no custom groups are defined, an action container
     has three default groups \c{Core::Constants::G_DEFAULT_ONE}, \c{Core::Constants::G_DEFAULT_TWO}
     and \c{Core::Constants::G_DEFAULT_THREE}.
 
-    You can define if the menu represented by this action container should automatically disable
-    or hide whenever it only contains disabled items and submenus by setting the corresponding
-    \l{ActionContainer::setOnAllDisabledBehavior()}{OnAllDisabledBehavior}. The default is
-    ActionContainer::Disable for menus, and ActionContainer::Show for menu bars.
+    You can specify whether the menu represented by this action container should
+    be automatically disabled or hidden whenever it only contains disabled items
+    and submenus by setting the corresponding \l setOnAllDisabledBehavior(). The
+    default is ActionContainer::Disable for menus, and ActionContainer::Show for
+    menu bars.
 */
 
 /*!
-    \enum ActionContainer::OnAllDisabledBehavior
-    Defines what happens when the represented menu is empty or contains only disabled/invisible items.
+    \enum Core::ActionContainer::OnAllDisabledBehavior
+    Defines what happens when the represented menu is empty or contains only
+    disabled or invisible items.
     \value Disable
         The menu will be visible but disabled.
     \value Hide
-        The menu will not be visible until the state of the subitems change.
+        The menu will not be visible until the state of the subitems changes.
     \value Show
         The menu will still be visible and active.
 */
 
 /*!
-    \fn ActionContainer::setOnAllDisabledBehavior(OnAllDisabledBehavior behavior)
+    \fn Core::ActionContainer::setOnAllDisabledBehavior(OnAllDisabledBehavior behavior)
     Defines the \a behavior of the menu represented by this action container for the case
     whenever it only contains disabled items and submenus.
     The default is ActionContainer::Disable for menus, and ActionContainer::Show for menu bars.
@@ -88,48 +91,49 @@ namespace Internal {
 */
 
 /*!
-    \fn ActionContainer::onAllDisabledBehavior() const
-    Returns the \a behavior of the menu represented by this action container for the case
+    \fn Core::ActionContainer::onAllDisabledBehavior() const
+    Returns the behavior of the menu represented by this action container for the case
     whenever it only contains disabled items and submenus.
     The default is ActionContainer::Disable for menus, and ActionContainer::Show for menu bars.
-    \sa ActionContainer::OnAllDisabledBehavior
-    \sa ActionContainer::setOnAllDisabledBehavior()
+    \sa OnAllDisabledBehavior
+    \sa setOnAllDisabledBehavior()
 */
 
 /*!
-    \fn int ActionContainer::id() const
+    \fn int Core::ActionContainer::id() const
     \internal
 */
 
 /*!
-    \fn QMenu *ActionContainer::menu() const
+    \fn QMenu *Core::ActionContainer::menu() const
     Returns the QMenu instance that is represented by this action container, or
     0 if this action container represents a menu bar.
 */
 
 /*!
-    \fn QMenuBar *ActionContainer::menuBar() const
+    \fn QMenuBar *Core::ActionContainer::menuBar() const
     Returns the QMenuBar instance that is represented by this action container, or
     0 if this action container represents a menu.
 */
 
 /*!
-    \fn QAction *ActionContainer::insertLocation(Id group) const
+    \fn QAction *Core::ActionContainer::insertLocation(Utils::Id group) const
     Returns an action representing the \a group,
     that could be used with \c{QWidget::insertAction}.
 */
 
 /*!
-    \fn void ActionContainer::appendGroup(Id group)
-    Adds a group with the given \a identifier to the action container. Using groups
-    you can segment your action container into logical parts and add actions and
-    menus directly to these parts.
+    \fn void Core::ActionContainer::appendGroup(Utils::Id group)
+    Adds \a group to the action container.
+
+    Use groups to segment your action container into logical parts. You can add
+    actions and menus directly into groups.
     \sa addAction()
     \sa addMenu()
 */
 
 /*!
-    \fn void ActionContainer::addAction(Command *action, Id group = Id())
+    \fn void Core::ActionContainer::addAction(Core::Command *action, Utils::Id group = Id())
     Add the \a action as a menu item to this action container. The action is added as the
     last item of the specified \a group.
     \sa appendGroup()
@@ -137,12 +141,51 @@ namespace Internal {
 */
 
 /*!
-    \fn void ActionContainer::addMenu(ActionContainer *menu, Id group = Id())
+    \fn void Core::ActionContainer::addMenu(Core::ActionContainer *menu, Utils::Id group = Utils::Id())
     Add the \a menu as a submenu to this action container. The menu is added as the
     last item of the specified \a group.
     \sa appendGroup()
     \sa addAction()
 */
+
+/*!
+    \fn void Core::ActionContainer::addMenu(Core::ActionContainer *before, Core::ActionContainer *menu)
+    Add \a menu as a submenu to this action container before the menu specified
+    by \a before.
+    \sa appendGroup()
+    \sa addAction()
+*/
+
+/*!
+    \fn Core::ActionContainer::clear()
+
+    Clears this menu and submenus from all actions and submenus. However, does
+    does not destroy the submenus and commands, just removes them from their
+    parents.
+*/
+
+/*!
+    \fn Core::ActionContainer::insertGroup(Utils::Id before, Utils::Id group)
+
+    Inserts \a group to the action container before the group specified by
+    \a before.
+*/
+
+/*!
+    \fn virtual Utils::TouchBar *Core::ActionContainer::touchBar() const
+
+    Returns the touch bar that is represented by this action container.
+*/
+
+/*!
+    \fn Core::ActionContainer::addSeparator(const Core::Context &context, Utils::Id group, QAction **outSeparator)
+
+    Adds a separator to the end of the given \a group to the action container,
+    which is enabled for a given \a context. Returns the created separator
+    action, \a outSeparator.
+*/
+
+namespace Internal {
 
 // ---------- ActionContainerPrivate ------------
 
@@ -206,6 +249,17 @@ QAction *ActionContainerPrivate::insertLocation(Id groupId) const
     return insertLocation(it);
 }
 
+QAction *ActionContainerPrivate::actionForItem(QObject *item) const
+{
+    if (auto cmd = qobject_cast<Command *>(item)) {
+        return cmd->action();
+    } else if (auto container = qobject_cast<ActionContainerPrivate *>(item)) {
+        if (container->containerAction())
+            return container->containerAction();
+    }
+    QTC_ASSERT(false, return nullptr);
+}
+
 QAction *ActionContainerPrivate::insertLocation(QList<Group>::const_iterator group) const
 {
     if (group == m_groups.constEnd())
@@ -214,13 +268,9 @@ QAction *ActionContainerPrivate::insertLocation(QList<Group>::const_iterator gro
     while (group != m_groups.constEnd()) {
         if (!group->items.isEmpty()) {
             QObject *item = group->items.first();
-            if (auto cmd = qobject_cast<Command *>(item)) {
-                return cmd->action();
-            } else if (auto container = qobject_cast<ActionContainer *>(item)) {
-                if (container->menu())
-                    return container->menu()->menuAction();
-            }
-            QTC_ASSERT(false, return nullptr);
+            QAction *action = actionForItem(item);
+            if (action)
+                return action;
         }
         ++group;
     }
@@ -236,60 +286,55 @@ void ActionContainerPrivate::addAction(Command *command, Id groupId)
     QList<Group>::const_iterator groupIt = findGroup(actualGroupId);
     QTC_ASSERT(groupIt != m_groups.constEnd(), qDebug() << "Can't find group"
                << groupId.name() << "in container" << id().name(); return);
-    QAction *beforeAction = insertLocation(groupIt);
-    m_groups[groupIt-m_groups.constBegin()].items.append(command);
-
+    m_groups[groupIt - m_groups.constBegin()].items.append(command);
     connect(command, &Command::activeStateChanged, this, &ActionContainerPrivate::scheduleUpdate);
     connect(command, &QObject::destroyed, this, &ActionContainerPrivate::itemDestroyed);
-    insertAction(beforeAction, command->action());
+
+    QAction *beforeAction = insertLocation(groupIt);
+    insertAction(beforeAction, command);
+
     scheduleUpdate();
 }
 
 void ActionContainerPrivate::addMenu(ActionContainer *menu, Id groupId)
 {
     auto containerPrivate = static_cast<ActionContainerPrivate *>(menu);
-    if (!containerPrivate->canBeAddedToMenu())
-        return;
+    QTC_ASSERT(containerPrivate->canBeAddedToContainer(this), return);
 
-    auto container = static_cast<MenuActionContainer *>(containerPrivate);
     const Id actualGroupId = groupId.isValid() ? groupId : Id(Constants::G_DEFAULT_TWO);
     QList<Group>::const_iterator groupIt = findGroup(actualGroupId);
     QTC_ASSERT(groupIt != m_groups.constEnd(), return);
-    QAction *beforeAction = insertLocation(groupIt);
-    m_groups[groupIt-m_groups.constBegin()].items.append(menu);
-
+    m_groups[groupIt - m_groups.constBegin()].items.append(menu);
     connect(menu, &QObject::destroyed, this, &ActionContainerPrivate::itemDestroyed);
-    insertMenu(beforeAction, container->menu());
+
+    QAction *beforeAction = insertLocation(groupIt);
+    insertMenu(beforeAction, menu);
+
     scheduleUpdate();
 }
 
-void ActionContainerPrivate::addMenu(ActionContainer *before, ActionContainer *menu, Id groupId)
+void ActionContainerPrivate::addMenu(ActionContainer *before, ActionContainer *menu)
 {
     auto containerPrivate = static_cast<ActionContainerPrivate *>(menu);
-    if (!containerPrivate->canBeAddedToMenu())
-        return;
+    QTC_ASSERT(containerPrivate->canBeAddedToContainer(this), return);
 
-    auto container = static_cast<MenuActionContainer *>(containerPrivate);
-    const Id actualGroupId = groupId.isValid() ? groupId : Id(Constants::G_DEFAULT_TWO);
-    QList<Group>::const_iterator groupIt = findGroup(actualGroupId);
-    QTC_ASSERT(groupIt != m_groups.constEnd(), return);
-    QAction *beforeAction = before->menu()->menuAction();
-    m_groups[groupIt-m_groups.constBegin()].items.append(menu);
-
+    for (Group &group : m_groups) {
+        const int insertionPoint = group.items.indexOf(before);
+        if (insertionPoint >= 0) {
+            group.items.insert(insertionPoint, menu);
+            break;
+        }
+    }
     connect(menu, &QObject::destroyed, this, &ActionContainerPrivate::itemDestroyed);
-    insertMenu(beforeAction, container->menu());
+
+    auto beforePrivate = static_cast<ActionContainerPrivate *>(before);
+    QAction *beforeAction = beforePrivate->containerAction();
+    if (beforeAction)
+        insertMenu(beforeAction, menu);
+
     scheduleUpdate();
 }
 
-/*!
- * Adds a separator to the end of the given \a group to the action container, which is enabled
- * for a given \a context. The created separator action is returned through \a outSeparator.
- *
- * Returns the created Command for the separator.
- */
-/*! \a context \a group \a outSeparator
- * \internal
- */
 Command *ActionContainerPrivate::addSeparator(const Context &context, Id group, QAction **outSeparator)
 {
     static int separatorIdCount = 0;
@@ -305,12 +350,10 @@ Command *ActionContainerPrivate::addSeparator(const Context &context, Id group, 
 
 void ActionContainerPrivate::clear()
 {
-    QMutableListIterator<Group> it(m_groups);
-    while (it.hasNext()) {
-        Group &group = it.next();
+    for (Group &group : m_groups) {
         foreach (QObject *item, group.items) {
             if (auto command = qobject_cast<Command *>(item)) {
-                removeAction(command->action());
+                removeAction(command);
                 disconnect(command, &Command::activeStateChanged,
                            this, &ActionContainerPrivate::scheduleUpdate);
                 disconnect(command, &QObject::destroyed, this, &ActionContainerPrivate::itemDestroyed);
@@ -318,7 +361,7 @@ void ActionContainerPrivate::clear()
                 container->clear();
                 disconnect(container, &QObject::destroyed,
                            this, &ActionContainerPrivate::itemDestroyed);
-                removeMenu(container->menu());
+                removeMenu(container);
             }
         }
         group.items.clear();
@@ -329,9 +372,7 @@ void ActionContainerPrivate::clear()
 void ActionContainerPrivate::itemDestroyed()
 {
     QObject *obj = sender();
-    QMutableListIterator<Group> it(m_groups);
-    while (it.hasNext()) {
-        Group &group = it.next();
+    for (Group &group : m_groups) {
         if (group.items.removeAll(obj) > 0)
             break;
     }
@@ -348,6 +389,11 @@ QMenu *ActionContainerPrivate::menu() const
 }
 
 QMenuBar *ActionContainerPrivate::menuBar() const
+{
+    return nullptr;
+}
+
+TouchBar *ActionContainerPrivate::touchBar() const
 {
     return nullptr;
 }
@@ -397,24 +443,33 @@ QMenu *MenuActionContainer::menu() const
     return m_menu;
 }
 
-void MenuActionContainer::insertAction(QAction *before, QAction *action)
+QAction *MenuActionContainer::containerAction() const
 {
-    m_menu->insertAction(before, action);
+    return m_menu->menuAction();
 }
 
-void MenuActionContainer::insertMenu(QAction *before, QMenu *menu)
+void MenuActionContainer::insertAction(QAction *before, Command *command)
 {
+    m_menu->insertAction(before, command->action());
+}
+
+void MenuActionContainer::insertMenu(QAction *before, ActionContainer *container)
+{
+    QMenu *menu = container->menu();
+    QTC_ASSERT(menu, return);
     menu->setParent(m_menu, menu->windowFlags()); // work around issues with Qt Wayland (QTBUG-68636)
     m_menu->insertMenu(before, menu);
 }
 
-void MenuActionContainer::removeAction(QAction *action)
+void MenuActionContainer::removeAction(Command *command)
 {
-    m_menu->removeAction(action);
+    m_menu->removeAction(command->action());
 }
 
-void MenuActionContainer::removeMenu(QMenu *menu)
+void MenuActionContainer::removeMenu(ActionContainer *container)
 {
+    QMenu *menu = container->menu();
+    QTC_ASSERT(menu, return);
     m_menu->removeAction(menu->menuAction());
 }
 
@@ -426,9 +481,7 @@ bool MenuActionContainer::updateInternal()
     bool hasitems = false;
     QList<QAction *> actions = m_menu->actions();
 
-    QListIterator<Group> it(m_groups);
-    while (it.hasNext()) {
-        const Group &group = it.next();
+    for (const Group &group : m_groups) {
         foreach (QObject *item, group.items) {
             if (auto container = qobject_cast<ActionContainerPrivate*>(item)) {
                 actions.removeAll(container->menu()->menuAction());
@@ -475,11 +528,11 @@ bool MenuActionContainer::updateInternal()
     return hasitems;
 }
 
-bool MenuActionContainer::canBeAddedToMenu() const
+bool MenuActionContainer::canBeAddedToContainer(ActionContainerPrivate *container) const
 {
-    return true;
+    return qobject_cast<MenuActionContainer *>(container)
+           || qobject_cast<MenuBarActionContainer *>(container);
 }
-
 
 // ---------- MenuBarActionContainer ------------
 
@@ -504,24 +557,33 @@ QMenuBar *MenuBarActionContainer::menuBar() const
     return m_menuBar;
 }
 
-void MenuBarActionContainer::insertAction(QAction *before, QAction *action)
+QAction *MenuBarActionContainer::containerAction() const
 {
-    m_menuBar->insertAction(before, action);
+    return nullptr;
 }
 
-void MenuBarActionContainer::insertMenu(QAction *before, QMenu *menu)
+void MenuBarActionContainer::insertAction(QAction *before, Command *command)
 {
+    m_menuBar->insertAction(before, command->action());
+}
+
+void MenuBarActionContainer::insertMenu(QAction *before, ActionContainer *container)
+{
+    QMenu *menu = container->menu();
+    QTC_ASSERT(menu, return);
     menu->setParent(m_menuBar, menu->windowFlags()); // work around issues with Qt Wayland (QTBUG-68636)
     m_menuBar->insertMenu(before, menu);
 }
 
-void MenuBarActionContainer::removeAction(QAction *action)
+void MenuBarActionContainer::removeAction(Command *command)
 {
-    m_menuBar->removeAction(action);
+    m_menuBar->removeAction(command->action());
 }
 
-void MenuBarActionContainer::removeMenu(QMenu *menu)
+void MenuBarActionContainer::removeMenu(ActionContainer *container)
 {
+    QMenu *menu = container->menu();
+    QTC_ASSERT(menu, return);
     m_menuBar->removeAction(menu->menuAction());
 }
 
@@ -547,13 +609,83 @@ bool MenuBarActionContainer::updateInternal()
     return hasitems;
 }
 
-bool MenuBarActionContainer::canBeAddedToMenu() const
+bool MenuBarActionContainer::canBeAddedToContainer(ActionContainerPrivate *) const
+{
+    return false;
+}
+
+// ---------- TouchBarActionContainer ------------
+
+const char ID_PREFIX[] = "io.qt.qtcreator.";
+
+TouchBarActionContainer::TouchBarActionContainer(Id id, const QIcon &icon, const QString &text)
+    : ActionContainerPrivate(id),
+      m_touchBar(std::make_unique<TouchBar>(id.withPrefix(ID_PREFIX).name(), icon, text))
+{
+}
+
+TouchBarActionContainer::~TouchBarActionContainer() = default;
+
+TouchBar *TouchBarActionContainer::touchBar() const
+{
+    return m_touchBar.get();
+}
+
+QAction *TouchBarActionContainer::containerAction() const
+{
+    return m_touchBar->touchBarAction();
+}
+
+QAction *TouchBarActionContainer::actionForItem(QObject *item) const
+{
+    if (Command *command = qobject_cast<Command *>(item))
+        return command->touchBarAction();
+    return ActionContainerPrivate::actionForItem(item);
+}
+
+void TouchBarActionContainer::insertAction(QAction *before, Command *command)
+{
+    m_touchBar->insertAction(before,
+                             command->id().withPrefix(ID_PREFIX).name(),
+                             command->touchBarAction());
+}
+
+void TouchBarActionContainer::insertMenu(QAction *before, ActionContainer *container)
+{
+    TouchBar *touchBar = container->touchBar();
+    QTC_ASSERT(touchBar, return);
+    m_touchBar->insertTouchBar(before, touchBar);
+}
+
+void TouchBarActionContainer::removeAction(Command *command)
+{
+    m_touchBar->removeAction(command->touchBarAction());
+}
+
+void TouchBarActionContainer::removeMenu(ActionContainer *container)
+{
+    TouchBar *touchBar = container->touchBar();
+    QTC_ASSERT(touchBar, return);
+    m_touchBar->removeTouchBar(touchBar);
+}
+
+bool TouchBarActionContainer::canBeAddedToContainer(ActionContainerPrivate *container) const
+{
+    return qobject_cast<TouchBarActionContainer *>(container);
+}
+
+bool TouchBarActionContainer::updateInternal()
 {
     return false;
 }
 
 } // namespace Internal
 
+/*!
+    Adds a separator to the end of \a group to the action container.
+
+    Returns the created separator.
+*/
 Command *ActionContainer::addSeparator(Id group)
 {
     static const Context context(Constants::C_GLOBAL);

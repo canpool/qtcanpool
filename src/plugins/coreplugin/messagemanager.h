@@ -27,9 +27,13 @@
 
 #include "core_global.h"
 #include "ioutputpane.h"
-#include <QMetaType>
 
+#include <QMetaType>
 #include <QObject>
+
+QT_BEGIN_NAMESPACE
+class QFont;
+QT_END_NAMESPACE
 
 namespace Core {
 
@@ -53,15 +57,22 @@ public:
 
     Q_DECLARE_FLAGS(PrintToOutputPaneFlags, PrintToOutputPaneFlag)
 
-    static void showOutputPane(Core::MessageManager::PrintToOutputPaneFlags flags = NoModeSwitch);
+    static void showOutputPane(PrintToOutputPaneFlags flags = NoModeSwitch);
 
-public slots:
-    static void write(const QString &text,
-                      Core::MessageManager::PrintToOutputPaneFlags flags = NoModeSwitch);
+    static void setFont(const QFont &font);
+    static void setWheelZoomEnabled(bool enabled);
+
+    static void writeMessages(const QStringList &messages,
+                              PrintToOutputPaneFlags flags = NoModeSwitch);
+    static void write(const QString &text, PrintToOutputPaneFlags flags = NoModeSwitch);
+    static void writeWithTime(const QString &text, PrintToOutputPaneFlags flags = NoModeSwitch);
 
 private:
     MessageManager();
     ~MessageManager() override;
+
+    static void doWrite(const QString &text, PrintToOutputPaneFlags flags);
+
     static void init();
     friend class Core::Internal::MainWindow;
 };

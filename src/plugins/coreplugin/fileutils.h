@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "coreplugin/core_global.h"
+#include "core_global.h"
 
 QT_BEGIN_NAMESPACE
 class QWidget;
@@ -44,7 +44,8 @@ struct CORE_EXPORT FileUtils
     static QString msgFindInDirectory();
     // Platform-dependent action descriptions
     static QString msgGraphicalShellAction();
-    static QString msgTerminalAction();
+    static QString msgTerminalHereAction();
+    static QString msgTerminalWithAction();
     // File operations aware of version control and file system case-insensitiveness
     static void removeFile(const QString &filePath, bool deleteFromFS);
     static bool renameFile(const QString &from, const QString &to);

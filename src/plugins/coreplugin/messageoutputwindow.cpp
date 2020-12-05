@@ -30,13 +30,20 @@
 #include "find/basetextfind.h"
 
 #include <aggregation/aggregate.h>
+#include <coreplugin/icore.h>
+#include <utils/utilsicons.h>
+
+#include <QFont>
+#include <QToolButton>
 
 namespace Core {
 namespace Internal {
 
+const char zoomSettingsKey[] = "Core/MessageOutput/Zoom";
+
 MessageOutputWindow::MessageOutputWindow()
 {
-    m_widget = new OutputWindow(Context(Constants::C_GENERAL_OUTPUT_PANE));
+    m_widget = new OutputWindow(Context(Constants::C_GENERAL_OUTPUT_PANE), zoomSettingsKey);
     m_widget->setReadOnly(true);
     // Let selected text be colored as if the text edit was editable,
     // otherwise the highlight for searching is too light
@@ -46,9 +53,20 @@ MessageOutputWindow::MessageOutputWindow()
     QColor activeHighlightedText = p.color(QPalette::Active, QPalette::HighlightedText);
     p.setColor(QPalette::HighlightedText, activeHighlightedText);
     m_widget->setPalette(p);
+
+    connect(this, &IOutputPane::zoomIn, m_widget, &Core::OutputWindow::zoomIn);
+    connect(this, &IOutputPane::zoomOut, m_widget, &Core::OutputWindow::zoomOut);
+    connect(this, &IOutputPane::resetZoom, m_widget, &Core::OutputWindow::resetZoom);
+    connect(this, &IOutputPane::fontChanged, m_widget, &OutputWindow::setBaseFont);
+    connect(this, &IOutputPane::wheelZoomEnabledChanged, m_widget, &OutputWindow::setWheelZoomEnabled);
+
     auto agg = new Aggregation::Aggregate;
     agg->add(m_widget);
     agg->add(new BaseTextFind(m_widget));
+
+    setupFilterUi("MessageOutputPane.Filter");
+    setFilteringEnabled(true);
+    setupContext(Constants::C_GENERAL_OUTPUT_PANE, m_widget);
 }
 
 MessageOutputWindow::~MessageOutputWindow()
@@ -93,7 +111,7 @@ void MessageOutputWindow::visibilityChanged(bool /*b*/)
 
 void MessageOutputWindow::append(const QString &text)
 {
-    m_widget->appendText(text);
+    m_widget->appendMessage(text, Utils::DebugFormat);
 }
 
 int MessageOutputWindow::priorityInStatusBar() const
@@ -124,6 +142,12 @@ void MessageOutputWindow::goToPrev()
 bool MessageOutputWindow::canNavigate() const
 {
     return false;
+}
+
+void MessageOutputWindow::updateFilter()
+{
+    m_widget->updateFilterProperties(filterText(), filterCaseSensitivity(), filterUsesRegexp(),
+                                     filterIsInverted());
 }
 
 } // namespace Internal

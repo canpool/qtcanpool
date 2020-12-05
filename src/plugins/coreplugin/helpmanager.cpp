@@ -80,15 +80,20 @@ void registerDocumentation(const QStringList &files)
         m_instance->registerDocumentation(files);
 }
 
-void unregisterDocumentation(const QStringList &nameSpaces)
+void unregisterDocumentation(const QStringList &fileNames)
 {
     if (checkInstance())
-        m_instance->unregisterDocumentation(nameSpaces);
+        m_instance->unregisterDocumentation(fileNames);
 }
 
-QMap<QString, QUrl> linksForIdentifier(const QString &id)
+QMultiMap<QString, QUrl> linksForIdentifier(const QString &id)
 {
-    return checkInstance() ? m_instance->linksForIdentifier(id) : QMap<QString, QUrl>();
+    return checkInstance() ? m_instance->linksForIdentifier(id) : QMultiMap<QString, QUrl>();
+}
+
+QMultiMap<QString, QUrl> linksForKeyword(const QString &keyword)
+{
+    return checkInstance() ? m_instance->linksForKeyword(keyword) : QMultiMap<QString, QUrl>();
 }
 
 QByteArray fileData(const QUrl &url)
@@ -96,15 +101,15 @@ QByteArray fileData(const QUrl &url)
     return checkInstance() ? m_instance->fileData(url) : QByteArray();
 }
 
-void handleHelpRequest(const QUrl &url, HelpManager::HelpViewerLocation location)
+void showHelpUrl(const QUrl &url, HelpManager::HelpViewerLocation location)
 {
     if (checkInstance())
-        m_instance->handleHelpRequest(url, location);
+        m_instance->showHelpUrl(url, location);
 }
 
-void handleHelpRequest(const QString &url, HelpViewerLocation location)
+void showHelpUrl(const QString &url, HelpViewerLocation location)
 {
-    handleHelpRequest(QUrl(url), location);
+    showHelpUrl(QUrl(url), location);
 }
 
 } // HelpManager

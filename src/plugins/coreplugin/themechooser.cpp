@@ -28,6 +28,8 @@
 #include "manhattanstyle.h"
 #include "themechooser.h"
 
+#include "dialogs/restartdialog.h"
+
 #include <utils/algorithm.h>
 #include <utils/theme/theme.h>
 #include <utils/theme/theme_p.h>
@@ -141,7 +143,7 @@ ThemeChooserPrivate::ThemeChooserPrivate(QWidget *widget)
     overriddenLabel->setText(ThemeChooser::tr("Current theme: %1")
                              .arg(creatorTheme()->displayName()));
     layout->addWidget(overriddenLabel);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     auto horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     layout->addSpacerItem(horizontalSpacer);
     m_themeComboBox->setModel(m_themeListModel);
@@ -178,11 +180,11 @@ void ThemeChooser::apply()
     QSettings *settings = ICore::settings();
     const QString currentThemeId = ThemeEntry::themeSetting().toString();
     if (currentThemeId != themeId) {
-        QMessageBox::information(ICore::mainWindow(), tr("Restart Required"),
-                                 tr("The theme change will take effect after restart."));
-
         // save filename of selected theme in global config
         settings->setValue(QLatin1String(Constants::SETTINGS_THEME), themeId);
+        RestartDialog restartDialog(ICore::dialogParent(),
+                                    tr("The theme change will take effect after restart."));
+        restartDialog.exec();
     }
 }
 

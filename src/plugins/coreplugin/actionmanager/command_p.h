@@ -27,9 +27,9 @@
 
 #include "command.h"
 
-#include <coreplugin/id.h>
 #include <coreplugin/icontext.h>
 
+#include <utils/id.h>
 #include <utils/proxyaction.h>
 
 #include <QList>
@@ -38,6 +38,8 @@
 #include <QMap>
 #include <QKeySequence>
 
+#include <memory>
+
 namespace Core {
 namespace Internal {
 
@@ -45,14 +47,16 @@ class Action : public Command
 {
     Q_OBJECT
 public:
-    Action(Id id);
+    Action(Utils::Id id);
 
-    Id id() const override;
+    Utils::Id id() const override;
 
     void setDefaultKeySequence(const QKeySequence &key) override;
-    QKeySequence defaultKeySequence() const override;
+    void setDefaultKeySequences(const QList<QKeySequence> &key) override;
+    QList<QKeySequence> defaultKeySequences() const override;
 
-    void setKeySequence(const QKeySequence &key) override;
+    void setKeySequences(const QList<QKeySequence> &keys) override;
+    QList<QKeySequence> keySequences() const override;
     QKeySequence keySequence() const override;
 
     void setDescription(const QString &text) override;
@@ -77,21 +81,30 @@ public:
     void removeAttribute(CommandAttribute attr) override;
     bool hasAttribute(CommandAttribute attr) const override;
 
+    void setTouchBarText(const QString &text) override;
+    QString touchBarText() const override;
+    void setTouchBarIcon(const QIcon &icon) override;
+    QIcon touchBarIcon() const override;
+    QAction *touchBarAction() const override;
+
 private:
     void updateActiveState();
     void setActive(bool state);
 
     Context m_context;
     CommandAttributes m_attributes;
-    Id m_id;
-    QKeySequence m_defaultKey;
+    Utils::Id m_id;
+    QList<QKeySequence> m_defaultKeys;
     QString m_defaultText;
+    QString m_touchBarText;
+    QIcon m_touchBarIcon;
     bool m_isKeyInitialized = false;
 
     Utils::ProxyAction *m_action = nullptr;
+    mutable std::unique_ptr<Utils::ProxyAction> m_touchBarAction;
     QString m_toolTip;
 
-    QMap<Id, QPointer<QAction> > m_contextActionMap;
+    QMap<Utils::Id, QPointer<QAction> > m_contextActionMap;
     QMap<QAction*, bool> m_scriptableMap;
     bool m_active = false;
     bool m_contextInitialized = false;

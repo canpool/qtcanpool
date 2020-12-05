@@ -35,14 +35,15 @@ class QSettings;
 QT_END_NAMESPACE
 
 namespace Utils {
+
 class Environment;
-struct ConsoleProcessPrivate;
+class CommandLine;
 
 class QTCREATOR_UTILS_EXPORT TerminalCommand
 {
 public:
     TerminalCommand() = default;
-    TerminalCommand(const QString &command, const QString &openArgs, const QString &executeArgs);
+    TerminalCommand(const QString &command, const QString &openArgs, const QString &executeArgs, bool needsQuotes = false);
 
     bool operator==(const TerminalCommand &other) const;
     bool operator<(const TerminalCommand &other) const;
@@ -50,6 +51,7 @@ public:
     QString command;
     QString openArgs;
     QString executeArgs;
+    bool needsQuotes = false;
 };
 
 class QTCREATOR_UTILS_EXPORT ConsoleProcess : public QObject
@@ -58,8 +60,13 @@ class QTCREATOR_UTILS_EXPORT ConsoleProcess : public QObject
 
 public:
     enum Mode { Run, Debug, Suspend };
-    ConsoleProcess(QObject *parent = nullptr);
+
+    explicit ConsoleProcess(QObject *parent = nullptr);
     ~ConsoleProcess() override;
+
+    void setCommand(const Utils::CommandLine &command);
+    Utils::CommandLine command() const;
+    void setAbortOnMetaChars(bool abort);
 
     void setWorkingDirectory(const QString &dir);
     QString workingDirectory() const;
@@ -70,8 +77,7 @@ public:
     QProcess::ProcessError error() const;
     QString errorString() const;
 
-    bool start(const QString &program, const QString &args);
-public slots:
+    bool start();
     void stop();
 
 public:
@@ -85,36 +91,17 @@ public:
     void killStub();
 
     qint64 applicationMainThreadID() const;
-#ifndef Q_OS_WIN
     void detachStub();
-#endif
 
     int exitCode() const;
     QProcess::ExitStatus exitStatus() const;
 
-#ifdef Q_OS_WIN
-    // Add PATH and SystemRoot environment variables in case they are missing
-    static QStringList fixWinEnvironment(const QStringList &env);
-    // Quote a Windows command line correctly for the "CreateProcess" API
-    static QString createWinCommandline(const QString &program, const QStringList &args);
-    static QString createWinCommandline(const QString &program, const QString &args);
-#endif
-
-#ifndef Q_OS_WIN
-    void setSettings(QSettings *settings);
+    void setSettings(QSettings *);
 
     static TerminalCommand defaultTerminalEmulator();
     static QVector<TerminalCommand> availableTerminalEmulators();
     static TerminalCommand terminalEmulator(const QSettings *settings);
     static void setTerminalEmulator(QSettings *settings, const TerminalCommand &term);
-#else
-    void setSettings(QSettings *) {}
-
-    static TerminalCommand defaultTerminalEmulator() { return TerminalCommand(); }
-    static QVector<TerminalCommand> availableTerminalEmulators() { return {}; }
-    static TerminalCommand terminalEmulator(const QSettings *) { return TerminalCommand(); }
-    static void setTerminalEmulator(QSettings *, const TerminalCommand &) {}
-#endif
 
     static bool startTerminalEmulator(QSettings *settings, const QString &workingDir,
                                       const Utils::Environment &env);
@@ -122,6 +109,7 @@ public:
 signals:
     void error(QProcess::ProcessError error);
     void processError(const QString &errorString);
+
     // These reflect the state of the actual client process
     void processStarted();
     void processStopped(int, QProcess::ExitStatus);
@@ -134,9 +122,6 @@ private:
     void stubConnectionAvailable();
     void readStubOutput();
     void stubExited();
-#ifdef Q_OS_WIN
-    void inferiorExited();
-#endif
 
     static QString modeOption(Mode m);
     static QString msgCommChannelFailed(const QString &error);
@@ -151,14 +136,12 @@ private:
     void emitError(QProcess::ProcessError err, const QString &errorString);
     QString stubServerListen();
     void stubServerShutdown();
-#ifdef Q_OS_WIN
     void cleanupStub();
     void cleanupInferior();
-#endif
 
-    ConsoleProcessPrivate *d;
+    class ConsoleProcessPrivate *d;
 };
 
-} //namespace Utils
+} // Utils
 
 Q_DECLARE_METATYPE(Utils::TerminalCommand)

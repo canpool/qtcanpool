@@ -68,12 +68,11 @@ class ShellCommandPrivate
 {
 public:
     struct Job {
-        explicit Job(const QString &wd, const FileName &b, const QStringList &a, int t,
+        explicit Job(const QString &wd, const CommandLine &command, int t,
                      const ExitCodeInterpreter &interpreter);
 
         QString workingDirectory;
-        FileName binary;
-        QStringList arguments;
+        CommandLine command;
         ExitCodeInterpreter exitCodeInterpreter;
         int timeoutS;
     };
@@ -113,11 +112,10 @@ ShellCommandPrivate::~ShellCommandPrivate()
     delete m_progressParser;
 }
 
-ShellCommandPrivate::Job::Job(const QString &wd, const FileName &b, const QStringList &a,
+ShellCommandPrivate::Job::Job(const QString &wd, const CommandLine &command,
                               int t, const ExitCodeInterpreter &interpreter) :
     workingDirectory(wd),
-    binary(b),
-    arguments(a),
+    command(command),
     exitCodeInterpreter(interpreter),
     timeoutS(t)
 {
@@ -146,14 +144,14 @@ QString ShellCommand::displayName() const
         return d->m_displayName;
     if (!d->m_jobs.isEmpty()) {
         const Internal::ShellCommandPrivate::Job &job = d->m_jobs.at(0);
-        QString result = job.binary.toFileInfo().baseName();
+        QString result = job.command.executable().toFileInfo().baseName();
         if (!result.isEmpty())
             result[0] = result.at(0).toTitleCase();
         else
             result = tr("UNKNOWN");
 
-        if (!job.arguments.isEmpty())
-            result += QLatin1Char(' ') + job.arguments.at(0);
+        if (!job.command.arguments().isEmpty())
+            result += ' ' + job.command.splitArguments().at(0);
 
         return result;
     }
@@ -195,17 +193,17 @@ void ShellCommand::addFlags(unsigned f)
     d->m_flags |= f;
 }
 
-void ShellCommand::addJob(const FileName &binary, const QStringList &arguments,
+void ShellCommand::addJob(const CommandLine &command,
                           const QString &workingDirectory, const ExitCodeInterpreter &interpreter)
 {
-    addJob(binary, arguments, defaultTimeoutS(), workingDirectory, interpreter);
+    addJob(command, defaultTimeoutS(), workingDirectory, interpreter);
 }
 
-void ShellCommand::addJob(const FileName &binary, const QStringList &arguments, int timeoutS,
+void ShellCommand::addJob(const CommandLine &command, int timeoutS,
                           const QString &workingDirectory, const ExitCodeInterpreter &interpreter)
 {
-    d->m_jobs.push_back(Internal::ShellCommandPrivate::Job(workDirectory(workingDirectory), binary,
-                                                           arguments, timeoutS, interpreter));
+    d->m_jobs.push_back(Internal::ShellCommandPrivate::Job(workDirectory(workingDirectory), command,
+                                                           timeoutS, interpreter));
 }
 
 void ShellCommand::execute()
@@ -240,7 +238,7 @@ unsigned ShellCommand::processFlags() const
 
 void ShellCommand::addTask(QFuture<void> &future)
 {
-    Q_UNUSED(future);
+    Q_UNUSED(future)
 }
 
 int ShellCommand::timeoutS() const
@@ -287,7 +285,7 @@ void ShellCommand::run(QFutureInterface<void> &future)
     for (int j = 0; j < count; j++) {
         const Internal::ShellCommandPrivate::Job &job = d->m_jobs.at(j);
         SynchronousProcessResponse resp
-                = runCommand(job.binary, job.arguments, job.timeoutS, job.workingDirectory,
+                = runCommand(job.command, job.timeoutS, job.workingDirectory,
                              job.exitCodeInterpreter);
         stdOut += resp.stdOut();
         stdErr += resp.stdErr();
@@ -319,8 +317,7 @@ void ShellCommand::run(QFutureInterface<void> &future)
     this->deleteLater();
 }
 
-SynchronousProcessResponse ShellCommand::runCommand(const FileName &binary,
-                                                    const QStringList &arguments, int timeoutS,
+SynchronousProcessResponse ShellCommand::runCommand(const CommandLine &command, int timeoutS,
                                                     const QString &workingDirectory,
                                                     const ExitCodeInterpreter &interpreter)
 {
@@ -328,7 +325,7 @@ SynchronousProcessResponse ShellCommand::runCommand(const FileName &binary,
 
     const QString dir = workDirectory(workingDirectory);
 
-    if (binary.isEmpty()) {
+    if (command.executable().isEmpty()) {
         response.result = SynchronousProcessResponse::StartFailed;
         return response;
     }
@@ -336,31 +333,30 @@ SynchronousProcessResponse ShellCommand::runCommand(const FileName &binary,
     QSharedPointer<OutputProxy> proxy(d->m_proxyFactory());
 
     if (!(d->m_flags & SuppressCommandLogging))
-        proxy->appendCommand(dir, binary, arguments);
+        emit proxy->appendCommand(dir, command);
 
     if ((d->m_flags & FullySynchronously)
             || (!(d->m_flags & NoFullySync)
                 && QThread::currentThread() == QCoreApplication::instance()->thread())) {
-        response = runFullySynchronous(binary, arguments, proxy, timeoutS, dir, interpreter);
+        response = runFullySynchronous(command, proxy, timeoutS, dir, interpreter);
     } else {
-        response = runSynchronous(binary, arguments, proxy, timeoutS, dir, interpreter);
+        response = runSynchronous(command, proxy, timeoutS, dir, interpreter);
     }
 
     if (!d->m_aborted) {
         // Success/Fail message in appropriate window?
         if (response.result == SynchronousProcessResponse::Finished) {
             if (d->m_flags & ShowSuccessMessage)
-                proxy->appendMessage(response.exitMessage(binary.toUserOutput(), timeoutS));
+                emit proxy->appendMessage(response.exitMessage(command.executable().toUserOutput(), timeoutS));
         } else if (!(d->m_flags & SuppressFailMessage)) {
-            proxy->appendError(response.exitMessage(binary.toUserOutput(), timeoutS));
+            emit proxy->appendError(response.exitMessage(command.executable().toUserOutput(), timeoutS));
         }
     }
 
     return response;
 }
 
-SynchronousProcessResponse ShellCommand::runFullySynchronous(const FileName &binary,
-                                                             const QStringList &arguments,
+SynchronousProcessResponse ShellCommand::runFullySynchronous(const CommandLine &cmd,
                                                              QSharedPointer<OutputProxy> proxy,
                                                              int timeoutS,
                                                              const QString &workingDirectory,
@@ -380,27 +376,26 @@ SynchronousProcessResponse ShellCommand::runFullySynchronous(const FileName &bin
     process.setTimeoutS(timeoutS);
     process.setExitCodeInterpreter(interpreter);
 
-    SynchronousProcessResponse resp = process.runBlocking(binary.toString(), arguments);
+    SynchronousProcessResponse resp = process.runBlocking(cmd);
 
     if (!d->m_aborted) {
         const QString stdErr = resp.stdErr();
         if (!stdErr.isEmpty() && !(d->m_flags & SuppressStdErr))
-            proxy->append(stdErr);
+            emit proxy->append(stdErr);
 
         const QString stdOut = resp.stdOut();
         if (!stdOut.isEmpty() && d->m_flags & ShowStdOut) {
             if (d->m_flags & SilentOutput)
-                proxy->appendSilently(stdOut);
+                emit proxy->appendSilently(stdOut);
             else
-                proxy->append(stdOut);
+                emit proxy->append(stdOut);
         }
     }
 
     return resp;
 }
 
-SynchronousProcessResponse ShellCommand::runSynchronous(const FileName &binary,
-                                                        const QStringList &arguments,
+SynchronousProcessResponse ShellCommand::runSynchronous(const CommandLine &cmd,
                                                         QSharedPointer<OutputProxy> proxy,
                                                         int timeoutS,
                                                         const QString &workingDirectory,
@@ -421,16 +416,14 @@ SynchronousProcessResponse ShellCommand::runSynchronous(const FileName &binary,
     // connect stderr to the output window if desired
     if (d->m_flags & MergeOutputChannels) {
         process.setProcessChannelMode(QProcess::MergedChannels);
-    } else if (d->m_progressiveOutput
-               || !(d->m_flags & SuppressStdErr)) {
+    } else if (d->m_progressiveOutput || !(d->m_flags & SuppressStdErr)) {
         process.setStdErrBufferedSignalsEnabled(true);
         connect(&process, &SynchronousProcess::stdErrBuffered,
-                this, [this, proxy](const QString &text)
-        {
+                this, [this, proxy](const QString &text) {
             if (d->m_progressParser)
                 d->m_progressParser->parseProgress(text);
             if (!(d->m_flags & SuppressStdErr))
-                proxy->appendError(text);
+                emit proxy->appendError(text);
             if (d->m_progressiveOutput)
                 emit stdErrText(text);
         });
@@ -440,12 +433,11 @@ SynchronousProcessResponse ShellCommand::runSynchronous(const FileName &binary,
     if (d->m_progressParser || d->m_progressiveOutput || (d->m_flags & ShowStdOut)) {
         process.setStdOutBufferedSignalsEnabled(true);
         connect(&process, &SynchronousProcess::stdOutBuffered,
-                this, [this, proxy](const QString &text)
-        {
+                this, [this, proxy](const QString &text) {
             if (d->m_progressParser)
                 d->m_progressParser->parseProgress(text);
             if (d->m_flags & ShowStdOut)
-                proxy->append(text);
+                emit proxy->append(text);
             if (d->m_progressiveOutput) {
                 emit stdOutText(text);
                 d->m_hadOutput = true;
@@ -460,7 +452,7 @@ SynchronousProcessResponse ShellCommand::runSynchronous(const FileName &binary,
     process.setTimeoutS(timeoutS);
     process.setExitCodeInterpreter(interpreter);
 
-    return process.run(binary.toString(), arguments);
+    return process.run(cmd);
 }
 
 const QVariant &ShellCommand::cookie() const

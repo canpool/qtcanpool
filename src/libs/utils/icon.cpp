@@ -139,13 +139,13 @@ static QPixmap masksToIcon(const MasksAndColors &masks, const QPixmap &combinedM
     if (style & Icon::DropShadow && creatorTheme()->flag(Theme::ToolBarIconShadow)) {
         const QPixmap shadowMask = maskToColorAndAlpha(combinedMask, Qt::black);
         p.setCompositionMode(QPainter::CompositionMode_DestinationOver);
-        p.setOpacity(0.05);
+        p.setOpacity(0.08);
         p.drawPixmap(QPointF(0, -0.501), shadowMask);
         p.drawPixmap(QPointF(-0.501, 0), shadowMask);
         p.drawPixmap(QPointF(0.5, 0), shadowMask);
         p.drawPixmap(QPointF(0.5, 0.5), shadowMask);
         p.drawPixmap(QPointF(-0.501, 0.5), shadowMask);
-        p.setOpacity(0.2);
+        p.setOpacity(0.3);
         p.drawPixmap(0, 1, shadowMask);
     }
 
@@ -239,7 +239,7 @@ QIcon Icon::modeIcon(const Icon &classic, const Icon &flat, const Icon &flatActi
 QIcon Icon::combinedIcon(const QList<QIcon> &icons)
 {
     QIcon result;
-    QWindow *window = QApplication::allWidgets().first()->windowHandle();
+    QWindow *window = QApplication::allWidgets().constFirst()->windowHandle();
     for (const QIcon &icon: icons)
         for (const QIcon::Mode mode: {QIcon::Disabled, QIcon::Normal})
             for (const QSize &size: icon.availableSizes(mode))

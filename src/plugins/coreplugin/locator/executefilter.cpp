@@ -44,7 +44,7 @@ ExecuteFilter::ExecuteFilter()
 
     m_process = new Utils::QtcProcess(this);
     m_process->setEnvironment(Utils::Environment::systemEnvironment());
-    connect(m_process, static_cast<void (QProcess::*)(int,QProcess::ExitStatus)>(&QProcess::finished),
+    connect(m_process, QOverload<int ,QProcess::ExitStatus>::of(&QProcess::finished),
             this, &ExecuteFilter::finished);
     connect(m_process, &QProcess::readyReadStandardOutput, this, &ExecuteFilter::readStandardOutput);
     connect(m_process, &QProcess::readyReadStandardError, this, &ExecuteFilter::readStandardError);
@@ -134,7 +134,7 @@ void ExecuteFilter::finished(int exitCode, QProcess::ExitStatus status)
         message = tr("Command \"%1\" finished.").arg(commandName);
     else
         message = tr("Command \"%1\" failed.").arg(commandName);
-    MessageManager::write(message);
+    MessageManager::writeWithTime(message);
 
     m_taskQueue.dequeue();
     if (!m_taskQueue.isEmpty())
@@ -160,20 +160,20 @@ void ExecuteFilter::runHeadCommand()
 {
     if (!m_taskQueue.isEmpty()) {
         const ExecuteData &d = m_taskQueue.head();
-        const Utils::FileName fullPath = Utils::Environment::systemEnvironment().searchInPath(d.executable);
+        const Utils::FilePath fullPath = Utils::Environment::systemEnvironment().searchInPath(d.executable);
         if (fullPath.isEmpty()) {
-            MessageManager::write(tr("Could not find executable for \"%1\".").arg(d.executable));
+            MessageManager::writeWithTime(tr("Could not find executable for \"%1\".").arg(d.executable));
             m_taskQueue.dequeue();
             runHeadCommand();
             return;
         }
-        MessageManager::write(tr("Starting command \"%1\".").arg(headCommand()));
+        MessageManager::writeWithTime(tr("Starting command \"%1\".").arg(headCommand()));
         m_process->setWorkingDirectory(d.workingDirectory);
-        m_process->setCommand(fullPath.toString(), d.arguments);
+        m_process->setCommand({fullPath, d.arguments, Utils::CommandLine::Raw});
         m_process->start();
         m_process->closeWriteChannel();
         if (!m_process->waitForStarted(1000)) {
-             MessageManager::write(tr("Could not start process: %1.").arg(m_process->errorString()));
+             MessageManager::writeWithTime(tr("Could not start process: %1.").arg(m_process->errorString()));
              m_taskQueue.dequeue();
              runHeadCommand();
         }

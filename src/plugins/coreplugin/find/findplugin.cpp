@@ -38,7 +38,6 @@
 #include <coreplugin/coreconstants.h>
 #include <coreplugin/icontext.h>
 #include <coreplugin/icore.h>
-#include <coreplugin/id.h>
 #include <coreplugin/coreplugin.h>
 
 #include <extensionsystem/pluginmanager.h>
@@ -50,20 +49,23 @@
 #include <QStringListModel>
 #include <QVector>
 #include <QAction>
-
-#include <QtPlugin>
 #include <QSettings>
 
-/*!
-    \namespace Core::Internal
-    \internal
-*/
 /*!
     \namespace Core::Internal::ItemDataRoles
     \internal
 */
 
+/*!
+    \class Core::Find
+    \inmodule QtCreator
+    \internal
+*/
+
 Q_DECLARE_METATYPE(Core::IFindFilter*)
+
+using namespace Qt;
+using namespace Utils;
 
 namespace {
     const int MAX_COMPLETIONS = 50;
@@ -82,8 +84,8 @@ QDebug operator<<(QDebug d, const CompletionEntry &e)
     QDebugStateSaver saver(d);
     d.noquote();
     d.nospace();
-    d << "CompletionEntry(\"" << e.text << "\", flags=" << hex
-      << showbase << int(e.findFlags) << dec << noshowbase << ')';
+    d << "CompletionEntry(\"" << e.text << "\", flags="
+      << "0x" << QString::number(e.findFlags, 16) << ')';
     return d;
 }
 

@@ -49,6 +49,9 @@ public:
     SearchResultTreeModel *model() const;
     void addResults(const QList<SearchResultItem> &items, SearchResult::AddMode mode);
 
+    void keyPressEvent(QKeyEvent *event) override;
+    bool event(QEvent *e) override;
+
 signals:
     void jumpToSearchResult(const SearchResultItem &item);
 

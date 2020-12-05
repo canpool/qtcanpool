@@ -34,6 +34,7 @@
 #ifdef BUILD_CRASH_HANDLER
 
 #include <QApplication>
+#include <QFileInfo>
 #include <QString>
 
 #include <stdlib.h>
@@ -45,6 +46,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/prctl.h>
+
+#include <utils/porting.h>
 
 // Enable compilation with older header that doesn't contain this constant
 // for running on newer libraries that do support it
@@ -95,8 +98,14 @@ CrashHandlerSetup::CrashHandlerSetup(const QString &appName,
                                      const QString &executableDirPath)
 {
 #ifdef BUILD_CRASH_HANDLER
-    if (qEnvironmentVariableIsEmpty("QTC_USE_CRASH_HANDLER"))
+    const QString value = qEnvironmentVariable("QTC_USE_CRASH_HANDLER");
+    if (value.trimmed().isEmpty())
         return;
+    if (!QStringList{"1", "all", "yes"}.contains(value)) {
+        const QString binaryName = QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+        if (!value.split(",", Utils::SkipEmptyParts).contains(binaryName))
+            return;
+    }
 
     appNameC = qstrdup(qPrintable(appName));
 
@@ -147,9 +156,9 @@ CrashHandlerSetup::CrashHandlerSetup(const QString &appName,
         }
     }
 #else
-    Q_UNUSED(appName);
-    Q_UNUSED(restartCap);
-    Q_UNUSED(executableDirPath);
+    Q_UNUSED(appName)
+    Q_UNUSED(restartCap)
+    Q_UNUSED(executableDirPath)
 #endif // BUILD_CRASH_HANDLER
 }
 

@@ -251,6 +251,10 @@ QRegularExpressionMatch FileSearchRegExp::doGuardedMatch(const QString &line, in
 void FileSearchRegExp::operator()(QFutureInterface<FileSearchResultList> &futureInterface,
                                   const FileIterator::Item &item) const
 {
+    if (!expression.isValid()) {
+        futureInterface.cancel();
+        return;
+    }
     if (futureInterface.isCanceled())
         return;
     futureInterface.setProgressRange(0, 1);
@@ -482,7 +486,7 @@ static bool matches(const QList<QRegExp> &exprList, const QString &filePath)
 {
     return Utils::anyOf(exprList, [&filePath](QRegExp reg) {
         return (reg.exactMatch(filePath)
-                || reg.exactMatch(FileName::fromString(filePath).fileName()));
+                || reg.exactMatch(FilePath::fromString(filePath).fileName()));
     });
 }
 
@@ -651,11 +655,16 @@ SubDirFileIterator::SubDirFileIterator(const QStringList &directories, const QSt
 {
     m_encoding = (encoding == nullptr ? QTextCodec::codecForLocale() : encoding);
     qreal maxPer = qreal(MAX_PROGRESS) / directories.count();
-    foreach (const QString &directoryEntry, directories) {
+    for (const QString &directoryEntry : directories) {
         if (!directoryEntry.isEmpty()) {
-            m_dirs.push(QDir(directoryEntry));
-            m_progressValues.push(maxPer);
-            m_processedValues.push(false);
+            const QDir dir(directoryEntry);
+            const QString canonicalPath = dir.canonicalPath();
+            if (!canonicalPath.isEmpty() && dir.exists()) {
+                m_dirs.push(dir);
+                m_knownDirs.insert(canonicalPath);
+                m_progressValues.push(maxPer);
+                m_processedValues.push(false);
+            }
         }
     }
 }
@@ -676,10 +685,18 @@ void SubDirFileIterator::update(int index)
         const bool processed = m_processedValues.pop();
         if (dir.exists()) {
             const QString dirPath = dir.path();
-            QStringList subDirs;
-            if (!processed)
-                subDirs = dir.entryList(QDir::Dirs|QDir::Hidden|QDir::NoDotAndDotDot);
-            if (subDirs.isEmpty()) {
+            using Dir = QString;
+            using CanonicalDir = QString;
+            std::vector<std::pair<Dir, CanonicalDir>> subDirs;
+            if (!processed) {
+                for (const QFileInfo &info :
+                     dir.entryInfoList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot)) {
+                    const QString canonicalDir = info.canonicalFilePath();
+                    if (!m_knownDirs.contains(canonicalDir))
+                        subDirs.emplace_back(info.filePath(), canonicalDir);
+                }
+            }
+            if (subDirs.empty()) {
                 const QStringList allFileEntries = dir.entryList(QDir::Files|QDir::Hidden);
                 const QStringList allFilePaths = Utils::transform(allFileEntries,
                                                                   [&dirPath](const QString &entry) {
@@ -696,14 +713,13 @@ void SubDirFileIterator::update(int index)
                 m_dirs.push(dir);
                 m_progressValues.push(subProgress);
                 m_processedValues.push(true);
-                QStringListIterator it(subDirs);
-                it.toBack();
-                while (it.hasPrevious()) {
-                    const QString &directory = it.previous();
-                    m_dirs.push(QDir(dirPath + QLatin1Char('/') + directory));
-                    m_progressValues.push(subProgress);
-                    m_processedValues.push(false);
-                }
+                Utils::reverseForeach(subDirs,
+                                      [this, subProgress](const std::pair<Dir, CanonicalDir> &dir) {
+                                          m_dirs.push(QDir(dir.first));
+                                          m_knownDirs.insert(dir.second);
+                                          m_progressValues.push(subProgress);
+                                          m_processedValues.push(false);
+                                      });
             }
         } else {
             m_progress += dirProgressMax;

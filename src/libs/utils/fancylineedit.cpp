@@ -23,10 +23,12 @@
 **
 ****************************************************************************/
 
+#include "camelcasecursor.h"
 #include "execmenu.h"
 #include "fancylineedit.h"
 #include "historycompleter.h"
 #include "hostosinfo.h"
+#include "optional.h"
 #include "qtcassert.h"
 #include "stylehelper.h"
 #include "utilsicons.h"
@@ -34,7 +36,9 @@
 #include <QAbstractItemView>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QKeySequence>
 #include <QMenu>
+#include <QShortcut>
 #include <QStylePainter>
 #include <QPropertyAnimation>
 #include <QStyle>
@@ -79,6 +83,31 @@ enum { margin = 6 };
 
 namespace Utils {
 
+static bool camelCaseNavigation = false;
+
+class CompletionShortcut : public QObject
+{
+    Q_OBJECT
+
+public:
+    void setKeySequence(const QKeySequence &key)
+    {
+        if (m_key != key) {
+            m_key = key;
+            emit keyChanged(key);
+        }
+    }
+    QKeySequence key() const { return m_key; }
+
+signals:
+    void keyChanged(const QKeySequence &key);
+
+private:
+    QKeySequence m_key = Qt::Key_Space + HostOsInfo::controlModifier();
+};
+Q_GLOBAL_STATIC(CompletionShortcut, completionShortcut)
+
+
 // --------- FancyLineEditPrivate
 class FancyLineEditPrivate : public QObject
 {
@@ -90,6 +119,7 @@ public:
     FancyLineEdit *m_lineEdit;
     IconButton *m_iconbutton[2];
     HistoryCompleter *m_historyCompleter = nullptr;
+    QShortcut m_completionShortcut;
     FancyLineEdit::ValidationFunction m_validationFunction = &FancyLineEdit::validateWithValidator;
     QString m_oldText;
     QMenu *m_menu[2];
@@ -99,19 +129,25 @@ public:
 
     bool m_isFiltering = false;
     bool m_firstChange = true;
+    bool m_toolTipSet = false;
 
     QString m_lastFilterText;
 
-    QColor m_okTextColor;
-    QColor m_errorTextColor = Qt::red;
+    const QColor m_okTextColor;
+    const QColor m_errorTextColor;
     QString m_errorMessage;
 };
 
 FancyLineEditPrivate::FancyLineEditPrivate(FancyLineEdit *parent) :
     QObject(parent),
-    m_lineEdit(parent)
+    m_lineEdit(parent),
+    m_completionShortcut(completionShortcut()->key(), parent),
+    m_okTextColor(creatorTheme()->color(Theme::TextColorNormal)),
+    m_errorTextColor(creatorTheme()->color(Theme::TextColorError))
 {
-    m_okTextColor = parent->palette().color(QPalette::Active, QPalette::Text);
+    m_completionShortcut.setContext(Qt::WidgetShortcut);
+    connect(completionShortcut(), &CompletionShortcut::keyChanged,
+            &m_completionShortcut, &QShortcut::setKey);
 
     for (int i = 0; i < 2; ++i) {
         m_iconbutton[i] = new IconButton(parent);
@@ -162,6 +198,12 @@ FancyLineEdit::FancyLineEdit(QWidget *parent) :
     connect(d->m_iconbutton[Left], &QAbstractButton::clicked, this, &FancyLineEdit::iconClicked);
     connect(d->m_iconbutton[Right], &QAbstractButton::clicked, this, &FancyLineEdit::iconClicked);
     connect(this, &QLineEdit::textChanged, this, &FancyLineEdit::validate);
+    connect(&d->m_completionShortcut, &QShortcut::activated, this, [this] {
+        if (!completer())
+            return;
+        completer()->setCompletionPrefix(text().left(cursorPosition()));
+        completer()->complete();
+    });
 }
 
 FancyLineEdit::~FancyLineEdit()
@@ -173,6 +215,14 @@ FancyLineEdit::~FancyLineEdit()
         // QCoreApplicationPrivate::sendPostedEvents dispatch our queued signal.
         d->m_historyCompleter->addEntry(text());
     }
+}
+
+void FancyLineEdit::setTextKeepingActiveCursor(const QString &text)
+{
+    optional<int> cursor = hasFocus() ? make_optional(cursorPosition()) : nullopt;
+    setText(text);
+    if (cursor)
+        setCursorPosition(*cursor);
 }
 
 void FancyLineEdit::setButtonVisible(Side side, bool visible)
@@ -302,7 +352,7 @@ void FancyLineEdit::setHistoryCompleter(const QString &historyKey, bool restoreL
 {
     QTC_ASSERT(!d->m_historyCompleter, return);
     d->m_historyCompleter = new HistoryCompleter(historyKey, this);
-    if (restoreLastItemFromHistory)
+    if (restoreLastItemFromHistory && d->m_historyCompleter->hasHistory())
         setText(d->m_historyCompleter->historyItem());
     QLineEdit::setCompleter(d->m_historyCompleter);
 
@@ -317,6 +367,34 @@ void FancyLineEdit::setHistoryCompleter(const QString &historyKey, bool restoreL
 void FancyLineEdit::onEditingFinished()
 {
     d->m_historyCompleter->addEntry(text());
+}
+
+void FancyLineEdit::keyPressEvent(QKeyEvent *event)
+{
+    if (camelCaseNavigation) {
+        if (event == QKeySequence::MoveToPreviousWord)
+            CamelCaseCursor::left(this, QTextCursor::MoveAnchor);
+        else if (event == QKeySequence::SelectPreviousWord)
+            CamelCaseCursor::left(this, QTextCursor::KeepAnchor);
+        else if (event == QKeySequence::MoveToNextWord)
+            CamelCaseCursor::right(this, QTextCursor::MoveAnchor);
+        else if (event == QKeySequence::SelectNextWord)
+            CamelCaseCursor::right(this, QTextCursor::KeepAnchor);
+        else
+            QLineEdit::keyPressEvent(event);
+    } else {
+        QLineEdit::keyPressEvent(event);
+    }
+}
+
+void FancyLineEdit::setCamelCaseNavigationEnabled(bool enabled)
+{
+    camelCaseNavigation = enabled;
+}
+
+void FancyLineEdit::setCompletionShortcut(const QKeySequence &shortcut)
+{
+    completionShortcut()->setKeySequence(shortcut);
 }
 
 void FancyLineEdit::setSpecialCompleter(QCompleter *completer)
@@ -372,28 +450,6 @@ void FancyLineEdit::setFiltering(bool on)
     }
 }
 
-QColor FancyLineEdit::errorColor() const
-{
-    return d->m_errorTextColor;
-}
-
-void FancyLineEdit::setErrorColor(const  QColor &c)
-{
-    d->m_errorTextColor = c;
-    validate();
-}
-
-QColor FancyLineEdit::okColor() const
-{
-    return d->m_okTextColor;
-}
-
-void FancyLineEdit::setOkColor(const QColor &c)
-{
-    d->m_okTextColor = c;
-    validate();
-}
-
 void FancyLineEdit::setValidationFunction(const FancyLineEdit::ValidationFunction &fn)
 {
     d->m_validationFunction = fn;
@@ -407,7 +463,7 @@ FancyLineEdit::ValidationFunction FancyLineEdit::defaultValidationFunction()
 
 bool FancyLineEdit::validateWithValidator(FancyLineEdit *edit, QString *errorMessage)
 {
-    Q_UNUSED(errorMessage);
+    Q_UNUSED(errorMessage)
     if (const QValidator *v = edit->validator()) {
         QString tmp = edit->text();
         int pos = edit->cursorPosition();
@@ -448,7 +504,10 @@ void FancyLineEdit::validate()
     const bool validates = d->m_validationFunction(this, &d->m_errorMessage);
     const State newState = isDisplayingPlaceholderText ? DisplayingPlaceholderText
                                                        : (validates ? Valid : Invalid);
-    setToolTip(d->m_errorMessage);
+    if (!validates || d->m_toolTipSet) {
+        setToolTip(d->m_errorMessage);
+        d->m_toolTipSet = true;
+    }
     // Changed..figure out if valid changed. DisplayingPlaceholderText is not valid,
     // but should not show error color. Also trigger on the first change.
     if (newState != d->m_state || d->m_firstChange) {
@@ -502,7 +561,8 @@ IconButton::IconButton(QWidget *parent)
 void IconButton::paintEvent(QPaintEvent *)
 {
     QWindow *window = this->window()->windowHandle();
-    const QPixmap iconPixmap = icon().pixmap(window, sizeHint());
+    const QPixmap iconPixmap = icon().pixmap(window, sizeHint(),
+                                             isEnabled() ? QIcon::Normal : QIcon::Disabled);
     QStylePainter painter(this);
     QRect pixmapRect(QPoint(), iconPixmap.size() / window->devicePixelRatio());
     pixmapRect.moveCenter(rect().center());
@@ -556,3 +616,5 @@ void IconButton::keyReleaseEvent(QKeyEvent *ke)
 }
 
 } // namespace Utils
+
+#include <fancylineedit.moc>

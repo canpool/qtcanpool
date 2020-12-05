@@ -56,8 +56,15 @@
 #include <QStyle>
 #include <QStyledItemDelegate>
 
+const int kInitialWidth = 750;
+const int kInitialHeight = 450;
+const int kMaxMinimumWidth = 250;
+const int kMaxMinimumHeight = 250;
+
 static const char pageKeyC[] = "General/LastPreferencePage";
 const int categoryIconSize = 24;
+
+using namespace Utils;
 
 namespace Core {
 namespace Internal {
@@ -257,19 +264,18 @@ bool CategoryFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sou
     if (QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent))
         return true;
 
-    const QString pattern = filterRegExp().pattern();
+    const QRegularExpression regex = filterRegularExpression();
     const CategoryModel *cm = static_cast<CategoryModel*>(sourceModel());
     const Category *category = cm->categories().at(sourceRow);
     for (const IOptionsPage *page : category->pages) {
-        if (page->displayCategory().contains(pattern, Qt::CaseInsensitive)
-                || page->displayName().contains(pattern, Qt::CaseInsensitive)
-                || page->matches(pattern))
+        if (page->displayCategory().contains(regex) || page->displayName().contains(regex)
+            || page->matches(regex))
             return true;
     }
 
     if (!category->providerPagesCreated) {
         for (const IOptionsPageProvider *provider : category->providers) {
-            if (provider->matches(pattern))
+            if (provider->matches(regex))
                 return true;
         }
     }
@@ -362,8 +368,8 @@ private:
             QSize minSize = inner->minimumSizeHint();
             minSize += QSize(fw, fw);
             minSize += QSize(scrollBarWidth(), 0);
-            minSize.setHeight(qMin(minSize.height(), 450));
-            minSize.setWidth(qMin(minSize.width(), 810));
+            minSize.setWidth(qMin(minSize.width(), kMaxMinimumWidth));
+            minSize.setHeight(qMin(minSize.height(), kMaxMinimumHeight));
             return minSize;
         }
         return QSize(0, 0);
@@ -445,7 +451,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     m_filterLineEdit->setFiltering(true);
 
     createGui();
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     if (Utils::HostOsInfo::isMacHost())
         setWindowTitle(QCoreApplication::translate("Core::Internal::SettingsDialog", "Preferences"));
     else
@@ -465,8 +470,14 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     // The order of the slot connection matters here, the filter slot
     // opens the matching page after the model has filtered.
-    connect(m_filterLineEdit, &Utils::FancyLineEdit::filterChanged,
-            &m_proxyModel, &QSortFilterProxyModel::setFilterFixedString);
+    connect(m_filterLineEdit,
+            &Utils::FancyLineEdit::filterChanged,
+            &m_proxyModel,
+            [this](const QString &filter) {
+                m_proxyModel.setFilterRegularExpression(
+                    QRegularExpression(QRegularExpression::escape(filter),
+                                       QRegularExpression::CaseInsensitiveOption));
+            });
     connect(m_filterLineEdit, &Utils::FancyLineEdit::filterChanged,
             this, &SettingsDialog::filter);
     m_categoryList->setFocus();
@@ -545,9 +556,8 @@ void SettingsDialog::createGui()
     headerHLayout->addSpacerItem(new QSpacerItem(leftMargin, 0, QSizePolicy::Fixed, QSizePolicy::Ignored));
     headerHLayout->addWidget(m_headerLabel);
 
-    m_stackedLayout->setMargin(0);
+    m_stackedLayout->setContentsMargins(0, 0, 0, 0);
     QWidget *emptyWidget = new QWidget(this);
-    emptyWidget->setMinimumSize(QSize(500, 500));
     m_stackedLayout->addWidget(emptyWidget); // no category selected, for example when filtering
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok |
@@ -628,12 +638,12 @@ void SettingsDialog::disconnectTabWidgets()
 void SettingsDialog::updateEnabledTabs(Category *category, const QString &searchText)
 {
     int firstEnabledTab = -1;
+    const QRegularExpression regex(QRegularExpression::escape(searchText),
+                                   QRegularExpression::CaseInsensitiveOption);
     for (int i = 0; i < category->pages.size(); ++i) {
         const IOptionsPage *page = category->pages.at(i);
-        const bool enabled = searchText.isEmpty()
-                             || page->category().toString().contains(searchText, Qt::CaseInsensitive)
-                             || page->displayName().contains(searchText, Qt::CaseInsensitive)
-                             || page->matches(searchText);
+        const bool enabled = searchText.isEmpty() || page->category().toString().contains(regex)
+                             || page->displayName().contains(regex) || page->matches(regex);
         category->tabWidget->setTabEnabled(i, enabled);
         if (enabled && firstEnabledTab < 0)
             firstEnabledTab = i;
@@ -722,7 +732,7 @@ void SettingsDialog::done(int val)
     QSettings *settings = ICore::settings();
     settings->setValue(QLatin1String(pageKeyC), m_currentPage.toSetting());
 
-    ICore::saveSettings(); // save all settings
+    ICore::saveSettings(ICore::SettingsDialogDone); // save all settings
 
     // exit event loops in reverse order of addition
     for (QEventLoop *eventLoop : m_eventLoops)
@@ -740,6 +750,8 @@ bool SettingsDialog::execDialog()
         static const QLatin1String kPreferenceDialogSize("Core/PreferenceDialogSize");
         if (ICore::settings()->contains(kPreferenceDialogSize))
             resize(ICore::settings()->value(kPreferenceDialogSize).toSize());
+        else
+            resize(kInitialWidth, kInitialHeight);
         exec();
         m_running = false;
         m_instance = nullptr;

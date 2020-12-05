@@ -27,12 +27,13 @@
 
 #include <coreplugin/core_global.h>
 
+#include <utils/id.h>
+
 #include <QString>
 #include <QFuture>
 #include <QWidget>
 
 namespace Core {
-class Id;
 class FutureProgressPrivate;
 
 class CORE_EXPORT FutureProgress : public QWidget
@@ -56,8 +57,14 @@ public:
     void setTitle(const QString &title);
     QString title() const;
 
-    void setType(Id type);
-    Id type() const;
+    void setSubtitle(const QString &subtitle);
+    QString subtitle() const;
+
+    void setSubtitleVisibleInStatusBar(bool visible);
+    bool isSubtitleVisibleInStatusBar() const;
+
+    void setType(Utils::Id type);
+    Utils::Id type() const;
 
     void setKeepOnFinish(KeepOnFinishType keepType);
     bool keepOnFinish() const;
@@ -83,6 +90,7 @@ signals:
     void fadeStarted();
 
     void statusBarWidgetChanged();
+    void subtitleInStatusBarChanged();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

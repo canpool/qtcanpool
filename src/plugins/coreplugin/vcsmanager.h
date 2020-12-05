@@ -27,12 +27,13 @@
 
 #include "core_global.h"
 
+#include <utils/id.h>
+
 #include <QString>
 #include <QObject>
 
 namespace Core {
 
-class Id;
 class IVersionControl;
 
 namespace Internal { class MainWindow; }
@@ -56,18 +57,10 @@ class CORE_EXPORT VcsManager : public QObject
 public:
     static VcsManager *instance();
 
-    template <typename T, typename... Args>
-    static T *registerVersionControl(Args&&... args)
-    {
-        auto vc = new T(std::forward<Args>(args)...);
-        addVersionControl(vc);
-        return vc;
-    }
-
     static void extensionsInitialized();
 
     static const QList<IVersionControl *> versionControls();
-    static IVersionControl *versionControl(Id id);
+    static IVersionControl *versionControl(Utils::Id id);
 
     static void resetVersionControlForDirectory(const QString &inputDirectory);
     static IVersionControl *findVersionControlForDirectory(const QString &directory,
@@ -110,11 +103,11 @@ private:
     explicit VcsManager(QObject *parent = nullptr);
     ~VcsManager() override;
 
+    void handleConfigurationChanges();
     static void addVersionControl(IVersionControl *vc);
 
-    void handleConfigurationChanges();
-
     friend class Core::Internal::MainWindow;
+    friend class Core::IVersionControl;
 };
 
 } // namespace Core

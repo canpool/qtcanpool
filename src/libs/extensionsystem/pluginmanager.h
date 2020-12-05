@@ -55,15 +55,15 @@ public:
     // Object pool operations
     static void addObject(QObject *obj);
     static void removeObject(QObject *obj);
-    static QList<QObject *> allObjects();
+    static QVector<QObject *> allObjects();
     static QReadWriteLock *listLock();
 
     // This is useful for soft dependencies using pure interfaces.
     template <typename T> static T *getObject()
     {
         QReadLocker lock(listLock());
-        QList<QObject *> all = allObjects();
-        foreach (QObject *obj, all) {
+        const QVector<QObject *> all = allObjects();
+        for (QObject *obj : all) {
             if (T *result = qobject_cast<T *>(obj))
                 return result;
         }
@@ -72,8 +72,8 @@ public:
     template <typename T, typename Predicate> static T *getObject(Predicate predicate)
     {
         QReadLocker lock(listLock());
-        QList<QObject *> all = allObjects();
-        foreach (QObject *obj, all) {
+        const QVector<QObject *> all = allObjects();
+        for (QObject *obj : all) {
             if (T *result = qobject_cast<T *>(obj))
                 if (predicate(result))
                     return result;
@@ -84,17 +84,19 @@ public:
     static QObject *getObjectByName(const QString &name);
 
     // Plugin operations
-    static QList<PluginSpec *> loadQueue();
+    static QVector<PluginSpec *> loadQueue();
     static void loadPlugins();
     static QStringList pluginPaths();
     static void setPluginPaths(const QStringList &paths);
     static QString pluginIID();
     static void setPluginIID(const QString &iid);
-    static const QList<PluginSpec *> plugins();
-    static QHash<QString, QList<PluginSpec *>> pluginCollections();
+    static const QVector<PluginSpec *> plugins();
+    static QHash<QString, QVector<PluginSpec *>> pluginCollections();
     static bool hasError();
-    static QSet<PluginSpec *> pluginsRequiringPlugin(PluginSpec *spec);
-    static QSet<PluginSpec *> pluginsRequiredByPlugin(PluginSpec *spec);
+    static const QStringList allErrors();
+    static const QSet<PluginSpec *> pluginsRequiringPlugin(PluginSpec *spec);
+    static const QSet<PluginSpec *> pluginsRequiredByPlugin(PluginSpec *spec);
+    static void checkForProblematicPlugins();
 
     // Settings
     static void setSettings(QSettings *settings);
@@ -105,6 +107,7 @@ public:
 
     // command line arguments
     static QStringList arguments();
+    static QStringList argumentsForRestart();
     static bool parseOptions(const QStringList &args,
         const QMap<QString, bool> &appOptions,
         QMap<QString, QString> *foundAppOptions,

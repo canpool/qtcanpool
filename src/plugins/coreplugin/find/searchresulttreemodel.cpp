@@ -71,10 +71,10 @@ void SearchResultTreeModel::setShowReplaceUI(bool show)
 
 void SearchResultTreeModel::setTextEditorFont(const QFont &font, const SearchResultColor &color)
 {
-    layoutAboutToBeChanged();
+    emit layoutAboutToBeChanged();
     m_textEditorFont = font;
     m_color = color;
-    layoutChanged();
+    emit layoutChanged();
 }
 
 Qt::ItemFlags SearchResultTreeModel::flags(const QModelIndex &idx) const
@@ -247,7 +247,7 @@ QVariant SearchResultTreeModel::data(const SearchResultTreeItem *row, int role) 
         else
             result = QVariant();
         break;
-    case Qt::TextColorRole:
+    case Qt::ForegroundRole:
         result = m_color.textForeground;
         break;
     case Qt::BackgroundRole:
@@ -258,7 +258,7 @@ QVariant SearchResultTreeModel::data(const SearchResultTreeItem *row, int role) 
         result = row->item.text;
         break;
     case ItemDataRoles::ResultItemRole:
-        result = qVariantFromValue(row->item);
+        result = QVariant::fromValue(row->item);
         break;
     case ItemDataRoles::ResultBeginLineNumberRole:
         result = row->item.mainRange.begin.line;
@@ -355,7 +355,7 @@ void SearchResultTreeModel::addResultsToCurrentParent(const QList<SearchResultIt
                 existingItem->setGenerated(false);
                 existingItem->item = item;
                 QModelIndex itemIndex = index(insertionIndex, 0, m_currentIndex);
-                dataChanged(itemIndex, itemIndex);
+                emit dataChanged(itemIndex, itemIndex);
             } else {
                 beginInsertRows(m_currentIndex, insertionIndex, insertionIndex);
                 m_currentParent->insertChild(insertionIndex, item);
@@ -363,7 +363,7 @@ void SearchResultTreeModel::addResultsToCurrentParent(const QList<SearchResultIt
             }
         }
     }
-    dataChanged(m_currentIndex, m_currentIndex); // Make sure that the number after the file name gets updated
+    emit dataChanged(m_currentIndex, m_currentIndex); // Make sure that the number after the file name gets updated
 }
 
 static bool lessThanByPath(const SearchResultItem &a, const SearchResultItem &b)

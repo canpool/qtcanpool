@@ -48,6 +48,8 @@
 
 Q_DECLARE_METATYPE(Core::INavigationWidgetFactory *)
 
+using namespace Utils;
+
 namespace Core {
 
 NavigationWidgetPlaceHolder *NavigationWidgetPlaceHolder::s_currentLeft = nullptr;
@@ -70,7 +72,7 @@ NavigationWidgetPlaceHolder::NavigationWidgetPlaceHolder(Id mode, Side side, QWi
     :QWidget(parent), m_mode(mode), m_side(side)
 {
     setLayout(new QVBoxLayout);
-    layout()->setMargin(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
     connect(ModeManager::instance(), &ModeManager::currentModeAboutToChange,
             this, &NavigationWidgetPlaceHolder::currentModeAboutToChange);
 }
@@ -260,7 +262,7 @@ void NavigationWidget::setFactories(const QList<INavigationWidgetFactory *> &fac
         }
 
         QStandardItem *newRow = new QStandardItem(factory->displayName());
-        newRow->setData(qVariantFromValue(factory), FactoryObjectRole);
+        newRow->setData(QVariant::fromValue(factory), FactoryObjectRole);
         newRow->setData(QVariant::fromValue(factory->id()), FactoryIdRole);
         newRow->setData(factory->priority(), FactoryPriorityRole);
         d->m_factoryModel->appendRow(newRow);
@@ -542,7 +544,7 @@ QString NavigationWidget::settingsKey(const QString &key) const
 
 void NavigationWidget::onSubWidgetFactoryIndexChanged(int factoryIndex)
 {
-    Q_UNUSED(factoryIndex);
+    Q_UNUSED(factoryIndex)
     auto subWidget = qobject_cast<Internal::NavigationSubWidget *>(sender());
     QTC_ASSERT(subWidget, return);
     Id factoryId = subWidget->factory()->id();

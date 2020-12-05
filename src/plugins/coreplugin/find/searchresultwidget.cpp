@@ -72,8 +72,8 @@ public:
     QSize sizeHint() const override
     {
         QSize sh = QLineEdit::minimumSizeHint();
-        sh.rwidth() += qMax(25 * fontMetrics().width(QLatin1Char('x')),
-                            fontMetrics().width(text()));
+        sh.rwidth() += qMax(25 * fontMetrics().horizontalAdvance(QLatin1Char('x')),
+                            fontMetrics().horizontalAdvance(text()));
         return sh;
     }
 };
@@ -82,7 +82,7 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
     QWidget(parent)
 {
     auto layout = new QVBoxLayout(this);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     setLayout(layout);
 
@@ -104,13 +104,13 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
 
     auto topFindWidget = new QWidget(topWidget);
     auto topFindLayout = new QHBoxLayout(topFindWidget);
-    topFindLayout->setMargin(0);
+    topFindLayout->setContentsMargins(0, 0, 0, 0);
     topFindWidget->setLayout(topFindLayout);
     topLayout->addWidget(topFindWidget);
 
     m_topReplaceWidget = new QWidget(topWidget);
     auto topReplaceLayout = new QHBoxLayout(m_topReplaceWidget);
-    topReplaceLayout->setMargin(0);
+    topReplaceLayout->setContentsMargins(0, 0, 0, 0);
     m_topReplaceWidget->setLayout(topReplaceLayout);
     topLayout->addWidget(m_topReplaceWidget);
 
@@ -123,7 +123,7 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
     }
     m_messageWidget->setAutoFillBackground(true);
     auto messageLayout = new QHBoxLayout(m_messageWidget);
-    messageLayout->setMargin(2);
+    messageLayout->setContentsMargins(2, 2, 2, 2);
     m_messageWidget->setLayout(messageLayout);
     QLabel *messageLabel = new QLabel(tr("Search was canceled."));
     messageLabel->setPalette(pal);
@@ -146,7 +146,7 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
     m_descriptionContainer = new QWidget(topFindWidget);
     auto descriptionLayout = new QHBoxLayout(m_descriptionContainer);
     m_descriptionContainer->setLayout(descriptionLayout);
-    descriptionLayout->setMargin(0);
+    descriptionLayout->setContentsMargins(0, 0, 0, 0);
     m_descriptionContainer->setMinimumWidth(200);
     m_descriptionContainer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     m_label = new QLabel(m_descriptionContainer);
@@ -176,8 +176,8 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
     m_preserveCaseCheck = new QCheckBox(m_topReplaceWidget);
     m_preserveCaseCheck->setText(tr("Preser&ve case"));
     m_preserveCaseCheck->setEnabled(false);
-    m_renameFilesCheckBox = new QCheckBox(m_topReplaceWidget);
-    m_renameFilesCheckBox->setVisible(false);
+    m_additionalReplaceWidget = new QWidget(m_topReplaceWidget);
+    m_additionalReplaceWidget->setVisible(false);
     m_replaceButton = new QToolButton(m_topReplaceWidget);
     m_replaceButton->setToolTip(tr("Replace all occurrences."));
     m_replaceButton->setText(tr("&Replace"));
@@ -198,7 +198,7 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
     topReplaceLayout->addWidget(m_replaceLabel);
     topReplaceLayout->addWidget(m_replaceTextEdit);
     topReplaceLayout->addWidget(m_preserveCaseCheck);
-    topReplaceLayout->addWidget(m_renameFilesCheckBox);
+    topReplaceLayout->addWidget(m_additionalReplaceWidget);
     topReplaceLayout->addWidget(m_replaceButton);
     topReplaceLayout->addStretch(2);
     setShowReplaceUI(m_replaceSupported);
@@ -208,6 +208,8 @@ SearchResultWidget::SearchResultWidget(QWidget *parent) :
             this, &SearchResultWidget::handleJumpToSearchResult);
     connect(m_replaceTextEdit, &QLineEdit::returnPressed,
             this, &SearchResultWidget::handleReplaceButton);
+    connect(m_replaceTextEdit, &QLineEdit::textChanged,
+            this, &SearchResultWidget::replaceTextChanged);
     connect(m_replaceButton, &QAbstractButton::clicked,
             this, &SearchResultWidget::handleReplaceButton);
 }
@@ -229,7 +231,16 @@ void SearchResultWidget::setInfo(const QString &label, const QString &toolTip, c
 
 QWidget *SearchResultWidget::additionalReplaceWidget() const
 {
-    return m_renameFilesCheckBox;
+    return m_additionalReplaceWidget;
+}
+
+void SearchResultWidget::setAdditionalReplaceWidget(QWidget *widget)
+{
+    if (QLayoutItem *item = m_topReplaceWidget->layout()->replaceWidget(m_additionalReplaceWidget,
+                                                                        widget))
+        delete item;
+    delete m_additionalReplaceWidget;
+    m_additionalReplaceWidget = widget;
 }
 
 void SearchResultWidget::addResult(const QString &fileName,
@@ -257,7 +268,7 @@ void SearchResultWidget::addResults(const QList<SearchResultItem> &items, Search
             Id undoWarningId = Id("warninglabel/").withSuffix(m_dontAskAgainGroup);
             if (m_infoBar.canInfoBeAdded(undoWarningId)) {
                 InfoBarEntry info(undoWarningId, tr("This change cannot be undone."),
-                                  InfoBarEntry::GlobalSuppressionEnabled);
+                                  InfoBarEntry::GlobalSuppression::Enabled);
                 m_infoBar.addInfo(info);
             }
         }
@@ -428,6 +439,11 @@ void SearchResultWidget::setSearchAgainSupported(bool supported)
 void SearchResultWidget::setSearchAgainEnabled(bool enabled)
 {
     m_searchAgainButton->setEnabled(enabled);
+}
+
+void SearchResultWidget::setReplaceEnabled(bool enabled)
+{
+    m_replaceButton->setEnabled(enabled);
 }
 
 void SearchResultWidget::finishSearch(bool canceled)

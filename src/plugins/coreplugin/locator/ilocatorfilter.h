@@ -25,8 +25,9 @@
 
 #pragma once
 
-#include <coreplugin/id.h>
+#include <coreplugin/core_global.h>
 
+#include <utils/id.h>
 #include <utils/optional.h>
 
 #include <QVariant>
@@ -105,6 +106,14 @@ class CORE_EXPORT ILocatorFilter : public QObject
     Q_OBJECT
 
 public:
+    enum class MatchLevel {
+        Best = 0,
+        Better,
+        Good,
+        Normal,
+        Count
+    };
+
     enum Priority {Highest = 0, High = 1, Medium = 2, Low = 3};
 
     ILocatorFilter(QObject *parent = nullptr);
@@ -112,8 +121,8 @@ public:
 
     static const QList<ILocatorFilter *> allLocatorFilters();
 
-    Id id() const;
-    Id actionId() const;
+    Utils::Id id() const;
+    Utils::Id actionId() const;
 
     QString displayName() const;
 
@@ -145,7 +154,8 @@ public:
     bool isEnabled() const;
 
     static Qt::CaseSensitivity caseSensitivity(const QString &str);
-    static QRegularExpression createRegExp(const QString &text);
+    static QRegularExpression createRegExp(const QString &text,
+                                           Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive);
     LocatorFilterEntry::HighlightInfo highlightInfo(const QRegularExpressionMatch &match,
         LocatorFilterEntry::HighlightInfo::DataType dataType = LocatorFilterEntry::HighlightInfo::DisplayName);
 
@@ -160,13 +170,13 @@ public slots:
 
 protected:
     void setHidden(bool hidden);
-    void setId(Id id);
+    void setId(Utils::Id id);
     void setPriority(Priority priority);
     void setDisplayName(const QString &displayString);
     void setConfigurable(bool configurable);
 
 private:
-    Id m_id;
+    Utils::Id m_id;
     QString m_shortcut;
     Priority m_priority = Medium;
     QString m_displayName;

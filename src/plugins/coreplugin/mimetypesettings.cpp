@@ -37,6 +37,7 @@
 #include <utils/headerviewstretcher.h>
 #include <utils/mimetypes/mimedatabase.h>
 #include <utils/qtcassert.h>
+#include <utils/stringutils.h>
 
 #include <QAbstractTableModel>
 #include <QCoreApplication>
@@ -157,9 +158,9 @@ QVariant MimeTypeSettingsModel::data(const QModelIndex &modelIndex, int role) co
             return defaultHandler ? defaultHandler->displayName() : QString();
         }
     } else if (role == Qt::EditRole) {
-        return qVariantFromValue(handlersForMimeType(m_mimeTypes.at(modelIndex.row())));
+        return QVariant::fromValue(handlersForMimeType(m_mimeTypes.at(modelIndex.row())));
     } else if (role == int(Role::DefaultHandler)) {
-        return qVariantFromValue(defaultHandlerForMimeType(m_mimeTypes.at(modelIndex.row())));
+        return QVariant::fromValue(defaultHandlerForMimeType(m_mimeTypes.at(modelIndex.row())));
     } else if (role == Qt::FontRole) {
         if (column == 1) {
             const Utils::MimeType &type = m_mimeTypes.at(modelIndex.row());
@@ -381,7 +382,7 @@ void MimeTypeSettingsPrivate::handlePatternEdited()
     const Utils::MimeType mt = m_model->m_mimeTypes.at(index);
     ensurePendingMimeType(mt);
     m_pendingModifiedMimeTypes[mt.name()].globPatterns
-            = m_ui.patternsLineEdit->text().split(kSemiColon, QString::SkipEmptyParts);
+            = m_ui.patternsLineEdit->text().split(kSemiColon, Utils::SkipEmptyParts);
 }
 
 void MimeTypeSettingsPrivate::addMagicHeaderRow(const MagicData &data)
@@ -397,7 +398,7 @@ void MimeTypeSettingsPrivate::editMagicHeaderRowData(const int row, const MagicD
     item->setText(1, QString::fromLatin1(Utils::Internal::MimeMagicRule::typeName(data.m_rule.type())));
     item->setText(2, QString::fromLatin1("%1:%2").arg(data.m_rule.startPos()).arg(data.m_rule.endPos()));
     item->setText(3, QString::number(data.m_priority));
-    item->setData(0, Qt::UserRole, qVariantFromValue(data));
+    item->setData(0, Qt::UserRole, QVariant::fromValue(data));
     m_ui.magicHeadersTreeWidget->takeTopLevelItem(row);
     m_ui.magicHeadersTreeWidget->insertTopLevelItem(row, item);
     m_ui.magicHeadersTreeWidget->setCurrentItem(item);
@@ -501,7 +502,7 @@ void MimeTypeSettingsPrivate::ensurePendingMimeType(const Utils::MimeType &mimeT
 
 void MimeTypeSettingsPrivate::writeUserModifiedMimeTypes()
 {
-    static Utils::FileName modifiedMimeTypesFile = Utils::FileName::fromString(
+    static Utils::FilePath modifiedMimeTypesFile = Utils::FilePath::fromString(
                 ICore::userResourcePath() + QLatin1String(kModifiedMimeTypesFile));
 
     if (QFile::exists(modifiedMimeTypesFile.toString())
@@ -578,7 +579,7 @@ MimeTypeSettingsPrivate::UserMimeTypeHash MimeTypeSettingsPrivate::readUserModif
                 if (reader.name() == QLatin1String(mimeTypeTagC)) {
                     mt.name = atts.value(QLatin1String(mimeTypeAttributeC)).toString();
                     mt.globPatterns = atts.value(QLatin1String(patternAttributeC)).toString()
-                            .split(kSemiColon, QString::SkipEmptyParts);
+                            .split(kSemiColon, Utils::SkipEmptyParts);
                 } else if (reader.name() == QLatin1String(matchTagC)) {
                     QByteArray value = atts.value(QLatin1String(matchValueAttributeC)).toUtf8();
                     QByteArray typeName = atts.value(QLatin1String(matchTypeAttributeC)).toUtf8();
@@ -632,9 +633,9 @@ void MimeTypeSettingsPrivate::applyUserModifiedMimeTypes(const UserMimeTypeHash 
 }
 
 // MimeTypeSettingsPage
-MimeTypeSettings::MimeTypeSettings(QObject *parent)
-    : IOptionsPage(parent)
-    , d(new MimeTypeSettingsPrivate)
+
+MimeTypeSettings::MimeTypeSettings()
+    : d(new MimeTypeSettingsPrivate)
 {
     setId(Constants::SETTINGS_ID_MIMETYPES);
     setDisplayName(tr("MIME Types"));
@@ -690,7 +691,7 @@ void MimeEditorDelegate::setEditorData(QWidget *editor, const QModelIndex &index
     auto box = static_cast<QComboBox *>(editor);
     const auto factories = index.model()->data(index, Qt::EditRole).value<QList<IEditorFactory *>>();
     for (IEditorFactory *factory : factories)
-        box->addItem(factory->displayName(), qVariantFromValue(factory));
+        box->addItem(factory->displayName(), QVariant::fromValue(factory));
     int currentIndex = factories.indexOf(
         index.model()
             ->data(index, int(MimeTypeSettingsModel::Role::DefaultHandler))

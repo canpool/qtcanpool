@@ -32,6 +32,8 @@
 #include <QSplitter>
 #include <QVBoxLayout>
 
+using namespace Utils;
+
 namespace Core {
 
 class OutputPanePlaceHolderPrivate {
@@ -63,7 +65,7 @@ OutputPanePlaceHolder::OutputPanePlaceHolder(Id mode, QSplitter *parent)
     sp.setVerticalPolicy(QSizePolicy::Preferred);
     sp.setHorizontalStretch(0);
     setSizePolicy(sp);
-    layout()->setMargin(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
     connect(ModeManager::instance(), &ModeManager::currentModeChanged,
             this, &OutputPanePlaceHolder::currentModeChanged);
     // if this is part of a lazily created mode widget,
@@ -174,6 +176,8 @@ void OutputPanePlaceHolder::setHeight(int height)
 
 void OutputPanePlaceHolder::ensureSizeHintAsMinimum()
 {
+    if (!d->m_splitter)
+        return;
     Internal::OutputPaneManager *om = Internal::OutputPaneManager::instance();
     int minimum = (d->m_splitter->orientation() == Qt::Vertical
                    ? om->sizeHint().height() : om->sizeHint().width());

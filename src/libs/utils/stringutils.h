@@ -27,6 +27,8 @@
 
 #include "utils_global.h"
 
+#include "porting.h"
+
 #include <QList>
 #include <QString>
 
@@ -100,6 +102,6 @@ T makeUniquelyNumbered(const T &preferred, const Container &reserved)
     return tryName;
 }
 
-
+QTCREATOR_UTILS_EXPORT QString formatElapsedTime(qint64 elapsed);
 
 } // namespace Utils

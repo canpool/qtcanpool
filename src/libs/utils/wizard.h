@@ -43,7 +43,7 @@ class QTCREATOR_UTILS_EXPORT Wizard : public QWizard
     Q_PROPERTY(bool automaticProgressCreationEnabled READ isAutomaticProgressCreationEnabled WRITE setAutomaticProgressCreationEnabled)
 
 public:
-    explicit Wizard(QWidget *parent = nullptr, Qt::WindowFlags flags = nullptr);
+    explicit Wizard(QWidget *parent = nullptr, Qt::WindowFlags flags = {});
     ~Wizard() override;
 
     bool isAutomaticProgressCreationEnabled() const;
@@ -55,7 +55,8 @@ public:
 
     template<class T> T *find() const
     {
-        foreach (int id, pageIds()) {
+        const QList<int> pages = pageIds();
+        for (int id : pages) {
             if (T *result = qobject_cast<T *>(page(id)))
                 return result;
         }

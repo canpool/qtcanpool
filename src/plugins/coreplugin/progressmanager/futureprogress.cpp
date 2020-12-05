@@ -26,8 +26,6 @@
 #include "futureprogress.h"
 #include "progressbar.h"
 
-#include <coreplugin/id.h>
-
 #include <utils/stylehelper.h>
 #include <utils/theme/theme.h>
 
@@ -71,6 +69,7 @@ public:
     FutureProgress *m_q;
     bool m_fadeStarting;
     bool m_isFading;
+    bool m_isSubtitleVisibleInStatusBar = false;
 };
 
 FutureProgressPrivate::FutureProgressPrivate(FutureProgress *q) :
@@ -82,8 +81,11 @@ FutureProgressPrivate::FutureProgressPrivate(FutureProgress *q) :
 }
 
 /*!
-    \mainclass
+    \ingroup mainclasses
+    \inheaderfile coreplugin/progressmanager/futureprogress.h
     \class Core::FutureProgress
+    \inmodule QtCreator
+
     \brief The FutureProgress class is used to adapt the appearance of
     progress indicators that were created through the ProgressManager class.
 
@@ -97,28 +99,27 @@ FutureProgressPrivate::FutureProgressPrivate(FutureProgress *q) :
 */
 
 /*!
-    \fn void FutureProgress::clicked()
+    \fn void Core::FutureProgress::clicked()
     Connect to this signal to get informed when the user clicks on the
     progress indicator.
 */
 
 /*!
-    \fn void FutureProgress::canceled()
+    \fn void Core::FutureProgress::canceled()
     Connect to this signal to get informed when the operation is canceled.
 */
 
 /*!
-    \fn void FutureProgress::finished()
+    \fn void Core::FutureProgress::finished()
     Another way to get informed when the task has finished.
 */
 
 /*!
-    \fn QWidget FutureProgress::widget() const
+    \fn QWidget Core::FutureProgress::widget() const
     Returns the custom widget that is shown below the progress indicator.
 */
 
 /*!
-    \fn FutureProgress::FutureProgress(QWidget *parent)
     \internal
 */
 FutureProgress::FutureProgress(QWidget *parent) :
@@ -127,7 +128,7 @@ FutureProgress::FutureProgress(QWidget *parent) :
     auto layout = new QVBoxLayout;
     setLayout(layout);
     layout->addWidget(d->m_progress);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addLayout(d->m_widgetLayout);
     d->m_widgetLayout->setContentsMargins(7, 0, 7, 2);
@@ -186,6 +187,33 @@ void FutureProgress::setTitle(const QString &title)
 QString FutureProgress::title() const
 {
     return d->m_progress->title();
+}
+
+void FutureProgress::setSubtitle(const QString &subtitle)
+{
+    if (subtitle != d->m_progress->subtitle()) {
+        d->m_progress->setSubtitle(subtitle);
+        if (d->m_isSubtitleVisibleInStatusBar)
+            emit subtitleInStatusBarChanged();
+    }
+}
+
+QString FutureProgress::subtitle() const
+{
+    return d->m_progress->subtitle();
+}
+
+void FutureProgress::setSubtitleVisibleInStatusBar(bool visible)
+{
+    if (visible != d->m_isSubtitleVisibleInStatusBar) {
+        d->m_isSubtitleVisibleInStatusBar = visible;
+        emit subtitleInStatusBarChanged();
+    }
+}
+
+bool FutureProgress::isSubtitleVisibleInStatusBar() const
+{
+    return d->m_isSubtitleVisibleInStatusBar;
 }
 
 void FutureProgress::cancel()

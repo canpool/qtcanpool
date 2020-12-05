@@ -44,6 +44,8 @@ SearchResultTreeView::SearchResultTreeView(QWidget *parent)
     setIndentation(14);
     setUniformRowHeights(true);
     setExpandsOnDoubleClick(true);
+    header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    header()->setStretchLastSection(false);
     header()->hide();
 
     connect(this, &SearchResultTreeView::activated,
@@ -76,6 +78,28 @@ void SearchResultTreeView::addResults(const QList<SearchResultItem> &items, Sear
         foreach (const QModelIndex &index, addedParents)
             setExpanded(index, true);
     }
+}
+
+void SearchResultTreeView::keyPressEvent(QKeyEvent *event)
+{
+    if ((event->key() == Qt::Key_Return
+            || event->key() == Qt::Key_Enter)
+            && event->modifiers() == 0
+            && currentIndex().isValid()
+            && state() != QAbstractItemView::EditingState) {
+        const SearchResultItem item
+            = model()->data(currentIndex(), ItemDataRoles::ResultItemRole).value<SearchResultItem>();
+        emit jumpToSearchResult(item);
+        return;
+    }
+    TreeView::keyPressEvent(event);
+}
+
+bool SearchResultTreeView::event(QEvent *e)
+{
+    if (e->type() == QEvent::Resize)
+        header()->setMinimumSectionSize(width());
+    return TreeView::event(e);
 }
 
 void SearchResultTreeView::emitJumpToSearchResult(const QModelIndex &index)

@@ -31,6 +31,8 @@
 
 #include <QFutureWatcher>
 
+#include <iterator>
+
 namespace Utils {
 
 enum class MapReduceOption
@@ -52,7 +54,8 @@ class MapReduceBase : public MapReduceObject
 protected:
     static const int MAX_PROGRESS = 1000000;
     // either const or non-const reference wrapper for items from the iterator
-    using ItemReferenceWrapper = std::reference_wrapper<std::remove_reference_t<typename ForwardIterator::reference>>;
+    using ItemReferenceWrapper = std::reference_wrapper<
+        std::remove_reference_t<typename std::iterator_traits<ForwardIterator>::reference>>;
 
 public:
     MapReduceBase(QFutureInterface<ReduceResult> futureInterface, ForwardIterator begin, ForwardIterator end,
@@ -146,7 +149,7 @@ protected:
             return;
         const double progressPerMap = MAX_PROGRESS / double(m_size);
         double progress = m_successfullyFinishedMapCount * progressPerMap;
-        foreach (const QFutureWatcher<MapResult> *watcher, m_mapWatcher) {
+        for (const QFutureWatcher<MapResult> *watcher : qAsConst(m_mapWatcher)) {
             if (watcher->progressMinimum() != watcher->progressMaximum()) {
                 const double range = watcher->progressMaximum() - watcher->progressMinimum();
                 progress += (watcher->progressValue() - watcher->progressMinimum()) / range * progressPerMap;
@@ -157,7 +160,7 @@ protected:
 
     void cancelAll()
     {
-        foreach (QFutureWatcher<MapResult> *watcher, m_mapWatcher)
+        for (QFutureWatcher<MapResult> *watcher : qAsConst(m_mapWatcher))
             watcher->cancel();
     }
 

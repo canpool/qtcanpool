@@ -28,6 +28,8 @@
 #include "theme/theme.h"
 #include "hostosinfo.h"
 
+#include <utils/qtcassert.h>
+
 #include <QPixmapCache>
 #include <QPainter>
 #include <QApplication>
@@ -35,6 +37,7 @@
 #include <QCommonStyle>
 #include <QStyleOption>
 #include <QWindow>
+#include <QFontDatabase>
 #include <qmath.h>
 
 // Clamps float color values within (0, 255)
@@ -184,7 +187,8 @@ void StyleHelper::setBaseColor(const QColor &newcolor)
 
     if (color.isValid() && color != m_baseColor) {
         m_baseColor = color;
-        foreach (QWidget *w, QApplication::topLevelWidgets())
+        const QList<QWidget *> widgets = QApplication::topLevelWidgets();
+        for (QWidget *w : widgets)
             w->update();
     }
 }
@@ -209,14 +213,14 @@ static void verticalGradientHelper(QPainter *p, const QRect &spanRect, const QRe
 void StyleHelper::verticalGradient(QPainter *painter, const QRect &spanRect, const QRect &clipRect, bool lightColored)
 {
     if (StyleHelper::usePixmapCache()) {
-        QString key;
+
         QColor keyColor = baseColor(lightColored);
-        key.sprintf("mh_vertical %d %d %d %d %d",
+        const QString key = QString::asprintf("mh_vertical %d %d %d %d %d",
             spanRect.width(), spanRect.height(), clipRect.width(),
             clipRect.height(), keyColor.rgb());
 
         QPixmap pixmap;
-        if (!QPixmapCache::find(key, pixmap)) {
+        if (!QPixmapCache::find(key, &pixmap)) {
             pixmap = QPixmap(clipRect.size());
             QPainter p(&pixmap);
             QRect rect(0, 0, clipRect.width(), clipRect.height());
@@ -267,14 +271,14 @@ QRect &rect, bool lightColored)
 void StyleHelper::horizontalGradient(QPainter *painter, const QRect &spanRect, const QRect &clipRect, bool lightColored)
 {
     if (StyleHelper::usePixmapCache()) {
-        QString key;
+
         QColor keyColor = baseColor(lightColored);
-        key.sprintf("mh_horizontal %d %d %d %d %d %d",
+        const QString key = QString::asprintf("mh_horizontal %d %d %d %d %d %d",
             spanRect.width(), spanRect.height(), clipRect.width(),
             clipRect.height(), keyColor.rgb(), spanRect.x());
 
         QPixmap pixmap;
-        if (!QPixmapCache::find(key, pixmap)) {
+        if (!QPixmapCache::find(key, &pixmap)) {
             pixmap = QPixmap(clipRect.size());
             QPainter p(&pixmap);
             QRect rect = QRect(0, 0, clipRect.width(), clipRect.height());
@@ -309,10 +313,9 @@ void StyleHelper::drawArrow(QStyle::PrimitiveElement element, QPainter *painter,
     QRect r = option->rect;
     int size = qMin(r.height(), r.width());
     QPixmap pixmap;
-    QString pixmapName;
-    pixmapName.sprintf("StyleHelper::drawArrow-%d-%d-%d-%f",
+    const QString pixmapName = QString::asprintf("StyleHelper::drawArrow-%d-%d-%d-%f",
                        element, size, enabled, devicePixelRatio);
-    if (!QPixmapCache::find(pixmapName, pixmap)) {
+    if (!QPixmapCache::find(pixmapName, &pixmap)) {
         QImage image(size * devicePixelRatio, size * devicePixelRatio, QImage::Format_ARGB32_Premultiplied);
         image.fill(Qt::transparent);
         QPainter painter(&image);
@@ -351,13 +354,12 @@ void StyleHelper::drawArrow(QStyle::PrimitiveElement element, QPainter *painter,
 void StyleHelper::menuGradient(QPainter *painter, const QRect &spanRect, const QRect &clipRect)
 {
     if (StyleHelper::usePixmapCache()) {
-        QString key;
-        key.sprintf("mh_menu %d %d %d %d %d",
+        const QString key = QString::asprintf("mh_menu %d %d %d %d %d",
             spanRect.width(), spanRect.height(), clipRect.width(),
             clipRect.height(), StyleHelper::baseColor().rgb());
 
         QPixmap pixmap;
-        if (!QPixmapCache::find(key, pixmap)) {
+        if (!QPixmapCache::find(key, &pixmap)) {
             pixmap = QPixmap(clipRect.size());
             QPainter p(&pixmap);
             QRect rect = QRect(0, 0, clipRect.width(), clipRect.height());
@@ -396,7 +398,7 @@ void StyleHelper::drawIconWithShadow(const QIcon &icon, const QRect &rect,
     QString pixmapName = QString::fromLatin1("icon %0 %1 %2 %3")
             .arg(icon.cacheKey()).arg(iconMode).arg(rect.height()).arg(devicePixelRatio);
 
-    if (!QPixmapCache::find(pixmapName, cache)) {
+    if (!QPixmapCache::find(pixmapName, &cache)) {
         // High-dpi support: The in parameters (rect, radius, offset) are in
         // device-independent pixels. The call to QIcon::pixmap() below might
         // return a high-dpi pixmap, which will in that case have a devicePixelRatio
@@ -544,6 +546,83 @@ QLinearGradient StyleHelper::statusBarGradient(const QRect &statusBarRect)
     return grad;
 }
 
+QIcon StyleHelper::getIconFromIconFont(const QString &fontName, const QList<IconFontHelper> &parameters)
+{
+    QFontDatabase a;
+
+    QTC_ASSERT(a.hasFamily(fontName), {});
+
+    if (!a.hasFamily(fontName))
+        return {};
+
+    QIcon icon;
+
+    for (const IconFontHelper &p : parameters) {
+        const int maxDpr = qRound(qApp->devicePixelRatio());
+        for (int dpr = 1; dpr <= maxDpr; dpr++) {
+            QPixmap pixmap(p.size() * dpr);
+            pixmap.setDevicePixelRatio(dpr);
+            pixmap.fill(Qt::transparent);
+
+            QFont font(fontName);
+            font.setPixelSize(p.size().height());
+
+            QPainter painter(&pixmap);
+            painter.save();
+            painter.setPen(p.color());
+            painter.setFont(font);
+            painter.drawText(QRectF(QPoint(0, 0), p.size()), p.iconSymbol());
+            painter.restore();
+
+            icon.addPixmap(pixmap, p.mode(), p.state());
+        }
+    }
+
+    return icon;
+}
+
+QIcon StyleHelper::getIconFromIconFont(const QString &fontName, const QString &iconSymbol, int fontSize, int iconSize, QColor color)
+{
+    QFontDatabase a;
+
+    QTC_ASSERT(a.hasFamily(fontName), {});
+
+    if (a.hasFamily(fontName)) {
+
+        QIcon icon;
+        QSize size(iconSize, iconSize);
+
+        const int maxDpr = qRound(qApp->devicePixelRatio());
+        for (int dpr = 1; dpr <= maxDpr; dpr++) {
+            QPixmap pixmap(size * dpr);
+            pixmap.setDevicePixelRatio(dpr);
+            pixmap.fill(Qt::transparent);
+
+            QFont font(fontName);
+            font.setPixelSize(fontSize);
+
+            QPainter painter(&pixmap);
+            painter.save();
+            painter.setPen(color);
+            painter.setFont(font);
+            painter.drawText(QRectF(QPoint(0, 0), size), iconSymbol);
+            painter.restore();
+
+            icon.addPixmap(pixmap);
+        }
+
+        return icon;
+    }
+
+    return {};
+}
+
+QIcon StyleHelper::getIconFromIconFont(const QString &fontName, const QString &iconSymbol, int fontSize, int iconSize)
+{
+    QColor penColor = QApplication::palette("QWidget").color(QPalette::Normal, QPalette::ButtonText);
+    return getIconFromIconFont(fontName, iconSymbol, fontSize, iconSize, penColor);
+}
+
 QString StyleHelper::dpiSpecificImageFile(const QString &fileName)
 {
     // See QIcon::addFile()
@@ -573,6 +652,41 @@ QList<int> StyleHelper::availableImageResolutions(const QString &fileName)
         if (QFile::exists(imageFileWithResolution(fileName, i)))
             result.append(i);
     return result;
+}
+
+double StyleHelper::luminance(const QColor &color)
+{
+    // calculate the luminance based on
+    // https://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
+    auto val = [](const double &colorVal) {
+        return colorVal < 0.03928 ? colorVal / 12.92 : std::pow((colorVal + 0.055) / 1.055, 2.4);
+    };
+
+    static QHash<QRgb, double> cache;
+    QHash<QRgb, double>::iterator it = cache.find(color.rgb());
+    if (it == cache.end()) {
+        it = cache.insert(color.rgb(), 0.2126 * val(color.redF())
+                          + 0.7152 * val(color.greenF())
+                          + 0.0722 * val(color.blueF()));
+    }
+    return it.value();
+}
+
+static double contrastRatio(const QColor &color1, const QColor &color2)
+{
+    // calculate the contrast ratio based on
+    // https://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
+    auto contrast = (StyleHelper::luminance(color1) + .05) / (StyleHelper::luminance(color2) + .05);
+    if (contrast < 1)
+        return 1 / contrast;
+    return contrast;
+}
+
+bool StyleHelper::isReadableOn(const QColor &background, const QColor &foreground)
+{
+    // following the W3C Recommendation on contrast for large Text
+    // https://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
+    return contrastRatio(background, foreground) > 3;
 }
 
 } // namespace Utils

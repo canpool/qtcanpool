@@ -32,20 +32,23 @@ Q_DECLARE_METATYPE(ExtensionSystem::PluginSpec*)
 
 namespace ExtensionSystem {
 
+/*!
+    \class ExtensionSystem::PluginErrorOverview
+    \internal
+*/
+
 PluginErrorOverview::PluginErrorOverview(QWidget *parent) :
     QDialog(parent),
     m_ui(new Internal::Ui::PluginErrorOverview)
 {
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
     m_ui->setupUi(this);
     m_ui->buttonBox->addButton(tr("Continue"), QDialogButtonBox::AcceptRole);
 
-    foreach (PluginSpec *spec, PluginManager::plugins()) {
+    for (PluginSpec *spec : PluginManager::plugins()) {
         // only show errors on startup if plugin is enabled.
         if (spec->hasError() && spec->isEffectivelyEnabled()) {
             QListWidgetItem *item = new QListWidgetItem(spec->name());
-            item->setData(Qt::UserRole, qVariantFromValue(spec));
+            item->setData(Qt::UserRole, QVariant::fromValue(spec));
             m_ui->pluginList->addItem(item);
         }
     }

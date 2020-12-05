@@ -119,7 +119,7 @@ EditorToolBar::EditorToolBar(QWidget *parent) :
         Utils::StyledBar(parent), d(new EditorToolBarPrivate(parent, this))
 {
     auto toolBarLayout = new QHBoxLayout(this);
-    toolBarLayout->setMargin(0);
+    toolBarLayout->setContentsMargins(0, 0, 0, 0);
     toolBarLayout->setSpacing(0);
     toolBarLayout->addWidget(d->m_defaultToolBar);
     d->m_toolBarPlaceholder->setLayout(toolBarLayout);
@@ -128,7 +128,6 @@ EditorToolBar::EditorToolBar(QWidget *parent) :
     d->m_defaultToolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     d->m_activeToolBar = d->m_defaultToolBar;
 
-    d->m_lockButton->setAutoRaise(true);
     d->m_lockButton->setEnabled(false);
 
     d->m_dragHandle->setProperty("noArrow", true);
@@ -149,7 +148,6 @@ EditorToolBar::EditorToolBar(QWidget *parent) :
     d->m_editorList->setMaxVisibleItems(40);
     d->m_editorList->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    d->m_closeEditorButton->setAutoRaise(true);
     d->m_closeEditorButton->setIcon(Utils::Icons::CLOSE_TOOLBAR.icon());
     d->m_closeEditorButton->setEnabled(false);
     d->m_closeEditorButton->setProperty("showborder", true);
@@ -170,12 +168,11 @@ EditorToolBar::EditorToolBar(QWidget *parent) :
     splitMenu->addAction(d->m_splitNewWindowAction);
     d->m_splitButton->setMenu(splitMenu);
 
-    d->m_closeSplitButton->setAutoRaise(true);
     d->m_closeSplitButton->setIcon(Utils::Icons::CLOSE_SPLIT_BOTTOM.icon());
 
     auto toplayout = new QHBoxLayout(this);
     toplayout->setSpacing(0);
-    toplayout->setMargin(0);
+    toplayout->setContentsMargins(0, 0, 0, 0);
     toplayout->addWidget(d->m_backButton);
     toplayout->addWidget(d->m_forwardButton);
     toplayout->addWidget(d->m_lockButton);
@@ -190,7 +187,7 @@ EditorToolBar::EditorToolBar(QWidget *parent) :
 
     // this signal is disconnected for standalone toolbars and replaced with
     // a private slot connection
-    connect(d->m_editorList, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
+    connect(d->m_editorList, QOverload<int>::of(&QComboBox::activated),
             this, &EditorToolBar::listSelectionActivated);
 
     connect(d->m_editorList, &QComboBox::customContextMenuRequested, [this](QPoint p) {
@@ -272,8 +269,6 @@ void EditorToolBar::addEditor(IEditor *editor)
 
     if (toolBar && !d->m_isStandalone)
         addCenterToolBar(toolBar);
-
-    updateDocumentStatus(editor->document());
 }
 
 void EditorToolBar::addCenterToolBar(QWidget *toolBar)
@@ -300,12 +295,14 @@ void EditorToolBar::setToolbarCreationFlags(ToolbarCreationFlags flags)
 {
     d->m_isStandalone = flags & FlagsStandalone;
     if (d->m_isStandalone) {
-        connect(EditorManager::instance(), &EditorManager::currentEditorChanged,
-                this, &EditorToolBar::updateEditorListSelection);
+        connect(EditorManager::instance(),
+                &EditorManager::currentEditorChanged,
+                this,
+                &EditorToolBar::setCurrentEditor);
 
-        disconnect(d->m_editorList, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
+        disconnect(d->m_editorList, QOverload<int>::of(&QComboBox::activated),
                    this, &EditorToolBar::listSelectionActivated);
-        connect(d->m_editorList, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
+        connect(d->m_editorList, QOverload<int>::of(&QComboBox::activated),
                 this, &EditorToolBar::changeActiveEditor);
         d->m_splitButton->setVisible(false);
         d->m_closeSplitButton->setVisible(false);
@@ -332,15 +329,6 @@ void EditorToolBar::setCurrentEditor(IEditor *editor)
     updateDocumentStatus(document);
 }
 
-void EditorToolBar::updateEditorListSelection(IEditor *newSelection)
-{
-    if (newSelection) {
-        const Utils::optional<int> index = DocumentModel::rowOfDocument(newSelection->document());
-        if (QTC_GUARD(index))
-            d->m_editorList->setCurrentIndex(index.value());
-    }
-}
-
 void EditorToolBar::changeActiveEditor(int row)
 {
     EditorManager::activateEditorForEntry(DocumentModel::entryAtRow(row));
@@ -355,6 +343,8 @@ void EditorToolBar::fillListContextMenu(QMenu *menu)
         DocumentModel::Entry *entry = editor ? DocumentModel::entryForDocument(editor->document())
                                              : nullptr;
         EditorManager::addSaveAndCloseEditorActions(menu, entry, editor);
+        menu->addSeparator();
+        EditorManager::addPinEditorActions(menu, entry);
         menu->addSeparator();
         EditorManager::addNativeDirAndOpenWithActions(menu, entry);
     }
@@ -407,10 +397,6 @@ void EditorToolBar::updateDocumentStatus(IDocument *document)
         d->m_editorList->setToolTip(QString());
         return;
     }
-
-    const Utils::optional<int> index = DocumentModel::rowOfDocument(document);
-    if (QTC_GUARD(index))
-        d->m_editorList->setCurrentIndex(*index);
 
     if (document->filePath().isEmpty()) {
         d->m_lockButton->setIcon(QIcon());

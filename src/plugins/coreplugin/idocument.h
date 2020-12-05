@@ -27,13 +27,16 @@
 
 #include "core_global.h"
 
+#include <utils/id.h>
+
 #include <QObject>
 
-namespace Utils { class FileName; }
+namespace Utils {
+class FilePath;
+class InfoBar;
+} // namespace Utils
 
 namespace Core {
-class Id;
-class InfoBar;
 
 namespace Internal {
 class IDocumentPrivate;
@@ -82,10 +85,9 @@ public:
     IDocument(QObject *parent = nullptr);
     ~IDocument() override;
 
-    void setId(Id id);
-    Id id() const;
+    void setId(Utils::Id id);
+    Utils::Id id() const;
 
-    // required to be re-implemented for documents of IEditors
     virtual OpenResult open(QString *errorString, const QString &fileName, const QString &realFileName);
 
     virtual bool save(QString *errorString, const QString &fileName = QString(), bool autoSave = false);
@@ -93,8 +95,8 @@ public:
     virtual QByteArray contents() const;
     virtual bool setContents(const QByteArray &contents);
 
-    const Utils::FileName &filePath() const;
-    virtual void setFilePath(const Utils::FileName &filePath);
+    const Utils::FilePath &filePath() const;
+    virtual void setFilePath(const Utils::FilePath &filePath);
     QString displayName() const;
     void setPreferredDisplayName(const QString &name);
     QString preferredDisplayName() const;
@@ -130,7 +132,7 @@ public:
     bool hasWriteWarning() const;
     void setWriteWarning(bool has);
 
-    InfoBar *infoBar();
+    Utils::InfoBar *infoBar();
 
 signals:
     // For meta data changes: file name, modified state, ...
@@ -144,7 +146,7 @@ signals:
     void aboutToReload();
     void reloadFinished(bool success);
 
-    void filePathChanged(const Utils::FileName &oldName, const Utils::FileName &newName);
+    void filePathChanged(const Utils::FilePath &oldName, const Utils::FilePath &newName);
 
 private:
     Internal::IDocumentPrivate *d;

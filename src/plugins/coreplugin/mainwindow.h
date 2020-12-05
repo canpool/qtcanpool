@@ -31,15 +31,19 @@
 #include <utils/appmainwindow.h>
 #include <utils/dropsupport.h>
 
-#include <QMap>
 #include <QColor>
 
 #include <functional>
+#include <unordered_map>
 
 QT_BEGIN_NAMESPACE
 class QPrinter;
 class QToolButton;
 QT_END_NAMESPACE
+
+namespace Utils {
+class InfoBar;
+}
 
 namespace Core {
 
@@ -81,7 +85,7 @@ public:
     void extensionsInitialized();
     void aboutToShutdown();
 
-    IContext *contextObject(QWidget *widget);
+    IContext *contextObject(QWidget *widget) const;
     void addContextObject(IContext *context);
     void removeContextObject(IContext *context);
 
@@ -93,6 +97,7 @@ public:
     virtual QPrinter *printer() const;
     IContext * currentContextObject() const;
     QStatusBar *statusBar() const;
+    Utils::InfoBar *infoBar() const;
 
     void updateAdditionalContexts(const Context &remove, const Context &add,
                                   ICore::ContextPriority priority);
@@ -106,6 +111,8 @@ public:
 
     void saveSettings();
 
+    void restart();
+
 public slots:
     void openFileWith();
     void exit();
@@ -117,7 +124,6 @@ private:
     void openFile();
     void aboutToShowRecentFiles();
     void setFocusToEditor();
-    void saveAll();
     void aboutQtCreator();
     void aboutPlugins();
     void updateFocusWidget(QWidget *old, QWidget *now);
@@ -161,7 +167,7 @@ private:
 
     QList<IContext *> m_activeContext;
 
-    QMap<QWidget *, IContext *> m_contextWidgets;
+    std::unordered_map<QWidget *, IContext *> m_contextWidgets;
 
     GeneralSettings *m_generalSettings = nullptr;
     SystemSettings *m_systemSettings = nullptr;

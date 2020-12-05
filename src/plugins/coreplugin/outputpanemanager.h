@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <coreplugin/id.h>
+#include <utils/id.h>
 
 #include <QToolButton>
 
@@ -37,9 +37,6 @@ class QTimeLine;
 QT_END_NAMESPACE
 
 namespace Core {
-
-class IOutputPane;
-
 namespace Internal {
 
 class MainWindow;

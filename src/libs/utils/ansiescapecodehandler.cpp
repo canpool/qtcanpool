@@ -51,11 +51,6 @@ namespace Utils {
     \endlist
 */
 
-AnsiEscapeCodeHandler::AnsiEscapeCodeHandler() :
-    m_previousFormatClosed(true)
-{
-}
-
 static QColor ansiColor(uint code)
 {
     QTC_ASSERT(code < 8, return QColor());
@@ -81,10 +76,10 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
         DefaultBackgroundColor = 49
     };
 
-    const QString escape = QLatin1String("\x1b[");
-    const QChar semicolon       = QLatin1Char(';');
-    const QChar colorTerminator = QLatin1Char('m');
-    const QChar eraseToEol      = QLatin1Char('K');
+    const QString escape        = "\x1b[";
+    const QChar semicolon       = ';';
+    const QChar colorTerminator = 'm';
+    const QChar eraseToEol      = 'K';
 
     QList<FormattedText> outputData;
     QTextCharFormat charFormat = m_previousFormatClosed ? input.format : m_previousFormat;
@@ -98,7 +93,25 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
 
     while (!strippedText.isEmpty()) {
         QTC_ASSERT(m_pendingText.isEmpty(), break);
-        const int escapePos = strippedText.indexOf(escape[0]);
+        if (m_waitingForTerminator) {
+            // We ignore all escape codes taking string arguments.
+            QString terminator = "\x1b\\";
+            int terminatorPos = strippedText.indexOf(terminator);
+            if (terminatorPos == -1 && !m_alternateTerminator.isEmpty()) {
+                terminator = m_alternateTerminator;
+                terminatorPos = strippedText.indexOf(terminator);
+            }
+            if (terminatorPos == -1) {
+                m_pendingText = strippedText;
+                break;
+            }
+            m_waitingForTerminator = false;
+            m_alternateTerminator.clear();
+            strippedText.remove(0, terminatorPos + terminator.length());
+            if (strippedText.isEmpty())
+                break;
+        }
+        const int escapePos = strippedText.indexOf(escape.at(0));
         if (escapePos < 0) {
             outputData << FormattedText(strippedText, charFormat);
             break;
@@ -106,9 +119,9 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
             outputData << FormattedText(strippedText.left(escapePos), charFormat);
             strippedText.remove(0, escapePos);
         }
-        QTC_ASSERT(strippedText[0] == escape[0], break);
+        QTC_ASSERT(strippedText.at(0) == escape.at(0), break);
 
-        while (!strippedText.isEmpty() && escape[0] == strippedText[0]) {
+        while (!strippedText.isEmpty() && escape.at(0) == strippedText.at(0)) {
             if (escape.startsWith(strippedText)) {
                 // control secquence is not complete
                 m_pendingText += strippedText;
@@ -116,13 +129,30 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
                 break;
             }
             if (!strippedText.startsWith(escape)) {
-                // not a control sequence
-                m_pendingText.clear();
-                outputData << FormattedText(strippedText.left(1), charFormat);
-                strippedText.remove(0, 1);
-                continue;
+                switch (strippedText.at(1).toLatin1()) {
+                case '\\': // Unexpected terminator sequence.
+                    QTC_CHECK(false);
+                    Q_FALLTHROUGH();
+                case 'N': case 'O': // Ignore unsupported single-character sequences.
+                    strippedText.remove(0, 2);
+                    break;
+                case ']':
+                    m_alternateTerminator = QChar(7);
+                    Q_FALLTHROUGH();
+                case 'P':  case 'X': case '^': case '_':
+                    strippedText.remove(0, 2);
+                    m_waitingForTerminator = true;
+                    break;
+                default:
+                    // not a control sequence
+                    m_pendingText.clear();
+                    outputData << FormattedText(strippedText.left(1), charFormat);
+                    strippedText.remove(0, 1);
+                    continue;
+                }
+                break;
             }
-            m_pendingText += strippedText.mid(0, escape.length());
+            m_pendingText += strippedText.midRef(0, escape.length());
             strippedText.remove(0, escape.length());
 
             // \e[K is not supported. Just strip it.
@@ -144,7 +174,7 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
                         break;
                     strNumber.clear();
                 }
-                m_pendingText += strippedText.mid(0, 1);
+                m_pendingText += strippedText.midRef(0, 1);
                 strippedText.remove(0, 1);
             }
             if (strippedText.isEmpty())
@@ -166,7 +196,7 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
             }
 
             for (int i = 0; i < numbers.size(); ++i) {
-                const int code = numbers.at(i).toInt();
+                const uint code = numbers.at(i).toUInt();
 
                 if (code >= TextColorStart && code <= TextColorEnd) {
                     charFormat.setForeground(ansiColor(code - TextColorStart));
@@ -214,7 +244,7 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
                             break;
                         case 5:
                             // 256 color mode with format: 38;5;<i>
-                            uint index = numbers.at(i + 1).toInt();
+                            uint index = numbers.at(i + 1).toUInt();
 
                             QColor color;
                             if (index < 8) {
@@ -229,7 +259,7 @@ QList<FormattedText> AnsiEscapeCodeHandler::parseText(const FormattedText &input
                                 color = QColor((o / 36) * 51, ((o / 6) % 6) * 51, (o % 6) * 51);
                             } else {
                                 // The last 24 colors are a greyscale gradient.
-                                uint grey = (index - 232) * 11;
+                                int grey = int((index - 232) * 11);
                                 color = QColor(grey, grey, grey);
                             }
 

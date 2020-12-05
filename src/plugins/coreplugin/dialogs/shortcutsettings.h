@@ -28,6 +28,7 @@
 #include <coreplugin/actionmanager/commandmappings.h>
 #include <coreplugin/dialogs/ioptionspage.h>
 
+#include <QGridLayout>
 #include <QKeySequence>
 #include <QPointer>
 #include <QPushButton>
@@ -46,11 +47,12 @@ class Command;
 namespace Internal {
 
 class ActionManagerPrivate;
+class ShortcutSettingsWidget;
 
 struct ShortcutItem
 {
     Command *m_cmd;
-    QKeySequence m_key;
+    QList<QKeySequence> m_keys;
     QTreeWidgetItem *m_item;
 };
 
@@ -79,44 +81,37 @@ private:
     int m_keyNum = 0;
 };
 
-class ShortcutSettingsWidget : public CommandMappings
+class ShortcutInput : public QObject
 {
     Q_OBJECT
-
 public:
-    ShortcutSettingsWidget(QWidget *parent = nullptr);
-    ~ShortcutSettingsWidget() override;
+    ShortcutInput();
+    ~ShortcutInput();
 
-    void apply();
+    void addToLayout(QGridLayout *layout, int row);
 
-protected:
-    void importAction() override;
-    void exportAction() override;
-    void defaultAction() override;
-    bool filterColumn(const QString &filterString, QTreeWidgetItem *item, int column) const override;
+    void setKeySequence(const QKeySequence &key);
+    QKeySequence keySequence() const;
+
+    using ConflictChecker = std::function<bool(QKeySequence)>;
+    void setConflictChecker(const ConflictChecker &fun);
+
+signals:
+    void changed();
+    void showConflictsRequested();
 
 private:
-    void initialize();
-    void handleCurrentCommandChanged(QTreeWidgetItem *current);
-    void resetToDefault();
-    bool validateShortcutEdit() const;
-    bool markCollisions(ShortcutItem *);
-    void setKeySequence(const QKeySequence &key);
-    void showConflicts();
-    void clear();
-
-    QList<ShortcutItem *> m_scitems;
-    QGroupBox *m_shortcutBox;
-    Utils::FancyLineEdit *m_shortcutEdit;
-    QLabel *m_warningLabel;
+    ConflictChecker m_conflictChecker;
+    QPointer<QLabel> m_shortcutLabel;
+    QPointer<Utils::FancyLineEdit> m_shortcutEdit;
+    QPointer<ShortcutButton> m_shortcutButton;
+    QPointer<QLabel> m_warningLabel;
 };
 
-class ShortcutSettings : public IOptionsPage
+class ShortcutSettings final : public IOptionsPage
 {
-    Q_OBJECT
-
 public:
-    ShortcutSettings(QObject *parent = nullptr);
+    ShortcutSettings();
 
     QWidget *widget() override;
     void apply() override;

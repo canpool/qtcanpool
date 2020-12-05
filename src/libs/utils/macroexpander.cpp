@@ -290,9 +290,34 @@ QString MacroExpander::expand(const QString &stringWithVariables) const
     return res;
 }
 
+FilePath MacroExpander::expand(const FilePath &fileNameWithVariables) const
+{
+    return FilePath::fromString(expand(fileNameWithVariables.toString()));
+}
+
 QByteArray MacroExpander::expand(const QByteArray &stringWithVariables) const
 {
     return expand(QString::fromLatin1(stringWithVariables)).toLatin1();
+}
+
+QVariant MacroExpander::expandVariant(const QVariant &v) const
+{
+    const auto type = QMetaType::Type(v.type());
+    if (type == QMetaType::QString) {
+        return expand(v.toString());
+    } else if (type == QMetaType::QStringList) {
+        return Utils::transform(v.toStringList(),
+                                [this](const QString &s) -> QVariant { return expand(s); });
+    } else if (type == QMetaType::QVariantList) {
+        return Utils::transform(v.toList(), [this](const QVariant &v) { return expandVariant(v); });
+    } else if (type == QMetaType::QVariantMap) {
+        const auto map = v.toMap();
+        QVariantMap result;
+        for (auto it = map.cbegin(), end = map.cend(); it != end; ++it)
+            result.insert(it.key(), expandVariant(it.value()));
+        return result;
+    }
+    return v;
 }
 
 QString MacroExpander::expandProcessArgs(const QString &argsWithVariables) const
@@ -394,7 +419,7 @@ void MacroExpander::registerFileVariables(const QByteArray &prefix,
 
     registerVariable(prefix + kFileNamePostfix,
          tr("%1: File name without path.").arg(heading),
-         [base]() -> QString { QString tmp = base(); return tmp.isEmpty() ? QString() : FileName::fromString(tmp).fileName(); },
+         [base]() -> QString { QString tmp = base(); return tmp.isEmpty() ? QString() : FilePath::fromString(tmp).fileName(); },
          visibleInChooser);
 
     registerVariable(prefix + kFileBaseNamePostfix,

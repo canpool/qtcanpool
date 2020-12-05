@@ -31,7 +31,7 @@
 #include <QJsonObject>
 #include <QObject>
 #include <QPluginLoader>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QVector>
 #include <QXmlStreamReader>
@@ -52,7 +52,7 @@ public:
 
     bool read(const QString &fileName);
     bool provides(const QString &pluginName, const QString &version) const;
-    bool resolveDependencies(const QList<PluginSpec *> &specs);
+    bool resolveDependencies(const QVector<PluginSpec *> &specs);
     bool loadLibrary();
     bool initializePlugin();
     bool initializeExtensions();
@@ -80,7 +80,7 @@ public:
     QString description;
     QString url;
     QString category;
-    QRegExp platformSpecification;
+    QRegularExpression platformSpecification;
     QVector<PluginDependency> dependencies;
     QJsonObject metaData;
     bool enabledBySettings = true;
@@ -103,7 +103,7 @@ public:
     static bool isValidVersion(const QString &version);
     static int versionCompare(const QString &version1, const QString &version2);
 
-    QList<PluginSpec *> enableDependenciesIndirectly(bool enableTestDependencies = false);
+    QVector<PluginSpec *> enableDependenciesIndirectly(bool enableTestDependencies = false);
 
     bool readMetaData(const QJsonObject &pluginMetaData);
 
@@ -111,7 +111,7 @@ private:
     PluginSpec *q;
 
     bool reportError(const QString &err);
-    static QRegExp &versionRegExp();
+    static const QRegularExpression &versionRegExp();
 };
 
 } // namespace Internal

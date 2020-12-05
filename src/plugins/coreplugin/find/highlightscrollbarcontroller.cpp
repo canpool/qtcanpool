@@ -34,7 +34,20 @@
 #include <QTimer>
 
 using namespace Utils;
+
 namespace Core {
+
+/*!
+    \class Core::Highlight
+    \inmodule QtCreator
+    \internal
+*/
+
+/*!
+    \class Core::HighlightScrollBarController
+    \inmodule QtCreator
+    \internal
+*/
 
 class HighlightScrollBarOverlay : public QWidget
 {
@@ -92,7 +105,7 @@ void HighlightScrollBarOverlay::scheduleUpdate()
         return;
 
     m_isCacheUpdateScheduled = true;
-    QTimer::singleShot(0, this, static_cast<void (QWidget::*)()>(&QWidget::update));
+    QTimer::singleShot(0, this, QOverload<>::of(&QWidget::update));
 }
 
 void HighlightScrollBarOverlay::paintEvent(QPaintEvent *paintEvent)
@@ -110,8 +123,8 @@ void HighlightScrollBarOverlay::paintEvent(QPaintEvent *paintEvent)
     const QRect &gRect = overlayRect();
     const QRect &hRect = handleRect();
 
-    const int marginX = 3;
-    const int marginH = -2 * marginX + 1;
+    constexpr int marginX = 3;
+    constexpr int marginH = -2 * marginX + 1;
     const QRect aboveHandleRect = QRect(gRect.x() + marginX,
                                         gRect.y(),
                                         gRect.width() + marginH,
@@ -127,8 +140,8 @@ void HighlightScrollBarOverlay::paintEvent(QPaintEvent *paintEvent)
 
     const int aboveValue = m_scrollBar->value();
     const int belowValue = m_scrollBar->maximum() - m_scrollBar->value();
-    const int sizeDocAbove = aboveValue * int(m_highlightController->lineHeight());
-    const int sizeDocBelow = belowValue * int(m_highlightController->lineHeight());
+    const int sizeDocAbove = int(aboveValue * m_highlightController->lineHeight());
+    const int sizeDocBelow = int(belowValue * m_highlightController->lineHeight());
     const int sizeDocVisible = int(m_highlightController->visibleRange());
 
     const int scrollBarBackgroundHeight = aboveHandleRect.height() + belowHandleRect.height();
@@ -295,7 +308,7 @@ void HighlightScrollBarOverlay::updateCache()
     m_highlightCache.clear();
 
     const QHash<Id, QVector<Highlight>> highlightsForId = m_highlightController->highlights();
-    for (QVector<Highlight> highlights : highlightsForId) {
+    for (const QVector<Highlight> &highlights : highlightsForId) {
         for (const auto &highlight : highlights) {
             auto &highlightMap = m_highlightCache[highlight.priority][highlight.color];
             insertPosition(&highlightMap, highlight.position);

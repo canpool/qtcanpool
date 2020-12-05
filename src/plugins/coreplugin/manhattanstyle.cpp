@@ -43,6 +43,7 @@
 #include <QLineEdit>
 #include <QMenuBar>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPixmap>
 #include <QStatusBar>
 #include <QStyleFactory>
@@ -122,13 +123,13 @@ public:
     void init();
 
 public:
-    const QPixmap extButtonPixmap;
+    const QIcon extButtonIcon;
     const QPixmap closeButtonPixmap;
     StyleAnimator animator;
 };
 
 ManhattanStylePrivate::ManhattanStylePrivate() :
-    extButtonPixmap(Utils::Icons::TOOLBAR_EXTENSION.pixmap()),
+    extButtonIcon(Utils::Icons::TOOLBAR_EXTENSION.icon()),
     closeButtonPixmap(Utils::Icons::CLOSE_FOREGROUND.pixmap())
 {
 }
@@ -246,14 +247,12 @@ QPalette panelPalette(const QPalette &oldPalette, bool lightColored = false)
     QPalette pal = oldPalette;
     pal.setBrush(QPalette::All, QPalette::WindowText, color);
     pal.setBrush(QPalette::All, QPalette::ButtonText, color);
-    pal.setBrush(QPalette::All, QPalette::Foreground, color);
     if (lightColored)
         color.setAlpha(100);
     else
         color = creatorTheme()->color(Theme::IconsDisabledColor);
     pal.setBrush(QPalette::Disabled, QPalette::WindowText, color);
     pal.setBrush(QPalette::Disabled, QPalette::ButtonText, color);
-    pal.setBrush(QPalette::Disabled, QPalette::Foreground, color);
     return pal;
 }
 
@@ -275,10 +274,7 @@ void ManhattanStyle::polish(QWidget *widget)
             widget->setContentsMargins(0, 0, 0, 0);
 
         widget->setAttribute(Qt::WA_LayoutUsesWidgetRect, true);
-        if (qobject_cast<QToolButton*>(widget)) {
-            widget->setAttribute(Qt::WA_Hover);
-            widget->setMaximumHeight(StyleHelper::navigationWidgetHeight() - 2);
-        } else if (qobject_cast<QLineEdit*>(widget)) {
+        if (qobject_cast<QToolButton*>(widget) || qobject_cast<QLineEdit*>(widget)) {
             widget->setAttribute(Qt::WA_Hover);
             widget->setMaximumHeight(StyleHelper::navigationWidgetHeight() - 2);
         } else if (qobject_cast<QLabel*>(widget)) {
@@ -291,7 +287,7 @@ void ManhattanStyle::polish(QWidget *widget)
             const bool isLightColored = lightColored(widget);
             QPalette palette = panelPalette(widget->palette(), isLightColored);
             if (!isLightColored)
-                palette.setBrush(QPalette::All, QPalette::Foreground,
+                palette.setBrush(QPalette::All, QPalette::WindowText,
                                  creatorTheme()->color(Theme::ComboBoxTextColor));
             widget->setPalette(palette);
             widget->setMaximumHeight(StyleHelper::navigationWidgetHeight() - 2);
@@ -305,12 +301,11 @@ void ManhattanStyle::unpolish(QWidget *widget)
     QProxyStyle::unpolish(widget);
     if (panelWidget(widget)) {
         widget->setAttribute(Qt::WA_LayoutUsesWidgetRect, false);
-        if (qobject_cast<QTabBar*>(widget))
+        if (qobject_cast<QTabBar*>(widget)
+                || qobject_cast<QToolBar*>(widget)
+                || qobject_cast<QComboBox*>(widget)) {
             widget->setAttribute(Qt::WA_Hover, false);
-        else if (qobject_cast<QToolBar*>(widget))
-            widget->setAttribute(Qt::WA_Hover, false);
-        else if (qobject_cast<QComboBox*>(widget))
-            widget->setAttribute(Qt::WA_Hover, false);
+        }
     }
 }
 
@@ -327,9 +322,6 @@ QPixmap ManhattanStyle::standardPixmap(StandardPixmap standardPixmap, const QSty
 
     QPixmap pixmap;
     switch (standardPixmap) {
-    case QStyle::SP_ToolBarHorizontalExtensionButton:
-        pixmap = d->extButtonPixmap;
-        break;
     case QStyle::SP_TitleBarCloseButton:
         pixmap = d->closeButtonPixmap;
         break;
@@ -342,7 +334,16 @@ QPixmap ManhattanStyle::standardPixmap(StandardPixmap standardPixmap, const QSty
 
 QIcon ManhattanStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption *option, const QWidget *widget) const
 {
-    QIcon icon = QProxyStyle::standardIcon(standardIcon, option, widget);
+    QIcon icon;
+    switch (standardIcon) {
+    case QStyle::SP_ToolBarHorizontalExtensionButton:
+        icon = d->extButtonIcon;
+        break;
+    default:
+        icon = QProxyStyle::standardIcon(standardIcon, option, widget);
+        break;
+    }
+
     if (standardIcon == QStyle::SP_ComputerIcon) {
         // Ubuntu has in some versions a 16x16 icon, see QTCREATORBUG-12832
         const QList<QSize> &sizes = icon.availableSizes();
@@ -608,9 +609,10 @@ void ManhattanStyle::drawPrimitive(PrimitiveElement element, const QStyleOption 
     case PE_IndicatorArrowDown:
     case PE_IndicatorArrowRight:
     case PE_IndicatorArrowLeft:
-        {
+        if (qobject_cast<const QMenu *>(widget)) // leave submenu arrow painting alone
+            QProxyStyle::drawPrimitive(element, option, painter, widget);
+        else
             StyleHelper::drawArrow(element, painter, option);
-        }
         break;
 
     default:
@@ -721,11 +723,11 @@ void ManhattanStyle::drawControl(ControlElement element, const QStyleOption *opt
 
                 bool notElideAsterisk = widget && widget->property("notelideasterisk").toBool()
                                         && cb->currentText.endsWith(asterisk)
-                                        && option->fontMetrics.width(cb->currentText) > elideWidth;
+                                        && option->fontMetrics.horizontalAdvance(cb->currentText) > elideWidth;
 
                 QString text;
                 if (notElideAsterisk) {
-                    elideWidth -= option->fontMetrics.width(asterisk);
+                    elideWidth -= option->fontMetrics.horizontalAdvance(asterisk);
                     text = asterisk;
                 }
                 text.prepend(option->fontMetrics.elidedText(cb->currentText, Qt::ElideRight, elideWidth));
@@ -737,7 +739,7 @@ void ManhattanStyle::drawControl(ControlElement element, const QStyleOption *opt
                     painter->drawText(editRect.adjusted(1, 0, -1, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
                 }
                 painter->setPen((option->state & State_Enabled)
-                                  ? option->palette.color(QPalette::Foreground)
+                                  ? option->palette.color(QPalette::WindowText)
                                   : creatorTheme()->color(Theme::IconsDisabledColor));
                 painter->drawText(editRect.adjusted(1, 0, -1, 0), Qt::AlignLeft | Qt::AlignVCenter, text);
 
@@ -856,7 +858,11 @@ void ManhattanStyle::drawControl(ControlElement element, const QStyleOption *opt
             }
         }
         break;
-
+    case CE_ToolButtonLabel:
+        // Directly use QCommonStyle to circumvent funny painting in QMacStyle
+        // which ignores the palette and adds an alpha
+        QCommonStyle::drawControl(element, option, painter, widget);
+        break;
     default:
         QProxyStyle::drawControl(element, option, painter, widget);
         break;
@@ -908,8 +914,10 @@ void ManhattanStyle::drawComplexControl(ComplexControl control, const QStyleOpti
             QStyleOptionToolButton label = *toolbutton;
 
             label.palette = panelPalette(option->palette, lightColored(widget));
-            if (widget && widget->property("highlightWidget").toBool())
-                label.palette.setColor(QPalette::ButtonText, Qt::red);
+            if (widget && widget->property("highlightWidget").toBool()) {
+                label.palette.setColor(QPalette::ButtonText,
+                                       creatorTheme()->color(Theme::IconsWarningToolBarColor));
+            }
             int fw = pixelMetric(PM_DefaultFrameWidth, option, widget);
             label.rect = button.adjusted(fw, fw, -fw, -fw);
 
@@ -979,7 +987,7 @@ void ManhattanStyle::drawComplexControl(ComplexControl control, const QStyleOpti
             QRect arrowRect((left + right) / 2 + (reverse ? 6 : -6), rect.center().y() - 3, 9, 9);
 
             if (!alignarrow) {
-                int labelwidth = option->fontMetrics.width(cb->currentText);
+                int labelwidth = option->fontMetrics.horizontalAdvance(cb->currentText);
                 if (reverse)
                     arrowRect.moveLeft(qMax(rect.width() - labelwidth - menuButtonWidth - 2, 4));
                 else

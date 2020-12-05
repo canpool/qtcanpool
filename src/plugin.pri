@@ -89,7 +89,7 @@ exists($$PLUGINJSON_IN) {
 
 osx {
     QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
-    QMAKE_LFLAGS += -compatibility_version $$QTCREATOR_COMPAT_VERSION
+    QMAKE_LFLAGS += -compatibility_version $$QTPROJECT_COMPAT_VERSION
 }
 
 RPATH_BASE = $$IDE_PLUGIN_PATH

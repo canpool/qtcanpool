@@ -26,9 +26,9 @@
 #pragma once
 
 #include "../core_global.h"
-#include "../id.h"
 
 #include <utils/fileutils.h>
+#include <utils/id.h>
 #include <utils/optional.h>
 
 QT_BEGIN_NAMESPACE
@@ -53,14 +53,24 @@ public:
     struct CORE_EXPORT Entry {
         Entry();
         ~Entry();
-        Utils::FileName fileName() const;
+        Utils::FilePath fileName() const;
         QString displayName() const;
         QString plainDisplayName() const;
         QString uniqueDisplayName() const;
-        Id id() const;
+        Utils::Id id() const;
 
         IDocument *document;
+        // When an entry is suspended, it means that it is not in memory,
+        // and there is no IEditor for it and only a dummy IDocument.
+        // This is typically the case for files that have not been opened yet,
+        // but can also happen later after they have been opened.
+        // The related setting for this is found in:
+        // Options > Environment > System > Auto-suspend unmodified files
         bool isSuspended;
+        // The entry has been pinned, which means that it should stick to
+        // the top of any lists of open files, and that any actions that close
+        // files in bulk should not close this one.
+        bool pinned;
     };
 
     static Entry *entryAtRow(int row);
@@ -69,9 +79,9 @@ public:
     static int entryCount();
     static QList<Entry *> entries();
     static Utils::optional<int> indexOfDocument(IDocument *document);
-    static Utils::optional<int> indexOfFilePath(const Utils::FileName &filePath);
+    static Utils::optional<int> indexOfFilePath(const Utils::FilePath &filePath);
     static Entry *entryForDocument(IDocument *document);
-    static Entry *entryForFilePath(const Utils::FileName &filePath);
+    static Entry *entryForFilePath(const Utils::FilePath &filePath);
     static QList<IDocument *> openedDocuments();
 
     static IDocument *documentForFilePath(const QString &filePath);

@@ -45,6 +45,8 @@
 
 Q_DECLARE_METATYPE(Core::IWizardFactory*)
 
+using namespace Utils;
+
 namespace {
 
 const int ICON_SIZE = 48;
@@ -84,7 +86,7 @@ public:
                         Id::fromStringList(ICore::settings()->value(BLACKLISTED_CATEGORIES_KEY).toStringList());
     }
 
-    void setPlatform(Core::Id platform)
+    void setPlatform(Id platform)
     {
         m_platform = platform;
         invalidateFilter();
@@ -114,7 +116,7 @@ public:
                 factoryOfItem(qobject_cast<QStandardItemModel*>(sourceModel())->itemFromIndex(sourceIndex));
 
         if (wizard) {
-            if (m_blacklistedCategories.contains(Core::Id::fromString(wizard->category())))
+            if (m_blacklistedCategories.contains(Id::fromString(wizard->category())))
                 return false;
             return wizard->isAvailable(m_platform);
         }
@@ -122,7 +124,7 @@ public:
         return true;
     }
 private:
-    Core::Id m_platform;
+    Id m_platform;
     QSet<Id> m_blacklistedCategories;
 };
 
@@ -181,8 +183,6 @@ NewDialog::NewDialog(QWidget *parent) :
 
     m_currentDialog = this;
 
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-    setWindowFlags(windowFlags());
     setAttribute(Qt::WA_DeleteOnClose);
     ICore::registerWindow(this, Context("Core.NewDialog"));
     m_ui->setupUi(this);
@@ -200,7 +200,7 @@ NewDialog::NewDialog(QWidget *parent) :
 
     m_ui->templateCategoryView->setModel(m_filterProxyModel);
     m_ui->templateCategoryView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_ui->templateCategoryView->setItemDelegate(new FancyTopLevelDelegate);
+    m_ui->templateCategoryView->setItemDelegate(new FancyTopLevelDelegate(this));
 
     m_ui->templatesView->setModel(m_filterProxyModel);
     m_ui->templatesView->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
@@ -230,8 +230,7 @@ NewDialog::NewDialog(QWidget *parent) :
     connect(m_ui->buttonBox, &QDialogButtonBox::accepted, this, &NewDialog::accept);
     connect(m_ui->buttonBox, &QDialogButtonBox::rejected, this, &NewDialog::reject);
 
-    connect(m_ui->comboBox,
-            static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
+    connect(m_ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &NewDialog::setSelectedPlatform);
 }
 
@@ -256,10 +255,10 @@ void NewDialog::setWizardFactories(QList<IWizardFactory *> factories,
 
     QStandardItem *projectKindItem = new QStandardItem(tr("Projects"));
     projectKindItem->setData(IWizardFactory::ProjectWizard, Qt::UserRole);
-    projectKindItem->setFlags(nullptr); // disable item to prevent focus
+    projectKindItem->setFlags({}); // disable item to prevent focus
     QStandardItem *filesKindItem = new QStandardItem(tr("Files and Classes"));
     filesKindItem->setData(IWizardFactory::FileWizard, Qt::UserRole);
-    filesKindItem->setFlags(nullptr); // disable item to prevent focus
+    filesKindItem->setFlags({}); // disable item to prevent focus
 
     parentItem->appendRow(projectKindItem);
     parentItem->appendRow(filesKindItem);
@@ -267,13 +266,13 @@ void NewDialog::setWizardFactories(QList<IWizardFactory *> factories,
     if (m_dummyIcon.isNull())
         m_dummyIcon = QIcon(":/utils/images/wizardicon-file.png");
 
-    QSet<Id> availablePlatforms = IWizardFactory::allAvailablePlatforms();
+    const QSet<Id> availablePlatforms = IWizardFactory::allAvailablePlatforms();
 
     const bool allowAllTemplates = ICore::settings()->value(ALLOW_ALL_TEMPLATES, true).toBool();
     if (allowAllTemplates)
         m_ui->comboBox->addItem(tr("All Templates"), Id().toSetting());
 
-    foreach (Id platform, availablePlatforms) {
+    for (Id platform : availablePlatforms) {
         const QString displayNameForPlatform = IWizardFactory::displayNameForPlatform(platform);
         m_ui->comboBox->addItem(tr("%1 Templates").arg(displayNameForPlatform), platform.toSetting());
     }
@@ -285,7 +284,7 @@ void NewDialog::setWizardFactories(QList<IWizardFactory *> factories,
     if (!showPlatformFilter)
         m_ui->comboBox->hide();
 
-    foreach (IWizardFactory *factory, factories) {
+    for (IWizardFactory *factory : qAsConst(factories)) {
         QStandardItem *kindItem;
         switch (factory->kind()) {
         case IWizardFactory::ProjectWizard:
@@ -318,7 +317,7 @@ void NewDialog::showDialog()
     static_cast<PlatformFilterProxyModel*>(m_filterProxyModel)->manualReset();
 
     if (!lastCategory.isEmpty())
-        foreach (QStandardItem* item, m_categoryItems) {
+        for (QStandardItem *item : qAsConst(m_categoryItems)) {
             if (item->data(Qt::UserRole) == lastCategory)
                 idx = m_filterProxyModel->mapFromSource(m_model->indexFromItem(item));
     }
@@ -521,7 +520,7 @@ void NewDialog::updateOkButton()
     m_okButton->setEnabled(currentWizardFactory() != nullptr);
 }
 
-void NewDialog::setSelectedPlatform(const QString & /*platform*/)
+void NewDialog::setSelectedPlatform(int /*platform*/)
 {
     //The static cast allows us to keep PlatformFilterProxyModel anonymous
     static_cast<PlatformFilterProxyModel*>(m_filterProxyModel)->setPlatform(selectedPlatform());

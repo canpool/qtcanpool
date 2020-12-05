@@ -37,7 +37,7 @@ class IEditor;
   * to the main editor widget itself.
   */
 
-class CORE_EXPORT DesignMode : public IMode
+class CORE_EXPORT DesignMode final : public IMode
 {
     Q_OBJECT
 
@@ -64,7 +64,7 @@ private:
     void updateActions();
 
     void currentEditorChanged(IEditor *editor);
-    void updateContext(Id newMode, Id oldMode);
+    void updateContext(Utils::Id newMode, Utils::Id oldMode);
     void setActiveContext(const Context &context);
 };
 

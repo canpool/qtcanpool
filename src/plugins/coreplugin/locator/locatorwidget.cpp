@@ -87,6 +87,7 @@ public:
     LocatorModel(QObject *parent = nullptr)
         : QAbstractListModel(parent)
         , mBackgroundColor(Utils::creatorTheme()->color(Utils::Theme::TextColorHighlightBackground))
+        , mForegroundColor(Utils::creatorTheme()->color(Utils::Theme::TextColorNormal))
     {}
 
     void clear();
@@ -100,6 +101,7 @@ private:
     mutable QList<LocatorFilterEntry> mEntries;
     bool hasExtraInfo = false;
     QColor mBackgroundColor;
+    QColor mForegroundColor;
 };
 
 class CompletionDelegate : public HighlightingItemDelegate
@@ -208,7 +210,7 @@ QVariant LocatorModel::data(const QModelIndex &index, int role) const
             return QColor(Qt::darkGray);
         break;
     case LocatorEntryRole:
-        return qVariantFromValue(mEntries.at(index.row()));
+        return QVariant::fromValue(mEntries.at(index.row()));
     case int(HighlightingItemRole::StartColumn):
     case int(HighlightingItemRole::Length): {
         LocatorFilterEntry &entry = mEntries[index.row()];
@@ -224,6 +226,8 @@ QVariant LocatorModel::data(const QModelIndex &index, int role) const
     }
     case int(HighlightingItemRole::Background):
         return mBackgroundColor;
+    case int(HighlightingItemRole::Foreground):
+        return mForegroundColor;
     }
 
     return QVariant();
@@ -248,6 +252,14 @@ void LocatorModel::addEntries(const QList<LocatorFilterEntry> &entries)
 CompletionList::CompletionList(QWidget *parent)
     : Utils::TreeView(parent)
 {
+    // on macOS and Windows the popup doesn't really get focus, so fake the selection color
+    // which would then just be a very light gray, but should look as if it had focus
+    QPalette p = palette();
+    p.setBrush(QPalette::Inactive,
+               QPalette::Highlight,
+               p.brush(QPalette::Normal, QPalette::Highlight));
+    setPalette(p);
+
     setItemDelegate(new CompletionDelegate(this));
     setRootIsDecorated(false);
     setUniformRowHeights(true);
@@ -546,7 +558,7 @@ LocatorWidget::LocatorWidget(Locator *locator) :
 
     auto layout = new QHBoxLayout(this);
     setLayout(layout);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_fileLineEdit);
 
     const QIcon icon = Utils::Icons::MAGNIFIER.icon();
@@ -567,8 +579,9 @@ LocatorWidget::LocatorWidget(Locator *locator) :
 
     m_fileLineEdit->setButtonMenu(Utils::FancyLineEdit::Left, m_filterMenu);
 
-    connect(m_refreshAction, &QAction::triggered,
-            locator, [locator]() { locator->refresh(); });
+    connect(m_refreshAction, &QAction::triggered, locator, [locator]() {
+        locator->refresh(locator->filters());
+    });
     connect(m_configureAction, &QAction::triggered, this, &LocatorWidget::showConfigureDialog);
     connect(m_fileLineEdit, &QLineEdit::textChanged,
         this, &LocatorWidget::showPopupDelayed);

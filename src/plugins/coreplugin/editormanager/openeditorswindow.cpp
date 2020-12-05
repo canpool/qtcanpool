@@ -73,7 +73,7 @@ OpenEditorsWindow::OpenEditorsWindow(QWidget *parent) :
     m_editorList->setFrameStyle(QFrame::NoFrame);
 
     auto layout = new QVBoxLayout(this);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_editorList);
 
     connect(m_editorList, &QTreeWidget::itemClicked,
@@ -217,7 +217,7 @@ static DocumentModel::Entry *entryForEditLocation(const EditLocation &item)
 {
     if (!item.document.isNull())
         return DocumentModel::entryForDocument(item.document);
-    return DocumentModel::entryForFilePath(Utils::FileName::fromString(item.fileName));
+    return DocumentModel::entryForFilePath(Utils::FilePath::fromString(item.fileName));
 }
 
 void OpenEditorsWindow::addHistoryItems(const QList<EditLocation> &history, EditorView *view,

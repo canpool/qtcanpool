@@ -84,7 +84,7 @@ void AnnotatedItemDelegate::paint(QPainter *painter,
         painter->save();
         painter->setPen(disabled.color(QPalette::WindowText));
 
-        static int extra = opt.fontMetrics.width(m_delimiter) + 10;
+        static int extra = opt.fontMetrics.horizontalAdvance(m_delimiter) + 10;
         const QPixmap &pixmap = opt.icon.pixmap(opt.decorationSize);
         const QRect &iconRect = style->itemPixmapRect(opt.rect, opt.decorationAlignment, pixmap);
         const QRect &displayRect = style->itemTextRect(opt.fontMetrics, opt.rect,
@@ -131,8 +131,8 @@ void PathChooserDelegate::setPromptDialogFilter(const QString &filter)
 
 QWidget *PathChooserDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
+    Q_UNUSED(option)
+    Q_UNUSED(index)
 
     auto editor = new Utils::PathChooser(parent);
 
@@ -162,12 +162,12 @@ void PathChooserDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
     if (!pathChooser)
         return;
 
-    model->setData(index, pathChooser->path(), Qt::EditRole);
+    model->setData(index, pathChooser->filePath().toString(), Qt::EditRole);
 }
 
 void PathChooserDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
 
     editor->setGeometry(option.rect);
 }
@@ -200,8 +200,8 @@ QWidget *CompleterDelegate::createEditor(QWidget *parent,
                                          const QStyleOptionViewItem &option,
                                          const QModelIndex &index) const
 {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
+    Q_UNUSED(option)
+    Q_UNUSED(index)
 
     auto edit = new CompletingLineEdit(parent);
 
@@ -229,7 +229,7 @@ void CompleterDelegate::updateEditorGeometry(QWidget *editor,
                                              const QStyleOptionViewItem &option,
                                              const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
 
     editor->setGeometry(option.rect);
 }

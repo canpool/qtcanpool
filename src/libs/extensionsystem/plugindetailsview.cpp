@@ -34,10 +34,13 @@
 #include <QDir>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QRegExp>
+#include <QRegularExpression>
 
 /*!
     \class ExtensionSystem::PluginDetailsView
+    \inheaderfile extensionsystem/plugindetailsview.h
+    \inmodule QtCreator
+
     \brief The PluginDetailsView class implements a widget that displays the
     contents of a PluginSpec.
 
@@ -67,16 +70,6 @@ PluginDetailsView::~PluginDetailsView()
     delete m_ui;
 }
 
-// TODO: make API in PluginSpec
-static QString getSpecRevision(PluginSpec *spec)
-{
-    const QJsonObject metaData = spec->metaData();
-    const QJsonValue revision = metaData.value("Revision");
-    if (revision.isString())
-        return revision.toString();
-    return QString();
-}
-
 /*!
     Reads the given \a spec and displays its values
     in this PluginDetailsView.
@@ -84,7 +77,7 @@ static QString getSpecRevision(PluginSpec *spec)
 void PluginDetailsView::update(PluginSpec *spec)
 {
     m_ui->name->setText(spec->name());
-    const QString revision = getSpecRevision(spec);
+    const QString revision = spec->revision();
     const QString versionString = spec->version() + (revision.isEmpty() ? QString()
                                                                         : " (" + revision + ")");
     m_ui->version->setText(versionString);
@@ -100,8 +93,8 @@ void PluginDetailsView::update(PluginSpec *spec)
     m_ui->description->setText(spec->description());
     m_ui->copyright->setText(spec->copyright());
     m_ui->license->setText(spec->license());
-    const QRegExp platforms = spec->platformSpecification();
-    const QString pluginPlatformString = platforms.isEmpty() ? tr("All") : platforms.pattern();
+    const QRegularExpression platforms = spec->platformSpecification();
+    const QString pluginPlatformString = platforms.pattern().isEmpty() ? tr("All") : platforms.pattern();
     const QString platformString = tr("%1 (current: \"%2\")").arg(pluginPlatformString,
                                                                   PluginManager::platformName());
     m_ui->platforms->setText(platformString);

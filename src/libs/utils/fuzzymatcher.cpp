@@ -72,10 +72,10 @@ QRegularExpression FuzzyMatcher::createRegExp(
     const QLatin1String lowercaseWordFirst("(?<=\\b|[A-Z0-9_])");
     const QLatin1String uppercaseWordContinuation("[a-z0-9_]*");
     const QLatin1String lowercaseWordContinuation("(?:[a-zA-Z0-9]*_)?");
-    const QLatin1String upperSnakeWordContinuation("[A-Z0-9]*_");
+    const QLatin1String upperSnakeWordContinuation("[A-Z0-9]*_?");
     keyRegExp += "(?:";
     for (const QChar &c : pattern) {
-        if (!c.isLetter()) {
+        if (!c.isLetterOrNumber()) {
             if (c == question) {
                 keyRegExp += '.';
                 plainRegExp += ").(";
@@ -120,6 +120,21 @@ QRegularExpression FuzzyMatcher::createRegExp(
     keyRegExp += ')';
 
     return QRegularExpression('(' + plainRegExp + ")|" + keyRegExp);
+}
+
+/**
+    \overload
+    This overload eases the construction of a fuzzy regexp from a given
+    Qt::CaseSensitivity.
+ */
+QRegularExpression FuzzyMatcher::createRegExp(const QString &pattern,
+                                              Qt::CaseSensitivity caseSensitivity)
+{
+    const CaseSensitivity sensitivity = (caseSensitivity == Qt::CaseSensitive)
+            ? CaseSensitivity::CaseSensitive
+            : CaseSensitivity::CaseInsensitive;
+
+    return createRegExp(pattern, sensitivity);
 }
 
 /*!

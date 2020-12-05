@@ -28,17 +28,17 @@
 #include "icore.h"
 #include "documentmanager.h"
 #include "idocument.h"
-#include "infobar.h"
 
 #include <coreplugin/dialogs/addtovcsdialog.h>
 #include <coreplugin/editormanager/editormanager.h>
 #include <coreplugin/editormanager/ieditor.h>
 
-#include "vcsbase/vcsbaseconstants.h"
 #include <extensionsystem/pluginmanager.h>
 #include <utils/algorithm.h>
+#include <utils/infobar.h>
 #include <utils/optional.h>
 #include <utils/qtcassert.h>
+#include <vcsbase/vcsbaseconstants.h>
 
 #include <QDir>
 #include <QString>
@@ -47,6 +47,8 @@
 
 #include <QFileInfo>
 #include <QMessageBox>
+
+using namespace Utils;
 
 namespace Core {
 
@@ -296,12 +298,12 @@ IVersionControl* VcsManager::findVersionControlForDirectory(const QString &input
             }
             return versionControl;
         } else {
-            InfoBar *infoBar = curDocument ? curDocument->infoBar() : nullptr;
+            Utils::InfoBar *infoBar = curDocument ? curDocument->infoBar() : nullptr;
             if (infoBar && infoBar->canInfoBeAdded(vcsWarning)) {
-                InfoBarEntry info(vcsWarning,
-                                  tr("%1 repository was detected but %1 is not configured.")
-                                  .arg(versionControl->displayName()),
-                                  InfoBarEntry::GlobalSuppressionEnabled);
+                Utils::InfoBarEntry info(vcsWarning,
+                                         tr("%1 repository was detected but %1 is not configured.")
+                                             .arg(versionControl->displayName()),
+                                         Utils::InfoBarEntry::GlobalSuppression::Enabled);
                 d->m_unconfiguredVcs = versionControl;
                 info.setCustomButtonInfo(ICore::msgShowOptionsDialog(), []() {
                     QTC_ASSERT(d->m_unconfiguredVcs, return);
@@ -346,8 +348,8 @@ bool VcsManager::promptToDelete(IVersionControl *vc, const QString &fileName)
     if (!vc->supportsOperation(IVersionControl::DeleteOperation))
         return true;
     const QString title = tr("Version Control");
-    const QString msg = tr("Would you like to remove this file from the version control system (%1)?\n"
-                           "Note: This might remove the local file.").arg(vc->displayName());
+    const QString msg = tr("Would you like to remove\n\t%1\nfrom the version control system (%2)?\n"
+                           "Note: This might remove the local file.").arg(fileName, vc->displayName());
     const QMessageBox::StandardButton button =
         QMessageBox::question(ICore::dialogParent(), title, msg, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
     if (button != QMessageBox::Yes)
@@ -400,16 +402,11 @@ void VcsManager::promptToAdd(const QString &directory, const QStringList &fileNa
     if (!vc || !vc->supportsOperation(IVersionControl::AddOperation))
         return;
 
-    QStringList unmanagedFiles;
-    QDir dir(directory);
-    foreach (const QString &fileName, fileNames) {
-        if (!vc->managesFile(directory, dir.relativeFilePath(fileName)))
-            unmanagedFiles << fileName;
-    }
+    const QStringList unmanagedFiles = vc->unmanagedFiles(directory, fileNames);
     if (unmanagedFiles.isEmpty())
         return;
 
-    Internal::AddToVcsDialog dlg(ICore::mainWindow(), VcsManager::msgAddToVcsTitle(),
+    Internal::AddToVcsDialog dlg(ICore::dialogParent(), VcsManager::msgAddToVcsTitle(),
                                  unmanagedFiles, vc->displayName());
     if (dlg.exec() == QDialog::Accepted) {
         QStringList notAddedToVc;
@@ -419,7 +416,8 @@ void VcsManager::promptToAdd(const QString &directory, const QStringList &fileNa
         }
 
         if (!notAddedToVc.isEmpty()) {
-            QMessageBox::warning(ICore::mainWindow(), VcsManager::msgAddToVcsFailedTitle(),
+            QMessageBox::warning(ICore::dialogParent(),
+                                 VcsManager::msgAddToVcsFailedTitle(),
                                  VcsManager::msgToAddToVcsFailed(notAddedToVc, vc));
         }
     }

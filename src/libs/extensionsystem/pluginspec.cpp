@@ -31,6 +31,7 @@
 #include "pluginmanager.h"
 
 #include <utils/algorithm.h>
+#include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 #include <utils/stringutils.h>
 
@@ -44,10 +45,12 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QPluginLoader>
-#include <QRegExp>
 
 /*!
     \class ExtensionSystem::PluginDependency
+    \inheaderfile extensionsystem/pluginspec.h
+    \inmodule QtCreator
+
     \brief The PluginDependency class contains the name and required compatible
     version number of a plugin's dependency.
 
@@ -91,6 +94,9 @@
 
 /*!
     \class ExtensionSystem::PluginSpec
+    \inheaderfile extensionsystem/pluginspec.h
+    \inmodule QtCreator
+
     \brief The PluginSpec class contains the information of the plugin's embedded meta data
     and information about the plugin's current state.
 
@@ -131,10 +137,22 @@
             The plugin instance has been deleted.
 */
 
+/*!
+    \class ExtensionSystem::PluginArgumentDescription
+    \inheaderfile extensionsystem/pluginspec.h
+    \inmodule QtCreator
+
+    \brief The PluginArgumentDescriptions class holds a list of descriptions of
+    command line arguments that a plugin processes.
+
+    \sa PluginSpec::argumentDescriptions()
+*/
+
 using namespace ExtensionSystem;
 using namespace ExtensionSystem::Internal;
 
 /*!
+    \fn uint ExtensionSystem::qHash(const ExtensionSystem::PluginDependency &value)
     \internal
 */
 uint ExtensionSystem::qHash(const PluginDependency &value)
@@ -163,6 +181,9 @@ static QString typeString(PluginDependency::Type type)
     }
 }
 
+/*!
+    \internal
+*/
 QString PluginDependency::toString() const
 {
     return name + " (" + version + typeString(type) + ")";
@@ -186,7 +207,8 @@ PluginSpec::~PluginSpec()
 }
 
 /*!
-    The plugin name. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin name. This is valid after the PluginSpec::Read state is
+    reached.
 */
 QString PluginSpec::name() const
 {
@@ -194,7 +216,8 @@ QString PluginSpec::name() const
 }
 
 /*!
-    The plugin version. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin version. This is valid after the PluginSpec::Read state
+    is reached.
 */
 QString PluginSpec::version() const
 {
@@ -202,7 +225,8 @@ QString PluginSpec::version() const
 }
 
 /*!
-    The plugin compatibility version. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin compatibility version. This is valid after the
+    PluginSpec::Read state is reached.
 */
 QString PluginSpec::compatVersion() const
 {
@@ -210,7 +234,8 @@ QString PluginSpec::compatVersion() const
 }
 
 /*!
-    The plugin vendor. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin vendor. This is valid after the PluginSpec::Read
+    state is reached.
 */
 QString PluginSpec::vendor() const
 {
@@ -218,7 +243,8 @@ QString PluginSpec::vendor() const
 }
 
 /*!
-    The plugin copyright. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin copyright. This is valid after the PluginSpec::Read
+     state is reached.
 */
 QString PluginSpec::copyright() const
 {
@@ -226,7 +252,8 @@ QString PluginSpec::copyright() const
 }
 
 /*!
-    The plugin license. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin license. This is valid after the PluginSpec::Read
+    state is reached.
 */
 QString PluginSpec::license() const
 {
@@ -234,7 +261,8 @@ QString PluginSpec::license() const
 }
 
 /*!
-    The plugin description. This is valid after the PluginSpec::Read state is reached.
+    Returns the plugin description. This is valid after the PluginSpec::Read
+    state is reached.
 */
 QString PluginSpec::description() const
 {
@@ -242,7 +270,7 @@ QString PluginSpec::description() const
 }
 
 /*!
-    The plugin URL where you can find more information about the plugin.
+    Returns the plugin URL where you can find more information about the plugin.
     This is valid after the PluginSpec::Read state is reached.
 */
 QString PluginSpec::url() const
@@ -251,7 +279,8 @@ QString PluginSpec::url() const
 }
 
 /*!
-    The category that the plugin belongs to. Categories are groups of plugins which allow for keeping them together in the UI.
+    Returns the category that the plugin belongs to. Categories are used to
+    group plugins together in the UI.
     Returns an empty string if the plugin does not belong to a category.
 */
 QString PluginSpec::category() const
@@ -259,30 +288,40 @@ QString PluginSpec::category() const
     return d->category;
 }
 
+QString PluginSpec::revision() const
+{
+    const QJsonValue revision = metaData().value("Revision");
+    if (revision.isString())
+        return revision.toString();
+    return QString();
+}
+
 /*!
-    A QRegExp matching the platforms this plugin works on. An empty pattern implies all platforms.
+    Returns a QRegularExpression matching the platforms this plugin works on.
+    An empty pattern implies all platforms.
     \since 3.0
 */
 
-QRegExp PluginSpec::platformSpecification() const
+QRegularExpression PluginSpec::platformSpecification() const
 {
     return d->platformSpecification;
 }
 
+/*!
+    Returns whether the plugin works on the host platform.
+*/
 bool PluginSpec::isAvailableForHostPlatform() const
 {
-    return d->platformSpecification.isEmpty()
-            || d->platformSpecification.indexIn(PluginManager::platformName()) >= 0;
+    return d->platformSpecification.pattern().isEmpty()
+            || d->platformSpecification.match(PluginManager::platformName()).hasMatch();
 }
 
+/*!
+    Returns whether the plugin is required.
+*/
 bool PluginSpec::isRequired() const
 {
     return d->required;
-}
-
-bool PluginSpec::isHiddenByDefault() const
-{
-    return d->hiddenByDefault;
 }
 
 /*!
@@ -296,7 +335,7 @@ bool PluginSpec::isExperimental() const
 /*!
     Returns whether the plugin is enabled by default.
     A plugin might be disabled because the plugin is experimental, or because
-    the install settings define it as disabled by default.
+    the installation settings define it as disabled by default.
 */
 bool PluginSpec::isEnabledByDefault() const
 {
@@ -307,9 +346,10 @@ bool PluginSpec::isEnabledByDefault() const
     Returns whether the plugin should be loaded at startup,
     taking into account the default enabled state, and the user's settings.
 
-    \note This function might return false even if the plugin is loaded as a requirement of another
-    enabled plugin.
-    \sa PluginSpec::isEffectivelyEnabled
+    \note This function might return \c false even if the plugin is loaded
+    as a requirement of another enabled plugin.
+
+    \sa isEffectivelyEnabled()
 */
 bool PluginSpec::isEnabledBySettings() const
 {
@@ -318,7 +358,7 @@ bool PluginSpec::isEnabledBySettings() const
 
 /*!
     Returns whether the plugin is loaded at startup.
-    \see PluginSpec::isEnabledBySettings
+    \sa isEnabledBySettings()
 */
 bool PluginSpec::isEffectivelyEnabled() const
 {
@@ -332,7 +372,8 @@ bool PluginSpec::isEffectivelyEnabled() const
 }
 
 /*!
-    Returns true if loading was not done due to user unselecting this plugin or its dependencies.
+    Returns \c true if loading was not done due to user unselecting this
+    plugin or its dependencies.
 */
 bool PluginSpec::isEnabledIndirectly() const
 {
@@ -340,7 +381,8 @@ bool PluginSpec::isEnabledIndirectly() const
 }
 
 /*!
-    Returns whether the plugin is enabled via the -load option on the command line.
+    Returns whether the plugin is enabled via the \c -load option on the
+    command line.
 */
 bool PluginSpec::isForceEnabled() const
 {
@@ -348,7 +390,8 @@ bool PluginSpec::isForceEnabled() const
 }
 
 /*!
-    Returns whether the plugin is disabled via the -noload option on the command line.
+    Returns whether the plugin is disabled via the \c -noload option on the
+     command line.
 */
 bool PluginSpec::isForceDisabled() const
 {
@@ -363,6 +406,9 @@ QVector<PluginDependency> PluginSpec::dependencies() const
     return d->dependencies;
 }
 
+/*!
+    Returns the plugin meta data.
+*/
 QJsonObject PluginSpec::metaData() const
 {
     return d->metaData;
@@ -378,8 +424,7 @@ PluginSpec::PluginArgumentDescriptions PluginSpec::argumentDescriptions() const
 }
 
 /*!
-    The absolute path to the directory containing the plugin XML description file
-    this PluginSpec corresponds to.
+    Returns the absolute path to the directory containing the plugin.
 */
 QString PluginSpec::location() const
 {
@@ -387,8 +432,7 @@ QString PluginSpec::location() const
 }
 
 /*!
-    The absolute path to the plugin XML description file (including the file name)
-    this PluginSpec corresponds to.
+    Returns the absolute path to the plugin.
 */
 QString PluginSpec::filePath() const
 {
@@ -396,7 +440,7 @@ QString PluginSpec::filePath() const
 }
 
 /*!
-    Command line arguments specific to the plugin. Set at startup.
+    Returns command line arguments specific to the plugin. Set at startup.
 */
 
 QStringList PluginSpec::arguments() const
@@ -424,7 +468,7 @@ void PluginSpec::addArgument(const QString &argument)
 
 
 /*!
-    The state in which the plugin currently is.
+    Returns the state in which the plugin currently is.
     See the description of the PluginSpec::State enum for details.
 */
 PluginSpec::State PluginSpec::state() const
@@ -433,7 +477,7 @@ PluginSpec::State PluginSpec::state() const
 }
 
 /*!
-    Returns whether an error occurred while reading/starting the plugin.
+    Returns whether an error occurred while reading or starting the plugin.
 */
 bool PluginSpec::hasError() const
 {
@@ -441,7 +485,8 @@ bool PluginSpec::hasError() const
 }
 
 /*!
-    Detailed, possibly multi-line, error description in case of an error.
+    Returns a detailed, possibly multi-line, error description in case of an
+    error.
 */
 QString PluginSpec::errorString() const
 {
@@ -460,8 +505,9 @@ bool PluginSpec::provides(const QString &pluginName, const QString &version) con
 }
 
 /*!
-    The corresponding IPlugin instance, if the plugin library has already been successfully loaded,
-    i.e. the PluginSpec::Loaded state is reached.
+    Returns the corresponding IPlugin instance, if the plugin library has
+    already been successfully loaded. That is, the PluginSpec::Loaded state
+    is reached.
 */
 IPlugin *PluginSpec::plugin() const
 {
@@ -479,6 +525,10 @@ QHash<PluginDependency, PluginSpec *> PluginSpec::dependencySpecs() const
     return d->dependencySpecs;
 }
 
+/*!
+    Returns whether the plugin requires any of the plugins specified by
+    \a plugins.
+*/
 bool PluginSpec::requiresAny(const QSet<PluginSpec *> &plugins) const
 {
     return Utils::anyOf(d->dependencySpecs.keys(), [this, &plugins](const PluginDependency &dep) {
@@ -487,9 +537,24 @@ bool PluginSpec::requiresAny(const QSet<PluginSpec *> &plugins) const
     });
 }
 
+/*!
+    Sets whether the plugin should be loaded at startup to \a value.
+
+    \sa isEnabledBySettings()
+*/
 void PluginSpec::setEnabledBySettings(bool value)
 {
     d->setEnabledBySettings(value);
+}
+
+PluginSpec *PluginSpec::read(const QString &filePath)
+{
+    auto spec = new PluginSpec;
+    if (!spec->d->read(filePath)) { // not a Qt Creator plugin
+        delete spec;
+        return nullptr;
+    }
+    return spec;
 }
 
 //==========PluginSpecPrivate==================
@@ -500,7 +565,6 @@ namespace {
     const char PLUGIN_VERSION[] = "Version";
     const char PLUGIN_COMPATVERSION[] = "CompatVersion";
     const char PLUGIN_REQUIRED[] = "Required";
-    const char PLUGIN_HIDDEN_BY_DEFAULT[] = "HiddenByDefault";
     const char PLUGIN_EXPERIMENTAL[] = "Experimental";
     const char PLUGIN_DISABLED_BY_DEFAULT[] = "DisabledByDefault";
     const char VENDOR[] = "Vendor";
@@ -528,6 +592,8 @@ namespace {
 PluginSpecPrivate::PluginSpecPrivate(PluginSpec *spec)
     : q(spec)
 {
+    if (Utils::HostOsInfo::isMacHost())
+        loader.setLoadHints(QLibrary::ExportExternalSymbolsHint);
 }
 
 /*!
@@ -689,12 +755,6 @@ bool PluginSpecPrivate::readMetaData(const QJsonObject &pluginMetaData)
     required = value.toBool(false);
     qCDebug(pluginLog) << "required =" << required;
 
-    value = metaData.value(QLatin1String(PLUGIN_HIDDEN_BY_DEFAULT));
-    if (!value.isUndefined() && !value.isBool())
-        return reportError(msgValueIsNotABool(PLUGIN_HIDDEN_BY_DEFAULT));
-    hiddenByDefault = value.toBool(false);
-    qCDebug(pluginLog) << "hiddenByDefault =" << hiddenByDefault;
-
     value = metaData.value(QLatin1String(PLUGIN_EXPERIMENTAL));
     if (!value.isUndefined() && !value.isBool())
         return reportError(msgValueIsNotABool(PLUGIN_EXPERIMENTAL));
@@ -754,8 +814,8 @@ bool PluginSpecPrivate::readMetaData(const QJsonObject &pluginMetaData)
     if (!value.isUndefined() && !value.isArray())
         return reportError(msgValueIsNotAObjectArray(DEPENDENCIES));
     if (!value.isUndefined()) {
-        QJsonArray array = value.toArray();
-        foreach (const QJsonValue &v, array) {
+        const QJsonArray array = value.toArray();
+        for (const QJsonValue &v : array) {
             if (!v.isObject())
                 return reportError(msgValueIsNotAObjectArray(DEPENDENCIES));
             QJsonObject dependencyObject = v.toObject();
@@ -801,8 +861,8 @@ bool PluginSpecPrivate::readMetaData(const QJsonObject &pluginMetaData)
     if (!value.isUndefined() && !value.isArray())
         return reportError(msgValueIsNotAObjectArray(ARGUMENTS));
     if (!value.isUndefined()) {
-        QJsonArray array = value.toArray();
-        foreach (const QJsonValue &v, array) {
+        const QJsonArray array = value.toArray();
+        for (const QJsonValue &v : array) {
             if (!v.isObject())
                 return reportError(msgValueIsNotAObjectArray(ARGUMENTS));
             QJsonObject argumentObject = v.toObject();
@@ -845,9 +905,9 @@ bool PluginSpecPrivate::provides(const QString &pluginName, const QString &plugi
 /*!
     \internal
 */
-QRegExp &PluginSpecPrivate::versionRegExp()
+const QRegularExpression &PluginSpecPrivate::versionRegExp()
 {
-    static QRegExp reg(QLatin1String("([0-9]+)(?:[.]([0-9]+))?(?:[.]([0-9]+))?(?:_([0-9]+))?"));
+    static const QRegularExpression reg("^([0-9]+)(?:[.]([0-9]+))?(?:[.]([0-9]+))?(?:_([0-9]+))?$");
     return reg;
 }
 /*!
@@ -855,7 +915,7 @@ QRegExp &PluginSpecPrivate::versionRegExp()
 */
 bool PluginSpecPrivate::isValidVersion(const QString &version)
 {
-    return versionRegExp().exactMatch(version);
+    return versionRegExp().match(version).hasMatch();
 }
 
 /*!
@@ -863,17 +923,15 @@ bool PluginSpecPrivate::isValidVersion(const QString &version)
 */
 int PluginSpecPrivate::versionCompare(const QString &version1, const QString &version2)
 {
-    QRegExp reg1 = versionRegExp();
-    QRegExp reg2 = versionRegExp();
-    if (!reg1.exactMatch(version1))
+    const QRegularExpressionMatch match1 = versionRegExp().match(version1);
+    const QRegularExpressionMatch match2 = versionRegExp().match(version2);
+    if (!match1.hasMatch())
         return 0;
-    if (!reg2.exactMatch(version2))
+    if (!match2.hasMatch())
         return 0;
-    int number1;
-    int number2;
     for (int i = 0; i < 4; ++i) {
-        number1 = reg1.cap(i+1).toInt();
-        number2 = reg2.cap(i+1).toInt();
+        const int number1 = match1.captured(i + 1).toInt();
+        const int number2 = match2.captured(i + 1).toInt();
         if (number1 < number2)
             return -1;
         if (number1 > number2)
@@ -885,7 +943,7 @@ int PluginSpecPrivate::versionCompare(const QString &version1, const QString &ve
 /*!
     \internal
 */
-bool PluginSpecPrivate::resolveDependencies(const QList<PluginSpec *> &specs)
+bool PluginSpecPrivate::resolveDependencies(const QVector<PluginSpec *> &specs)
 {
     if (hasError)
         return false;
@@ -897,7 +955,7 @@ bool PluginSpecPrivate::resolveDependencies(const QList<PluginSpec *> &specs)
         return false;
     }
     QHash<PluginDependency, PluginSpec *> resolvedDependencies;
-    foreach (const PluginDependency &dependency, dependencies) {
+    for (const PluginDependency &dependency : qAsConst(dependencies)) {
         PluginSpec * const found = Utils::findOrDefault(specs, [&dependency](PluginSpec *spec) {
             return spec->provides(dependency.name, dependency.version);
         });
@@ -924,14 +982,12 @@ bool PluginSpecPrivate::resolveDependencies(const QList<PluginSpec *> &specs)
 }
 
 // returns the plugins that it actually indirectly enabled
-QList<PluginSpec *> PluginSpecPrivate::enableDependenciesIndirectly(bool enableTestDependencies)
+QVector<PluginSpec *> PluginSpecPrivate::enableDependenciesIndirectly(bool enableTestDependencies)
 {
     if (!q->isEffectivelyEnabled()) // plugin not enabled, nothing to do
         return {};
-    QList<PluginSpec *> enabled;
-    QHashIterator<PluginDependency, PluginSpec *> it(dependencySpecs);
-    while (it.hasNext()) {
-        it.next();
+    QVector<PluginSpec *> enabled;
+    for (auto it = dependencySpecs.cbegin(), end = dependencySpecs.cend(); it != end; ++it) {
         if (it.key().type != PluginDependency::Required
                 && (!enableTestDependencies || it.key().type != PluginDependency::Test))
             continue;

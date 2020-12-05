@@ -1,2 +1,2 @@
 include(../../plugin.pri)
-include($$PWD/../../../../../src/plugins/coreplugin/coreplugin-plugin.pri)
+include($$QTCANPOOL_DIR/src/plugins/coreplugin/coreplugin-plugin.pri)

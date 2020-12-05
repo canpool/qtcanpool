@@ -55,7 +55,7 @@ private:
     QMenu *m_dockMenu = nullptr;
     QList<QWidget *> m_windows;
     QList<QAction *> m_windowActions;
-    QList<Id> m_windowActionIds;
+    QList<Utils::Id> m_windowActionIds;
 };
 
 class WindowSupport : public QObject
@@ -80,6 +80,7 @@ private:
     QAction *m_zoomAction;
     QAction *m_closeAction;
     QAction *m_toggleFullScreenAction;
+    Qt::WindowStates m_previousWindowState;
     bool m_shutdown = false;
 };
 

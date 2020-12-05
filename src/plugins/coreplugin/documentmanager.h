@@ -25,7 +25,9 @@
 
 #pragma once
 
-#include <coreplugin/id.h>
+#include <coreplugin/core_global.h>
+
+#include <utils/id.h>
 
 #include <QObject>
 #include <QPair>
@@ -34,7 +36,7 @@ QT_BEGIN_NAMESPACE
 class QStringList;
 QT_END_NAMESPACE
 
-namespace Utils { class FileName; }
+namespace Utils { class FilePath; }
 
 namespace Core {
 
@@ -54,7 +56,7 @@ public:
         KeepLinks
     };
 
-    using RecentFile = QPair<QString, Id>;
+    using RecentFile = QPair<QString, Utils::Id>;
 
     static DocumentManager *instance();
 
@@ -69,10 +71,8 @@ public:
     static void expectFileChange(const QString &fileName);
     static void unexpectFileChange(const QString &fileName);
 
-    static void setAutoReloadPostponed(bool enabled);
-
     // recent files
-    static void addToRecentFiles(const QString &fileName, Id editorId = Id());
+    static void addToRecentFiles(const QString &fileName, Utils::Id editorId = {});
     Q_SLOT void clearRecentFiles();
     static QList<RecentFile> recentFiles();
 
@@ -125,7 +125,7 @@ public:
                                      const QString &alwaysSaveMessage = QString(),
                                      bool *alwaysSave = nullptr,
                                      QList<IDocument *> *failedToClose = nullptr);
-    static void showFilePropertiesDialog(const Utils::FileName &filePath);
+    static void showFilePropertiesDialog(const Utils::FilePath &filePath);
 
     static QString fileDialogLastVisitedDirectory();
     static void setFileDialogLastVisitedDirectory(const QString &);
@@ -138,11 +138,8 @@ public:
     static bool useProjectsDirectory();
     static void setUseProjectsDirectory(bool);
 
-    static Utils::FileName projectsDirectory();
-    static void setProjectsDirectory(const Utils::FileName &directory);
-
-    static QString buildDirectory();
-    static void setBuildDirectory(const QString &directory);
+    static Utils::FilePath projectsDirectory();
+    static void setProjectsDirectory(const Utils::FilePath &directory);
 
     /* Used to notify e.g. the code model to update the given files. Does *not*
        lead to any editors to reload or any other editor manager actions. */
@@ -156,10 +153,7 @@ signals:
     void allDocumentsRenamed(const QString &from, const QString &to);
     /// emitted if one document changed its name e.g. due to save as
     void documentRenamed(Core::IDocument *document, const QString &from, const QString &to);
-    void projectsDirectoryChanged(const Utils::FileName &directory);
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *e) override;
+    void projectsDirectoryChanged(const Utils::FilePath &directory);
 
 private:
     explicit DocumentManager(QObject *parent);
@@ -169,18 +163,14 @@ private:
     void checkForNewFileName();
     void checkForReload();
     void changedFile(const QString &file);
-    void filePathChanged(const Utils::FileName &oldName, const Utils::FileName &newName);
+    void filePathChanged(const Utils::FilePath &oldName, const Utils::FilePath &newName);
+    void updateSaveAll();
+    static void registerSaveAllAction();
 
     friend class Core::Internal::MainWindow;
     friend class Core::Internal::DocumentManagerPrivate;
 };
 
-/*! The FileChangeBlocker blocks all change notifications to all IDocument * that
-    match the given filename. And unblocks in the destructor.
-
-    To also reload the IDocument in the destructor class set modifiedReload to true
-
-  */
 class CORE_EXPORT FileChangeBlocker
 {
 public:

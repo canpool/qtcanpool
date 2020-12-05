@@ -90,8 +90,8 @@ public:
         if (!index.isValid())
             return false;
 
-        const QRegExp regexp = filterRegExp();
-        if (regexp.isEmpty() || sourceModel()->rowCount(index) > 0)
+        const QRegularExpression regexp = filterRegularExpression();
+        if (regexp.pattern().isEmpty() || sourceModel()->rowCount(index) > 0)
             return true;
 
         const QString displayText = index.data(Qt::DisplayRole).toString();
@@ -338,36 +338,39 @@ void VariableGroupItem::populateGroup(MacroExpander *expander)
 using namespace Internal;
 
 /*!
- * \class Core::VariableChooser
- * \brief The VariableChooser class is used to add a tool window for selecting \QC variables
- * to line edits, text edits or plain text edits.
- *
- * If you allow users to add \QC variables to strings that are specified in your UI, for example
- * when users can provide a string through a text control, you should add a variable chooser to it.
- * The variable chooser allows users to open a tool window that contains the list of
- * all available variables together with a description. Double-clicking a variable inserts the
- * corresponding string into the corresponding text control like a line edit.
- *
- * \image variablechooser.png "External Tools Preferences with Variable Chooser"
- *
- * The variable chooser monitors focus changes of all children of its parent widget.
- * When a text control gets focus, the variable chooser checks if it has variable support set,
- * either through the addVariableSupport() function. If the control supports variables,
- * a tool button which opens the variable chooser is shown in it while it has focus.
- *
- * Supported text controls are QLineEdit, QTextEdit and QPlainTextEdit.
- *
- * The variable chooser is deleted when its parent widget is deleted.
- *
- * Example:
- * \code
- * QWidget *myOptionsContainerWidget = new QWidget;
- * new Core::VariableChooser(myOptionsContainerWidget)
- * QLineEdit *myLineEditOption = new QLineEdit(myOptionsContainerWidget);
- * myOptionsContainerWidget->layout()->addWidget(myLineEditOption);
- * Core::VariableChooser::addVariableSupport(myLineEditOption);
- * \endcode
- */
+    \class Core::VariableChooser
+    \inheaderfile coreplugin/variablechooser.h
+    \inmodule QtCreator
+
+    \brief The VariableChooser class is used to add a tool window for selecting \QC variables
+    to line edits, text edits or plain text edits.
+
+    If you allow users to add \QC variables to strings that are specified in your UI, for example
+    when users can provide a string through a text control, you should add a variable chooser to it.
+    The variable chooser allows users to open a tool window that contains the list of
+    all available variables together with a description. Double-clicking a variable inserts the
+    corresponding string into the corresponding text control like a line edit.
+
+    \image variablechooser.png "External Tools Preferences with Variable Chooser"
+
+    The variable chooser monitors focus changes of all children of its parent widget.
+    When a text control gets focus, the variable chooser checks if it has variable support set.
+    If the control supports variables,
+    a tool button which opens the variable chooser is shown in it while it has focus.
+
+    Supported text controls are QLineEdit, QTextEdit and QPlainTextEdit.
+
+    The variable chooser is deleted when its parent widget is deleted.
+
+    Example:
+    \code
+    QWidget *myOptionsContainerWidget = new QWidget;
+    new Core::VariableChooser(myOptionsContainerWidget)
+    QLineEdit *myLineEditOption = new QLineEdit(myOptionsContainerWidget);
+    myOptionsContainerWidget->layout()->addWidget(myLineEditOption);
+    Core::VariableChooser::addVariableSupport(myLineEditOption);
+    \endcode
+*/
 
 /*!
  * \internal
@@ -375,7 +378,6 @@ using namespace Internal;
  * Property name that is checked for deciding if a widget supports \QC variables.
  * Can be manually set with
  * \c{textcontrol->setProperty(VariableChooser::kVariableSupportProperty, true)}
- * \sa addVariableSupport()
  */
 const char kVariableSupportProperty[] = "QtCreator.VariableSupport";
 const char kVariableNameProperty[] = "QtCreator.VariableName";
@@ -383,7 +385,6 @@ const char kVariableNameProperty[] = "QtCreator.VariableName";
 /*!
  * Creates a variable chooser that tracks all children of \a parent for variable support.
  * Ownership is also transferred to \a parent.
- * \sa addVariableSupport()
  */
 VariableChooser::VariableChooser(QWidget *parent) :
     QWidget(parent),
@@ -406,6 +407,9 @@ VariableChooser::~VariableChooser()
     delete d;
 }
 
+/*!
+    Adds the macro expander provider \a provider.
+*/
 void VariableChooser::addMacroExpanderProvider(const MacroExpanderProvider &provider)
 {
     auto item = new VariableGroupItem;
@@ -415,8 +419,11 @@ void VariableChooser::addMacroExpanderProvider(const MacroExpanderProvider &prov
 }
 
 /*!
- * Marks the control as supporting variables.
- * \sa kVariableSupportProperty
+ * Marks the control \a textcontrol as supporting variables.
+ *
+ * If the control provides a variable to the macro expander itself, set
+ * \a ownName to the variable name to prevent the user from choosing the
+ * variable, which would lead to endless recursion.
  */
 void VariableChooser::addSupportedWidget(QWidget *textcontrol, const QByteArray &ownName)
 {
@@ -466,7 +473,7 @@ void VariableChooserPrivate::updateButtonGeometry()
 
 void VariableChooserPrivate::updateCurrentEditor(QWidget *old, QWidget *widget)
 {
-    Q_UNUSED(old);
+    Q_UNUSED(old)
     if (!widget) // we might loose focus, but then keep the previous state
         return;
     // prevent children of the chooser itself, and limit to children of chooser's parent
@@ -543,7 +550,9 @@ void VariableChooserPrivate::updatePositionAndShow(bool)
 
 void VariableChooserPrivate::updateFilter(const QString &filterText)
 {
-    m_sortModel->setFilterWildcard(filterText);
+    const QString pattern = QRegularExpression::escape(filterText);
+    m_sortModel->setFilterRegularExpression(
+                QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption));
     m_variableTree->expandAll();
 }
 

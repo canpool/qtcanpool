@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <qglobal.h>
 #include "reaper_p.h"
 
 #include <extensionsystem/iplugin.h>
@@ -75,10 +76,13 @@ private slots:
     // Locator:
     void test_basefilefilter();
     void test_basefilefilter_data();
+
+    void testOutputFormatter();
 #endif
 
 private:
     static void addToPathChooserContextMenu(Utils::PathChooser *pathChooser, QMenu *menu);
+    void checkSettings();
 
     MainWindow *m_mainWindow = nullptr;
     EditMode *m_editMode = nullptr;

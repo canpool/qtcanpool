@@ -32,6 +32,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSettings>
+#include <QStyle>
+#include <QTextEdit>
 
 /*!
     \class Utils::CheckableMessageBox
@@ -61,6 +63,7 @@ public:
         sizePolicy.setHeightForWidth(pixmapLabel->sizePolicy().hasHeightForWidth());
         pixmapLabel->setSizePolicy(sizePolicy);
         pixmapLabel->setVisible(false);
+        pixmapLabel->setFocusPolicy(Qt::NoFocus);
 
         auto pixmapSpacer =
             new QSpacerItem(0, 5, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
@@ -70,14 +73,23 @@ public:
         messageLabel->setWordWrap(true);
         messageLabel->setOpenExternalLinks(true);
         messageLabel->setTextInteractionFlags(Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse);
-
-        auto checkBoxRightSpacer =
-            new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum);
-        auto buttonSpacer =
-            new QSpacerItem(0, 1, QSizePolicy::Minimum, QSizePolicy::Minimum);
+        messageLabel->setFocusPolicy(Qt::NoFocus);
+        messageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
         checkBox = new QCheckBox(q);
         checkBox->setText(CheckableMessageBox::tr("Do not ask again"));
+
+        const QString showText = CheckableMessageBox::tr("Show Details...");
+        detailsButton = new QPushButton(showText, q);
+        detailsButton->setAutoDefault(false);
+        detailsButton->hide();
+        detailsText = new QTextEdit(q);
+        detailsText->hide();
+        QObject::connect(detailsButton, &QPushButton::clicked, detailsText, [this, showText] {
+            detailsText->setVisible(!detailsText->isVisible());
+            detailsButton->setText(
+                detailsText->isVisible() ? CheckableMessageBox::tr("Hide Details...") : showText);
+        });
 
         buttonBox = new QDialogButtonBox(q);
         buttonBox->setOrientation(Qt::Horizontal);
@@ -89,16 +101,22 @@ public:
 
         auto horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->addLayout(verticalLayout);
-        horizontalLayout_2->addWidget(messageLabel);
+        horizontalLayout_2->addWidget(messageLabel, 10);
 
         auto horizontalLayout = new QHBoxLayout();
         horizontalLayout->addWidget(checkBox);
-        horizontalLayout->addItem(checkBoxRightSpacer);
+        horizontalLayout->addStretch(10);
+
+        auto detailsButtonLayout = new QHBoxLayout;
+        detailsButtonLayout->addWidget(detailsButton);
+        detailsButtonLayout->addStretch(10);
 
         auto verticalLayout_2 = new QVBoxLayout(q);
         verticalLayout_2->addLayout(horizontalLayout_2);
         verticalLayout_2->addLayout(horizontalLayout);
-        verticalLayout_2->addItem(buttonSpacer);
+        verticalLayout_2->addLayout(detailsButtonLayout);
+        verticalLayout_2->addWidget(detailsText, 10);
+        verticalLayout_2->addStretch(1);
         verticalLayout_2->addWidget(buttonBox);
     }
 
@@ -107,6 +125,9 @@ public:
     QCheckBox *checkBox = nullptr;
     QDialogButtonBox *buttonBox = nullptr;
     QAbstractButton *clickedButton = nullptr;
+    QPushButton *detailsButton = nullptr;
+    QTextEdit *detailsText = nullptr;
+    QMessageBox::Icon icon = QMessageBox::NoIcon;
 };
 
 CheckableMessageBox::CheckableMessageBox(QWidget *parent) :
@@ -114,7 +135,6 @@ CheckableMessageBox::CheckableMessageBox(QWidget *parent) :
     d(new CheckableMessageBoxPrivate(this))
 {
     setModal(true);
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     connect(d->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(d->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     connect(d->buttonBox, &QDialogButtonBox::clicked,
@@ -148,17 +168,53 @@ void CheckableMessageBox::setText(const QString &t)
     d->messageLabel->setText(t);
 }
 
-QPixmap CheckableMessageBox::iconPixmap() const
+QMessageBox::Icon CheckableMessageBox::icon() const
 {
-    if (const QPixmap *p = d->pixmapLabel->pixmap())
-        return QPixmap(*p);
+    return d->icon;
+}
+
+// See QMessageBoxPrivate::standardIcon
+static QPixmap pixmapForIcon(QMessageBox::Icon icon, QWidget *w)
+{
+    const QStyle *style = w ? w->style() : QApplication::style();
+    const int iconSize = style->pixelMetric(QStyle::PM_MessageBoxIconSize, nullptr, w);
+    QIcon tmpIcon;
+    switch (icon) {
+    case QMessageBox::Information:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxInformation, nullptr, w);
+        break;
+    case QMessageBox::Warning:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxWarning, nullptr, w);
+        break;
+    case QMessageBox::Critical:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxCritical, nullptr, w);
+        break;
+    case QMessageBox::Question:
+        tmpIcon = style->standardIcon(QStyle::SP_MessageBoxQuestion, nullptr, w);
+        break;
+    default:
+        break;
+    }
+    if (!tmpIcon.isNull()) {
+        QWindow *window = nullptr;
+        if (w) {
+            window = w->windowHandle();
+            if (!window) {
+                if (const QWidget *nativeParent = w->nativeParentWidget())
+                    window = nativeParent->windowHandle();
+            }
+        }
+        return tmpIcon.pixmap(window, QSize(iconSize, iconSize));
+    }
     return QPixmap();
 }
 
-void CheckableMessageBox::setIconPixmap(const QPixmap &p)
+void CheckableMessageBox::setIcon(QMessageBox::Icon icon)
 {
-    d->pixmapLabel->setPixmap(p);
-    d->pixmapLabel->setVisible(!p.isNull());
+    d->icon = icon;
+    const QPixmap pixmap = pixmapForIcon(icon, this);
+    d->pixmapLabel->setPixmap(pixmap);
+    d->pixmapLabel->setVisible(!pixmap.isNull());
 }
 
 bool CheckableMessageBox::isChecked() const
@@ -191,6 +247,18 @@ void CheckableMessageBox::setCheckBoxVisible(bool v)
     d->checkBox->setVisible(v);
 }
 
+QString CheckableMessageBox::detailedText() const
+{
+    return d->detailsText->toPlainText();
+}
+
+void CheckableMessageBox::setDetailedText(const QString &text)
+{
+    d->detailsText->setText(text);
+    if (!text.isEmpty())
+        d->detailsButton->setVisible(true);
+}
+
 QDialogButtonBox::StandardButtons CheckableMessageBox::standardButtons() const
 {
     return d->buttonBox->standardButtons();
@@ -213,7 +281,8 @@ QPushButton *CheckableMessageBox::addButton(const QString &text, QDialogButtonBo
 
 QDialogButtonBox::StandardButton CheckableMessageBox::defaultButton() const
 {
-    foreach (QAbstractButton *b, d->buttonBox->buttons())
+    const QList<QAbstractButton *> buttons = d->buttonBox->buttons();
+    for (QAbstractButton *b : buttons)
         if (auto *pb = qobject_cast<QPushButton *>(b))
             if (pb->isDefault())
                return d->buttonBox->standardButton(pb);
@@ -239,7 +308,7 @@ CheckableMessageBox::question(QWidget *parent,
 {
     CheckableMessageBox mb(parent);
     mb.setWindowTitle(title);
-    mb.setIconPixmap(QMessageBox::standardIcon(QMessageBox::Question));
+    mb.setIcon(QMessageBox::Question);
     mb.setText(question);
     mb.setCheckBoxText(checkBoxText);
     mb.setChecked(*checkBoxSetting);
@@ -261,7 +330,7 @@ CheckableMessageBox::information(QWidget *parent,
 {
     CheckableMessageBox mb(parent);
     mb.setWindowTitle(title);
-    mb.setIconPixmap(QMessageBox::standardIcon(QMessageBox::Information));
+    mb.setIcon(QMessageBox::Information);
     mb.setText(text);
     mb.setCheckBoxText(checkBoxText);
     mb.setChecked(*checkBoxSetting);
@@ -277,7 +346,7 @@ QMessageBox::StandardButton CheckableMessageBox::dialogButtonBoxToMessageBoxButt
     return static_cast<QMessageBox::StandardButton>(int(db));
 }
 
-bool askAgain(QSettings *settings, const QString &settingsSubKey)
+bool CheckableMessageBox::shouldAskAgain(QSettings *settings, const QString &settingsSubKey)
 {
     if (QTC_GUARD(settings)) {
         settings->beginGroup(QLatin1String(kDoNotAskAgainKey));
@@ -297,9 +366,7 @@ void initDoNotAskAgainMessageBox(CheckableMessageBox &messageBox, const QString 
                                  DoNotAskAgainType type)
 {
     messageBox.setWindowTitle(title);
-    messageBox.setIconPixmap(QMessageBox::standardIcon(type == Information
-                                               ? QMessageBox::Information
-                                               : QMessageBox::Question));
+    messageBox.setIcon(type == Information ? QMessageBox::Information : QMessageBox::Question);
     messageBox.setText(text);
     messageBox.setCheckBoxVisible(true);
     messageBox.setCheckBoxText(type == Information ? CheckableMessageBox::msgDoNotShowAgain()
@@ -309,7 +376,7 @@ void initDoNotAskAgainMessageBox(CheckableMessageBox &messageBox, const QString 
     messageBox.setDefaultButton(defaultButton);
 }
 
-void doNotAskAgain(QSettings *settings, const QString &settingsSubKey)
+void CheckableMessageBox::doNotAskAgain(QSettings *settings, const QString &settingsSubKey)
 {
     if (!settings)
         return;
@@ -337,7 +404,7 @@ CheckableMessageBox::doNotAskAgainQuestion(QWidget *parent, const QString &title
                                            QDialogButtonBox::StandardButton acceptButton)
 
 {
-    if (!askAgain(settings, settingsSubKey))
+    if (!shouldAskAgain(settings, settingsSubKey))
         return acceptButton;
 
     CheckableMessageBox messageBox(parent);
@@ -365,7 +432,7 @@ CheckableMessageBox::doNotShowAgainInformation(QWidget *parent, const QString &t
                                            QDialogButtonBox::StandardButton defaultButton)
 
 {
-    if (!askAgain(settings, settingsSubKey))
+    if (!shouldAskAgain(settings, settingsSubKey))
             return defaultButton;
 
     CheckableMessageBox messageBox(parent);
@@ -398,7 +465,8 @@ bool CheckableMessageBox::hasSuppressedQuestions(QSettings *settings)
     QTC_ASSERT(settings, return false);
     bool hasSuppressed = false;
     settings->beginGroup(QLatin1String(kDoNotAskAgainKey));
-    foreach (const QString &subKey, settings->childKeys()) {
+    const QStringList childKeys = settings->childKeys();
+    for (const QString &subKey : childKeys) {
         if (settings->value(subKey, false).toBool()) {
             hasSuppressed = true;
             break;

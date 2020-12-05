@@ -46,14 +46,15 @@ public:
 class QTCREATOR_UTILS_EXPORT AnsiEscapeCodeHandler
 {
 public:
-    AnsiEscapeCodeHandler();
     QList<FormattedText> parseText(const FormattedText &input);
     void endFormatScope();
 
 private:
     void setFormatScope(const QTextCharFormat &charFormat);
 
-    bool            m_previousFormatClosed;
+    bool            m_previousFormatClosed = true;
+    bool            m_waitingForTerminator = false;
+    QString         m_alternateTerminator;
     QTextCharFormat m_previousFormat;
     QString         m_pendingText;
 };

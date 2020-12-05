@@ -27,8 +27,9 @@
 
 #include "ilocatorfilter.h"
 
+#include <utils/fileutils.h>
+
 #include <QSharedPointer>
-#include <QStringList>
 
 namespace Core {
 
@@ -44,27 +45,22 @@ public:
         virtual ~Iterator();
         virtual void toFront() = 0;
         virtual bool hasNext() const = 0;
-        virtual QString next() = 0;
-        virtual QString filePath() const = 0;
-        virtual QString fileName() const = 0;
+        virtual Utils::FilePath next() = 0;
+        virtual Utils::FilePath filePath() const = 0;
     };
 
     class CORE_EXPORT ListIterator : public Iterator {
     public:
-        ListIterator(const QStringList &filePaths);
-        ListIterator(const QStringList &filePaths, const QStringList &fileNames);
+        ListIterator(const Utils::FilePaths &filePaths);
 
         void toFront() override;
         bool hasNext() const override;
-        QString next() override;
-        QString filePath() const override;
-        QString fileName() const override;
+        Utils::FilePath next() override;
+        Utils::FilePath filePath() const override;
 
     private:
-        QStringList m_filePaths;
-        QStringList m_fileNames;
-        QStringList::const_iterator m_pathPosition;
-        QStringList::const_iterator m_namePosition;
+        Utils::FilePaths m_filePaths;
+        Utils::FilePaths::const_iterator m_pathPosition;
     };
 
     BaseFileFilter();
@@ -80,6 +76,7 @@ protected:
     QSharedPointer<Iterator> fileIterator();
 
 private:
+    MatchLevel matchLevelFor(const QRegularExpressionMatch &match, const QString &matchText) const;
     void updatePreviousResultData();
 
     Internal::BaseFileFilterPrivate *d = nullptr;

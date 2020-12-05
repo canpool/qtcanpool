@@ -31,6 +31,7 @@
 #include <QList>
 #include <QGraphicsOpacityEffect>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QPointer>
 #include <QPropertyAnimation>
 #include <QToolButton>
@@ -53,14 +54,14 @@ public:
     void init();
     void cleanup();
 
-    FutureProgress *doAddTask(const QFuture<void> &future, const QString &title, Id type,
+    FutureProgress *doAddTask(const QFuture<void> &future, const QString &title, Utils::Id type,
                             ProgressFlags flags);
 
     void doSetApplicationLabel(const QString &text);
     ProgressView *progressView();
 
 public slots:
-    void doCancelTasks(Core::Id type);
+    void doCancelTasks(Utils::Id type);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
@@ -88,14 +89,14 @@ private:
     bool hasError() const;
     bool isLastFading() const;
 
-    void removeOldTasks(Id type, bool keepOne = false);
+    void removeOldTasks(Utils::Id type, bool keepOne = false);
     void removeOneOldTask();
     void removeTask(FutureProgress *task);
     void deleteTask(FutureProgress *task);
 
     QPointer<ProgressView> m_progressView;
     QList<FutureProgress *> m_taskList;
-    QMap<QFutureWatcher<void> *, Id> m_runningTasks;
+    QMap<QFutureWatcher<void> *, Utils::Id> m_runningTasks;
     QFutureWatcher<void> *m_applicationTask = nullptr;
     StatusBarWidget *m_statusBarWidgetContainer;
     QWidget *m_statusBarWidget;
@@ -103,20 +104,12 @@ private:
     QHBoxLayout *m_summaryProgressLayout;
     QWidget *m_currentStatusDetailsWidget = nullptr;
     QPointer<FutureProgress> m_currentStatusDetailsProgress;
+    QLabel *m_statusDetailsLabel = nullptr;
     ProgressBar *m_summaryProgressBar;
     QGraphicsOpacityEffect *m_opacityEffect;
     QPointer<QPropertyAnimation> m_opacityAnimation;
     bool m_progressViewPinned = false;
     bool m_hovered = false;
-};
-
-class ToggleButton : public QToolButton
-{
-    Q_OBJECT
-public:
-    ToggleButton(QWidget *parent);
-    QSize sizeHint() const override;
-    void paintEvent(QPaintEvent *event) override;
 };
 
 } // namespace Internal

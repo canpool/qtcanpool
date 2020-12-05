@@ -72,7 +72,6 @@ SOURCES += \
     $$PWD/sidebar.cpp \
     $$PWD/fileiconprovider.cpp \
     $$PWD/icore.cpp \
-    $$PWD/infobar.cpp \
     $$PWD/editormanager/ieditor.cpp \
     $$PWD/dialogs/ioptionspage.cpp \
     $$PWD/settingsdatabase.cpp \
@@ -80,6 +79,7 @@ SOURCES += \
     $$PWD/editormanager/systemeditor.cpp \
     $$PWD/designmode.cpp \
     $$PWD/editortoolbar.cpp \
+    $$PWD/helpitem.cpp \
     $$PWD/helpmanager.cpp \
     $$PWD/outputpanemanager.cpp \
     $$PWD/navigationsubwidget.cpp \
@@ -87,7 +87,6 @@ SOURCES += \
     $$PWD/externaltool.cpp \
     $$PWD/dialogs/externaltoolconfig.cpp \
     $$PWD/dialogs/filepropertiesdialog.cpp \
-    $$PWD/toolsettings.cpp \
     $$PWD/variablechooser.cpp \
     $$PWD/mimetypemagicdialog.cpp \
     $$PWD/mimetypesettings.cpp \
@@ -100,6 +99,7 @@ SOURCES += \
     $$PWD/documentmanager.cpp \
     $$PWD/iversioncontrol.cpp \
     $$PWD/dialogs/addtovcsdialog.cpp \
+    $$PWD/dialogs/restartdialog.cpp \
     $$PWD/ioutputpane.cpp \
     $$PWD/patchtool.cpp \
     $$PWD/windowsupport.cpp \
@@ -110,7 +110,10 @@ SOURCES += \
     $$PWD/systemsettings.cpp \
     $$PWD/coreicons.cpp \
     $$PWD/diffservice.cpp \
-    $$PWD/menubarfilter.cpp
+    $$PWD/menubarfilter.cpp \
+    $$PWD/welcomepagehelper.cpp \
+    $$PWD/dialogs/codecselector.cpp \
+    $$PWD/plugininstallwizard.cpp
 
 HEADERS += \
     $$PWD/corejsextensions.h \
@@ -166,7 +169,6 @@ HEADERS += \
     $$PWD/reaper_p.h \
     $$PWD/icontext.h \
     $$PWD/icore.h \
-    $$PWD/infobar.h \
     $$PWD/imode.h \
     $$PWD/ioutputpane.h \
     $$PWD/coreconstants.h \
@@ -193,6 +195,7 @@ HEADERS += \
     $$PWD/editormanager/systemeditor.h \
     $$PWD/designmode.h \
     $$PWD/editortoolbar.h \
+    $$PWD/helpitem.h \
     $$PWD/helpmanager.h \
     $$PWD/helpmanager_implementation.h \
     $$PWD/outputpanemanager.h \
@@ -201,7 +204,6 @@ HEADERS += \
     $$PWD/externaltool.h \
     $$PWD/dialogs/externaltoolconfig.h \
     $$PWD/dialogs/filepropertiesdialog.h \
-    $$PWD/toolsettings.h \
     $$PWD/variablechooser.h \
     $$PWD/mimetypemagicdialog.h \
     $$PWD/mimetypesettings.h \
@@ -215,6 +217,7 @@ HEADERS += \
     $$PWD/textdocument.h \
     $$PWD/documentmanager.h \
     $$PWD/dialogs/addtovcsdialog.h \
+    $$PWD/dialogs/restartdialog.h \
     $$PWD/patchtool.h \
     $$PWD/windowsupport.h \
     $$PWD/opendocumentstreeview.h \
@@ -225,7 +228,10 @@ HEADERS += \
     $$PWD/editormanager/documentmodel_p.h \
     $$PWD/diffservice.h \
     $$PWD/menubarfilter.h \
-    $$PWD/editormanager/ieditorfactory_p.h
+    $$PWD/editormanager/ieditorfactory_p.h \
+    $$PWD/welcomepagehelper.h \
+    $$PWD/dialogs/codecselector.h \
+    $$PWD/plugininstallwizard.h
 
 FORMS += \
     $$PWD/dialogs/newdialog.ui \
@@ -274,8 +280,6 @@ equals(TEST, 1) {
     HEADERS += $$PWD/testdatadir.h
 }
 
-DISTFILES += \
-    $$PWD/Core.json.in
-
-QMAKE_SUBSTITUTES += \
-    $$PWD/Core.json.in
+# added by maminjie
+HEADERS += \
+    $$PWD/vcsbase/vcsbaseconstants.h

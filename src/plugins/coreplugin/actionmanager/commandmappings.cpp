@@ -74,11 +74,16 @@ public:
         defaultButton = new QPushButton(CommandMappings::tr("Reset All"), groupBox);
         defaultButton->setToolTip(CommandMappings::tr("Reset all to default."));
 
+        resetButton = new QPushButton(CommandMappings::tr("Reset"), groupBox);
+        resetButton->setToolTip(CommandMappings::tr("Reset to default."));
+        resetButton->setVisible(false);
+
         importButton = new QPushButton(CommandMappings::tr("Import..."), groupBox);
         exportButton = new QPushButton(CommandMappings::tr("Export..."), groupBox);
 
         auto hboxLayout1 = new QHBoxLayout();
         hboxLayout1->addWidget(defaultButton);
+        hboxLayout1->addWidget(resetButton);
         hboxLayout1->addStretch();
         hboxLayout1->addWidget(importButton);
         hboxLayout1->addWidget(exportButton);
@@ -100,6 +105,7 @@ public:
                    q, &CommandMappings::importAction);
         q->connect(defaultButton, &QPushButton::clicked,
                    q, &CommandMappings::defaultAction);
+        q->connect(resetButton, &QPushButton::clicked, q, &CommandMappings::resetRequested);
 
         commandList->sortByColumn(0, Qt::AscendingOrder);
 
@@ -117,11 +123,18 @@ public:
     FancyLineEdit *filterEdit;
     QTreeWidget *commandList;
     QPushButton *defaultButton;
+    QPushButton *resetButton;
     QPushButton *importButton;
     QPushButton *exportButton;
 };
 
 } // namespace Internal
+
+/*!
+    \class Core::CommandMappings
+    \inmodule QtCreator
+    \internal
+*/
 
 CommandMappings::CommandMappings(QWidget *parent)
     : QWidget(parent), d(new Internal::CommandMappingsPrivate(this))
@@ -137,6 +150,11 @@ void CommandMappings::setImportExportEnabled(bool enabled)
 {
     d->importButton->setVisible(enabled);
     d->exportButton->setVisible(enabled);
+}
+
+void CommandMappings::setResetVisible(bool visible)
+{
+    d->resetButton->setVisible(visible);
 }
 
 QTreeWidget *CommandMappings::commandList() const

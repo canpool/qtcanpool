@@ -47,7 +47,7 @@ static QPointer<QSplitter> m_splitter;
 static QList<QPointer<QWidget>> m_statusBarWidgets;
 static QList<QPointer<IContext>> m_contexts;
 
-/*!
+/*
     Context that always returns the context of the active's mode widget (if available).
 */
 class StatusBarContext : public IContext
@@ -63,7 +63,7 @@ static QWidget *createWidget(QWidget *parent)
     QWidget *w = new QWidget(parent);
     w->setLayout(new QHBoxLayout);
     w->setVisible(true);
-    w->layout()->setMargin(0);
+    w->layout()->setContentsMargins(0, 0, 0, 0);
     return w;
 }
 
@@ -98,9 +98,9 @@ static void createStatusBarManager()
     bar->insertPermanentWidget(1, rightCornerWidget);
     m_statusBarWidgets.append(rightCornerWidget);
 
-    auto context = new StatusBarContext(bar);
-    context->setWidget(bar);
-    ICore::addContextObject(context);
+    auto statusContext = new StatusBarContext(bar);
+    statusContext->setWidget(bar);
+    ICore::addContextObject(statusContext);
 
     QObject::connect(ICore::instance(), &ICore::saveSettingsRequested, [] {
         QSettings *s = ICore::settings();
@@ -109,7 +109,8 @@ static void createStatusBarManager()
         s->endGroup();
     });
 
-    QObject::connect(ICore::instance(), &ICore::coreAboutToClose, [] {
+    QObject::connect(ICore::instance(), &ICore::coreAboutToClose, [statusContext] {
+        delete statusContext;
         // This is the catch-all on rampdown. Individual items may
         // have been removed earlier by destroyStatusBarWidget().
         for (const QPointer<IContext> &context : m_contexts) {
@@ -142,12 +143,11 @@ void StatusBarManager::addStatusBarWidget(QWidget *widget,
 void StatusBarManager::destroyStatusBarWidget(QWidget *widget)
 {
     QTC_ASSERT(widget, return);
-    for (const QPointer<IContext> &context : m_contexts) {
-        if (context->widget() == widget) {
-            ICore::removeContextObject(context);
-            m_contexts.removeAll(context);
-            break;
-        }
+    const auto it = std::find_if(m_contexts.begin(), m_contexts.end(),
+            [widget](const auto &context) { return context->widget() == widget; });
+    if (it != m_contexts.end()) {
+        delete *it;
+        m_contexts.erase(it);
     }
     widget->setParent(nullptr);
     delete widget;

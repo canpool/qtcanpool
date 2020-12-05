@@ -40,6 +40,9 @@
 #include <QEvent>
 #include <QMenu>
 #include <QWidget>
+#include <QWindowStateChangeEvent>
+
+using namespace Utils;
 
 namespace Core {
 namespace Internal {
@@ -64,7 +67,16 @@ WindowSupport::WindowSupport(QWidget *window, const Context &context)
 
         m_zoomAction = new QAction(this);
         ActionManager::registerAction(m_zoomAction, Constants::ZOOM_WINDOW, context);
-        connect(m_zoomAction, &QAction::triggered, m_window, &QWidget::showMaximized);
+        connect(m_zoomAction, &QAction::triggered, m_window, [this] {
+            if (m_window->isMaximized()) {
+                // similar to QWidget::showMaximized
+                m_window->ensurePolished();
+                m_window->setWindowState(m_window->windowState() & ~Qt::WindowMaximized);
+                m_window->setVisible(true);
+            } else {
+                m_window->showMaximized();
+            }
+        });
 
         m_closeAction = new QAction(this);
         ActionManager::registerAction(m_closeAction, Constants::CLOSE_WINDOW, context);
@@ -90,7 +102,6 @@ WindowSupport::~WindowSupport()
             ActionManager::unregisterAction(m_closeAction, Constants::CLOSE_WINDOW);
         }
         ActionManager::unregisterAction(m_toggleFullScreenAction, Constants::TOGGLE_FULLSCREEN);
-        ICore::removeContextObject(m_contextObject);
         m_windowList->removeWindow(m_window);
     }
 }
@@ -111,6 +122,7 @@ bool WindowSupport::eventFilter(QObject *obj, QEvent *event)
             m_minimizeAction->setEnabled(!minimized);
             m_zoomAction->setEnabled(!minimized);
         }
+        m_previousWindowState = static_cast<QWindowStateChangeEvent *>(event)->oldState();
         updateFullScreenAction();
     } else if (event->type() == QEvent::WindowActivate) {
         m_windowList->setActiveWindow(m_window);
@@ -126,7 +138,7 @@ bool WindowSupport::eventFilter(QObject *obj, QEvent *event)
 void WindowSupport::toggleFullScreen()
 {
     if (m_window->isFullScreen()) {
-        m_window->setWindowState(m_window->windowState() & ~Qt::WindowFullScreen);
+        m_window->setWindowState(m_previousWindowState & ~Qt::WindowFullScreen);
     } else {
         m_window->setWindowState(m_window->windowState() | Qt::WindowFullScreen);
     }

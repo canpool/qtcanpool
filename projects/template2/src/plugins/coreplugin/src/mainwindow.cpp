@@ -28,8 +28,6 @@
 
 #include <app/app_version.h>
 
-#include <coreplugin/plugindialog.h>
-
 #include <extensionsystem/pluginmanager.h>
 #include <utils/algorithm.h>
 #include <utils/historycompleter.h>
@@ -212,12 +210,6 @@ void MainWindow::saveWindowSettings()
     settings->setValue(QLatin1String(windowStateKey), saveState());
 
     settings->endGroup();
-}
-
-void MainWindow::aboutPlugins()
-{
-    PluginDialog dialog(this);
-    dialog.exec();
 }
 
 QPrinter *MainWindow::printer() const

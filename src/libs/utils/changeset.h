@@ -105,7 +105,7 @@ private:
     bool flip_helper(int pos1, int length1, int pos2, int length2);
     bool copy_helper(int pos, int length, int to);
 
-    bool hasOverlap(int pos, int length);
+    bool hasOverlap(int pos, int length) const;
     QString textAt(int pos, int length);
 
     void doReplace(const EditOp &replace, QList<EditOp> *replaceList);
@@ -120,5 +120,10 @@ private:
     QList<EditOp> m_operationList;
     bool m_error;
 };
+
+inline bool operator<(const ChangeSet::Range &r1, const ChangeSet::Range &r2)
+{
+    return r1.start < r2.start;
+}
 
 } // namespace Utils

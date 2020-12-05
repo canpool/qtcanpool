@@ -60,6 +60,7 @@ public:
 
     void setModel(QAbstractItemModel *model) override;
     void mousePressEvent(QMouseEvent *ev) override;
+    void mouseMoveEvent(QMouseEvent *ev) override;
     void mouseReleaseEvent(QMouseEvent *ev) override;
     void contextMenuEvent(QContextMenuEvent *ev) override;
     void showEvent(QShowEvent *ev) override;
@@ -68,10 +69,18 @@ public:
     void dropEvent(QDropEvent *ev) override;
     void dragMoveEvent(QDragMoveEvent *ev) override;
     void mouseDoubleClickEvent(QMouseEvent *ev) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     void showProgressIndicator();
     void hideProgressIndicator();
     void resizeColumns();
+
+    int spanColumn() const;
+    void setSpanColumn(int column);
+
+    // In some situations this needs to be called when manually resizing columns when the span
+    // column is set.
+    void refreshSpanColumn();
 
 signals:
     void aboutToShow();
@@ -126,6 +135,7 @@ public:
     QPoint pos() const { return m_pos; }
     QPoint globalPos() const { return m_view->mapToGlobal(m_pos); }
     QModelIndex index() const { return m_index; }
+    QModelIndex sourceModelIndex() const { return m_sourceModelIndex; }
     QModelIndexList selectedRows() const { return m_selectedRows; }
     QModelIndexList currentOrSelectedRows() const;
 
@@ -134,6 +144,7 @@ private:
     QWidget *m_view = nullptr;
     QPoint m_pos;
     QModelIndex m_index;
+    QModelIndex m_sourceModelIndex;
     QModelIndexList m_selectedRows;
 };
 

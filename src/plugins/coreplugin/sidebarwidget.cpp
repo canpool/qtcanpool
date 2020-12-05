@@ -81,7 +81,7 @@ SideBarWidget::SideBarWidget(SideBar *sideBar, const QString &id)
     m_toolbar->addAction(m_closeAction);
 
     auto lay = new QVBoxLayout();
-    lay->setMargin(0);
+    lay->setContentsMargins(0, 0, 0, 0);
     lay->setSpacing(0);
     setLayout(lay);
     lay->addWidget(m_toolbar);
@@ -89,7 +89,7 @@ SideBarWidget::SideBarWidget(SideBar *sideBar, const QString &id)
     QStringList titleList = m_sideBar->availableItemTitles();
     Utils::sort(titleList);
     QString t = id;
-    if (titleList.count()) {
+    if (!titleList.isEmpty()) {
         foreach (const QString &itemTitle, titleList)
             m_comboBox->addItem(itemTitle, m_sideBar->idForTitle(itemTitle));
 
@@ -99,7 +99,7 @@ SideBarWidget::SideBarWidget(SideBar *sideBar, const QString &id)
     }
     setCurrentItem(t);
 
-    connect(m_comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(m_comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &SideBarWidget::setCurrentIndex);
 }
 

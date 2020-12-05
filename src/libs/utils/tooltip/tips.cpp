@@ -25,8 +25,8 @@
 
 #include "tips.h"
 #include "tooltip.h"
-#include "reuse.h"
 
+#include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 
 #include <QRect>
@@ -43,27 +43,52 @@
 #include <QPaintEvent>
 #include <QVBoxLayout>
 
+#include <QPoint>
+#include <QRect>
+#include <QWidget>
+#include <QApplication>
+#include <QDesktopWidget>
+
+#include <memory>
+
 namespace Utils {
 namespace Internal {
 
-QTipLabel::QTipLabel(QWidget *parent) :
+TipLabel::TipLabel(QWidget *parent) :
     QLabel(parent, Qt::ToolTip | Qt::BypassGraphicsProxyWidget)
-{}
-
-void QTipLabel::setHelpId(const QString &id)
 {
-    m_helpId = id;
+}
+
+void TipLabel::setContextHelp(const QVariant &help)
+{
+    m_contextHelp = help;
     update();
 }
 
-QString QTipLabel::helpId() const
+QVariant TipLabel::contextHelp() const
 {
-    return m_helpId;
+    return m_contextHelp;
 }
 
+const QMetaObject *TipLabel::metaObject() const
+{
+    // CSS Tooltip styling depends on a the name of this class.
+    // So set up a minimalist QMetaObject to fake a class name "QTipLabel":
+    static const uint tip_label_meta_data[15] = { 8 /* moc revision */ };
+    static const QMetaObject tipMetaObject {
+         &QLabel::staticMetaObject,
+         QByteArrayLiteral("QTipLabel").data_ptr(),
+         tip_label_meta_data,
+         nullptr,
+         nullptr,
+         nullptr
+    };
+
+    return &tipMetaObject;
+}
 
 ColorTip::ColorTip(QWidget *parent)
-    : QTipLabel(parent)
+    : TipLabel(parent)
 {
     resize(40, 40);
 }
@@ -94,14 +119,14 @@ bool ColorTip::canHandleContentReplacement(int typeId) const
     return typeId == ToolTip::ColorContent;
 }
 
-bool ColorTip::equals(int typeId, const QVariant &other, const QString &otherHelpId) const
+bool ColorTip::equals(int typeId, const QVariant &other, const QVariant &otherContextHelp) const
 {
-    return typeId == ToolTip::ColorContent && otherHelpId == helpId() && other == m_color;
+    return typeId == ToolTip::ColorContent && otherContextHelp == contextHelp() && other == m_color;
 }
 
 void ColorTip::paintEvent(QPaintEvent *event)
 {
-    QTipLabel::paintEvent(event);
+    TipLabel::paintEvent(event);
 
     QPainter painter(this);
     painter.setBrush(m_color);
@@ -115,7 +140,7 @@ void ColorTip::paintEvent(QPaintEvent *event)
     painter.drawRect(borderRect);
 }
 
-TextTip::TextTip(QWidget *parent) : QTipLabel(parent)
+TextTip::TextTip(QWidget *parent) : TipLabel(parent)
 {
     setForegroundRole(QPalette::ToolTipText);
     setBackgroundRole(QPalette::ToolTipBase);
@@ -134,7 +159,14 @@ static bool likelyContainsLink(const QString &s)
 
 void TextTip::setContent(const QVariant &content)
 {
-    m_text = content.toString();
+    if (content.canConvert<QString>()) {
+        m_text = content.toString();
+    } else if (content.canConvert<TextItem>()) {
+        auto item = content.value<TextItem>();
+        m_text = item.first;
+        m_format = item.second;
+    }
+
     bool containsLink = likelyContainsLink(m_text);
     setOpenExternalLinks(containsLink);
 }
@@ -146,12 +178,8 @@ bool TextTip::isInteractive() const
 
 void TextTip::configure(const QPoint &pos, QWidget *w)
 {
-    if (helpId().isEmpty())
-        setText(m_text);
-    else
-        setText(QString::fromLatin1("<table><tr><td valign=middle>%1</td><td>&nbsp;&nbsp;"
-                                    "<img src=\":/utils/tooltip/images/f1.png\"></td>"
-                                    "</tr></table>").arg(m_text));
+    setTextFormat(m_format);
+    setText(m_text);
 
     // Make it look good with the default ToolTip font on Mac, which has a small descent.
     QFontMetrics fm(font());
@@ -182,9 +210,12 @@ int TextTip::showTime() const
     return 10000 + 40 * qMax(0, m_text.size() - 100);
 }
 
-bool TextTip::equals(int typeId, const QVariant &other, const QString &otherHelpId) const
+bool TextTip::equals(int typeId, const QVariant &other, const QVariant &otherContextHelp) const
 {
-    return typeId == ToolTip::TextContent && otherHelpId == helpId() && other.toString() == m_text;
+    return typeId == ToolTip::TextContent && otherContextHelp == contextHelp()
+           && ((other.canConvert<QString>() && other.toString() == m_text)
+               || (other.canConvert<TextItem>()
+                   && other.value<TextItem>() == TextItem(m_text, m_format)));
 }
 
 void TextTip::paintEvent(QPaintEvent *event)
@@ -210,7 +241,7 @@ void TextTip::resizeEvent(QResizeEvent *event)
 }
 
 WidgetTip::WidgetTip(QWidget *parent) :
-    QTipLabel(parent), m_layout(new QVBoxLayout)
+    TipLabel(parent), m_layout(new QVBoxLayout)
 {
     m_layout->setContentsMargins(0, 0, 0, 0);
     setLayout(m_layout);
@@ -257,18 +288,31 @@ void WidgetTip::pinToolTipWidget(QWidget *parent)
 bool WidgetTip::canHandleContentReplacement(int typeId) const
 {
     // Always create a new widget.
-    Q_UNUSED(typeId);
+    Q_UNUSED(typeId)
     return false;
 }
 
-bool WidgetTip::equals(int typeId, const QVariant &other, const QString &otherHelpId) const
+bool WidgetTip::equals(int typeId, const QVariant &other, const QVariant &otherContextHelp) const
 {
-    return typeId == ToolTip::WidgetContent && otherHelpId == helpId()
+    return typeId == ToolTip::WidgetContent && otherContextHelp == contextHelp()
             && other.value<QWidget *>() == m_widget;
 }
 
-// need to include it here to force it to be inside the namespaces
-#include "moc_tips.cpp"
+
+int screenNumber(const QPoint &pos, QWidget *w)
+{
+    if (QApplication::desktop()->isVirtualDesktop())
+        return QApplication::desktop()->screenNumber(pos);
+    else
+        return QApplication::desktop()->screenNumber(w);
+}
+
+QRect screenGeometry(const QPoint &pos, QWidget *w)
+{
+    if (HostOsInfo::isMacHost())
+        return QApplication::desktop()->availableGeometry(screenNumber(pos, w));
+    return QApplication::desktop()->screenGeometry(screenNumber(pos, w));
+}
 
 } // namespace Internal
 } // namespace Utils

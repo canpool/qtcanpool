@@ -27,12 +27,15 @@
 
 #include "ioutputpane.h"
 
+namespace Core {
+
 /*!
     \class Core::IOutputPane
-    \brief The IOutputPane class is an interface for providing \gui Output panes.
+    \inheaderfile coreplugin/ioutputpane.h
+    \brief The IOutputPane class is an interface for providing \uicontrol Output panes.
 
-    \mainclass
-    \inmodule Qt Creator
+    \ingroup mainclasses
+    \inmodule QtCreator
 */
 
 /*!
@@ -131,7 +134,7 @@
 /*!
     \fn bool IOutputPane::canNext() const
 
-    Determines whether the \gui Next button in the output pane is enabled.
+    Determines whether the \uicontrol Next button in the output pane is enabled.
     Is overwritten when \c canNavigate() returns \c false.
 
     \sa IOutputPane::canNavigate()
@@ -142,7 +145,7 @@
 /*!
     \fn bool IOutputPane::canPrevious() const
 
-    Determines whether the \gui Previous button in the output pane is enabled.
+    Determines whether the \uicontrol Previous button in the output pane is enabled.
     Is overwritten when \c canNavigate() returns \c false.
 
     \sa IOutputPane::canNavigate()
@@ -153,7 +156,7 @@
 /*!
     \fn void IOutputPane::goToNext()
 
-    Is called on selecting the \gui Next button.
+    Is called on selecting the \uicontrol Next button.
 
     \sa IOutputPane::canNext()
 */
@@ -161,7 +164,7 @@
 /*!
     \fn void IOutputPane::goToPrev()
 
-    Is called on selecting the \gui Previous button.
+    Is called on selecting the \uicontrol Previous button.
 
     \sa IOutputPane::canPrevious()
 */
@@ -258,3 +261,5 @@
     Displays \a number in the status bar button belonging to the output pane
     (for example, number of issues on building).
 */
+
+} // namespace Core

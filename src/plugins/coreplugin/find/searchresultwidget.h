@@ -27,7 +27,7 @@
 
 #include "searchresultwindow.h"
 
-#include <coreplugin/infobar.h>
+#include <utils/infobar.h>
 
 #include <QWidget>
 
@@ -54,6 +54,7 @@ public:
 
     void setInfo(const QString &label, const QString &toolTip, const QString &term);
     QWidget *additionalReplaceWidget() const;
+    void setAdditionalReplaceWidget(QWidget *widget);
 
     void addResult(const QString &fileName,
                    const QString &lineText,
@@ -90,6 +91,8 @@ public:
     void setSearchAgainSupported(bool supported);
     void setSearchAgainEnabled(bool enabled);
 
+    void setReplaceEnabled(bool enabled);
+
 public slots:
     void finishSearch(bool canceled);
     void sendRequestPopup();
@@ -97,6 +100,7 @@ public slots:
 signals:
     void activated(const Core::SearchResultItem &item);
     void replaceButtonClicked(const QString &replaceText, const QList<Core::SearchResultItem> &checkedItems, bool preserveCase);
+    void replaceTextChanged(const QString &replaceText);
     void searchAgainRequested();
     void cancelled();
     void paused(bool paused);
@@ -123,15 +127,15 @@ private:
     int m_count = 0;
     QString m_dontAskAgainGroup;
     QFrame *m_messageWidget = nullptr;
-    InfoBar m_infoBar;
-    InfoBarDisplay m_infoBarDisplay;
+    Utils::InfoBar m_infoBar;
+    Utils::InfoBarDisplay m_infoBarDisplay;
     QWidget *m_topReplaceWidget = nullptr;
     QLabel *m_replaceLabel = nullptr;
     QLineEdit *m_replaceTextEdit = nullptr;
     QToolButton *m_replaceButton = nullptr;
     QToolButton *m_searchAgainButton = nullptr;
     QCheckBox *m_preserveCaseCheck = nullptr;
-    QCheckBox *m_renameFilesCheckBox = nullptr;
+    QWidget *m_additionalReplaceWidget = nullptr;
     QWidget *m_descriptionContainer = nullptr;
     QLabel *m_label = nullptr;
     QLabel *m_searchTerm = nullptr;

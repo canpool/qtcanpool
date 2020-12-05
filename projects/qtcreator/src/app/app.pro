@@ -11,6 +11,7 @@ QT -= testlib
 HEADERS += $$QTCANPOOL_ROOT/src/tools/qtcreatorcrashhandler/crashhandlersetup.h
 SOURCES += main.cpp $$QTCANPOOL_ROOT/src/tools/qtcreatorcrashhandler/crashhandlersetup.cpp
 
+RPATH_BASE = $$IDE_BIN_PATH
 include($$QTCANPOOL_ROOT/src/rpath.pri)
 include($$QTCANPOOL_ROOT/src/libs/qt-breakpad/qtbreakpad.pri)
 
@@ -22,47 +23,26 @@ win32 {
     #  RC_VERSION_STRING="4.4.0-beta1" (free text)
     # Also, we need to replace space with \x20 to be able to work with both rc and windres
     COPYRIGHT = "2008-$${QTCREATOR_COPYRIGHT_YEAR} The Qt Company Ltd"
-    DEFINES += RC_VERSION=$$replace(QTCREATOR_VERSION, "\\.", ","),0 \
+    APPLICATION_NAME = "$${IDE_DISPLAY_NAME}"
+    DEFINES += \
+        RC_APPLICATION_NAME=\"$$replace(APPLICATION_NAME, " ", "\\x20")\" \
+        RC_VERSION=$$replace(QTCREATOR_VERSION, "\\.", ","),0 \
         RC_VERSION_STRING=\"$${QTCREATOR_DISPLAY_VERSION}\" \
         RC_COPYRIGHT=\"$$replace(COPYRIGHT, " ", "\\x20")\"
     RC_FILE = qtcreator.rc
 } else:macx {
     LIBS += -framework CoreFoundation
-    minQtVersion(5, 7, 1) {
-        QMAKE_ASSET_CATALOGS = $$PWD/qtcreator.xcassets
-        QMAKE_ASSET_CATALOGS_BUILD_PATH = $$IDE_DATA_PATH
-        QMAKE_ASSET_CATALOGS_INSTALL_PATH = $$INSTALL_DATA_PATH
-        QMAKE_ASSET_CATALOGS_APP_ICON = qtcreator
-    } else {
-        ASSETCATALOG.files = $$PWD/qtcreator.xcassets
-        macx-xcode {
-            QMAKE_BUNDLE_DATA += ASSETCATALOG
-        } else {
-            ASSETCATALOG.output = $$IDE_DATA_PATH/qtcreator.icns
-            ASSETCATALOG.commands = xcrun actool \
-                --app-icon qtcreator \
-                --output-partial-info-plist $$shell_quote($(TMPDIR)/qtcreator.Info.plist) \
-                --platform macosx \
-                --minimum-deployment-target $$QMAKE_MACOSX_DEPLOYMENT_TARGET \
-                --compile $$shell_quote($$IDE_DATA_PATH) \
-                $$shell_quote($$PWD/qtcreator.xcassets) > /dev/null
-            ASSETCATALOG.input = ASSETCATALOG.files
-            ASSETCATALOG.CONFIG += no_link target_predeps
-            QMAKE_EXTRA_COMPILERS += ASSETCATALOG
-            icns.files = \
-                $$IDE_DATA_PATH/qtcreator.icns \
-                $$IDE_DATA_PATH/prifile.icns \
-                $$IDE_DATA_PATH/profile.icns
-            icns.path = $$INSTALL_DATA_PATH
-            icns.CONFIG += no_check_exist
-            INSTALLS += icns
-        }
-    }
+    QMAKE_ASSET_CATALOGS = $$PWD/qtcreator.xcassets
+    QMAKE_ASSET_CATALOGS_BUILD_PATH = $$IDE_DATA_PATH
+    QMAKE_ASSET_CATALOGS_INSTALL_PATH = $$INSTALL_DATA_PATH
+    QMAKE_ASSET_CATALOGS_APP_ICON = qtcreator
 
     infoplist = $$cat($$PWD/app-Info.plist, blob)
-    infoplist = $$replace(infoplist, @MACOSX_DEPLOYMENT_TARGET@, $$QMAKE_MACOSX_DEPLOYMENT_TARGET)
-    infoplist = $$replace(infoplist, @QTCREATOR_COPYRIGHT_YEAR@, $$QTCREATOR_COPYRIGHT_YEAR)
-    infoplist = $$replace(infoplist, @PRODUCT_BUNDLE_IDENTIFIER@, $$PRODUCT_BUNDLE_IDENTIFIER)
+    infoplist = $$replace(infoplist, \\$\\{MACOSX_DEPLOYMENT_TARGET\\}, $$QMAKE_MACOSX_DEPLOYMENT_TARGET)
+    infoplist = $$replace(infoplist, \\$\\{IDE_COPYRIGHT_YEAR\\}, $$QTCREATOR_COPYRIGHT_YEAR)
+    infoplist = $$replace(infoplist, \\$\\{IDE_APP_TARGET\\}, $$IDE_APP_TARGET)
+    infoplist = $$replace(infoplist, \\$\\{IDE_BUNDLE_IDENTIFIER\\}, $$PRODUCT_BUNDLE_IDENTIFIER)
+    infoplist = $$replace(infoplist, \\$\\{IDE_VERSION\\}, $$QTCREATOR_VERSION)
     write_file($$OUT_PWD/Info.plist, infoplist)
 
     QMAKE_INFO_PLIST = $$OUT_PWD/Info.plist
@@ -78,3 +58,5 @@ DISTFILES += qtcreator.rc \
 QMAKE_SUBSTITUTES += $$PWD/app_version.h.in
 
 CONFIG += no_batch
+
+QMAKE_EXTRA_TARGETS += deployqt # dummy

@@ -26,13 +26,20 @@
 #include "iversioncontrol.h"
 #include "vcsmanager.h"
 
+#include <utils/algorithm.h>
+#include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 
+#include <QDir>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QStringList>
 
 /*!
     \class Core::IVersionControl::TopicCache
+    \inheaderfile coreplugin/iversioncontrol.h
+    \inmodule QtCreator
+
     \brief The TopicCache class stores a cache which maps a directory to a topic.
 
     A VCS topic is typically the current active branch name, but it can also have other
@@ -79,15 +86,64 @@ QStringList IVersionControl::additionalToolsPath() const
 }
 
 ShellCommand *IVersionControl::createInitialCheckoutCommand(const QString &url,
-                                                            const Utils::FileName &baseDirectory,
+                                                            const Utils::FilePath &baseDirectory,
                                                             const QString &localName,
                                                             const QStringList &extraArgs)
 {
-    Q_UNUSED(url);
-    Q_UNUSED(baseDirectory);
-    Q_UNUSED(localName);
-    Q_UNUSED(extraArgs);
+    Q_UNUSED(url)
+    Q_UNUSED(baseDirectory)
+    Q_UNUSED(localName)
+    Q_UNUSED(extraArgs)
     return nullptr;
+}
+
+IVersionControl::RepoUrl::RepoUrl(const QString &location)
+{
+    if (location.isEmpty())
+        return;
+
+    // Check for local remotes (refer to the root or relative path)
+    // On Windows, local paths typically starts with <drive>:
+    auto locationIsOnWindowsDrive = [&location] {
+        if (!Utils::HostOsInfo::isWindowsHost() || location.size() < 2)
+            return false;
+        const QChar drive = location.at(0).toLower();
+        return drive >= 'a' && drive <= 'z' && location.at(1) == ':';
+    };
+    if (location.startsWith("file://") || location.startsWith('/') || location.startsWith('.')
+            || locationIsOnWindowsDrive()) {
+        protocol = "file";
+        path = QDir::fromNativeSeparators(location.startsWith("file://")
+                                               ? location.mid(7) : location);
+        isValid = true;
+        return;
+    }
+
+    // TODO: Why not use QUrl?
+    static const QRegularExpression remotePattern(
+                "^(?:(?<protocol>[^:]+)://)?(?:(?<user>[^@]+)@)?(?<host>[^:/]+)"
+                "(?::(?<port>\\d+))?:?(?<path>.*)$");
+    const QRegularExpressionMatch match = remotePattern.match(location);
+    if (!match.hasMatch())
+        return;
+
+    bool ok  = false;
+    protocol = match.captured("protocol");
+    userName = match.captured("user");
+    host = match.captured("host");
+    port = match.captured("port").toUShort(&ok);
+    path = match.captured("path");
+    isValid = !host.isEmpty() && (ok || match.captured("port").isEmpty());
+}
+
+IVersionControl::RepoUrl IVersionControl::getRepoUrl(const QString &location) const
+{
+    return RepoUrl(location);
+}
+
+void IVersionControl::setTopicCache(TopicCache *topicCache)
+{
+    m_topicCache = topicCache;
 }
 
 QString IVersionControl::vcsTopic(const QString &topLevel)
@@ -95,14 +151,27 @@ QString IVersionControl::vcsTopic(const QString &topLevel)
     return m_topicCache ? m_topicCache->topic(topLevel) : QString();
 }
 
+IVersionControl::IVersionControl()
+{
+    Core::VcsManager::addVersionControl(this);
+}
+
 IVersionControl::~IVersionControl()
 {
     delete m_topicCache;
 }
 
+QStringList IVersionControl::unmanagedFiles(const QString &workingDir,
+                                            const QStringList &filePaths) const
+{
+    return Utils::filtered(filePaths, [wd = QDir(workingDir), this](const QString &f) {
+        return !managesFile(wd.path(), wd.relativeFilePath(f));
+    });
+}
+
 IVersionControl::OpenSupportMode IVersionControl::openSupportMode(const QString &fileName) const
 {
-    Q_UNUSED(fileName);
+    Q_UNUSED(fileName)
     return NoOpen;
 }
 
@@ -126,6 +195,17 @@ QString IVersionControl::TopicCache::topic(const QString &topLevel)
         return data.topic;
     data.timeStamp = lastModified;
     return data.topic = refreshTopic(topLevel);
+}
+
+void IVersionControl::fillLinkContextMenu(QMenu *, const QString &, const QString &)
+{
+}
+
+bool IVersionControl::handleLink(const QString &workingDirectory, const QString &reference)
+{
+    QTC_ASSERT(!reference.isEmpty(), return false);
+    vcsDescribe(workingDirectory, reference);
+    return true;
 }
 
 } // namespace Core

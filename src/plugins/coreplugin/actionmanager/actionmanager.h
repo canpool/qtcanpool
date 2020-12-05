@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include "coreplugin/core_global.h"
-#include "coreplugin/coreconstants.h"
-#include "coreplugin/icontext.h"
-#include <coreplugin/actionmanager/command.h>
+#include "../core_global.h"
+#include "../coreconstants.h"
+#include "../icontext.h"
+#include "command.h"
 
 #include <QObject>
 #include <QList>
@@ -55,19 +55,22 @@ class CORE_EXPORT ActionManager : public QObject
 public:
     static ActionManager *instance();
 
-    static ActionContainer *createMenu(Id id);
-    static ActionContainer *createMenuBar(Id id);
+    static ActionContainer *createMenu(Utils::Id id);
+    static ActionContainer *createMenuBar(Utils::Id id);
+    static ActionContainer *createTouchBar(Utils::Id id,
+                                           const QIcon &icon,
+                                           const QString &text = QString());
 
-    static Command *registerAction(QAction *action, Id id,
+    static Command *registerAction(QAction *action, Utils::Id id,
                                    const Context &context = Context(Constants::C_GLOBAL),
                                    bool scriptable = false);
 
-    static Command *command(Id id);
-    static ActionContainer *actionContainer(Id id);
+    static Command *command(Utils::Id id);
+    static ActionContainer *actionContainer(Utils::Id id);
 
     static QList<Command *> commands();
 
-    static void unregisterAction(QAction *action, Id id);
+    static void unregisterAction(QAction *action, Utils::Id id);
 
     static void setPresentationModeEnabled(bool enabled);
     static bool isPresentationModeEnabled();
@@ -76,7 +79,7 @@ public:
 
 signals:
     void commandListChanged();
-    void commandAdded(Core::Id id);
+    void commandAdded(Utils::Id id);
 
 private:
     ActionManager(QObject *parent = nullptr);

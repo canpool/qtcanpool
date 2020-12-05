@@ -50,7 +50,7 @@ EditorWindow::EditorWindow(QWidget *parent) :
 {
     m_area = new EditorArea;
     auto layout = new QVBoxLayout;
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     setLayout(layout);
     layout->addWidget(m_area);
@@ -70,7 +70,7 @@ EditorWindow::EditorWindow(QWidget *parent) :
     static int windowId = 0;
 
     ICore::registerWindow(this,
-                          Context(Id("EditorManager.ExternalWindow.").withSuffix(++windowId),
+                          Context(Utils::Id("EditorManager.ExternalWindow.").withSuffix(++windowId),
                                   Constants::C_EDITORMANAGER));
 
     connect(m_area, &EditorArea::windowTitleNeedsUpdate,

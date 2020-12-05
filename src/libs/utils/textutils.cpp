@@ -80,7 +80,7 @@ QString textAt(QTextCursor tc, int pos, int length)
     return tc.selectedText().replace(QChar::ParagraphSeparator, QLatin1Char('\n'));
 }
 
-QTextCursor selectAt(QTextCursor textCursor, uint line, uint column, uint length)
+QTextCursor selectAt(QTextCursor textCursor, int line, int column, uint length)
 {
     if (line < 1)
         line = 1;
@@ -88,11 +88,9 @@ QTextCursor selectAt(QTextCursor textCursor, uint line, uint column, uint length
     if (column < 1)
         column = 1;
 
-    textCursor.setPosition(0);
-    textCursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line - 1);
-    textCursor.movePosition(QTextCursor::NextCharacter,QTextCursor::MoveAnchor, column  + length - 1 );
-
-    textCursor.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor, length);
+    const int anchorPosition = positionInText(textCursor.document(), line, column + length);
+    textCursor.setPosition(anchorPosition);
+    textCursor.setPosition(anchorPosition - length, QTextCursor::KeepAnchor);
 
     return textCursor;
 }
@@ -140,8 +138,18 @@ QTextCursor wordStartCursor(const QTextCursor &textCursor)
     return cursor;
 }
 
+QString wordUnderCursor(const QTextCursor &cursor)
+{
+    QTextCursor tc(cursor);
+    tc.select(QTextCursor::WordUnderCursor);
+    return tc.selectedText();
+}
+
 int utf8NthLineOffset(const QTextDocument *textDocument, const QByteArray &buffer, int line)
 {
+    if (textDocument->blockCount() < line)
+        return -1;
+
     if (textDocument->characterCount() == buffer.size() + 1)
         return textDocument->findBlockByNumber(line - 1).position();
 
@@ -153,6 +161,76 @@ int utf8NthLineOffset(const QTextDocument *textDocument, const QByteArray &buffe
         ++utf8Offset;
     }
     return utf8Offset;
+}
+
+LineColumn utf16LineColumn(const QByteArray &utf8Buffer, int utf8Offset)
+{
+    Utils::LineColumn lineColumn;
+    lineColumn.line = static_cast<int>(
+                          std::count(utf8Buffer.begin(), utf8Buffer.begin() + utf8Offset, '\n'))
+                      + 1;
+    const int startOfLineOffset = utf8Offset ? (utf8Buffer.lastIndexOf('\n', utf8Offset - 1) + 1)
+                                             : 0;
+    lineColumn.column = QString::fromUtf8(
+                            utf8Buffer.mid(startOfLineOffset, utf8Offset - startOfLineOffset))
+                            .length()
+                        + 1;
+    return lineColumn;
+}
+
+QString utf16LineTextInUtf8Buffer(const QByteArray &utf8Buffer, int currentUtf8Offset)
+{
+    const int lineStartUtf8Offset = currentUtf8Offset
+                                        ? (utf8Buffer.lastIndexOf('\n', currentUtf8Offset - 1) + 1)
+                                        : 0;
+    const int lineEndUtf8Offset = utf8Buffer.indexOf('\n', currentUtf8Offset);
+    return QString::fromUtf8(
+        utf8Buffer.mid(lineStartUtf8Offset, lineEndUtf8Offset - lineStartUtf8Offset));
+}
+
+static bool isByteOfMultiByteCodePoint(unsigned char byte)
+{
+    return byte & 0x80; // Check if most significant bit is set
+}
+
+bool utf8AdvanceCodePoint(const char *&current)
+{
+    if (Q_UNLIKELY(*current == '\0'))
+        return false;
+
+    // Process multi-byte UTF-8 code point (non-latin1)
+    if (Q_UNLIKELY(isByteOfMultiByteCodePoint(*current))) {
+        unsigned trailingBytesCurrentCodePoint = 1;
+        for (unsigned char c = (*current) << 2; isByteOfMultiByteCodePoint(c); c <<= 1)
+            ++trailingBytesCurrentCodePoint;
+        current += trailingBytesCurrentCodePoint + 1;
+
+    // Process single-byte UTF-8 code point (latin1)
+    } else {
+        ++current;
+    }
+
+    return true;
+}
+
+void applyReplacements(QTextDocument *doc, const Replacements &replacements)
+{
+    if (replacements.empty())
+        return;
+
+    int fullOffsetShift = 0;
+    QTextCursor editCursor(doc);
+    editCursor.beginEditBlock();
+    for (const Utils::Text::Replacement &replacement : replacements) {
+        editCursor.setPosition(replacement.offset + fullOffsetShift);
+        editCursor.movePosition(QTextCursor::NextCharacter,
+                                QTextCursor::KeepAnchor,
+                                replacement.length);
+        editCursor.removeSelectedText();
+        editCursor.insertText(replacement.text);
+        fullOffsetShift += replacement.text.length() - replacement.length;
+    }
+    editCursor.endEditBlock();
 }
 
 } // Text

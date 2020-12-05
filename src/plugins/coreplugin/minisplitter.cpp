@@ -78,6 +78,23 @@ void MiniSplitterHandle::paintEvent(QPaintEvent *event)
     painter.fillRect(event->rect(), color);
 }
 
+/*!
+    \class Core::MiniSplitter
+    \inheaderfile coreplugin/minisplitter.h
+    \inmodule QtCreator
+
+    \brief The MiniSplitter class is a simple helper-class to obtain
+    \macos style 1-pixel wide splitters.
+*/
+
+/*!
+    \enum Core::MiniSplitter::SplitterStyle
+    This enum value holds the splitter style.
+
+    \value Dark  Dark style.
+    \value Light Light style.
+*/
+
 QSplitterHandle *MiniSplitter::createHandle()
 {
     return new MiniSplitterHandle(orientation(), this, m_style == Light);
@@ -92,8 +109,8 @@ MiniSplitter::MiniSplitter(QWidget *parent, SplitterStyle style)
     setProperty("minisplitter", true);
 }
 
-MiniSplitter::MiniSplitter(Qt::Orientation orientation, SplitterStyle style)
-    : QSplitter(orientation),
+MiniSplitter::MiniSplitter(Qt::Orientation orientation, QWidget *parent, SplitterStyle style)
+    : QSplitter(orientation, parent),
       m_style(style)
 {
     setHandleWidth(1);
@@ -102,11 +119,12 @@ MiniSplitter::MiniSplitter(Qt::Orientation orientation, SplitterStyle style)
 }
 
 /*!
-    \class NonResizingSplitter
-    \inmodule Qt Creator
+    \class Core::NonResizingSplitter
+    \inheaderfile coreplugin/minisplitter.h
+    \inmodule QtCreator
 
-    The NonResizingSplitter class is a MiniSplitter that keeps its first widget's size fixed
-    when it is resized.
+    \brief The NonResizingSplitter class is a MiniSplitter that keeps its
+    first widget's size fixed when it is resized.
 */
 
 /*!

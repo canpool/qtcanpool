@@ -28,6 +28,7 @@
 
 // Enable WinAPI Windows Vista and later
 #ifdef Q_OS_WIN
+// kept by maminjie on 2020-12-5 (QT 5.12.0)
 #undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0600 // Needed for QueryFullProcessImageName
 #include <windows.h>
@@ -123,17 +124,23 @@ QTCREATOR_UTILS_EXPORT QString winGetDLLVersion(WinDLLVersionType t,
     QString rc;
     switch (t) {
     case WinDLLFileVersion:
-        QTextStream(&rc) << HIWORD(versionInfo->dwFileVersionMS) << '.' << LOWORD(versionInfo->dwFileVersionMS);
+        QTextStream(&rc) << HIWORD(versionInfo->dwFileVersionMS) << '.'
+                         << LOWORD(versionInfo->dwFileVersionMS) << '.'
+                         << HIWORD(versionInfo->dwFileVersionLS) << '.'
+                         << LOWORD(versionInfo->dwFileVersionLS);
         break;
     case WinDLLProductVersion:
-        QTextStream(&rc) << HIWORD(versionInfo->dwProductVersionMS) << '.' << LOWORD(versionInfo->dwProductVersionMS);
+        QTextStream(&rc) << HIWORD(versionInfo->dwProductVersionMS) << '.'
+                         << LOWORD(versionInfo->dwProductVersionMS) << '.'
+                         << HIWORD(versionInfo->dwProductVersionLS) << '.'
+                         << LOWORD(versionInfo->dwProductVersionLS);
         break;
     }
     return rc;
 #endif
-    Q_UNUSED(t);
-    Q_UNUSED(name);
-    Q_UNUSED(errorMessage);
+    Q_UNUSED(t)
+    Q_UNUSED(name)
+    Q_UNUSED(errorMessage)
     return QString();
 }
 
@@ -182,7 +189,7 @@ QTCREATOR_UTILS_EXPORT QString imageName(quint32 processId)
         result = QString::fromUtf16(reinterpret_cast<const ushort*>(path));
     CloseHandle(handle);
 #else
-    Q_UNUSED(processId);
+    Q_UNUSED(processId)
 #endif
     return result;
 }

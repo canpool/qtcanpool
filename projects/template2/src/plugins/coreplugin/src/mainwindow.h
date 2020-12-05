@@ -65,7 +65,6 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    void aboutPlugins();
     void updateFocusWidget(QWidget *old, QWidget *now);
     void openDroppedFiles(const QList<Utils::DropSupport::FileSpec> &files);
     void restoreWindowState();

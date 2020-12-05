@@ -29,108 +29,173 @@
 #include "ioptionspage.h"
 
 #include <utils/stringutils.h>
+#include <utils/qtcassert.h>
 
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QIcon>
 #include <QLabel>
 #include <QPushButton>
+#include <QRegularExpression>
+
+using namespace Utils;
+
+/*!
+    \class Core::IOptionsPageProvider
+    \inmodule QtCreator
+    \internal
+*/
+/*!
+    \class Core::IOptionsPageWidget
+    \inmodule QtCreator
+    \internal
+*/
 
 /*!
     \class Core::IOptionsPage
-    \mainclass
-    \inmodule Qt Creator
+    \inheaderfile coreplugin/dialogs/ioptionspage.h
+    \ingroup mainclasses
+    \inmodule QtCreator
+
     \brief The IOptionsPage class is an interface for providing pages for the
-    \gui Options dialog (called \gui Preferences on Mac OS).
+    \uicontrol Options dialog (called \uicontrol Preferences on \macos).
+
+    \image qtcreator-options-dialog.png
 */
 
 /*!
 
-    \fn Id IOptionsPage::id() const
+    \fn Utils::Id Core::IOptionsPage::id() const
 
     Returns a unique identifier for referencing the options page.
 */
 
 /*!
-    \fn QString IOptionsPage::displayName() const
+    \fn QString Core::IOptionsPage::displayName() const
 
     Returns the translated display name of the options page.
 */
 
 /*!
-    \fn Id IOptionsPage::category() const
+    \fn Utils::Id Core::IOptionsPage::category() const
 
     Returns the unique id for the category that the options page should be displayed in. This id is
-    used for sorting the list on the left side of the \gui Options dialog.
+    used for sorting the list on the left side of the \uicontrol Options dialog.
 */
 
 /*!
-    \fn QString IOptionsPage::displayCategory() const
+    \fn QString Core::IOptionsPage::displayCategory() const
 
     Returns the translated category name of the options page. This name is displayed in the list on
-    the left side of the \gui Options dialog.
+    the left side of the \uicontrol Options dialog.
 */
 
 /*!
-    \fn QIcon IOptionsPage::categoryIcon() const
-
     Returns the category icon of the options page. This icon is displayed in the list on the left
-    side of the \gui Options dialog.
+    side of the \uicontrol Options dialog.
 */
-
 QIcon Core::IOptionsPage::categoryIcon() const
 {
     return m_categoryIcon.icon();
 }
 
 /*!
-    \fn QWidget *IOptionsPage::widget()
+    Sets the \a widgetCreator callback to create page widgets on demand. The
+    widget will be destroyed on finish().
+ */
+void Core::IOptionsPage::setWidgetCreator(const WidgetCreator &widgetCreator)
+{
+    m_widgetCreator = widgetCreator;
+}
 
-    Returns the widget to show in the \gui Options dialog. You should create a widget lazily here,
+/*!
+    Returns the widget to show in the \uicontrol Options dialog. You should create a widget lazily here,
     and delete it again in the finish() method. This method can be called multiple times, so you
     should only create a new widget if the old one was deleted.
+
+    Alternatively, use setWidgetCreator() to set a callback function that is used to
+    lazily create a widget in time.
+
+    Either override this function in a derived class, or set a widget creator.
 */
 
-/*!
-    \fn void IOptionsPage::apply()
+QWidget *Core::IOptionsPage::widget()
+{
+    QTC_ASSERT(m_widgetCreator, return nullptr);
+    if (!m_widget)
+        m_widget = m_widgetCreator();
+    return m_widget;
+}
 
-    This is called when selecting the \gui Apply button on the options page dialog. It should detect
-    whether any changes were made and store those.
+/*!
+    Called when selecting the \uicontrol Apply button on the options page dialog.
+    Should detect whether any changes were made and store those.
+
+    Either override this function in a derived class, or set a widget creator.
+
+    \sa setWidgetCreator()
 */
 
-/*!
-    \fn void IOptionsPage::finish()
+void Core::IOptionsPage::apply()
+{
+    QTC_ASSERT(m_widgetCreator, return);
+    if (m_widget)
+        m_widget->apply();
+}
 
-    Is called directly before the \gui Options dialog closes. Here you should delete the widget that
-    was created in widget() to free resources.
+/*!
+    Called directly before the \uicontrol Options dialog closes. Here you should
+    delete the widget that was created in widget() to free resources.
+
+    Either override this function in a derived class, or set a widget creator.
+
+    \sa setWidgetCreator()
 */
 
+void Core::IOptionsPage::finish()
+{
+    QTC_ASSERT(m_widgetCreator, return);
+    if (m_widget) {
+        m_widget->finish();
+        delete m_widget;
+    }
+}
+
 /*!
-    \fn void IOptionsPage::setId(Id id)
+    Sets \a categoryIconPath as the path to the category icon of the options
+    page.
+*/
+void Core::IOptionsPage::setCategoryIconPath(const QString &categoryIconPath)
+{
+    m_categoryIcon = Icon({{categoryIconPath, Theme::PanelTextColorDark}}, Icon::Tint);
+}
+
+/*!
+    \fn void Core::IOptionsPage::setId(Utils::Id id)
 
     Sets the \a id of the options page.
 */
 
 /*!
-    \fn void IOptionsPage::setDisplayName(const QString &displayName)
+    \fn void Core::IOptionsPage::setDisplayName(const QString &displayName)
 
     Sets \a displayName as the display name of the options page.
 */
 
 /*!
-    \fn void IOptionsPage::setCategory(Id category)
+    \fn void Core::IOptionsPage::setCategory(Utils::Id category)
 
     Uses \a category to sort the options pages.
 */
 
 /*!
-    \fn void IOptionsPage::setDisplayCategory(const QString &displayCategory)
+    \fn void Core::IOptionsPage::setDisplayCategory(const QString &displayCategory)
 
     Sets \a displayCategory as the display category of the options page.
 */
 
 /*!
-    \fn void IOptionsPage::setCategoryIcon(const QString &categoryIcon)
+    \fn void Core::IOptionsPage::setCategoryIcon(const Utils::Icon &categoryIcon)
 
     Sets \a categoryIcon as the category icon of the options page.
 */
@@ -139,7 +204,7 @@ static QList<Core::IOptionsPage *> g_optionsPages;
 
 /*!
     Constructs an options page with the given \a parent and registers it
-    at the global options page pool if \a registerGlobally is true.
+    at the global options page pool if \a registerGlobally is \c true.
 */
 Core::IOptionsPage::IOptionsPage(QObject *parent, bool registerGlobally)
     : QObject(parent)
@@ -149,24 +214,27 @@ Core::IOptionsPage::IOptionsPage(QObject *parent, bool registerGlobally)
 }
 
 /*!
-    Destroys the options page.
+    \internal
  */
 Core::IOptionsPage::~IOptionsPage()
 {
     g_optionsPages.removeOne(this);
 }
 
+/*!
+    Returns a list of all options pages.
+ */
 const QList<Core::IOptionsPage *> Core::IOptionsPage::allOptionsPages()
 {
     return g_optionsPages;
 }
 
 /*!
-    Is used by the \gui Options dialog search filter to match \a searchKeyWord to this options
+    Is used by the \uicontrol Options dialog search filter to match \a regexp to this options
     page. This defaults to take the widget and then looks for all child labels, check boxes, push
     buttons, and group boxes. Should return \c true when a match is found.
 */
-bool Core::IOptionsPage::matches(const QString &searchKeyWord) const
+bool Core::IOptionsPage::matches(const QRegularExpression &regexp) const
 {
     if (!m_keywordsInitialized) {
         auto that = const_cast<IOptionsPage *>(this);
@@ -186,7 +254,7 @@ bool Core::IOptionsPage::matches(const QString &searchKeyWord) const
         m_keywordsInitialized = true;
     }
     foreach (const QString &keyword, m_keywords)
-        if (keyword.contains(searchKeyWord, Qt::CaseInsensitive))
+        if (keyword.contains(regexp))
             return true;
     return false;
 }

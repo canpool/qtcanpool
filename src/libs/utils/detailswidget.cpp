@@ -110,9 +110,9 @@ DetailsWidgetPrivate::DetailsWidgetPrivate(QWidget *parent) :
     summaryLayout->addWidget(m_summaryLabelIcon);
 
     m_summaryLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
-    m_summaryLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    m_summaryLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Minimum);
     m_summaryLabel->setContentsMargins(0, 0, 0, 0);
-    summaryLayout->addWidget(m_summaryLabel);
+    summaryLayout->addWidget(m_summaryLabel, 1);
 
     m_summaryCheckBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     m_summaryCheckBox->setAttribute(Qt::WA_LayoutUsesWidgetRect); /* broken layout on mac otherwise */
@@ -227,6 +227,16 @@ void DetailsWidget::setUseCheckBox(bool b)
 {
     d->m_useCheckBox = b;
     d->updateControls();
+}
+
+void DetailsWidget::setCheckable(bool b)
+{
+    d->m_summaryCheckBox->setEnabled(b);
+}
+
+void DetailsWidget::setExpandable(bool b)
+{
+    d->m_detailsButton->setEnabled(b);
 }
 
 void DetailsWidget::setChecked(bool b)

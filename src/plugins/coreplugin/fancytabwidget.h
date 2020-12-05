@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <utils/infobar.h>
+
 #include <QIcon>
 #include <QWidget>
 
@@ -125,6 +127,7 @@ public:
     QRect tabRect(int index) const;
 
 signals:
+    void currentAboutToChange(int index);
     void currentChanged(int index);
     void menuTriggered(int index, QMouseEvent *event);
 
@@ -156,6 +159,7 @@ public:
 
     int currentIndex() const;
     QStatusBar *statusBar() const;
+    Utils::InfoBar *infoBar();
 
     void setTabEnabled(int index, bool enable);
     bool isTabEnabled(int index) const;
@@ -182,6 +186,8 @@ private:
     QStackedLayout *m_modesStack;
     QWidget *m_selectionWidget;
     QStatusBar *m_statusBar;
+    Utils::InfoBarDisplay m_infoBarDisplay;
+    Utils::InfoBar m_infoBar;
 };
 
 } // namespace Internal
