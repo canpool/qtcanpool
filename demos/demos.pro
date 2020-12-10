@@ -5,7 +5,6 @@ SUBDIRS +=  \
     fancydemo \
     fancyribbon \
     qtqrcode \
-    qtitanribbon \
     litedemo \
     controldemo
 

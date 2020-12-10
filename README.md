@@ -24,7 +24,7 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 |projects||项目目录，其中提供简单的模板template，用户可以持续添加自己的项目在此目录，<br>从而实现一套框架管理多项目
 |share||源代码中所需要的一些非代码共享文件
 |src||源代码文件
-||libs|基础类库，包含qcanpool、qlite、qribbon、extensionsystem、aggregation、utils等
+||libs|基础类库，包含qcanpool、qlite、extensionsystem、aggregation、utils等
 ||modules|基础模块，包含qtoffice、qtqrcode、qcustomcontrols等
 ||shared|共享的实用代码文件
 ||tools|实用的工具
@@ -56,6 +56,3 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 - <font size=4>qliteDemo</font>
 ![qlite](./doc/pics/qlite.png)
-
-- <font size=4>qribbonDemo</font>
-![qribbon](./doc/pics/qribbon.png)
