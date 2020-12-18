@@ -1,0 +1,16 @@
+qtcanpool changelog:
+
+Version 1.1.0
+
+* plugins:
+- sync coreplugin to qt-creator-4.13.2
+- remove vcsbase
+* libs:
+- remove qextserialport, qtsoap, qftp
+- sync aggregation, extensionsystem, utils to qt-creator-4.13.2
+- upgrade qcanpool to 1.1.0
+- upgrade qlite to 1.1.0
+
+Version 1.0.0
+
+- initial release

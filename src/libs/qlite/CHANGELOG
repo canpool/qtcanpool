@@ -1,0 +1,13 @@
+qlite changelog:
+
+Version 1.1.0
+
+* Fixed:
+- fix the qss display
+- fix the icon hiding of LiteTabWidget
+* Ported:
+- adapt to linux
+
+Version 1.0.0
+
+- initial release

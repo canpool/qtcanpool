@@ -35,13 +35,14 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 - Qt 5.10.0/5.12.0 MSVC2015 64bit
 - Qt 5.12.0 MinGW 64bit
 
-### 开源协议
+### 协议
 * 遵循GPLv3/LGPLv3开源许可协议
 
-### 编码规范
+### 规范
 * [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)
 * [Qt 编程风格与规范](https://blog.csdn.net/qq_35488967/article/details/70055490)
 * 源文件采用UTF-8编码
+* [仓库管理规范](./doc/仓库管理规范.md)
 
 ### 贡献
 * 欢迎提交issue对关心的问题发起讨论
@@ -56,3 +57,6 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 - <font size=4>qliteDemo</font>
 ![qlite](./doc/pics/qlite.png)
+
+### 扩展
+- [canopen](https://gitee.com/icanpool/canopen/blob/master/qtcanpool.md)

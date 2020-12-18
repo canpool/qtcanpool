@@ -1,0 +1,23 @@
+qcanpool changelog:
+
+Version 1.1.0
+
+* Optimized:
+- FancyBar supports the menubar height adaptation
+* Added:
+- add FancyRibbon, FancyRibbonPage, FancyRibbonGroup
+- add FancyPopupWidget, FancyApplicationWidget
+* Ported:
+- adapt FancyBar to linux
+* Changed:
+- remove minicard, simplefilter, pagesorter to miscs
+- add the namespace QCanpool
+- separate FancyTitleBar from FancyBar
+- rename CentralArea to MiniCentralArea
+- rename Cursor->FancyCursor, ScreenHelper->FancyScreen
+- rename IMode->FancyMode, QuickAccessBar->FancyQuickAccessBar
+- rename IModeBar->FancyModeBar, ModeManager->FancyModeManger and refect them
+
+Version 1.0.0
+
+- initial release
