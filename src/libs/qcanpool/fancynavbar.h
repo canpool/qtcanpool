@@ -60,8 +60,6 @@ public:
 signals:
     void sigSideExpand(bool expand);
 
-public slots:
-
 private:
     FancyNavBarPrivate *d;
 };
