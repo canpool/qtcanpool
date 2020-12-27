@@ -30,16 +30,6 @@
 #include <QTextStream>
 #include <QColor>
 
-static QString colorToArgb(const QColor &color)
-{
-    QString argb =  QString("%1%2%3%4")
-            .arg(color.alpha(), 2, 16, QLatin1Char('0'))
-            .arg(color.red(), 2, 16, QLatin1Char('0'))
-            .arg(color.green(), 2, 16, QLatin1Char('0'))
-            .arg(color.blue(), 2, 16, QLatin1Char('0'));
-    return argb;
-}
-
 Worksheet::Worksheet()
 {
     sheetName = QString("Sheet");

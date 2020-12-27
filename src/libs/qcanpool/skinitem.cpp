@@ -134,7 +134,7 @@ void SkinItem::paintEvent(QPaintEvent *)
         QPen pen(BORDER_COLOR);
         pen.setWidth(5);
         painter.setPen(pen);
-        painter.drawRoundRect(0, 0, this->width() - 1, this->height() - 1, 5, 5);
+        painter.drawRoundedRect(0, 0, this->width() - 1, this->height() - 1, 5, 5);
 
         if (d->m_isSelected) {
             QString state = QString(":/skin/state_ok");

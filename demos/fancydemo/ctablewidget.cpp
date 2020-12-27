@@ -96,7 +96,7 @@ void CTableWidget::setBackgroundColor(int row, QColor color)
     {
         QTableWidgetItem *item = this->item(row, col);
         if(item)
-            item->setBackgroundColor(color);
+            item->setBackground(color);
     }
 }
 
@@ -106,7 +106,7 @@ void CTableWidget::setTextColor(int row, QColor color)
     {
         QTableWidgetItem *item = this->item(row, col);
         if(item)
-            item->setTextColor(color);
+            item->setBackground(color);
     }
 }
 
