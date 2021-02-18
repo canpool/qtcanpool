@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2019-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2019-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -29,13 +29,16 @@
 
 #include <QtCore/qglobal.h>
 
+#if !defined(QLITE_LIBRARY_DISABLE)
 #if defined(QLITE_LIBRARY)
 #  define QLITE_SHARED_EXPORT Q_DECL_EXPORT
 #else
 #  define QLITE_SHARED_EXPORT Q_DECL_IMPORT
 #endif
-
-#define QLITE_NAMESPACE  QLite
+#  define QLITE_NAMESPACE QLite
+#else
+#  define QLITE_SHARED_EXPORT
+#endif
 
 #if !defined(QLITE_NAMESPACE)
 #define QLITE_BEGIN_NAMESPACE

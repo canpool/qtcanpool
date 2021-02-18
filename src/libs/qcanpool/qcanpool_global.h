@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -29,13 +29,16 @@
 
 #include <QtCore/qglobal.h>
 
+#if !defined(QCANPOOL_LIBRARY_DISABLE)
 #if defined(QCANPOOL_LIBRARY)
 #  define QCANPOOL_SHARED_EXPORT Q_DECL_EXPORT
 #else
 #  define QCANPOOL_SHARED_EXPORT Q_DECL_IMPORT
 #endif
-
-#define QCANPOOL_NAMESPACE  QCanpool
+#  define QCANPOOL_NAMESPACE QCanpool
+#else
+#  define QCANPOOL_SHARED_EXPORT
+#endif
 
 #if !defined(QCANPOOL_NAMESPACE)
 #define QCANPOOL_BEGIN_NAMESPACE
