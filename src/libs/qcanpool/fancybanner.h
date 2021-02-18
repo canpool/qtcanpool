@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -48,6 +48,8 @@ public:
 
     void setIndicatorFrontColor(QColor color);
     void setIndicatorBackColor(QColor color);
+
+    void setPageSize(int w, int h);
 
 signals:
     void currentClicked(int index);
