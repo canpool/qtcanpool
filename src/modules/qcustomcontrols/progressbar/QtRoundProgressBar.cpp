@@ -17,7 +17,7 @@
  */
 /***************************************************************************
  **
- **  Copyright (C) 2019-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2019-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -44,7 +44,8 @@
 
 #include "QtRoundProgressBar.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
+#include <QPainterPath>
 
 QtRoundProgressBar::QtRoundProgressBar(QWidget *parent) :
     QWidget(parent),

@@ -33,7 +33,8 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 ### 环境
 - Qt 5.10.0 MinGW 32bit
 - Qt 5.10.0/5.12.0 MSVC2015 64bit
-- Qt 5.12.0 MinGW 64bit
+- Qt 5.12.0/5.15.2 MinGW 64bit
+- Qt 5.15.2 MSVC2019 64bit
 
 ### 协议
 * 遵循GPLv3/LGPLv3开源许可协议

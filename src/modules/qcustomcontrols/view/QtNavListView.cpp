@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2019-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2019-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **  Reference: http://www.qtcn.org
@@ -28,6 +28,7 @@
 #include "QtNavListView.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QFile>
 #include <QDomDocument>
 
