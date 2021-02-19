@@ -30,7 +30,7 @@
 #include <QObject>
 #include "qcanpool_global.h"
 
-QCANPOOL_BEGIN_NAMESPACE
+namespace QCanpool {
 
 // color
 QCANPOOL_SHARED_EXPORT QColor argbToColor(const QString &argb);
@@ -42,6 +42,6 @@ QCANPOOL_SHARED_EXPORT void showInExplorer(QString fileName);
 // settings
 QCANPOOL_SHARED_EXPORT void setSysSettings(const QString &organization, const QString &application);
 
-QCANPOOL_END_NAMESPACE
+} // namespace QCanpool
 
 #endif // QCANPOOL_H

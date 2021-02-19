@@ -12,7 +12,8 @@ class LiteTabWidget;
 class LiteTabBar;
 QLITE_END_NAMESPACE
 
-class MainWindow : public QLite::LiteWindow
+
+class MainWindow : public QLITE_PREPEND_NAMESPACE(LiteWindow)
 {
     Q_OBJECT
 
@@ -30,12 +31,11 @@ private slots:
     void slotChangeSkin();
 
 private:
-    QLite::LiteModeBar *m_pModeBar;
+    QLITE_PREPEND_NAMESPACE(LiteModeBar) *m_pModeBar;
     QStackedWidget *m_pStackedWidget;
 
-    QLite::LiteTabWidget *m_pTabWidget;
-    QLite::LiteTabBar *m_pTabBar;
-
+    QLITE_PREPEND_NAMESPACE(LiteTabWidget) *m_pTabWidget;
+    QLITE_PREPEND_NAMESPACE(LiteTabBar) *m_pTabBar;
     QActionGroup *m_pActionGroup;
 };
 

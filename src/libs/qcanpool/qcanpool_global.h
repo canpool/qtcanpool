@@ -35,9 +35,12 @@
 #else
 #  define QCANPOOL_SHARED_EXPORT Q_DECL_IMPORT
 #endif
-#  define QCANPOOL_NAMESPACE QCanpool
 #else
 #  define QCANPOOL_SHARED_EXPORT
+#endif
+
+#if !defined(QCANPOOL_NAMESPACE_DISABLE)
+#define QCANPOOL_NAMESPACE  QCanpool
 #endif
 
 #if !defined(QCANPOOL_NAMESPACE)

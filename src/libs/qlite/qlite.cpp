@@ -32,7 +32,9 @@
 #include <QColor>
 #include <QPalette>
 
-void QLITE_PREPEND_NAMESPACE(setStyle)(const QString &style)
+namespace QLite {
+
+void setStyle(const QString &style)
 {
     QFile file(style);
     if (file.open(QFile::ReadOnly)) {
@@ -44,7 +46,7 @@ void QLITE_PREPEND_NAMESPACE(setStyle)(const QString &style)
     }
 }
 
-QString QLITE_PREPEND_NAMESPACE(loadStyle)(const QString &filename)
+QString loadStyle(const QString &filename)
 {
     QFile stylefile(filename);
     if (stylefile.open(QFile::ReadOnly)) {
@@ -55,3 +57,5 @@ QString QLITE_PREPEND_NAMESPACE(loadStyle)(const QString &filename)
         return QString("");
     }
 }
+
+} // namespace QLite

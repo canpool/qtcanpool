@@ -35,9 +35,12 @@
 #else
 #  define QLITE_SHARED_EXPORT Q_DECL_IMPORT
 #endif
-#  define QLITE_NAMESPACE QLite
 #else
 #  define QLITE_SHARED_EXPORT
+#endif
+
+#if !defined(QLITE_NAMESPACE_DISABLE)
+#define QLITE_NAMESPACE QLite
 #endif
 
 #if !defined(QLITE_NAMESPACE)

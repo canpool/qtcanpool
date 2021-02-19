@@ -19,8 +19,8 @@
 #include "qlite/litetabbar.h"
 #include "qlite/litedialog.h"
 #include "qlite/litebar.h"
-
 QLITE_USE_NAMESPACE
+
 
 MainWindow::MainWindow(QWidget *parent)
     : LiteWindow(parent)
