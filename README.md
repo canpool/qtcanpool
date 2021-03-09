@@ -10,7 +10,7 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 - [码云](https://gitee.com/icanpool/qtcanpool)
 
 ### 教程
-- [核心库使用教程](http://blog.csdn.net/mmjbigma/article/details/79427537)
+- [使用教程](https://blog.csdn.net/canpool/category_10631139.html)
 - [配套附件](https://pan.baidu.com/s/1o3d_IV2KWgcrnftaGVxFKA)
 - [初学教程](https://blog.csdn.net/liang19890820/article/details/50277095#qt%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7)
 - [学习之路](https://www.devbean.net/category/qt-study-road-2/)
