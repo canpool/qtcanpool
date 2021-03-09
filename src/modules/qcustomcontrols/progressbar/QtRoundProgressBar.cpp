@@ -210,13 +210,13 @@ void QtRoundProgressBar::paintEvent(QPaintEvent* /*event*/)
     p.end();
 
     QPainter painter(this);
-    painter.fillRect(baseRect, palette().background());
+    painter.fillRect(baseRect, palette().window());
     painter.drawImage(0, 0, buffer);
 }
 
 void QtRoundProgressBar::drawBackground(QPainter &p, const QRectF &baseRect)
 {
-    p.fillRect(baseRect, palette().background());
+    p.fillRect(baseRect, palette().window());
 }
 
 void QtRoundProgressBar::drawBase(QPainter &p, const QRectF &baseRect)
