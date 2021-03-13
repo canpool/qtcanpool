@@ -58,6 +58,7 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 - <font size=4>qliteDemo</font>
 ![qlite](./doc/pics/qlite.png)
+![qlite-show](./doc/pics/qlite-show.png)
 
 ### 扩展
 - [canopen](https://gitee.com/icanpool/canopen/blob/master/qtcanpool.md)
