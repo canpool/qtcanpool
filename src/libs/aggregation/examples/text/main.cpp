@@ -27,8 +27,8 @@
 
 #include <QApplication>
 
-MyMain::MyMain(QWidget *parent, Qt::WFlags flags)
-    : QWidget(parent, flags)
+MyMain::MyMain(QWidget *parent, Qt::WindowFlags f)
+    : QWidget(parent, f)
 {
     ui.setupUi(this);
     connect(ui.comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
