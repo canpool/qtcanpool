@@ -5,8 +5,6 @@
 
 QCANPOOL_USE_NAMESPACE
 
-class MiniCard;
-
 QCANPOOL_BEGIN_NAMESPACE
 class TinyTabWidget;
 QCANPOOL_END_NAMESPACE
@@ -19,11 +17,9 @@ public:
 
 private:
     void createWindow();
-    void createCards();
 
 private:
     TinyTabWidget *m_pTabWidget;
-    QList<MiniCard *> m_infoCards;
 };
 
 #endif // CUSTOMMODE_H

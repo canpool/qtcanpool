@@ -47,7 +47,7 @@ SkinDialog::SkinDialog(QWidget *parent)
 
     createWindow();
 
-    setFixedSize(800, 600); //
+    resize(800, 600);
     setWindowTitle(tr("Change Skin Center"));
     setWindowIcon(QIcon(":/main/logo"));
 }

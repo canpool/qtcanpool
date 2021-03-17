@@ -3,7 +3,7 @@ include(../qtproject.pri)
 TEMPLATE  = subdirs
 CONFIG   += ordered
 
-SUBDIRS += \
+SUBDIRS = \
     libs \
     tools \
 

@@ -6,10 +6,6 @@
 #include "cwidgets.h"
 #include "ctablewidget.h"
 
-#include "minicard.h"
-#include "simplefilter.h"
-#include "qcustomchart.h"
-
 CustomMode::CustomMode(QWidget *parent)
     : FancyMode(parent)
 {
@@ -22,27 +18,17 @@ CustomMode::CustomMode(QWidget *parent)
 
 void CustomMode::createWindow()
 {
-    QGridLayout *pCardLayout = new QGridLayout();
-    pCardLayout->setSpacing(10);
-    pCardLayout->setContentsMargins(10,10,10,5);
-    createCards();
-    for(int j = 0; j < m_infoCards.count(); j++){
-        pCardLayout->addWidget(m_infoCards.at(j), j/6, j%6);
-    }
-
-    ////////////
     MiniStack *stack1 = new MiniStack();
-    stack1->setTitle(tr("Device Chooser"));
+    stack1->setTitle(tr("Mini Stack"));
     stack1->setTitleMargins(5,1,5,1);
 
-    QCustomChart *chart = new QCustomChart();
     MiniStack *stack2 = new MiniStack();
     stack2->setTitleMargins(5,1,5,1);
-    stack2->addTab(tr("Tab1"), chart);
-    stack2->addTab(tr("Tab2"), new QWidget);
-    stack2->addTab(tr("Tab3"), new QWidget);
-    stack2->addTab(tr("Tab4"), new QWidget);
-    stack2->setTitle(tr("real-time curve - chart"));
+    stack2->addTab(tr("Tab1"), new QTextEdit("tab1"));
+    stack2->addTab(tr("Tab2"), new QTextEdit("tab2"));
+    stack2->addTab(tr("Tab3"), new QTextEdit("tab3"));
+    stack2->addTab(tr("Tab4"), new QTextEdit("tab4"));
+    stack2->setTitle(tr("Mini Stack"));
 
     QHBoxLayout *pStackLayout = new QHBoxLayout();
     pStackLayout->setContentsMargins(10,5,10,5);
@@ -54,7 +40,6 @@ void CustomMode::createWindow()
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(0);
-    layout->addLayout(pCardLayout);
     layout->addLayout(pStackLayout);
     layout->addStretch();
     QWidget *w = new QWidget();
@@ -103,68 +88,4 @@ void CustomMode::createWindow()
     tabWidget->setTabPosition(TinyTabWidget::East);
 
     setWidget(tabWidget);
-}
-
-void CustomMode::createCards()
-{
-    MiniCard *card = new MiniCard();
-    card->setTitle(tr("Device"));
-    card->setInfo(tr("Device info"));
-    card->setValue("0");
-    card->setDesc(tr("Online num"));
-    card->setNote(tr("Total: 0"));
-    m_infoCards.append(card);
-
-    card = new MiniCard();
-    card->setTitle(tr("Sensor"));
-    card->setInfo(tr("Sensor info"));
-    card->setValue("0");
-    card->setDesc(tr("Total"));
-    card->setNote("20%");
-    card->setInfoBackgroundColor(QColor(35,198,200));
-    card->setNoteColor(QColor(35,198,200,255));
-    m_infoCards.append(card);
-
-
-    card = new MiniCard();
-    card->setTitle(tr("Data upload"));
-    card->setInfo(tr("Data info"));
-    card->setValue("0");
-    card->setDesc(tr("Upload num"));
-    card->setNote(QDateTime::currentDateTime().toString("MM/dd hh:mm"));
-    card->setInfoBackgroundColor(QColor(35,198,200));
-    card->setNoteColor(QColor(35,198,200));
-    m_infoCards.append(card);
-
-
-    card = new MiniCard();
-    card->setTitle(tr("Warning record"));
-    card->setInfo(tr("Warning info"));
-    card->setValue("0");
-    card->setDesc(tr("Warning num"));
-    card->setNote(QDateTime::currentDateTime().toString("MM/dd hh:mm"));
-    card->setInfoBackgroundColor(QColor(248,172,89));
-    card->setNoteColor(QColor(35,198,200));
-    m_infoCards.append(card);
-
-    card = new MiniCard();
-    card->setTitle(tr("User record"));
-    card->setInfo(tr("User info"));
-    card->setValue("0");
-    card->setDesc(tr("Online num"));
-    card->setNote("20%");
-    card->setInfoBackgroundColor(QColor(35,198,200));
-    card->setNoteColor(QColor(35,198,200));
-    m_infoCards.append(card);
-
-
-    card = new MiniCard();
-    card->setTitle(tr("Access record"));
-    card->setInfo(tr("System info"));
-    card->setValue("0");
-    card->setDesc(tr("Access num"));
-    card->setNote(QDateTime::currentDateTime().toString("MM/dd hh:mm"));
-    card->setInfoBackgroundColor(QColor(35,198,200));
-    card->setNoteColor(QColor(35,198,200));
-    m_infoCards.append(card);
 }

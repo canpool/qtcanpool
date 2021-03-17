@@ -1,13 +1,10 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS +=  \
+SUBDIRS = \
     fancydemo \
     fancyribbon \
     qtqrcode \
     litedemo \
-    controldemo
-
-win32 {
-SUBDIRS += qtoffice
-}
+    controldemo \
+    qtoffice

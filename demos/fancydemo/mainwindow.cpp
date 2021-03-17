@@ -39,7 +39,6 @@
 #include "qcanpool/fancynavbar.h"
 #include "qcanpool/fancybanner.h"
 
-#include "pagesorter.h"
 #include "skindialog.h"
 #include "theme.h"
 

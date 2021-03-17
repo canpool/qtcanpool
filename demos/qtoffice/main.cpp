@@ -7,8 +7,10 @@
 #include <QTextEdit>
 #include <QTextDocumentWriter>
 
+#if defined(Q_OS_WIN)
 #include "qtword.h"
 #include "qtexcel.h"
+#endif
 #include "qtxmlexcel.h"
 #include "qthtmlword.h"
 
@@ -43,6 +45,7 @@ int main(int argc, char *argv[])
 
 #endif
 
+#if defined(Q_OS_WIN)
 #if 1
     // base on QtExcel
     QString appDir = QApplication::applicationDirPath();
@@ -104,8 +107,8 @@ int main(int argc, char *argv[])
     excel.save();
     excel.close();
     qDebug()<<"excel demo end";
-
 #endif
+#endif // Q_OS_WIN
 
     // word test
 #if 0
@@ -176,7 +179,7 @@ int main(int argc, char *argv[])
     qDebug()<<"QtHtmlWord demo end!";
 #endif
 
-
+#if defined(Q_OS_WIN)
 #if 0
     // base on QtWord
     QtWord word;
@@ -311,6 +314,7 @@ int main(int argc, char *argv[])
     word.close();
     qDebug()<<"word operation end!";
 #endif
+#endif // Q_OS_WIN
 
 //    return a.exec();
 }

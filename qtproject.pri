@@ -23,7 +23,6 @@ isEmpty(QTPROJECT_OUT_PWD):         QTPROJECT_OUT_PWD = $$OUT_PWD
 isEmpty(QTPROJECT_PRO_FILE_PWD):    QTPROJECT_PRO_FILE_PWD = $$_PRO_FILE_PWD_
 isEmpty(QTPROJECT_PRO_FILE):        QTPROJECT_PRO_FILE = $$_PRO_FILE_
 
-CONFIG += c++14
 
 defineReplace(qtLibraryTargetName) {
    unset(LIBRARY_NAME)

@@ -39,7 +39,7 @@ HEADERS += \
     gaugewidget.h \
     viewwidget.h
 
-include($$QTCANPOOL_DIR/src/modules/modules.pri)
+include($$QTCANPOOL_DIR/src/modules/qcustomcontrols/qcustomcontrols.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
