@@ -26,7 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-include($$QTCANPOOL_ROOT/src/rpath.pri)
+include($$QTCANPOOL_DIR/src/rpath.pri)
 
 # lib
 LIBS *= -l$$qtLibraryNameVersion(qlite, 1)

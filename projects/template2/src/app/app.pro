@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 include(../../qtproject.pri)
-include($$QTCANPOOL_ROOT/src/shared/qtsingleapplication/qtsingleapplication.pri)
-include($$QTCANPOOL_ROOT/src/rpath.pri)
+include($$QTCANPOOL_DIR/src/shared/qtsingleapplication/qtsingleapplication.pri)
+include($$QTCANPOOL_DIR/src/rpath.pri)
 
 QT       += core gui network
 
@@ -34,8 +34,8 @@ CONFIG += c++11
 # lib
 LIBS *= -l$$qtLibraryName(ExtensionSystem) -l$$qtLibraryName(Aggregation) -l$$qtLibraryName(Utils)
 
-HEADERS += $$QTCANPOOL_ROOT/src/tools/qtcreatorcrashhandler/crashhandlersetup.h
-SOURCES += main.cpp $$QTCANPOOL_ROOT/src/tools/qtcreatorcrashhandler/crashhandlersetup.cpp
+HEADERS += $$QTCANPOOL_DIR/src/tools/qtcreatorcrashhandler/crashhandlersetup.h
+SOURCES += main.cpp $$QTCANPOOL_DIR/src/tools/qtcreatorcrashhandler/crashhandlersetup.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

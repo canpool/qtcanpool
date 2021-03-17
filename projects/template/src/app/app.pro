@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 include(../../qtproject.pri)
-include($$QTCANPOOL_ROOT/src/rpath.pri)
+include($$QTCANPOOL_DIR/src/rpath.pri)
 
 QT       += core gui
 

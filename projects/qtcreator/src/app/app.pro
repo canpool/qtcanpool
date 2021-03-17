@@ -1,5 +1,5 @@
 include(../../qtproject.pri)
-include($$QTCANPOOL_ROOT/src/shared/qtsingleapplication/qtsingleapplication.pri)
+include($$QTCANPOOL_DIR/src/shared/qtsingleapplication/qtsingleapplication.pri)
 
 TEMPLATE = app
 CONFIG += qtc_runnable sliced_bundle
@@ -8,12 +8,12 @@ DESTDIR = $$IDE_APP_PATH
 VERSION = $$QTCREATOR_VERSION
 QT -= testlib
 
-HEADERS += $$QTCANPOOL_ROOT/src/tools/qtcreatorcrashhandler/crashhandlersetup.h
-SOURCES += main.cpp $$QTCANPOOL_ROOT/src/tools/qtcreatorcrashhandler/crashhandlersetup.cpp
+HEADERS += $$QTCANPOOL_DIR/src/tools/qtcreatorcrashhandler/crashhandlersetup.h
+SOURCES += main.cpp $$QTCANPOOL_DIR/src/tools/qtcreatorcrashhandler/crashhandlersetup.cpp
 
 RPATH_BASE = $$IDE_BIN_PATH
-include($$QTCANPOOL_ROOT/src/rpath.pri)
-include($$QTCANPOOL_ROOT/src/libs/qt-breakpad/qtbreakpad.pri)
+include($$QTCANPOOL_DIR/src/rpath.pri)
+include($$QTCANPOOL_DIR/src/libs/qt-breakpad/qtbreakpad.pri)
 
 LIBS *= -l$$qtLibraryName(ExtensionSystem) -l$$qtLibraryName(Aggregation) -l$$qtLibraryName(Utils)
 
