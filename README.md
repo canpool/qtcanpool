@@ -31,10 +31,14 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 |thirdparty||第三方模块
 
 ### 环境
-- Qt 5.10.0 MinGW 32bit
-- Qt 5.10.0/5.12.0 MSVC2015 64bit
-- Qt 5.12.0/5.15.2 MinGW 64bit
-- Qt 5.15.2 MSVC2019 64bit
+- Qt 5.12.0 Linux (travis ci)
+- Qt 5.15.2 MinGW/MSVC2019 64bit
+- 其它环境未测试，推荐使用[QT LTS](https://download.qt.io/official_releases/qt/)版本
+
+### 版本
+- 格式：x.y.z
+- 说明：主版本.次版本.补丁版本
+- 补充：主版本和次版本都可能存在重大变更，请查看CHANGELOG
 
 ### 协议
 * 遵循GPLv3/LGPLv3开源许可协议
