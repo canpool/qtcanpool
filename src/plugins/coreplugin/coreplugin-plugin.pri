@@ -281,5 +281,6 @@ equals(TEST, 1) {
 }
 
 # added by maminjie
+INCLUDEPATH += $$PWD
 HEADERS += \
     $$PWD/vcsbase/vcsbaseconstants.h
