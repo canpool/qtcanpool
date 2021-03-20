@@ -134,7 +134,7 @@ void SkinDialog::createWindow()
 
 QString SkinDialog::skinName()
 {
-    QSettings settings("Canpool", "qtcanpool");
+    QSettings settings(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
     QString skinName = settings.value("skin").toString();
     return skinName;
 }

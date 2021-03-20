@@ -89,7 +89,7 @@ void Theme::init()
 
 QString Theme::themeFileName()
 {
-    QSettings settings("Canpool", "qtcanpool");
+    QSettings settings(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
     QString theme = settings.value("theme").toString();
     return theme;
 }
@@ -107,7 +107,7 @@ QString Theme::themeName(const QString &fileName)
 
 void Theme::setTheme(const QString &fileName)
 {
-    QSettings settings("Canpool", "qtcanpool");
+    QSettings settings(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
     settings.setValue("theme", fileName);
     loadTheme(fileName);
 }

@@ -29,6 +29,7 @@
 #include "chartsmode.h"
 #include "custommode.h"
 #include "menumode.h"
+#include "explorer.h"
 
 #include "qcanpool/fancytabwidget.h"
 #include "qcanpool/fancytabbar.h"
@@ -430,7 +431,7 @@ void MainWindow::slotResizable(bool resizable)
 
 void MainWindow::slotChangeSkin(QString skinName)
 {
-    QSettings settings("Canpool", "qtcanpool");
+    QSettings settings(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
     settings.setValue("skin", skinName);
     update();
 }
@@ -447,7 +448,7 @@ void MainWindow::slotSetStyle(QAction *action)
 
 void MainWindow::readSettings()
 {
-    QSettings settings("Canpool", "qtproject");
+    QSettings settings(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
     QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
     QSize size = settings.value("size", QSize(400, 400)).toSize();
     move(pos);
@@ -456,7 +457,7 @@ void MainWindow::readSettings()
 
 void MainWindow::writeSettings()
 {
-    QSettings settings("Canpool", "qtproject");
+    QSettings settings(SETTINGS_ORGANIZATION, SETTINGS_APPLICATION);
     settings.setValue("pos", pos());
     settings.setValue("size", size());
 }

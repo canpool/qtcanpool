@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QDir>
 
+#define SETTINGS_ORGANIZATION   "Canpool"
+#define SETTINGS_APPLICATION    "qtcanpool"
+
 class Explorer : public QObject
 {
     Q_OBJECT
