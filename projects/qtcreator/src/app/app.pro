@@ -13,7 +13,6 @@ SOURCES += main.cpp $$QTCANPOOL_DIR/src/tools/qtcreatorcrashhandler/crashhandler
 
 RPATH_BASE = $$IDE_BIN_PATH
 include($$QTCANPOOL_DIR/src/rpath.pri)
-include($$QTCANPOOL_DIR/src/libs/qt-breakpad/qtbreakpad.pri)
 
 LIBS *= -l$$qtLibraryName(ExtensionSystem) -l$$qtLibraryName(Aggregation) -l$$qtLibraryName(Utils)
 

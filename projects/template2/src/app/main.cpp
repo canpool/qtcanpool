@@ -65,10 +65,6 @@
 #include <vector>
 #include <iterator>
 
-#ifdef ENABLE_QT_BREAKPAD
-#include <qtsystemexceptionhandler.h>
-#endif
-
 #ifdef Q_OS_LINUX
 #include <malloc.h>
 #endif
@@ -549,13 +545,10 @@ int main(int argc, char **argv)
 
     const QString libexecPath = QCoreApplication::applicationDirPath()
             + '/' + RELATIVE_LIBEXEC_PATH;
-#ifdef ENABLE_QT_BREAKPAD
-    QtSystemExceptionHandler systemExceptionHandler(libexecPath);
-#else
+
     // Display a backtrace once a serious signal is delivered (Linux only).
     CrashHandlerSetup setupCrashHandler(Core::Constants::IDE_DISPLAY_NAME,
                                         CrashHandlerSetup::EnableRestart, libexecPath);
-#endif
 
     app.setAttribute(Qt::AA_UseHighDpiPixmaps);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
