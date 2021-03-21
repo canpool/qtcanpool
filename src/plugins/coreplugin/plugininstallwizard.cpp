@@ -63,7 +63,7 @@ struct Data
 {
     FilePath sourcePath;
     FilePath extractedPath;
-    bool installIntoApplication;
+    bool installIntoApplication = false;
 };
 
 static QStringList libraryNameFilter()
@@ -270,7 +270,10 @@ public:
         PluginSpec *coreplugin = CorePlugin::instance()->pluginSpec();
 
         // look for plugin
-        QDirIterator it(m_tempDir->path(), libraryNameFilter(), QDir::Files | QDir::NoSymLinks);
+        QDirIterator it(m_tempDir->path(),
+                        libraryNameFilter(),
+                        QDir::Files | QDir::NoSymLinks,
+                        QDirIterator::Subdirectories);
         while (it.hasNext()) {
             if (fi.isCanceled())
                 return;
@@ -298,9 +301,9 @@ public:
                 return; // successful / no error
             }
         }
-        fi.reportResult({PluginInstallWizard::tr("Did not find %1 plugin in toplevel directory.")
-                             .arg(Constants::IDE_DISPLAY_NAME),
-                         InfoLabel::Error});
+        fi.reportResult(
+            {PluginInstallWizard::tr("Did not find %1 plugin.").arg(Constants::IDE_DISPLAY_NAME),
+             InfoLabel::Error});
     }
 
     void cleanupPage()
@@ -350,7 +353,7 @@ public:
         vlayout->addSpacing(10);
 
         auto localInstall = new QRadioButton(PluginInstallWizard::tr("User plugins"));
-        localInstall->setChecked(true);
+        localInstall->setChecked(!m_data->installIntoApplication);
         auto localLabel = new QLabel(
             PluginInstallWizard::tr("The plugin will be available to all compatible %1 "
                                     "installations, but only for the current user.")
@@ -364,6 +367,7 @@ public:
 
         auto appInstall = new QRadioButton(
             PluginInstallWizard::tr("%1 installation").arg(Constants::IDE_DISPLAY_NAME));
+        appInstall->setChecked(m_data->installIntoApplication);
         auto appLabel = new QLabel(
             PluginInstallWizard::tr("The plugin will be available only to this %1 "
                                     "installation, but for all users that can access it.")

@@ -58,7 +58,7 @@ public:
     virtual int priorityInStatusBar() const = 0;
 
     virtual void clearContents() = 0;
-    virtual void visibilityChanged(bool visible) = 0;
+    virtual void visibilityChanged(bool visible);
 
     virtual void setFocus() = 0;
     virtual bool hasFocus() const = 0;
@@ -92,9 +92,9 @@ signals:
     void navigateStateUpdate();
     void flashButton();
     void setBadgeNumber(int number);
-    void zoomIn(int range);
-    void zoomOut(int range);
-    void resetZoom();
+    void zoomInRequested(int range);
+    void zoomOutRequested(int range);
+    void resetZoomRequested();
     void wheelZoomEnabledChanged(bool enabled);
     void fontChanged(const QFont &font);
 

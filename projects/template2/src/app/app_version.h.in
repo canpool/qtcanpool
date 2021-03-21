@@ -38,6 +38,7 @@ const char IDE_CASED_ID[] = \"$${IDE_CASED_ID}\";
 #define IDE_VERSION $${QTPROJECT_VERSION}
 #define IDE_VERSION_STR STRINGIFY(IDE_VERSION)
 #define IDE_VERSION_DISPLAY_DEF $${QTPROJECT_DISPLAY_VERSION}
+#define IDE_VERSION_COMPAT_DEF $${QTPROJECT_COMPAT_VERSION}
 
 #define IDE_VERSION_MAJOR $$replace(QTPROJECT_VERSION, "^(\\d+)\\.\\d+\\.\\d+(-.*)?$", \\1)
 #define IDE_VERSION_MINOR $$replace(QTPROJECT_VERSION, "^\\d+\\.(\\d+)\\.\\d+(-.*)?$", \\1)

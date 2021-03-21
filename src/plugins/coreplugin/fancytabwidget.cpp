@@ -164,7 +164,7 @@ bool FancyTabBar::event(QEvent *event)
 }
 
 // Resets hover animation on mouse enter
-void FancyTabBar::enterEvent(QEvent *event)
+void FancyTabBar::enterEvent(EnterEvent *event)
 {
     Q_UNUSED(event)
     m_hoverRect = QRect();
@@ -184,13 +184,13 @@ void FancyTabBar::leaveEvent(QEvent *event)
 QSize FancyTabBar::sizeHint() const
 {
     const QSize sh = tabSizeHint();
-    return {sh.width(), sh.height() * m_tabs.count()};
+    return {sh.width(), sh.height() * int(m_tabs.count())};
 }
 
 QSize FancyTabBar::minimumSizeHint() const
 {
     const QSize sh = tabSizeHint(true);
-    return {sh.width(), sh.height() * m_tabs.count()};
+    return {sh.width(), sh.height() * int(m_tabs.count())};
 }
 
 QRect FancyTabBar::tabRect(int index) const

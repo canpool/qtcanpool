@@ -29,10 +29,13 @@
 #include <coreplugin/documentmanager.h>
 #include <coreplugin/icore.h>
 #include <coreplugin/iversioncontrol.h>
+#include <coreplugin/messagemanager.h>
 #include <coreplugin/vcsmanager.h>
 #include <utils/consoleprocess.h>
 #include <utils/environment.h>
 #include <utils/hostosinfo.h>
+#include <utils/qtcprocess.h>
+#include <utils/textfileformat.h>
 #include <utils/unixutils.h>
 
 #include <QApplication>
@@ -40,6 +43,9 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QRegularExpression>
+#include <QTextStream>
+#include <QTextCodec>
 #include <QWidget>
 
 using namespace Utils;
@@ -97,12 +103,23 @@ void FileUtils::showInGraphicalShell(QWidget *parent, const QString &pathIn)
         // we cannot select a file here, because no file browser really supports it...
         const QString folder = fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.filePath();
         const QString app = UnixUtils::fileBrowser(ICore::settings());
-        QProcess browserProc;
-        const QString browserArgs = UnixUtils::substituteFileBrowserParameters(app, folder);
-        bool success = browserProc.startDetached(browserArgs);
-        const QString error = QString::fromLocal8Bit(browserProc.readAllStandardError());
-        success = success && error.isEmpty();
-        if (!success)
+        QStringList browserArgs = Utils::QtcProcess::splitArgs(
+                    UnixUtils::substituteFileBrowserParameters(app, folder));
+        QString error;
+        if (browserArgs.isEmpty()) {
+            error = QApplication::translate("Core::Internal",
+                                            "The command for file browser is not set.");
+        } else {
+            QProcess browserProc;
+            browserProc.setProgram(browserArgs.takeFirst());
+            browserProc.setArguments(browserArgs);
+            const bool success = browserProc.startDetached();
+            error = QString::fromLocal8Bit(browserProc.readAllStandardError());
+            if (!success && error.isEmpty())
+                error = QApplication::translate("Core::Internal",
+                                                "Error while starting file browser.");
+        }
+        if (!error.isEmpty())
             showGraphicalShellError(parent, app, error);
     }
 }
@@ -153,19 +170,27 @@ QString FileUtils::msgTerminalWithAction()
 
 void FileUtils::removeFile(const QString &filePath, bool deleteFromFS)
 {
+    removeFiles({FilePath::fromString(filePath)}, deleteFromFS);
+}
+
+void FileUtils::removeFiles(const FilePaths &filePaths, bool deleteFromFS)
+{
     // remove from version control
-    VcsManager::promptToDelete(filePath);
+    VcsManager::promptToDelete(filePaths);
+
+    if (!deleteFromFS)
+        return;
 
     // remove from file system
-    if (deleteFromFS) {
-        QFile file(filePath);
-
-        if (file.exists()) {
-            // could have been deleted by vc
-            if (!file.remove())
-                QMessageBox::warning(ICore::dialogParent(),
-                    QApplication::translate("Core::Internal", "Deleting File Failed"),
-                    QApplication::translate("Core::Internal", "Could not delete file %1.").arg(filePath));
+    for (const FilePath &fp : filePaths) {
+        QFile file(fp.toString());
+        if (!file.exists()) // could have been deleted by vc
+            continue;
+        if (!file.remove()) {
+            MessageManager::write(QCoreApplication::translate(
+                                      "Core::Internal",
+                                      "Failed to remove file \"%1\")1.").
+                                  arg(fp.toUserOutput()), MessageManager::ModeSwitch);
         }
     }
 }
@@ -178,7 +203,8 @@ static inline bool fileSystemRenameFile(const QString &orgFilePath,
     return QFile::rename(orgFilePath, newFilePath);
 }
 
-bool FileUtils::renameFile(const QString &orgFilePath, const QString &newFilePath)
+bool FileUtils::renameFile(const QString &orgFilePath, const QString &newFilePath,
+                           HandleIncludeGuards handleGuards)
 {
     if (orgFilePath == newFilePath)
         return false;
@@ -195,7 +221,162 @@ bool FileUtils::renameFile(const QString &orgFilePath, const QString &newFilePat
         // yeah we moved, tell the filemanager about it
         DocumentManager::renamedFile(orgFilePath, newFilePath);
     }
+
+    if (result && handleGuards == HandleIncludeGuards::Yes) {
+        QFileInfo fi(orgFilePath);
+        bool headerUpdateSuccess = updateHeaderFileGuardAfterRename(newFilePath, fi.baseName());
+        if (!headerUpdateSuccess) {
+            Core::MessageManager::write(QCoreApplication::translate(
+                                            "Core::FileUtils",
+                                            "Failed to rename the include guard in file \"%1\".")
+                                        .arg(newFilePath));
+        }
+    }
+
     return result;
+}
+
+bool FileUtils::updateHeaderFileGuardAfterRename(const QString &headerPath,
+                                                 const QString &oldHeaderBaseName)
+{
+    bool ret = true;
+    QFile headerFile(headerPath);
+    if (!headerFile.open(QFile::ReadOnly | QFile::Text))
+        return false;
+
+    QRegularExpression guardConditionRegExp(
+                QString("(#ifndef)(\\s*)(_*)%1_H(_*)(\\s*)").arg(oldHeaderBaseName.toUpper()));
+    QRegularExpression guardDefineRegexp, guardCloseRegExp;
+    QRegularExpressionMatch guardConditionMatch, guardDefineMatch, guardCloseMatch;
+    int guardStartLine = -1;
+    int guardCloseLine = -1;
+
+    QByteArray data = headerFile.readAll();
+    headerFile.close();
+
+    const auto headerFileTextFormat = Utils::TextFileFormat::detect(data);
+    QTextStream inStream(&data);
+    int lineCounter = 0;
+    QString line;
+    while (!inStream.atEnd()) {
+        // use trimmed line to get rid from the maunder leading spaces
+        inStream.readLineInto(&line);
+        line = line.trimmed();
+        if (line == QStringLiteral("#pragma once")) {
+            // if pragma based guard found skip reading the whole file
+            break;
+        }
+
+        if (guardStartLine == -1) {
+            // we are still looking for the guard condition
+            guardConditionMatch = guardConditionRegExp.match(line);
+            if (guardConditionMatch.hasMatch()) {
+                guardDefineRegexp.setPattern(QString("(#define\\s*%1)%2(_H%3\\s*)")
+                                             .arg(guardConditionMatch.captured(3),
+                                                  oldHeaderBaseName.toUpper(),
+                                                  guardConditionMatch.captured(4)));
+                // read the next line for the guard define
+                line = inStream.readLine();
+                if (!inStream.atEnd()) {
+                    guardDefineMatch = guardDefineRegexp.match(line);
+                    if (guardDefineMatch.hasMatch()) {
+                        // if a proper guard define present in the next line store the line number
+                        guardCloseRegExp
+                                .setPattern(
+                                    QString("(#endif\\s*)(\\/\\/|\\/\\*)(\\s*%1)%2(_H%3\\s*)((\\*\\/)?)")
+                                                    .arg(
+                                                        guardConditionMatch.captured(3),
+                                                        oldHeaderBaseName.toUpper(),
+                                                        guardConditionMatch.captured(4)));
+                        guardStartLine = lineCounter;
+                        lineCounter++;
+                    }
+                } else {
+                    // it the line after the guard opening is not something what we expect
+                    // then skip the whole guard replacing process
+                    break;
+                }
+            }
+        } else {
+            // guard start found looking for the guard closing endif
+            guardCloseMatch = guardCloseRegExp.match(line);
+            if (guardCloseMatch.hasMatch()) {
+                guardCloseLine = lineCounter;
+                break;
+            }
+        }
+        lineCounter++;
+    }
+
+    if (guardStartLine != -1) {
+        // At least the guard have been found ->
+        // copy the contents of the header to a temporary file with the updated guard lines
+        inStream.seek(0);
+
+        QFileInfo fi(headerFile);
+        const auto guardCondition = QString("#ifndef%1%2%3_H%4%5").arg(
+                    guardConditionMatch.captured(2),
+                    guardConditionMatch.captured(3),
+                    fi.baseName().toUpper(),
+                    guardConditionMatch.captured(4),
+                    guardConditionMatch.captured(5));
+        // guardDefineRegexp.setPattern(QString("(#define\\s*%1)%2(_H%3\\s*)")
+        const auto guardDefine = QString("%1%2%3").arg(
+                    guardDefineMatch.captured(1),
+                    fi.baseName().toUpper(),
+                    guardDefineMatch.captured(2));
+        const auto guardClose = QString("%1%2%3%4%5%6").arg(
+                    guardCloseMatch.captured(1),
+                    guardCloseMatch.captured(2),
+                    guardCloseMatch.captured(3),
+                    fi.baseName().toUpper(),
+                    guardCloseMatch.captured(4),
+                    guardCloseMatch.captured(5));
+
+        QFile tmpHeader(headerPath + ".tmp");
+        if (tmpHeader.open(QFile::WriteOnly)) {
+            const auto lineEnd =
+                    headerFileTextFormat.lineTerminationMode
+                    == Utils::TextFileFormat::LFLineTerminator
+                    ? QStringLiteral("\n") : QStringLiteral("\r\n");
+            // write into temporary string,
+            // after that write with codec into file (QTextStream::setCodec is gone in Qt 6)
+            QString outString;
+            QTextStream outStream(&outString);
+            int lineCounter = 0;
+            while (!inStream.atEnd()) {
+                inStream.readLineInto(&line);
+                if (lineCounter == guardStartLine) {
+                    outStream << guardCondition << lineEnd;
+                    outStream << guardDefine << lineEnd;
+                    inStream.readLine();
+                    lineCounter++;
+                } else if (lineCounter == guardCloseLine) {
+                    outStream << guardClose << lineEnd;
+                } else {
+                    outStream << line << lineEnd;
+                }
+                lineCounter++;
+            }
+            const QTextCodec *textCodec = (headerFileTextFormat.codec == nullptr)
+                                              ? QTextCodec::codecForName("UTF-8")
+                                              : headerFileTextFormat.codec;
+            tmpHeader.write(textCodec->fromUnicode(outString));
+            tmpHeader.close();
+        } else {
+            // if opening the temp file failed report error
+            ret = false;
+        }
+    }
+
+    if (ret && guardStartLine != -1) {
+        // if the guard was found (and updated updated properly) swap the temp and the target file
+        ret = QFile::remove(headerPath);
+        if (ret)
+            ret = QFile::rename(headerPath + ".tmp", headerPath);
+    }
+
+    return ret;
 }
 
 } // namespace Core

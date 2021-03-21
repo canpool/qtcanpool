@@ -39,7 +39,6 @@
 #include "vcsmanager.h"
 #include "versiondialog.h"
 #include "statusbarmanager.h"
-#include "id.h"
 #include "manhattanstyle.h"
 #include "navigationwidget.h"
 #include "rightpane.h"
@@ -85,6 +84,7 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QPrinter>
 #include <QSettings>
 #include <QStatusBar>
@@ -207,6 +207,16 @@ void MainWindow::setSidebarVisible(bool visible, Side side)
 {
     if (NavigationWidgetPlaceHolder::current(side))
         navigationWidget(side)->setShown(visible);
+}
+
+bool MainWindow::askConfirmationBeforeExit() const
+{
+    return m_askConfirmationBeforeExit;
+}
+
+void MainWindow::setAskConfirmationBeforeExit(bool ask)
+{
+    m_askConfirmationBeforeExit = ask;
 }
 
 void MainWindow::setOverrideColor(const QColor &color)
@@ -335,6 +345,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
     static bool alreadyClosed = false;
     if (alreadyClosed) {
         event->accept();
+        return;
+    }
+
+    if (m_askConfirmationBeforeExit &&
+            (QMessageBox::question(this,
+                                   tr("Exit %1?").arg(Constants::IDE_DISPLAY_NAME),
+                                   tr("Exit %1?").arg(Constants::IDE_DISPLAY_NAME),
+                                   QMessageBox::Yes | QMessageBox::No,
+                                   QMessageBox::No)
+             == QMessageBox::No)) {
+        event->ignore();
         return;
     }
 
@@ -995,12 +1016,15 @@ void MainWindow::updateContextObject(const QList<IContext *> &context)
 void MainWindow::aboutToShutdown()
 {
     disconnect(qApp, &QApplication::focusChanged, this, &MainWindow::updateFocusWidget);
+    for (auto contextPair : m_contextWidgets)
+        disconnect(contextPair.second, &QObject::destroyed, this, nullptr);
     m_activeContext.clear();
     hide();
 }
 
 static const char settingsGroup[] = "MainWindow";
 static const char colorKey[] = "Color";
+static const char askBeforeExitKey[] = "AskBeforeExit";
 static const char windowGeometryKey[] = "WindowGeometry";
 static const char windowStateKey[] = "WindowState";
 static const char modeSelectorLayoutKey[] = "ModeSelectorLayout";
@@ -1018,6 +1042,8 @@ void MainWindow::readSettings()
         StyleHelper::setBaseColor(settings->value(QLatin1String(colorKey),
                                   QColor(StyleHelper::DEFAULT_BASE_COLOR)).value<QColor>());
     }
+
+    m_askConfirmationBeforeExit = settings->value(askBeforeExitKey, false).toBool();
 
     {
         ModeManager::Style modeStyle =
@@ -1049,6 +1075,8 @@ void MainWindow::saveSettings()
 
     if (!(m_overrideColor.isValid() && StyleHelper::baseColor() == m_overrideColor))
         settings->setValue(QLatin1String(colorKey), StyleHelper::requestedBaseColor());
+
+    settings->setValue(askBeforeExitKey, m_askConfirmationBeforeExit);
 
     settings->endGroup();
 

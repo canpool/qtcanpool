@@ -20,7 +20,6 @@ SOURCES += \
     $$PWD/fancytabwidget.cpp \
     $$PWD/generalsettings.cpp \
     $$PWD/themechooser.cpp \
-    $$PWD/id.cpp \
     $$PWD/icontext.cpp \
     $$PWD/jsexpander.cpp \
     $$PWD/messagemanager.cpp \
@@ -87,7 +86,6 @@ SOURCES += \
     $$PWD/externaltool.cpp \
     $$PWD/dialogs/externaltoolconfig.cpp \
     $$PWD/dialogs/filepropertiesdialog.cpp \
-    $$PWD/variablechooser.cpp \
     $$PWD/mimetypemagicdialog.cpp \
     $$PWD/mimetypesettings.cpp \
     $$PWD/dialogs/promptoverwritedialog.cpp \
@@ -125,7 +123,6 @@ HEADERS += \
     $$PWD/fancytabwidget.h \
     $$PWD/generalsettings.h \
     $$PWD/themechooser.h \
-    $$PWD/id.h \
     $$PWD/jsexpander.h \
     $$PWD/messagemanager.h \
     $$PWD/messageoutputwindow.h \
@@ -204,7 +201,6 @@ HEADERS += \
     $$PWD/externaltool.h \
     $$PWD/dialogs/externaltoolconfig.h \
     $$PWD/dialogs/filepropertiesdialog.h \
-    $$PWD/variablechooser.h \
     $$PWD/mimetypemagicdialog.h \
     $$PWD/mimetypesettings.h \
     $$PWD/dialogs/promptoverwritedialog.h \

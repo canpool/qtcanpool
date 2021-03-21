@@ -69,7 +69,7 @@ QList<LocatorFilterEntry> ExecuteFilter::matchesFor(QFutureInterface<LocatorFilt
         LocatorFilterEntry filterEntry(this, cmd, QVariant());
         const int index = cmd.indexOf(entry, 0, entryCaseSensitivity);
         if (index >= 0) {
-            filterEntry.highlightInfo = {index, entry.length()};
+            filterEntry.highlightInfo = {index, int(entry.length())};
             value.append(filterEntry);
         } else {
             others.append(filterEntry);
@@ -97,7 +97,7 @@ void ExecuteFilter::accept(LocatorFilterEntry selection,
     bool found;
     QString workingDirectory = Utils::globalMacroExpander()->value("CurrentDocument:Path", &found);
     if (!found || workingDirectory.isEmpty())
-        workingDirectory = Utils::globalMacroExpander()->value("CurrentProject:Path", &found);
+        workingDirectory = Utils::globalMacroExpander()->value("CurrentDocument:Project:Path", &found);
 
     ExecuteData d;
     d.workingDirectory = workingDirectory;
