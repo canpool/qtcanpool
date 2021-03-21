@@ -29,25 +29,21 @@
 #include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 
-#include <QRect>
+#include <QApplication>
 #include <QColor>
+#include <QFontMetrics>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QPen>
-#include <QPixmap>
-#include <QStyle>
-#include <QFontMetrics>
-#include <QTextDocument>
-#include <QStylePainter>
-#include <QStyleOptionFrame>
-#include <QResizeEvent>
-#include <QPaintEvent>
-#include <QVBoxLayout>
-
 #include <QPoint>
 #include <QRect>
+#include <QResizeEvent>
+#include <QStyle>
+#include <QStylePainter>
+#include <QStyleOptionFrame>
+#include <QTextDocument>
+#include <QScreen>
 #include <QWidget>
-#include <QApplication>
-#include <QDesktopWidget>
 
 #include <memory>
 
@@ -74,15 +70,36 @@ const QMetaObject *TipLabel::metaObject() const
 {
     // CSS Tooltip styling depends on a the name of this class.
     // So set up a minimalist QMetaObject to fake a class name "QTipLabel":
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     static const uint tip_label_meta_data[15] = { 8 /* moc revision */ };
+
     static const QMetaObject tipMetaObject {
-         &QLabel::staticMetaObject,
-         QByteArrayLiteral("QTipLabel").data_ptr(),
-         tip_label_meta_data,
-         nullptr,
-         nullptr,
-         nullptr
+         &QLabel::staticMetaObject,                  // SuperData superdata;
+         QByteArrayLiteral("QTipLabel").data_ptr(),  // const QByteArrayData *stringdata;
+         tip_label_meta_data,                        // const uint *data;
+         nullptr,                                    // StaticMetacallFunction static_metacall;
+         nullptr,                                    // const SuperData *relatedMetaObjects;
+         nullptr                                     // void *extradata;
     };
+#else
+    static const uint tip_label_meta_data[15] = { 9 /* moc revision */ };
+
+    struct qt_meta_stringdata_Utils_t {
+        const uint offsetsAndSize[2];
+        char stringdata0[24];
+    } qt_meta_stringdata =  { 8, sizeof("QTipLabel"), "QTipLabel" };
+
+    static const QMetaObject tipMetaObject {
+        &QLabel::staticMetaObject,                    // SuperData superdata
+        qt_meta_stringdata.offsetsAndSize,            // const uint *stringdata;
+        tip_label_meta_data,                          // const uint *data;
+        nullptr,                                      // StaticMetacallFunction static_metacall;
+        nullptr,                                      // const SuperData *relatedMetaObjects;
+        nullptr,                                      // QtPrivate::QMetaTypeInterface *const *metaTypes;
+        nullptr,                                      // void *extradata;
+    };
+#endif
 
     return &tipMetaObject;
 }
@@ -106,10 +123,9 @@ void ColorTip::setContent(const QVariant &content)
     tilePainter.fillRect(size, size, size, size, col);
 }
 
-void ColorTip::configure(const QPoint &pos, QWidget *w)
+void ColorTip::configure(const QPoint &pos)
 {
     Q_UNUSED(pos)
-    Q_UNUSED(w)
 
     update();
 }
@@ -176,7 +192,7 @@ bool TextTip::isInteractive() const
     return likelyContainsLink(m_text);
 }
 
-void TextTip::configure(const QPoint &pos, QWidget *w)
+void TextTip::configure(const QPoint &pos)
 {
     setTextFormat(m_format);
     setText(m_text);
@@ -190,7 +206,7 @@ void TextTip::configure(const QPoint &pos, QWidget *w)
     // Try to find a nice width without unnecessary wrapping.
     setWordWrap(false);
     int tipWidth = sizeHint().width();
-    const int screenWidth = screenGeometry(pos, w).width();
+    const int screenWidth = QGuiApplication::screenAt(pos)->availableGeometry().width();
     const int maxDesiredWidth = int(screenWidth * .5);
     if (tipWidth > maxDesiredWidth) {
         setWordWrap(true);
@@ -222,7 +238,7 @@ void TextTip::paintEvent(QPaintEvent *event)
 {
     QStylePainter p(this);
     QStyleOptionFrame opt;
-    opt.init(this);
+    opt.initFrom(this);
     p.drawPrimitive(QStyle::PE_PanelTipLabel, opt);
     p.end();
 
@@ -233,7 +249,7 @@ void TextTip::resizeEvent(QResizeEvent *event)
 {
     QStyleHintReturnMask frameMask;
     QStyleOption option;
-    option.init(this);
+    option.initFrom(this);
     if (style()->styleHint(QStyle::SH_ToolTip_Mask, &option, this, &frameMask))
         setMask(frameMask.region);
 
@@ -252,7 +268,7 @@ void WidgetTip::setContent(const QVariant &content)
     m_widget = content.value<QWidget *>();
 }
 
-void WidgetTip::configure(const QPoint &pos, QWidget *)
+void WidgetTip::configure(const QPoint &pos)
 {
     QTC_ASSERT(m_widget && m_layout->count() == 0, return);
 
@@ -296,22 +312,6 @@ bool WidgetTip::equals(int typeId, const QVariant &other, const QVariant &otherC
 {
     return typeId == ToolTip::WidgetContent && otherContextHelp == contextHelp()
             && other.value<QWidget *>() == m_widget;
-}
-
-
-int screenNumber(const QPoint &pos, QWidget *w)
-{
-    if (QApplication::desktop()->isVirtualDesktop())
-        return QApplication::desktop()->screenNumber(pos);
-    else
-        return QApplication::desktop()->screenNumber(w);
-}
-
-QRect screenGeometry(const QPoint &pos, QWidget *w)
-{
-    if (HostOsInfo::isMacHost())
-        return QApplication::desktop()->availableGeometry(screenNumber(pos, w));
-    return QApplication::desktop()->screenGeometry(screenNumber(pos, w));
 }
 
 } // namespace Internal

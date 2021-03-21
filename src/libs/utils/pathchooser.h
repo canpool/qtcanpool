@@ -148,11 +148,18 @@ public:
     using AboutToShowContextMenuHandler = std::function<void (PathChooser *, QMenu *)>;
     static void setAboutToShowContextMenuHandler(AboutToShowContextMenuHandler handler);
 
+    void setOpenTerminalHandler(const std::function<void()> &openTerminal);
+    std::function<void()> openTerminalHandler() const;
+
     // Deprecated. Use filePath().toString() or better suitable conversions.
     QString path() const { return filePath().toString(); }
     // Deprecated. Use filePath()
     FilePath fileName() const { return filePath(); }
 
+    // this sets the placeHolderText to defaultValue and enables to use this as
+    // input value during validation if the real value is empty
+    // setting an empty QString will disable this and clear the placeHolderText
+    void setDefaultValue(const QString &defaultValue);
 private:
     bool validatePath(FancyLineEdit *edit, QString *errorMessage) const;
     // Returns overridden title or the one from <title>

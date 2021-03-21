@@ -352,7 +352,7 @@ static QStringList splitArgsUnix(const QString &args, bool abortOnMeta,
                         goto quoteerr;
                     c = args.unicode()[pos++];
                 } while (c != QLatin1Char('\''));
-                cret += args.midRef(spos, pos - spos - 1);
+                cret += args.mid(spos, pos - spos - 1);
                 hadWord = true;
             } else if (c == QLatin1Char('"')) {
                 for (;;) {
@@ -663,7 +663,13 @@ bool QtcProcess::prepareCommand(const QString &command, const QString &arguments
         } else {
             if (err != QtcProcess::FoundMeta)
                 return false;
-            *outCmd = QLatin1String("/bin/sh");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            *outCmd = qEnvironmentVariable("SHELL", "/bin/sh");
+#else
+            // for sdktool
+            *outCmd = qEnvironmentVariableIsSet("SHELL") ? QString::fromLocal8Bit(qgetenv("SHELL"))
+                                                         : QString("/bin/sh");
+#endif
             *outArgs = Arguments::createUnixArgs(
                         QStringList({"-c", (quoteArg(command) + ' ' + arguments)}));
         }
@@ -678,6 +684,10 @@ QtcProcess::QtcProcess(QObject *parent)
     static int qProcessProcessErrorMeta = qRegisterMetaType<QProcess::ProcessError>();
     Q_UNUSED(qProcessExitStatusMeta)
     Q_UNUSED(qProcessProcessErrorMeta)
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_UNIX)
+    setChildProcessModifier([this] { setupChildProcess_impl(); });
+#endif
 }
 
 void QtcProcess::setUseCtrlCStub(bool enabled)
@@ -776,7 +786,7 @@ void QtcProcess::terminate()
 {
 #ifdef Q_OS_WIN
     if (m_useCtrlCStub)
-        EnumWindows(sendShutDownMessageToAllWindowsOfProcess_enumWnd, pid()->dwProcessId);
+        EnumWindows(sendShutDownMessageToAllWindowsOfProcess_enumWnd, processId());
     else
 #endif
     QProcess::terminate();
@@ -786,7 +796,7 @@ void QtcProcess::interrupt()
 {
 #ifdef Q_OS_WIN
     QTC_ASSERT(m_useCtrlCStub, return);
-    EnumWindows(sendInterruptMessageToAllWindowsOfProcess_enumWnd, pid()->dwProcessId);
+    EnumWindows(sendInterruptMessageToAllWindowsOfProcess_enumWnd, processId());
 #endif
 }
 
@@ -1220,7 +1230,14 @@ QString QtcProcess::expandMacros(const QString &str, AbstractMacroExpander *mx, 
     return ret;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void QtcProcess::setupChildProcess()
+{
+    setupChildProcess_impl();
+}
+#endif
+
+void QtcProcess::setupChildProcess_impl()
 {
 #if defined Q_OS_UNIX
     // nice value range is -20 to +19 where -20 is highest, 0 default and +19 is lowest
@@ -1230,7 +1247,6 @@ void QtcProcess::setupChildProcess()
             perror("Failed to set nice value");
     }
 #endif
-    QProcess::setupChildProcess();
 }
 
 bool QtcProcess::ArgIterator::next()

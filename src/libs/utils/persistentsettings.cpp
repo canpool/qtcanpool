@@ -40,6 +40,7 @@
 #include <QMessageBox>
 #endif
 
+#include <utils/porting.h>
 #include <utils/qtcassert.h>
 
 // Read and write rectangle in X11 resource syntax "12x12+4+3"
@@ -188,13 +189,13 @@ private:
     enum Element { QtCreatorElement, DataElement, VariableElement,
                    SimpleValueElement, ListValueElement, MapValueElement, UnknownElement };
 
-    Element element(const QStringRef &r) const;
+    Element element(const StringView &r) const;
     static inline bool isValueElement(Element e)
         { return e == SimpleValueElement || e == ListValueElement || e == MapValueElement; }
     QVariant readSimpleValue(QXmlStreamReader &r, const QXmlStreamAttributes &attributes) const;
 
     bool handleStartElement(QXmlStreamReader &r);
-    bool handleEndElement(const QStringRef &name);
+    bool handleEndElement(const StringView &name);
 
     static QString formatWarning(const QXmlStreamReader &r, const QString &message);
 
@@ -233,7 +234,7 @@ QVariantMap ParseContext::parse(QFile &file)
 
 bool ParseContext::handleStartElement(QXmlStreamReader &r)
 {
-    const QStringRef name = r.name();
+    const StringView name = r.name();
     const Element e = element(name);
     if (e == VariableElement) {
         m_currentVariableName = r.readElementText();
@@ -268,7 +269,7 @@ bool ParseContext::handleStartElement(QXmlStreamReader &r)
     return false;
 }
 
-bool ParseContext::handleEndElement(const QStringRef &name)
+bool ParseContext::handleEndElement(const StringView &name)
 {
     const Element e = element(name);
     if (ParseContext::isValueElement(e)) {
@@ -297,7 +298,7 @@ QString ParseContext::formatWarning(const QXmlStreamReader &r, const QString &me
     return result;
 }
 
-ParseContext::Element ParseContext::element(const QStringRef &r) const
+ParseContext::Element ParseContext::element(const StringView &r) const
 {
     if (r == valueElement)
         return SimpleValueElement;
@@ -317,7 +318,7 @@ ParseContext::Element ParseContext::element(const QStringRef &r) const
 QVariant ParseContext::readSimpleValue(QXmlStreamReader &r, const QXmlStreamAttributes &attributes) const
 {
     // Simple value
-    const QStringRef type = attributes.value(typeAttribute);
+    const StringView type = attributes.value(typeAttribute);
     const QString text = r.readElementText();
     if (type == QLatin1String("QChar")) { // Workaround: QTBUG-12345
         QTC_ASSERT(text.size() == 1, return QVariant());
@@ -354,6 +355,9 @@ bool PersistentSettingsReader::load(const FilePath &fileName)
     m_valueMap.clear();
 
     QFile file(fileName.toString());
+    if (file.size() == 0) // skip empty files
+        return false;
+
     if (!file.open(QIODevice::ReadOnly|QIODevice::Text))
         return false;
     ParseContext ctx;

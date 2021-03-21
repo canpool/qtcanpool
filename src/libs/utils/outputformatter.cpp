@@ -290,7 +290,8 @@ void OutputFormatter::doAppendMessage(const QString &text, OutputFormat format)
 
     QList<FormattedText> formattedText = parseAnsi(text, charFmt);
     const QString cleanLine = std::accumulate(formattedText.begin(), formattedText.end(), QString(),
-            [](const FormattedText &t1, const FormattedText &t2) { return t1.text + t2.text; });
+            [](const FormattedText &t1, const FormattedText &t2) -> QString
+            { return t1.text + t2.text; });
     QList<OutputLineParser *> involvedParsers;
     const OutputLineParser::Result res = handleMessage(cleanLine, format, involvedParsers);
 
@@ -328,7 +329,9 @@ OutputLineParser::Result OutputFormatter::handleMessage(const QString &text, Out
                                                         QList<OutputLineParser *> &involvedParsers)
 {
     // We only invoke the line parsers for stdout and stderr
-    if (format != StdOutFormat && format != StdErrFormat)
+    // Bad: on Windows we may get stdout and stdErr only as DebugFormat as e.g. GUI applications
+    // print them Windows-internal and we retrieve this separately
+    if (format != StdOutFormat && format != StdErrFormat && format != DebugFormat)
         return OutputLineParser::Status::NotHandled;
     const OutputLineParser * const oldNextParser = d->nextParser;
     if (d->nextParser) {

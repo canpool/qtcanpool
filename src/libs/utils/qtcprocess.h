@@ -142,7 +142,11 @@ public:
     };
 
 private:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     void setupChildProcess() override;
+#endif
+
+    void setupChildProcess_impl();
 
     CommandLine m_commandLine;
     Environment m_environment;
@@ -152,6 +156,3 @@ private:
 };
 
 } // namespace Utils
-
-Q_DECLARE_METATYPE(QProcess::ExitStatus);
-Q_DECLARE_METATYPE(QProcess::ProcessError);

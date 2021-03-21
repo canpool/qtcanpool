@@ -106,8 +106,8 @@ NameValueModel::~NameValueModel() = default;
 
 QString NameValueModel::indexToVariable(const QModelIndex &index) const
 {
-    return d->m_resultNameValueDictionary.key(d->m_resultNameValueDictionary.constBegin()
-                                              + index.row());
+    const auto it = std::next(d->m_resultNameValueDictionary.constBegin(), index.row());
+    return d->m_resultNameValueDictionary.key(it);
 }
 
 void NameValueModel::setBaseNameValueDictionary(const NameValueDictionary &dictionary)
@@ -150,7 +150,8 @@ QVariant NameValueModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    const auto resultIterator = d->m_resultNameValueDictionary.constBegin() + index.row();
+    const auto resultIterator = std::next(d->m_resultNameValueDictionary.constBegin(), index.row());
+
     switch (role) {
     case Qt::DisplayRole:
     case Qt::EditRole:
@@ -161,8 +162,8 @@ QVariant NameValueModel::data(const QModelIndex &index, int role) const
             // Do not return "<UNSET>" when editing a previously unset variable:
             if (role == Qt::EditRole) {
                 int pos = d->findInChanges(indexToVariable(index));
-                if (pos != -1)
-                    return d->m_items.at(pos).value;
+                if (pos != -1 && d->m_items.at(pos).operation == NameValueItem::Unset)
+                    return QString();
             }
             QString value = d->m_resultNameValueDictionary.value(resultIterator);
             if (role == Qt::ToolTipRole && value.length() > 80) {

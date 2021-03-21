@@ -39,6 +39,7 @@
 
 #include <QApplication>
 
+#include <algorithm>
 #include <limits.h>
 #include <memory>
 
@@ -89,19 +90,37 @@ static Q_LOGGING_CATEGORY(processLog, "qtc.utils.synchronousprocess", QtWarningM
 // A special QProcess derivative allowing for terminal control.
 class TerminalControllingProcess : public QProcess {
 public:
-    TerminalControllingProcess() = default;
+    TerminalControllingProcess();
 
     unsigned flags() const { return m_flags; }
     void setFlags(unsigned tc) { m_flags = tc; }
 
 protected:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     void setupChildProcess() override;
+#endif
 
 private:
+    void setupChildProcess_impl();
+
     unsigned m_flags = 0;
 };
 
+TerminalControllingProcess::TerminalControllingProcess()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0) && defined(Q_OS_UNIX)
+    setChildProcessModifier([this] { setupChildProcess_impl(); });
+#endif
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void TerminalControllingProcess::setupChildProcess()
+{
+    setupChildProcess_impl();
+}
+#endif
+
+void TerminalControllingProcess::setupChildProcess_impl()
 {
 #ifdef Q_OS_UNIX
     // Disable terminal by becoming a session leader.
@@ -456,39 +475,30 @@ SynchronousProcessResponse SynchronousProcess::run(const CommandLine &cmd,
 
     d->clearForRun();
 
-    // On Windows, start failure is triggered immediately if the
-    // executable cannot be found in the path. Do not start the
-    // event loop in that case.
     d->m_binary = cmd.executable();
     // using QProcess::start() and passing program, args and OpenMode results in a different
     // quoting of arguments than using QProcess::setArguments() beforehand and calling start()
     // only with the OpenMode
     d->m_process.setProgram(cmd.executable().toString());
     d->m_process.setArguments(cmd.splitArguments());
-    connect(&d->m_process, &QProcess::started, this, [this, writeData] {
-        if (!writeData.isEmpty()) {
-            int pos = 0;
-            int sz = writeData.size();
-            do {
-                d->m_process.waitForBytesWritten();
-                auto res = d->m_process.write(writeData.constData() + pos, sz - pos);
-                if (res > 0) pos += res;
-            } while (pos < sz);
-            d->m_process.waitForBytesWritten();
-        }
-        d->m_process.closeWriteChannel();
-    });
+    if (!writeData.isEmpty()) {
+        connect(&d->m_process, &QProcess::started, this, [this, writeData] {
+            d->m_process.write(writeData);
+            d->m_process.closeWriteChannel();
+        });
+    }
     d->m_process.start(writeData.isEmpty() ? QIODevice::ReadOnly : QIODevice::ReadWrite);
 
+    // On Windows, start failure is triggered immediately if the
+    // executable cannot be found in the path. Do not start the
+    // event loop in that case.
     if (!d->m_startFailure) {
         d->m_timer.start();
         if (isGuiThread())
             QApplication::setOverrideCursor(Qt::WaitCursor);
         d->m_eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
-        if (d->m_result.result == SynchronousProcessResponse::Finished || d->m_result.result == SynchronousProcessResponse::FinishedError) {
-            processStdOut(false);
-            processStdErr(false);
-        }
+        processStdOut(false);
+        processStdErr(false);
 
         d->m_result.rawStdOut = d->m_stdOut.rawData;
         d->m_result.rawStdErr = d->m_stdErr.rawData;
@@ -510,9 +520,6 @@ SynchronousProcessResponse SynchronousProcess::runBlocking(const CommandLine &cm
 
     d->clearForRun();
 
-    // On Windows, start failure is triggered immediately if the
-    // executable cannot be found in the path. Do not start the
-    // event loop in that case.
     d->m_binary = cmd.executable();
     d->m_process.start(cmd.executable().toString(), cmd.splitArguments(), QIODevice::ReadOnly);
     if (!d->m_process.waitForStarted(d->m_maxHangTimerCount * 1000)
@@ -521,11 +528,11 @@ SynchronousProcessResponse SynchronousProcess::runBlocking(const CommandLine &cm
         return d->m_result;
     }
     d->m_process.closeWriteChannel();
-    if (d->m_process.waitForFinished(d->m_maxHangTimerCount * 1000)) {
+    if (!d->m_process.waitForFinished(d->m_maxHangTimerCount * 1000)) {
         if (d->m_process.state() == QProcess::Running) {
             d->m_result.result = SynchronousProcessResponse::Hang;
             d->m_process.terminate();
-            if (d->m_process.waitForFinished(1000) && d->m_process.state() == QProcess::Running) {
+            if (!d->m_process.waitForFinished(1000) && d->m_process.state() == QProcess::Running) {
                 d->m_process.kill();
                 d->m_process.waitForFinished(1000);
             }
@@ -785,7 +792,11 @@ QString SynchronousProcess::locateBinary(const QString &path, const QString &bin
 QString SynchronousProcess::normalizeNewlines(const QString &text)
 {
     QString res = text;
-    res.replace(QLatin1String("\r\n"), QLatin1String("\n"));
+    const auto newEnd = std::unique(res.begin(), res.end(), [](const QChar &c1, const QChar &c2) {
+        return c1 == '\r' && c2 == '\r'; // QTCREATORBUG-24556
+    });
+    res.chop(std::distance(newEnd, res.end()));
+    res.replace("\r\n", "\n");
     return res;
 }
 

@@ -23,45 +23,38 @@
 **
 ****************************************************************************/
 
-#include "execmenu.h"
+#pragma once
 
-#include <QApplication>
-#include <QMenu>
-#include <QPoint>
-#include <QRect>
-#include <QScreen>
-#include <QSize>
+#include "utils_global.h"
+#include "macroexpander.h"
+
 #include <QWidget>
+
+#include <functional>
 
 namespace Utils {
 
-/*!
- * Opens \a menu at the specified \a widget position.
- * This function computes the position where to show the menu, and opens it with
- * QMenu::exec().
- */
-QAction *execMenuAtWidget(QMenu *menu, QWidget *widget)
-{
-    QPoint p;
-    QRect screen = widget->screen()->availableGeometry();
-    QSize sh = menu->sizeHint();
-    QRect rect = widget->rect();
-    if (widget->isRightToLeft()) {
-        if (widget->mapToGlobal(QPoint(0, rect.bottom())).y() + sh.height() <= screen.height())
-            p = widget->mapToGlobal(rect.bottomRight());
-        else
-            p = widget->mapToGlobal(rect.topRight() - QPoint(0, sh.height()));
-        p.rx() -= sh.width();
-    } else {
-        if (widget->mapToGlobal(QPoint(0, rect.bottom())).y() + sh.height() <= screen.height())
-            p = widget->mapToGlobal(rect.bottomLeft());
-        else
-            p = widget->mapToGlobal(rect.topLeft() - QPoint(0, sh.height()));
-    }
-    p.rx() = qMax(screen.left(), qMin(p.x(), screen.right() - sh.width()));
-    p.ry() += 1;
+namespace Internal { class VariableChooserPrivate; }
 
-    return menu->exec(p);
-}
+class QTCREATOR_UTILS_EXPORT VariableChooser : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit VariableChooser(QWidget *parent = nullptr);
+    ~VariableChooser() override;
+
+    void addMacroExpanderProvider(const Utils::MacroExpanderProvider &provider);
+    void addSupportedWidget(QWidget *textcontrol, const QByteArray &ownName = QByteArray());
+
+    static void addSupportForChildWidgets(QWidget *parent, Utils::MacroExpander *expander);
+
+protected:
+    bool event(QEvent *ev) override;
+    bool eventFilter(QObject *, QEvent *event) override;
+
+private:
+    Internal::VariableChooserPrivate *d;
+};
 
 } // namespace Utils

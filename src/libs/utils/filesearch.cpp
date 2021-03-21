@@ -23,14 +23,16 @@
 **
 ****************************************************************************/
 
-#include "algorithm.h"
 #include "filesearch.h"
+
+#include "algorithm.h"
 #include "fileutils.h"
 #include "mapreduce.h"
+#include "qtcassert.h"
+#include "stringutils.h"
 
 #include <QCoreApplication>
 #include <QMutex>
-#include <QRegExp>
 #include <QRegularExpression>
 #include <QTextCodec>
 
@@ -64,19 +66,20 @@ QString clippedText(const QString &text, int maxLength)
 }
 
 // returns success
-bool openStream(const QString &filePath, QTextCodec *encoding, QTextStream *stream, QFile *file,
-                QString *tempString,
-                const QMap<QString, QString> &fileToContentsMap)
+bool getFileContent(const QString &filePath,
+                    QTextCodec *encoding,
+                    QString *tempString,
+                    const QMap<QString, QString> &fileToContentsMap)
 {
     if (fileToContentsMap.contains(filePath)) {
         *tempString = fileToContentsMap.value(filePath);
-        stream->setString(tempString);
     } else {
-        file->setFileName(filePath);
-        if (!file->open(QIODevice::ReadOnly))
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly))
             return false;
-        stream->setDevice(file);
-        stream->setCodec(encoding);
+        const QByteArray content = file.readAll();
+        *tempString = QTC_GUARD(encoding) ? encoding->toUnicode(content)
+                                          : QTextCodec::codecForLocale()->toUnicode(content);
     }
     return true;
 }
@@ -140,13 +143,12 @@ void FileSearch::operator()(QFutureInterface<FileSearchResultList> &futureInterf
     futureInterface.setProgressRange(0, 1);
     futureInterface.setProgressValue(0);
     FileSearchResultList results;
-    QFile file;
-    QTextStream stream;
     QString tempString;
-    if (!openStream(item.filePath, item.encoding, &stream, &file, &tempString, fileToContentsMap)) {
+    if (!getFileContent(item.filePath, item.encoding, &tempString, fileToContentsMap)) {
         futureInterface.cancel(); // failure
         return;
     }
+    QTextStream stream(&tempString);
     int lineNr = 0;
 
     while (!stream.atEnd()) {
@@ -216,8 +218,6 @@ void FileSearch::operator()(QFutureInterface<FileSearchResultList> &futureInterf
         if (futureInterface.isCanceled())
             break;
     }
-    if (file.isOpen())
-        file.close();
     if (!futureInterface.isCanceled()) {
         futureInterface.reportResult(results);
         futureInterface.setProgressValue(1);
@@ -260,13 +260,12 @@ void FileSearchRegExp::operator()(QFutureInterface<FileSearchResultList> &future
     futureInterface.setProgressRange(0, 1);
     futureInterface.setProgressValue(0);
     FileSearchResultList results;
-    QFile file;
-    QTextStream stream;
     QString tempString;
-    if (!openStream(item.filePath, item.encoding, &stream, &file, &tempString, fileToContentsMap)) {
+    if (!getFileContent(item.filePath, item.encoding, &tempString, fileToContentsMap)) {
         futureInterface.cancel(); // failure
         return;
     }
+    QTextStream stream(&tempString);
     int lineNr = 0;
 
     QString line;
@@ -293,8 +292,6 @@ void FileSearchRegExp::operator()(QFutureInterface<FileSearchResultList> &future
         if (futureInterface.isCanceled())
             break;
     }
-    if (file.isOpen())
-        file.close();
     if (!futureInterface.isCanceled()) {
         futureInterface.reportResult(results);
         futureInterface.setProgressValue(1);
@@ -475,22 +472,24 @@ QString matchCaseReplacement(const QString &originalText, const QString &replace
 }
 } // namespace
 
-static QList<QRegExp> filtersToRegExps(const QStringList &filters)
+static QList<QRegularExpression> filtersToRegExps(const QStringList &filters)
 {
     return Utils::transform(filters, [](const QString &filter) {
-        return QRegExp(filter, Qt::CaseInsensitive, QRegExp::Wildcard);
+        return QRegularExpression(Utils::wildcardToRegularExpression(filter),
+                                  QRegularExpression::CaseInsensitiveOption);
     });
 }
 
-static bool matches(const QList<QRegExp> &exprList, const QString &filePath)
+static bool matches(const QList<QRegularExpression> &exprList, const QString &filePath)
 {
-    return Utils::anyOf(exprList, [&filePath](QRegExp reg) {
-        return (reg.exactMatch(filePath)
-                || reg.exactMatch(FilePath::fromString(filePath).fileName()));
+    return Utils::anyOf(exprList, [&filePath](const QRegularExpression &reg) {
+        return (reg.match(filePath).hasMatch()
+                || reg.match(FilePath::fromString(filePath).fileName()).hasMatch());
     });
 }
 
-static bool isFileIncluded(const QList<QRegExp> &filterRegs, const QList<QRegExp> &exclusionRegs,
+static bool isFileIncluded(const QList<QRegularExpression> &filterRegs,
+                           const QList<QRegularExpression> &exclusionRegs,
                            const QString &filePath)
 {
     const bool isIncluded = filterRegs.isEmpty() || matches(filterRegs, filePath);
@@ -500,8 +499,8 @@ static bool isFileIncluded(const QList<QRegExp> &filterRegs, const QList<QRegExp
 std::function<bool(const QString &)>
 filterFileFunction(const QStringList &filters, const QStringList &exclusionFilters)
 {
-    const QList<QRegExp> filterRegs = filtersToRegExps(filters);
-    const QList<QRegExp> exclusionRegs = filtersToRegExps(exclusionFilters);
+    const QList<QRegularExpression> filterRegs = filtersToRegExps(filters);
+    const QList<QRegularExpression> exclusionRegs = filtersToRegExps(exclusionFilters);
     return [filterRegs, exclusionRegs](const QString &filePath) {
         return isFileIncluded(filterRegs, exclusionRegs, filePath);
     };
@@ -510,8 +509,8 @@ filterFileFunction(const QStringList &filters, const QStringList &exclusionFilte
 std::function<QStringList(const QStringList &)>
 filterFilesFunction(const QStringList &filters, const QStringList &exclusionFilters)
 {
-    const QList<QRegExp> filterRegs = filtersToRegExps(filters);
-    const QList<QRegExp> exclusionRegs = filtersToRegExps(exclusionFilters);
+    const QList<QRegularExpression> filterRegs = filtersToRegExps(filters);
+    const QList<QRegularExpression> exclusionRegs = filtersToRegExps(exclusionFilters);
     return [filterRegs, exclusionRegs](const QStringList &filePaths) {
         return Utils::filtered(filePaths, [&filterRegs, &exclusionRegs](const QString &filePath) {
             return isFileIncluded(filterRegs, exclusionRegs, filePath);
