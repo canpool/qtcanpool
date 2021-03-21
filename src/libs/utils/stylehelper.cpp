@@ -651,7 +651,9 @@ QIcon StyleHelper::getCursorFromIconFont(const QString &fontName, const QString 
             painter.save();
             painter.setRenderHint(QPainter::Antialiasing, true);
             painter.setRenderHint(QPainter::TextAntialiasing, true);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
             painter.setRenderHint(QPainter::LosslessImageRendering, true);
+#endif
             painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
             painter.setFont(font);

@@ -29,9 +29,14 @@
 #include <QMenu>
 #include <QPoint>
 #include <QRect>
-#include <QScreen>
 #include <QSize>
 #include <QWidget>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#include <QDesktopWidget>
+#else
+#include <QScreen>
+#endif
 
 namespace Utils {
 
@@ -43,7 +48,11 @@ namespace Utils {
 QAction *execMenuAtWidget(QMenu *menu, QWidget *widget)
 {
     QPoint p;
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    QRect screen = QApplication::desktop()->availableGeometry(widget);
+#else
     QRect screen = widget->screen()->availableGeometry();
+#endif
     QSize sh = menu->sizeHint();
     QRect rect = widget->rect();
     if (widget->isRightToLeft()) {
