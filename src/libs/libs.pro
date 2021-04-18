@@ -3,7 +3,7 @@ include(../../qtproject.pri)
 TEMPLATE  = subdirs
 
 SUBDIRS =   \
-    qcanpool   \
+    qcanpool \
     qlite \
     aggregation \
     extensionsystem \
