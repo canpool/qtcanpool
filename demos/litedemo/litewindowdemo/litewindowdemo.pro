@@ -3,7 +3,7 @@
 # Project created by QtCreator 2019-03-09T14:40:01
 #
 #-------------------------------------------------
-include(../../../../qtproject.pri)
+include(../../../qtproject.pri)
 
 QT       += core gui
 

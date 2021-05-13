@@ -1,5 +1,5 @@
 /***************************************************
-    name 	: green
+    name 	: dark green
     author 	: maminjie (canpool@163.com)
 *****************************************************/
 
@@ -302,7 +302,7 @@ QComboBox QAbstractItemView::item {
 }
 
 QStatusBar {
-    background: #22cb64;
+    background: #016f6c;
 }
 
 QStatusBar::item {
@@ -388,7 +388,7 @@ QWidget#qlite_tabwidget QToolButton {
 QWidget#qlite_modebar QToolButton:hover,
 QWidget#qlite_tabwidget QToolButton:hover {
     color: white;
-    background: rgba(34, 203, 100, 150);
+    background: rgba(1, 111, 108, 150);
 }
 
 QWidget#qlite_modebar QToolButton:pressed,
@@ -396,7 +396,7 @@ QWidget#qlite_modebar QToolButton:checked,
 QWidget#qlite_tabwidget QToolButton:pressed,
 QWidget#qlite_tabwidget QToolButton:checked {
     color: white;
-    background: rgba(34, 203, 100, 220);
+    background: rgba(1, 111, 108, 220);
 }
 
 QWidget#qlite_modebar QToolButton#tab {
@@ -449,7 +449,7 @@ QWidget#qlite_tabwidget[tabPosition="3"] QToolButton#tab:checked {
 
 QWidget#qlite_titlebar {
     color: white;
-    background: #22cb64;
+    background: #016f6c;
 }
 
 QWidget#qlite_titlebar QMenuBar, QLabel, QToolButton {
@@ -465,7 +465,7 @@ QWidget#qlite_titlebar QToolButton {
 QWidget#qlite_titlebar QToolButton#close,
 QWidget#qlite_titlebar QToolButton#minimize,
 QWidget#qlite_titlebar QToolButton#maximize {
-    width: 32px;
+    width: 24px;
     height: 18px;
 }
 

@@ -9,6 +9,3 @@ SUBDIRS = \
     controldemo \
     qtoffice
 
-!macx {
-SUBDIRS += licenseDemo
-}
