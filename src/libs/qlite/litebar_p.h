@@ -119,6 +119,7 @@ private slots:
 
 public:
     LiteBar *q;
+    QWidget *m_titleBar;
 
     QToolButton *m_logoButton;
     QLabel *m_titleLabel;
@@ -150,6 +151,7 @@ public:
     QPoint m_mousePoint;
     bool m_bLeftButtonPressed;
     bool m_bLeftButtonDbClicked;
+    bool m_bLeftButtonTitlePressed;
 };
 
 QLITE_END_NAMESPACE

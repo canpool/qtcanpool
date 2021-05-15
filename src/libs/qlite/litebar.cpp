@@ -81,6 +81,7 @@ void LiteCursor::recalculate(const QPoint &gMousePos, const QRect &frameRect)
 LiteBarPrivate::LiteBarPrivate()
 {
     q = nullptr;
+    m_titleBar = nullptr;
 
     m_logoButton = nullptr;
     m_titleLabel = nullptr;
@@ -108,6 +109,7 @@ LiteBarPrivate::LiteBarPrivate()
     m_mousePoint.setY(0);
     m_bLeftButtonPressed = false;
     m_bLeftButtonDbClicked = false;
+    m_bLeftButtonTitlePressed = true;
 }
 
 void LiteBarPrivate::init()
@@ -118,7 +120,7 @@ void LiteBarPrivate::init()
     m_toolBar = new QToolBar(m_mainWidget);
     m_toolBar->setObjectName(QLatin1String("qlite_sys_toolbar"));
     m_toolBar->setStyleSheet("QToolBar{border:none; background: transparent;}");
-    m_toolBar->setIconSize(QSize(18, 18));
+    m_toolBar->setIconSize(QSize(14, 14));
 
     m_minimizeAction = new QAction(m_mainWidget);
     m_minimizeAction->setIcon(QIcon(":/qlite/min"));
@@ -268,10 +270,11 @@ void LiteBarPrivate::handleMousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton) {
         m_bLeftButtonPressed = true;
+        m_bLeftButtonTitlePressed = m_titleBar ? (m_titleBar->sizeHint().height() > event->pos().y()) : true;
         QWidget *pWindow = m_mainWidget;
 
         if (pWindow->isTopLevel()) {
-            if (m_isMaximized) {
+            if (m_isMaximized && m_bLeftButtonTitlePressed) {
                 m_dragPoint = calcDragPoint(pWindow, event);
                 m_movePoint = event->globalPos() - m_dragPoint;
             } else {
@@ -326,7 +329,7 @@ void LiteBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
         updateCursorShape(event->globalPos());
     }
 
-    if (m_bLeftButtonPressed) {
+    if (m_bLeftButtonPressed && m_bLeftButtonTitlePressed) {
         QWidget *pWindow = m_mainWidget;
 
         if (pWindow->isTopLevel()) {
@@ -368,7 +371,7 @@ void LiteBarPrivate::handleMouseDblClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_bLeftButtonDbClicked = true;
-        if (m_bWidgetMaximizable) {
+        if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
             if (m_isMaximized) {
                 m_dragPoint = calcDragPoint(m_mainWidget, event);
                 m_mousePoint = event->globalPos();
@@ -704,6 +707,15 @@ void LiteBar::updateWidgetFlags()
 {
     d->m_windowFlags = d->m_mainWidget->windowFlags();
     d->updateWindowButtons();
+}
+
+/**
+ * @brief LiteBar::setTitleBar
+ * @param widget - custom titlebar widget
+ */
+void LiteBar::setTitleBar(QWidget *widget)
+{
+    d->m_titleBar = widget;
 }
 
 bool LiteBar::eventFilter(QObject *object, QEvent *event)

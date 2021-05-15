@@ -40,7 +40,7 @@ class QLITE_SHARED_EXPORT LiteDialog : public QDialog
     Q_OBJECT
 public:
     explicit LiteDialog(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~LiteDialog();
+    virtual ~LiteDialog();
 
     LiteBar *liteBar() const;
 

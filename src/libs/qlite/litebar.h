@@ -64,6 +64,8 @@ public:
 
     void updateWidgetFlags();
 
+    void setTitleBar(QWidget *widget);
+
 signals:
     void sigWidgetResizable(bool resizable);
     void sigWidgetMovable(bool movable);

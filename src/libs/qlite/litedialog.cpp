@@ -66,6 +66,7 @@ LiteDialog::LiteDialog(QWidget *parent, Qt::WindowFlags f)
 
     QWidget *titleWidget = new QWidget(this);
     titleWidget->setObjectName(QLatin1String("qlite_titlebar"));
+    d->m_liteBar->setTitleBar(titleWidget);
 
     QHBoxLayout *titleLayout = new QHBoxLayout();
     titleLayout->setContentsMargins(2, 0, 2, 0);

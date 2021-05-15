@@ -39,7 +39,7 @@ class QLITE_SHARED_EXPORT LiteBoard : public QDialog
     Q_OBJECT
 public:
     explicit LiteBoard(QWidget *parent = nullptr);
-    ~LiteBoard();
+    virtual ~LiteBoard();
 
 protected:
     void mousePressEvent(QMouseEvent *event);

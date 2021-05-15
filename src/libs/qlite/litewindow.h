@@ -40,7 +40,7 @@ class QLITE_SHARED_EXPORT LiteWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit LiteWindow(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-    ~LiteWindow();
+    virtual ~LiteWindow();
 
     LiteBar *liteBar() const;
 
