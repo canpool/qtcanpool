@@ -42,6 +42,12 @@ MainWindow::MainWindow(QWidget *parent)
     FancyRibbonPage *page = m_ribbon->addPage(tr("Home"));
     FancyRibbonGroup *group = page->addGroup(tr("Font"));
     group->addAction(QIcon(":/main/logo"), tr("testgroup"), FancyRibbonGroup::GroupLarge);
+    action = new QAction(QIcon(":/main/logo"), tr("test"));
+    menu = new QMenu();
+    menu->addAction(QIcon(":/main/logo"), tr("test"));
+    menu->addAction(QIcon(":/main/logo"), tr("test"));
+    action->setMenu(menu);
+    group->addAction(action, FancyRibbonGroup::GroupLarge);
     group->addAction(QIcon(":/main/logo"), tr("test"), FancyRibbonGroup::GroupSmall);
     group->addAction(QIcon(":/main/logo"), tr("test"), FancyRibbonGroup::GroupSmall);
     group->addAction(QIcon(":/main/logo"), tr("test"), FancyRibbonGroup::GroupSmall);

@@ -153,9 +153,9 @@ void FancyRibbonGroupPrivate::init()
     QHBoxLayout *titleLayout = new QHBoxLayout();
     titleLayout->setSpacing(0);
     titleLayout->setContentsMargins(0, 0, 2, 2);
-    titleLayout->addSpacerItem(new QSpacerItem(QSizePolicy::Expanding, QSizePolicy::Preferred));
+    titleLayout->addStretch();
     titleLayout->addWidget(m_titleLabel);
-    titleLayout->addSpacerItem(new QSpacerItem(QSizePolicy::Expanding, QSizePolicy::Preferred));
+    titleLayout->addStretch();
     titleLayout->addWidget(m_optionButton);
 
     QWidget *line = new QWidget();
@@ -178,7 +178,6 @@ void FancyRibbonGroupPrivate::init()
     controlLayout->addLayout(m_extLayout);
     QWidget *container = new QWidget();
     container->setLayout(controlLayout);
-    container->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
     QVBoxLayout *bodyLayout = new QVBoxLayout();
     bodyLayout->setSpacing(0);
@@ -193,6 +192,7 @@ void FancyRibbonGroupPrivate::init()
     mainLayout->addWidget(line);
 
     q->setLayout(mainLayout);
+    q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
 FancyRibbonContainer *FancyRibbonGroupPrivate::getContainer(FancyRibbonGroup::GroupSize size)

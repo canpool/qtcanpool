@@ -162,7 +162,7 @@ QString FancyRibbonPage::title() const
 void FancyRibbonPage::setBackgroundColor(const QColor &color)
 {
     QPalette palette;
-    palette.setColor(QPalette::Background, color);
+    palette.setColor(QPalette::Window, color);
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 }

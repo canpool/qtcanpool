@@ -698,7 +698,7 @@ void FancyTabBar::setSelectedTextColor(const QColor &color)
 void FancyTabBar::setBackgroundColor(const QColor &color)
 {
     QPalette palette;
-    palette.setColor(QPalette::Background, color);
+    palette.setColor(QPalette::Window, color);
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 }
