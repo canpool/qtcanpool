@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -34,6 +34,7 @@ class QMenuBar;
 
 QCANPOOL_BEGIN_NAMESPACE
 
+class FancyTitleBar;
 class FancyQuickAccessBar;
 class FancyBarPrivate;
 
@@ -51,6 +52,8 @@ public:
 
     explicit FancyBar(QWidget *parent);
     ~FancyBar();
+
+    FancyTitleBar *titleBar() const;
 
     QMenuBar* menuBar() const;
     void showMenuBar(bool show = false);

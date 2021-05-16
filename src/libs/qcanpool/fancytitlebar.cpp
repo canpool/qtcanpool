@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -37,6 +37,7 @@
 #include <QEvent>
 #include <QPoint>
 #include <QApplication>
+#include <QWidget>
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -59,6 +60,8 @@ public:
 
     void updateWindowButtons();
 
+    void setIconDark(bool dark);
+
 public:
     // window
     bool windowTitleChange(QObject *obj);
@@ -73,6 +76,7 @@ private:
     void handleMouseMoveEvent(QMouseEvent *event);
     void handleLeaveEvent(QEvent *event);
     void handleHoverMoveEvent(QHoverEvent *event);
+    void handleMouseDblClickEvent(QMouseEvent *event);
 
     // widget action
     void restoreWidget(QWidget *pWidget);
@@ -83,7 +87,10 @@ private:
     void updateCursorShape(const QPoint &gMousePos);
     QPoint calcStartPoint(QWidget *pWindow, QMouseEvent *event) const;
 
+    QRect validDragRect();
+
 public:
+    // Simulate mouse events
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -98,6 +105,7 @@ private slots:
 public:
     FancyTitleBar   *q;
     QWidget         *m_mainWidget;
+    QWidget         *m_titleWidget;
 
     // title widget
     FancyButton     *m_logoButton;
@@ -107,12 +115,18 @@ public:
     FancyButton     *m_minimizeButton;
     FancyButton     *m_closeButton;
 
-
     QMenu           *m_menu;
     QAction         *m_maximizeAction;
     QAction         *m_minimizeAction;
     QAction         *m_restoreAction;
     QAction         *m_closeAction;
+
+    // 0:white, 1:black
+    QIcon           m_closeIcon[2];
+    QIcon           m_minimizeIcon[2];
+    QIcon           m_maximizeIcon[2];
+    QIcon           m_normalIcon[2];
+    bool            m_bDarkIcon;
 
     // main window
     Qt::WindowFlags m_windowFlags;
@@ -122,6 +136,8 @@ public:
     int             m_currentScreen;
     bool            m_bEdgePressed;
     bool            m_bLeftButtonPressed;
+    bool            m_bLeftButtonDbClicked;
+    bool            m_bLeftButtonTitlePressed;
     bool            m_bCursorShapeChanged;
     bool            m_isMaximized;
     bool            m_isMinimized;
@@ -134,10 +150,13 @@ public:
 
 FancyTitleBarPrivate::FancyTitleBarPrivate()
     : m_mainWidget(nullptr)
+    , m_titleWidget(nullptr)
     , m_normalRect(FancyScreen::normalRect())
     , m_currentScreen(0)
     , m_bEdgePressed(false)
     , m_bLeftButtonPressed(false)
+    , m_bLeftButtonDbClicked(false)
+    , m_bLeftButtonTitlePressed(true)
     , m_bCursorShapeChanged(false)
     , m_isMaximized(false)
     , m_isMinimized(false)
@@ -146,6 +165,15 @@ FancyTitleBarPrivate::FancyTitleBarPrivate()
     , m_bWidgetMovable(true)
     , m_movePoint(QPoint(0, 0))
 {
+    m_closeIcon[0] = QIcon(":/main/close");
+    m_minimizeIcon[0] = QIcon(":/main/min");
+    m_maximizeIcon[0] = QIcon(":/main/max");
+    m_normalIcon[0] = QIcon(":/main/restore");
+    m_closeIcon[1] = QIcon(":/main/close2");
+    m_minimizeIcon[1] = QIcon(":/main/min2");
+    m_maximizeIcon[1] = QIcon(":/main/max2");
+    m_normalIcon[1] = QIcon(":/main/restore2");
+    m_bDarkIcon = false;
 }
 
 FancyTitleBarPrivate::~FancyTitleBarPrivate()
@@ -165,19 +193,18 @@ void FancyTitleBarPrivate::init()
     m_titleLabel->setStyleSheet("color:white;");
 
     m_minimizeButton = new FancyButton(m_mainWidget);
-    m_minimizeButton->setIcon(QIcon(":/main/min"));
+    m_minimizeButton->setIcon(m_minimizeIcon[0]);
     m_minimizeButton->setToolTip(tr("minimize"));
     connect(m_minimizeButton, SIGNAL(clicked(bool)), this, SLOT(slotSysButtonClicked()));
 
     m_maximizeButton = new FancyButton(m_mainWidget);
-    m_maximizeButton->setIcon(QIcon(":/main/max"));
+    m_maximizeButton->setIcon(m_maximizeIcon[0]);
     m_maximizeButton->setToolTip(tr("maximize"));
     connect(m_maximizeButton, SIGNAL(clicked(bool)), this, SLOT(slotSysButtonClicked()));
 
     m_closeButton = new FancyButton(m_mainWidget);
-    m_closeButton->setIcon(QIcon(":/main/close"));
+    m_closeButton->setIcon(m_closeIcon[0]);
     m_closeButton->setToolTip(tr("close"));
-    m_closeButton->setIconSize(QSize(22, 22));
     connect(m_closeButton, SIGNAL(clicked(bool)), this, SLOT(slotSysButtonClicked()));
     m_closeButton->setHoverColor(QColor(207, 0, 0, 230));
     m_closeButton->setPressColor(QColor(207, 0, 0, 150));
@@ -186,10 +213,10 @@ void FancyTitleBarPrivate::init()
     connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowSystemMenu()));
     connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideSystemMenu()));
 
-    m_maximizeAction = new QAction(QIcon(":/main/max2"), tr("maximize"), this);
-    m_minimizeAction = new QAction(QIcon(":/main/min2"), tr("minimize"), this);
-    m_restoreAction = new QAction(QIcon(":/main/restore2"), tr("restore"), this);
-    m_closeAction = new QAction(QIcon(":/main/close2"), tr("close"), this);
+    m_maximizeAction = new QAction(m_maximizeIcon[1], tr("maximize"), this);
+    m_minimizeAction = new QAction(m_minimizeIcon[1], tr("minimize"), this);
+    m_restoreAction = new QAction(m_normalIcon[1], tr("restore"), this);
+    m_closeAction = new QAction(m_closeIcon[1], tr("close"), this);
     m_closeAction->setShortcut(QString("Alt+F4"));
     connect(m_maximizeAction, SIGNAL(triggered(bool)), m_maximizeButton, SIGNAL(clicked(bool)));
     connect(m_minimizeAction, SIGNAL(triggered(bool)), m_minimizeButton, SIGNAL(clicked(bool)));
@@ -210,6 +237,8 @@ void FancyTitleBarPrivate::init()
     systemButtonLayout->addWidget(m_maximizeButton);
     systemButtonLayout->addWidget(m_closeButton);
     m_systemGroup->setLayout(systemButtonLayout);
+
+    setIconDark(false);
 }
 
 void FancyTitleBarPrivate::installWidget(QWidget *w)
@@ -255,6 +284,9 @@ void FancyTitleBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
         case QEvent::HoverMove:
             handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
             break;
+        case QEvent::MouseButtonDblClick:
+            handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
+            break;
         default:
             break;
     }
@@ -271,6 +303,21 @@ void FancyTitleBarPrivate::updateWindowButtons()
     m_restoreAction->setEnabled(false);
 
     setWidgetMaximizable(m_windowFlags & Qt::WindowMaximizeButtonHint);
+}
+
+void FancyTitleBarPrivate::setIconDark(bool dark)
+{
+    m_bDarkIcon = dark;
+
+    int index = dark ? 1 : 0;
+
+    m_minimizeButton->setIcon(m_minimizeIcon[index]);
+    m_closeButton->setIcon(m_closeIcon[index]);
+    if (m_isMaximized) {
+        m_maximizeButton->setIcon(m_normalIcon[index]);
+    } else {
+        m_maximizeButton->setIcon(m_maximizeIcon[index]);
+    }
 }
 
 bool FancyTitleBarPrivate::windowTitleChange(QObject *obj)
@@ -325,11 +372,11 @@ void FancyTitleBarPrivate::windowStateChange(QObject *obj)
     if (m_isMaximized) {
         m_maximizeButton->setToolTip(tr("restore"));
         m_maximizeButton->setProperty("maximizeProperty", "restore");
-        m_maximizeButton->setIcon(QIcon(":/main/restore"));
+        m_maximizeButton->setIcon(m_bDarkIcon ? m_normalIcon[1] : m_normalIcon[0]);
     } else {
         m_maximizeButton->setProperty("maximizeProperty", "maximize");
         m_maximizeButton->setToolTip(tr("maximize"));
-        m_maximizeButton->setIcon(QIcon(":/main/max"));
+        m_maximizeButton->setIcon(m_bDarkIcon ? m_maximizeIcon[1] : m_maximizeIcon[0]);
     }
 
     if (m_windowFlags & Qt::WindowMaximizeButtonHint) {
@@ -348,6 +395,8 @@ void FancyTitleBarPrivate::handleMousePressEvent(QMouseEvent *event)
         QRect frameRect = m_mainWidget->frameGeometry();
         m_pressCursor.recalculate(event->globalPos(), frameRect);
     }
+    mousePressEvent(event);
+    event->ignore();
 }
 
 void FancyTitleBarPrivate::handleMouseReleaseEvent(QMouseEvent *event)
@@ -360,6 +409,8 @@ void FancyTitleBarPrivate::handleMouseReleaseEvent(QMouseEvent *event)
             updateCursorShape(event->globalPos());
         }
     }
+    mouseReleaseEvent(event);
+    event->ignore();
 }
 
 void FancyTitleBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
@@ -371,6 +422,7 @@ void FancyTitleBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
     } else if (m_bWidgetResizable) {
         updateCursorShape(event->globalPos());
     }
+    mouseMoveEvent(event);
 }
 
 void FancyTitleBarPrivate::handleLeaveEvent(QEvent *event)
@@ -387,6 +439,11 @@ void FancyTitleBarPrivate::handleHoverMoveEvent(QHoverEvent *event)
     if (!m_bEdgePressed && m_bWidgetResizable) {
         updateCursorShape(m_mainWidget->mapToGlobal(event->pos()));
     }
+}
+
+void FancyTitleBarPrivate::handleMouseDblClickEvent(QMouseEvent *event)
+{
+    mouseDoubleClickEvent(event);
 }
 
 void FancyTitleBarPrivate::restoreWidget(QWidget *pWidget)
@@ -510,6 +567,41 @@ void FancyTitleBarPrivate::updateCursorShape(const QPoint &gMousePos)
  *  |                   |
  *  |-------------------|
  *
+ * as follows:
+ * ****************************************************************************
+ *
+ *   (screenX, screenY)
+ *         \        mouse
+ *          +-------*---------------------
+ *        / |                |           |
+ *   point  |                |orgHeight  |
+ *          |                |           |
+ *          |----------------|           |   maxHeight
+ *          |      orgWidth              |
+ *          |                            |
+ *          |                            |
+ *          ------------------------------
+ *                  maxWidth
+ *
+ *****************************************************************************
+ *
+ *   (screenX, screenY)
+ *         \                        mouse
+ *          +------------+----------*-----
+ *          |          / |               |
+ *          |      point |orgHeight      |
+ *          |            |               |
+ *          |            ----------------| maxHeight
+ *          |               orgWidth     |
+ *          |                            |
+ *          |                            |
+ *          ------------------------------
+ *                  maxWidth
+ *
+ *****************************************************************************
+ *
+ * 1. When titleWidget was set, the x,y coordinate (constrained within the title bar area) as follows:
+ *
  *  1) y coordinate is fixed to 0
  *  2) x coordinate is:
  *      a) screen x coordinate, when the drag point is left half (Align screen left)
@@ -524,18 +616,29 @@ void FancyTitleBarPrivate::updateCursorShape(const QPoint &gMousePos)
  *          |---------*------|
  *                |-------|
  *                `-> mouseX - oriWidth/2
+ *
+ * 2. When titleWidget was not set, the y coordinate is not constrained,
+ * the method of calculating the y coordinate is the same as above
+ *
  */
 QPoint FancyTitleBarPrivate::calcStartPoint(QWidget *pWindow, QMouseEvent *event) const
 {
     int mouseX = event->globalX();
+    int mouseY = event->globalY();
     FancyScreen screen;
     QRect rect = screen.screenRect(m_currentScreen);
     int maxWidth = rect.x() + rect.width();
+    int maxHeight = rect.y() + rect.height();
     int screenX = rect.x();
+    int screenY = rect.y();
     int oriWidth = m_normalRect.width();
+    int orgHeight = m_normalRect.height();
 
     if (oriWidth == 0) {
         oriWidth = pWindow->minimumWidth();
+    }
+    if (orgHeight == 0) {
+        orgHeight = pWindow->minimumHeight();
     }
 
     QPoint point;
@@ -549,17 +652,42 @@ QPoint FancyTitleBarPrivate::calcStartPoint(QWidget *pWindow, QMouseEvent *event
         point.setX(mouseX - oriWidth / 2);
     }
 
+    if (m_titleWidget == nullptr) {
+        if (mouseY - screenY < orgHeight / 2) {
+            point.setY(screenY);
+        } else if (maxHeight - mouseY < orgHeight / 2) {
+            point.setY(maxHeight - orgHeight);
+        } else {
+            point.setY(mouseY - orgHeight / 2);
+        }
+    }
+
     return point;
+}
+
+QRect FancyTitleBarPrivate::validDragRect()
+{
+    FancyScreen screen;
+    QRect rect = screen.screenRect(m_currentScreen);
+
+    int offset = 2 * m_moveCursor.m_nBorderWidth;
+    rect.setWidth(rect.width() - rect.x() - offset);
+    rect.setHeight(rect.height() - rect.y() - offset);
+    rect.setX(offset);
+    rect.setY(offset);
+
+    return rect;
 }
 
 void FancyTitleBarPrivate::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_bLeftButtonPressed = true;
+        m_bLeftButtonTitlePressed = m_titleWidget ? (m_titleWidget->sizeHint().height() > event->pos().y()) : true;
         QWidget *pWindow = m_mainWidget;
 
         if (pWindow->isTopLevel()) {
-            if (m_isMaximized) {
+            if (m_isMaximized && m_bLeftButtonTitlePressed) {
                 m_movePoint = event->globalPos() - calcStartPoint(pWindow, event);
             } else {
                 m_movePoint = event->globalPos() - pWindow->pos();
@@ -573,7 +701,7 @@ void FancyTitleBarPrivate::mouseReleaseEvent(QMouseEvent *event)
     m_bLeftButtonPressed = false;
 
     // maximize on the top of the screen
-    if (!m_isMaximized) {
+    if (!m_isMaximized && !m_bLeftButtonDbClicked) {
         if (event->globalY() <= 3) {
             m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
 
@@ -584,22 +712,25 @@ void FancyTitleBarPrivate::mouseReleaseEvent(QMouseEvent *event)
             int y = m_mainWidget->frameGeometry().y();
 
             if (y < 0) {
-                m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
+                m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
             }
         }
     }
+    m_bLeftButtonDbClicked = false;
 }
 
 void FancyTitleBarPrivate::mouseMoveEvent(QMouseEvent *event)
 {
-    if (!m_bLeftButtonPressed) {
+    if (!m_bLeftButtonPressed || !m_bLeftButtonTitlePressed) {
         return;
     }
 
     QWidget *pWindow = m_mainWidget;
     if (pWindow->isTopLevel()) {
         if (m_bWidgetMaximizable && m_isMaximized) {
-            if (event->globalY() > 2 * m_moveCursor.m_nBorderWidth) {
+            // calculate the valid rect
+            QRect rect = validDragRect();
+            if (rect.contains(event->pos())) {
                 m_movePoint = event->globalPos() - calcStartPoint(pWindow, event);
                 restoreWidget(pWindow);
             }
@@ -616,7 +747,11 @@ void FancyTitleBarPrivate::mouseMoveEvent(QMouseEvent *event)
 void FancyTitleBarPrivate::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if ( event->button() == Qt::LeftButton ) {
-        if (m_bWidgetMaximizable) {
+        m_bLeftButtonDbClicked = true;
+        if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
+            if (m_isMaximized) {
+                m_movePoint = event->globalPos() - calcStartPoint(m_mainWidget, event);
+            }
             emit m_maximizeButton->click();
         }
     }
@@ -670,25 +805,30 @@ void FancyTitleBarPrivate::systemMenuTriggered(QMouseEvent *e)
     m_menu->popup(pos);
 }
 
-///
-/// \brief FancyTitleBar::FancyTitleBar
-/// \param parent
-///
-FancyTitleBar::FancyTitleBar(QObject *parent)
-    : QObject(parent)
+/**
+ * @brief FancyTitleBar::FancyTitleBar
+ * @param mainWidget - the host widget
+ */
+FancyTitleBar::FancyTitleBar(QWidget *mainWidget)
+    : QObject(mainWidget)
     , d(new FancyTitleBarPrivate())
 {
-    Q_ASSERT(parent);
+    Q_ASSERT(mainWidget);
 
     d->q = this;
-    d->installWidget(qobject_cast<QWidget *>(parent));
+    d->installWidget(mainWidget);
     d->init();
-    parent->installEventFilter(this);
+    mainWidget->installEventFilter(this);
 }
 
 FancyTitleBar::~FancyTitleBar()
 {
     delete d;
+}
+
+void FancyTitleBar::setTitleWidget(QWidget *widget)
+{
+    d->m_titleWidget = widget;
 }
 
 QWidget *FancyTitleBar::mainWidget() const
@@ -726,6 +866,19 @@ void FancyTitleBar::setMinimizeIcon(QIcon &icon)
     d->m_minimizeButton->setIcon(icon);
 }
 
+void FancyTitleBar::setNormalIcon(QIcon &icon)
+{
+    d->m_normalIcon[0] = icon;
+    if (!d->m_isMaximized) {
+        d->m_maximizeButton->setIcon(icon);
+    }
+}
+
+void FancyTitleBar::setIconDark(bool dark)
+{
+    d->m_bDarkIcon = dark;
+}
+
 void FancyTitleBar::setWidgetResizable(bool resizable)
 {
     d->m_bWidgetResizable = resizable;
@@ -745,26 +898,6 @@ void FancyTitleBar::updateWidgetFlags()
 {
     d->m_windowFlags = d->m_mainWidget->windowFlags();
     d->updateWindowButtons();
-}
-
-void FancyTitleBar::mousePressEvent(QMouseEvent *event)
-{
-    d->mousePressEvent(event);
-}
-
-void FancyTitleBar::mouseReleaseEvent(QMouseEvent *event)
-{
-    d->mouseReleaseEvent(event);
-}
-
-void FancyTitleBar::mouseMoveEvent(QMouseEvent *event)
-{
-    d->mouseMoveEvent(event);
-}
-
-void FancyTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    d->mouseDoubleClickEvent(event);
 }
 
 bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)

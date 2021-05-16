@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -24,6 +24,28 @@
  **  https://www.gnu.org/licenses/gpl-3.0.html.
  **
 ****************************************************************************/
+/****************************************************************************
+ * NOTES:
+ *  1) the mainWidget is host-widget, FancyTitleBar is used as its event filter
+ *  2) the titleWidget is the title bar area of mainWidget, used to guide the
+ *     mouse event operation of FancyTitleBar
+ *
+ *  ------------------------------------------------,
+ *  |               titleWidget                    | \
+ *  |-----------------------------------------------  \
+ *  |                                              |   \
+ *  |                                              |    \
+ *  |                                              |     \
+ *  |                                              |       mainWindget
+ *  |                                              |     /
+ *  |                                              |    /
+ *  |                                              |   /
+ *  |                                              |  /
+ *  |                                              | /
+ *  ------------------------------------------------'
+ *
+ *****************************************************************************
+ */
 #ifndef FANCYTITLEBAR_H
 #define FANCYTITLEBAR_H
 
@@ -43,29 +65,28 @@ class QCANPOOL_SHARED_EXPORT FancyTitleBar : public QObject
 {
     Q_OBJECT
 public:
-    explicit FancyTitleBar(QObject *parent = nullptr);
+    explicit FancyTitleBar(QWidget *mainWidget);
     ~FancyTitleBar();
+
+    void setTitleWidget(QWidget *widget);
 
     QWidget *mainWidget() const;
     QLabel *titleLabel() const;
     QToolButton *logoButton() const;
     QWidget *systemGroup() const;
 
+    // set nondark icon
     void setCloseIcon(QIcon &icon);
     void setMaximizeIcon(QIcon &icon);
     void setMinimizeIcon(QIcon &icon);
+    void setNormalIcon(QIcon &icon);
+    void setIconDark(bool dark);
 
     void setWidgetResizable(bool resizable);
     void setWidgetMovable(bool movable);
     void setWidgetMaximizable(bool maximizable);
 
     void updateWidgetFlags();
-
-public:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
 
 signals:
     void windowResizable(bool resizable);

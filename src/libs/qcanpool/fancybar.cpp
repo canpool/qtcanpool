@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2018-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2018-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -72,10 +72,6 @@ public:
     void registerWidget(QWidget *widget);
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
     QSize sizeHint() const;
 
 private slots:
@@ -230,6 +226,12 @@ void FancyBarPrivate::init()
     layout->addLayout(m_logoLayout);
     layout->addLayout(rightLayout);
     setLayout(layout);
+
+    QVBoxLayout *qlayout = new QVBoxLayout();
+    qlayout->setMargin(0);
+    qlayout->setSpacing(0);
+    qlayout->addWidget(this);
+    q->setLayout(qlayout);
 }
 
 void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
@@ -404,31 +406,10 @@ void FancyBarPrivate::updateMenuColor()
 void FancyBarPrivate::registerWidget(QWidget *widget)
 {
     m_titleBar = new FancyTitleBar(widget);
+    m_titleBar->setTitleWidget(q);
 
     connect(m_titleBar, SIGNAL(windowResizable(bool)), q, SIGNAL(maximizationChanged(bool)));
     connect(m_titleBar, SIGNAL(windowIconChanged(QIcon &)), this, SLOT(slotWindowIconChange(QIcon &)));
-}
-
-void FancyBarPrivate::mousePressEvent(QMouseEvent *event)
-{
-    m_titleBar->mousePressEvent(event);
-    event->ignore();
-}
-
-void FancyBarPrivate::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_titleBar->mouseReleaseEvent(event);
-    event->ignore();
-}
-
-void FancyBarPrivate::mouseMoveEvent(QMouseEvent *event)
-{
-    m_titleBar->mouseMoveEvent(event);
-}
-
-void FancyBarPrivate::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    m_titleBar->mouseDoubleClickEvent(event);
 }
 
 QSize FancyBarPrivate::sizeHint() const
@@ -504,12 +485,6 @@ FancyBar::FancyBar(QWidget *parent)
     d->registerWidget(parent);
     d->init();
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->setMargin(0);
-    layout->setSpacing(0);
-    layout->addWidget(d);
-    setLayout(layout);
-
     if (s_backgroundColor.isValid()) {
         setBackgroundColor(s_backgroundColor);
     }
@@ -517,6 +492,11 @@ FancyBar::FancyBar(QWidget *parent)
 
 FancyBar::~FancyBar()
 {
+}
+
+FancyTitleBar *FancyBar::titleBar() const
+{
+    return d->m_titleBar;
 }
 
 QMenuBar *FancyBar::menuBar() const
