@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2019-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2019-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -41,6 +41,7 @@
 #include <QObject>
 #include <QMouseEvent>
 #include <QHoverEvent>
+#include <QIcon>
 #include "qlite_global.h"
 
 class QLabel;
@@ -78,8 +79,11 @@ class LiteBarPrivate : public QObject
     Q_OBJECT
 public:
     LiteBarPrivate();
+
     void init();
     void installWidget(QWidget *w);
+
+    void setIconDark(bool dark);
 
     void handleWidgetMouseEvent(QObject *obj, QEvent *event);
 
@@ -127,6 +131,10 @@ public:
     QAction *m_closeAction;
     QAction *m_maximizeAction;
     QAction *m_minimizeAction;
+    QIcon m_closeIcon;
+    QIcon m_minimizeIcon;
+    QIcon m_maximizeIcon;
+    QIcon m_normalIcon;
 
     QWidget *m_mainWidget;
     QPoint m_dragPos;

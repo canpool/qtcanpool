@@ -1,9 +1,12 @@
 <RCC>
     <qresource prefix="/qlite">
-        <file alias="close">resource/main/close.png</file>
-        <file alias="max">resource/main/max.png</file>
-        <file alias="min">resource/main/min.png</file>
-        <file alias="restore">resource/main/restore.png</file>
-        <file alias="logo">resource/main/logo.png</file>
+        <file>resource/main/close.svg</file>
+        <file>resource/main/close_dark.svg</file>
+        <file>resource/main/max.svg</file>
+        <file>resource/main/max_dark.svg</file>
+        <file>resource/main/min.svg</file>
+        <file>resource/main/min_dark.svg</file>
+        <file>resource/main/restore.svg</file>
+        <file>resource/main/restore_dark.svg</file>
     </qresource>
 </RCC>

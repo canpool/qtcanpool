@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2019-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2019-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -115,6 +115,8 @@ LiteBarPrivate::LiteBarPrivate()
 void LiteBarPrivate::init()
 {
     m_logoButton = new QToolButton(m_mainWidget);
+    m_logoButton->setIconSize(QSize(14, 14));
+    m_logoButton->setAutoRaise(true);
     m_titleLabel = new QLabel(m_mainWidget);
 
     m_toolBar = new QToolBar(m_mainWidget);
@@ -123,17 +125,14 @@ void LiteBarPrivate::init()
     m_toolBar->setIconSize(QSize(14, 14));
 
     m_minimizeAction = new QAction(m_mainWidget);
-    m_minimizeAction->setIcon(QIcon(":/qlite/min"));
     m_minimizeAction->setText(tr("minimize"));
     m_minimizeAction->setToolTip(tr("minimize"));
 
     m_maximizeAction = new QAction(m_mainWidget);
-    m_maximizeAction->setIcon(QIcon(":/qlite/max"));
     m_maximizeAction->setText(tr("maximize"));
     m_maximizeAction->setToolTip(tr("maximize"));
 
     m_closeAction = new QAction(m_mainWidget);
-    m_closeAction->setIcon(QIcon(":/qlite/close"));
     m_closeAction->setText(tr("close"));
     m_closeAction->setToolTip(tr("close"));
 
@@ -157,6 +156,7 @@ void LiteBarPrivate::init()
     connect(m_closeAction, SIGNAL(triggered()), this, SLOT(slotSysButtonClicked()));
 
     updateWindowButtons();
+    setIconDark(false);
 }
 
 void LiteBarPrivate::installWidget(QWidget *w)
@@ -165,6 +165,26 @@ void LiteBarPrivate::installWidget(QWidget *w)
     m_windowFlags = w->windowFlags();
     m_mainWidget->setMouseTracking(true);
     m_mainWidget->setAttribute(Qt::WA_Hover, true);
+}
+
+void LiteBarPrivate::setIconDark(bool dark)
+{
+    QString suffix = QString("");
+    if (dark) {
+        suffix = QString("_dark");
+    }
+    m_closeIcon = QIcon(QString(":/qlite/resource/main/close%1.svg").arg(suffix));
+    m_minimizeIcon = QIcon(QString(":/qlite/resource/main/min%1.svg").arg(suffix));
+    m_maximizeIcon = QIcon(QString(":/qlite/resource/main/max%1.svg").arg(suffix));
+    m_normalIcon = QIcon(QString(":/qlite/resource/main/restore%1.svg").arg(suffix));
+
+    m_closeAction->setIcon(m_closeIcon);
+    m_minimizeAction->setIcon(m_minimizeIcon);
+    if (m_isMaximized) {
+        m_maximizeAction->setIcon(m_maximizeIcon);
+    } else {
+        m_maximizeAction->setIcon(m_normalIcon);
+    }
 }
 
 void LiteBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
@@ -245,10 +265,10 @@ void LiteBarPrivate::windowStateChange(QObject *obj)
 
     if (m_isMaximized) {
         m_maximizeAction->setToolTip(tr("restore"));
-        m_maximizeAction->setIcon(QIcon(":/qlite/restore"));
+        m_maximizeAction->setIcon(m_normalIcon);
     } else {
         m_maximizeAction->setToolTip(tr("maximize"));
-        m_maximizeAction->setIcon(QIcon(":/qlite/max"));
+        m_maximizeAction->setIcon(m_maximizeIcon);
     }
 }
 
@@ -680,12 +700,28 @@ void LiteBar::setCloseIcon(QIcon &icon)
 
 void LiteBar::setMaximizeIcon(QIcon &icon)
 {
-    d->m_maximizeAction->setIcon(icon);
+    d->m_maximizeIcon = icon;
+    if (d->m_isMaximized) {
+        d->m_maximizeAction->setIcon(icon);
+    }
 }
 
 void LiteBar::setMinimizeIcon(QIcon &icon)
 {
     d->m_minimizeAction->setIcon(icon);
+}
+
+void LiteBar::setNormalIcon(QIcon &icon)
+{
+    d->m_normalIcon = icon;
+    if (!d->m_isMaximized) {
+        d->m_maximizeAction->setIcon(icon);
+    }
+}
+
+void LiteBar::setIconDark(bool dark)
+{
+    d->setIconDark(dark);
 }
 
 void LiteBar::setWidgetResizable(bool resizable)

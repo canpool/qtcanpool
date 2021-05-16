@@ -1,6 +1,6 @@
 /***************************************************************************
  **
- **  Copyright (C) 2019-2020 MaMinJie <canpool@163.com>
+ **  Copyright (C) 2019-2021 MaMinJie <canpool@163.com>
  **  Contact: https://github.com/canpool
  **           https://gitee.com/icanpool
  **
@@ -57,6 +57,8 @@ public:
     void setCloseIcon(QIcon &icon);
     void setMaximizeIcon(QIcon &icon);
     void setMinimizeIcon(QIcon &icon);
+    void setNormalIcon(QIcon &icon);
+    void setIconDark(bool dark);
 
     void setWidgetResizable(bool resizable);
     void setWidgetMovable(bool movable);

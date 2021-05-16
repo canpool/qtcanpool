@@ -92,7 +92,6 @@ LiteDialog::LiteDialog(QWidget *parent, Qt::WindowFlags f)
     activateWindow();
 
     setObjectName(QLatin1String("qlite_dialog"));
-    setWindowIcon(QIcon(":/qlite/logo"));
 }
 
 LiteDialog::~LiteDialog()

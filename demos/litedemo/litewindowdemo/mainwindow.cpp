@@ -136,6 +136,7 @@ void MainWindow::slotLiteDialog()
 {
     LiteDialog dlg;
 //    dlg.setFixedSize(400, 200);
+    dlg.setWindowIcon(QIcon(":/main/logo"));
     dlg.exec();
 }
 
