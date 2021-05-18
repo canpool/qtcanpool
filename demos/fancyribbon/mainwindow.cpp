@@ -11,10 +11,13 @@
 #include <QMenu>
 #include <QStatusBar>
 #include <QToolBar>
+#include <QRadioButton>
+#include <QCheckBox>
 
 #include "qcanpool/fancyribbon.h"
 #include "qcanpool/fancyribbonpage.h"
 #include "qcanpool/fancyribbongroup.h"
+#include "qcanpool/fancyribboncontainers.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -90,8 +93,55 @@ MainWindow::MainWindow(QWidget *parent)
     toolBar->addAction(QIcon(":/main/logo"), tr("test"));
     group->addWidget(toolBar);
 
+    /* custom containers */
+    page = m_ribbon->addPage(tr("Insert"));
+    group = page->addGroup(tr("Radios&Checks"));
+    FancyRibbonGridContainer *gridContainer = new FancyRibbonGridContainer(this);
+    gridContainer->addWidget(new QRadioButton(tr("Radio 1")));
+    gridContainer->addWidget(new QRadioButton(tr("Radio 2")));
+    gridContainer->addWidget(new QRadioButton(tr("Radio 3")));
+    gridContainer->addWidget(new QRadioButton(tr("Radio 4")));
+    gridContainer->addWidget(new QRadioButton(tr("Radio 5")));
+    gridContainer->addWidget(new QCheckBox(tr("Check 1")));
+    gridContainer->addWidget(new QCheckBox(tr("Check 2")));
+    gridContainer->addWidget(new QCheckBox(tr("Check 3")));
+    gridContainer->addWidget(new QCheckBox(tr("Check 4")));
+    group->addWidget(gridContainer);
 
-    m_ribbon->addPage(tr("Insert"));
+    group = page->addGroup(tr("ToolButtons"));
+    gridContainer = new FancyRibbonGridContainer(this);
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 1")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 2")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 3")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 4")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 5")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 6")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 7")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 8")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 9")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 10")));
+    gridContainer->addWidget(createToolButton(QIcon(":/main/logo"), tr("test 11")));
+    group->addWidget(gridContainer);
+
+    group = page->addGroup(tr("Actions"));
+    FancyRibbonActionContainer *actionContainer = new FancyRibbonActionContainer(this);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("testgroup"), FancyRibbonGroup::GroupLarge);
+    action = new QAction(QIcon(":/main/logo"), tr("test"));
+    menu = new QMenu();
+    menu->addAction(QIcon(":/main/logo"), tr("test"));
+    menu->addAction(QIcon(":/main/logo"), tr("test"));
+    action->setMenu(menu);
+    actionContainer->addAction(action, FancyRibbonGroup::GroupLarge);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test\ngroup"), FancyRibbonGroup::GroupLarge); // too long
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test"), FancyRibbonGroup::GroupMedium);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test123"), FancyRibbonGroup::GroupMedium);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test12345"), FancyRibbonGroup::GroupMedium);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test 1"), FancyRibbonGroup::GroupSmall);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test 2"), FancyRibbonGroup::GroupSmall);
+    actionContainer->addAction(QIcon(":/main/logo"), tr("test 3"), FancyRibbonGroup::GroupSmall);
+    group->addWidget(actionContainer);
+
+
     m_ribbon->addPage(tr("Debug"));
     m_ribbon->addPage(tr("View"));
     m_ribbon->addPage(tr("Help"));
@@ -102,14 +152,26 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("fancy ribbon demo"));
 
     QPalette palette;
-    palette.setColor(QPalette::Background, QColor(100, 100, 0));
+    palette.setColor(QPalette::Window, QColor(100, 100, 0));
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 
-    resize(800, 600);
+    resize(800, 300);
 }
 
 MainWindow::~MainWindow()
 {
 
+}
+
+QToolButton *MainWindow::createToolButton(const QIcon &icon, const QString &text)
+{
+    QToolButton *button = new QToolButton();
+    button->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    button->setAutoRaise(true);
+    button->setIconSize(QSize(18, 18));
+    button->setText(text);
+    button->setIcon(icon);
+    button->setToolTip(text);
+    return button;
 }

@@ -35,16 +35,16 @@
 
 QCANPOOL_BEGIN_NAMESPACE
 
-/* FancyRibbonContainer */
-class FancyRibbonContainer : public QToolBar
+/* FancyRibbonInnerContainer */
+class FancyRibbonInnerContainer : public QToolBar
 {
     Q_OBJECT
 public:
-    FancyRibbonContainer(FancyRibbonGroup::GroupSize size, QWidget *parent = nullptr);
-    virtual ~FancyRibbonContainer();
+    FancyRibbonInnerContainer(FancyRibbonGroup::GroupSize size, QWidget *parent = nullptr);
+    virtual ~FancyRibbonInnerContainer();
 };
 
-FancyRibbonContainer::FancyRibbonContainer(FancyRibbonGroup::GroupSize size, QWidget *parent)
+FancyRibbonInnerContainer::FancyRibbonInnerContainer(FancyRibbonGroup::GroupSize size, QWidget *parent)
     : QToolBar(parent)
 {
     switch (size) {
@@ -71,7 +71,7 @@ FancyRibbonContainer::FancyRibbonContainer(FancyRibbonGroup::GroupSize size, QWi
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 }
 
-FancyRibbonContainer::~FancyRibbonContainer()
+FancyRibbonInnerContainer::~FancyRibbonInnerContainer()
 {
 
 }
@@ -86,11 +86,11 @@ public:
 
     void init();
 
-    FancyRibbonContainer *getContainer(FancyRibbonGroup::GroupSize size);
+    FancyRibbonInnerContainer *getContainer(FancyRibbonGroup::GroupSize size);
     QAction *addAction(const QIcon &icon, const QString &text,
                        FancyRibbonGroup::GroupSize size);
     void addAction(QAction *action, FancyRibbonGroup::GroupSize size);
-    void formatAction(FancyRibbonContainer *container, QAction *action);
+    void formatAction(FancyRibbonInnerContainer *container, QAction *action);
 
 public:
     FancyRibbonGroup *q;
@@ -99,9 +99,9 @@ public:
     QLabel *m_titleLabel;
     FancyButton *m_optionButton;
 
-    FancyRibbonContainer *m_largeContainer;
-    FancyRibbonContainer *m_mediumContainer;
-    FancyRibbonContainer *m_smallContainer;
+    FancyRibbonInnerContainer *m_largeContainer;
+    FancyRibbonInnerContainer *m_mediumContainer;
+    FancyRibbonInnerContainer *m_smallContainer;
 };
 
 
@@ -195,13 +195,13 @@ void FancyRibbonGroupPrivate::init()
     q->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
-FancyRibbonContainer *FancyRibbonGroupPrivate::getContainer(FancyRibbonGroup::GroupSize size)
+FancyRibbonInnerContainer *FancyRibbonGroupPrivate::getContainer(FancyRibbonGroup::GroupSize size)
 {
-    FancyRibbonContainer *container = nullptr;
+    FancyRibbonInnerContainer *container = nullptr;
     switch (size) {
         case FancyRibbonGroup::GroupLarge: {
             if (m_largeContainer == nullptr) {
-                m_largeContainer = new FancyRibbonContainer(size);
+                m_largeContainer = new FancyRibbonInnerContainer(size);
                 if (m_mediumContainer != nullptr) {
                     m_inLayout->insertWidget(m_inLayout->indexOf(m_mediumContainer), m_largeContainer);
                 } else if (m_smallContainer != nullptr) {
@@ -215,7 +215,7 @@ FancyRibbonContainer *FancyRibbonGroupPrivate::getContainer(FancyRibbonGroup::Gr
         break;
         case FancyRibbonGroup::GroupMedium: {
             if (m_mediumContainer == nullptr) {
-                m_mediumContainer = new FancyRibbonContainer(size);
+                m_mediumContainer = new FancyRibbonInnerContainer(size);
                 if (m_smallContainer != nullptr) {
                     m_inLayout->insertWidget(m_inLayout->indexOf(m_smallContainer), m_mediumContainer);
                 } else {
@@ -227,7 +227,7 @@ FancyRibbonContainer *FancyRibbonGroupPrivate::getContainer(FancyRibbonGroup::Gr
         break;
         default: {
             if (m_smallContainer == nullptr) {
-                m_smallContainer = new FancyRibbonContainer(size);
+                m_smallContainer = new FancyRibbonInnerContainer(size);
                 m_inLayout->addWidget(m_smallContainer);
             }
             container = m_smallContainer;
@@ -240,7 +240,7 @@ FancyRibbonContainer *FancyRibbonGroupPrivate::getContainer(FancyRibbonGroup::Gr
 QAction *FancyRibbonGroupPrivate::addAction(const QIcon &icon, const QString &text,
                                             FancyRibbonGroup::GroupSize size)
 {
-    FancyRibbonContainer *container = getContainer(size);
+    FancyRibbonInnerContainer *container = getContainer(size);
     QAction *action = container->addAction(icon, text);
     formatAction(container, action);
     return action;
@@ -248,12 +248,12 @@ QAction *FancyRibbonGroupPrivate::addAction(const QIcon &icon, const QString &te
 
 void FancyRibbonGroupPrivate::addAction(QAction *action, FancyRibbonGroup::GroupSize size)
 {
-    FancyRibbonContainer *container = getContainer(size);
+    FancyRibbonInnerContainer *container = getContainer(size);
     container->addAction(action);
     formatAction(container, action);
 }
 
-void FancyRibbonGroupPrivate::formatAction(FancyRibbonContainer *container, QAction *action)
+void FancyRibbonGroupPrivate::formatAction(FancyRibbonInnerContainer *container, QAction *action)
 {
     QToolButton *button = qobject_cast<QToolButton *>(container->widgetForAction(action));
     button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);

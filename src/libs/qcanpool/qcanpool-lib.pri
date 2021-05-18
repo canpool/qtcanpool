@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 TRANSLATIONS += resource/qm/qcanpool_zh_CN.ts
 
 HEADERS += \
+    $$PWD/fancyribboncontainers.h \
     $$PWD/qcanpool_global.h \
     $$PWD/fancytabwidget.h \
     $$PWD/fancytabbar.h \
@@ -55,6 +56,7 @@ HEADERS += \
     $$PWD/fancyapplicationwidget.h
 
 SOURCES += \
+    $$PWD/fancyribboncontainers.cpp \
     $$PWD/fancytabwidget.cpp \
     $$PWD/fancytabbar.cpp \
     $$PWD/fancytab.cpp \
