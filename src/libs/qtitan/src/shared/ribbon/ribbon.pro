@@ -16,8 +16,7 @@ contains(CONFIG, demo) {
 include($$PWD/../qtitandemo.pri)
 }
 
-DESTDIR = $$PWD/../../../bin
-DESTDIR = $$member(DESTDIR, 0)$$QTITAN_LIB_PREFIX
+DESTDIR = $$QTN_OUTPUT_DIR
 
 VERSION = $$QTN_COMPONENT_VERSION
 
@@ -29,8 +28,7 @@ QMAKE_TARGET_COPYRIGHT = Copyright (C) 2009-2015 Developer Machines
 !lessThan(QT_VER_MAJ, 5) {
   QT += widgets core-private widgets-private gui-private
 } else {
-  DLLDESTDIR = $$PWD/../../../bin
-  DLLDESTDIR = $$member(DLLDESTDIR, 0)$$QTITAN_LIB_PREFIX
+  DLLDESTDIR = $$QTN_OUTPUT_DIR
 }
 
 QTITAN_ROOT=$$PWD/../../..

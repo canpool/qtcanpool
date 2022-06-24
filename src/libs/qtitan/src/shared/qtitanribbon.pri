@@ -3,7 +3,7 @@ QTITAN_ROOT = $$PWD/../..
 
 include($$QTITAN_ROOT/src/shared/platform.pri)
 
-QTITAN_LIB_PATH = $$QTITAN_ROOT/bin$$QTITAN_LIB_PREFIX
+QTITAN_LIB_PATH = $$QTN_OUTPUT_DIR
 INCLUDEPATH += $$QTITAN_ROOT/include
 
 QTN_COMPONENT_VERSION = $$fromfile($$QTITAN_ROOT/src/ribbon/ribbon.pri, QTN_COMPONENT_VERSION)
