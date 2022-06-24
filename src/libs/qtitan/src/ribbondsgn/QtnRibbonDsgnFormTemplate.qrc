@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/qt-project.org/designer/templates/forms">
+        <file>QtitanRibbon_Main_Window.ui</file>
+        <file>QtitanRibbon_Backstage_Page.ui</file>
+    </qresource>
+</RCC>

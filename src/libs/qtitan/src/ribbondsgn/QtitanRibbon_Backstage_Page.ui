@@ -1,0 +1,21 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>BackstagePage</class>
+ <widget class="Qtitan::RibbonBackstagePage" name="RibbonBackstagePage" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>RibbonBackstagePage</string>
+  </property>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <connections/>
+</ui>
