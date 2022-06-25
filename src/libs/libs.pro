@@ -5,6 +5,7 @@ TEMPLATE  = subdirs
 SUBDIRS =   \
     qcanpool \
     qlite \
+    qtitan \
     aggregation \
     extensionsystem \
     utils

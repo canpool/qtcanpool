@@ -6,6 +6,7 @@ SUBDIRS = \
     fancyribbon \
     qtqrcode \
     litedemo \
+    qtitanribbon \
     controldemo \
     qtoffice
 

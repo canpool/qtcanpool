@@ -64,5 +64,9 @@ qtcanpool旨在提供给用户优秀的项目管理方式、多样的选择、�
 ![qlite](./doc/pics/qlite.png)
 ![qlite-show](./doc/pics/qlite-show.png)
 
+- <font size=4>qtitanribbon4</font>
+![qtitanribbon4](./doc/pics/qtitanribbon4.png)
+声明：qtitan组件不是免费的，qtitanribbon4来源于网络，作者将其移植到qtcanpool中，仅供学习交流，如需商用请访问官网 https://www.devmachines.com/ 进行购买。
+
 ### 扩展
 - [canopen](https://gitee.com/icanpool/canopen/blob/master/qtcanpool.md)

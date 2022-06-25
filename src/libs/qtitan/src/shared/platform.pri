@@ -61,6 +61,9 @@ win32-g++ {
 }
 
 QTITAN_ROOT = $$PWD/../..
-include($$QTITAN_ROOT/qtproject.pri)
-isEmpty(IDE_BUILD_TREE): IDE_BUILD_TREE = $$PWD/../..
-QTN_OUTPUT_DIR = $$IDE_BUILD_TREE/bin$$QTITAN_LIB_PREFIX
+QTN_OUTPUT_PREFIX = $$PWD/../..
+isEmpty(QTCANPOOL_DIR) {
+    include($$QTITAN_ROOT/qtproject.pri)
+    QTN_OUTPUT_PREFIX = $$IDE_BUILD_TREE
+}
+QTN_OUTPUT_DIR = $$QTN_OUTPUT_PREFIX/bin$$QTITAN_LIB_PREFIX
