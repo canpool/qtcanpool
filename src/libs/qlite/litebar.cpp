@@ -31,6 +31,7 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QToolBar>
+#include <QStyle>
 
 #include "litescreen.h"
 
@@ -114,15 +115,17 @@ LiteBarPrivate::LiteBarPrivate()
 
 void LiteBarPrivate::init()
 {
+    const int sz = qApp->style()->pixelMetric(QStyle::PM_SmallIconSize, Q_NULLPTR, Q_NULLPTR);
     m_logoButton = new QToolButton(m_mainWidget);
-    m_logoButton->setIconSize(QSize(14, 14));
+    m_logoButton->setIconSize(QSize(sz, sz));
     m_logoButton->setAutoRaise(true);
+    m_logoButton->hide();
     m_titleLabel = new QLabel(m_mainWidget);
 
     m_toolBar = new QToolBar(m_mainWidget);
     m_toolBar->setObjectName(QLatin1String("qlite_sys_toolbar"));
     m_toolBar->setStyleSheet("QToolBar{border:none; background: transparent;}");
-    m_toolBar->setIconSize(QSize(14, 14));
+    m_toolBar->setIconSize(QSize(sz, sz));
 
     m_minimizeAction = new QAction(m_mainWidget);
     m_minimizeAction->setText(tr("minimize"));
@@ -238,8 +241,8 @@ bool LiteBarPrivate::windowIconChange(QObject *obj)
     }
     QIcon icon = pWidget->windowIcon();
     if (!icon.isNull()) {
+        m_logoButton->show();
         m_logoButton->setIcon(icon);
-        m_logoButton->setIconSize(QSize(20, 20));
     }
     return true;
 }
