@@ -32,6 +32,7 @@ HEADERS += \
     $$PWD/litebar_p.h \
     $$PWD/litedialog.h \
     $$PWD/litemodebar.h \
+    $$PWD/litequickaccessbar.h \
     $$PWD/litescreen.h \
     $$PWD/litetabbar.h \
     $$PWD/litetabwidget.h \
@@ -45,6 +46,7 @@ SOURCES += \
     $$PWD/litebar.cpp \
     $$PWD/litedialog.cpp \
     $$PWD/litemodebar.cpp \
+    $$PWD/litequickaccessbar.cpp \
     $$PWD/litescreen.cpp \
     $$PWD/litetabbar.cpp \
     $$PWD/litetabwidget.cpp \
