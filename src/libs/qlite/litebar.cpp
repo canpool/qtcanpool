@@ -184,9 +184,9 @@ void LiteBarPrivate::setIconDark(bool dark)
     m_closeAction->setIcon(m_closeIcon);
     m_minimizeAction->setIcon(m_minimizeIcon);
     if (m_isMaximized) {
-        m_maximizeAction->setIcon(m_maximizeIcon);
-    } else {
         m_maximizeAction->setIcon(m_normalIcon);
+    } else {
+        m_maximizeAction->setIcon(m_maximizeIcon);
     }
 }
 
