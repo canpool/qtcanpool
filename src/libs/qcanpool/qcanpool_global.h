@@ -1,0 +1,40 @@
+/**
+ * Copyright (C) 2018-2022 maminjie <canpool@163.com>
+ * SPDX-License-Identifier: MulanPSL-2.0
+**/
+#ifndef QCANPOOL_GLOBAL_H
+#define QCANPOOL_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if !defined(QCANPOOL_LIBRARY_DISABLE)
+#if defined(QCANPOOL_LIBRARY)
+#  define QCANPOOL_SHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define QCANPOOL_SHARED_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#  define QCANPOOL_SHARED_EXPORT
+#endif
+
+#if !defined(QCANPOOL_NAMESPACE_DISABLE)
+#define QCANPOOL_NAMESPACE  QCanpool
+#endif
+
+#if !defined(QCANPOOL_NAMESPACE)
+#define QCANPOOL_BEGIN_NAMESPACE
+#define QCANPOOL_END_NAMESPACE
+#define QCANPOOL_USE_NAMESPACE
+#define QCANPOOL_PREPEND_NAMESPACE(name) name
+#else
+#define QCANPOOL_BEGIN_NAMESPACE namespace QCANPOOL_NAMESPACE {
+#define QCANPOOL_END_NAMESPACE }
+#define QCANPOOL_USE_NAMESPACE using namespace QCANPOOL_NAMESPACE;
+#define QCANPOOL_PREPEND_NAMESPACE(name) QCANPOOL_NAMESPACE::name
+#endif // QCANPOOL_NAMESPACE
+
+QCANPOOL_BEGIN_NAMESPACE
+// nothing
+QCANPOOL_END_NAMESPACE
+
+#endif // QCANPOOL_GLOBAL_H
