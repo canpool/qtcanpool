@@ -17,7 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 HEADERS += \
-    $$PWD/qcanpool_global.h \
+    $$PWD/qcanpool.h \
     $$PWD/quickaccessbar.h \
     $$PWD/quickaccessbar_p.h
 

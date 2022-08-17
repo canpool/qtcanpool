@@ -5,7 +5,7 @@
 #ifndef QUICKACCESSBAR_H
 #define QUICKACCESSBAR_H
 
-#include "qcanpool_global.h"
+#include "qcanpool.h"
 #include <QToolBar>
 #include <QMenu>
 

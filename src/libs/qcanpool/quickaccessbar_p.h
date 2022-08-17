@@ -16,7 +16,7 @@
 // We mean it.
 //
 
-#include "qcanpool_global.h"
+#include "qcanpool.h"
 #include <QToolBar>
 #include <QToolButton>
 #include <QAction>

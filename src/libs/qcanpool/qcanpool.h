@@ -2,8 +2,8 @@
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
 **/
-#ifndef QCANPOOL_GLOBAL_H
-#define QCANPOOL_GLOBAL_H
+#ifndef QCANPOOL_H
+#define QCANPOOL_H
 
 #include <QtCore/qglobal.h>
 
@@ -37,4 +37,4 @@ QCANPOOL_BEGIN_NAMESPACE
 // nothing
 QCANPOOL_END_NAMESPACE
 
-#endif // QCANPOOL_GLOBAL_H
+#endif // QCANPOOL_H
