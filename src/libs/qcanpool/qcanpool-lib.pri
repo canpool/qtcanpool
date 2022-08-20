@@ -24,6 +24,8 @@ HEADERS += \
 SOURCES += \
     $$PWD/quickaccessbar.cpp
 
+include($$PWD/fancy.pri)
+
 RESOURCES += \
     $$PWD/qcanpool.qrc
 

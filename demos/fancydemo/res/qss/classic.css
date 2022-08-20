@@ -1,0 +1,451 @@
+/***************************************************
+    name 	: classic
+    author 	: maminjie (canpool@163.com)
+*****************************************************/
+
+*{
+    outline: 0px;
+}
+
+QWidget {
+}
+
+.QFrame{
+}
+
+QLabel {
+}
+
+QPushButton:disabled, QToolButton:disabled {
+}
+
+QLineEdit:disabled, QGroupBox:disabled, QComboBox:disabled,
+QDateEdit:disabled, QTimeEdit:disabled, QDateTimeEdit:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled {
+    color: gray;
+}
+
+QPushButton, QToolButton {
+    border-style: none;
+    padding: 3px;
+}
+
+QPushButton {
+}
+
+QToolButton::menu-indicator,
+QToolButton::menu-button,
+QToolButton::menu-arrow {
+}
+
+QToolButton[popupMode="1"] { /* only for MenuButtonPopup */
+    padding-right: 12px;
+}
+
+QPushButton:hover, QToolButton:hover {
+    background: rgba(38, 160, 218, 80);
+}
+
+QPushButton:hover {
+}
+
+QPushButton:pressed, QToolButton:pressed,
+QPushButton:checked, QToolButton:checked {
+    background: rgba(38, 160, 218, 130);
+}
+
+QProgressBar {
+}
+
+QProgressBar::chunk {
+}
+
+QScrollBar::sub-page, QScrollBar::add-page {
+}
+
+QScrollBar:vertical {
+}
+
+QScrollBar:horizontal {
+}
+
+QScrollArea {
+}
+
+QTreeView, QListView, QTableView, QTabWidget::pane {
+}
+
+QTreeView, QListView, QTableView, QTabWidget {
+}
+
+QTreeView, QListView, QTableView, QSplitter::handle {
+}
+
+QTableView::item:selected, QListView::item:selected, QTreeView::item:selected {
+}
+
+QTableView::item:hover, QListView::item:hover, QTreeView::item:hover {
+}
+
+QTableView::item, QListView::item, QTreeView::item {
+}
+
+QHeaderView {
+}
+
+QHeaderView::section, QTableCornerButton:section {
+}
+
+QHeaderView::section::checked {
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+}
+
+QTreeView::branch:has-siblings:!adjoins-item {
+}
+
+QTreeView::branch:closed:has-children:has-siblings {
+}
+
+QTreeView::branch:has-children:!has-siblings:closed {
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+}
+
+QTreeView::branch:open:has-children:has-siblings {
+}
+
+QTreeView::branch:open:has-children:!has-siblings {
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+
+QTabWidget::pane {
+     position: absolute;
+     top: -0.2em;
+}
+
+QTabBar::tab {
+}
+
+QTabBar::tab:hover {
+}
+
+QTabBar::tab:selected {
+}
+
+QTabBar::tab:first:selected, QTabBar::tab:first:hover {
+}
+
+QTabBar::tab:last:selected, QTabBar::tab:last:hover {
+}
+
+QTabBar::tab:top:selected {
+}
+
+QTabBar::tab:right:selected {
+}
+
+QTabBar::tab:bottom:selected {
+}
+
+QTabBar::tab:left:selected {
+}
+
+QTabBar::tear {
+}
+
+QTabBar::close-button {
+}
+
+QMenu {
+}
+
+QMenu::item {
+    padding: 2px 30px 2px 20px;
+    border-width: 1px 1px 1px 5px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+QMenu::indicator {
+    width: 13px;
+    height: 13px;
+}
+
+QMenu::item:selected {
+    background: #c0ddeb;
+    border-color: #26a0da;
+}
+
+QMenu::item:disabled {
+}
+
+QMenu::separator {
+}
+
+QMenuBar {
+    padding: 0px 0px 0px 5px;
+}
+
+QMenuBar::item:selected {
+}
+
+QMenuBar::item:disabled {
+}
+
+QToolBar {
+}
+
+QToolBar::handle {
+}
+
+QToolBar:top, QToolBar:left, QToolBar:right, QToolBar:bottom {
+}
+
+QToolBar::separator {
+}
+
+QToolTip {
+}
+
+.QGroupBox {
+}
+
+.QGroupBox::title {
+}
+
+QRadioButton, QCheckBox {
+}
+
+QRadioButton::indicator, QCheckBox::indicator, QGroupBox::indicator {
+}
+
+QCheckBox::indicator:unchecked, QGroupBox::indicator:unchecked {
+}
+
+QCheckBox::indicator:checked, QGroupBox::indicator:checked {
+}
+
+QRadioButton::indicator::unchecked {
+}
+
+QRadioButton::indicator::checked {
+}
+
+QCheckBox:checked, QRadioButton::checked {
+}
+
+QLineEdit,QTextEdit,QPlainTextEdit,QSpinBox,QDoubleSpinBox, QTimeEdit, QDateEdit, QDateTimeEdit {
+}
+
+QLineEdit[echoMode="2"] {
+    lineedit-password-character: 9679;
+    font-size: 10px;
+}
+
+QLineEdit {
+    min-height: 22px;
+}
+
+QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QSpinBox:hover,QDoubleSpinBox:hover,
+QTimeEdit:hover, QDateEdit:hover, QDateTimeEdit:hover {
+}
+
+QTimeEdit::up-button,QDateEdit::up-button,QDateTimeEdit::up-button,QDoubleSpinBox::up-button,QSpinBox::up-button{
+}
+
+QTimeEdit::down-button,QDateEdit::down-button,QDateTimeEdit::down-button,QDoubleSpinBox::down-button,QSpinBox::down-button{
+}
+
+QTimeEdit::up-button:pressed, QDateEdit::up-button:pressed, QDateTimeEdit::up-button:pressed,
+QDoubleSpinBox::up-button:pressed, QSpinBox::up-button:pressed {
+}
+
+QTimeEdit::down-button:pressed, QDateEdit::down-button:pressed, QDateTimeEdit::down-button:pressed,
+QDoubleSpinBox::down-button:pressed, QSpinBox::down-button:pressed {
+}
+
+
+QComboBox::down-arrow, QDateEdit[calendarPopup="true"]::down-arrow,
+QTimeEdit[calendarPopup="true"]::down-arrow, QDateTimeEdit[calendarPopup="true"]::down-arrow{
+}
+
+QComboBox, QDateEdit, QTimeEdit, QDateTimeEdit, QSpinBox, QDoubleSpinBox {
+}
+
+QComboBox::drop-down, QDateEdit::drop-down, QTimeEdit::drop-down, QDateTimeEdit::drop-down {
+}
+
+QComboBox::drop-down:on {
+}
+
+QComboBox::down-arrow {
+}
+
+QComboBox {
+}
+
+QComboBox:editable {
+}
+
+QComboBox:hover, QComboBox:clicked {
+}
+
+QComboBox QAbstractItemView {
+}
+
+QComboBox QAbstractItemView::item {
+}
+
+QStatusBar {
+    background: #0747a6;
+}
+
+QStatusBar::item {
+    border: 0px solid #4D4D4D;
+    border-radius: 3px;
+}
+
+QToolBox {
+}
+
+QToolBox::tab {
+}
+
+QToolBox::tab:selected {
+}
+
+QSplitter {
+}
+
+QSplitter::handle {
+}
+
+QMdiArea QWidget {
+}
+
+QPrintPreviewDialog QToolButton {
+}
+
+QToolButton#qt_calendar_prevmonth,
+#qt_calendar_nextmonth,
+#qt_calendar_monthbutton,
+#qt_calendar_yearbutton {
+}
+
+QToolButton#qt_calendar_prevmonth:hover,
+QToolButton#qt_calendar_nextmonth:hover,
+QToolButton#qt_calendar_monthbutton:hover,
+QToolButton#qt_calendar_yearbutton:hover,
+QToolButton#qt_calendar_prevmonth:pressed,
+QToolButton#qt_calendar_nextmonth:pressed,
+QToolButton#qt_calendar_monthbutton:pressed,
+QToolButton#qt_calendar_yearbutton:pressed {
+}
+
+QCalendarWidget QSpinBox#qt_calendar_yearedit {
+}
+
+QDateEdit QCalendarWidget QSpinBox#qt_calendar_yearedit,
+QDateTimeEdit QCalendarWidget QSpinBox#qt_calendar_yearedit {
+}
+
+QCalendarWidget QToolButton::menu-indicator{
+    image:None;
+}
+
+QCalendarWidget QTableView {
+}
+
+QCalendarWidget QAbsractItemView:enabled {
+}
+
+QCalendarWidget QAbsractItemView:disabled {
+}
+
+QCalendarWidget QWidget#qt_calendar_navigationbar{
+}
+
+QDockWidget {
+}
+
+QLCDNumber {
+}
+
+/***************************************************
+    name 	: qtcanpool classic
+    author 	: maminjie (canpool@163.com)
+*****************************************************/
+
+QWidget#qtc_titlebar {
+    color: black;
+    background: rgb(245, 246, 247);
+}
+
+QWidget#qtc_titlebar QMenuBar, QLabel, QToolButton {
+    color: black;
+    background: transparent;
+}
+
+QWidget#qtc_titlebar QToolButton {
+    width: 22px;
+    height: 18px;
+}
+
+QToolBar#qtc_quickaccessbar QToolButton {
+    width: 18px;
+    height: 18px;
+}
+
+QToolBar#qtc_quickaccessbar,
+QToolBar#qtc_sys_toolbar,
+QToolBar#qtc_menu_toolbar {
+    border: none;
+    background: transparent;
+}
+
+QWidget#qtc_titlebar QToolButton#close,
+QWidget#qtc_titlebar QToolButton#minimize,
+QWidget#qtc_titlebar QToolButton#maximize {
+    width: 24px;
+    height: 18px;
+}
+
+QWidget#qtc_titlebar QToolButton#close {
+    qproperty-icon: url(:/res/qtc/close_dark.svg);
+}
+
+QWidget#qtc_titlebar QToolButton#minimize {
+    qproperty-icon: url(:/res/qtc/min_dark.svg);
+}
+
+QWidget#qtc_titlebar QToolButton#maximize[state="restore"] {
+    qproperty-icon: url(:/res/qtc/max_dark.svg);
+}
+
+QWidget#qtc_titlebar QToolButton#maximize[state="maximize"] {
+    qproperty-icon: url(:/res/qtc/restore_dark.svg);
+}
+
+QWidget#qtc_titlebar QToolButton#close:hover {
+    background: rgba(207, 0, 0, 230);
+}
+
+QWidget#qtc_titlebar QToolButton#close:pressed {
+    background: rgba(207, 0, 0, 150);
+}
+
+QWidget#qtc_titlebar QToolButton::menu-button {
+/*    image: none;*/
+}
+
+QWidget#qtc_dialog QWidget#centerwidget:active {
+    background: transparent;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #1883d7;
+}

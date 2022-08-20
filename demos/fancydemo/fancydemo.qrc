@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/qss">
+        <file alias="classic">res/qss/classic.css</file>
+        <file alias="flatdark">res/qss/flatdark.css</file>
+    </qresource>
+    <qresource prefix="/main">
+        <file alias="logo">res/main/logo.png</file>
+    </qresource>
+    <qresource prefix="/tools">
+        <file alias="new">res/tools/new.png</file>
+        <file alias="open">res/tools/open.png</file>
+        <file alias="save">res/tools/save.png</file>
+        <file alias="save_all">res/tools/save_all.png</file>
+        <file alias="recent">res/tools/recent.png</file>
+        <file alias="copy">res/tools/copy.png</file>
+        <file alias="cut">res/tools/cut.png</file>
+        <file alias="redo">res/tools/redo.png</file>
+        <file alias="undo">res/tools/undo.png</file>
+        <file alias="paste">res/tools/paste.png</file>
+        <file alias="help">res/tools/help.png</file>
+        <file alias="option">res/tools/option.png</file>
+        <file alias="exit">res/tools/exit.png</file>
+        <file alias="start">res/tools/start.png</file>
+        <file alias="suspend">res/tools/suspend.png</file>
+        <file alias="stop">res/tools/stop.png</file>
+        <file alias="menu">res/tools/menu.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>res/qtc/close.svg</file>
+        <file>res/qtc/close_dark.svg</file>
+        <file>res/qtc/max.svg</file>
+        <file>res/qtc/max_dark.svg</file>
+        <file>res/qtc/min.svg</file>
+        <file>res/qtc/min_dark.svg</file>
+        <file>res/qtc/restore.svg</file>
+        <file>res/qtc/restore_dark.svg</file>
+    </qresource>
+</RCC>

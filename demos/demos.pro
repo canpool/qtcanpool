@@ -3,3 +3,4 @@ CONFIG += ordered
 
 SUBDIRS = \
     helloworld \
+    fancydemo
