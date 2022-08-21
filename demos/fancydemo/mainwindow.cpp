@@ -6,6 +6,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QLineEdit>
+#include <QTextEdit>
 
 #include <QApplication>
 #include <QFile>
@@ -13,15 +14,20 @@
 #include "qcanpool/fancybar.h"
 #include "qcanpool/fancydialog.h"
 #include "qcanpool/fancytitlebar.h"
+#include "qcanpool/fancytabwidget.h"
+#include "qcanpool/fancytabbar.h"
 #include "qcanpool/quickaccessbar.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : FancyWindow(parent)
+    , m_themeStyle(QString(":/qss/flatdark"))
 {
     setWindowIcon(QIcon(":/main/logo"));
     setWindowTitle(tr("Qt canpool fancy demo V2"));
     setMinimumSize(QSize(600, 400));
     setMouseTracking(true);
+
+    m_pTabWidget = new FancyTabWidget();
 
     createWindow();
 }
@@ -35,10 +41,32 @@ void MainWindow::createWindow()
     createQuickAccessBar();
     createMenuBar();
     createSystemMenu();
+    createCentralWidget();
+}
+
+void MainWindow::createCentralWidget()
+{
+    FancyTabBar *tabBar = m_pTabWidget->tabBar();
 
     QLabel *label = new QLabel("I CAN DO IT");
     label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    setCentralWidget(label);
+    m_pTabWidget->addTab(label, QIcon(":/main/logo"), tr("tab1"));
+
+    QTextEdit *text = new QTextEdit(this);
+    m_pTabWidget->addTab(text, QIcon(":/main/logo"), tr("tab2"));
+
+    QAction *action = new QAction(QIcon(":/main/logo"), tr("testAction1"));
+    tabBar->addAction(action, FancyTabBar::Middle);
+    tabBar->setActionIconOnly(action, false);
+
+    tabBar->addAction(QIcon(":/tools/start"), tr("start"));
+    tabBar->addAction(QIcon(":/tools/suspend"), tr("suspend"));
+    action = tabBar->addAction(QIcon(":/tools/stop"), tr("stop"));
+    tabBar->setActionIconOnly(action, true);
+
+    m_pTabWidget->setTabPosition(FancyTabWidget::West);
+
+    setCentralWidget(m_pTabWidget);
 }
 
 void MainWindow::createQuickAccessBar()
@@ -140,6 +168,15 @@ void MainWindow::createSystemMenu()
     addWindowStyleItem(group, menu->addAction(tr("WindowStyle")), FancyBar::WindowStyle);
     addWindowStyleItem(group, menu->addAction(tr("MergedStyle")), FancyBar::MergedStyle);
     emit group->actions().at(0)->trigger();
+
+    menu = new QMenu(tr("tab position"));
+    mainMenu->addMenu(menu);
+    group = new QActionGroup(this);
+    addTabPositionItem(group, menu->addAction(tr("North")), FancyTabWidget::North);
+    addTabPositionItem(group, menu->addAction(tr("South")), FancyTabWidget::South);
+    addTabPositionItem(group, menu->addAction(tr("West")), FancyTabWidget::West);
+    addTabPositionItem(group, menu->addAction(tr("East")), FancyTabWidget::East);
+    emit group->actions().at(2)->trigger();
 }
 
 void MainWindow::addThemeStyleItem(QActionGroup *group, QAction *action, const QString &qss)
@@ -156,6 +193,14 @@ void MainWindow::addWindowStyleItem(QActionGroup *group, QAction *action, int st
     action->setCheckable(true);
     action->setData(QVariant(style));
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(slotChangeWindowStyle()));
+}
+
+void MainWindow::addTabPositionItem(QActionGroup *group, QAction *action, int position)
+{
+    group->addAction(action);
+    action->setCheckable(true);
+    action->setData(QVariant(position));
+    QObject::connect(action, SIGNAL(triggered()), this, SLOT(slotSetTabPosition()));
 }
 
 void MainWindow::setThemeStyle(const QString &style)
@@ -186,7 +231,8 @@ void MainWindow::slotChangeThemeStyle()
 {
     QAction *action = qobject_cast<QAction *>(sender());
     if (action) {
-        setThemeStyle(action->data().toString());
+        m_themeStyle = action->data().toString();
+        setThemeStyle(m_themeStyle);
     }
 }
 
@@ -198,3 +244,11 @@ void MainWindow::slotChangeWindowStyle()
     }
 }
 
+void MainWindow::slotSetTabPosition()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action) {
+        m_pTabWidget->setTabPosition(static_cast<FancyTabWidget::TabPosition>(action->data().toInt()));
+        setThemeStyle(m_themeStyle);
+    }
+}

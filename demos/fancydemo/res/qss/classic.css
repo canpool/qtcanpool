@@ -381,6 +381,40 @@ QLCDNumber {
     author 	: maminjie (canpool@163.com)
 *****************************************************/
 
+QWidget#qtc_tabwidget[tabPosition="0"] QToolButton#tab,
+QWidget#qtc_tabwidget[tabPosition="1"] QToolButton#tab {
+    border-width: 2px 0px 2px 0px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+QWidget#qtc_tabwidget[tabPosition="0"] QToolButton#tab:pressed,
+QWidget#qtc_tabwidget[tabPosition="0"] QToolButton#tab:checked {
+    border-top-color: red;
+}
+
+QWidget#qtc_tabwidget[tabPosition="1"] QToolButton#tab:pressed,
+QWidget#qtc_tabwidget[tabPosition="1"] QToolButton#tab:checked {
+    border-bottom-color: red;
+}
+
+QWidget#qtc_tabwidget[tabPosition="2"] QToolButton#tab,
+QWidget#qtc_tabwidget[tabPosition="3"] QToolButton#tab {
+    border-width: 0px 2px 0px 2px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+QWidget#qtc_tabwidget[tabPosition="2"] QToolButton#tab:pressed,
+QWidget#qtc_tabwidget[tabPosition="2"] QToolButton#tab:checked {
+    border-left-color: red;
+}
+
+QWidget#qtc_tabwidget[tabPosition="3"] QToolButton#tab:pressed,
+QWidget#qtc_tabwidget[tabPosition="3"] QToolButton#tab:checked {
+    border-right-color: red;
+}
+
 QWidget#qtc_titlebar {
     color: black;
     background: rgb(245, 246, 247);
