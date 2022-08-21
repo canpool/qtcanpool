@@ -29,6 +29,7 @@ public:
 
 Q_SIGNALS:
     void showCustomizeMenu(QMenu *menu);
+    void customizeActionChanged();
 
 private Q_SLOTS:
     void customizeAction(QAction *action);

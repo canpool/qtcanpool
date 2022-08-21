@@ -80,6 +80,12 @@ void FancyBarPrivate::createTitleWidget()
     m_quickAccessBar = new QuickAccessBar();
     m_quickAccessBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     m_quickAccessBar->hide();
+    // to resize menuBar when quickAccessBar size was changed
+    connect(m_quickAccessBar, &QuickAccessBar::customizeActionChanged, [&] () {
+        if (m_style == FancyBar::MergedStyle && m_bMenuBarVisible && m_menuBar) {
+            q->update();
+        }
+    });
 
     m_logoButton = m_titleBar->logoButton();
     m_titleLabel = m_titleBar->titleLabel();
@@ -197,7 +203,6 @@ void FancyBarPrivate::setFancyStyle(int style)
         m_logoButton->setVisible(true);
         titleLayout->addWidget(m_logoButton, 0, Qt::AlignVCenter);
         titleLayout->addWidget(m_quickAccessBar);
-        // FIXME: menuBar doesn't automatically resize immediately after changing quickAccessBar size
         titleLayout->addLayout(m_menuBarArea);
         titleLayout->addItem(m_leftSpacerItem);
         titleLayout->addWidget(m_titleLabel);
@@ -277,7 +282,6 @@ QMenuBar *FancyBar::menuBar() const
         d->m_menuBar = new QMenuBar();
         d->m_menuBar->setNativeMenuBar(false);
         d->m_menuBar->setVisible(true);
-        d->m_menuBar->setAttribute(Qt::WA_Mapped);
         d->m_menuBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         d->m_menuBarArea->addWidget(d->m_menuBar);
     }
