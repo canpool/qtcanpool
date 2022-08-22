@@ -383,6 +383,7 @@ void FancyTitleBarPrivate::handleLeaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
 
+    // if press, then leave after release
     if (!m_bEdgePressed) {
         m_mainWidget->unsetCursor();
     }
@@ -916,6 +917,7 @@ bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)
         }
         case QEvent::MouseMove:
         case QEvent::HoverMove:
+        case QEvent::Leave:
         case QEvent::MouseButtonPress:
         case QEvent::MouseButtonRelease:
         case QEvent::MouseButtonDblClick: {
