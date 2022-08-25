@@ -49,6 +49,8 @@ void MainWindow::createCentralWidget()
     FancyTabBar *tabBar = m_pTabWidget->tabBar();
 
     QLabel *label = new QLabel("I CAN DO IT");
+    // ignore the label's control to continue processEvent
+    label->setTextInteractionFlags(Qt::NoTextInteraction);
     label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     m_pTabWidget->addTab(label, QIcon(":/main/logo"), tr("tab1"));
 
