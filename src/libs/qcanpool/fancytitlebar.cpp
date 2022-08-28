@@ -16,6 +16,7 @@
 #include <QApplication>
 #include <QWidget>
 #include <QStyle>
+#include <QLayout>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
 #include <QApplication>
@@ -184,6 +185,7 @@ void FancyTitleBarPrivate::init()
     m_titleLabel->setAlignment(Qt::AlignCenter);
 
     m_toolBar = new QToolBar(m_mainWidget);
+    m_toolBar->layout()->setSizeConstraint(QLayout::SetFixedSize);
     m_toolBar->setObjectName(QLatin1String("qtc_sys_toolbar"));
 //    m_toolBar->setStyleSheet("QToolBar{border:none; background:transparent;}");
     m_toolBar->setIconSize(QSize(sz, sz));

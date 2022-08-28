@@ -10,6 +10,7 @@
 #include <QStyle>
 #include <QEvent>
 #include <QActionEvent>
+#include <QLayout>
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -138,6 +139,7 @@ QuickAccessBar::QuickAccessBar(QWidget *parent)
     d->q = this;
     d->init();
     setObjectName(QLatin1String("qtc_quickaccessbar"));
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 QuickAccessBar::~QuickAccessBar()
