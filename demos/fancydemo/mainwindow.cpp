@@ -16,6 +16,7 @@
 #include "qcanpool/fancytitlebar.h"
 #include "qcanpool/fancytabwidget.h"
 #include "qcanpool/fancytabbar.h"
+#include "qcanpool/fancytoolbutton.h"
 #include "qcanpool/quickaccessbar.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -60,6 +61,18 @@ void MainWindow::createCentralWidget()
     QAction *action = new QAction(QIcon(":/main/logo"), tr("testAction1"));
     tabBar->addAction(action, FancyTabBar::Middle);
     tabBar->setActionIconOnly(action, false);
+
+    FancyToolButton *button = new FancyToolButton();
+    button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    button->setMenuArea(FancyToolButton::RightMenuArea);
+    button->setMenuArrowType(Qt::RightArrow);
+    action = new QAction(QIcon(":/main/logo"), tr("testMenu"));
+    QMenu *menu = new QMenu(this);
+    menu->addAction(tr("action1"));
+    menu->addAction(tr("action2"));
+    action->setMenu(menu);
+    button->setDefaultAction(action);
+    tabBar->addActionButton(button, FancyTabBar::Middle);
 
     tabBar->addAction(QIcon(":/tools/start"), tr("start"));
     tabBar->addAction(QIcon(":/tools/suspend"), tr("suspend"));

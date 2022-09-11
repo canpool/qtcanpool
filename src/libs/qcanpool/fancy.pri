@@ -7,6 +7,7 @@ HEADERS += \
     $$PWD/fancytabwidget.h \
     $$PWD/fancytitlebar.h \
     $$PWD/fancytitlebar_p.h \
+    $$PWD/fancytoolbutton.h \
     $$PWD/fancywindow.h
 
 SOURCES += \
@@ -15,4 +16,5 @@ SOURCES += \
     $$PWD/fancytabbar.cpp \
     $$PWD/fancytabwidget.cpp \
     $$PWD/fancytitlebar.cpp \
+    $$PWD/fancytoolbutton.cpp \
     $$PWD/fancywindow.cpp

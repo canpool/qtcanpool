@@ -327,6 +327,33 @@ void FancyTabBar::addAction(QAction *action, FancyTabBar::ActionPosition positio
     }
 }
 
+void FancyTabBar::addActionButton(QToolButton *button, FancyTabBar::ActionPosition position)
+{
+    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    button->setObjectName(QLatin1String("button"));
+    button->setIconSize(d->m_iconSize);
+    d->m_actionButtons.append(button);
+    QAction *action = button->defaultAction();
+    if (action) {
+        d->m_actionTabMap.insert(action, button);
+    }
+
+    switch (position) {
+        case FancyTabBar::Front: {
+            d->m_frontActionLayout->addWidget(button);
+            break;
+        }
+        case FancyTabBar::Middle: {
+            d->m_middleActionLayout->addWidget(button);
+            break;
+        }
+        case FancyTabBar::Back: {
+            d->m_backActionLayout->addWidget(button);
+            break;
+        }
+    }
+}
+
 void FancyTabBar::setActionIconOnly(QAction *action, bool iconOnly)
 {
     Qt::ToolButtonStyle style = iconOnly ? Qt::ToolButtonIconOnly :

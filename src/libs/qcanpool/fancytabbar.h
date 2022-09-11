@@ -8,6 +8,8 @@
 #include "qcanpool.h"
 #include <QWidget>
 
+class QToolButton;
+
 QCANPOOL_BEGIN_NAMESPACE
 
 class FancyTabBarPrivate;
@@ -58,6 +60,7 @@ public:
     /* actions */
     QAction *addAction(const QIcon &icon, const QString &text, ActionPosition position = Back);
     void addAction(QAction *action, ActionPosition position = Back);
+    void addActionButton(QToolButton *button, ActionPosition position = Back);
     void setActionIconOnly(QAction *action, bool iconOnly);
 
     /* common */
