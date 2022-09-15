@@ -23,6 +23,16 @@
 #include <QAction>
 #include <QLabel>
 
+#ifdef QTC_USE_NATIVE
+#include <QAbstractNativeEventFilter>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define QTRESULT qintptr
+#else
+#define QTRESULT long
+#endif // QTRESULT
+#endif // QTC_USE_NATIVE
+
 QCANPOOL_BEGIN_NAMESPACE
 
 /* FancyCursor */
@@ -64,23 +74,20 @@ private:
 };
 
 class FancyTitleBar;
+
 /* FancyTitleBarPrivate */
 class FancyTitleBarPrivate : public QObject
 {
     Q_OBJECT
 public:
-    explicit FancyTitleBarPrivate();
-    ~FancyTitleBarPrivate();
+    explicit FancyTitleBarPrivate(QWidget *mainWidget);
+    virtual ~FancyTitleBarPrivate();
 
-    void init();
-    void installWidget(QWidget *w);
+    virtual void init();
 
     void setWidgetResizable(bool resizable);
     void setWidgetMovable(bool movable);
     void setWidgetMaximizable(bool maximizable);
-
-    // mouse event
-    void handleWidgetMouseEvent(QObject *obj, QEvent *event);
 
     void updateWindowButtons();
 
@@ -91,35 +98,11 @@ public:
     void windowSizeChange(QObject *obj);
     void windowStateChange(QObject *obj);
 
-private:
-    // mouse event
-    void handleMousePressEvent(QMouseEvent *event);
-    void handleMouseReleaseEvent(QMouseEvent *event);
-    void handleMouseMoveEvent(QMouseEvent *event);
-    void handleLeaveEvent(QEvent *event);
-    void handleHoverMoveEvent(QHoverEvent *event);
-    void handleMouseDblClickEvent(QMouseEvent *event);
-
-    // widget action
     void restoreWidget(QWidget *pWidget);
     void maximizeWidget(QWidget *pWidget);
-    void resizeWidget(const QPoint &gMousePos);
 
-    // mouse shape
-    void updateCursorShape(const QPoint &gMousePos);
-
-    QPoint windowStartPos(QWidget *pWindow, QMouseEvent *event) const;
-    QRect validDragRect();
-
-public:
-    // Simulate mouse events
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
-
-private slots:
-    void systemButtonClicked();
+public slots:
+    virtual void systemButtonClicked();
 
 public:
     FancyTitleBar   *q;
@@ -142,23 +125,94 @@ public:
 
     // main window
     Qt::WindowFlags m_windowFlags;
-    FancyCursor     m_pressCursor;
-    FancyCursor     m_moveCursor;
-    QRect           m_normalRect;
-    int             m_currentScreen;
-    bool            m_bEdgePressed;
-    bool            m_bLeftButtonPressed;
-    bool            m_bLeftButtonDbClicked;
-    bool            m_bLeftButtonTitlePressed;
-    bool            m_bCursorShapeChanged;
     bool            m_isMaximized;
     bool            m_isMinimized;
     bool            m_bWidgetMaximizable;
     bool            m_bWidgetResizable;
     bool            m_bWidgetMovable;
+    QRect           m_normalRect;
+    int             m_currentScreen;
+};
+
+#ifndef QTC_USE_NATIVE
+
+/* FancyTitleBarPrivateQt */
+class FancyTitleBarPrivateQt : public FancyTitleBarPrivate
+{
+    Q_OBJECT
+public:
+    explicit FancyTitleBarPrivateQt(QWidget *mainWidget);
+    virtual ~FancyTitleBarPrivateQt();
+
+    void init();
+
+    // mouse event
+    void handleWidgetMouseEvent(QObject *obj, QEvent *event);
+
+private:
+    // mouse event
+    void handleMousePressEvent(QMouseEvent *event);
+    void handleMouseReleaseEvent(QMouseEvent *event);
+    void handleMouseMoveEvent(QMouseEvent *event);
+    void handleLeaveEvent(QEvent *event);
+    void handleHoverMoveEvent(QHoverEvent *event);
+    void handleMouseDblClickEvent(QMouseEvent *event);
+
+    // widget action
+    void resizeWidget(const QPoint &gMousePos);
+
+    // mouse shape
+    void updateCursorShape(const QPoint &gMousePos);
+
+    QPoint windowStartPos(QWidget *pWindow, QMouseEvent *event) const;
+    QRect validDragRect();
+
+public:
+    // Simulate mouse events
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+
+protected:
+    virtual bool eventFilter(QObject *object, QEvent *event) override;
+
+public:
+    // main window
+    FancyCursor     m_pressCursor;
+    FancyCursor     m_moveCursor;
+    bool            m_bEdgePressed;
+    bool            m_bLeftButtonPressed;
+    bool            m_bLeftButtonDbClicked;
+    bool            m_bLeftButtonTitlePressed;
+    bool            m_bCursorShapeChanged;
 
     QPoint          m_movePoint;
 };
+
+#else  // QTC_USE_NATIVE
+
+class FancyTitleBarPrivateNative : public FancyTitleBarPrivate, public QAbstractNativeEventFilter
+{
+    Q_OBJECT
+public:
+    explicit FancyTitleBarPrivateNative(QWidget *mainWidget);
+    virtual ~FancyTitleBarPrivateNative();
+
+    void init();
+
+#ifdef Q_OS_WINDOWS
+    bool handleWindowsMessage(void *message, QTRESULT *result);
+#endif
+
+public slots:
+    void systemButtonClicked();
+
+public:
+    virtual bool nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result);
+};
+
+#endif // QTC_USE_NATIVE
 
 QCANPOOL_END_NAMESPACE
 

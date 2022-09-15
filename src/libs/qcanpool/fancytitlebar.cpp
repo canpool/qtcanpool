@@ -1,7 +1,6 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
- * Notice: based on framelesshelper
 **/
 #include "fancytitlebar_p.h"
 #include "fancytitlebar.h"
@@ -26,7 +25,606 @@
 #include <QScreen>
 #endif
 
+#ifdef QTC_USE_NATIVE
+// Reference documents
+// Microsoft: https://docs.microsoft.com/en-us/windows/apps/design/basics/titlebar-design
+// Window Reference: https://docs.microsoft.com/en-us/windows/win32/winmsg/window-reference
+// KDE: https://develop.kde.org/hig/
+// GNOME: https://developer.gnome.org/hig/patterns/containers/header-bars.html
+// Apple: https://developer.apple.com/design/human-interface-guidelines/macos/windows-and-views/window-anatomy/
+
+#ifdef Q_OS_WINDOWS
+#include <windows.h>
+#include <windowsx.h>
+#include <winuser.h>
+#endif // Q_OS_WINDOWS
+
+#endif // QTC_USE_NATIVE
+
 QCANPOOL_BEGIN_NAMESPACE
+
+#ifdef QTC_USE_NATIVE
+/* FancyTitleBarPrivateNative */
+FancyTitleBarPrivateNative::FancyTitleBarPrivateNative(QWidget *mainWidget)
+    : FancyTitleBarPrivate(mainWidget)
+{
+}
+
+FancyTitleBarPrivateNative::~FancyTitleBarPrivateNative()
+{
+    qApp->removeNativeEventFilter(this);
+}
+
+void FancyTitleBarPrivateNative::init()
+{
+    FancyTitleBarPrivate::init();
+
+#ifdef Q_OS_WINDOWS
+    HWND hwnd = (HWND)m_mainWidget->winId();
+    DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
+    ::SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION);
+#endif // Q_OS_WINDOWS
+
+    qApp->installNativeEventFilter(this);
+}
+
+#ifdef Q_OS_WINDOWS
+bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *result)
+{
+    // Workaround for known bug -> check Qt forum : https://forum.qt.io/topic/93141/qtablewidget-itemselectionchanged/13
+#if (QT_VERSION == QT_VERSION_CHECK(5, 11, 1))
+    MSG *msg = *reinterpret_cast<MSG**>(message);
+#else
+    MSG *msg = reinterpret_cast<MSG*>(message);
+#endif
+
+    QWidget *widget = QWidget::find(reinterpret_cast<WId>(msg->hwnd));
+    if (!widget || widget != m_mainWidget) {
+        return false;
+    }
+
+    if (msg->message == WM_NCCALCSIZE) {
+        // handleNonClientCalcSize
+        // https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-nccalcsize
+        *result = 0;
+        if (!msg->wParam) {
+            return true;
+        }
+        // https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nccalcsize_params
+        // if msg->wParam is TRUE, then lParam is NCCALCSIZE_PARAMS
+        // reference to windows terminal
+        NCCALCSIZE_PARAMS &params = *reinterpret_cast<NCCALCSIZE_PARAMS *>(msg->lParam);
+        const int originalTop = params.rgrc[0].top;
+        const RECT originalRect = params.rgrc[0];
+        const auto ret = ::DefWindowProc(msg->hwnd, WM_NCCALCSIZE, msg->wParam, msg->lParam);
+        if (ret != 0) {
+            *result = ret;
+            return true;
+        }
+        params.rgrc[0].top = originalTop;
+        bool isMaximized = GetWindowStyle(msg->hwnd) & WS_MAXIMIZE;
+        if (isMaximized) {
+            int border = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+            RECT &rect = params.rgrc[0];
+            rect.top += border;
+        } else {
+            params.rgrc[0] = originalRect;
+        }
+        m_isMaximized = isMaximized;
+        return true;
+    } else if (msg->message == WM_NCHITTEST) {
+        // handleNonClientHitTest
+        // https://docs.microsoft.com/en-us/windows/win32/dwm/customframe#appendix-c-hittestnca-function
+        int borderWidth = 5;
+        long x = GET_X_LPARAM(msg->lParam);
+        long y = GET_Y_LPARAM(msg->lParam);
+        QPoint pos = m_mainWidget->mapFromGlobal(QPoint(x, y));
+        int w = m_mainWidget->width();
+        int h = m_mainWidget->height();
+
+        bool left = pos.x() < borderWidth;
+        bool right = pos.x() > w - borderWidth;
+        bool top = pos.y() < borderWidth;
+        bool bottom = pos.y() > h - borderWidth;
+
+        *result = 0;
+        if (m_bWidgetResizable) {
+            if (top && left) {
+                *result = HTTOPLEFT;
+            } else if (top && right) {
+                *result = HTTOPRIGHT;
+            } else if (bottom && left) {
+                *result = HTBOTTOMLEFT;
+            } else if (bottom && right) {
+                *result = HTBOTTOMRIGHT;
+            } else if (left) {
+                *result = HTLEFT;
+            } else if (right) {
+                *result = HTRIGHT;
+            } else if (top) {
+                *result = HTTOP;
+            } else if (bottom) {
+                *result = HTBOTTOM;
+            }
+        }
+
+        if (*result != 0) {
+            return true;
+        }
+
+        if (m_bWidgetMovable && m_titleWidget && m_titleWidget->rect().contains(pos)) {
+            QWidget *child = m_titleWidget->childAt(pos);
+            if (!child || qstrcmp(child->metaObject()->className(), "QWidget") == 0) {
+                // A non-QWidget or non-QWidget-derived class in the title bar belongs to the blank area
+                *result = HTCAPTION;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+#endif
+
+void FancyTitleBarPrivateNative::systemButtonClicked()
+{
+    QAction *pAction = qobject_cast<QAction *>(sender());
+    QWidget *pWindow = m_mainWidget;
+
+    if (pWindow) {
+        if (pAction == m_minimizeAction) {
+            pWindow->showMinimized();
+            m_isMinimized = true;
+        } else if (pAction == m_maximizeAction) {
+            if (m_isMaximized) {
+                pWindow->showNormal();
+            } else {
+                pWindow->showMaximized();
+            }
+            m_isMinimized = false;
+        } else if (pAction == m_closeAction) {
+            pWindow->close();
+        }
+    }
+}
+
+bool FancyTitleBarPrivateNative::nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result)
+{
+    if (eventType == "windows_generic_MSG") {
+#ifdef Q_OS_WINDOWS
+        return handleWindowsMessage(message, result);
+#endif
+    }
+    return false;
+}
+
+#else // !QTC_USE_NATIVE
+
+/* FancyTitleBarPrivateQt */
+FancyTitleBarPrivateQt::FancyTitleBarPrivateQt(QWidget *mainWidget)
+    : FancyTitleBarPrivate(mainWidget)
+    , m_bEdgePressed(false)
+    , m_bLeftButtonPressed(false)
+    , m_bLeftButtonDbClicked(false)
+    , m_bLeftButtonTitlePressed(true)
+    , m_bCursorShapeChanged(false)
+    , m_movePoint(QPoint(0, 0))
+{
+
+}
+
+FancyTitleBarPrivateQt::~FancyTitleBarPrivateQt()
+{
+    m_mainWidget->removeEventFilter(this);
+}
+
+void FancyTitleBarPrivateQt::init()
+{
+    FancyTitleBarPrivate::init();
+
+    m_mainWidget->installEventFilter(this);
+}
+
+void FancyTitleBarPrivateQt::handleWidgetMouseEvent(QObject *obj, QEvent *event)
+{
+    Q_UNUSED(obj);
+
+    switch (event->type()) {
+        case QEvent::MouseButtonPress:
+            handleMousePressEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::MouseButtonRelease:
+            handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::MouseMove:
+            handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::Leave:
+            handleLeaveEvent(static_cast<QMouseEvent *>(event));
+            break;
+        case QEvent::HoverMove:
+            handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
+            break;
+        case QEvent::MouseButtonDblClick:
+            handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
+            break;
+        default:
+            break;
+    }
+}
+
+void FancyTitleBarPrivateQt::handleMousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton && !m_isMaximized) {
+        m_bEdgePressed = true;
+        QRect frameRect = m_mainWidget->frameGeometry();
+        m_pressCursor.update(event->globalPos(), frameRect);
+    }
+    mousePressEvent(event);
+    event->ignore();
+}
+
+void FancyTitleBarPrivateQt::handleMouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_bEdgePressed = false;
+        m_pressCursor.reset();
+
+        if (m_bWidgetResizable) {
+            updateCursorShape(event->globalPos());
+        }
+    }
+    mouseReleaseEvent(event);
+    event->ignore();
+}
+
+void FancyTitleBarPrivateQt::handleMouseMoveEvent(QMouseEvent *event)
+{
+    if (m_bEdgePressed) {
+        if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
+            resizeWidget(event->globalPos());
+        }
+    } else if (m_bWidgetResizable) {
+        updateCursorShape(event->globalPos());
+    }
+    mouseMoveEvent(event);
+}
+
+void FancyTitleBarPrivateQt::handleLeaveEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+
+    // if press, then leave after release
+    if (!m_bEdgePressed) {
+        m_mainWidget->unsetCursor();
+    }
+}
+
+void FancyTitleBarPrivateQt::handleHoverMoveEvent(QHoverEvent *event)
+{
+    if (!m_bEdgePressed && m_bWidgetResizable) {
+        updateCursorShape(m_mainWidget->mapToGlobal(event->pos()));
+    }
+}
+
+void FancyTitleBarPrivateQt::handleMouseDblClickEvent(QMouseEvent *event)
+{
+    mouseDoubleClickEvent(event);
+}
+
+void FancyTitleBarPrivateQt::resizeWidget(const QPoint &gMousePos)
+{
+    // original rect
+    QRect oriRect = m_mainWidget->frameGeometry();
+    int left, top, right, bottom;
+    oriRect.getCoords(&left, &top, &right, &bottom);
+    int minWidth = m_mainWidget->minimumWidth();
+    int minHeight = m_mainWidget->minimumHeight();
+
+    // update coords
+    if (m_pressCursor.m_bOnTopLeftEdge) {
+        left = gMousePos.x();
+        top = gMousePos.y();
+    } else if (m_pressCursor.m_bOnBottomLeftEdge) {
+        left = gMousePos.x();
+        bottom = gMousePos.y();
+    } else if (m_pressCursor.m_bOnTopRightEdge) {
+        right = gMousePos.x();
+        top = gMousePos.y();
+    } else if (m_pressCursor.m_bOnBottomRightEdge) {
+        right = gMousePos.x();
+        bottom = gMousePos.y();
+    } else if (m_pressCursor.m_bOnLeftEdge) {
+        left = gMousePos.x();
+    } else if (m_pressCursor.m_bOnRightEdge) {
+        right = gMousePos.x();
+    } else if (m_pressCursor.m_bOnTopEdge) {
+        top = gMousePos.y();
+    } else if (m_pressCursor.m_bOnBottomEdge) {
+        bottom = gMousePos.y();
+    }
+
+    QRect newRect(QPoint(left, top), QPoint(right, bottom));
+
+    if (newRect.isValid()) {
+        if (minWidth > newRect.width()) {
+            if (left != oriRect.left()) {
+                newRect.setLeft(oriRect.left());
+            } else {
+                newRect.setRight(oriRect.right());
+            }
+        }
+
+        if (minHeight > newRect.height()) {
+            if (top != oriRect.top()) {
+                newRect.setTop(oriRect.top());
+            } else {
+                newRect.setBottom(oriRect.bottom());
+            }
+        }
+
+        m_mainWidget->setGeometry(newRect);
+    }
+}
+
+void FancyTitleBarPrivateQt::updateCursorShape(const QPoint &gMousePos)
+{
+    if (m_mainWidget->isFullScreen() || m_mainWidget->isMaximized() || m_isMaximized) {
+        if (m_bCursorShapeChanged) {
+            m_mainWidget->unsetCursor();
+            m_bCursorShapeChanged = false;
+        }
+        return;
+    }
+
+    m_moveCursor.update(gMousePos, m_mainWidget->frameGeometry());
+
+    if (m_moveCursor.m_bOnTopLeftEdge || m_moveCursor.m_bOnBottomRightEdge) {
+        m_mainWidget->setCursor(Qt::SizeFDiagCursor);
+        m_bCursorShapeChanged = true;
+    } else if (m_moveCursor.m_bOnTopRightEdge || m_moveCursor.m_bOnBottomLeftEdge) {
+        m_mainWidget->setCursor(Qt::SizeBDiagCursor);
+        m_bCursorShapeChanged = true;
+    } else if (m_moveCursor.m_bOnLeftEdge || m_moveCursor.m_bOnRightEdge) {
+        m_mainWidget->setCursor(Qt::SizeHorCursor);
+        m_bCursorShapeChanged = true;
+    } else if (m_moveCursor.m_bOnTopEdge || m_moveCursor.m_bOnBottomEdge) {
+        m_mainWidget->setCursor(Qt::SizeVerCursor);
+        m_bCursorShapeChanged = true;
+    } else {
+        if (m_bCursorShapeChanged) {
+            m_mainWidget->unsetCursor();
+            m_bCursorShapeChanged = false;
+        }
+    }
+}
+
+/**
+ * @brief Calculate the starting position of the window from maximized to normal size
+ *
+ *  |-------------------|       |---------|
+ *  |                   |  ==>  |         |
+ *  |                   |       |---------|
+ *  |                   |
+ *  |-------------------|
+ *
+ * as follows:
+ * ****************************************************************************
+ *
+ *   (screenX, screenY)
+ *         \        mouse
+ *          +-------*---------------------
+ *        / |                |           |
+ *   point  |                |oriHeight  |
+ *          |                |           |
+ *          |----------------|           |   maxHeight
+ *          |      oriWidth              |
+ *          |                            |
+ *          |                            |
+ *          ------------------------------
+ *                  maxWidth
+ *
+ *****************************************************************************
+ *
+ *   (screenX, screenY)
+ *         \                        mouse
+ *          +------------+----------*-----
+ *          |          / |               |
+ *          |      point |oriHeight      |
+ *          |            |               |
+ *          |            ----------------| maxHeight
+ *          |               oriWidth     |
+ *          |                            |
+ *          |                            |
+ *          ------------------------------
+ *                  maxWidth
+ *
+ *****************************************************************************
+ *
+ * 1. When titleWidget was set, the x,y coordinate (constrained within the title bar area) as follows:
+ *
+ *  1) y coordinate is fixed to 0
+ *  2) x coordinate is:
+ *      a) screen x coordinate, when the drag point is left half (Align screen left)
+ *          |--*-------------|
+ *          |-------|
+ *          `-> screenX
+ *      b) maxwidth - oriWidth, when the drag point is right half (Align screen right)
+ *          |-------------*--|
+ *                   |-------|
+ *                   `-> maxWidth - oriWidth
+ *      c) mouseX - oriWidth/2
+ *          |---------*------|
+ *                |-------|
+ *                `-> mouseX - oriWidth/2
+ *
+ * 2. When titleWidget was not set, the y coordinate is not constrained,
+ * the method of calculating the y coordinate is the same as above
+ *
+ * @param pWindow
+ * @param event
+ * @return QPoint
+ */
+QPoint FancyTitleBarPrivateQt::windowStartPos(QWidget *pWindow, QMouseEvent *event) const
+{
+    int mouseX = event->globalX();
+    int mouseY = event->globalY();
+    FancyScreen screen;
+    QRect rect = screen.screenRect(m_currentScreen);
+    int maxWidth = rect.x() + rect.width();
+    int maxHeight = rect.y() + rect.height();
+    int screenX = rect.x();
+    int screenY = rect.y();
+    int oriWidth = m_normalRect.width();
+    int oriHeight = m_normalRect.height();
+
+    if (oriWidth == 0) {
+        oriWidth = pWindow->minimumWidth();
+    }
+    if (oriHeight == 0) {
+        oriHeight = pWindow->minimumHeight();
+    }
+
+    QPoint point;
+    point.setY(0);
+
+    if (mouseX - screenX < oriWidth / 2) {
+        point.setX(screenX);                // Align screen left
+    } else if (maxWidth - mouseX < oriWidth / 2) {
+        point.setX(maxWidth - oriWidth);    // Align screen right
+    } else {
+        point.setX(mouseX - oriWidth / 2);
+    }
+
+    if (m_titleWidget == nullptr) {
+        if (mouseY - screenY < oriHeight / 2) {
+            point.setY(screenY);
+        } else if (maxHeight - mouseY < oriHeight / 2) {
+            point.setY(maxHeight - oriHeight);
+        } else {
+            point.setY(mouseY - oriHeight / 2);
+        }
+    }
+
+    return point;
+}
+
+QRect FancyTitleBarPrivateQt::validDragRect()
+{
+    FancyScreen screen;
+    QRect rect = screen.screenRect(m_currentScreen);
+
+    int offset = 2 * m_moveCursor.m_nBorderWidth;
+    rect.setWidth(rect.width() - rect.x() - offset);
+    rect.setHeight(rect.height() - rect.y() - offset);
+    rect.setX(offset);
+    rect.setY(offset);
+
+    return rect;
+}
+
+void FancyTitleBarPrivateQt::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_bLeftButtonPressed = true;
+        m_bLeftButtonTitlePressed = m_titleWidget ? (event->pos().y() < m_titleWidget->sizeHint().height()) : true;
+        QWidget *pWindow = m_mainWidget;
+
+        if (pWindow->isTopLevel()) {
+            if (m_isMaximized && m_bLeftButtonTitlePressed) {
+                m_movePoint = event->globalPos() - windowStartPos(pWindow, event);
+            } else {
+                m_movePoint = event->globalPos() - pWindow->pos();
+            }
+        }
+    }
+}
+
+void FancyTitleBarPrivateQt::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_bLeftButtonPressed = false;
+
+    // maximize on the top of the screen
+    if (!m_isMaximized && !m_bLeftButtonDbClicked) {
+        if (event->globalY() <= 3) {
+            m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
+
+            if (m_bWidgetMaximizable) {
+                emit m_maximizeAction->triggered();
+            }
+        } else {
+            int y = m_mainWidget->frameGeometry().y();
+            if (y < 0) {
+                // Always show all titlebar on screen
+                m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
+            }
+        }
+    }
+    m_bLeftButtonDbClicked = false;
+}
+
+void FancyTitleBarPrivateQt::mouseMoveEvent(QMouseEvent *event)
+{
+    if (!m_bLeftButtonPressed || !m_bLeftButtonTitlePressed) {
+        return;
+    }
+
+    QWidget *pWindow = m_mainWidget;
+    if (pWindow->isTopLevel()) {
+        if (m_bWidgetMaximizable && m_isMaximized) {
+            // calculate the valid rect
+            QRect rect = validDragRect();
+            if (rect.contains(event->pos())) {
+                m_movePoint = event->globalPos() - windowStartPos(pWindow, event);
+                restoreWidget(pWindow);
+            }
+        } else {
+            if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
+                event->ignore();
+            } else {
+                pWindow->move(event->globalPos() - m_movePoint);
+            }
+        }
+    }
+}
+
+void FancyTitleBarPrivateQt::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_bLeftButtonDbClicked = true;
+        if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
+            if (m_isMaximized) {
+                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+            }
+            emit m_maximizeAction->triggered();
+        }
+    }
+}
+
+bool FancyTitleBarPrivateQt::eventFilter(QObject *object, QEvent *event)
+{
+    switch (event->type()) {
+        case QEvent::Resize: {
+            windowSizeChange(object);
+            return true;
+        }
+        case QEvent::MouseMove:
+        case QEvent::HoverMove:
+        case QEvent::Leave:
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick: {
+            handleWidgetMouseEvent(object, event);
+            return true;
+        }
+        default:
+            break;
+    }
+
+    return QObject::eventFilter(object, event);
+}
+
+#endif // QTC_USE_NATIVE
 
 /* FancyCursor */
 FancyCursor::FancyCursor()
@@ -151,23 +749,21 @@ QRect FancyScreen::normalRect()
                  2 * geom.width() / 3, 2 * geom.height() / 3);
 }
 
-FancyTitleBarPrivate::FancyTitleBarPrivate()
-    : m_mainWidget(nullptr)
+/* FancyTitleBarPrivate */
+FancyTitleBarPrivate::FancyTitleBarPrivate(QWidget *mainWidget)
+    : m_mainWidget(mainWidget)
     , m_titleWidget(nullptr)
-    , m_normalRect(FancyScreen::normalRect())
-    , m_currentScreen(0)
-    , m_bEdgePressed(false)
-    , m_bLeftButtonPressed(false)
-    , m_bLeftButtonDbClicked(false)
-    , m_bLeftButtonTitlePressed(true)
-    , m_bCursorShapeChanged(false)
     , m_isMaximized(false)
     , m_isMinimized(false)
     , m_bWidgetMaximizable(true)
     , m_bWidgetResizable(true)
     , m_bWidgetMovable(true)
-    , m_movePoint(QPoint(0, 0))
+    , m_normalRect(FancyScreen::normalRect())
+    , m_currentScreen(0)
 {
+    m_windowFlags = m_mainWidget->windowFlags();
+    m_mainWidget->setMouseTracking(true);
+    m_mainWidget->setAttribute(Qt::WA_Hover, true);
 }
 
 FancyTitleBarPrivate::~FancyTitleBarPrivate()
@@ -226,14 +822,33 @@ void FancyTitleBarPrivate::init()
     connect(m_minimizeAction, SIGNAL(triggered()), this, SLOT(systemButtonClicked()));
     connect(m_maximizeAction, SIGNAL(triggered()), this, SLOT(systemButtonClicked()));
     connect(m_closeAction, SIGNAL(triggered()), this, SLOT(systemButtonClicked()));
+
+    // Update maximize button state. Otherwise, when native,
+    // the button state will not be initialized at first
+    windowStateChange(m_mainWidget);
 }
 
-void FancyTitleBarPrivate::installWidget(QWidget *w)
+void FancyTitleBarPrivate::systemButtonClicked()
 {
-    m_mainWidget = w;
-    m_windowFlags = w->windowFlags();
-    m_mainWidget->setMouseTracking(true);
-    m_mainWidget->setAttribute(Qt::WA_Hover, true);
+    QAction *pAction = qobject_cast<QAction *>(sender());
+    QWidget *pWindow = m_mainWidget;
+
+    if (pWindow) {
+        if (pAction == m_minimizeAction) {
+            pWindow->showMinimized();
+            m_isMinimized = true;
+        } else if (pAction == m_maximizeAction) {
+            if (m_isMaximized) {
+                restoreWidget(pWindow);
+            } else {
+                m_normalRect = pWindow->frameGeometry();
+                maximizeWidget(pWindow);
+            }
+            m_isMinimized = false;
+        } else if (pAction == m_closeAction) {
+            pWindow->close();
+        }
+    }
 }
 
 void FancyTitleBarPrivate::setWidgetResizable(bool resizable)
@@ -249,34 +864,6 @@ void FancyTitleBarPrivate::setWidgetMovable(bool movable)
 void FancyTitleBarPrivate::setWidgetMaximizable(bool maximizable)
 {
     m_bWidgetMaximizable = maximizable;
-}
-
-void FancyTitleBarPrivate::handleWidgetMouseEvent(QObject *obj, QEvent *event)
-{
-    Q_UNUSED(obj);
-
-    switch (event->type()) {
-        case QEvent::MouseButtonPress:
-            handleMousePressEvent(static_cast<QMouseEvent *>(event));
-            break;
-        case QEvent::MouseButtonRelease:
-            handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
-            break;
-        case QEvent::MouseMove:
-            handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
-            break;
-        case QEvent::Leave:
-            handleLeaveEvent(static_cast<QMouseEvent *>(event));
-            break;
-        case QEvent::HoverMove:
-            handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
-            break;
-        case QEvent::MouseButtonDblClick:
-            handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
-            break;
-        default:
-            break;
-    }
 }
 
 void FancyTitleBarPrivate::updateWindowButtons()
@@ -320,7 +907,7 @@ void FancyTitleBarPrivate::windowSizeChange(QObject *obj)
             // Mask the maximized state, because the frameless window
             // will cover the windows taskbar when maximized
             w->setWindowState(w->windowState() & ~Qt::WindowMaximized);
-            this->maximizeWidget(w);
+            maximizeWidget(w);
         }
 
         windowStateChange(obj);
@@ -342,65 +929,6 @@ void FancyTitleBarPrivate::windowStateChange(QObject *obj)
         m_maximizeAction->setIcon(m_maximizeIcon);
     }
     toolButton->style()->polish(toolButton);
-}
-
-void FancyTitleBarPrivate::handleMousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton && !m_isMaximized) {
-        m_bEdgePressed = true;
-        QRect frameRect = m_mainWidget->frameGeometry();
-        m_pressCursor.update(event->globalPos(), frameRect);
-    }
-    mousePressEvent(event);
-    event->ignore();
-}
-
-void FancyTitleBarPrivate::handleMouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_bEdgePressed = false;
-        m_pressCursor.reset();
-
-        if (m_bWidgetResizable) {
-            updateCursorShape(event->globalPos());
-        }
-    }
-    mouseReleaseEvent(event);
-    event->ignore();
-}
-
-void FancyTitleBarPrivate::handleMouseMoveEvent(QMouseEvent *event)
-{
-    if (m_bEdgePressed) {
-        if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
-            resizeWidget(event->globalPos());
-        }
-    } else if (m_bWidgetResizable) {
-        updateCursorShape(event->globalPos());
-    }
-    mouseMoveEvent(event);
-}
-
-void FancyTitleBarPrivate::handleLeaveEvent(QEvent *event)
-{
-    Q_UNUSED(event);
-
-    // if press, then leave after release
-    if (!m_bEdgePressed) {
-        m_mainWidget->unsetCursor();
-    }
-}
-
-void FancyTitleBarPrivate::handleHoverMoveEvent(QHoverEvent *event)
-{
-    if (!m_bEdgePressed && m_bWidgetResizable) {
-        updateCursorShape(m_mainWidget->mapToGlobal(event->pos()));
-    }
-}
-
-void FancyTitleBarPrivate::handleMouseDblClickEvent(QMouseEvent *event)
-{
-    mouseDoubleClickEvent(event);
 }
 
 void FancyTitleBarPrivate::restoreWidget(QWidget *pWidget)
@@ -427,331 +955,24 @@ void FancyTitleBarPrivate::maximizeWidget(QWidget *pWidget)
     emit q->windowResizable(false);
 }
 
-void FancyTitleBarPrivate::resizeWidget(const QPoint &gMousePos)
-{
-    // original rect
-    QRect oriRect = m_mainWidget->frameGeometry();
-    int left, top, right, bottom;
-    oriRect.getCoords(&left, &top, &right, &bottom);
-    int minWidth = m_mainWidget->minimumWidth();
-    int minHeight = m_mainWidget->minimumHeight();
-
-    // update coords
-    if (m_pressCursor.m_bOnTopLeftEdge) {
-        left = gMousePos.x();
-        top = gMousePos.y();
-    } else if (m_pressCursor.m_bOnBottomLeftEdge) {
-        left = gMousePos.x();
-        bottom = gMousePos.y();
-    } else if (m_pressCursor.m_bOnTopRightEdge) {
-        right = gMousePos.x();
-        top = gMousePos.y();
-    } else if (m_pressCursor.m_bOnBottomRightEdge) {
-        right = gMousePos.x();
-        bottom = gMousePos.y();
-    } else if (m_pressCursor.m_bOnLeftEdge) {
-        left = gMousePos.x();
-    } else if (m_pressCursor.m_bOnRightEdge) {
-        right = gMousePos.x();
-    } else if (m_pressCursor.m_bOnTopEdge) {
-        top = gMousePos.y();
-    } else if (m_pressCursor.m_bOnBottomEdge) {
-        bottom = gMousePos.y();
-    }
-
-    QRect newRect(QPoint(left, top), QPoint(right, bottom));
-
-    if (newRect.isValid()) {
-        if (minWidth > newRect.width()) {
-            if (left != oriRect.left()) {
-                newRect.setLeft(oriRect.left());
-            } else {
-                newRect.setRight(oriRect.right());
-            }
-        }
-
-        if (minHeight > newRect.height()) {
-            if (top != oriRect.top()) {
-                newRect.setTop(oriRect.top());
-            } else {
-                newRect.setBottom(oriRect.bottom());
-            }
-        }
-
-        m_mainWidget->setGeometry(newRect);
-    }
-}
-
-void FancyTitleBarPrivate::updateCursorShape(const QPoint &gMousePos)
-{
-    if (m_mainWidget->isFullScreen() || m_mainWidget->isMaximized() || m_isMaximized) {
-        if (m_bCursorShapeChanged) {
-            m_mainWidget->unsetCursor();
-            m_bCursorShapeChanged = false;
-        }
-        return;
-    }
-
-    m_moveCursor.update(gMousePos, m_mainWidget->frameGeometry());
-
-    if (m_moveCursor.m_bOnTopLeftEdge || m_moveCursor.m_bOnBottomRightEdge) {
-        m_mainWidget->setCursor(Qt::SizeFDiagCursor);
-        m_bCursorShapeChanged = true;
-    } else if (m_moveCursor.m_bOnTopRightEdge || m_moveCursor.m_bOnBottomLeftEdge) {
-        m_mainWidget->setCursor(Qt::SizeBDiagCursor);
-        m_bCursorShapeChanged = true;
-    } else if (m_moveCursor.m_bOnLeftEdge || m_moveCursor.m_bOnRightEdge) {
-        m_mainWidget->setCursor(Qt::SizeHorCursor);
-        m_bCursorShapeChanged = true;
-    } else if (m_moveCursor.m_bOnTopEdge || m_moveCursor.m_bOnBottomEdge) {
-        m_mainWidget->setCursor(Qt::SizeVerCursor);
-        m_bCursorShapeChanged = true;
-    } else {
-        if (m_bCursorShapeChanged) {
-            m_mainWidget->unsetCursor();
-            m_bCursorShapeChanged = false;
-        }
-    }
-}
-
-/**
- * @brief Calculate the starting position of the window from maximized to normal size
- *
- *  |-------------------|       |---------|
- *  |                   |  ==>  |         |
- *  |                   |       |---------|
- *  |                   |
- *  |-------------------|
- *
- * as follows:
- * ****************************************************************************
- *
- *   (screenX, screenY)
- *         \        mouse
- *          +-------*---------------------
- *        / |                |           |
- *   point  |                |oriHeight  |
- *          |                |           |
- *          |----------------|           |   maxHeight
- *          |      oriWidth              |
- *          |                            |
- *          |                            |
- *          ------------------------------
- *                  maxWidth
- *
- *****************************************************************************
- *
- *   (screenX, screenY)
- *         \                        mouse
- *          +------------+----------*-----
- *          |          / |               |
- *          |      point |oriHeight      |
- *          |            |               |
- *          |            ----------------| maxHeight
- *          |               oriWidth     |
- *          |                            |
- *          |                            |
- *          ------------------------------
- *                  maxWidth
- *
- *****************************************************************************
- *
- * 1. When titleWidget was set, the x,y coordinate (constrained within the title bar area) as follows:
- *
- *  1) y coordinate is fixed to 0
- *  2) x coordinate is:
- *      a) screen x coordinate, when the drag point is left half (Align screen left)
- *          |--*-------------|
- *          |-------|
- *          `-> screenX
- *      b) maxwidth - oriWidth, when the drag point is right half (Align screen right)
- *          |-------------*--|
- *                   |-------|
- *                   `-> maxWidth - oriWidth
- *      c) mouseX - oriWidth/2
- *          |---------*------|
- *                |-------|
- *                `-> mouseX - oriWidth/2
- *
- * 2. When titleWidget was not set, the y coordinate is not constrained,
- * the method of calculating the y coordinate is the same as above
- *
- * @param pWindow
- * @param event
- * @return QPoint
- */
-QPoint FancyTitleBarPrivate::windowStartPos(QWidget *pWindow, QMouseEvent *event) const
-{
-    int mouseX = event->globalX();
-    int mouseY = event->globalY();
-    FancyScreen screen;
-    QRect rect = screen.screenRect(m_currentScreen);
-    int maxWidth = rect.x() + rect.width();
-    int maxHeight = rect.y() + rect.height();
-    int screenX = rect.x();
-    int screenY = rect.y();
-    int oriWidth = m_normalRect.width();
-    int oriHeight = m_normalRect.height();
-
-    if (oriWidth == 0) {
-        oriWidth = pWindow->minimumWidth();
-    }
-    if (oriHeight == 0) {
-        oriHeight = pWindow->minimumHeight();
-    }
-
-    QPoint point;
-    point.setY(0);
-
-    if (mouseX - screenX < oriWidth / 2) {
-        point.setX(screenX);                // Align screen left
-    } else if (maxWidth - mouseX < oriWidth / 2) {
-        point.setX(maxWidth - oriWidth);    // Align screen right
-    } else {
-        point.setX(mouseX - oriWidth / 2);
-    }
-
-    if (m_titleWidget == nullptr) {
-        if (mouseY - screenY < oriHeight / 2) {
-            point.setY(screenY);
-        } else if (maxHeight - mouseY < oriHeight / 2) {
-            point.setY(maxHeight - oriHeight);
-        } else {
-            point.setY(mouseY - oriHeight / 2);
-        }
-    }
-
-    return point;
-}
-
-QRect FancyTitleBarPrivate::validDragRect()
-{
-    FancyScreen screen;
-    QRect rect = screen.screenRect(m_currentScreen);
-
-    int offset = 2 * m_moveCursor.m_nBorderWidth;
-    rect.setWidth(rect.width() - rect.x() - offset);
-    rect.setHeight(rect.height() - rect.y() - offset);
-    rect.setX(offset);
-    rect.setY(offset);
-
-    return rect;
-}
-
-void FancyTitleBarPrivate::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_bLeftButtonPressed = true;
-        m_bLeftButtonTitlePressed = m_titleWidget ? (m_titleWidget->sizeHint().height() > event->pos().y()) : true;
-        QWidget *pWindow = m_mainWidget;
-
-        if (pWindow->isTopLevel()) {
-            if (m_isMaximized && m_bLeftButtonTitlePressed) {
-                m_movePoint = event->globalPos() - windowStartPos(pWindow, event);
-            } else {
-                m_movePoint = event->globalPos() - pWindow->pos();
-            }
-        }
-    }
-}
-
-void FancyTitleBarPrivate::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_bLeftButtonPressed = false;
-
-    // maximize on the top of the screen
-    if (!m_isMaximized && !m_bLeftButtonDbClicked) {
-        if (event->globalY() <= 3) {
-            m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
-
-            if (m_bWidgetMaximizable) {
-                emit m_maximizeAction->triggered();
-            }
-        } else {
-            int y = m_mainWidget->frameGeometry().y();
-            if (y < 0) {
-                // Always show all titlebar on screen
-                m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
-            }
-        }
-    }
-    m_bLeftButtonDbClicked = false;
-}
-
-void FancyTitleBarPrivate::mouseMoveEvent(QMouseEvent *event)
-{
-    if (!m_bLeftButtonPressed || !m_bLeftButtonTitlePressed) {
-        return;
-    }
-
-    QWidget *pWindow = m_mainWidget;
-    if (pWindow->isTopLevel()) {
-        if (m_bWidgetMaximizable && m_isMaximized) {
-            // calculate the valid rect
-            QRect rect = validDragRect();
-            if (rect.contains(event->pos())) {
-                m_movePoint = event->globalPos() - windowStartPos(pWindow, event);
-                restoreWidget(pWindow);
-            }
-        } else {
-            if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
-                event->ignore();
-            } else {
-                pWindow->move(event->globalPos() - m_movePoint);
-            }
-        }
-    }
-}
-
-void FancyTitleBarPrivate::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    if ( event->button() == Qt::LeftButton ) {
-        m_bLeftButtonDbClicked = true;
-        if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
-            if (m_isMaximized) {
-                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
-            }
-            emit m_maximizeAction->triggered();
-        }
-    }
-}
-
-void FancyTitleBarPrivate::systemButtonClicked()
-{
-    QAction *pAction = qobject_cast<QAction *>(sender());
-    QWidget *pWindow = m_mainWidget;
-
-    if (pWindow) {
-        if (pAction == m_minimizeAction) {
-            pWindow->showMinimized();
-            m_isMinimized = true;
-        } else if (pAction == m_maximizeAction) {
-            if (m_isMaximized) {
-                restoreWidget(pWindow);
-            } else {
-                m_normalRect = pWindow->frameGeometry();
-                maximizeWidget(pWindow);
-            }
-            m_isMinimized = false;
-        } else if (pAction == m_closeAction) {
-            pWindow->close();
-        }
-    }
-}
-
 /**
  * @brief FancyTitleBar::FancyTitleBar
  * @param mainWidget - the host widget
  */
 FancyTitleBar::FancyTitleBar(QWidget *mainWidget)
     : QObject(mainWidget)
-    , d(new FancyTitleBarPrivate())
 {
     Q_ASSERT(mainWidget);
 
+#ifdef QTC_USE_NATIVE
+    d = new FancyTitleBarPrivateNative(mainWidget);
+#else
+    d = new FancyTitleBarPrivateQt(mainWidget);
+#endif
+
     d->q = this;
-    d->installWidget(mainWidget);
     d->init();
+
     mainWidget->installEventFilter(this);
 }
 
@@ -911,19 +1132,6 @@ bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)
         } break;
         case QEvent::WindowStateChange: {
             d->windowStateChange(object);
-            return true;
-        }
-        case QEvent::Resize: {
-            d->windowSizeChange(object);
-            return true;
-        }
-        case QEvent::MouseMove:
-        case QEvent::HoverMove:
-        case QEvent::Leave:
-        case QEvent::MouseButtonPress:
-        case QEvent::MouseButtonRelease:
-        case QEvent::MouseButtonDblClick: {
-            d->handleWidgetMouseEvent(object, event);
             return true;
         }
         default:

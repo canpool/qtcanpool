@@ -32,6 +32,12 @@ FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
 {
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QLatin1String("qtc_dialog"));
+    // When using the native title bar, it needs to be set before creating the title bar
+    QDialog::setWindowFlags(Qt::WindowSystemMenuHint |
+                   Qt::WindowMinimizeButtonHint |
+                   Qt::FramelessWindowHint |
+                   Qt::Dialog |
+                   f);
 
     d->fancyBar = new FancyBar(this);
     d->fancyBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -45,10 +51,6 @@ FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
     QDialog::setLayout(layout);
 
     resize(600, 300);
-
-    setWindowFlags(Qt::WindowSystemMenuHint |
-                   Qt::WindowMinimizeButtonHint |
-                   f);
 }
 
 FancyDialog::~FancyDialog()

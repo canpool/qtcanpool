@@ -30,6 +30,13 @@ FancyWindow::FancyWindow(QWidget *parent)
 {
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QLatin1String("qtc_window"));
+    // When using the native title bar, it needs to be set before creating the title bar
+    QMainWindow::setWindowFlags(Qt::WindowSystemMenuHint |
+                Qt::WindowMinimizeButtonHint |
+                Qt::WindowMaximizeButtonHint |
+                Qt::FramelessWindowHint |
+                Qt::Window
+                );
 
     d->fancyBar = new FancyBar(this);
     connect(d->fancyBar, SIGNAL(maximizationChanged(bool)), this, SIGNAL(resizable(bool)));
@@ -39,11 +46,6 @@ FancyWindow::FancyWindow(QWidget *parent)
     resize(geom.width(), geom.height());
     raise();
     activateWindow();
-
-    setWindowFlags(Qt::WindowSystemMenuHint |
-                Qt::WindowMinimizeButtonHint |
-                Qt::WindowMaximizeButtonHint
-                );
 }
 
 FancyWindow::~FancyWindow()
