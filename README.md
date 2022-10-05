@@ -34,14 +34,9 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 ### 分支
 - [master](https://gitee.com/icanpool/qtcanpool/tree/master/)：V2 版本的主分支
 - [v1_master](https://gitee.com/icanpool/qtcanpool/tree/v1_master/)：V1 版本的主分支
-- [fancytitlebar](https://gitee.com/icanpool/qtcanpool/tree/fancytitlebar/)：精选的定制标题栏的开发分支
-- [fancytoolbutton](https://gitee.com/icanpool/qtcanpool/tree/fancytoolbutton/)：精选的定制工具按钮的开发分支
-- [ribbon](https://gitee.com/icanpool/qtcanpool/tree/ribbon/)：Ribbon 风格的控件类库的开发分支
-- [dock](https://gitee.com/icanpool/qtcanpool/tree/dock/)：Docking 风格的控件类库的开发分支
 
 说明：
 - v1_master 分支停止维护，只修复严重 bug
-- 开发分支的功能成熟稳定后会主动合入 master 分支。
 
 ### 协议
 * 遵循 [MulanPSL2](./LICENSE) 开源许可协议
