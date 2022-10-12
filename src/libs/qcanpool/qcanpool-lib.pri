@@ -23,10 +23,23 @@ win32 {
 HEADERS += \
     $$PWD/qcanpool.h \
     $$PWD/quickaccessbar.h \
-    $$PWD/quickaccessbar_p.h
+    $$PWD/quickaccessbar_p.h \
+    $$PWD/ribbonbar.h \
+    $$PWD/ribbonbar_p.h \
+    $$PWD/ribboncontainers.h \
+    $$PWD/ribbongroup.h \
+    $$PWD/ribbongroup_p.h \
+    $$PWD/ribbonpage.h \
+    $$PWD/ribbonpage_p.h \
+    $$PWD/ribbonwindow.h
 
 SOURCES += \
-    $$PWD/quickaccessbar.cpp
+    $$PWD/quickaccessbar.cpp \
+    $$PWD/ribbonbar.cpp \
+    $$PWD/ribboncontainers.cpp \
+    $$PWD/ribbongroup.cpp \
+    $$PWD/ribbonpage.cpp \
+    $$PWD/ribbonwindow.cpp
 
 include($$PWD/fancy.pri)
 

@@ -1,1 +1,7 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/">
+        <file>res/group_option.png</file>
+        <file>res/arrow_up.png</file>
+        <file>res/arrow_down.png</file>
+    </qresource>
+</RCC>
