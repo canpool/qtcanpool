@@ -84,6 +84,7 @@ public:
     virtual ~FancyTitleBarPrivate();
 
     virtual void init();
+    virtual void setDisabled(bool disable);
 
     void setWidgetResizable(bool resizable);
     void setWidgetMovable(bool movable);
@@ -127,6 +128,7 @@ public:
     Qt::WindowFlags m_windowFlags;
     bool            m_isMaximized;
     bool            m_isMinimized;
+    bool            m_isDisabled;
     bool            m_bWidgetMaximizable;
     bool            m_bWidgetResizable;
     bool            m_bWidgetMovable;
@@ -145,6 +147,7 @@ public:
     virtual ~FancyTitleBarPrivateQt();
 
     void init();
+    void setDisabled(bool disable);
 
     // mouse event
     void handleWidgetMouseEvent(QObject *obj, QEvent *event);
@@ -200,6 +203,7 @@ public:
     virtual ~FancyTitleBarPrivateNative();
 
     void init();
+    void setDisabled(bool disable);
 
 #ifdef Q_OS_WINDOWS
     bool handleWindowsMessage(void *message, QTRESULT *result);
@@ -210,6 +214,9 @@ public slots:
 
 public:
     virtual bool nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result);
+
+private:
+    void installNativeEventFilter();
 };
 
 #endif // QTC_USE_NATIVE

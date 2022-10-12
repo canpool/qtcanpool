@@ -55,10 +55,8 @@ FancyTitleBarPrivateNative::~FancyTitleBarPrivateNative()
     qApp->removeNativeEventFilter(this);
 }
 
-void FancyTitleBarPrivateNative::init()
+void FancyTitleBarPrivateNative::installNativeEventFilter()
 {
-    FancyTitleBarPrivate::init();
-
 #ifdef Q_OS_WINDOWS
     HWND hwnd = (HWND)m_mainWidget->winId();
     DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
@@ -66,6 +64,26 @@ void FancyTitleBarPrivateNative::init()
 #endif // Q_OS_WINDOWS
 
     qApp->installNativeEventFilter(this);
+}
+
+void FancyTitleBarPrivateNative::init()
+{
+    FancyTitleBarPrivate::init();
+    installNativeEventFilter();
+}
+
+void FancyTitleBarPrivateNative::setDisabled(bool disable)
+{
+    if (m_isDisabled == disable) {
+        return;
+    }
+    m_isDisabled = disable;
+    FancyTitleBarPrivate::setDisabled(disable);
+    if (disable) {
+        qApp->removeNativeEventFilter(this);
+    } else {
+        installNativeEventFilter();
+    }
 }
 
 #ifdef Q_OS_WINDOWS
@@ -223,6 +241,20 @@ void FancyTitleBarPrivateQt::init()
     FancyTitleBarPrivate::init();
 
     m_mainWidget->installEventFilter(this);
+}
+
+void FancyTitleBarPrivateQt::setDisabled(bool disable)
+{
+    if (m_isDisabled == disable) {
+        return;
+    }
+    m_isDisabled = disable;
+    FancyTitleBarPrivate::setDisabled(disable);
+    if (disable) {
+        m_mainWidget->removeEventFilter(this);
+    } else {
+        m_mainWidget->installEventFilter(this);
+    }
 }
 
 void FancyTitleBarPrivateQt::handleWidgetMouseEvent(QObject *obj, QEvent *event)
@@ -755,6 +787,7 @@ FancyTitleBarPrivate::FancyTitleBarPrivate(QWidget *mainWidget)
     , m_titleWidget(nullptr)
     , m_isMaximized(false)
     , m_isMinimized(false)
+    , m_isDisabled(false)
     , m_bWidgetMaximizable(true)
     , m_bWidgetResizable(true)
     , m_bWidgetMovable(true)
@@ -826,6 +859,17 @@ void FancyTitleBarPrivate::init()
     // Update maximize button state. Otherwise, when native,
     // the button state will not be initialized at first
     windowStateChange(m_mainWidget);
+
+    m_mainWidget->installEventFilter(q);
+}
+
+void FancyTitleBarPrivate::setDisabled(bool disable)
+{
+    if (disable) {
+        m_mainWidget->removeEventFilter(q);
+    } else {
+        m_mainWidget->installEventFilter(q);
+    }
 }
 
 void FancyTitleBarPrivate::systemButtonClicked()
@@ -972,8 +1016,6 @@ FancyTitleBar::FancyTitleBar(QWidget *mainWidget)
 
     d->q = this;
     d->init();
-
-    mainWidget->installEventFilter(this);
 }
 
 FancyTitleBar::~FancyTitleBar()
@@ -1109,6 +1151,11 @@ void FancyTitleBar::setWidgetMovable(bool movable)
 void FancyTitleBar::setWidgetMaximizable(bool maximizable)
 {
     d->m_bWidgetMaximizable = maximizable;
+}
+
+void FancyTitleBar::setDisabled(bool disable)
+{
+    d->setDisabled(disable);
 }
 
 void FancyTitleBar::updateWidgetFlags()

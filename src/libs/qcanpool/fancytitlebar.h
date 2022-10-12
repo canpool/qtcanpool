@@ -75,6 +75,7 @@ public:
     void setWidgetMovable(bool movable);
     void setWidgetMaximizable(bool maximizable);
 
+    void setDisabled(bool disable);
     void updateWidgetFlags();
 
 signals:
