@@ -335,6 +335,17 @@ void FancyToolButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &o
             }
         }
     }
+    // adjust the icon rect
+    if (m_iconRect.isValid()) {
+        int wa = 0, ha = 0;
+        if (m_iconRect.size().width() > opt.iconSize.width()) {
+            wa = (m_iconRect.size().width() - opt.iconSize.width()) / 2;
+        }
+        if (m_iconRect.size().height() > opt.iconSize.height()) {
+            ha = (m_iconRect.size().height() - opt.iconSize.height()) / 2;
+        }
+        m_iconRect.adjust(wa, ha, -wa, -ha);
+    }
 }
 
 FancyToolButton::FancyToolButton(QWidget *parent)
