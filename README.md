@@ -57,6 +57,10 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 1）<font size=4>fancydemo</font>
 ![qcanpool](./doc/pics/fancydemo.png)
 
+2）<font size=4>fancytitlebar</font>
+![fancytitlebar](./doc/pics/fancytitlebar.png)
+支持 windows 原生特性（毛玻璃预览，半屏和¼屏等显示效果）
+
 ### 体验
 下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
 ![run](./doc/pics/run.png)
@@ -74,9 +78,5 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 精选的 Qt 控件，每个控件独占一个分支，分支名以 fancy 命名，如：[fancytitlebar](https://gitee.com/icanpool/fancycontrols/tree/fancytitlebar/)，[fancytoolbutton](https://gitee.com/icanpool/fancycontrols/tree/fancytoolbutton/)，[fancydock](https://gitee.com/icanpool/fancycontrols/tree/fancydock/)，[fancyribbon](https://gitee.com/icanpool/fancycontrols/tree/fancyribbon/) 等。
 
-1）fancytitlebar
-![fancytitlebar](./doc/pics/fancytitlebar.png)
-支持 windows 原生特性（毛玻璃预览，半屏等显示效果）
-
-2）fancytoolbutton
+1）fancytoolbutton
 ![fancytoolbutton](./doc/pics/fancytoolbutton.png)
