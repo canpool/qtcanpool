@@ -4,4 +4,5 @@ CONFIG += ordered
 SUBDIRS = \
     helloworld \
     fancydemo \
-    fancyribbon
+    fancyribbon \
+    fancytitlebar
