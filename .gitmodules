@@ -1,0 +1,4 @@
+[submodule "src/libs/qads/Qt-Advanced-Docking-System"]
+	path = src/libs/qads/Qt-Advanced-Docking-System
+	url = https://gitee.com/icanpool/Qt-Advanced-Docking-System.git
+	branch = br-4.0.2

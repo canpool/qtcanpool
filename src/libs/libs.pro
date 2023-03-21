@@ -5,6 +5,10 @@ TEMPLATE  = subdirs
 SUBDIRS =   \
     qcanpool
 
+exists($$PWD/qads/Qt-Advanced-Docking-System/src) {
+    SUBDIRS += qads
+}
+
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
     include($$l/$${l}_dependencies.pri)
