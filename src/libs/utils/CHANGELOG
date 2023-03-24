@@ -1,0 +1,11 @@
+
+2023-3-24
+
+build error fixed:
+(Qt 5.15.2 MSVC2019 64bit)
+- optional.h: remove the ! in "#if !defined(__apple_build_version__)"
+- algorithm.h: comment the "#ifdef Q_CC_CLANG"
+
+(Qt 5.15.2 MinGW 64bit)
+- fileutils.cpp: use fileIdWin7
+

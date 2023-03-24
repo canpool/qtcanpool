@@ -3,6 +3,9 @@ include(../../qtproject.pri)
 TEMPLATE  = subdirs
 
 SUBDIRS =   \
+    aggregation \
+    extensionsystem \
+    utils \
     qcanpool
 
 exists($$PWD/qads/Qt-Advanced-Docking-System/src) {
