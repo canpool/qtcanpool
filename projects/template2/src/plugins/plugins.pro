@@ -4,6 +4,7 @@ TEMPLATE  = subdirs
 
 SUBDIRS   = \
     coreplugin \
+    helloworld
 
 for(p, SUBDIRS) {
     QTC_PLUGIN_DEPENDS =
