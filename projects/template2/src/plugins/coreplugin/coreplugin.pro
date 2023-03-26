@@ -8,8 +8,10 @@ include(../../qtplugin.pri)
 msvc: QMAKE_CXXFLAGS += -wd4251 -wd4290 -wd4250
 SOURCES += mainwindow.cpp \
     coreplugin.cpp \
+    plugindialog.cpp \
 
 HEADERS += mainwindow.h \
     coreplugin.h \
+    plugindialog.h \
 
 RESOURCES += core.qrc

@@ -25,6 +25,9 @@
 
 #include "mainwindow.h"
 
+
+#include "plugindialog.h"
+
 #include <app/app_version.h>
 #include <extensionsystem/pluginmanager.h>
 #include <utils/hostosinfo.h>
@@ -59,6 +62,19 @@ MainWindow::MainWindow()
     QCoreApplication::setApplicationName(QLatin1String(Constants::IDE_CASED_ID));
     QCoreApplication::setApplicationVersion(QLatin1String(Constants::IDE_VERSION_LONG));
     QCoreApplication::setOrganizationName(QLatin1String(Constants::IDE_SETTINGSVARIANT_STR));
+
+    QMenuBar *mb = new QMenuBar();
+    if (!HostOsInfo::isMacHost()) // System menu bar on Mac
+        setMenuBar(mb);
+    QMenu *menu = mb->addMenu(tr("&Help"));
+    QAction *tmpaction = nullptr;
+
+    // About Plugins Action
+    tmpaction = new QAction(tr("About &Plugins..."), this);
+    tmpaction->setMenuRole(QAction::ApplicationSpecificRole);
+    tmpaction->setEnabled(true);
+    connect(tmpaction, &QAction::triggered, this, &MainWindow::aboutPlugins);
+    menu->addAction(tmpaction);
 }
 
 
@@ -168,7 +184,8 @@ void MainWindow::saveWindowSettings()
 
 void MainWindow::aboutPlugins()
 {
-    // TODO: support PluginDialog
+    PluginDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::restoreWindowState()
