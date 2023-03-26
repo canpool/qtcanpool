@@ -35,13 +35,13 @@ defineReplace(dependencyName) {
 # for substitution in the .json
 dependencyList =
 for(dep, plugin_deps) {
-    dependencyList += "        { \"Name\" : \"$$dependencyName($$dep)\", \"Version\" : \"$$QTCREATOR_VERSION\" }"
+    dependencyList += "        { \"Name\" : \"$$dependencyName($$dep)\", \"Version\" : \"$$QTPROJECT_VERSION\" }"
 }
 for(dep, plugin_recmds) {
-    dependencyList += "        { \"Name\" : \"$$dependencyName($$dep)\", \"Version\" : \"$$QTCREATOR_VERSION\", \"Type\" : \"optional\" }"
+    dependencyList += "        { \"Name\" : \"$$dependencyName($$dep)\", \"Version\" : \"$$QTPROJECT_VERSION\", \"Type\" : \"optional\" }"
 }
 for(dep, plugin_test_deps) {
-    dependencyList += "        { \"Name\" : \"$$dependencyName($$dep)\", \"Version\" : \"$$QTCREATOR_VERSION\", \"Type\" : \"test\" }"
+    dependencyList += "        { \"Name\" : \"$$dependencyName($$dep)\", \"Version\" : \"$$QTPROJECT_VERSION\", \"Type\" : \"test\" }"
 }
 dependencyList = $$join(dependencyList, ",$$escape_expand(\\n)")
 
@@ -66,7 +66,7 @@ isEmpty(USE_USER_DESTDIR) {
         isEmpty(DESTDIRBASE):DESTDIRBASE = "$$(HOME)/.local/share/data"
         else:DESTDIRBASE = "$$DESTDIRBASE/data"
     }
-    DESTDIR = "$$DESTDIRBASE/QtProject/$$DESTDIRAPPNAME/plugins/$$QTCREATOR_VERSION"
+    DESTDIR = "$$DESTDIRBASE/QtProject/$$DESTDIRAPPNAME/plugins/$$QTPROJECT_VERSION"
 }
 LIBS += -L$$DESTDIR
 INCLUDEPATH += $$QTPLUGIN_OUT_PWD
