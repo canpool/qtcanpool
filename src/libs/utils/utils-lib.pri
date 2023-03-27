@@ -24,21 +24,21 @@ win32: LIBS += -luser32 -lshell32
 win32: LIBS += -liphlpapi -lws2_32
 
 SOURCES += \
-#    $$PWD/globalfilechangeblocker.cpp \
+    $$PWD/globalfilechangeblocker.cpp \
     $$PWD/benchmarker.cpp \
 #    $$PWD/displayname.cpp \
     $$PWD/environment.cpp \
 #    $$PWD/environmentmodel.cpp \
-#    $$PWD/environmentdialog.cpp \
+    $$PWD/environmentdialog.cpp \
     $$PWD/namevaluedictionary.cpp \
     $$PWD/namevalueitem.cpp \
 #    $$PWD/namevaluemodel.cpp \
-#    $$PWD/namevaluesdialog.cpp \
-#    $$PWD/qrcparser.cpp \
+    $$PWD/namevaluesdialog.cpp \
+    $$PWD/qrcparser.cpp \
     $$PWD/qtcprocess.cpp \
-#    $$PWD/reloadpromptutils.cpp \
+    $$PWD/reloadpromptutils.cpp \
 #    $$PWD/settingsaccessor.cpp \
-#    $$PWD/shellcommand.cpp \
+    $$PWD/shellcommand.cpp \
 #    $$PWD/shellcommandpage.cpp \
 #    $$PWD/settingsselector.cpp \
     $$PWD/stringutils.cpp \
@@ -47,45 +47,45 @@ SOURCES += \
 #    $$PWD/temporaryfile.cpp \
 #    $$PWD/textfieldcheckbox.cpp \
 #    $$PWD/textfieldcombobox.cpp \
-#    $$PWD/filesearch.cpp \
-#    $$PWD/pathchooser.cpp \
+    $$PWD/filesearch.cpp \
+    $$PWD/pathchooser.cpp \
 #    $$PWD/pathlisteditor.cpp \
-#    $$PWD/wizard.cpp \
-#    $$PWD/wizardpage.cpp \
-#    $$PWD/filewizardpage.cpp \
+    $$PWD/wizard.cpp \
+    $$PWD/wizardpage.cpp \
+    $$PWD/filewizardpage.cpp \
 #    $$PWD/filesystemwatcher.cpp \
 #    $$PWD/projectintropage.cpp \
-#    $$PWD/filenamevalidatinglineedit.cpp \
+    $$PWD/filenamevalidatinglineedit.cpp \
 #    $$PWD/codegeneration.cpp \
 #    $$PWD/classnamevalidatinglineedit.cpp \
-#    $$PWD/fancylineedit.cpp \
-#    $$PWD/qtcolorbutton.cpp \
+    $$PWD/fancylineedit.cpp \
+    $$PWD/qtcolorbutton.cpp \
 #    $$PWD/savedaction.cpp \
     $$PWD/synchronousprocess.cpp \
     $$PWD/savefile.cpp \
     $$PWD/fileutils.cpp \
-#    $$PWD/textfileformat.cpp \
-#    $$PWD/consoleprocess.cpp \
+    $$PWD/textfileformat.cpp \
+    $$PWD/consoleprocess.cpp \
 #    $$PWD/uncommentselection.cpp \
 #    $$PWD/parameteraction.cpp \
-#    $$PWD/headerviewstretcher.cpp \
-#    $$PWD/checkablemessagebox.cpp \
-#    $$PWD/styledbar.cpp \
+    $$PWD/headerviewstretcher.cpp \
+    $$PWD/checkablemessagebox.cpp \
+    $$PWD/styledbar.cpp \
     $$PWD/stylehelper.cpp \
-#    $$PWD/fancymainwindow.cpp \
+    $$PWD/fancymainwindow.cpp \
 #    $$PWD/detailsbutton.cpp \
 #    $$PWD/detailswidget.cpp \
 #    $$PWD/changeset.cpp \
     $$PWD/faketooltip.cpp \
-#    $$PWD/htmldocextractor.cpp \
+    $$PWD/htmldocextractor.cpp \
 #    $$PWD/navigationtreeview.cpp \
 #    $$PWD/crumblepath.cpp \
-#    $$PWD/historycompleter.cpp \
+    $$PWD/historycompleter.cpp \
 #    $$PWD/buildablehelperlibrary.cpp \
 #    $$PWD/delegates.cpp \
-#    $$PWD/fileinprojectfinder.cpp \
+    $$PWD/fileinprojectfinder.cpp \
 #    $$PWD/statuslabel.cpp \
-#    $$PWD/outputformatter.cpp \
+    $$PWD/outputformatter.cpp \
 #    $$PWD/flowlayout.cpp \
 #    $$PWD/networkaccessmanager.cpp \
 #    $$PWD/persistentsettings.cpp \
@@ -93,38 +93,38 @@ SOURCES += \
 #    $$PWD/json.cpp \
 #    $$PWD/portlist.cpp \
 #    $$PWD/processhandle.cpp \
-#    $$PWD/appmainwindow.cpp \
+    $$PWD/appmainwindow.cpp \
 #    $$PWD/basetreeview.cpp \
     $$PWD/qtcassert.cpp \
 #    $$PWD/elfreader.cpp \
-#    $$PWD/proxyaction.cpp \
-#    $$PWD/elidinglabel.cpp \
+    $$PWD/proxyaction.cpp \
+    $$PWD/elidinglabel.cpp \
     $$PWD/hostosinfo.cpp \
     $$PWD/tooltip/tooltip.cpp \
     $$PWD/tooltip/tips.cpp \
-#    $$PWD/unixutils.cpp \
-#    $$PWD/ansiescapecodehandler.cpp \
-#    $$PWD/execmenu.cpp \
-#    $$PWD/completinglineedit.cpp \
-#    $$PWD/winutils.cpp \
+    $$PWD/unixutils.cpp \
+    $$PWD/ansiescapecodehandler.cpp \
+    $$PWD/execmenu.cpp \
+    $$PWD/completinglineedit.cpp \
+    $$PWD/winutils.cpp \
     $$PWD/itemviews.cpp \
     $$PWD/treemodel.cpp \
 #    $$PWD/treeviewcombobox.cpp \
 #    $$PWD/proxycredentialsdialog.cpp \
-#    $$PWD/macroexpander.cpp \
+    $$PWD/macroexpander.cpp \
     $$PWD/theme/theme.cpp \
-#    $$PWD/progressindicator.cpp \
-#    $$PWD/fadingindicator.cpp \
-#    $$PWD/overridecursor.cpp \
+    $$PWD/progressindicator.cpp \
+    $$PWD/fadingindicator.cpp \
+    $$PWD/overridecursor.cpp \
     $$PWD/categorysortfiltermodel.cpp \
-#    $$PWD/dropsupport.cpp \
+    $$PWD/dropsupport.cpp \
     $$PWD/icon.cpp \
 #    $$PWD/port.cpp \
-#    $$PWD/runextensions.cpp \
+    $$PWD/runextensions.cpp \
     $$PWD/utilsicons.cpp \
 #    $$PWD/guard.cpp \
-#    $$PWD/highlightingitemdelegate.cpp \
-#    $$PWD/fuzzymatcher.cpp \
+    $$PWD/highlightingitemdelegate.cpp \
+    $$PWD/fuzzymatcher.cpp \
 #    $$PWD/textutils.cpp \
 #    $$PWD/url.cpp \
 #    $$PWD/filecrumblabel.cpp \
@@ -133,40 +133,40 @@ SOURCES += \
 #    $$PWD/differ.cpp \
 #    $$PWD/jsontreeitem.cpp \
 #    $$PWD/namevaluevalidator.cpp \
-#    $$PWD/camelcasecursor.cpp \
-#    $$PWD/infolabel.cpp \
-#    $$PWD/overlaywidget.cpp \
-#    $$PWD/archive.cpp \
-#    $$PWD/id.cpp \
-#    $$PWD/infobar.cpp \
+    $$PWD/camelcasecursor.cpp \
+    $$PWD/infolabel.cpp \
+    $$PWD/overlaywidget.cpp \
+    $$PWD/archive.cpp \
+    $$PWD/id.cpp \
+    $$PWD/infobar.cpp \
 #    $$PWD/aspects.cpp \
 #    $$PWD/layoutbuilder.cpp \
-#    $$PWD/variablechooser.cpp \
+    $$PWD/variablechooser.cpp \
     $$PWD/qtcsettings.cpp
 
 HEADERS += \
     $$PWD/environmentfwd.h \
 #    $$PWD/genericconstants.h \
-#    $$PWD/globalfilechangeblocker.h \
+    $$PWD/globalfilechangeblocker.h \
     $$PWD/benchmarker.h \
 #    $$PWD/displayname.h \
     $$PWD/environment.h \
 #    $$PWD/environmentmodel.h \
-#    $$PWD/environmentdialog.h \
+    $$PWD/environmentdialog.h \
     $$PWD/namevaluedictionary.h \
     $$PWD/namevalueitem.h \
 #    $$PWD/namevaluemodel.h \
-#    $$PWD/namevaluesdialog.h \
+    $$PWD/namevaluesdialog.h \
 #    $$PWD/pointeralgorithm.h \
-#    $$PWD/qrcparser.h \
+    $$PWD/qrcparser.h \
     $$PWD/qtcprocess.h \
 #    $$PWD/span.h \
 #    $$PWD/../3rdparty/span/span.hpp \
 #    $$PWD/utils_global.h \
-#    $$PWD/reloadpromptutils.h \
+    $$PWD/reloadpromptutils.h \
 #    $$PWD/settingsaccessor.h \
 #    $$PWD/settingsselector.h \
-#    $$PWD/shellcommand.h \
+    $$PWD/shellcommand.h \
 #    $$PWD/shellcommandpage.h \
     $$PWD/stringutils.h \
 #    $$PWD/templateengine.h \
@@ -174,71 +174,71 @@ HEADERS += \
 #    $$PWD/temporaryfile.h \
 #    $$PWD/textfieldcheckbox.h \
 #    $$PWD/textfieldcombobox.h \
-#    $$PWD/filesearch.h \
+    $$PWD/filesearch.h \
 #    $$PWD/listutils.h \
-#    $$PWD/pathchooser.h \
+    $$PWD/pathchooser.h \
 #    $$PWD/pathlisteditor.h \
-#    $$PWD/wizard.h \
-#    $$PWD/wizardpage.h \
-#    $$PWD/filewizardpage.h \
+    $$PWD/wizard.h \
+    $$PWD/wizardpage.h \
+    $$PWD/filewizardpage.h \
 #    $$PWD/filesystemwatcher.h \
 #    $$PWD/projectintropage.h \
-#    $$PWD/filenamevalidatinglineedit.h \
+    $$PWD/filenamevalidatinglineedit.h \
 #    $$PWD/codegeneration.h \
 #    $$PWD/classnamevalidatinglineedit.h \
-#    $$PWD/fancylineedit.h \
-#    $$PWD/qtcolorbutton.h \
+    $$PWD/fancylineedit.h \
+    $$PWD/qtcolorbutton.h \
 #    $$PWD/savedaction.h \
-#    $$PWD/consoleprocess.h \
+    $$PWD/consoleprocess.h \
     $$PWD/synchronousprocess.h \
     $$PWD/savefile.h \
     $$PWD/fileutils.h \
-#    $$PWD/textfileformat.h \
+    $$PWD/textfileformat.h \
 #    $$PWD/uncommentselection.h \
 #    $$PWD/parameteraction.h \
-#    $$PWD/headerviewstretcher.h \
-#    $$PWD/checkablemessagebox.h \
+    $$PWD/headerviewstretcher.h \
+    $$PWD/checkablemessagebox.h \
     $$PWD/qtcassert.h \
-#    $$PWD/styledbar.h \
+    $$PWD/styledbar.h \
     $$PWD/stylehelper.h \
-#    $$PWD/fancymainwindow.h \
+    $$PWD/fancymainwindow.h \
 #    $$PWD/detailsbutton.h \
 #    $$PWD/detailswidget.h \
 #    $$PWD/changeset.h \
     $$PWD/faketooltip.h \
-#    $$PWD/htmldocextractor.h \
+    $$PWD/htmldocextractor.h \
 #    $$PWD/navigationtreeview.h \
 #    $$PWD/crumblepath.h \
-#    $$PWD/historycompleter.h \
+    $$PWD/historycompleter.h \
 #    $$PWD/buildablehelperlibrary.h \
 #    $$PWD/delegates.h \
-#    $$PWD/fileinprojectfinder.h \
+    $$PWD/fileinprojectfinder.h \
 #    $$PWD/statuslabel.h \
-#    $$PWD/outputformatter.h \
-#    $$PWD/outputformat.h \
+    $$PWD/outputformatter.h \
+    $$PWD/outputformat.h \
 #    $$PWD/flowlayout.h \
 #    $$PWD/networkaccessmanager.h \
 #    $$PWD/persistentsettings.h \
 #    $$PWD/completingtextedit.h \
 #    $$PWD/json.h \
-#    $$PWD/runextensions.h \
+    $$PWD/runextensions.h \
 #    $$PWD/portlist.h \
 #    $$PWD/processhandle.h \
-#    $$PWD/appmainwindow.h \
+    $$PWD/appmainwindow.h \
 #    $$PWD/basetreeview.h \
 #    $$PWD/elfreader.h \
-#    $$PWD/proxyaction.h \
+    $$PWD/proxyaction.h \
     $$PWD/hostosinfo.h \
     $$PWD/osspecificaspects.h \
-#    $$PWD/elidinglabel.h \
+    $$PWD/elidinglabel.h \
     $$PWD/tooltip/tooltip.h \
     $$PWD/tooltip/tips.h \
     $$PWD/tooltip/effects.h \
-#    $$PWD/unixutils.h \
-#    $$PWD/ansiescapecodehandler.h \
-#    $$PWD/execmenu.h \
-#    $$PWD/completinglineedit.h \
-#    $$PWD/winutils.h \
+    $$PWD/unixutils.h \
+    $$PWD/ansiescapecodehandler.h \
+    $$PWD/execmenu.h \
+    $$PWD/completinglineedit.h \
+    $$PWD/winutils.h \
     $$PWD/itemviews.h \
     $$PWD/treemodel.h \
 #    $$PWD/treeviewcombobox.h \
@@ -246,20 +246,20 @@ HEADERS += \
     $$PWD/algorithm.h \
 #    $$PWD/QtConcurrentTools \
 #    $$PWD/proxycredentialsdialog.h \
-#    $$PWD/macroexpander.h \
+    $$PWD/macroexpander.h \
     $$PWD/theme/theme.h \
     $$PWD/theme/theme_p.h \
-#    $$PWD/progressindicator.h \
-#    $$PWD/fadingindicator.h \
+    $$PWD/progressindicator.h \
+    $$PWD/fadingindicator.h \
     $$PWD/executeondestruction.h \
-#    $$PWD/overridecursor.h \
+    $$PWD/overridecursor.h \
     $$PWD/categorysortfiltermodel.h \
-#    $$PWD/dropsupport.h \
+    $$PWD/dropsupport.h \
     $$PWD/utilsicons.h \
     $$PWD/icon.h \
 #    $$PWD/port.h \
-#    $$PWD/functiontraits.h \
-#    $$PWD/mapreduce.h \
+    $$PWD/functiontraits.h \
+    $$PWD/mapreduce.h \
 #    $$PWD/declarationmacros.h \
 #    $$PWD/smallstring.h \
 #    $$PWD/smallstringiterator.h \
@@ -273,10 +273,10 @@ HEADERS += \
 #    $$PWD/smallstringfwd.h \
     $$PWD/optional.h \
     $$PWD/../3rdparty/optional/optional.hpp \
-#    $$PWD/variant.h \
-#    $$PWD/../3rdparty/variant/variant.hpp \
-#    $$PWD/highlightingitemdelegate.h \
-#    $$PWD/fuzzymatcher.h \
+    $$PWD/variant.h \
+    $$PWD/../3rdparty/variant/variant.hpp \
+    $$PWD/highlightingitemdelegate.h \
+    $$PWD/fuzzymatcher.h \
 #    $$PWD/textutils.h \
     $$PWD/predicates.h \
 #    $$PWD/url.h \
@@ -290,20 +290,20 @@ HEADERS += \
 #    $$PWD/jsontreeitem.h \
 #    $$PWD/listmodel.h \
 #    $$PWD/namevaluevalidator.h \
-#    $$PWD/camelcasecursor.h \
-#    $$PWD/infolabel.h \
-#    $$PWD/overlaywidget.h \
-#    $$PWD/archive.h \
-#    $$PWD/id.h \
-#    $$PWD/infobar.h \
+    $$PWD/camelcasecursor.h \
+    $$PWD/infolabel.h \
+    $$PWD/overlaywidget.h \
+    $$PWD/archive.h \
+    $$PWD/id.h \
+    $$PWD/infobar.h \
     $$PWD/porting.h \
 #    $$PWD/aspects.h \
 #    $$PWD/layoutbuilder.h \
-#    $$PWD/variablechooser.h \
+    $$PWD/variablechooser.h \
 #    $$PWD/set_algorithm.h \
     $$PWD/qtcsettings.h
 
-#FORMS += $$PWD/filewizardpage.ui \
+FORMS += $$PWD/filewizardpage.ui \
 #    $$PWD/projectintropage.ui \
 #    $$PWD/proxycredentialsdialog.ui \
 #    $$PWD/removefiledialog.ui
@@ -323,5 +323,5 @@ osx {
     LIBS += -framework Foundation -framework AppKit
 }
 
-#include(touchbar/touchbar.pri)
+include(touchbar/touchbar.pri)
 include(mimetypes/mimetypes.pri)
