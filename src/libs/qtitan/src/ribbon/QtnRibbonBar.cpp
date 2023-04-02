@@ -2458,9 +2458,8 @@ void RibbonBar::setMinimizedFlag(bool flag)
 
         if (d.m_minimized)
         {
-		   //此处会导致ribbon最小化时当前激活的page再打开时不显示，sgy 2019-01-08 注释掉
-           //for (int i = 0, count = d.m_listPages.size(); count > i; i++)
-           //     d.updateMinimizedModePage(d.m_listPages.at(i));
+            for (int i = 0, count = d.m_listPages.size(); count > i; i++)
+                d.updateMinimizedModePage(d.m_listPages.at(i));
         }
         else
         {
