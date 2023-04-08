@@ -6,4 +6,5 @@ SUBDIRS = \
     fancydemo \
     fancyribbon \
     fancytitlebar \
-    ribbondemo
+    ribbondemo \
+    plotdemo

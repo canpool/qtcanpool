@@ -7,7 +7,8 @@ SUBDIRS =   \
     extensionsystem \
     utils \
     qcanpool \
-    qribbon
+    qribbon \
+    qcustomplot
 
 exists($$PWD/qads/Qt-Advanced-Docking-System/src) {
     SUBDIRS += qads
