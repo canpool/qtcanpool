@@ -6,7 +6,8 @@ SUBDIRS =   \
     aggregation \
     extensionsystem \
     utils \
-    qcanpool
+    qcanpool \
+    qribbon
 
 exists($$PWD/qads/Qt-Advanced-Docking-System/src) {
     SUBDIRS += qads

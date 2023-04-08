@@ -1,0 +1,38 @@
+/**
+ * Copyleft (C) 2023 maminjie <canpool@163.com>
+**/
+#pragma once
+
+#include "qtc_global.h"
+
+#define QRIBBON_NAMESPACE QRibbon
+
+#if !defined(QRIBBON_NAMESPACE)
+#  define QRIBBON_BEGIN_NAMESPACE
+#  define QRIBBON_END_NAMESPACE
+#  define QRIBBON_USE_NAMESPACE
+#  define QRIBBON_PREPEND_NAMESPACE(name) name
+#else
+#  define QRIBBON_BEGIN_NAMESPACE namespace QRIBBON_NAMESPACE {
+#  define QRIBBON_END_NAMESPACE }
+#  define QRIBBON_USE_NAMESPACE using namespace QRIBBON_NAMESPACE;
+#  define QRIBBON_PREPEND_NAMESPACE(name) QRIBBON_NAMESPACE::name
+#endif
+
+
+QRIBBON_BEGIN_NAMESPACE
+
+#ifndef QRIBBON_LIBRARY_STATIC
+#ifdef  QRIBBON_LIBRARY
+#define QRIBBON_EXPORT Q_DECL_EXPORT
+#else
+#define QRIBBON_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define QRIBBON_EXPORT
+#endif
+
+QRIBBON_END_NAMESPACE
+
+QRIBBON_USE_NAMESPACE
+

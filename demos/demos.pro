@@ -5,4 +5,5 @@ SUBDIRS = \
     helloworld \
     fancydemo \
     fancyribbon \
-    fancytitlebar
+    fancytitlebar \
+    ribbondemo

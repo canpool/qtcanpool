@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+      <file>res/new16x16.png</file>
+      <file>res/new32x32.png</file>
+      <file>res/open16x16.png</file>
+      <file>res/open32x32.png</file>
+      <file>res/save16x16.png</file>
+      <file>res/save32x32.png</file>
+      <file>res/saveasfile16x16.png</file>
+      <file>res/saveasfile32x32.png</file>
+      <file>res/clipboard16x16.png</file>
+      <file>res/clipboard32x32.png</file>
+      <file>res/close16x16.png</file>
+      <file>res/close32x32.png</file>
+      <file>res/cut16x16.png</file>
+      <file>res/undo16x16.png</file>
+      <file>res/redo16x16.png</file>
+      <file>res/print16x16.png</file>
+      <file>res/print32x32.png</file>
+    </qresource>
+  </RCC>
