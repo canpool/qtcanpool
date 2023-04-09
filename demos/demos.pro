@@ -7,4 +7,5 @@ SUBDIRS = \
     fancyribbon \
     fancytitlebar \
     ribbondemo \
-    plotdemo
+    plotdemo \
+    qrcodedemo \
