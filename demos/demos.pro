@@ -9,3 +9,4 @@ SUBDIRS = \
     ribbondemo \
     plotdemo \
     qrcodedemo \
+    controldemo \
