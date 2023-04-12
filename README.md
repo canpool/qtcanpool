@@ -18,9 +18,11 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 |:------|:------|:------|
 |demos||丰富的例子|
 |doc||文档|
-|projects||项目目录，其中提供简单的模板 template，用户可以持续添加自己的项目在此目录，<br>从而实现一套框架管理多项目
+|projects||项目目录，其中提供简单的模板 template，用户可以持续添加自己的项目在此目录，从而实现一套框架管理多项目
 |src||源代码文件
-||libs|基础类库，包含 qcanpool 等
+||libs|基础类库
+||modules|基础模块
+||plugins|基础插件
 ||shared|共享的实用代码文件
 
 ### 环境
@@ -61,8 +63,15 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 ![fancytitlebar](./doc/pics/fancytitlebar.png)
 支持 windows 原生特性（毛玻璃预览，半屏和¼屏等显示效果）
 
+3）<font size=4>fancyribbon</font>
+![fancyribbon](./doc/pics/fancyribbon.png)
+
+4）<font size=4>qrcodedemo</font>
+
+![qrcodedemo](./doc/pics/qrcodedemo.png#pic_center)
+
 ### 体验
-下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
+下载源码，使用 qtcreator 打开 qtcanpool.pro，build 整个工程，然后右击 fancydemo 并单击 Run 体验，如下所示：
 ![run](./doc/pics/run.png)
 
 ### 其它
@@ -71,7 +80,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 - [SARibbon](https://gitee.com/czyt1988/SARibbon)：一款轻量级的 Ribbon 控件
 
 2）docking 控件
-- [Qt-Advanced-Docking-System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)：一款比 Qt 自带的 QDockWidget 高级的 Docking 系统。已经应用到 qtcreator 中。
+- [Qt-Advanced-Docking-System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)：一款比 Qt 自带的 QDockWidget 高级的 Docking 系统。已经应用到 qtcreator 中。以 git 子模块的方式集成到库 [qads](./src/libs/qads) 中。
 
 ### 拓展
 1、[fancycontrols](https://gitee.com/icanpool/fancycontrols)
