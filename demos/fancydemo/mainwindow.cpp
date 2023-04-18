@@ -74,6 +74,10 @@ void MainWindow::createCentralWidget()
     button->setDefaultAction(action);
     tabBar->addActionButton(button, FancyTabBar::Middle);
 
+    action = new QAction(QIcon(":/main/logo"), tr("testAction2"));
+    tabBar->addAction(action, FancyTabBar::Middle);
+    tabBar->setActionIconOnly(action, false);
+
     tabBar->addAction(QIcon(":/tools/start"), tr("start"));
     tabBar->addAction(QIcon(":/tools/suspend"), tr("suspend"));
     action = tabBar->addAction(QIcon(":/tools/stop"), tr("stop"));
