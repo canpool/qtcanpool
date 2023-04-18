@@ -122,7 +122,11 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         params.rgrc[0].top = originalTop;
         bool isMaximized = GetWindowStyle(msg->hwnd) & WS_MAXIMIZE;
         if (isMaximized) {
+#ifdef SM_CXPADDEDBORDER
             int border = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+#else
+            int border = GetSystemMetrics(SM_CXSIZEFRAME);
+#endif
             RECT &rect = params.rgrc[0];
             rect.top += border;
         } else {
