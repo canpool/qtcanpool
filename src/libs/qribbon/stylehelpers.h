@@ -6,6 +6,8 @@
 #include "ribbon_global.h"
 #include "ribbonbar.h"
 
+#include <QStyleOption>
+
 QRIBBON_BEGIN_NAMESPACE
 
 class QRIBBON_EXPORT DrawHelpers

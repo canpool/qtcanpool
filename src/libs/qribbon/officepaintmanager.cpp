@@ -446,7 +446,7 @@ bool OfficePaintManager::drawIndicatorCheckRadioButton(QStyle::PrimitiveElement 
             const qreal checkmarkRadius = outlineRadius / 2.32;
             circle.addEllipse(circleCenter, checkmarkRadius, checkmarkRadius);
             QColor checkMarkColor = highlighted && enabled ? m_clrAccentText : m_clrBarDkShadow;
-            checkMarkColor = checkMarkColor.dark(180);
+            checkMarkColor = checkMarkColor.darker(180);
             checkMarkColor.setAlpha(200);
             p->setPen(checkMarkColor);
             checkMarkColor.setAlpha(180);
@@ -473,7 +473,7 @@ bool OfficePaintManager::drawIndicatorCheckRadioButton(QStyle::PrimitiveElement 
         if (stateChecked == 1) {
             p->setRenderHint(QPainter::Antialiasing, true);
             QColor checkMarkColor = highlighted && enabled ? m_clrAccentText : m_clrBarDkShadow;
-            checkMarkColor = checkMarkColor.dark(180);
+            checkMarkColor = checkMarkColor.darker(180);
 
             QPen checkPen = QPen(checkMarkColor, DrawHelpers::dpiScaled(1.1));
             checkMarkColor.setAlpha(210);

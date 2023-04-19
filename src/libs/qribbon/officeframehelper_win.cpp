@@ -450,7 +450,7 @@ void OfficeFrameHelperWin::restoreMargins()
             // Reduce top frame to zero since we paint it ourselves.
             const QMargins customMargins =
                 QMargins(m_oldMarginsleft, m_oldMarginstop, m_oldMarginsright, m_oldMarginsbottom);
-            const QVariant customMarginsV = qVariantFromValue(customMargins);
+            const QVariant customMarginsV = QVariant::fromValue(customMargins);
 
             // The dynamic property takes effect when creating the platform window.
             window->setProperty("_q_windowsCustomMargins", customMarginsV);
@@ -1042,8 +1042,12 @@ void OfficeFrameHelperWin::fillSolidRect(QPainter *painter, const QRect &rect, c
     if (hdc == 0)
         return;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     QVector<QRect> rects = airRegion.rects();
     for (QVector<QRect>::iterator it = rects.begin(); it != rects.end(); ++it) {
+#else // since 5.8
+    for (QRegion::const_iterator it = airRegion.begin(); it != airRegion.end(); ++it) {
+#endif
         QRect r = rect.intersected(*it);
         RECT rc;
         rc.left = r.left();
@@ -1417,7 +1421,7 @@ void OfficeFrameHelperWin::collapseTopFrame()
 
             // Reduce top frame to zero since we paint it ourselves.
             const QMargins customMargins = QMargins(-val, -valTitle, -val, -valBottom);
-            const QVariant customMarginsV = qVariantFromValue(customMargins);
+            const QVariant customMarginsV = QVariant::fromValue(customMargins);
 
             QMargins oldcustomMargins =
                 qvariant_cast<QMargins>(QGuiApplication::platformNativeInterface()->windowProperty(

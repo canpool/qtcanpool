@@ -164,9 +164,15 @@ QSize RibbonTabPrivate::sizeForWidth(int w) const
         if (m < 0 && m_frameWidth)   // no m_indent, but we do have a frame
         {
             if (itemUpperCase)
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
                 m = fm.width(QLatin1Char('X')) - m_margin * 2;
             else
                 m = fm.width(QLatin1Char('x')) - m_margin * 2;
+#else
+                m = fm.horizontalAdvance(QLatin1Char('X')) - m_margin * 2;
+            else
+                m = fm.horizontalAdvance(QLatin1Char('x')) - m_margin * 2;
+#endif
         }
         if (m > 0) {
             if ((m_align & Qt::AlignLeft) || (m_align & Qt::AlignRight))
@@ -193,7 +199,12 @@ QSize RibbonTabPrivate::sizeForWidth(int w) const
     } else
         br = QRect(QPoint(0, 0), QSize(fm.averageCharWidth(), fm.lineSpacing()));
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     int hframe = itemUpperCase ? fm.width(QLatin1Char('X')) * 2 : fm.width(QLatin1Char('x')) * 2;
+#else
+    int hframe = itemUpperCase ? fm.horizontalAdvance(QLatin1Char('X')) * 2
+                               : fm.horizontalAdvance(QLatin1Char('x')) * 2;
+#endif
 
     const QSize contentsSize(br.width() + hextra + hframe, br.height() + vextra);
     return (contentsSize + contentsMargin).expandedTo(q->minimumSize());
@@ -230,7 +241,11 @@ QRect RibbonTabPrivate::documentRect() const
     const int m_align = QStyle::visualAlignment(q->layoutDirection(), QFlag(this->m_align));
     int m = m_indent;
     if (m < 0 && m_frameWidth)   // no m_indent, but we do have a frame
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
         m = q->fontMetrics().width(QLatin1Char('x')) / 2 - m_margin;
+#else
+        m = q->fontMetrics().horizontalAdvance(QLatin1Char('x')) / 2 - m_margin;
+#endif
     if (m > 0) {
         if (m_align & Qt::AlignLeft)
             cr.setLeft(cr.left() + m);
@@ -456,7 +471,11 @@ bool RibbonTab::validRect() const
     int clientWidth = opt.rect.width();
     if (!d->m_text.isEmpty()) {
         QString text = d->m_text;
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
         wid = opt.fontMetrics.width(text.remove(QChar('&')));
+#else
+        wid = opt.fontMetrics.horizontalAdvance(text.remove(QChar('&')));
+#endif
     } else
         wid = 10;
 

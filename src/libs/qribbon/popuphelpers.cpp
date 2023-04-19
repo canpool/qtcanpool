@@ -228,14 +228,14 @@ void PopupDrawHelper::drawPrimitive(PrimitiveElement element, const QStyleOption
         if (const QStyleOptionFrame *optFrame = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             QRect rect = option->rect;
             int titleBarHeight = proxy()->pixelMetric(PM_TitleBarHeight, 0, 0);
-            p->fillRect(rect, /*optFrame->palette*/ m_palBackground.background().color());
+            p->fillRect(rect, /*optFrame->palette*/ m_palBackground.window().color());
             rect.adjust(3, titleBarHeight, -3, -3);
-            p->fillRect(rect, /*optFrame->palette*/ m_palBackground.foreground().color());
+            p->fillRect(rect, /*optFrame->palette*/ m_palBackground.windowText().color());
             rect.adjust(optFrame->lineWidth, optFrame->lineWidth, -optFrame->lineWidth, -optFrame->lineWidth);
             rect.setBottom(rect.top() + 30);
             DrawHelpers::drawGradientFill(*p, rect,
-                                          /*optFrame->palette*/ m_palBackground.foreground().color().dark(111),
-                                          /*optFrame->palette*/ m_palBackground.foreground().color(), true);
+                                          /*optFrame->palette*/ m_palBackground.windowText().color().darker(111),
+                                          /*optFrame->palette*/ m_palBackground.windowText().color(), true);
             break;
         }
         // fallthrough
@@ -291,8 +291,8 @@ void PopupOffice2000DrawHelper::drawPrimitive(PrimitiveElement element, const QS
     case PE_FrameWindow:
         if (const QStyleOptionFrame *optFrame = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             QRect rect = optFrame->rect;
-            DrawHelpers::drawGradientFill(*p, rect, m_palBackground.background().color(),
-                                          m_palBackground.background().color(), true);
+            DrawHelpers::drawGradientFill(*p, rect, m_palBackground.window().color(),
+                                          m_palBackground.window().color(), true);
             DrawHelpers::draw3DRect(*p, m_palFrame.shadow().color(), m_palFrame.shadow().color(), rect.x(), rect.y(),
                                     rect.width() - 1, rect.height() - 1, false);
 

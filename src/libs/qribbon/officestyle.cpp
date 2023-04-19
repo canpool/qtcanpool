@@ -1008,7 +1008,11 @@ QSize OfficeStyle::sizeFromContents(ContentsType ct, const QStyleOption *opt, co
                 QFont fontBold = menuitem->font;
                 fontBold.setBold(true);
                 QFontMetrics fmBold(fontBold);
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
                 w += fmBold.width(menuitem->text) + 6 + 6;
+#else
+                w += fmBold.horizontalAdvance(menuitem->text) + 6 + 6;
+#endif
                 int h = menuitem->fontMetrics.height() + 6;
                 s.setHeight(qMax(h, 22));
                 s.setWidth(qMax(w, s.width()));
@@ -1837,13 +1841,13 @@ bool OfficeStyle::drawPanelButtonTool(const QStyleOption *opt, QPainter *p, cons
 {
     Q_UNUSED(w);
     if (const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(opt)) {
-        bool smallSize = opt->rect.height() < 33;
+        // bool smallSize = opt->rect.height() < 33;
 
         bool enabled = opt->state & State_Enabled;
         bool checked = opt->state & State_On;
         bool selected = opt->state & State_MouseOver;
-        bool mouseInSplit = opt->state & State_MouseOver && toolbutton->activeSubControls & SC_ToolButton;
-        bool mouseInSplitDropDown = opt->state & State_MouseOver && toolbutton->activeSubControls & SC_ToolButtonMenu;
+        // bool mouseInSplit = opt->state & State_MouseOver && toolbutton->activeSubControls & SC_ToolButton;
+        // bool mouseInSplitDropDown = opt->state & State_MouseOver && toolbutton->activeSubControls & SC_ToolButtonMenu;
         bool pressed = opt->state & State_Sunken;
         bool popuped = (toolbutton->activeSubControls & QStyle::SC_ToolButtonMenu) && (opt->state & State_Sunken);
 
@@ -2003,13 +2007,6 @@ bool OfficeStyle::drawSizeGrip(const QStyleOption *opt, QPainter *p, const QWidg
 {
     QTC_D(const OfficeStyle);
     return d->officePaintManager()->drawSizeGrip(opt, p, w);
-}
-
-static QRect getSourceH(QRect rcSrc, int nState, int nCount)
-{
-    QRect rcImage(0, 0, rcSrc.width() / nCount, rcSrc.height());
-    rcImage.translate(nState * rcImage.width(), 0);
-    return rcImage;
 }
 
 // for Slider

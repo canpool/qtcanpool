@@ -43,6 +43,7 @@
 
 QRIBBON_USE_NAMESPACE
 
+/*
 static QString qtc_getColorName(RibbonPage::ContextColor color)
 {
     switch (color) {
@@ -65,6 +66,7 @@ static QString qtc_getColorName(RibbonPage::ContextColor color)
     }
     return QString("");
 }
+*/
 
 static QColor qtc_getColorToRGB(RibbonPage::ContextColor color)
 {
@@ -353,7 +355,11 @@ void RibbonPaintManager::drawReducedGroup(const QStyleOption *opt, QPainter *p, 
         OfficePaintManager::ImageIcons index = OfficePaintManager::Icon_ArowDown;
         OfficePaintManager::ImageState state = OfficePaintManager::Black2;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
         int width = opt->fontMetrics.width(strSecondRow);
+#else
+        int width = opt->fontMetrics.horizontalAdvance(strSecondRow);
+#endif
         QPoint pt = QPoint(strSecondRow.isEmpty() ? rcText.center().x() - 4 : rectSecondRow.left() + width + 1,
                            strSecondRow.isEmpty() ? rectFirstRow.bottom()
                                                   : (rectSecondRow.top() + (rectSecondRow.height() - 9) / 2) + 1);
@@ -1153,7 +1159,7 @@ void RibbonPaintManager::drawRibbonBackstageMenu(const QStyleOption *opt, QPaint
             const int iconSize = baseStyle()->proxy()->pixelMetric(QStyle::PM_ToolBarIconSize, opt, widget);
             int yoff = (y - 1 + h / 2);
             QPen penSave = p->pen();
-            QColor clr = d->m_clrAccent.light(130);
+            QColor clr = d->m_clrAccent.lighter(130);
             p->setPen(clr);
             p->drawLine(x + 2 + iconSize, yoff, x + w - 4, yoff);
             p->setPen(penSave);

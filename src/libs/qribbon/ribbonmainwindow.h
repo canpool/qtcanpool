@@ -17,7 +17,7 @@ class QRIBBON_EXPORT RibbonMainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit RibbonMainWindow(QWidget *parent = Q_NULL, Qt::WindowFlags flags = 0);
+    explicit RibbonMainWindow(QWidget *parent = Q_NULL, Qt::WindowFlags flags = Qt::WindowFlags());
     ~RibbonMainWindow();
 public:
     RibbonBar *ribbonBar() const;

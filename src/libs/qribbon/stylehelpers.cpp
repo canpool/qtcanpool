@@ -49,8 +49,8 @@ void DrawHelpers::draw3DRect(QPainter &pnt, QColor &col, int x, int y, int w, in
 {
     QPen savePen = pnt.pen();
 
-    QColor light = col.light(135);
-    QColor dark = col.dark(140);
+    QColor light = col.lighter(135);
+    QColor dark = col.darker(140);
     pnt.setPen(up ? light : dark);
     pnt.drawLine(x, y, x + w, y);
     pnt.drawLine(x, y, x, y + h);

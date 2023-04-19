@@ -915,7 +915,7 @@ void RibbonBarCustomizePagePrivate::fillStateActions(RibbonGroup *group, QTreeWi
         if (!actionName.isEmpty()) {
             QTreeWidgetItem *item = new QTreeWidgetItem(itemParent, QStringList(actionName));
             if (!isCustomGroup)
-                item->setTextColor(0, QColor(Qt::gray));
+                item->setForeground(0, QColor(Qt::gray));
 
             item->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
             QIcon icon = action->property("icon").value<QIcon>();

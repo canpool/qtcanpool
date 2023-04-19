@@ -733,8 +733,13 @@ int RibbonStyle::pixelMetric(PixelMetric pm, const QStyleOption *option, const Q
             if (strFirstRow.count() < strSecondRow.count())
                 strFirstRow = strSecondRow;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
             ret =
                 optBut->fontMetrics.boundingRect(strFirstRow).width() + optBut->fontMetrics.width(QLatin1Char(' ')) * 4;
+#else
+            ret = optBut->fontMetrics.boundingRect(strFirstRow).width() +
+                    optBut->fontMetrics.horizontalAdvance(QLatin1Char(' ')) * 4;
+#endif
             if (towRow)
                 ret = ret + 16;
 
@@ -957,7 +962,11 @@ QSize RibbonStyle::sizeFromContents(ContentsType ct, const QStyleOption *opt, co
                     QFont fontBold = mi->font;
                     fontBold.setBold(true);
                     QFontMetrics fmBold(fontBold);
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
                     w += fmBold.width(mi->text) - fm.width(mi->text);
+#else
+                    w += fmBold.horizontalAdvance(mi->text) - fm.horizontalAdvance(mi->text);
+#endif
                 }
 
                 int checkcol = qMax(maxpmw, windowsCheckMarkWidth);   // Windows always shows a check column
@@ -1032,11 +1041,21 @@ QRect RibbonStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex *
                             QSize textSize;
                             if (!strFirstRow.isEmpty()) {
                                 textSize = opt->fontMetrics.size(Qt::TextShowMnemonic, strFirstRow);
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
                                 textSize.setWidth(textSize.width() + opt->fontMetrics.width(QLatin1Char(' ')) * 2);
+#else
+                                textSize.setWidth(textSize.width() +
+                                                  opt->fontMetrics.horizontalAdvance(QLatin1Char(' ')) * 2);
+#endif
                             }
                             if (!strSecondRow.isEmpty()) {
                                 QSize textSize1 = opt->fontMetrics.size(Qt::TextShowMnemonic, strSecondRow);
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
                                 textSize1.setWidth(textSize1.width() + opt->fontMetrics.width(QLatin1Char(' ')) * 2);
+#else
+                                textSize1.setWidth(textSize1.width() +
+                                                   opt->fontMetrics.horizontalAdvance(QLatin1Char(' ')) * 2);
+#endif
                                 textSize.setWidth(qMax(textSize.width(), textSize1.width()));
                             }
                             ret.adjust(0, tb->iconSize.height() + 8, 0, 0);
