@@ -159,7 +159,7 @@ void RibbonPaintManager::drawPixTitleBackground(QPainter *p, const QRect &rectDs
 {
     Q_UNUSED(widget);
 
-    if (theme() == OfficeStyle::Office2013Dark) {
+    if (theme() == OfficeStyle::OfficeDark) {
         QImage image = pixTitleBackground.toImage();
         QColor color(0, 0, 0);
         QColor clrDest(240, 240, 240);

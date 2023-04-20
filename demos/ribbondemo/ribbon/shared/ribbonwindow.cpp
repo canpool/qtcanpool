@@ -42,7 +42,7 @@ RibbonWindow::RibbonWindow(QWidget *parent)
 
 void RibbonWindow::createOptions()
 {
-    QRibbon::RibbonStyle::Theme themeId = QRibbon::RibbonStyle::Office2013White;
+    QRibbon::RibbonStyle::Theme themeId = QRibbon::RibbonStyle::OfficeWhite;
     if (m_ribbonStyle)
         themeId = m_ribbonStyle->getTheme();
 
@@ -52,29 +52,26 @@ void RibbonWindow::createOptions()
     QMenu *menuStyle = new QMenu(ribbonBar());
     m_styleActions = new QActionGroup(this);
 
-    QMenu *menuStyle2013 = new QMenu(tr("Office 2013"), this);
-    QAction *action2013White = menuStyle2013->addAction(tr("White"));
-    action2013White->setObjectName("Office2013White");
-    action2013White->setCheckable(true);
-    action2013White->setChecked(themeId == RibbonStyle::Office2013White);
+    QAction *actionWhite = menuStyle->addAction(tr("White"));
+    actionWhite->setObjectName("OfficeWhite");
+    actionWhite->setCheckable(true);
+    actionWhite->setChecked(themeId == RibbonStyle::OfficeWhite);
 
-    QAction *action2013Gray = menuStyle2013->addAction(tr("Light Gray"));
-    action2013Gray->setObjectName("Office2013Gray");
-    action2013Gray->setCheckable(true);
-    action2013Gray->setChecked(themeId == RibbonStyle::Office2013Gray);
-    menuStyle->addMenu(menuStyle2013);
+    QAction *actionGray = menuStyle->addAction(tr("Gray"));
+    actionGray->setObjectName("OfficeGray");
+    actionGray->setCheckable(true);
+    actionGray->setChecked(themeId == RibbonStyle::OfficeGray);
 
-    QAction *action2013Dark = menuStyle2013->addAction(tr("Dark Gray"));
-    action2013Dark->setObjectName("Office2013Dark");
-    action2013Dark->setCheckable(true);
-    action2013Dark->setChecked(themeId == RibbonStyle::Office2013Dark);
-    menuStyle->addMenu(menuStyle2013);
+    QAction *actionDark = menuStyle->addAction(tr("Dark"));
+    actionDark->setObjectName("OfficeDark");
+    actionDark->setCheckable(true);
+    actionDark->setChecked(themeId == RibbonStyle::OfficeDark);
 
     menuStyle->addSeparator();
 
-    m_styleActions->addAction(action2013White);
-    m_styleActions->addAction(action2013Gray);
-    m_styleActions->addAction(action2013Dark);
+    m_styleActions->addAction(actionWhite);
+    m_styleActions->addAction(actionGray);
+    m_styleActions->addAction(actionDark);
 
     actionStyle->setMenu(menuStyle);
     connect(m_styleActions, SIGNAL(triggered(QAction *)), this, SLOT(optionsTheme(QAction *)));
@@ -172,13 +169,13 @@ void RibbonWindow::optionsDialog() {}
 
 void RibbonWindow::optionsTheme(QAction *action)
 {
-    QRibbon::RibbonStyle::Theme themeId = QRibbon::RibbonStyle::Office2013White;
-    if (action->objectName() == "Office2013White")
-        themeId = OfficeStyle::Office2013White;
-    else if (action->objectName() == "Office2013Gray")
-        themeId = OfficeStyle::Office2013Gray;
-    else if (action->objectName() == "Office2013Dark")
-        themeId = OfficeStyle::Office2013Dark;
+    QRibbon::RibbonStyle::Theme themeId = QRibbon::RibbonStyle::OfficeWhite;
+    if (action->objectName() == "OfficeWhite")
+        themeId = OfficeStyle::OfficeWhite;
+    else if (action->objectName() == "OfficeGray")
+        themeId = OfficeStyle::OfficeGray;
+    else if (action->objectName() == "OfficeDark")
+        themeId = OfficeStyle::OfficeDark;
 
     setStyleTheme(themeId);
 }
@@ -206,8 +203,8 @@ void RibbonWindow::setStyleTheme(RibbonStyle::Theme themeId)
 void RibbonWindow::setButtonStyleTheme(RibbonStyle::Theme themeId)
 {
     if (QToolButton *button = ribbonBar()->getSystemButton()) {
-        if (themeId == OfficeStyle::Office2013White || themeId == OfficeStyle::Office2013Gray ||
-            themeId == OfficeStyle::Office2013Dark)
+        if (themeId == OfficeStyle::OfficeWhite || themeId == OfficeStyle::OfficeGray ||
+            themeId == OfficeStyle::OfficeDark)
             button->setToolButtonStyle(Qt::ToolButtonTextOnly);
         else
             button->setToolButtonStyle(Qt::ToolButtonFollowStyle);
@@ -218,13 +215,13 @@ void RibbonWindow::updateActionsTheme()
 {
     OfficeStyle::Theme theme = m_ribbonStyle->getTheme();
 
-    QString strTheme = "Office2013White";
-    if (theme == OfficeStyle::Office2013White)
-        strTheme = "Office2013White";
-    else if (theme == OfficeStyle::Office2013Gray)
-        strTheme = "Office2013Gray";
-    else if (theme == OfficeStyle::Office2013Dark)
-        strTheme = "Office2013Dark";
+    QString strTheme = "OfficeWhite";
+    if (theme == OfficeStyle::OfficeWhite)
+        strTheme = "OfficeWhite";
+    else if (theme == OfficeStyle::OfficeGray)
+        strTheme = "OfficeGray";
+    else if (theme == OfficeStyle::OfficeDark)
+        strTheme = "OfficeDark";
 
     QList<QAction *> list = m_styleActions->actions();
     for (int i = 0, count = list.count(); count > i; i++)

@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>res/Office2013White/OfficeTheme.ini</file>
-        <file>res/Office2013Gray/OfficeTheme.ini</file>
-        <file>res/Office2013Dark/OfficeTheme.ini</file>
+        <file>res/OfficeWhite/OfficeTheme.ini</file>
+        <file>res/OfficeGray/OfficeTheme.ini</file>
+        <file>res/OfficeDark/OfficeTheme.ini</file>
         <file>res/logo.png</file>
         <file>res/ribbonbackstageback_icon.png</file>
         <file>res/menuimg-pro24.png</file>

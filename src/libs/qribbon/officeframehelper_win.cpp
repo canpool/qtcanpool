@@ -296,7 +296,6 @@ OfficeFrameHelperWin::OfficeFrameHelperWin(QWidget *parent) : QObject(parent)
     m_shellAutohideBarsInitialized = false;
 
     m_changedSize = SIZE_RESTORED;
-    m_isTheme2013 = false;
 
     m_oldMarginsleft = 0;
     m_oldMarginstop = 0;
@@ -471,7 +470,7 @@ bool OfficeFrameHelperWin::isActive() const { return m_active; }
 
 bool OfficeFrameHelperWin::isMaximize() const { return getStyle() & WS_MAXIMIZE; }
 
-bool OfficeFrameHelperWin::canHideTitle() const { return isTheme2013(); }
+bool OfficeFrameHelperWin::canHideTitle() const { return true; }
 
 int OfficeFrameHelperWin::frameBorder() const { return m_frameBorder; }
 
@@ -718,7 +717,7 @@ void OfficeFrameHelperWin::updateFrameRegion(const QSize &szFrameRegion, bool bU
                     hRgn = CreateRectRgn(frameRegion, frameRegion, szFrameRegion.width() - frameRegion,
                                          szFrameRegion.height() - frameRegion);
                 } else {
-                    if (isTheme2013())
+                    if (true)
                         hRgn = ::CreateRectRgn(0, 0, szFrameRegion.width() + 1, szFrameRegion.height() + 1);
                     else
                         hRgn = calcFrameRegion(szFrameRegion);
@@ -804,20 +803,6 @@ bool OfficeFrameHelperWin::isTitleVisible() const
     return false;
 }
 
-bool OfficeFrameHelperWin::isTheme2013() const
-{
-    if (OfficeStyle *officeStyle = qobject_cast<OfficeStyle *>(qApp->style())) {
-        OfficeStyle::Theme theme = officeStyle->getTheme();
-        if (theme == OfficeStyle::Office2013White || theme == OfficeStyle::Office2013Gray ||
-            theme == OfficeStyle::Office2013Dark)
-            return true;
-        return isTheme2016();
-    }
-    return false;
-}
-
-bool OfficeFrameHelperWin::isTheme2016() const { return false; }
-
 void OfficeFrameHelperWin::initStyleOption(StyleOptionFrame *option)
 {
     RECT rc;
@@ -868,7 +853,7 @@ static void drawPartFrame(QWidget *frame, HDC hdc, HDC cdc, const StyleOptionFra
 void OfficeFrameHelperWin::redrawFrame()
 {
     if (!m_dwmEnabled) {
-        if (isTheme2013()) {
+        if (true) {
             StyleOptionFrame opt;
             initStyleOption(&opt);
             opt.hdc = ::GetWindowDC(m_hwndFrame);
@@ -1103,7 +1088,7 @@ void OfficeFrameHelperWin::drawDwmCaptionText(QPainter *painter, const QRect &rc
     dib.bmiHeader.biCompression = BI_RGB;
 
     // Set up the DC
-    HFONT hCaptionFont = getCaptionFont(contextTab || isTheme2013() ? hTheme : Q_NULL);
+    HFONT hCaptionFont = getCaptionFont(contextTab ? hTheme : Q_NULL);
     // #pragma warning(suppress: 6387)
     HBITMAP bmp = CreateDIBSection(/*hdc*/ Q_NULL, &dib, DIB_RGB_COLORS, Q_NULL, Q_NULL, 0);
     HBITMAP hOldBmp = Q_NULL;
@@ -1156,7 +1141,7 @@ QSize OfficeFrameHelperWin::sizeSystemIcon(const QIcon &icon, const QRect &rect)
 {
     Q_UNUSED(icon)
     Q_UNUSED(rect)
-    return isTheme2016() ? QSize() : QSize(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    return QSize(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 }
 
 HICON OfficeFrameHelperWin::windowIcon(const QIcon &icon, const QRect &rect) const
@@ -1385,18 +1370,16 @@ void OfficeFrameHelperWin::collapseTopFrame()
     if (!m_frame->isVisible())
         return;
 
-    const bool theme2013 = isTheme2013();
-
     const DWORD dStyle = getStyle();
 
-    if ((dStyle & WS_MINIMIZE) && theme2013)
+    if ((dStyle & WS_MINIMIZE))
         return;
 
     if (QWindow *window = m_frame->windowHandle()) {
         if (QPlatformWindow *platformWindow = window->handle()) {
             int val = 0;
             int valBottom = 0;
-            bool visible = theme2013 ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
+            bool visible = true;
 
             int valTitle = m_dwmEnabled ? (visible ? captionSize() + (m_frameBorder * 2) : 0)
                                         : (visible ? captionSize() + m_frameBorder / 2 : m_frameBorder / 2);
@@ -1406,7 +1389,7 @@ void OfficeFrameHelperWin::collapseTopFrame()
                     valTitle = 0;
             }
 
-            if (theme2013 && (dStyle & WS_MINIMIZE) == 0) {
+            if ((dStyle & WS_MINIMIZE) == 0) {
                 if (dStyle & WS_MAXIMIZE) {
                     if ((dStyle & WS_MAXIMIZE) == 0) {
                         valTitle -= m_frameBorder;
@@ -1558,7 +1541,7 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
                 RECT rc;
                 ::GetWindowRect(m_hwndFrame, &rc);
 
-                rc.bottom = rc.top + m_frameBorder - (isTheme2013() ? 3 : 0);
+                rc.bottom = rc.top + m_frameBorder - (true ? 3 : 0);
                 if (::PtInRect(&rc, point))
                     *result = HTTOP;
 
@@ -1737,7 +1720,8 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
             if (!isTitleVisible())
                 lpncsp->rgrc[0].top = rc.top;
         } else {
-            if (isTheme2013()) {
+            // TODO: optimize
+            if (true) {
                 if ((dwStyle & WS_MAXIMIZE) == 0) {
                     lpncsp->rgrc[0].left -= m_frameBorder - 3;
                     lpncsp->rgrc[0].right += m_frameBorder - 3;
@@ -1779,10 +1763,9 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
         static bool bShow = false;
         if (!bShow) {
             bShow = true;
-
-            bool is2013 = isTheme2013();
-            int val = is2013 ? m_frameBorder - 3 : 0;
-            bool visible = is2013 ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
+            // TODO: optimize
+            int val = true ? m_frameBorder - 3 : 0;
+            bool visible = true ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
             int valTitle = m_dwmEnabled ? (visible ? captionSize() + (m_frameBorder * 2) : 0)
                                         : (visible ? captionSize() + m_frameBorder * 0.5 : m_frameBorder * 0.5);
 
@@ -1798,10 +1781,10 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
         if (!bShow) {
             bShow = true;
 
-            bool is2013 = isTheme2013();
+            // TODO: optimize
             int val = m_dwmEnabled ? 0 : m_frameBorder;
-            int valLeft = m_dwmEnabled ? (is2013 ? 0 : m_frameBorder + m_frameBorder / 2) : m_frameBorder;
-            bool visible = is2013 ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
+            int valLeft = m_dwmEnabled ? (true ? 0 : m_frameBorder + m_frameBorder / 2) : m_frameBorder;
+            bool visible = true ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
             int valTitle = m_dwmEnabled ? (visible ? captionSize() + (m_frameBorder * 2) : 0)
                                         : (visible ? captionSize() + m_frameBorder / 2 - 1 : m_frameBorder / 2 - 1);
 
@@ -1855,12 +1838,7 @@ bool OfficeFrameHelperWin::eventFilter(QObject *obj, QEvent *event)
                 m_closeWindow = true;
             } else if (event->type() == QEvent::StyleChange) {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-                bool m_hasIsTheme2013 = m_isTheme2013;
-#endif   // QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                m_isTheme2013 = isTheme2013();
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-                bool hasMaximize = m_hasIsTheme2013 != m_isTheme2013 && ((getStyle() & WS_MAXIMIZE) != 0);
+                bool hasMaximize = ((getStyle() & WS_MAXIMIZE) != 0);
                 if (hasMaximize) {
                     m_frame->setWindowState(m_frame->windowState() &
                                             ~(Qt::WindowMinimized | Qt::WindowMaximized | Qt::WindowFullScreen));
@@ -1928,7 +1906,7 @@ bool OfficeFrameHelperWin::eventFilter(QObject *obj, QEvent *event)
 
 bool OfficeFrameHelperWin::isCompositionEnabled()
 {
-    if (isTheme2013() && m_officeFrameEnabled)
+    if (m_officeFrameEnabled)
         return false;
 
     if (pDwmIsCompositionEnabled) {
@@ -1939,7 +1917,7 @@ bool OfficeFrameHelperWin::isCompositionEnabled()
     return false;
 }
 
-bool OfficeFrameHelperWin::isSmallSystemBorders() { return isTheme2013(); }
+bool OfficeFrameHelperWin::isSmallSystemBorders() { return true; }
 
 void OfficeFrameHelperWin::enableWindowAero(HWND hwnd, bool enable)
 {

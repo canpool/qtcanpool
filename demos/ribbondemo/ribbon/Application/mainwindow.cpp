@@ -1831,9 +1831,9 @@ void MainWindow::readSettings()
     QSettings settings(this);
 
     OfficeStyle *st = (OfficeStyle *)qApp->style();
-    OfficeStyle::Theme theme = (OfficeStyle::Theme)settings.value("theme", (int)OfficeStyle::Office2013White).toInt();
+    OfficeStyle::Theme theme = (OfficeStyle::Theme)settings.value("theme", (int)OfficeStyle::OfficeWhite).toInt();
 
-    if (theme == OfficeStyle::Office2013White)
+    if (theme == OfficeStyle::OfficeWhite)
         ribbonBar()->getSystemButton()->setToolButtonStyle(Qt::ToolButtonTextOnly);
     else
         ribbonBar()->getSystemButton()->setToolButtonStyle(Qt::ToolButtonFollowStyle);
@@ -1904,7 +1904,7 @@ void MainWindow::updateRibbonBackground()
 {
     OfficeStyle::Theme theme = m_ribbonStyle->getTheme();
     QPixmap px(m_curRibbonBackground);
-    if (theme == OfficeStyle::Office2013Dark)
+    if (theme == OfficeStyle::OfficeDark)
         ribbonBar()->setTitleBackground(
             QPixmap::fromImage(DrawHelpers::addaptColors(px.toImage(), qRgb(255, 255, 255), qRgb(230, 230, 230))));
     else

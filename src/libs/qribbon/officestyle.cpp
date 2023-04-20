@@ -75,18 +75,7 @@ OfficeStylePrivate::OfficeStylePrivate() : CommonStylePrivate()
     m_popupProxy = Q_NULL;
     m_refCountProxy = 0;
     m_typePopupStyle = OfficeStyle::PopupSystemDecoration;
-
-#ifdef Q_OS_LINUX
-    m_themeType = OfficeStyle::Office2013Gray;
-#endif /* Q_OS_LINUX */
-
-#ifdef Q_OS_MAC
-    m_themeType = OfficeStyle::Office2013Gray;
-#endif /* Q_OS_MAC */
-
-#ifdef Q_OS_WIN
-    m_themeType = OfficeStyle::Office2013White;
-#endif /* Q_OS_WIN */
+    m_themeType = OfficeStyle::OfficeWhite;
 }
 
 OfficeStylePrivate::~OfficeStylePrivate() {}
@@ -309,14 +298,14 @@ QString OfficeStylePrivate::theme(const QString &str) const
     QString strStyle;
 
     switch (m_themeType) {
-    case OfficeStyle::Office2013White:
-        strStyle += ":/res/Office2013White/";
+    case OfficeStyle::OfficeWhite:
+        strStyle += ":/res/OfficeWhite/";
         break;
-    case OfficeStyle::Office2013Gray:
-        strStyle += ":/res/Office2013Gray/";
+    case OfficeStyle::OfficeGray:
+        strStyle += ":/res/OfficeGray/";
         break;
-    case OfficeStyle::Office2013Dark:
-        strStyle += ":/res/Office2013Dark/";
+    case OfficeStyle::OfficeDark:
+        strStyle += ":/res/OfficeDark/";
         break;
     default:
         Q_ASSERT(false);
@@ -940,17 +929,7 @@ void OfficeStyle::createPopupProxy()
         } else {
             popup2003Style = new PopupOffice2003DrawHelper();
         }
-        switch (getTheme()) {
-        case OfficeStyle::Office2013White:
-            popup2003Style->setDecoration(PopupOffice2003DrawHelper::OS_SYSTEMWHITE);
-            break;
-        case OfficeStyle::Office2013Gray:
-            popup2003Style->setDecoration(PopupOffice2003DrawHelper::OS_SYSTEMGRAY);
-            break;
-        default:
-            Q_ASSERT(false);
-            break;
-        }
+        popup2003Style->setDecoration(PopupOffice2003DrawHelper::OS_SYSTEMWHITE);
         popupStyle = popup2003Style;
     } break;
     case PopupMSNDecoration:

@@ -75,8 +75,6 @@ protected:
 
     bool isMDIMaximized() const;
     bool isTitleVisible() const;
-    bool isTheme2013() const;
-    bool isTheme2016() const;
     void initStyleOption(StyleOptionFrame *option);
     void redrawFrame();
     bool modifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags);
@@ -144,7 +142,6 @@ private:
 
     bool m_wasFullScreen;
     bool m_closeWindow;
-    bool m_isTheme2013;
     int m_changedSize;
 private:
     class FrameHelperEventHook;

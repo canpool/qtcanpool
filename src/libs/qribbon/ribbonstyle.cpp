@@ -1254,8 +1254,7 @@ bool RibbonStyle::drawTitleBar(const QStyleOptionComplex *opt, QPainter *p, cons
                 optTitleBar->frameHelper->drawTitleBar(p, optTitle);
             }
 
-            OfficeStyle::Theme themeId = getTheme();
-            if ((themeId < Office2013White || themeId <= Office2013Dark || !optTitleBar->isBackstageVisible) &&
+            if ((!optTitleBar->isBackstageVisible) &&
                 optTitleBar->listContextHeaders && optTitleBar->listContextHeaders->count() > 0)
                 proxy()->drawPrimitive((QStyle::PrimitiveElement)RibbonStyle::PE_RibbonContextHeaders, opt, p, w);
 
@@ -1579,7 +1578,7 @@ bool RibbonStyle::drawMenuItem(const QStyleOption *opt, QPainter *p, const QWidg
 /*! \internal */
 void RibbonStyle::drawTabShape(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    if (getTheme() < OfficeStyle::Office2013White && paintAnimation(tp_PrimitiveElement, PE_RibbonTab, opt, p, widget))
+    if (paintAnimation(tp_PrimitiveElement, PE_RibbonTab, opt, p, widget))
         return;
 
     QTC_D(const RibbonStyle);

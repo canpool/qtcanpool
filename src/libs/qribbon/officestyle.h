@@ -26,9 +26,9 @@ class QRIBBON_EXPORT OfficeStyle : public CommonStyle
     Q_PROPERTY(bool DPIAware READ isDPIAware WRITE setDPIAware)
 public:
     enum Theme {
-        Office2013White,
-        Office2013Gray,
-        Office2013Dark,
+        OfficeWhite,
+        OfficeGray,
+        OfficeDark,
     };
 
     enum OfficePopupDecoration {

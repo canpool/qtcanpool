@@ -42,9 +42,9 @@ RibbonPopularPage::RibbonPopularPage(MainWindow *mainWindow, QWidget *parent)
     QRibbon::RibbonStyle *ribbonStyle = qobject_cast<QRibbon::RibbonStyle *>(qApp->style());
     m_currentThemeId = ribbonStyle->getTheme();
 
-    m_pageRes.comboBoxTheme->addItem("Office 2013 White", OfficeStyle::Office2013White);
-    m_pageRes.comboBoxTheme->addItem("Office 2013 Light Gray", OfficeStyle::Office2013Gray);
-    m_pageRes.comboBoxTheme->addItem("Office 2013 Dark Gray", OfficeStyle::Office2013Dark);
+    m_pageRes.comboBoxTheme->addItem("Office 2013 White", OfficeStyle::OfficeWhite);
+    m_pageRes.comboBoxTheme->addItem("Office 2013 Light Gray", OfficeStyle::OfficeGray);
+    m_pageRes.comboBoxTheme->addItem("Office 2013 Dark Gray", OfficeStyle::OfficeDark);
     m_pageRes.comboBoxTheme->setCurrentIndex(m_currentThemeId);
     connect(m_pageRes.comboBoxTheme, SIGNAL(currentIndexChanged(int)), this, SLOT(currentThemeChanged(int)));
 
@@ -88,9 +88,9 @@ void RibbonPopularPage::setupPage()
 
 void RibbonPopularPage::updateEnabledWidgets()
 {
-    bool isThemeModern = m_currentThemeId == OfficeStyle::Office2013White ||
-                         m_currentThemeId == OfficeStyle::Office2013Gray ||
-                         m_currentThemeId == OfficeStyle::Office2013Dark;
+    bool isThemeModern = m_currentThemeId == OfficeStyle::OfficeWhite ||
+                         m_currentThemeId == OfficeStyle::OfficeGray ||
+                         m_currentThemeId == OfficeStyle::OfficeDark;
 
     m_pageRes.labelAccentColor->setEnabled(isThemeModern);
     m_pageRes.pushButtonAccentColor->setEnabled(isThemeModern);
