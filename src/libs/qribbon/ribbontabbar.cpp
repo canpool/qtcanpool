@@ -646,7 +646,8 @@ void RibbonTab::mouseDoubleClickEvent(QMouseEvent *event)
         return;
     }
 
-    if (d->m_select && d->m_minimizeDblClick) {
+    // When the ribbon is minimized, it supports double-clicking tab to maximize ribbon
+    if (d->m_select/* && d->m_minimizeDblClick*/) {
         d->m_minimizeDblClick = true;
         event->setAccepted(false);
         QWidget::mouseDoubleClickEvent(event);
