@@ -10,6 +10,7 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QSettings>
 
 #include "qcanpool/fancybar.h"
 #include "qcanpool/fancydialog.h"
@@ -31,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_pTabWidget = new FancyTabWidget();
 
     createWindow();
+
+    readSettings();
 }
 
 MainWindow::~MainWindow()
@@ -58,7 +61,7 @@ void MainWindow::createCentralWidget()
     QTextEdit *text = new QTextEdit(this);
     m_pTabWidget->addTab(text, QIcon(":/main/logo"), tr("tab2"));
 
-    QAction *action = new QAction(QIcon(":/main/logo"), tr("testAction1"));
+    QAction *action = new QAction(QIcon(":/main/logo"), tr("action1"));
     tabBar->addAction(action, FancyTabBar::Middle);
     tabBar->setActionIconOnly(action, false);
 
@@ -74,7 +77,7 @@ void MainWindow::createCentralWidget()
     button->setDefaultAction(action);
     tabBar->addActionButton(button, FancyTabBar::Middle);
 
-    action = new QAction(QIcon(":/main/logo"), tr("testAction2"));
+    action = new QAction(QIcon(":/main/logo"), tr("action2"));
     tabBar->addAction(action, FancyTabBar::Middle);
     tabBar->setActionIconOnly(action, false);
 
@@ -222,6 +225,33 @@ void MainWindow::addTabPositionItem(QActionGroup *group, QAction *action, int po
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(slotSetTabPosition()));
 }
 
+void MainWindow::readSettings()
+{
+    QSettings settings(this);
+
+    QByteArray byte = settings.value("geometry").toByteArray();
+    if (!byte.isEmpty())
+        restoreGeometry(byte);
+
+    if (QuickAccessBar *quickAccessBar = fancyBar()->quickAccessBar()) {
+        byte = settings.value("quickaccessbar").toByteArray();
+        quickAccessBar->setState(byte);
+    }
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings(this);
+
+    QByteArray byte = saveGeometry();
+    settings.setValue("geometry", byte);
+
+    if (QuickAccessBar *quickAccessBar = fancyBar()->quickAccessBar()) {
+        byte = quickAccessBar->state();
+        settings.setValue("quickaccessbar", byte);
+    }
+}
+
 void MainWindow::setThemeStyle(const QString &style)
 {
     QFile file(style);
@@ -270,4 +300,9 @@ void MainWindow::slotSetTabPosition()
         m_pTabWidget->setTabPosition(static_cast<FancyTabWidget::TabPosition>(action->data().toInt()));
         setThemeStyle(m_themeStyle);
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
 }

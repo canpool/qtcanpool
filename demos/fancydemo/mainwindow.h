@@ -32,11 +32,17 @@ private:
     void addWindowStyleItem(QActionGroup *group, QAction *action, int style);
     void addTabPositionItem(QActionGroup *group, QAction *action, int position);
 
+    void readSettings();
+    void writeSettings();
+
 private slots:
     void slotNew();
     void slotChangeThemeStyle();
     void slotChangeWindowStyle();
     void slotSetTabPosition();
+
+protected:
+    virtual void closeEvent(QCloseEvent *event);
 
 private:
     FancyTabWidget *m_pTabWidget;
