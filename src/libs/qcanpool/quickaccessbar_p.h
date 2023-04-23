@@ -73,6 +73,7 @@ public:
     QAction *findBeforeAction(QAction *action) const;
     void updateAction(QAction *action);
     void setActionVisible(QAction *action, bool visible);
+    void setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible);
 
 public:
     QuickAccessBar *q;

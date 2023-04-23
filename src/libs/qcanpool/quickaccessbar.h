@@ -27,6 +27,9 @@ public:
     bool isActionVisible(QAction *action) const;
     int visibleCount() const;
 
+    QByteArray state() const;
+    void setState(const QByteArray &s);
+
 Q_SIGNALS:
     void showCustomizeMenu(QMenu *menu);
     void customizeActionChanged();

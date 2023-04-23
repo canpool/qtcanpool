@@ -116,20 +116,25 @@ void QuickAccessBarPrivate::updateAction(QAction *action)
 void QuickAccessBarPrivate::setActionVisible(QAction *action, bool visible)
 {
     if (QuickAccessAction *wrapper = findQuickAccessAction(action)) {
-        if (visible) {
-            if (m_customizeAction) {
-                QAction *beforeAct = findBeforeAction(wrapper);
-                q->insertAction(beforeAct, action);
-            } else {
-                q->addAction(action);
-            }
-        } else {
-            q->removeAction(action);
-            m_removeAction = false;
-        }
-        wrapper->update();
-        q->adjustSize();
+        setActionVisible(wrapper, action, visible);
     }
+}
+
+void QuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible)
+{
+    if (visible) {
+        if (m_customizeAction) {
+            QAction *beforeAct = findBeforeAction(wrapper);
+            q->insertAction(beforeAct, action);
+        } else {
+            q->addAction(action);
+        }
+    } else {
+        q->removeAction(action);
+        m_removeAction = false;
+    }
+    wrapper->update();
+    q->adjustSize();
 }
 
 QuickAccessBar::QuickAccessBar(QWidget *parent)
@@ -177,6 +182,42 @@ int QuickAccessBar::visibleCount() const
         }
     }
     return visibleCount;
+}
+
+QByteArray QuickAccessBar::state() const
+{
+    QByteArray s;
+    foreach (QAction *act, d->m_actionList) {
+        if (act->isChecked()) {
+            s.append('1');
+        } else {
+            s.append('0');
+        }
+    }
+    return s;
+}
+
+void QuickAccessBar::setState(const QByteArray &s)
+{
+    if (s.isEmpty()) {
+        return;
+    }
+    int cnt = s.count();
+    int j = 0;
+    QList<QAction *> list = d->m_customizeGroup->actions();
+    for (int i = 0, count = list.count(); i < count; ++i) {
+        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i])) {
+            if (j < cnt) {
+                if (s.at(j) == '1') {
+                    d->setActionVisible(act, act->m_srcAction, true);
+                } else {
+                    if (act->isChecked())
+                        d->setActionVisible(act, act->m_srcAction, false);
+                }
+            }
+            ++j;
+        }
+    }
 }
 
 void QuickAccessBar::customizeAction(QAction *action)
