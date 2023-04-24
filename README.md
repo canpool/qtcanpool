@@ -66,7 +66,10 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 3）<font size=4>fancyribbon</font>
 ![fancyribbon](./doc/pics/fancyribbon.png)
 
-4）<font size=4>qrcodedemo</font>
+4）<font size=4>fancytoolbutton</font>
+![fancyribbon](./doc/pics/fancytoolbutton.png)
+
+5）<font size=4>qrcodedemo</font>
 
 ![qrcodedemo](./doc/pics/qrcodedemo.png#pic_center)
 
@@ -81,11 +84,3 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 2）docking 控件
 - [Qt-Advanced-Docking-System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)：一款比 Qt 自带的 QDockWidget 高级的 Docking 系统。已经应用到 qtcreator 中。以 git 子模块的方式集成到库 [qads](./src/libs/qads) 中。
-
-### 拓展
-1、[fancycontrols](https://gitee.com/icanpool/fancycontrols)
-
-精选的 Qt 控件，每个控件独占一个分支，分支名以 fancy 命名，如：[fancytitlebar](https://gitee.com/icanpool/fancycontrols/tree/fancytitlebar/)，[fancytoolbutton](https://gitee.com/icanpool/fancycontrols/tree/fancytoolbutton/)，[fancydock](https://gitee.com/icanpool/fancycontrols/tree/fancydock/)，[fancyribbon](https://gitee.com/icanpool/fancycontrols/tree/fancyribbon/) 等。
-
-1）fancytoolbutton
-![fancytoolbutton](./doc/pics/fancytoolbutton.png)
