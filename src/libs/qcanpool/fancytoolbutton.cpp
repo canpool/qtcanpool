@@ -170,9 +170,11 @@ void FancyToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt,
         if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon && m_menuArea == FancyToolButton::BottomMenuArea) {
             QString strFirstRow, strSecondRow;
             splitString(toolbutton->text, strFirstRow, strSecondRow);
+            int height = toolbutton->fontMetrics.height();
+            int mbi = 6;
             rcArrow = QRect(QPoint(strSecondRow.isEmpty() ? toolbutton->rect.width() / 2 - 2 : toolbutton->rect.right() - 7,
-                                   toolbutton->rect.bottom() - 8),
-                            QSize(6, 6));
+                                   m_textRect.top() + height * 3 / 2 - mbi / 2),
+                            QSize(mbi, mbi));
         } else {
             int mbi = pixelMetric(QStyle::PM_MenuButtonIndicator, toolbutton, widget);
             rcArrow = QRect(ir.right() - mbi - 1,
@@ -186,9 +188,11 @@ void FancyToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt,
         if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon && m_menuArea == FancyToolButton::BottomMenuArea) {
             QString strFirstRow, strSecondRow;
             splitString(toolbutton->text, strFirstRow, strSecondRow);
+            int height = toolbutton->fontMetrics.height();
+            int mbi = 6;
             newBtn.rect = QRect(QPoint(strSecondRow.isEmpty() ? toolbutton->rect.width() / 2 - 2 : toolbutton->rect.right() - 8,
-                                       toolbutton->rect.bottom() - 8),
-                                QSize(6, 6));
+                                       m_textRect.top() + height * 3 / 2 - mbi / 2),
+                                QSize(mbi, mbi));
         } else {
             QRect ir = menuarea;
             int mbi = pixelMetric(QStyle::PM_MenuButtonIndicator, toolbutton, widget);
@@ -279,8 +283,9 @@ void FancyToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPaint
                 splitString(toolbutton->text, strFirstRow, strSecondRow);
 
                 int height = toolbutton->fontMetrics.height();
-                QRect rcFirstRowText(QPoint(rcText.left(), rcText.bottom() - height * 2 + 1),
-                                     QPoint(rcText.right(), rcText.bottom() - height + 1));
+                // text AlignTop
+                QRect rcFirstRowText(QPoint(rcText.left(), rcText.top() + 1),
+                                     QPoint(rcText.right(), rcText.top() + height + 1));
 
                 // if FancyToolButton::BottomMenuArea, add height in sizeHint
                 if (m_menuArea != FancyToolButton::BottomMenuArea && strSecondRow.isEmpty()) {
@@ -298,8 +303,9 @@ void FancyToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPaint
                             toolbutton->features & QStyleOptionToolButton::HasMenu)
                         left = opt->rect.left() - 5;
 
-                    QRect rcSecondRowText(QPoint(left, rcText.bottom() - height),
-                                          QPoint(rcText.right(), rcText.bottom() + 2));
+                    // text AlignTop
+                    QRect rcSecondRowText(QPoint(left, rcText.top() + height + 1),
+                                          QPoint(rcText.right(), rcText.top() + height * 2 + 2));
                     style()->drawItemText(p, rcSecondRowText, alignment, toolbutton->palette,
                                           toolbutton->state & QStyle::State_Enabled, strSecondRow, QPalette::ButtonText);
                 }
