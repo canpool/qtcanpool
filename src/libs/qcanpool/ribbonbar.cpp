@@ -112,7 +112,7 @@ void RibbonBarPrivate::init()
     m_minimizeButton->setObjectName(QLatin1String("minmax"));
 
     m_stack = new RibbonStackedWidget(q);
-    m_stack->setFixedHeight(100);
+    m_stack->setFixedHeight(94);
     m_stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_stack->installEventFilter(q);
 
