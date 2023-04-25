@@ -14,6 +14,7 @@
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QActionGroup>
+#include <QComboBox>
 
 #include "qcanpool/ribbonbar.h"
 #include "qcanpool/ribbonpage.h"
@@ -192,6 +193,29 @@ MainWindow::MainWindow(QWidget *parent)
     group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
     group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
     group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
+
+    // loft container
+    group = page->addGroup(tr("loft"));
+    RibbonLoftContainer *loftContainer = new RibbonLoftContainer(this);
+    toolBar = loftContainer->toolBar(RibbonLoftContainer::Top);
+    QComboBox *cb = new QComboBox(this);
+    cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    cb->addItems({ "Arial", "Helvetica", "Times" });
+    toolBar->addWidget(cb);
+    action = new QAction(icon, tr("test"));
+    menu = new QMenu();
+    menu->addAction(icon, tr("test"));
+    menu->addAction(icon, tr("test"));
+    action->setMenu(menu);
+    toolBar->addAction(action);
+    toolBar = loftContainer->toolBar(RibbonLoftContainer::Bottom);
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addSeparator();
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    group->addWidget(loftContainer);
 
 
     ribbonBar->addPage(tr("View"));

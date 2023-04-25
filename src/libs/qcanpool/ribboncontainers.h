@@ -10,6 +10,8 @@
 
 #include "ribbongroup.h"
 
+class QToolBar;
+
 QCANPOOL_BEGIN_NAMESPACE
 
 class QCANPOOL_SHARED_EXPORT RibbonContainer : public QWidget
@@ -51,6 +53,26 @@ public:
 
 private:
     RibbonActionContainerPrivate *d;
+};
+
+/* RibbonLoftContainer */
+class RibbonLoftContainerPrivate;
+class QCANPOOL_SHARED_EXPORT RibbonLoftContainer : public RibbonContainer
+{
+    Q_OBJECT
+public:
+    enum Position {
+        Top, Bottom
+    };
+public:
+    explicit RibbonLoftContainer(QWidget *parent = nullptr);
+    virtual ~RibbonLoftContainer();
+
+public:
+    QToolBar *toolBar(Position pos);
+
+private:
+    RibbonLoftContainerPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE

@@ -10,6 +10,7 @@
 
 #include <QAction>
 #include <QToolButton>
+#include <QToolBar>
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -175,6 +176,66 @@ QAction *RibbonActionContainer::addAction(const QIcon &icon, const QString &text
 void RibbonActionContainer::addAction(QAction *action, RibbonGroup::GroupSize size)
 {
     return d->addAction(action, size);
+}
+
+/* RibbonLoftContainerPrivate */
+class RibbonLoftContainerPrivate
+{
+public:
+    RibbonLoftContainerPrivate();
+
+    void init();
+
+public:
+    RibbonLoftContainer *q;
+    QToolBar *m_topBar;
+    QToolBar *m_bottomBar;
+};
+
+RibbonLoftContainerPrivate::RibbonLoftContainerPrivate()
+{
+
+}
+
+void RibbonLoftContainerPrivate::init()
+{
+    m_topBar = new QToolBar();
+    m_topBar->setIconSize(QSize(20, 20));
+    m_topBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+
+    m_bottomBar = new QToolBar();
+    m_bottomBar->setIconSize(QSize(20, 20));
+    m_bottomBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    mainLayout->setSpacing(5);
+    mainLayout->setContentsMargins(1, 0, 1, 0);
+    mainLayout->addWidget(m_topBar);
+    mainLayout->addWidget(m_bottomBar);
+    mainLayout->addStretch();
+    q->setLayout(mainLayout);
+}
+
+RibbonLoftContainer::RibbonLoftContainer(QWidget *parent)
+    : RibbonContainer(parent)
+    , d(new RibbonLoftContainerPrivate)
+{
+    d->q = this;
+    d->init();
+}
+
+RibbonLoftContainer::~RibbonLoftContainer()
+{
+    delete d;
+}
+
+QToolBar *RibbonLoftContainer::toolBar(RibbonLoftContainer::Position pos)
+{
+    if (pos == RibbonLoftContainer::Top) {
+        return d->m_topBar;
+    } else {
+        return d->m_bottomBar;
+    }
 }
 
 QCANPOOL_END_NAMESPACE
