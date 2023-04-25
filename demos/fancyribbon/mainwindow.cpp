@@ -33,17 +33,13 @@ MainWindow::MainWindow(QWidget *parent)
     QuickAccessBar *quickAccessBar = ribbonBar->quickAccessBar();
     quickAccessBar->addAction(icon, tr("action 1"));
     quickAccessBar->addAction(icon, tr("action 2"));
-    quickAccessBar->addAction(icon, tr("action 3"));
-    quickAccessBar->addAction(icon, tr("action 4"));
 
     QToolBar *ribbonToolBar = ribbonBar->toolBar(RibbonBar::ToolBarTopPosition);
     ribbonToolBar->addAction(icon, tr("top btn 1"));
     ribbonToolBar->addAction(icon, tr("top btn 2"));
-    ribbonToolBar->addAction(icon, tr("top btn 3"));
     ribbonToolBar = ribbonBar->toolBar(RibbonBar::ToolBarBottomPosition);
     ribbonToolBar->addAction(icon, tr("bottom btn 1"));
     ribbonToolBar->addAction(icon, tr("bottom btn 2"));
-    ribbonToolBar->addAction(icon, tr("bottom btn 3"));
 
     QAction *action = nullptr;
     QMenu *menu = nullptr;
@@ -244,7 +240,7 @@ MainWindow::MainWindow(QWidget *parent)
     styleAction->setData(QVariant(RibbonBar::MergedStyle));
     actionGroup->addAction(styleAction);
     connect(actionGroup, SIGNAL(triggered(QAction *)), this, SLOT(slotChangeStyle(QAction *)));
-    emit actionGroup->actions().at(0)->trigger();
+    emit actionGroup->actions().at(1)->trigger();
 
 
     setWindowIcon(icon);
