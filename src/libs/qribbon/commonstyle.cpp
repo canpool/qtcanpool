@@ -1132,8 +1132,7 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *
                 return false;
             }
 
-            QStyleOption optTmp = *option;
-            QStyleOption *opt = &optTmp;
+            QStyleOption *opt = const_cast<QStyleOption *>(option);
 
             opt->rect.setRect(0, 0, rect.width(), rect.height());
 
