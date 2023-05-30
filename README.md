@@ -27,6 +27,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 环境
 - Qt 5.15.2 MinGW/MSVC2019 64bit
+- Qt 5.14.2 MinGW 64bit
 - 其它环境未测试，推荐使用 [QT LTS](https://download.qt.io/official_releases/qt/) 版本
 
 ### 版本
@@ -42,6 +43,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 协议
 * 遵循 [MulanPSL2](./LICENSE) 开源许可协议
+* 集成组件遵循各自开源许可协议
 
 ### 规范
 * [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)
@@ -57,16 +59,21 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 例子
 1）<font size=4>fancydemo</font>
+
 ![qcanpool](./doc/pics/fancydemo.png)
 
 2）<font size=4>fancytitlebar</font>
+
 ![fancytitlebar](./doc/pics/fancytitlebar.png)
+
 支持 windows 原生特性（毛玻璃预览，半屏和¼屏等显示效果）
 
 3）<font size=4>fancyribbon</font>
+
 ![fancyribbon](./doc/pics/fancyribbon.png)
 
 4）<font size=4>fancytoolbutton</font>
+
 ![fancyribbon](./doc/pics/fancytoolbutton.png)
 
 5）<font size=4>qrcodedemo</font>
@@ -74,13 +81,9 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 ![qrcodedemo](./doc/pics/qrcodedemo.png#pic_center)
 
 ### 体验
-下载源码，使用 qtcreator 打开 qtcanpool.pro，build 整个工程，然后右击 fancydemo 并单击 Run 体验，如下所示：
+下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
 ![run](./doc/pics/run.png)
 
 ### 其它
-1）ribbon 控件
-- [QtitanRibbon](https://www.devmachines.com/qtitanribbon-overview.html)：一款商用的遵循 Microsoft Ribbon UI 的组件
-- [SARibbon](https://gitee.com/czyt1988/SARibbon)：一款轻量级的 Ribbon 控件
-
-2）docking 控件
-- [Qt-Advanced-Docking-System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System)：一款比 Qt 自带的 QDockWidget 高级的 Docking 系统。已经应用到 qtcreator 中。以 git 子模块的方式集成到库 [qads](./src/libs/qads) 中。
+- [QxRibbon](https://gitee.com/icanpool/QxRibbon)：Microsoft Ribbon for Qt
+- [QxDock](https://gitee.com/icanpool/QxDock)：Advanced Docking System for Qt
