@@ -6,9 +6,14 @@ SUBDIRS =   \
     qcanpool \
     qlite \
     qtitan \
-    aggregation \
-    extensionsystem \
-    utils
+
+QTC_BUILD_EXTENSIONSYSTEM = 0
+equals(QTC_BUILD_EXTENSIONSYSTEM, 1) {
+    SUBDIRS += \
+        aggregation \
+        extensionsystem \
+        utils
+}
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
