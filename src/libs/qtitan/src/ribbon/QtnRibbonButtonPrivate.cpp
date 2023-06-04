@@ -139,7 +139,7 @@ QSize RibbonButton::sizeHint() const
         else
         {
             QSize textSize = opt.fontMetrics.size(Qt::TextShowMnemonic, textButton);
-            textSize.setWidth(textSize.width() + opt.fontMetrics.width(QLatin1Char(' ')) * 2);
+            textSize.setWidth(textSize.width() + opt.fontMetrics.horizontalAdvance(QLatin1Char(' ')) * 2);
             h = sz.height();
 
             if (opt.toolButtonStyle == Qt::ToolButtonTextBesideIcon) 

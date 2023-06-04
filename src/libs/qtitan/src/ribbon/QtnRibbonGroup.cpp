@@ -420,7 +420,11 @@ QSize RibbonGroupPrivate::updateControlsLayout(QWidget* parent, int leftOffset) 
     QList<RibbonControl *> rowControls;
     QList<RibbonControl *> controls = m_controls;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 2, 0)
     qSort(controls.begin(), controls.end(), RibbonGroupPrivate::visualIndexLessThan);
+#else
+    std::sort(controls.begin(), controls.end(), RibbonGroupPrivate::visualIndexLessThan);
+#endif
 
     for (QList<RibbonControl *>::const_iterator it = controls.constBegin(); it != controls.constEnd(); ++it)
     {
@@ -521,7 +525,7 @@ QSize RibbonGroupPrivate::sizeHint() const
     const int heightCaptionGroup = opt.lineWidth;
 
     QSize textSize = opt.fontMetrics.size(Qt::TextShowMnemonic, p.title());
-    textSize.rwidth() += opt.fontMetrics.width(QLatin1Char(' ')) * 4;
+    textSize.rwidth() += opt.fontMetrics.horizontalAdvance(QLatin1Char(' ')) * 4;
 
     if (m_optionButton->isVisible())
         textSize.rwidth() += m_optionButton->sizeHint().width();

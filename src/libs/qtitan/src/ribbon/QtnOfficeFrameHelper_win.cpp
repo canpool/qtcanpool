@@ -1,15 +1,15 @@
 /****************************************************************************
 **
 ** Qtitan Library by Developer Machines (Microsoft-Ribbon implementation for Qt.C++)
-** 
+**
 ** Copyright (c) 2009-2015 Developer Machines (http://www.devmachines.com)
 **           ALL RIGHTS RESERVED
-** 
+**
 **  The entire contents of this file is protected by copyright law and
 **  international treaties. Unauthorized reproduction, reverse-engineering
 **  and distribution of all or any portion of the code contained in this
-**  file is strictly prohibited and may result in severe civil and 
-**  criminal penalties and will be prosecuted to the maximum extent 
+**  file is strictly prohibited and may result in severe civil and
+**  criminal penalties and will be prosecuted to the maximum extent
 **  possible under the law.
 **
 **  RESTRICTIONS
@@ -66,7 +66,7 @@ QT_BEGIN_NAMESPACE
     Q_GUI_EXPORT QPixmap qt_pixmapFromWinHICON(HICON icon);
 QT_END_NAMESPACE
 
-enum HBitmapFormat 
+enum HBitmapFormat
 {
     HBitmapNoAlpha,
     HBitmapPremultipliedAlpha,
@@ -75,7 +75,7 @@ enum HBitmapFormat
 #endif
 
 //DWM related
-typedef struct          //MARGINS       
+typedef struct          //MARGINS
 {
     int cxLeftWidth;    // width of left border that retains its size
     int cxRightWidth;   // width of right border that retains its size
@@ -100,7 +100,7 @@ typedef struct //DTTOPTS
     int iGlowSize;
 } HLP_DTTOPTS;
 
-typedef struct 
+typedef struct
 {
     DWORD dwFlags;
     DWORD dwMask;
@@ -109,7 +109,7 @@ typedef struct
 #define HLP_WM_THEMECHANGED                 0x031A
 #define HLP_WM_DWMCOMPOSITIONCHANGED        0x031E
 
-enum HLP_WINDOWTHEMEATTRIBUTETYPE 
+enum HLP_WINDOWTHEMEATTRIBUTETYPE
 {
     HLP_WTA_NONCLIENT = 1
 };
@@ -184,7 +184,7 @@ static PtrDwmIsCompositionEnabled pDwmIsCompositionEnabled = 0;
 static PtrDwmSetWindowAttribute pDwmSetWindowAttribute = 0;
 static PtrDwmExtendFrameIntoClientArea pDwmExtendFrameIntoClientArea = 0;
 
-//Theme related 
+//Theme related
 typedef bool (WINAPI *PtrIsAppThemed)();
 typedef HANDLE (WINAPI *PtrOpenThemeData)(HWND hwnd, LPCWSTR pszClassList);
 typedef HRESULT (WINAPI *PtrGetThemeSysFont)(HANDLE hTheme, int iFontId, LOGFONTW *plf);
@@ -265,7 +265,7 @@ void OfficeFrameHelperWin::FrameHelperEventHook::setEventHook()
 
     m_pUnhookWinEvent = (LPFNUNHOOKWINEVENT)dwmLib.resolve("UnhookWinEvent");
     if (m_pSetWinEventHook && m_pUnhookWinEvent)
-        m_hWinEventHook = m_pSetWinEventHook(EVENT_OBJECT_REORDER, EVENT_OBJECT_REORDER, Q_NULL, 
+        m_hWinEventHook = m_pSetWinEventHook(EVENT_OBJECT_REORDER, EVENT_OBJECT_REORDER, Q_NULL,
         &OfficeFrameHelperWin::FrameHelperEventHook::WinEventProc, GetCurrentProcessId(), 0, 0);
 }
 
@@ -338,12 +338,12 @@ OfficeFrameHelperWin::OfficeFrameHelperWin(QWidget* parent)
     m_changedSize = SIZE_RESTORED;
     m_isTheme2013 = false;
 
-    m_oldMarginsleft = 0; 
+    m_oldMarginsleft = 0;
     m_oldMarginstop = 0;
     m_oldMarginsright = 0;
     m_oldMarginsbottom = 0;
 
-    if (m_msgGetFrameHook == 0) 
+    if (m_msgGetFrameHook == 0)
         m_msgGetFrameHook = RegisterWindowMessageW(L"WM_GETFRAMEHOOK");
 
     connect(&m_refreshFrame,  SIGNAL(timeout()), this, SLOT(refreshFrameTimer()));
@@ -470,9 +470,9 @@ void OfficeFrameHelperWin::setFrameHook()
 Q_DECLARE_METATYPE(QMargins)
 void OfficeFrameHelperWin::saveMargins()
 {
-    if (QWindow* window = m_frame->windowHandle()) 
+    if (QWindow* window = m_frame->windowHandle())
     {
-        if (QPlatformWindow* platformWindow = window->handle()) 
+        if (QPlatformWindow* platformWindow = window->handle())
         {
             QMargins oldcustomMargins = qvariant_cast<QMargins>(QGuiApplication::platformNativeInterface()->
                 windowProperty(platformWindow, QStringLiteral("WindowsCustomMargins")));
@@ -486,16 +486,16 @@ void OfficeFrameHelperWin::saveMargins()
 
 void OfficeFrameHelperWin::restoreMargins()
 {
-    if (QWindow *window = m_frame->windowHandle()) 
+    if (QWindow *window = m_frame->windowHandle())
     {
-        if (QPlatformWindow* platformWindow = window->handle()) 
+        if (QPlatformWindow* platformWindow = window->handle())
         {
             RECT rc;
             ::GetWindowRect(m_hwndFrame, &rc);
 
             // Reduce top frame to zero since we paint it ourselves.
             const QMargins customMargins = QMargins(m_oldMarginsleft, m_oldMarginstop, m_oldMarginsright, m_oldMarginsbottom);
-            const QVariant customMarginsV = qVariantFromValue(customMargins);
+            const QVariant customMarginsV = QVariant::fromValue(customMargins);
 
             // The dynamic property takes effect when creating the platform window.
             window->setProperty("_q_windowsCustomMargins", customMarginsV);
@@ -539,14 +539,14 @@ DWORD OfficeFrameHelperWin::getStyle(bool exStyle) const
 }
 
 int OfficeFrameHelperWin::titleBarSize() const
-{ 
+{
     if (isTitleVisible() || (!m_ribbonBar && m_frame))
         return m_frame->style()->pixelMetric(QStyle::PM_TitleBarHeight, 0) + m_frameBorder;
 
     if (m_ribbonBar)
         return m_ribbonBar->titleBarHeight() + m_frameBorder;
 
-    return frameSize() + captionSize(); 
+    return frameSize() + captionSize();
 }
 
 int OfficeFrameHelperWin::tabBarHeight() const
@@ -691,7 +691,7 @@ QString OfficeFrameHelperWin::getSystemMenuString(uint item) const
     }
 
     HMENU hMenu = ::GetSystemMenu(m_hwndFrame, 0);
-    Q_ASSERT(::IsMenu(hMenu)); 
+    Q_ASSERT(::IsMenu(hMenu));
     if (hMenu)
     {
         // offer no buffer first
@@ -915,7 +915,7 @@ void OfficeFrameHelperWin::initStyleOption(StyleOptionFrame* option)
     ::ClientToScreen(m_hwndFrame, ((LPPOINT)&rcClient)+1);
 
     option->init(m_frame);
-    option->rect = QRect(QPoint(rc.left, rc.top), QPoint(rc.right, rc.bottom)); 
+    option->rect = QRect(QPoint(rc.left, rc.top), QPoint(rc.right, rc.bottom));
     option->active = m_active;
     option->hasStatusBar = isFrameHasStatusBar();
     option->frameBorder = m_frameBorder;
@@ -1081,7 +1081,7 @@ void OfficeFrameHelperWin::drawTitleBar(QPainter* painter, const StyleOptionTitl
     drawDwmCaptionText(painter, opt.rcTitleText, text[0] != Q_NULL ? QString::fromWCharArray(text) : opt.text, opt.clrText, opt.state & QStyle::State_Active, false);
     delete[] text;
 
-    if (opt.drawIcon && !opt.icon.isNull()) 
+    if (opt.drawIcon && !opt.icon.isNull())
     {
         int nFrameBorder = frameBorder();
         int nTopBorder = isDwmEnabled() ? nFrameBorder : 0;
@@ -1134,8 +1134,12 @@ void OfficeFrameHelperWin::fillSolidRect(QPainter* painter, const QRect& rect, c
     if (hdc == 0)
         return;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     QVector<QRect> rects = airRegion.rects();
     for (QVector<QRect>::iterator it = rects.begin(); it != rects.end(); ++it)
+#else // since 5.8
+    for (QRegion::const_iterator it = airRegion.begin(); it != airRegion.end(); ++it)
+#endif
     {
         QRect r = rect.intersected(*it);
         RECT rc;
@@ -1175,7 +1179,7 @@ void OfficeFrameHelperWin::drawDwmCaptionText(QPainter* painter, const QRect& rc
         return;
 
     HANDLE hTheme = pOpenThemeData((HWND)QApplication::desktop()->winId(), L"WINDOW");
-    if (!hTheme) 
+    if (!hTheme)
        return;
 
     // Set up a memory DC and bitmap that we'll draw into
@@ -1225,7 +1229,7 @@ void OfficeFrameHelperWin::drawDwmCaptionText(QPainter* painter, const QRect& rc
 
     bool maximizeStyle = getStyle() & WS_MAXIMIZE;
 
-    pDrawThemeTextEx(hTheme, dcMem, maximizeStyle ? HLP_WP_MAXCAPTION : HLP_WP_CAPTION, active ? HLP_FS_ACTIVE : HLP_FS_INACTIVE, 
+    pDrawThemeTextEx(hTheme, dcMem, maximizeStyle ? HLP_WP_MAXCAPTION : HLP_WP_CAPTION, active ? HLP_FS_ACTIVE : HLP_FS_INACTIVE,
        (LPCWSTR)text.utf16(), -1, uFormat, &rctext, &dto);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -1493,20 +1497,20 @@ void OfficeFrameHelperWin::collapseTopFrame()
         return;
 
     const bool theme2013 = isTheme2013();
-	
+
     const DWORD dStyle = getStyle();
 
     if ((dStyle & WS_MINIMIZE) && theme2013)
       return;
 
-    if (QWindow* window = m_frame->windowHandle()) 
+    if (QWindow* window = m_frame->windowHandle())
     {
-        if (QPlatformWindow* platformWindow = window->handle()) 
+        if (QPlatformWindow* platformWindow = window->handle())
         {
             int val = 0;
             int valBottom = 0;
             bool visible = theme2013 ? true : m_ribbonBar->qtn_d().m_ribbonBarVisible;
-			
+
             int valTitle = m_dwmEnabled ? (visible ? captionSize() + (m_frameBorder * 2) : 0) : (visible ? captionSize() + m_frameBorder / 2 : m_frameBorder / 2);
 
             if ((dStyle & WS_MAXIMIZE) == 0)
@@ -1515,7 +1519,7 @@ void OfficeFrameHelperWin::collapseTopFrame()
                     valTitle = 0;
             }
 
-			//====================modify by sgy 2019-01-08 2013主题窗体还原时不会更改为最大按钮的修改========================
+            //====================modify by sgy 2019-01-08 ========================
             //if (theme2013 && (dStyle & WS_MINIMIZE) == 0)
 			if (dStyle & WS_MAXIMIZE)
             {
@@ -1536,12 +1540,12 @@ void OfficeFrameHelperWin::collapseTopFrame()
                 valTitle -= m_frameBorder;
                 valBottom = 0;
             }*/
-	
-			//====================modify by sgy 2019-01-08 2013主题窗体还原时不会更改为最大按钮的修改========================
+
+            //====================modify by sgy 2019-01-08 ========================
 
             // Reduce top frame to zero since we paint it ourselves.
             const QMargins customMargins = QMargins(-val, -valTitle, -val, -valBottom);
-            const QVariant customMarginsV = qVariantFromValue(customMargins);
+            const QVariant customMarginsV = QVariant::fromValue(customMargins);
 
             QMargins oldcustomMargins = qvariant_cast<QMargins>(QGuiApplication::platformNativeInterface()->
                 windowProperty(platformWindow, QStringLiteral("WindowsCustomMargins")));
@@ -1671,7 +1675,7 @@ bool OfficeFrameHelperWin::winEvent(MSG* msg, long* result)
             if (getStyle(FALSE) & WS_MAXIMIZE)
                 modifyStyle(m_hwndFrame, WS_MAXIMIZE, 0, 0);
         }
-		
+
         return false;
     }
     else if (msg->message == WM_ENTERSIZEMOVE)
@@ -1757,12 +1761,12 @@ bool OfficeFrameHelperWin::winEvent(MSG* msg, long* result)
 
         LRESULT lResult;
         // Perform hit testing using DWM
-        if (pDwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, &lResult)) 
+        if (pDwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, &lResult))
         {
             // DWM returned a hit, no further processing necessary
             *result = lResult;
-        } 
-        else 
+        }
+        else
         {
             // DWM didn't return a hit, process using DefWindowProc
             lResult = DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
@@ -1901,7 +1905,7 @@ bool OfficeFrameHelperWin::winEvent(MSG* msg, long* result)
 
         if (m_dwmEnabled)
             *result = DefWindowProcW(msg->hwnd, msg->message, msg->wParam, msg->lParam);
-        else 
+        else
         {
             lpncsp->rgrc[0].left   += m_frameBorder;
             lpncsp->rgrc[0].top    += m_frameBorder;
@@ -1936,17 +1940,17 @@ bool OfficeFrameHelperWin::winEvent(MSG* msg, long* result)
                     m_borderSizeBotton = borderSize;
                     lpncsp->rgrc[0].bottom = rc.bottom - borderSize;
                 }
-				
+
             }
         }
 
         if (((dwStyle & (WS_MAXIMIZE | WS_CHILD)) == WS_MAXIMIZE) && shellAutohideBars() != 0)
             lpncsp->rgrc[0].bottom -= 1;
 
-		//=================Start add by sgy 2019-01-08 解决非2013主题缩放时tab控件不刷新问题==============
+		//=================Start add by sgy 2019-01-08 ==============
 		if(!isTheme2013())
 			postRecalcFrameLayout();
-		//=================End add by sgy 2019-01-08 解决非2013主题缩放时tab控件不刷新问题==============
+		//=================End add by sgy 2019-01-08 ==============
         return true;
     }
     else if (msg->message == WM_SYSCOMMAND && !m_dwmEnabled && msg->wParam == SC_MINIMIZE && getStyle() & WS_CHILD)
@@ -2039,7 +2043,7 @@ bool OfficeFrameHelperWin::eventFilter(QObject* obj, QEvent* event)
             QEvent e(QEvent::EmbeddingControl);
             QCoreApplication::sendEvent(m_frame, &e);
         }
-        else 
+        else
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         if (event->type() == QEvent::Paint)
         {
@@ -2143,7 +2147,7 @@ bool OfficeFrameHelperWin::isCompositionEnabled()
     if (isTheme2013() && m_officeFrameEnabled)
         return false;
 
-    if (pDwmIsCompositionEnabled) 
+    if (pDwmIsCompositionEnabled)
     {
         BOOL enabled;
         HRESULT hr = pDwmIsCompositionEnabled(&enabled);
@@ -2172,7 +2176,7 @@ void OfficeFrameHelperWin::enableWindowShadow(HWND hwnd, bool enable)
     ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
     Q_ASSERT( false );
 /*
-#if _MSC_VER >= 1200 // check the version of the system 
+#if _MSC_VER >= 1200 // check the version of the system
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     ::GetVersionEx(&osvi);
 */
@@ -2180,7 +2184,7 @@ void OfficeFrameHelperWin::enableWindowShadow(HWND hwnd, bool enable)
     OSVERSIONINFOEX osvi;
     ::ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-    ULONGLONG maskCondition = ::VerSetConditionMask(0, VER_MAJORVERSION, VER_EQUAL); 
+    ULONGLONG maskCondition = ::VerSetConditionMask(0, VER_MAJORVERSION, VER_EQUAL);
     ::VerifyVersionInfoW(&osvi, VER_MAJORVERSION, maskCondition);
 */
     bool isWindowsVista = (osvi.dwMajorVersion >= 6);
@@ -2234,14 +2238,14 @@ bool OfficeFrameHelperWin::setWindowAttribute(HWND hwnd, DWORD dwAttribute, LPCV
 bool OfficeFrameHelperWin::resolveSymbols()
 {
     static bool tried = false;
-    if (!tried) 
+    if (!tried)
     {
         tried = true;
 
         QLibrary dwmLib(QString::fromLatin1("dwmapi"));
         pDwmIsCompositionEnabled = (PtrDwmIsCompositionEnabled)dwmLib.resolve("DwmIsCompositionEnabled");
         pDwmSetWindowAttribute = (PtrDwmSetWindowAttribute)dwmLib.resolve("DwmSetWindowAttribute");
-        if (pDwmIsCompositionEnabled && pDwmSetWindowAttribute) 
+        if (pDwmIsCompositionEnabled && pDwmSetWindowAttribute)
         {
             pDwmDefWindowProc = (PtrDwmDefWindowProc)dwmLib.resolve("DwmDefWindowProc");
             pDwmExtendFrameIntoClientArea = (PtrDwmExtendFrameIntoClientArea)dwmLib.resolve("DwmExtendFrameIntoClientArea");
@@ -2249,7 +2253,7 @@ bool OfficeFrameHelperWin::resolveSymbols()
         QLibrary themeLib(QString::fromLatin1("uxtheme"));
         pIsAppThemed = (PtrIsAppThemed)themeLib.resolve("IsAppThemed");
 
-        if (pIsAppThemed) 
+        if (pIsAppThemed)
         {
             pOpenThemeData = (PtrOpenThemeData)themeLib.resolve("OpenThemeData");
             pGetThemeSysFont = (PtrGetThemeSysFont)themeLib.resolve("GetThemeSysFont");

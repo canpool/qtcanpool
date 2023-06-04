@@ -205,7 +205,7 @@ QSize RibbonSystemButton::sizeHint() const
 
     int indent = 0;
     if (opt.toolButtonStyle == Qt::ToolButtonTextOnly)
-        indent = opt.fontMetrics.width(QLatin1Char('x')) * 4;
+        indent = opt.fontMetrics.horizontalAdvance(QLatin1Char('x')) * 4;
     else if (opt.toolButtonStyle == Qt::ToolButtonIconOnly)
         indent = 24;
 

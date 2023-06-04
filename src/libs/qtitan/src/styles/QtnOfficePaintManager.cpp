@@ -1352,7 +1352,6 @@ bool OfficePaintManager::drawScrollBarLine(QStyle::ControlElement element, const
         int number = -1;
         if (opt->state & QStyle::State_Horizontal) 
         {
-            QRect rcSrc;
             if (element == QStyle::CE_ScrollBarAddLine)
                 number = !enabled ? 16 : state != 0 ? 14 : 13;
             else
@@ -2391,10 +2390,10 @@ bool OfficePaintManager2013::drawIndicatorCheckRadioButton(QStyle::PrimitiveElem
             circle.addEllipse(circleCenter, checkmarkRadius, checkmarkRadius);
             QColor checkMarkColor = highlighted && enabled ? m_clrAccentText : m_clrBarDkShadow;
             if (!themeBlack)
-                checkMarkColor = checkMarkColor.dark(180);
+                checkMarkColor = checkMarkColor.darker(180);
 
             if (themeBlack && highlighted)
-                checkMarkColor = checkMarkColor.light();
+                checkMarkColor = checkMarkColor.lighter();
             checkMarkColor.setAlpha(200);
             p->setPen(checkMarkColor);
             checkMarkColor.setAlpha(180);
@@ -2425,9 +2424,9 @@ bool OfficePaintManager2013::drawIndicatorCheckRadioButton(QStyle::PrimitiveElem
             p->setRenderHint(QPainter::Antialiasing, true);
             QColor checkMarkColor = highlighted && enabled ? m_clrAccentText : m_clrBarDkShadow;
             if (!themeBlack)
-                checkMarkColor = checkMarkColor.dark(180);
+                checkMarkColor = checkMarkColor.darker(180);
             if (themeBlack && highlighted)
-                checkMarkColor = checkMarkColor.light();
+                checkMarkColor = checkMarkColor.lighter();
 
             QPen checkPen = QPen(checkMarkColor, DrawHelpers::dpiScaled(1.1));
             checkMarkColor.setAlpha(210);
@@ -3697,14 +3696,14 @@ bool OfficePaintManager2016::drawComboBox(const QStyleOptionComplex* opt, QPaint
             if (theme() == OfficeStyle::Office2016Black)
                 colorBorder = qRgb(140, 140, 140);
             else
-                colorBorder = onlyClrAccent ? d.m_clrAccent : m_clrBarDkShadow.dark(150);
+                colorBorder = onlyClrAccent ? d.m_clrAccent : m_clrBarDkShadow.darker(150);
         }
         else if (highlighted || hasFocus)
         {
             if (theme() == OfficeStyle::Office2016Black)
                 colorBorder = qRgb(140, 140, 140);
             else
-                colorBorder = onlyClrAccent ? d.m_clrAccent : m_clrBarDkShadow.dark(150);
+                colorBorder = onlyClrAccent ? d.m_clrAccent : m_clrBarDkShadow.darker(150);
         }
 
         if (cmb->frame)
@@ -3830,7 +3829,7 @@ void OfficePaintManager2016::setupPalette(QWidget* widget) const
         else if (qobject_cast<RibbonToolBarControl*>(widget))
         {
             QPalette palette = widget->palette();
-            palette.setBrush(QPalette::Background, helper().getColor("Window", "BarLight").light(114));
+            palette.setBrush(QPalette::Background, helper().getColor("Window", "BarLight").lighter(114));
             widget->setPalette(palette);
         }
         else if (qobject_cast<QGroupBox*>(widget))
@@ -3848,7 +3847,7 @@ void OfficePaintManager2016::setupPalette(QWidget* widget) const
             {
                 QPalette palette = widget->palette();
                 palette.setBrush(QPalette::ButtonText, color);
-                palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.dark());
+                palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.darker());
                 widget->setPalette(palette);
             }
         }
@@ -3887,7 +3886,7 @@ void OfficePaintManager2016::setupPalette(QWidget* widget) const
             QColor color = helper().getColor("Dialog", "Foreground");
             QPalette palette = widget->palette();
             palette.setBrush(QPalette::ButtonText, color);
-            palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.dark(150));
+            palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.darker(150));
             widget->setPalette(palette);
         }
     }

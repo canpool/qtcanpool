@@ -354,7 +354,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
             {
                 p->save();
                 int margin = 3;
-                p->setPen(opt->palette.background().color().darker(114));
+                p->setPen(opt->palette.window().color().darker(114));
                 int x1 = opt->rect.center().x();
                 p->drawLine(QPoint(x1, opt->rect.top() + margin), QPoint(x1, opt->rect.bottom() - margin));
                 p->restore();
@@ -372,7 +372,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
                     path.lineTo (rect.center().x(), rect.bottom() - rectText.width() - margin);
 
                     p->save();
-                    p->setPen(opt->palette.background().color().darker(114));
+                    p->setPen(opt->palette.window().color().darker(114));
                     p->drawPath(path);
                     QSize s = rect.size();
                     s.transpose();
@@ -382,7 +382,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
                     p->translate(-rect.left() + 1, -rect.top());
                     int indent = 0;
                     QPalette pal;
-                    pal.setColor(QPalette::WindowText, opt->palette.background().color().darker(114));
+                    pal.setColor(QPalette::WindowText, opt->palette.window().color().darker(114));
                     baseStyle()->proxy()->drawItemText(p, rect.adjusted(indent + 1, 1, -indent - 1, -1), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic, pal,
                         optGroup->state & QStyle::State_Enabled, titleText, QPalette::WindowText);
                     p->restore();
@@ -394,7 +394,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
                     path.lineTo (rect.center().x(), rect.bottom() - margin);
 
                     p->save();
-                    p->setPen(opt->palette.background().color().darker(114));
+                    p->setPen(opt->palette.window().color().darker(114));
                     p->drawPath(path);
                     QSize s = rect.size();
                     s.transpose();
@@ -404,7 +404,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
                     p->translate(-rect.left() + 1, -rect.top());
                     int indent = 0;
                     QPalette pal;
-                    pal.setColor(QPalette::WindowText, opt->palette.background().color().darker(114));
+                    pal.setColor(QPalette::WindowText, opt->palette.window().color().darker(114));
                     baseStyle()->proxy()->drawItemText(p, rect.adjusted(indent + rect.width() - rectText.width() - 2, 1, -indent - 1, -1), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic, pal,
                         optGroup->state & QStyle::State_Enabled, titleText, QPalette::WindowText);
                     p->restore();
@@ -412,7 +412,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
                 else if (optGroup->textAlignment == Qt::AlignVCenter)
                 {
                     p->save();
-                    p->setPen(opt->palette.background().color().darker(114));
+                    p->setPen(opt->palette.window().color().darker(114));
                     p->drawLine(rect.center().x(), rect.top() + rectText.width() + rectText.width() + margin + 2, rect.center().x(), rect.bottom() - margin);
                     p->drawLine(rect.center().x(), rect.top() + margin, rect.center().x(), rect.bottom() - (rectText.width() + rectText.width() + margin));
 
@@ -424,7 +424,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption* opt, 
                     p->translate(-rect.left() + 1, -rect.top());
                     int indent = 0;
                     QPalette pal;
-                    pal.setColor(QPalette::WindowText, opt->palette.background().color().darker(114));
+                    pal.setColor(QPalette::WindowText, opt->palette.window().color().darker(114));
                     baseStyle()->proxy()->drawItemText(p, rect.adjusted(indent + (rect.width() - rectText.width())/2 - 2, 1, -indent - 1, -1), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextShowMnemonic, pal,
                         optGroup->state & QStyle::State_Enabled, titleText, QPalette::WindowText);
                     p->restore();
@@ -928,7 +928,7 @@ void RibbonPaintManager::drawReducedGroup(const QStyleOption* opt, QPainter* p, 
         state = !(optGroup->state & QStyle::State_Enabled) ? 3 : opt->state & QStyle::State_MouseOver ? 1 : 0;
         rcSrc = sourceRectImage(soImage.rect(), state, 4);
 
-        int width = opt->fontMetrics.width(strSecondRow) + 7;
+        int width = opt->fontMetrics.horizontalAdvance(strSecondRow) + 7;
         QPoint pt = QPoint(strSecondRow.isEmpty() ? rcText.center().x() - 1 : 
             rectSecondRow.left() + width - 4, strSecondRow.isEmpty() ? rectFirstRow.bottom() : rectSecondRow.center().y());
 
@@ -1906,7 +1906,7 @@ void RibbonPaintManager::drawRibbonBackstageMenu(const QStyleOption* opt, QPaint
         QPalette pal = menuitem->palette;
         QColor clrText = focus ? QColor(Qt::white) : helper().getColor("Ribbon", "BackstageMenuTextColor", QColor(Qt::black));
         if ( dis )
-            clrText = menuitem->palette.color(QPalette::Disabled, QPalette::WindowText).light(); //QColor(143, 143, 143);
+            clrText = menuitem->palette.color(QPalette::Disabled, QPalette::WindowText).lighter(); //QColor(143, 143, 143);
 
         pal.setColor(QPalette::WindowText, clrText);
 
@@ -2385,7 +2385,7 @@ void RibbonPaintManager2013::drawReducedGroup(const QStyleOption* opt, QPainter*
         OfficePaintManager2013::ImageIcons index = OfficePaintManager2013::Icon_ArowDown;
         OfficePaintManager2013::ImageState state = OfficePaintManager2013::Black2;
 
-        int width = opt->fontMetrics.width(strSecondRow);
+        int width = opt->fontMetrics.horizontalAdvance(strSecondRow);
         QPoint pt = QPoint(strSecondRow.isEmpty() ? rcText.center().x() - 4 : 
             rectSecondRow.left() + width + 1, strSecondRow.isEmpty() ? rectFirstRow.bottom() : (rectSecondRow.top() + (rectSecondRow.height() - 9)/2) + 1);
 
@@ -3235,7 +3235,7 @@ void RibbonPaintManager2013::drawRibbonBackstageMenu(const QStyleOption* opt, QP
             int yoff = (y - 1 + h / 2);
             QPen penSave = p->pen();
             OfficeStyle::Theme th = theme();
-            QColor clr = th == OfficeStyle::Office2016Black || th == OfficeStyle::Office2016DarkGray ? m_clrBarLight : d.m_clrAccent.light(130);
+            QColor clr = th == OfficeStyle::Office2016Black || th == OfficeStyle::Office2016DarkGray ? m_clrBarLight : d.m_clrAccent.lighter(130);
             p->setPen(clr);
             p->drawLine(x + 2 + iconSize, yoff, x + w - 4, yoff);
             p->setPen(penSave);
@@ -4114,7 +4114,7 @@ void RibbonPaintManager2016::setupPalette(QWidget* widget) const
         else if (qobject_cast<RibbonToolBarControl*>(widget))
         {
             QPalette palette = widget->palette();
-            palette.setBrush(QPalette::Background, helper().getColor("Window", "BarLight").light(114));
+            palette.setBrush(QPalette::Background, helper().getColor("Window", "BarLight").lighter(114));
             widget->setPalette(palette);
         }
         else if (qobject_cast<QGroupBox*>(widget))
@@ -4151,7 +4151,7 @@ void RibbonPaintManager2016::setupPalette(QWidget* widget) const
             {
                 QPalette palette = widget->palette();
                 palette.setBrush(QPalette::ButtonText, color);
-                palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.dark());
+                palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.darker());
                 widget->setPalette(palette);
             }
         }
@@ -4173,7 +4173,7 @@ void RibbonPaintManager2016::setupPalette(QWidget* widget) const
                 QColor color = helper().getColor("Dialog", "Foreground");
                 QPalette palette = widget->palette();
                 palette.setBrush(QPalette::ButtonText, color);
-                palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.dark(150));
+                palette.setBrush(QPalette::Disabled, QPalette::ButtonText, color.darker(150));
                 widget->setPalette(palette);
             }
         }

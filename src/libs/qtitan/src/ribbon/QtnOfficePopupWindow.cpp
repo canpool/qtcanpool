@@ -589,7 +589,7 @@ void OfficePopupWindowPrivate::initTitleBarStyleOption(StyleOptionPopupTitleBar*
     option->text = m_titleTxt;
     QFontMetrics fm(m_titleFont);
     option->fontMetrics = fm;
-    option->subControls = 0;
+    option->subControls = QStyle::SubControls();
 
     if (!m_titleTxt.isEmpty())
       option->subControls = QStyle::SC_TitleBarLabel;

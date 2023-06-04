@@ -1340,9 +1340,14 @@ QRect RibbonGallery::borders() const
 
     rcBorders.setRight(rcBorders.right() + d.scrollWidth());
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
     int left = 0, top = 0, right = 0, bottom = 0;
     getContentsMargins(&left, &top, &right, &bottom);
     rcBorders.adjust(left, top, right, bottom);
+#else
+    QMargins m = contentsMargins();
+    rcBorders.adjust(m.left(), m.top(), m.right(), m.bottom());
+#endif
 
     return rcBorders;
 }

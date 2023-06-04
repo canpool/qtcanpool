@@ -822,7 +822,7 @@ int RibbonStyle::pixelMetric(PixelMetric pm, const QStyleOption* option, const Q
                 if(strFirstRow.count() < strSecondRow.count())
                     strFirstRow = strSecondRow;
 
-                ret = optBut->fontMetrics.boundingRect(strFirstRow).width() + optBut->fontMetrics.width(QLatin1Char(' '))*4;
+                ret = optBut->fontMetrics.boundingRect(strFirstRow).width() + optBut->fontMetrics.horizontalAdvance(QLatin1Char(' '))*4;
                 if (towRow)
                     ret = ret + 16;
                     
@@ -844,6 +844,7 @@ int RibbonStyle::pixelMetric(PixelMetric pm, const QStyleOption* option, const Q
                 }
                 break;
             }
+            // fallthrough
         case PM_TitleBarHeight : 
             {
                 ret = OfficeStyle::pixelMetric(pm, option, widget);
@@ -1085,7 +1086,7 @@ QSize RibbonStyle::sizeFromContents(ContentsType ct, const QStyleOption* opt, co
                             QFont fontBold = mi->font;
                             fontBold.setBold(true);
                             QFontMetrics fmBold(fontBold);
-                            w += fmBold.width(mi->text) - fm.width(mi->text);
+                            w += fmBold.horizontalAdvance(mi->text) - fm.horizontalAdvance(mi->text);
                         }
 
                         int checkcol = qMax(maxpmw, windowsCheckMarkWidth); // Windows always shows a check column
@@ -1165,6 +1166,7 @@ QRect RibbonStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex* 
                             ret.adjust(0, 0, -mbi, 0);
                         break;
                     }
+                    // fallthrough
                 case SC_ToolButtonMenu:
                     if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay)) == QStyleOptionToolButton::MenuButtonPopup)
                     {
@@ -1180,12 +1182,12 @@ QRect RibbonStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex* 
                                 if (!strFirstRow.isEmpty())
                                 {
                                     textSize = opt->fontMetrics.size(Qt::TextShowMnemonic, strFirstRow);
-                                    textSize.setWidth(textSize.width() + opt->fontMetrics.width(QLatin1Char(' '))*2);
+                                    textSize.setWidth(textSize.width() + opt->fontMetrics.horizontalAdvance(QLatin1Char(' '))*2);
                                 }
                                 if (!strSecondRow.isEmpty())
                                 {
                                     QSize textSize1 = opt->fontMetrics.size(Qt::TextShowMnemonic, strSecondRow);
-                                    textSize1.setWidth(textSize1.width() + opt->fontMetrics.width(QLatin1Char(' '))*2);
+                                    textSize1.setWidth(textSize1.width() + opt->fontMetrics.horizontalAdvance(QLatin1Char(' '))*2);
                                     textSize.setWidth(qMax(textSize.width(), textSize1.width()));
                                 }
                                 ret.adjust(0, tb->iconSize.height() + 8, 0, 0);

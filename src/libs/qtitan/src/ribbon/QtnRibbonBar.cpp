@@ -505,8 +505,13 @@ void RibbonBarPrivate::layoutRibbon()
             if (RibbonPage* page = m_listPages.at(index))
             {
                 QRect rectLogotype;
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
                 int width = m_logotypeLabel->pixmap()->width();
                 int height = m_logotypeLabel->pixmap()->height();
+#else
+                int width = m_logotypeLabel->pixmap(Qt::ReturnByValue).width();
+                int height = m_logotypeLabel->pixmap(Qt::ReturnByValue).height();
+#endif
                 QRect rcPage = page->geometry();
 
                 if (height < rcPage.height())
@@ -2343,7 +2348,11 @@ QPixmap RibbonBar::logoPixmap(Qt::AlignmentFlag& alignment) const
     QTN_D(const RibbonBar);
     
     alignment = d.m_logotypeLabel->alignmentLogotype();
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     return d.m_logotypeLabel->isVisible() ? *d.m_logotypeLabel->pixmap() : QPixmap();
+#else
+    return d.m_logotypeLabel->isVisible() ? d.m_logotypeLabel->pixmap(Qt::ReturnByValue) : QPixmap();
+#endif
 }
 
 /*!
@@ -3200,12 +3209,20 @@ void RibbonBar::wheelEvent(QWheelEvent* event)
     if (!isMaximized())
         return;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QPoint pos = event->pos();
+#else
+    QPoint pos = event->position().toPoint();
+#endif
 
     if (!geometry().contains(pos))
         return;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     d.m_tabBar->currentNextTab(event->delta() < 0);
+#else
+    d.m_tabBar->currentNextTab(event->angleDelta().y() < 0);
+#endif
 }
 
 void RibbonBar::contextMenuEvent(QContextMenuEvent* event)

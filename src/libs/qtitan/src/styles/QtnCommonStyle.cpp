@@ -54,10 +54,16 @@ QTITAN_USE_NAMESPACE
  */
 static QPixmap cachedPixmap(const QString& img)
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
     if (QPixmap* p = QPixmapCache::find(img))
         return *p;
 
     QPixmap pm;
+#else
+    QPixmap pm;
+    if (QPixmapCache::find(img, &pm))
+        return pm;
+#endif
     pm = QPixmap::fromImage(QImage(img), Qt::OrderedDither | Qt::OrderedAlphaDither);
 
 //    if (pm.isNull())
@@ -1139,73 +1145,24 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption* 
             QtitanTransition* transition = new QtitanTransition;
             transition->setWidget(w);
 
-            QStyleOption* opt = Q_NULL;
-            if (const QStyleOptionComboBox* comboBox = qstyleoption_cast<const QStyleOptionComboBox*>(option)) 
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionComboBox));
-                if (opt != Q_NULL)
-                    memcpy(opt, comboBox, sizeof(QStyleOptionComboBox));
-            }
-            else if (const StyleSystemToolButton* btn = qstyleoption_cast<const StyleSystemToolButton*>(option)) 
-            {
-                opt = (QStyleOption*)malloc(sizeof(StyleSystemToolButton));
-                if (opt != Q_NULL)
-                    memcpy(opt, btn, sizeof(StyleSystemToolButton));
-            }
-            else if (const QStyleOptionToolButton* button = qstyleoption_cast<const QStyleOptionToolButton*>(option)) 
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionToolButton));
-                if (opt != Q_NULL)
-                    memcpy(opt, button, sizeof(QStyleOptionToolButton));
-            }
-            else if (const StyleOptionTitleBar* button = qstyleoption_cast<const StyleOptionTitleBar*>(option))
-            {
-                opt = (QStyleOption*)malloc(sizeof(StyleOptionTitleBar));
-                if (opt != Q_NULL)
-                    memcpy(opt, button, sizeof(StyleOptionTitleBar));
-            }
-            else if (const StyleRibbonOptionHeader* optHendle = qstyleoption_cast<const StyleRibbonOptionHeader*>(option))
-            {
-                opt = (QStyleOption*)malloc(sizeof(StyleRibbonOptionHeader));
-                if (opt != Q_NULL)
-                    memcpy(opt, optHendle, sizeof(StyleRibbonOptionHeader));
-            }
-            else if (const QStyleOptionButton* btn = qstyleoption_cast<const QStyleOptionButton*>(option)) 
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionButton));
-                if (opt != Q_NULL)
-                    memcpy(opt, btn, sizeof(QStyleOptionButton));
-            }
-            else if (const QStyleOptionGroupBox* box = qstyleoption_cast<const QStyleOptionGroupBox*>(option))
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionGroupBox));
-                if (opt != Q_NULL)
-                    memcpy(opt, box, sizeof(QStyleOptionGroupBox));
-            }
-            else if (const QStyleOptionHeader* pHeader = qstyleoption_cast<const QStyleOptionHeader*>(option))
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionHeader));
-                if (opt != Q_NULL)
-                    memcpy(opt, pHeader, sizeof(QStyleOptionHeader));
-            }
-            else if (const QStyleOptionComplex* pOptionComplex = qstyleoption_cast<const QStyleOptionComplex*>(option))
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionComplex));
-                if (opt != Q_NULL)
-                    memcpy(opt, pOptionComplex, sizeof(QStyleOptionComplex));
-            }
-            else if (const QStyleOptionFrame* pOptionComplex = qstyleoption_cast<const QStyleOptionFrame*>(option))
-            {
-                opt = (QStyleOption*)malloc(sizeof(QStyleOptionFrame));
-                if (opt != Q_NULL)
-                    memcpy(opt, pOptionComplex, sizeof(QStyleOptionFrame));
-            }
+            bool bTransition = qstyleoption_cast<const QStyleOptionComboBox *>(option) ||
+                    qstyleoption_cast<const StyleSystemToolButton *>(option) ||
+                    qstyleoption_cast<const QStyleOptionToolButton *>(option) ||
+                    qstyleoption_cast<const StyleOptionTitleBar *>(option) ||
+                    qstyleoption_cast<const StyleRibbonOptionHeader *>(option) ||
+                    qstyleoption_cast<const QStyleOptionButton *>(option) ||
+                    qstyleoption_cast<const QStyleOptionGroupBox *>(option) ||
+                    qstyleoption_cast<const QStyleOptionHeader *>(option) ||
+                    qstyleoption_cast<const QStyleOptionComplex *>(option) ||
+                    qstyleoption_cast<const QStyleOptionFrame *>(option);
 
-            if (opt == Q_NULL)
+            if (!bTransition)
             {
                 delete transition;
                 return false;
             }
+
+            QStyleOption* opt = const_cast<QStyleOption *>(option);
 
             opt->rect.setRect(0, 0, rect.width(), rect.height());
 
@@ -1260,8 +1217,6 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption* 
                 default:
                     break;
             }
-
-            free(opt);
 
             transition->setEndImage(endImage);
 

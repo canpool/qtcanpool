@@ -1233,7 +1233,7 @@ QSize OfficeStyle::sizeFromContents(ContentsType ct, const QStyleOption* opt, co
                         QFont fontBold = menuitem->font;
                         fontBold.setBold(true);
                         QFontMetrics fmBold(fontBold);
-                        w += fmBold.width(menuitem->text) + 6 + 6;
+                        w += fmBold.horizontalAdvance(menuitem->text) + 6 + 6;
                         int h =  menuitem->fontMetrics.height() + 6;
                         s.setHeight(qMax(h, 22));
                         s.setWidth(qMax(w, s.width()));
@@ -1290,11 +1290,13 @@ QRect OfficeStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex* 
                         case SC_TitleBarContextHelpButton:
                             if (tb->titleBarFlags & Qt::WindowContextHelpButtonHint)
                                 offset += delta;
+                            // fallthrough
                         case SC_TitleBarMinButton:
                             if (!isMinimized && (tb->titleBarFlags & Qt::WindowMinimizeButtonHint))
                                 offset += delta;
                             else if (sc == SC_TitleBarMinButton)
                                 break;
+                            // fallthrough
                         case SC_TitleBarNormalButton:
                             if (isMinimized && (tb->titleBarFlags & Qt::WindowMinimizeButtonHint))
                                 offset += delta;
@@ -1302,21 +1304,25 @@ QRect OfficeStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex* 
                                 offset += delta;
                             else if (sc == SC_TitleBarNormalButton)
                                 break;
+                            // fallthrough
                         case SC_TitleBarMaxButton:
                             if (!isMaximized && (tb->titleBarFlags & Qt::WindowMaximizeButtonHint))
                                 offset += delta;
                             else if (sc == SC_TitleBarMaxButton)
                                 break;
+                            // fallthrough
                         case SC_TitleBarShadeButton:
                             if (!isMinimized && (tb->titleBarFlags & Qt::WindowShadeButtonHint))
                                 offset += delta;
                             else if (sc == SC_TitleBarShadeButton)
                                 break;
+                            // fallthrough
                         case SC_TitleBarUnshadeButton:
                             if (isMinimized && (tb->titleBarFlags & Qt::WindowShadeButtonHint))
                                 offset += delta;
                             else if (sc == SC_TitleBarUnshadeButton)
                                 break;
+                            // fallthrough
                         case SC_TitleBarCloseButton:
                             if (tb->titleBarFlags & Qt::WindowSystemMenuHint)
                                 offset += delta;
