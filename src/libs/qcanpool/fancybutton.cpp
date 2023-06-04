@@ -29,6 +29,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QAction>
+#include <QPainterPath>
 #include "qcanpool.h"
 
 QCANPOOL_BEGIN_NAMESPACE
@@ -80,12 +81,20 @@ void FancyButtonPrivate::painterInfo(QColor &color)
     QPainter painter(q);
     QPen pen(Qt::NoBrush, 1);
     painter.setPen(pen);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     painter.setBrush(color);
 
     if (m_bRound) {
-        int r = qMin(q->width(), q->height()) / 2;
-        painter.drawEllipse(QPointF(q->width() / 2, q->height() / 2), r, r);
+        QSize iconSize = q->iconSize();
+        qreal r = qMin(iconSize.width(), iconSize.height()) / 2 + 2;
+        QPointF center(q->width() / 2, q->height() / 2);
+        // draw window
+        painter.drawEllipse(center, r, r);
+        // draw image
+        QPainterPath path;
+        path.addEllipse(center, r, r);
+        painter.setClipPath(path);
+        painter.drawPixmap(QPoint(0, 0), q->icon().pixmap(q->size()));
     } else {
         painter.drawRect(q->rect());
     }
@@ -272,7 +281,9 @@ void FancyButton::paintEvent(QPaintEvent *event)
         }
     }
 
-    QToolButton::paintEvent(event);
+    if (!d->m_bRound) {
+        QToolButton::paintEvent(event);
+    }
 }
 
 QCANPOOL_END_NAMESPACE

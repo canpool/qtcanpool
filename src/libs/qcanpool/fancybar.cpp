@@ -290,7 +290,7 @@ void FancyBarPrivate::setFancyStyle(FancyBar::FancyStyle style)
         showMenuWidget(false);
     } else if (style == FancyBar::ClassicStyle) {
         m_applicationButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        m_applicationButton->setIconSize(QSize(48, 48));
+        m_applicationButton->setIconSize(QSize(40, 40));
         m_applicationButton->setRound(true);
         m_logoLayout->addLayout(m_appButtonLayout);
         titleLayout->addWidget(m_quickAccessBar);
