@@ -134,7 +134,11 @@ void QtStateProgressBar::drawBackground(QPainter &p)
     p.save();
     p.setPen(Qt::NoPen);
     p.setBrush(palette().window().color());
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
     p.drawRoundRect(rect(), 0, 0);
+#else
+    p.drawRoundedRect(rect(), 0, 0);
+#endif
     p.restore();
 }
 
@@ -212,7 +216,7 @@ void QtStateProgressBar::drawNote(QPainter &p, int index, const QColor &color)
     if (index < m_notes.count()) {
         p.save();
         p.setPen(color);
-        qreal textWidth = p.fontMetrics().width(m_notes[index]);
+        qreal textWidth = p.fontMetrics().horizontalAdvance(m_notes[index]);
         QRectF noteRect(-textWidth*3/4 + index*m_lineWidth, -(m_bigRadius*4),
                         textWidth*3/2, m_bigRadius*2);
         p.drawText(noteRect, Qt::AlignCenter, m_notes[index]);
@@ -225,7 +229,7 @@ void QtStateProgressBar::drawState(QPainter &p, int index, const QColor &color)
     if (index < m_states.count()) {
         p.save();
         p.setPen(color);
-        qreal textWidth = p.fontMetrics().width(m_states[index]);
+        qreal textWidth = p.fontMetrics().horizontalAdvance(m_states[index]);
         QRectF stateRect(-textWidth*3/4 + index*m_lineWidth, m_bigRadius*3/2,
                          textWidth*3/2, m_bigRadius*2);
         p.drawText(stateRect, Qt::AlignCenter, m_states[index]);
@@ -247,7 +251,7 @@ void QtStateProgressBar::drawTip(QPainter &p, int index)
     p.save();
     p.setPen(Qt::NoPen);
     p.setBrush(m_tipBackColor);
-    int textWidth = p.fontMetrics().width(tip);
+    int textWidth = p.fontMetrics().horizontalAdvance(tip);
     textWidth = qMax(textWidth, m_bigRadius*2);
     QRectF rect(index*m_lineWidth - textWidth, -(m_bigRadius*4),
                 textWidth*2, m_bigRadius*2);

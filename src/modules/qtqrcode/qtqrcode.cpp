@@ -61,7 +61,6 @@ QPixmap QtQrcode::createQRCode(const QString &text, int width)
     image.fill(0);
     p = qrcode->data;
     for(y=0; y<qrcode->width; y++) {
-        bit = 7;
         q += margin / 8;
         bit = 7 - (margin % 8);
         for(x=0; x<qrcode->width; x++) {
