@@ -50,6 +50,7 @@ void FancyTabWidgetPrivate::init()
     q->setLayout(m_layout);
 
     QObject::connect(m_tabBar, SIGNAL(currentChanged(int)), m_stack, SLOT(setCurrentIndex(int)));
+    QObject::connect(m_stack, SIGNAL(currentChanged(int)), q, SIGNAL(currentChanged(int)));
 }
 
 void FancyTabWidgetPrivate::updateTabBarPosition()
@@ -110,7 +111,7 @@ int FancyTabWidget::insertTab(int index, QWidget *widget, const QString &label)
 
 int FancyTabWidget::insertTab(int index, QWidget *widget, const QIcon &icon, const QString &label)
 {
-    if(!widget)
+    if (!widget)
         return -1;
     index = d->m_stack->insertWidget(index, widget);
     d->m_tabBar->insertTab(index, icon, label);
@@ -179,6 +180,16 @@ void FancyTabWidget::setTabPosition(FancyTabWidget::TabPosition pos)
         return;
     d->m_pos = pos;
     d->updateTabBarPosition();
+}
+
+void FancyTabWidget::setCurrentIndex(int index)
+{
+    d->m_tabBar->setCurrentIndex(index);
+}
+
+void FancyTabWidget::setCurrentWidget(QWidget *widget)
+{
+    d->m_tabBar->setCurrentIndex(indexOf(widget));
 }
 
 QCANPOOL_END_NAMESPACE

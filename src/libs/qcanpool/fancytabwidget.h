@@ -48,6 +48,13 @@ public:
     TabPosition tabPosition() const;
     void setTabPosition(TabPosition);
 
+signals:
+    void currentChanged(int index);
+
+public slots:
+    void setCurrentIndex(int index);
+    void setCurrentWidget(QWidget *widget);
+
 private:
     FancyTabWidgetPrivate *d;
 };

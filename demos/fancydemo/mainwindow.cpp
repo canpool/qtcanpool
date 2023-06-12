@@ -61,6 +61,8 @@ void MainWindow::createCentralWidget()
     QTextEdit *text = new QTextEdit(this);
     m_pTabWidget->addTab(text, QIcon(":/main/logo"), tr("tab2"));
 
+    m_pTabWidget->setCurrentWidget(text);
+
     QAction *action = new QAction(QIcon(":/main/logo"), tr("action1"));
     tabBar->addAction(action, FancyTabBar::Middle);
     tabBar->setActionIconOnly(action, false);
@@ -304,5 +306,6 @@ void MainWindow::slotSetTabPosition()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    Q_UNUSED(event);
     writeSettings();
 }
