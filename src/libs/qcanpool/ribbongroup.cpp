@@ -4,7 +4,6 @@
 **/
 #include "ribbongroup.h"
 #include "ribbongroup_p.h"
-#include "ribbonpage.h"
 
 #include <QVBoxLayout>
 #include <QToolButton>

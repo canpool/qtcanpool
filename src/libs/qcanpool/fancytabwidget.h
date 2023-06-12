@@ -24,7 +24,7 @@ public:
     explicit FancyTabWidget(QWidget *parent = nullptr);
     ~FancyTabWidget();
 
-    int addTab(QWidget *widget, const QString &);
+    int addTab(QWidget *widget, const QString &label);
     int addTab(QWidget *widget, const QIcon &icon, const QString &label);
 
     int insertTab(int index, QWidget *widget, const QString &label);

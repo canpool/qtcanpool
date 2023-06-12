@@ -81,7 +81,7 @@ void FancyBarPrivate::createTitleWidget()
     m_quickAccessBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     m_quickAccessBar->hide();
     // to resize menuBar when quickAccessBar size was changed
-    connect(m_quickAccessBar, &QuickAccessBar::customizeActionChanged, [&] () {
+    connect(m_quickAccessBar, &QuickAccessBar::customizeActionChanged, this, [&] () {
         if (m_style == FancyBar::MergedStyle && m_bMenuBarVisible && m_menuBar) {
             q->update();
         }

@@ -55,7 +55,6 @@ void RibbonPagePrivate::insertGroup(int index, RibbonGroup *group)
 void RibbonPagePrivate::removeGroup(int index)
 {
     if (validateGroupIndex(index)) {
-        RibbonGroup *group = m_listGroups.at(index);
         m_listGroups.removeAt(index);
         updateLayout();
     }

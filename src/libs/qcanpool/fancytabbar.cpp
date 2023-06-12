@@ -394,8 +394,8 @@ void FancyTabBar::setOrientation(Qt::Orientation orientation)
 
 void FancyTabBar::setCurrentIndex(int index)
 {
-    if(index == d->m_currentIndex) return;
-    if(d->m_currentIndex != -1){
+    if (index == d->m_currentIndex) return;
+    if (d->m_currentIndex != -1) {
         d->m_tabs.at(d->m_currentIndex)->setChecked(false);
     }
     d->m_currentIndex = index;
