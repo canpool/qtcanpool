@@ -12,6 +12,7 @@
 #include <QStylePainter>
 #include <QApplication>
 #include <QAction>
+#include <QMenu>
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -42,11 +43,13 @@ public:
     QRect m_iconRect;
     QRect m_textRect;
     FancyToolButton *q;
+    bool m_showMenu;
 };
 
 FancyToolButtonPrivate::FancyToolButtonPrivate()
     : m_menuArrowType(Qt::DownArrow)
     , m_menuArea(FancyToolButton::BottomMenuArea)
+    , m_showMenu(false)
 {
 }
 
@@ -517,6 +520,9 @@ void FancyToolButton::paintEvent(QPaintEvent *event)
     QPainter p(this);
     QStyleOptionToolButton opt;
     initStyleOption(&opt);
+    if (d->m_showMenu) {
+        opt.state |= QStyle::State_Sunken | QStyle::State_Raised;
+    }
     d->drawToolButton(&opt, &p, this);
 }
 
@@ -531,6 +537,27 @@ void FancyToolButton::mousePressEvent(QMouseEvent *e)
             showMenu();
             return;
         }
+        // RightMenu popups menu on the right
+        if (d->m_menuArea == RightMenuArea && d->m_menuArrowType == Qt::RightArrow) {
+            QStyleOptionToolButton opt;
+            initStyleOption(&opt);
+            QRect popupr = d->subControlRect(QStyle::CC_ToolButton, &opt, QStyle::SC_ToolButtonMenu, this);
+            if (popupr.isValid() && popupr.contains(e->pos())) {
+                QAction *action = defaultAction();
+                if (action && action->menu()) {
+                    d->m_showMenu = true;
+                    repaint();
+                    QPoint pos = e->globalPos();
+                    pos.setX(pos.x() - e->x() + width());
+                    pos.setY(pos.y() - e->y());
+                    action->menu()->exec(pos);
+                    d->m_showMenu = false;
+                    repaint();
+                    return;
+                }
+            }
+        }
+
     }
     QToolButton::mousePressEvent(e);
 }
