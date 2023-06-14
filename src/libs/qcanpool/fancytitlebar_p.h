@@ -136,8 +136,6 @@ public:
     int             m_currentScreen;
 };
 
-#ifndef QTC_USE_NATIVE
-
 /* FancyTitleBarPrivateQt */
 class FancyTitleBarPrivateQt : public FancyTitleBarPrivate
 {
@@ -193,7 +191,7 @@ public:
     QPoint          m_movePoint;
 };
 
-#else  // QTC_USE_NATIVE
+#ifdef QTC_USE_NATIVE
 
 class FancyTitleBarPrivateNative : public FancyTitleBarPrivate, public QAbstractNativeEventFilter
 {

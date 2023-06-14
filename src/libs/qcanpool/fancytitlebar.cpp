@@ -220,7 +220,7 @@ bool FancyTitleBarPrivateNative::nativeEventFilter(const QByteArray &eventType, 
     return false;
 }
 
-#else // !QTC_USE_NATIVE
+#endif // QTC_USE_NATIVE
 
 /* FancyTitleBarPrivateQt */
 FancyTitleBarPrivateQt::FancyTitleBarPrivateQt(QWidget *mainWidget)
@@ -660,8 +660,6 @@ bool FancyTitleBarPrivateQt::eventFilter(QObject *object, QEvent *event)
     return QObject::eventFilter(object, event);
 }
 
-#endif // QTC_USE_NATIVE
-
 /* FancyCursor */
 FancyCursor::FancyCursor()
     : m_nBorderWidth(5)
@@ -1013,7 +1011,11 @@ FancyTitleBar::FancyTitleBar(QWidget *mainWidget)
     Q_ASSERT(mainWidget);
 
 #ifdef QTC_USE_NATIVE
-    d = new FancyTitleBarPrivateNative(mainWidget);
+    if (QApplication::screens().size() == 1) {
+        d = new FancyTitleBarPrivateNative(mainWidget);
+    } else {
+        d = new FancyTitleBarPrivateQt(mainWidget);
+    }
 #else
     d = new FancyTitleBarPrivateQt(mainWidget);
 #endif
