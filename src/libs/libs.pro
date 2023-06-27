@@ -15,10 +15,6 @@ equals(QTC_BUILD_EXTENSIONSYSTEM, 1) {
         utils
 }
 
-exists($$PWD/qads/Qt-Advanced-Docking-System/src) {
-    SUBDIRS += qads
-}
-
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
     include($$l/$${l}_dependencies.pri)
