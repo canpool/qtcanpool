@@ -385,6 +385,19 @@ FancyToolButton::FancyToolButton(QWidget *parent)
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 
+FancyToolButton::FancyToolButton(const QString &text, QWidget *parent)
+    : FancyToolButton(parent)
+{
+    setText(text);
+}
+
+FancyToolButton::FancyToolButton(const QIcon &icon, const QString &text, QWidget *parent)
+    : FancyToolButton(parent)
+{
+    setIcon(icon);
+    setText(text);
+}
+
 FancyToolButton::~FancyToolButton()
 {
     delete d;

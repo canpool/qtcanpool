@@ -26,6 +26,8 @@ public:
 
 public:
     explicit FancyToolButton(QWidget *parent = nullptr);
+    explicit FancyToolButton(const QString &text, QWidget *parent = nullptr);
+    FancyToolButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr);
     virtual ~FancyToolButton();
 
     Qt::ArrowType menuArrowType() const;

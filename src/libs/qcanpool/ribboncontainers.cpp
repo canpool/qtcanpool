@@ -14,6 +14,7 @@
 
 QCANPOOL_BEGIN_NAMESPACE
 
+/* RibbonContainer */
 RibbonContainer::RibbonContainer(QWidget *parent)
     : QWidget(parent)
 {
@@ -21,6 +22,29 @@ RibbonContainer::RibbonContainer(QWidget *parent)
 
 RibbonContainer::~RibbonContainer()
 {
+}
+
+/* RibbonGridLayout */
+class RibbonGridLayout : public QGridLayout
+{
+public:
+    RibbonGridLayout(QWidget *parent = nullptr);
+public:
+    void addWidget(QWidget *widget);
+};
+
+RibbonGridLayout::RibbonGridLayout(QWidget *parent)
+    : QGridLayout(parent)
+{
+
+}
+
+void RibbonGridLayout::addWidget(QWidget *widget)
+{
+    int cnt = count();
+    int column = cnt / 3;
+    int row = column ? (cnt % 3) : cnt;
+    QGridLayout::addWidget(widget, row, column, Qt::AlignLeft);
 }
 
 /* RibbonGridContainerPrivate */
@@ -33,7 +57,7 @@ public:
 
 public:
     RibbonGridContainer *q;
-    QGridLayout *m_gridLayout;
+    RibbonGridLayout *m_gridLayout;
 };
 
 RibbonGridContainerPrivate::RibbonGridContainerPrivate()
@@ -41,7 +65,7 @@ RibbonGridContainerPrivate::RibbonGridContainerPrivate()
 
 void RibbonGridContainerPrivate::init()
 {
-    m_gridLayout = new QGridLayout(q);
+    m_gridLayout = new RibbonGridLayout(q);
     m_gridLayout->setSpacing(1);
     m_gridLayout->setContentsMargins(2, 1, 2, 1);
     q->setLayout(m_gridLayout);
@@ -63,10 +87,7 @@ RibbonGridContainer::~RibbonGridContainer()
 
 void RibbonGridContainer::addWidget(QWidget *widget)
 {
-    int cnt = d->m_gridLayout->count();
-    int column = cnt / 3;
-    int row = column ? (cnt % 3) : cnt;
-    d->m_gridLayout->addWidget(widget, row, column, Qt::AlignLeft);
+    d->m_gridLayout->addWidget(widget);
 }
 
 /* RibbonActionContainerPrivate */
@@ -83,8 +104,8 @@ public:
 public:
     RibbonActionContainer *q;
     QHBoxLayout *m_largeLayout;
-    QVBoxLayout *m_mediumLayout;
-    QVBoxLayout *m_smallLayout;
+    RibbonGridLayout *m_mediumLayout;
+    RibbonGridLayout *m_smallLayout;
 };
 
 RibbonActionContainerPrivate::RibbonActionContainerPrivate()
@@ -96,11 +117,11 @@ void RibbonActionContainerPrivate::init()
     m_largeLayout->setSpacing(0);
     m_largeLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_mediumLayout = new QVBoxLayout();
+    m_mediumLayout = new RibbonGridLayout();
     m_mediumLayout->setSpacing(0);
     m_mediumLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_smallLayout = new QVBoxLayout();
+    m_smallLayout = new RibbonGridLayout();
     m_smallLayout->setSpacing(0);
     m_smallLayout->setContentsMargins(0, 0, 0, 0);
 
@@ -126,31 +147,31 @@ void RibbonActionContainerPrivate::addAction(QAction *action, RibbonGroup::Group
     QToolButton *button = new QToolButton(q);
     button->setAutoRaise(true);
     button->setDefaultAction(action);
-    QBoxLayout *layout = nullptr;
 
     switch (size) {
         case RibbonGroup::GroupLarge: {
             button->setIconSize(QSize(32, 32));
             button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-            layout = m_largeLayout;
+            m_largeLayout->addWidget(button);
+            m_largeLayout->setAlignment(button, Qt::AlignLeft);
         }
         break;
         case RibbonGroup::GroupMedium: {
             button->setIconSize(QSize(18, 18));
             button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-            layout = m_mediumLayout;
+            m_mediumLayout->addWidget(button);
+            m_mediumLayout->setAlignment(button, Qt::AlignLeft);
         }
         break;
         default: {
             button->setIconSize(QSize(18, 18));
             button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-            layout = m_smallLayout;
+            m_smallLayout->addWidget(button);
+            m_smallLayout->setAlignment(button, Qt::AlignLeft);
         }
         break;
     }
     button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    layout->addWidget(button);
-    layout->setAlignment(button, Qt::AlignLeft);
 }
 
 /* RibbonActionContainer */

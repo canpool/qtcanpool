@@ -119,6 +119,40 @@ void RibbonPagePrivate::updateLayout()
     }
 }
 
+void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
+{
+    int w = q->width();
+    if (m_groupsWidth > w) {
+        QPoint numPixels = event->pixelDelta();
+        QPoint numDegrees = event->angleDelta() / 8;
+
+        int scrollpix = 0;
+        if (!numPixels.isNull())
+            scrollpix = numPixels.x() / 4; // FIXME
+        else if (!numDegrees.isNull())
+            scrollpix = numDegrees.y();
+        else {
+        }
+        if (scrollpix > 0) {
+            int tmp = m_groupXBase - scrollpix;
+            if (tmp < (w - m_groupsWidth)) {
+                tmp = w - m_groupsWidth;
+            }
+            m_groupXBase = tmp;
+        } else {
+            int tmp = m_groupXBase - scrollpix;
+            if (tmp > 0) {
+                tmp = 0;
+            }
+            m_groupXBase = tmp;
+        }
+        updateLayout();
+    } else {
+        event->ignore();
+        m_groupXBase = 0;
+    }
+}
+
 void RibbonPagePrivate::slotLeftScrollButton()
 {
     int w = q->width();
@@ -219,6 +253,11 @@ void RibbonPage::resizeEvent(QResizeEvent *e)
 {
     QWidget::resizeEvent(e);
     d->updateLayout();
+}
+
+void RibbonPage::wheelEvent(QWheelEvent *event)
+{
+    d->doWheelEvent(event);
 }
 
 QCANPOOL_END_NAMESPACE

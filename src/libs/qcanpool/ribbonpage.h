@@ -46,7 +46,7 @@ public slots:
 
 protected:
     void resizeEvent(QResizeEvent *e) override;
-
+    void wheelEvent(QWheelEvent *event) override;
 private:
     RibbonPagePrivate *d;
 };

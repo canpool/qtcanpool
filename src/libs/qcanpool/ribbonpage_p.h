@@ -10,6 +10,7 @@
 
 class QHBoxLayout;
 class QToolButton;
+class QWheelEvent;
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -35,6 +36,7 @@ public:
 
     int calculateGroupsWidth();
     void updateLayout();
+    void doWheelEvent(QWheelEvent *event);
 
 public slots:
     void slotLeftScrollButton();

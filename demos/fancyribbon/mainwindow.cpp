@@ -43,71 +43,74 @@ MainWindow::MainWindow(QWidget *parent)
 
     QAction *action = nullptr;
     QMenu *menu = nullptr;
+    QToolBar *toolBar = nullptr;
+
+    menu = new QMenu();
+    menu->addAction(icon, tr("test"));
+    menu->addAction(icon, tr("test"));
 
     action = new QAction(icon, tr("test"));
     ribbonBar->addAction(action);
 
     action = new QAction(icon, tr("test"));
-    menu = new QMenu();
-    menu->addAction(icon, tr("test"));
-    menu->addAction(icon, tr("test"));
     action->setMenu(menu);
     ribbonBar->addAction(action);
 
+    // Inner Container QToolButton
     RibbonPage *page = ribbonBar->addPage(tr("Home"));
-    RibbonGroup *group = page->addGroup(tr("Font"));
+    RibbonGroup *group = page->addGroup(tr("InnerContainer(QToolButtons)"));
     group->addAction(icon, tr("testgroup"), RibbonGroup::GroupLarge);
+    group->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge); // too long
     action = new QAction(icon, tr("test"));
-    menu = new QMenu();
-    menu->addAction(icon, tr("test"));
-    menu->addAction(icon, tr("test"));
     action->setMenu(menu);
     group->addAction(action, RibbonGroup::GroupLarge);
-    group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
-    group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
-    group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
-
-    group = page->addGroup(tr("Clipboard"));
-    group->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge); // too long
-    group->addAction(icon, tr("test"), RibbonGroup::GroupMedium);
-    group->addAction(icon, tr("test123"), RibbonGroup::GroupMedium);
-    group->addAction(icon, tr("test12345"), RibbonGroup::GroupMedium);
-    group->setOptionButtonVisible();
-
-    group = page->addGroup(tr("Links"));
-    group->addAction(icon, tr("Hyperlink"), RibbonGroup::GroupMedium);
-    group->addAction(icon, tr("Bookmark"), RibbonGroup::GroupMedium);
-    group->addAction(icon, tr("Cross-reference"), RibbonGroup::GroupMedium);
-
-    group = page->addGroup(tr("Themes"));
-    group->addAction(icon, tr("test\n12"), RibbonGroup::GroupLarge); // it's right
-    action = new QAction(icon, tr("Colors"));
-    menu = new QMenu();
-    menu->addAction(icon, tr("test"));
-    menu->addAction(icon, tr("test"));
+    action = new QAction(icon, tr("test"));
     action->setMenu(menu);
     // add action that has menu
     group->addAction(action, RibbonGroup::GroupMedium);
-    group->addAction(icon, tr("Fonts"), RibbonGroup::GroupMedium);
-
-    group = page->addGroup(tr("Defines"));
-    QToolBar *toolBar = new QToolBar("bar");
+    group->addAction(icon, tr("test123"), RibbonGroup::GroupMedium);
+    group->addAction(icon, tr("test12345"), RibbonGroup::GroupMedium);
     action = new QAction(icon, tr("test"));
-    menu = new QMenu();
-    menu->addAction(icon, tr("test"));
-    menu->addAction(icon, tr("test"));
     action->setMenu(menu);
-    toolBar->addAction(action);
-    toolBar->addAction(icon, tr("test"));
-    toolBar->addAction(icon, tr("test"));
-    toolBar->addAction(icon, tr("test"));
-    toolBar->addAction(icon, tr("test"));
-    toolBar->addAction(icon, tr("test"));
-    group->addWidget(toolBar);
+    group->addAction(action, RibbonGroup::GroupSmall);
+    group->addAction(icon, tr("test123"), RibbonGroup::GroupSmall);
+    group->addAction(icon, tr("test12345"), RibbonGroup::GroupSmall);
+    group->setOptionButtonVisible();
+
+    /* fancy toolbutton */
+    group = page->addGroup(tr("InnerContainer(FancyToolButtons)"));
+    FancyToolButton *button = new FancyToolButton(icon, tr("test button"));
+    button->setPopupMode(QToolButton::DelayedPopup);
+    button->setMenu(menu);
+    group->addToolButton(button, RibbonGroup::GroupLarge);
+    button = new FancyToolButton(icon, tr("test"));
+    button->setPopupMode(QToolButton::MenuButtonPopup);
+    button->setMenu(menu);
+    group->addToolButton(button, RibbonGroup::GroupLarge);
+    button = new FancyToolButton(icon, tr("test\nbutton"));
+    button->setPopupMode(QToolButton::InstantPopup);
+    button->setMenu(menu);
+    group->addToolButton(button, RibbonGroup::GroupLarge);
+    button = new FancyToolButton(icon, tr("test"));
+    button->setPopupMode(QToolButton::InstantPopup);
+    button->setMenu(menu);
+    group->addToolButton(button, RibbonGroup::GroupMedium);
+    button = new FancyToolButton(icon, tr("test123"));
+    group->addToolButton(button, RibbonGroup::GroupMedium);
+    button = new FancyToolButton(icon, tr("test12345"));
+    group->addToolButton(button, RibbonGroup::GroupMedium);
+    button = new FancyToolButton(icon, tr("test"));
+    button->setPopupMode(QToolButton::InstantPopup);
+    button->setMenu(menu);
+    group->addToolButton(button, RibbonGroup::GroupSmall); // using QToolButton is appropriate
+    button = new FancyToolButton(icon, tr("test123"));
+    group->addToolButton(button, RibbonGroup::GroupSmall);
+    button = new FancyToolButton(icon, tr("test12345"));
+    group->addToolButton(button, RibbonGroup::GroupSmall);
 
     /* custom containers */
-    page = ribbonBar->addPage(tr("Insert"));
-    group = page->addGroup(tr("Radios&Checks"));
+    page = ribbonBar->addPage(tr("Custom"));
+    group = page->addGroup(tr("GridContainer(Radios & Checks)"));
     RibbonGridContainer *gridContainer = new RibbonGridContainer(this);
     gridContainer->addWidget(new QRadioButton(tr("Radio 1")));
     gridContainer->addWidget(new QRadioButton(tr("Radio 2")));
@@ -120,11 +123,17 @@ MainWindow::MainWindow(QWidget *parent)
     gridContainer->addWidget(new QCheckBox(tr("Check 4")));
     group->addWidget(gridContainer);
 
-    group = page->addGroup(tr("ToolButtons"));
+    group = page->addGroup(tr("GridContainer(ToolButtons)"));
     gridContainer = new RibbonGridContainer(this);
-    gridContainer->addWidget(createToolButton(icon, tr("test 1")));
-    gridContainer->addWidget(createToolButton(icon, tr("test 2")));
-    gridContainer->addWidget(createToolButton(icon, tr("test 3")));
+    QToolButton *btn = createToolButton(icon, tr("test 1"));
+    btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    gridContainer->addWidget(btn);
+    btn = createToolButton(icon, tr("test 2"));
+    btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    gridContainer->addWidget(btn);
+    btn = createToolButton(icon, tr("test 3"));
+    btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    gridContainer->addWidget(btn);
     gridContainer->addWidget(createToolButton(icon, tr("test 4")));
     gridContainer->addWidget(createToolButton(icon, tr("test 5")));
     gridContainer->addWidget(createToolButton(icon, tr("test 6")));
@@ -135,63 +144,27 @@ MainWindow::MainWindow(QWidget *parent)
     gridContainer->addWidget(createToolButton(icon, tr("test 11")));
     group->addWidget(gridContainer);
 
-    group = page->addGroup(tr("Actions"));
+    group = page->addGroup(tr("ActionContainer"));
     RibbonActionContainer *actionContainer = new RibbonActionContainer(this);
     actionContainer->addAction(icon, tr("testgroup"), RibbonGroup::GroupLarge);
     action = new QAction(icon, tr("test"));
-    menu = new QMenu();
-    menu->addAction(icon, tr("test"));
-    menu->addAction(icon, tr("test"));
     action->setMenu(menu);
     actionContainer->addAction(action, RibbonGroup::GroupLarge);
     actionContainer->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge); // too long
     actionContainer->addAction(icon, tr("test"), RibbonGroup::GroupMedium);
     actionContainer->addAction(icon, tr("test123"), RibbonGroup::GroupMedium);
     actionContainer->addAction(icon, tr("test12345"), RibbonGroup::GroupMedium);
+    actionContainer->addAction(icon, tr("test 1"), RibbonGroup::GroupMedium);
+    actionContainer->addAction(icon, tr("test 2"), RibbonGroup::GroupMedium);
     actionContainer->addAction(icon, tr("test 1"), RibbonGroup::GroupSmall);
     actionContainer->addAction(icon, tr("test 2"), RibbonGroup::GroupSmall);
     actionContainer->addAction(icon, tr("test 3"), RibbonGroup::GroupSmall);
+    actionContainer->addAction(icon, tr("test 4"), RibbonGroup::GroupSmall);
+    actionContainer->addAction(icon, tr("test 5"), RibbonGroup::GroupSmall);
     group->addWidget(actionContainer);
 
-    /* fancy toolbutton */
-    page = ribbonBar->addPage(tr("Debug"));
-    group = page->addGroup(tr("fancy"));
-
-    FancyToolButton *button = new FancyToolButton();
-    button->setIcon(icon);
-    button->setText("test button");
-    button->setPopupMode(QToolButton::DelayedPopup);
-    menu = new QMenu();
-    menu->addAction(tr("action1"));
-    menu->addAction(tr("action2"));
-    button->setMenu(menu);
-    group->addToolButton(button, RibbonGroup::GroupLarge);
-
-    button = new FancyToolButton();
-    button->setIcon(icon);
-    button->setText("test");
-    button->setPopupMode(QToolButton::MenuButtonPopup);
-    menu = new QMenu();
-    menu->addAction(tr("action1"));
-    menu->addAction(tr("action2"));
-    button->setMenu(menu);
-    group->addToolButton(button, RibbonGroup::GroupLarge);
-
-    button = new FancyToolButton();
-    button->setIcon(icon);
-    button->setText("test\nbutton");
-    button->setPopupMode(QToolButton::InstantPopup);
-    menu = new QMenu();
-    menu->addAction(tr("action1"));
-    menu->addAction(tr("action2"));
-    button->setMenu(menu);
-    group->addToolButton(button, RibbonGroup::GroupLarge);
-    group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
-    group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
-    group->addAction(icon, tr("test"), RibbonGroup::GroupSmall);
-
     // loft container
-    group = page->addGroup(tr("loft"));
+    group = page->addGroup(tr("LoftContainer"));
     RibbonLoftContainer *loftContainer = new RibbonLoftContainer(this);
     toolBar = loftContainer->toolBar(RibbonLoftContainer::Top);
     QComboBox *cb = new QComboBox(this);
@@ -199,9 +172,6 @@ MainWindow::MainWindow(QWidget *parent)
     cb->addItems({ "Arial", "Helvetica", "Times" });
     toolBar->addWidget(cb);
     action = new QAction(icon, tr("test"));
-    menu = new QMenu();
-    menu->addAction(icon, tr("test"));
-    menu->addAction(icon, tr("test"));
     action->setMenu(menu);
     toolBar->addAction(action);
     toolBar = loftContainer->toolBar(RibbonLoftContainer::Bottom);
@@ -213,8 +183,20 @@ MainWindow::MainWindow(QWidget *parent)
     toolBar->addAction(icon, tr("test"));
     group->addWidget(loftContainer);
 
+    // other
+    group = page->addGroup(tr("Defines"));
+    toolBar = new QToolBar("bar");
+    toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    action = new QAction(icon, tr("test"));
+    action->setMenu(menu);
+    toolBar->addAction(action);
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    toolBar->addAction(icon, tr("test"));
+    group->addWidget(toolBar);
 
-    ribbonBar->addPage(tr("View"));
     ribbonBar->addPage(tr("Help"));
 
     /* options */
