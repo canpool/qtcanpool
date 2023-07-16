@@ -26,7 +26,7 @@ QDateEdit:disabled, QTimeEdit:disabled, QDateTimeEdit:disabled, QSpinBox:disable
 
 QPushButton, QToolButton {
     border-style: none;
-    padding: 3px;
+    padding: 0px;
 }
 
 QPushButton {
@@ -433,6 +433,10 @@ QWidget#qtc_titlebar QToolButton {
 QToolBar#qtc_quickaccessbar QToolButton {
     width: 18px;
     height: 18px;
+}
+
+QToolButton#qtc_quickaccessbutton {
+    padding: 3px;
 }
 
 QToolBar#qtc_quickaccessbar,
