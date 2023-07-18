@@ -85,5 +85,6 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 ![run](./doc/pics/run.png)
 
 ### 其它
+- [qtcanpool-extend](https://gitee.com/icanpool/qtcanpool-extend)：qtcanpool extend libraries
 - [QxRibbon](https://gitee.com/icanpool/QxRibbon)：Microsoft Ribbon for Qt
 - [QxDock](https://gitee.com/icanpool/QxDock)：Advanced Docking System for Qt

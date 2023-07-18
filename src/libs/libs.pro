@@ -4,16 +4,7 @@ TEMPLATE  = subdirs
 
 SUBDIRS =   \
     qcanpool \
-    qribbon \
-    qcustomplot
-
-QTC_BUILD_EXTENSIONSYSTEM = 0
-equals(QTC_BUILD_EXTENSIONSYSTEM, 1) {
-    SUBDIRS += \
-        aggregation \
-        extensionsystem \
-        utils
-}
+    qribbon
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =

@@ -8,6 +8,5 @@ SUBDIRS = \
     fancytitlebar \
     fancytoolbutton \
     ribbondemo \
-    plotdemo \
     qrcodedemo \
     controldemo \
