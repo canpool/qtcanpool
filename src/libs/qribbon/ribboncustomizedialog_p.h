@@ -6,7 +6,7 @@
 #include "ribbon_global.h"
 #include "ribboncustomizepage.h"
 #include "ui_ribbonbarcustomizepage.h"
-#include "ui_ribbonquickaccessbarCustomizePage.h"
+#include "ui_ribbonquickaccessbarcustomizepage.h"
 #include <QDialogButtonBox>
 #include <QLayout>
 #include <QListWidget>
