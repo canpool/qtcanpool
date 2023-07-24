@@ -426,7 +426,7 @@ QWidget#qtc_titlebar QMenuBar, QLabel, QToolButton {
 }
 
 QWidget#qtc_titlebar QToolButton {
-    width: 22px;
+    width: 18px;
     height: 18px;
 }
 
@@ -436,7 +436,7 @@ QToolBar#qtc_quickaccessbar QToolButton {
 }
 
 QToolButton#qtc_quickaccessbutton {
-    padding: 3px;
+    padding: 0px 0px 0px 3px;
 }
 
 QToolBar#qtc_quickaccessbar,
@@ -449,7 +449,7 @@ QToolBar#qtc_menu_toolbar {
 QWidget#qtc_titlebar QToolButton#close,
 QWidget#qtc_titlebar QToolButton#minimize,
 QWidget#qtc_titlebar QToolButton#maximize {
-    width: 24px;
+    width: 22px;
     height: 18px;
 }
 

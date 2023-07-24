@@ -283,7 +283,7 @@ QMenuBar *FancyBar::menuBar() const
         d->m_menuBar->setNativeMenuBar(false);
         d->m_menuBar->setVisible(true);
         d->m_menuBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        d->m_menuBarArea->addWidget(d->m_menuBar);
+        d->m_menuBarArea->addWidget(d->m_menuBar, 0, Qt::AlignVCenter);
     }
 
     return d->m_menuBar;
