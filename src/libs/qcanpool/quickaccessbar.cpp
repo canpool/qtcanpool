@@ -224,7 +224,7 @@ void QuickAccessBar::customizeAction(QAction *action)
 {
     d->m_customizeAction = true;
     if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
-        setActionVisible(act->m_srcAction, !widgetForAction(act->m_srcAction));
+        d->setActionVisible(act, act->m_srcAction, !widgetForAction(act->m_srcAction));
         emit customizeActionChanged();
     }
     d->m_customizeAction = false;
