@@ -16,6 +16,7 @@ QCANPOOL_BEGIN_NAMESPACE
 
 QuickAccessButton::QuickAccessButton(QWidget *parent)
     : QToolButton(parent)
+    , m_orientation(Qt::Horizontal)
 {
     setObjectName(QLatin1String("qtc_quickaccessbutton"));
 }
@@ -28,7 +29,16 @@ QuickAccessButton::~QuickAccessButton()
 QSize QuickAccessButton::sizeHint() const
 {
     QSize sz = QToolButton::sizeHint();
-    return QSize(sz.width() / 2, sz.height());
+    if (m_orientation == Qt::Horizontal) {
+        return QSize(sz.width() / 2, sz.height());
+    } else {
+        return QSize(sz.width(), sz.height() / 2);
+    }
+}
+
+void QuickAccessButton::setOrientation(Qt::Orientation orientation)
+{
+    m_orientation = orientation;
 }
 
 
@@ -59,6 +69,8 @@ void QuickAccessBarPrivate::init()
 
     m_accessPopup = new QuickAccessButton(q);
     m_accessPopup->setPopupMode(QToolButton::InstantPopup);
+    QObject::connect(q, SIGNAL(orientationChanged(Qt::Orientation)),
+                     m_accessPopup, SLOT(setOrientation(Qt::Orientation)));
     m_menu = new QMenu(q);
     m_accessPopup->setMenu(m_menu);
 

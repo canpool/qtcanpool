@@ -28,12 +28,18 @@ class QuickAccessBar;
 /* QuickAccessButton */
 class QuickAccessButton : public QToolButton
 {
+    Q_OBJECT
 public:
     explicit QuickAccessButton(QWidget* parent = Q_NULLPTR);
     virtual ~QuickAccessButton();
 
 public:
     virtual QSize sizeHint() const;
+
+public slots:
+    void setOrientation(Qt::Orientation orientation);
+private:
+    Qt::Orientation m_orientation;
 };
 
 /* QuickAccessAction */
