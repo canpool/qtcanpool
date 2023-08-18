@@ -12,3 +12,7 @@ isEmpty(QTPROJECT_PRO_FILE_PWD):    QTPROJECT_PRO_FILE_PWD = $$_PRO_FILE_PWD_
 isEmpty(QTPROJECT_PRO_FILE):        QTPROJECT_PRO_FILE = $$_PRO_FILE_
 
 isEmpty(QTCANPOOL_DIR):             QTCANPOOL_DIR = $$quote($$PWD/../..)
+
+!exists($$QTCANPOOL_DIR) {
+    error("QTCANPOOL_DIR was not configured correctly")
+}
