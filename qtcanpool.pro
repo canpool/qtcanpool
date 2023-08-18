@@ -10,4 +10,6 @@ CONFIG += ordered
 
 SUBDIRS = \
     src \
-    demos
+    demos \
+    examples \
+    tests

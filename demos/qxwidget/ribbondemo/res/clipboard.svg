@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created using Krita: https://krita.org -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:krita="http://krita.org/namespaces/svg/krita"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    width="23.04pt"
+    height="23.04pt"
+    viewBox="0 0 23.04 23.04">
+<defs/>
+<path id="shape0" transform="matrix(0.02460937607349 0 0 0.02460937607349 3.64746059409055 3.64499965648322)" fill="#030000" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M288 0.2L288 0L0 0L0 64L351.9 64L351.9 0.2Z" sodipodi:nodetypes="ccccccc"/><path id="shape1" transform="matrix(0.02460937607349 0 0 0.02460937607349 0.49499951907649 3.64499965648322)" fill="#e6c27c" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M608 82.7L608 256L480.1 256L480.1 672L86.4 672C38.8 672 0 634.9 0 589.3L0 82.7C0 37.1 38.8 0 86.4 0L128.1 0L128.1 155.8L480 156L480.1 64L480.1 0.2L416.2 0.2L416.2 0L521.7 0C569.2 0.1 608 37.1 608 82.7Z" sodipodi:nodetypes="ccccccccccccccccc"/><path id="shape2" transform="matrix(0.02460937607349 0 0 0.02460937607349 3.64746059409055 0.494999519076508)" fill="#727272" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M288 128.2L288 128L288.1 0.1L64.1 0L64 128L0 128L0 283.8L351.9 284L352 192L352 128.2ZM128 128L128 64L223.9 64.1L223.9 128.1L175.9 128.1Z" sodipodi:nodetypes="ccccccccccccccccc"/><path id="shape3" transform="matrix(0.02460937607349 0 0 0.02460937607349 10.7349609032557 8.36999986259328)" fill="#727272" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M0 0L0 576L329 576L479.9 399.4L479.9 0ZM64 64L415.9 64L415.9 320L242 320L242 512L64 512ZM306 504.4L306 384L408.9 384Z" sodipodi:nodetypes="ccccccccccccccccc"/><path id="shape4" transform="matrix(0.02460937607349 0 0 0.02460937607349 13.8603516645889 11.52)" fill="#727272" stroke-opacity="0" stroke="#000000" stroke-width="0" stroke-linecap="square" stroke-linejoin="bevel" d="M0 0L223.9 0L223.9 64L0 64ZM0 96L223.9 96L223.9 160L0 160Z" sodipodi:nodetypes="cccccccccc"/>
+</svg>

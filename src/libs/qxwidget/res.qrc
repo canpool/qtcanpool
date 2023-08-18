@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>res/ribbonGroupOptionButton.png</file>
+        <file>res/ArrowDown.png</file>
+        <file>res/ArrowMore.png</file>
+        <file>res/ArrowUp.png</file>
+        <file>res/Titlebar_Close.png</file>
+        <file>res/Titlebar_Close_Hover.png</file>
+        <file>res/Titlebar_Max.png</file>
+        <file>res/Titlebar_Min.png</file>
+        <file>res/Titlebar_Normal.png</file>
+        <file>res/Titlebar_Shade.png</file>
+        <file>res/Titlebar_Unshade.png</file>
+        <file>res/lighter/ribbonGroupOptionButton.png</file>
+        <file>res/lighter/ArrowDown.png</file>
+        <file>res/lighter/ArrowMore.png</file>
+        <file>res/lighter/ArrowUp.png</file>
+        <file>res/lighter/Titlebar_Close.png</file>
+        <file>res/lighter/Titlebar_Close_Hover.png</file>
+        <file>res/lighter/Titlebar_Max.png</file>
+        <file>res/lighter/Titlebar_Min.png</file>
+        <file>res/lighter/Titlebar_Normal.png</file>
+        <file>res/lighter/Titlebar_Shade.png</file>
+        <file>res/lighter/Titlebar_Unshade.png</file>
+    </qresource>
+    <qresource prefix="/theme">
+        <file>res/default.css</file>
+        <file>res/office2013.css</file>
+        <file>res/wpsdark.css</file>
+    </qresource>
+</RCC>
