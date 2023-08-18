@@ -1093,12 +1093,12 @@ void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
 
 void MainWindow::onActionHelpTriggered()
 {
-    QString url("https://gitee.com/icanpool/QxRibbon");
+    QString url("https://gitee.com/icanpool/qtcanpool");
 
     AboutDialog ad(QLatin1String(":/icon/res/logo64.svg"), tr("QxRibbon"), QLatin1String(QX_VERSION_STR),
                    tr(
 "Copyleft (C) 2023 maminjie &lt;canpool@163.com&gt;<br/>"
-"<br/>QxRibbon is a Qt componet like to Microsoft Ribbon style. "
+"<br/>QxRibbon is a QxWidget componet like to Microsoft Ribbon style. "
 "For more information, please visit <a href=\"%1\">%1</a>").arg(url),
                    this);
     ad.exec();
