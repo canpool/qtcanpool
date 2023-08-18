@@ -64,7 +64,7 @@
 #endif // QX_WIDGET_LIBRARY_STATIC
 
 #define QX_VERSION_MAJOR 0
-#define QX_VERSION_MINOR 1
+#define QX_VERSION_MINOR 6
 #define QX_VERSION_PATCH 0
 /*
    QX_VERSION is (major << 16) + (minor << 8) + patch.
@@ -78,7 +78,7 @@
 
 
 #ifndef QX_DISABLE_DEPRECATED_BEFORE
-#define QX_DISABLE_DEPRECATED_BEFORE QT_VERSION_CHECK(0, 1, 0)
+#define QX_DISABLE_DEPRECATED_BEFORE QT_VERSION_CHECK(0, 6, 0)
 #endif
 
 /*
