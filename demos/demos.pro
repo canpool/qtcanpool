@@ -4,6 +4,6 @@ CONFIG += ordered
 SUBDIRS = \
     helloworld \
     qcanpool \
-    ribbondemo \
+    qribbon \
     qrcodedemo \
     controldemo \
