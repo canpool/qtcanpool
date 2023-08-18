@@ -3,10 +3,7 @@ CONFIG += ordered
 
 SUBDIRS = \
     helloworld \
-    fancydemo \
-    fancyribbon \
-    fancytitlebar \
-    fancytoolbutton \
+    qcanpool \
     ribbondemo \
     qrcodedemo \
     controldemo \

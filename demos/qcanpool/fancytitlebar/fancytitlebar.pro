@@ -1,9 +1,10 @@
-include(../../qtproject.pri)
+include(../../../qtproject.pri)
+
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = fancytoolbutton
+TARGET = fancytitlebar
 TEMPLATE = app
 DESTDIR = $$IDE_APP_PATH
 
@@ -18,6 +19,11 @@ include($$QTCANPOOL_DIR/src/rpath.pri)
 # lib
 LIBS *= -l$$qtLibraryName(qcanpool)
 
+win32 {
+    DEFINES += USE_NATIVE
+    LIBS += -lUser32
+}
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp
@@ -29,6 +35,3 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-RESOURCES += \
-    res.qrc
