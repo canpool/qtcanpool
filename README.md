@@ -80,6 +80,10 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ![qrcodedemo](./doc/pics/qrcodedemo.png#pic_center)
 
+6）<font size=4>ribbondemo</font>
+
+![ribbondemo](./doc/pics/ribbondemo.gif#pic_center)
+
 ### 体验
 下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
 ![run](./doc/pics/run.png)
