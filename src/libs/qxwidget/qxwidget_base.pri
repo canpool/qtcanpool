@@ -1,6 +1,7 @@
 HEADERS += \
     $$PWD/QxFramelessHelper.h \
     $$PWD/QxGlobal.h \
+    $$PWD/QxMenuButton.h \
     $$PWD/QxQuickAccessBar.h \
     $$PWD/QxQuickAccessBarPrivate.h \
     $$PWD/QxTinyNavBar.h \
@@ -12,6 +13,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/QxFramelessHelper.cpp \
+    $$PWD/QxMenuButton.cpp \
     $$PWD/QxQuickAccessBar.cpp \
     $$PWD/QxTinyNavBar.cpp \
     $$PWD/QxTinyTabBar.cpp \

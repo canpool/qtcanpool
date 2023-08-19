@@ -261,9 +261,9 @@ QAbstractButton#qx_RibbonApplicationButton:focus {
   outline: none;
 }
 
-QAbstractButton#qx_RibbonApplicationButton::menu-indicator {
+/* QAbstractButton#qx_RibbonApplicationButton::menu-indicator {
   image: none;
-}
+} */
 
 /*RibbonButton*/
 

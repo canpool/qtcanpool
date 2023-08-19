@@ -14,6 +14,7 @@
 #include "qxwidget/QxRibbonPage.h"
 #include "qxwidget/QxRibbonContainers.h"
 #include "qxwidget/QxQuickAccessBar.h"
+#include "qxwidget/QxMenuButton.h"
 #include "qxwidget/QxUtils.h"
 
 #include <QAbstractButton>
@@ -939,11 +940,8 @@ void MainWindow::createApplicationButton()
 {
 #if QXRIBBON_TEST_CUSTOMIZE_APPBTN
     // FIXME: 当前按钮在单击后会出现下沉效果
-    QToolButton *appBtn = new QToolButton(this);
+    MenuButton *appBtn = new MenuButton(this);
     appBtn->setText(tr("&File"));
-    appBtn->setAutoRaise(true);
-    appBtn->setFocusPolicy(Qt::NoFocus);
-    appBtn->setPopupMode(QToolButton::InstantPopup);
     appBtn->setToolButtonStyle(Qt::ToolButtonTextOnly);
     appBtn->setMinimumWidth(40);
     RibbonMenu *appMenu = new RibbonMenu(this);
