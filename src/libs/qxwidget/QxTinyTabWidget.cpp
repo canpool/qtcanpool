@@ -6,6 +6,7 @@
 #include "QxTinyTabbar.h"
 
 #include <QStackedWidget>
+#include <QToolButton>
 #include <QBoxLayout>
 #include <QIcon>
 
@@ -204,6 +205,35 @@ void TinyTabWidget::setTabPosition(TinyTabWidget::TabPosition pos)
     }
     d->m_pos = pos;
     d->updateTabBarPosition();
+}
+
+QToolButton *TinyTabWidget::addButton(const QString &text)
+{
+    return addButton(QIcon(), text);
+}
+
+QToolButton *TinyTabWidget::addButton(const QIcon &icon, const QString &text)
+{
+    Q_D(TinyTabWidget);
+    QToolButton *button = new QToolButton(this);
+    button->setText(text);
+    button->setIcon(icon);
+    button->setIconSize(d->m_tabBar->iconSize());
+    button->setAutoRaise(true);
+    button->setFocusPolicy(Qt::NoFocus);
+    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->m_tabLayout->addWidget(button);
+    return button;
+}
+
+void TinyTabWidget::removeButton(QToolButton *button)
+{
+    if (button == Q_NULLPTR) {
+        return;
+    }
+    Q_D(TinyTabWidget);
+    d->m_tabLayout->removeWidget(button);
+    delete button;
 }
 
 void TinyTabWidget::setCurrentIndex(int index)

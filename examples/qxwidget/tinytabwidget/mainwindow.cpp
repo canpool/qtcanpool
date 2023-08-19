@@ -59,6 +59,10 @@ MainWindow::MainWindow(QWidget *parent)
     });
     emit group->actions().at(2)->trigger();
 
+    tw->addButton(icon, tr("button1"));
+    tw->addButton(icon, tr("button2"));
+    tw->addButton(icon, tr("button3"));
+
     statusBar();
 
     setWindowTitle(tr("QxTinyTabWidget Example"));

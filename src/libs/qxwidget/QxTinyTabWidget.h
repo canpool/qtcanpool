@@ -7,6 +7,8 @@
 #include "QxGlobal.h"
 #include <QWidget>
 
+class QToolButton;
+
 QX_BEGIN_NAMESPACE
 
 class TinyTabBar;
@@ -37,12 +39,16 @@ public:
     void setTabEnabled(int index, bool enable);
     void setTabVisible(int index, bool visible);
 
-    TinyTabBar *tabBar(void) const;
+    TinyTabBar *tabBar() const;
 
     enum TabPosition { North, South, West, East };
     Q_ENUM(TabPosition)
     TabPosition tabPosition() const;
     void setTabPosition(TabPosition);
+
+    QToolButton *addButton(const QString &text);
+    QToolButton *addButton(const QIcon &icon, const QString &text);
+    void removeButton(QToolButton *button);
 
 Q_SIGNALS:
     void currentChanged(int index);
