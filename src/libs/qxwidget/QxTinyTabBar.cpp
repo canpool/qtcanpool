@@ -104,6 +104,8 @@ int TinyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
     QAction *action = new QAction(icon, text, this);
     action->setCheckable(true);
     QToolButton *button = new QToolButton(this);
+    button->setAutoRaise(true);
+    button->setFocusPolicy(Qt::NoFocus);
     button->setDefaultAction(action);
     button->setToolButtonStyle(toolButtonStyle());
     button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
