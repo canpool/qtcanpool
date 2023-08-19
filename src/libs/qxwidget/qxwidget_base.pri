@@ -7,6 +7,7 @@ HEADERS += \
     $$PWD/QxTinyNavBarPrivate.h \
     $$PWD/QxTinyTabBar.h \
     $$PWD/QxTinyTabBarPrivate.h \
+    $$PWD/QxTinyTabWidget.h \
     $$PWD/QxUtils.h
 
 SOURCES += \
@@ -14,6 +15,7 @@ SOURCES += \
     $$PWD/QxQuickAccessBar.cpp \
     $$PWD/QxTinyNavBar.cpp \
     $$PWD/QxTinyTabBar.cpp \
+    $$PWD/QxTinyTabWidget.cpp \
     $$PWD/QxUtils.cpp
 
 win32 {

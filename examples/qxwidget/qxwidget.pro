@@ -3,4 +3,5 @@ CONFIG += ordered
 
 SUBDIRS = \
     quickaccessbar \
-    tinytabbar
+    tinytabbar \
+    tinytabwidget
