@@ -23,6 +23,7 @@ public:
     TinyTabBar *m_tabBar;
     QStackedWidget *m_stack;
     QBoxLayout *m_layout;
+    QBoxLayout *m_tabLayout;
     TinyTabWidget::TabPosition m_pos;
 };
 
@@ -36,16 +37,23 @@ void TinyTabWidgetPrivate::init()
     Q_Q(TinyTabWidget);
     m_tabBar = new TinyTabBar(q);
     m_tabBar->setTogglable(false);
+    m_tabBar->layout()->setSizeConstraint(QLayout::SetFixedSize);
     m_tabBar->setObjectName(QLatin1String("qx_TinyTabWidget_tabbar"));
 
     m_stack = new QStackedWidget(q);
     m_stack->setObjectName(QLatin1String("qx_TinyTabWidget_stackedwidget"));
     m_stack->setLineWidth(0);
 
+    m_tabLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+    m_tabLayout->setMargin(0);
+    m_tabLayout->setSpacing(0);
+    m_tabLayout->addWidget(m_tabBar);
+    m_tabLayout->addStretch();
+
     m_layout = new QBoxLayout(QBoxLayout::TopToBottom);
     m_layout->setMargin(0);
-    m_layout->setSpacing(1);
-    m_layout->addWidget(m_tabBar);
+    m_layout->setSpacing(0);
+    m_layout->addLayout(m_tabLayout);
     m_layout->addWidget(m_stack);
     q->setLayout(m_layout);
 
@@ -58,21 +66,25 @@ void TinyTabWidgetPrivate::updateTabBarPosition()
     switch (m_pos) {
     case TinyTabWidget::North: {
         m_layout->setDirection(QBoxLayout::TopToBottom);
+        m_tabLayout->setDirection(QBoxLayout::LeftToRight);
         m_tabBar->setOrientation(Qt::Horizontal);
         break;
     }
     case TinyTabWidget::South: {
         m_layout->setDirection(QBoxLayout::BottomToTop);
+        m_tabLayout->setDirection(QBoxLayout::LeftToRight);
         m_tabBar->setOrientation(Qt::Horizontal);
         break;
     }
     case TinyTabWidget::West: {
         m_layout->setDirection(QBoxLayout::LeftToRight);
+        m_tabLayout->setDirection(QBoxLayout::TopToBottom);
         m_tabBar->setOrientation(Qt::Vertical);
         break;
     }
     case TinyTabWidget::East: {
         m_layout->setDirection(QBoxLayout::RightToLeft);
+        m_tabLayout->setDirection(QBoxLayout::TopToBottom);
         m_tabBar->setOrientation(Qt::Vertical);
         break;
     }
