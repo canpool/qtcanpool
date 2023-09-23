@@ -35,6 +35,22 @@ def do_framework(args):
         shutil.copy(os.path.join(ROOT_DIR, f), os.path.join(outdir, f))
 
 
+def do_create(args):
+    if "." in args.name or args.name in ("template",):
+        logging.error("project name is illegal")
+        return
+    outdir = args.outdir
+    if not outdir:
+        outdir = os.path.join(ROOT_DIR, "projects")
+    project_dir = os.path.join(outdir, args.name)
+    if os.path.isdir(project_dir):
+        shutil.rmtree(project_dir)
+    template_dir = os.path.join(ROOT_DIR, "projects", "template")
+    shutil.copytree(template_dir, project_dir)
+    os.chdir(project_dir)
+    os.rename("template.pro", f"{args.name}.pro")
+
+
 def do_main(args):
     print("try -h/--help for more details.")
 
@@ -50,6 +66,13 @@ def main():
     subparser.add_argument("-o", "--outdir", type=str, metavar="DIR",
         help="archive directory, default is qtcproject")
     subparser.set_defaults(func=do_framework)
+    # create project based on projects/template
+    subparser = subparsers.add_parser("create", aliases=["c", "new"],
+        formatter_class=argparse.RawTextHelpFormatter,  help="create a project based on template")
+    subparser.add_argument("name", type=str, metavar="NAME", help="project name")
+    subparser.add_argument("-o", "--outdir", type=str, metavar="DIR",
+        help="project directory, default is projects")
+    subparser.set_defaults(func=do_create)
 
     args = parser.parse_args()
     args.func(args)
