@@ -50,7 +50,8 @@ defineReplace(qtLibraryName) {
 defineReplace(qtLibraryNameVersion) {
    RET = $$qtLibraryTargetName($$1)
    win32 {
-      RET = $$RET$$2
+      VERSION_LIST = $$split(2, .)
+      RET = $$RET$$first(VERSION_LIST)
    }
    return($$RET)
 }
@@ -317,8 +318,13 @@ for(ever) {
         }
         isEmpty(dependencies_file): \
             error("Library dependency $$dep not found")
+        QTC_LIB_VERSION =
         include($$dependencies_file)
-        LIBS += -l$$qtLibraryName($$QTC_LIB_NAME)
+        isEmpty(QTC_LIB_VERSION) {
+            LIBS += -l$$qtLibraryName($$QTC_LIB_NAME)
+        } else {
+            LIBS += -l$$qtLibraryNameVersion($$QTC_LIB_NAME, $$QTC_LIB_VERSION)
+        }
     }
     QTC_LIB_DEPENDS = $$unique(QTC_LIB_DEPENDS)
     QTC_LIB_DEPENDS -= $$unique(done_libs)
