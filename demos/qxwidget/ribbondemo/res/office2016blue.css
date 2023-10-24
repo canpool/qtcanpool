@@ -453,45 +453,45 @@ QxRibbon--RibbonPageScrollButton:hover {
   background-color: #cee7fc;
 }
 
-QxRibbon--WindowToolButton {
+QxRibbon--WindowButton {
   background-color: transparent;
   border: none;
 }
 
-QxRibbon--WindowToolButton:focus {
+QxRibbon--WindowButton:focus {
   outline: none;
 }
 
-QxRibbon--WindowToolButton#qx_MinimizeWindowButton {
+QxRibbon--WindowButton#qx_MinimizeWindowButton {
   image: url(:/image/res/lighter/titlebar_min.png);
 }
 
-QxRibbon--WindowToolButton#qx_MaximizeWindowButton {
+QxRibbon--WindowButton#qx_MaximizeWindowButton {
   image: url(:/image/res/lighter/titlebar_max.png);
 }
 
-QxRibbon--WindowToolButton#qx_MaximizeWindowButton:checked {
+QxRibbon--WindowButton#qx_MaximizeWindowButton:checked {
   image: url(:/image/res/lighter/titlebar_normal.png);
 }
 
-QxRibbon--WindowToolButton#qx_MinimizeWindowButton:hover,#qx_MaximizeWindowButton:hover {
+QxRibbon--WindowButton#qx_MinimizeWindowButton:hover,#qx_MaximizeWindowButton:hover {
   background-color: #124078;
 }
 
-QxRibbon--WindowToolButton#qx_MinimizeWindowButton:pressed,#qx_MaximizeWindowButton:pressed {
+QxRibbon--WindowButton#qx_MinimizeWindowButton:pressed,#qx_MaximizeWindowButton:pressed {
   background-color: #002050;
 }
 
-QxRibbon--WindowToolButton#qx_CloseWindowButton {
+QxRibbon--WindowButton#qx_CloseWindowButton {
   image: url(:/image/res/lighter/titlebar_close.png);
 }
 
-QxRibbon--WindowToolButton#qx_CloseWindowButton:hover {
+QxRibbon--WindowButton#qx_CloseWindowButton:hover {
   background-color: #e81123;
   image: url(:/image/res/lighter/titlebar_close_hover.png);
 }
 
-QxRibbon--WindowToolButton#qx_CloseWindowButton:pressed {
+QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
   background-color: #f1707a;
   image: url(:/image/res/lighter/titlebar_close_hover.png);
 }

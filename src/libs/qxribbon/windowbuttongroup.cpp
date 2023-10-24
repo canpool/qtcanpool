@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MulanPSL-2.0
 **/
 #include "windowbuttongroup.h"
+#include "windowbuttongroup_p.h"
 #include "ribbonmanager.h"
 
 #include <QResizeEvent>
@@ -16,28 +17,12 @@ QX_RIBBON_BEGIN_NAMESPACE
 #define MAX_BUTTON_WIDTH    30
 #define CLS_BUTTON_WIDTH    40
 
-class WindowButtonGroupPrivate
+WindowButton::WindowButton(QWidget *p)
+    : QPushButton(p)
 {
-    QX_DECLARE_PUBLIC(WindowButtonGroup)
-public:
-    WindowButtonGroupPrivate();
+    setFlat(true);
+}
 
-    void setupMinimizeButton(bool on);
-    void setupMaximizeButton(bool on);
-    void setupCloseButton(bool on);
-    void updateSize();
-    void resize(QSize size);
-    QSize sizeHint() const;
-    int groupHeight() const;
-public:
-    WindowToolButton *m_closeButton;
-    WindowToolButton *m_minimizeButton;
-    WindowToolButton *m_maximizeButton;
-    int m_closeStretch;
-    int m_maxStretch;
-    int m_minStretch;
-    qreal m_iconScale;
-};
 
 WindowButtonGroupPrivate::WindowButtonGroupPrivate()
     : m_closeButton(Q_NULLPTR)
@@ -58,13 +43,13 @@ void WindowButtonGroupPrivate::setupMinimizeButton(bool on)
             m_minimizeButton->deleteLater();
             m_minimizeButton = Q_NULLPTR;
         }
-        m_minimizeButton = new WindowToolButton(q);
+        m_minimizeButton = new WindowButton(q);
         m_minimizeButton->setObjectName(QStringLiteral("qx_MinimizeWindowButton"));
         m_minimizeButton->setFixedSize(MIN_BUTTON_WIDTH, groupHeight());
         m_minimizeButton->setFocusPolicy(Qt::NoFocus);
         m_minimizeButton->setIconSize(m_minimizeButton->size() * m_iconScale);
         m_minimizeButton->show();
-        q->connect(m_minimizeButton, &QAbstractButton::clicked, q, &WindowButtonGroup::minimizeWindow);
+        connect(m_minimizeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
     } else {
         if (m_minimizeButton) {
             delete m_minimizeButton;
@@ -82,14 +67,14 @@ void WindowButtonGroupPrivate::setupMaximizeButton(bool on)
             m_maximizeButton->deleteLater();
             m_maximizeButton = Q_NULLPTR;
         }
-        m_maximizeButton = new WindowToolButton(q);
+        m_maximizeButton = new WindowButton(q);
         m_maximizeButton->setObjectName(QStringLiteral("qx_MaximizeWindowButton"));
         m_maximizeButton->setFixedSize(MAX_BUTTON_WIDTH, groupHeight());
         m_maximizeButton->setCheckable(true);
         m_maximizeButton->setFocusPolicy(Qt::NoFocus);
         m_maximizeButton->setIconSize(m_maximizeButton->size() * m_iconScale);
         m_maximizeButton->show();
-        q->connect(m_maximizeButton, &QAbstractButton::clicked, q, &WindowButtonGroup::maximizeWindow);
+        connect(m_maximizeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
     } else {
         if (m_maximizeButton) {
             delete m_maximizeButton;
@@ -107,12 +92,12 @@ void WindowButtonGroupPrivate::setupCloseButton(bool on)
             m_closeButton->deleteLater();
             m_closeButton = Q_NULLPTR;
         }
-        m_closeButton = new WindowToolButton(q);
+        m_closeButton = new WindowButton(q);
         m_closeButton->setObjectName(QStringLiteral("qx_CloseWindowButton"));
         m_closeButton->setFixedSize(CLS_BUTTON_WIDTH, groupHeight());
         m_closeButton->setFocusPolicy(Qt::NoFocus);
         // m_closeButton->setFlat(true);
-        q->connect(m_closeButton, &QAbstractButton::clicked, q, &WindowButtonGroup::closeWindow);
+        connect(m_closeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
         m_closeButton->setIconSize(m_closeButton->size() * m_iconScale);
         m_closeButton->show();
     } else {
@@ -194,10 +179,25 @@ int WindowButtonGroupPrivate::groupHeight() const
     return qMin(RibbonElementStyleOpt.titleBarHeight(), RibbonElementStyleOpt.tabBarHeight());
 }
 
-WindowToolButton::WindowToolButton(QWidget *p)
-    : QPushButton(p)
+void WindowButtonGroupPrivate::buttonClicked()
 {
-    setFlat(true);
+    Q_Q(WindowButtonGroup);
+    WindowButton *button = qobject_cast<WindowButton *>(sender());
+    QWidget *pw = q->parentWidget();
+
+    if (pw) {
+        if (button == m_minimizeButton) {
+            pw->showMinimized();
+        } else if (button == m_maximizeButton) {
+            if (pw->isMaximized()) {
+                pw->showNormal();
+            } else {
+                pw->showMaximized();
+            }
+        } else if (button == m_closeButton) {
+            pw->close();
+        }
+    }
 }
 
 WindowButtonGroup::WindowButtonGroup(QWidget *parent, Qt::WindowFlags flags)
@@ -218,32 +218,17 @@ WindowButtonGroup::~WindowButtonGroup()
     QX_FINI_PRIVATE()
 }
 
-void WindowButtonGroup::setupMinimizeButton(bool on)
-{
-    Q_D(WindowButtonGroup);
-    d->setupMinimizeButton(on);
-}
-
-void WindowButtonGroup::setupMaximizeButton(bool on)
-{
-    Q_D(WindowButtonGroup);
-    d->setupMaximizeButton(on);
-}
-
-void WindowButtonGroup::setupCloseButton(bool on)
-{
-    Q_D(WindowButtonGroup);
-    d->setupCloseButton(on);
-}
-
 void WindowButtonGroup::updateWindowFlags(Qt::WindowFlags flags)
 {
+    Q_D(WindowButtonGroup);
     if (flags == Qt::WindowFlags()) {
-        flags = parentWidget()->windowFlags();
+        if (QWidget *pw = parentWidget()) {
+            flags = pw->windowFlags();
+        }
     }
-    setupMinimizeButton(flags & Qt::WindowMinimizeButtonHint);
-    setupMaximizeButton(flags & Qt::WindowMaximizeButtonHint);
-    setupCloseButton(flags & Qt::WindowCloseButtonHint);
+    d->setupMinimizeButton(flags & Qt::WindowMinimizeButtonHint);
+    d->setupMaximizeButton(flags & Qt::WindowMaximizeButtonHint);
+    d->setupCloseButton(flags & Qt::WindowCloseButtonHint);
     parentResize();
 }
 
@@ -305,33 +290,6 @@ void WindowButtonGroup::resizeEvent(QResizeEvent *e)
 {
     Q_D(WindowButtonGroup);
     d->resize(e->size());
-}
-
-void WindowButtonGroup::closeWindow()
-{
-    if (parentWidget()) {
-        parentWidget()->close();
-    }
-}
-
-void WindowButtonGroup::minimizeWindow()
-{
-    if (parentWidget()) {
-        parentWidget()->showMinimized();
-    }
-}
-
-void WindowButtonGroup::maximizeWindow()
-{
-    QWidget *par = parentWidget();
-
-    if (par) {
-        if (par->isMaximized()) {
-            par->showNormal();
-        } else {
-            par->showMaximized();
-        }
-    }
 }
 
 QX_RIBBON_END_NAMESPACE

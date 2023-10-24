@@ -40,7 +40,8 @@ HEADERS += \
     $$PWD/ribbontabbar.h \
     $$PWD/ribbonutils.h \
     $$PWD/ribbonwindow.h \
-    $$PWD/windowbuttongroup.h
+    $$PWD/windowbuttongroup.h \
+    $$PWD/windowbuttongroup_p.h
 
 SOURCES += \
     $$PWD/framelesshelper.cpp \

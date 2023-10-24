@@ -941,52 +941,52 @@ QxRibbon--RibbonPageScrollButton:hover {
   background-color: #595b5d;
 }
 
-/*WindowToolButton*/
+/*WindowButton*/
 
-QxRibbon--WindowToolButton {
+QxRibbon--WindowButton {
   background-color: transparent;
   border: none;
 }
 
-QxRibbon--WindowToolButton:hover, QxRibbon--WindowToolButton:pressed, QxRibbon--WindowToolButton:checked {
+QxRibbon--WindowButton:hover, QxRibbon--WindowButton:pressed, QxRibbon--WindowButton:checked {
   border: none;
 }
 
-QxRibbon--WindowToolButton:focus {
+QxRibbon--WindowButton:focus {
   outline: none;
 }
 
-QxRibbon--WindowToolButton#qx_MinimizeWindowButton {
+QxRibbon--WindowButton#qx_MinimizeWindowButton {
   image: url(:/image/res/lighter/titlebar_min.png);
 }
 
-QxRibbon--WindowToolButton#qx_MaximizeWindowButton {
+QxRibbon--WindowButton#qx_MaximizeWindowButton {
   image: url(:/image/res/lighter/titlebar_max.png);
 }
 
-QxRibbon--WindowToolButton#qx_MaximizeWindowButton:checked {
+QxRibbon--WindowButton#qx_MaximizeWindowButton:checked {
   background-color: transparent;
   image: url(:/image/res/lighter/titlebar_normal.png);
 }
 
-QxRibbon--WindowToolButton#qx_MinimizeWindowButton:hover,QxRibbon--WindowToolButton#qx_MaximizeWindowButton:hover {
+QxRibbon--WindowButton#qx_MinimizeWindowButton:hover,QxRibbon--WindowButton#qx_MaximizeWindowButton:hover {
   background-color: #5888d0;
 }
 
-QxRibbon--WindowToolButton#qx_MinimizeWindowButton:pressed,QxRibbon--WindowToolButton#qx_MaximizeWindowButton:pressed {
+QxRibbon--WindowButton#qx_MinimizeWindowButton:pressed,QxRibbon--WindowButton#qx_MaximizeWindowButton:pressed {
   background-color: #3369b9;
 }
 
-QxRibbon--WindowToolButton#qx_CloseWindowButton {
+QxRibbon--WindowButton#qx_CloseWindowButton {
   image: url(:/image/res/lighter/titlebar_close.png);
 }
 
-QxRibbon--WindowToolButton#qx_CloseWindowButton:hover {
+QxRibbon--WindowButton#qx_CloseWindowButton:hover {
   background-color: #e81123;
   image: url(:/image/res/lighter/titlebar_close_hover.png);
 }
 
-QxRibbon--WindowToolButton#qx_CloseWindowButton:pressed {
+QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
   background-color: #f1707a;
   image: url(:/image/res/lighter/titlebar_close_hover.png);
 }
