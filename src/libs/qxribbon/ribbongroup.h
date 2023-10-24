@@ -4,12 +4,12 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonbutton.h"
 
 #include <QWidget>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGallery;
 class RibbonGroupPrivate;
@@ -25,7 +25,7 @@ class RibbonGroupPrivate;
  *
  * group 的布局通过 @ref RibbonGroupLayout 来实现
  */
-class QX_WIDGET_EXPORT RibbonGroup : public QWidget
+class QX_RIBBON_EXPORT RibbonGroup : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool isCanCustomize READ isCanCustomize WRITE setCanCustomize)
@@ -130,4 +130,4 @@ private:
     friend class RibbonCustomizeWidgetPrivate;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

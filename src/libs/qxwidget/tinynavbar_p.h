@@ -4,14 +4,14 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxwidget_global.h"
 #include "tinytabbar_p.h"
 #include "menuaccessbutton.h"
 #include <QMap>
 
 class QMenu;
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class TinyNavBar;
 
@@ -37,4 +37,4 @@ public:
     bool m_removingAction : 1;
 };
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

@@ -4,7 +4,7 @@
 **/
 #include "ribbonmanager.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 RibbonManager::RibbonManager()
     : m_factory(new RibbonFactory())
@@ -39,4 +39,4 @@ void RibbonManager::setupFactory(RibbonFactory *factory)
     m_factory = factory;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

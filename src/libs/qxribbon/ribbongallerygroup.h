@@ -4,12 +4,12 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QListView>
 
 class QActionGroup;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGalleryGroupPrivate;
 
@@ -18,7 +18,7 @@ class RibbonGalleryGroupPrivate;
 ///
 /// 组负责显示管理 Gallery Item
 ///
-class QX_WIDGET_EXPORT RibbonGalleryGroup : public QListView
+class QX_RIBBON_EXPORT RibbonGalleryGroup : public QListView
 {
     Q_OBJECT
 public:
@@ -92,4 +92,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonGalleryGroup)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

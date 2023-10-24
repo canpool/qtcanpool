@@ -4,12 +4,12 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QPushButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
-class QX_WIDGET_EXPORT RibbonApplicationButton : public QPushButton
+class QX_RIBBON_EXPORT RibbonApplicationButton : public QPushButton
 {
     Q_OBJECT
 public:
@@ -18,4 +18,4 @@ public:
     RibbonApplicationButton(const QIcon &icon, const QString &text, QWidget *parent = Q_NULLPTR);
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

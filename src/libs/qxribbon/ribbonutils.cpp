@@ -5,7 +5,7 @@
 #include "ribbonutils.h"
 #include <QPainter>
 
-namespace Qx {
+namespace QxRibbon {
 
 QIcon colorIcon(const QColor &color, const QSize &size)
 {
@@ -27,4 +27,4 @@ QIcon colorIcon(const QColor &color, const QSize &size)
     return QIcon(res);
 }
 
-} // namespace Qx
+} // namespace QxRibbon

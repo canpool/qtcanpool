@@ -4,13 +4,13 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbongroup.h"
 
 #include <QWidgetItem>
 #include <QLayout>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGroupLayoutPrivate;
 
@@ -93,4 +93,4 @@ private:
     friend class RibbonGroupPrivate;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -3,13 +3,14 @@ VERSION = 0.6.0
 QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-DEFINES += QX_WIDGET_LIBRARY
+DEFINES += QX_RIBBON_LIBRARY
 DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     $$PWD/framelesshelper.h \
     $$PWD/quickaccessbar.h \
     $$PWD/quickaccessbar_p.h \
+    $$PWD/qxribbon_global.h \
     $$PWD/ribbonactionsmanager.h \
     $$PWD/ribbonapplicationbutton.h \
     $$PWD/ribbonbar.h \

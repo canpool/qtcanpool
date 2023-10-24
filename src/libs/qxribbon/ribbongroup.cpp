@@ -22,7 +22,7 @@
 #include <QResizeEvent>
 #include <QWidgetAction>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 #ifndef QX_RIBBON_PROP_ROW_PROPORTION
 #define QX_RIBBON_PROP_ROW_PROPORTION "_qx_RibbonGroupRowProportion"
@@ -821,4 +821,4 @@ void RibbonGroup::actionEvent(QActionEvent *event)
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QDebug>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonStyleOptionPrivate
 {
@@ -148,4 +148,4 @@ QDebug operator<<(QDebug debug, const RibbonStyleOption &c)
     return debug;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

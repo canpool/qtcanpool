@@ -4,10 +4,10 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonButtonPrivate;
 /**
@@ -17,7 +17,7 @@ class RibbonButtonPrivate;
  *
  * @note @sa setIconSize 函数不在起作用
  */
-class QX_WIDGET_EXPORT RibbonButton : public QToolButton
+class QX_RIBBON_EXPORT RibbonButton : public QToolButton
 {
     Q_OBJECT
 public:
@@ -67,4 +67,4 @@ protected:
     QX_DECLARE_PRIVATE(RibbonButton)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

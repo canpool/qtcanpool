@@ -4,7 +4,7 @@
  **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 
 #include <QAction>
 #include <QIcon>
@@ -14,7 +14,7 @@
 #include <QListView>
 #include <QStyledItemDelegate>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGalleryItemPrivate;
 
@@ -98,4 +98,4 @@ private:
     QList<RibbonGalleryItem *> m_items;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -6,7 +6,7 @@
 #include "ribbonbuttongroup.h"
 #include "quickaccessbar.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonQuickAccessBarPrivate
 {
@@ -37,4 +37,4 @@ QuickAccessBar *RibbonQuickAccessBar::accessBar() const
     return d->m_accessBar;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

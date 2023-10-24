@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxwidget_global.h"
 #include <QObject>
 #include <QMap>
 
@@ -12,7 +12,7 @@ class QAction;
 class QActionGroup;
 class QToolButton;
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class TinyTabBar;
 
@@ -40,4 +40,4 @@ public:
     bool m_togglable;
 };
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

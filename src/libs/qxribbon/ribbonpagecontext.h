@@ -4,19 +4,19 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonpage.h"
 
 #include <QWidget>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonPageContextPrivate;
 
 /**
  * @brief 管理上下文标签的类
  */
-class QX_WIDGET_EXPORT RibbonPageContext : public QObject
+class QX_RIBBON_EXPORT RibbonPageContext : public QObject
 {
     Q_OBJECT
 public:
@@ -51,4 +51,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonPageContext)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

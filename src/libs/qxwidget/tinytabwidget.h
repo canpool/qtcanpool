@@ -4,12 +4,12 @@
  **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxwidget_global.h"
 #include <QWidget>
 
 class QToolButton;
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class TinyTabBar;
 class TinyTabWidgetPrivate;
@@ -59,4 +59,4 @@ private:
     QX_DECLARE_PRIVATE(TinyTabWidget)
 };
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

@@ -4,12 +4,12 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonfactory.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
-class QX_WIDGET_EXPORT RibbonManager
+class QX_RIBBON_EXPORT RibbonManager
 {
 protected:
     RibbonManager();
@@ -34,4 +34,4 @@ private:
 #define RibbonElementStyleOpt RibbonElementFactory->getRibbonStyleOption()
 #endif
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -10,7 +10,7 @@
 #include <QApplication>
 #include <QFile>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonWindowPrivate
 {
@@ -292,4 +292,4 @@ void RibbonWindow::loadTheme(const QString &themeFile)
     file.close();
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

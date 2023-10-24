@@ -11,7 +11,7 @@
 #include <QSpacerItem>
 #include <QVBoxLayout>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /**
  * @brief The RibbonCustomizeDialogUi class
@@ -171,4 +171,4 @@ bool QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonWindow *w,
     return RibbonCustomizeWidget::fromXml(&xml, w, mgr);
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

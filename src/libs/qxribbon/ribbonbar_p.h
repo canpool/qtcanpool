@@ -4,12 +4,12 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonbar.h"
 
 #include <QStackedWidget>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonQuickAccessBar;
 class RibbonControlButton;
@@ -135,6 +135,6 @@ public:
     bool m_blockResize;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE
 
-Q_DECLARE_METATYPE(QX_PREPEND_NAMESPACE(RibbonTabData))
+Q_DECLARE_METATYPE(QX_RIBBON_PREPEND_NAMESPACE(RibbonTabData))

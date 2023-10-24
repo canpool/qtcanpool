@@ -7,16 +7,16 @@ class QTextEdit;
 class QActionGroup;
 class QAbstractButton;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 class RibbonPage;
 class RibbonPageContext;
 class RibbonCustomizeWidget;
 class RibbonActionsManager;
 class RibbonQuickAccessBar;
 class RibbonButtonGroup;
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE
 
-QX_USE_NAMESPACE
+QX_RIBBON_USE_NAMESPACE
 
 class MainWindow : public RibbonWindow
 {

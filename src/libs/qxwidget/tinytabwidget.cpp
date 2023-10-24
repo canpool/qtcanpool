@@ -10,7 +10,7 @@
 #include <QBoxLayout>
 #include <QIcon>
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class TinyTabWidgetPrivate
 {
@@ -248,4 +248,4 @@ void TinyTabWidget::setCurrentWidget(QWidget *widget)
     d->m_tabBar->setCurrentIndex(indexOf(widget));
 }
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

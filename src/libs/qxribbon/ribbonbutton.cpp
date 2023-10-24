@@ -16,7 +16,7 @@
 #include <QStyleOptionToolButton>
 #include <QStylePainter>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 #define QX_INDICATOR_ARROW_WIDTH             8
 #define QX_WIDTH_HEIGHT_RATIO                1.2
@@ -899,4 +899,4 @@ bool RibbonButton::event(QEvent *e)
     return QToolButton::event(e);
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonactionsmanager.h"
 #include "ribboncustomizedata.h"
 #include "ribbongroup.h"
@@ -18,7 +18,7 @@ class QAbstractButton;
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonCustomizeWidgetUi;
 class RibbonCustomizeWidgetPrivate;
@@ -167,4 +167,4 @@ QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml
  */
 int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonWindow *w);
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

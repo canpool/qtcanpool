@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 
 #include <QAbstractListModel>
 #include <QAction>
@@ -13,7 +13,7 @@
 #include <QSet>
 #include <QString>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonWindow;
 class RibbonPage;
@@ -44,7 +44,7 @@ class RibbonActionsManagerModelPrivate;
  * 添加的 action, 并给予 Page 建立 tag，正常使用用户仅需关注此 autoRegisteActions 函数即可
  *
  */
-class QX_WIDGET_EXPORT RibbonActionsManager : public QObject
+class QX_RIBBON_EXPORT RibbonActionsManager : public QObject
 {
     Q_OBJECT
 public:
@@ -136,7 +136,7 @@ private:
 /**
  * @brief RibbonActionsManager 对应的model
  */
-class QX_WIDGET_EXPORT RibbonActionsManagerModel : public QAbstractListModel
+class QX_RIBBON_EXPORT RibbonActionsManagerModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
@@ -161,4 +161,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonActionsManagerModel)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

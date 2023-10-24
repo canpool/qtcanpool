@@ -2,7 +2,7 @@
 
 #include "qxribbon/quickaccessbar.h"
 
-QX_USE_NAMESPACE
+QX_RIBBON_USE_NAMESPACE
 
 void TestQuickAccessBar::visibleCount()
 {

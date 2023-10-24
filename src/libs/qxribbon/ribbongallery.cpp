@@ -14,7 +14,7 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* RibbonGalleryPrivate */
 class RibbonGalleryPrivate
@@ -428,4 +428,4 @@ void RibbonGalleryViewport::widgetTitleChanged(QWidget *w, const QString &title)
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

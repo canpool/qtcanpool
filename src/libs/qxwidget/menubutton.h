@@ -4,10 +4,10 @@
  **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxwidget_global.h"
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class QX_WIDGET_EXPORT MenuButton : public QToolButton
 {
@@ -22,4 +22,4 @@ protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 };
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

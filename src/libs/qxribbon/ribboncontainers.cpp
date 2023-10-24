@@ -11,7 +11,7 @@
 #include <QPainter>
 #include <QStylePainter>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonCtrlContainerPrivate
 {
@@ -200,4 +200,4 @@ void RibbonCtrlContainer::setOrientation(Qt::Orientation orientation)
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

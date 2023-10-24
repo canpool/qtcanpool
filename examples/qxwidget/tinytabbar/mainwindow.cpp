@@ -10,7 +10,7 @@
 #include "qxwidget/tinytabbar.h"
 #include "qxwidget/tinynavbar.h"
 
-QX_USE_NAMESPACE
+QX_WIDGET_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

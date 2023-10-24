@@ -10,7 +10,7 @@
 #include <QHBoxLayout>
 #include <QWidgetAction>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* RibbonButtonGroupItem */
 class RibbonButtonGroupItem
@@ -228,4 +228,4 @@ void RibbonButtonGroup::actionEvent(QActionEvent *e)
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

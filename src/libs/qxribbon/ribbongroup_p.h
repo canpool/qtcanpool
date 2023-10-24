@@ -4,12 +4,12 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbongroup.h"
 
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonButton;
 class RibbonGroupItem;
@@ -52,4 +52,4 @@ public:
     bool m_isCanCustomize;                                ///< 记录是否可自定义
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -4,12 +4,12 @@
  **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QIcon>
 
-namespace Qx {
+namespace QxRibbon {
 
 /* color */
-QX_WIDGET_EXPORT QIcon colorIcon(const QColor &color, const QSize &size);
+QX_RIBBON_EXPORT QIcon colorIcon(const QColor &color, const QSize &size);
 
-} // namespace Qx
+} // namespace QxRibbon

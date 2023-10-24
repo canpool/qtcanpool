@@ -37,7 +37,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 bool QxRibbonCustomizeDataSetToXml(QXmlStreamWriter *xml, const QList<RibbonCustomizeData> &cds, bool force = false)
 {
@@ -1432,4 +1432,4 @@ void RibbonCustomizeWidget::onPushButtonResetClicked()
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

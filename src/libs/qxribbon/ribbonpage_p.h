@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonPage;
 class RibbonSeparator;
@@ -102,4 +102,4 @@ public:
     bool m_isCanCustomize;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

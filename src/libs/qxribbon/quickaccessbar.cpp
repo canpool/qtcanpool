@@ -13,7 +13,7 @@
 #include <QActionEvent>
 #include <QLayout>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* QuickAccessButton */
 QuickAccessButton::QuickAccessButton(QWidget *parent)
@@ -281,4 +281,4 @@ void QuickAccessBar::actionEvent(QActionEvent *event)
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

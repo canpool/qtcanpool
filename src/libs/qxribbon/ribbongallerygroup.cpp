@@ -10,7 +10,7 @@
 #include <QItemSelectionModel>
 #include <QPainter>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* RibbonGalleryItemPrivate */
 class RibbonGalleryItemPrivate
@@ -671,4 +671,4 @@ void RibbonGalleryGroup::onItemEntered(const QModelIndex &index)
     d->itemActivate(index, QAction::Hover);
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

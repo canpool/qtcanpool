@@ -10,7 +10,7 @@
 #include <QStyle>
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 #define MIN_BUTTON_WIDTH    30
 #define MAX_BUTTON_WIDTH    30
@@ -334,4 +334,4 @@ void WindowButtonGroup::maximizeWindow()
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

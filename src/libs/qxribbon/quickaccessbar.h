@@ -4,15 +4,15 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QToolBar>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class QuickAccessBarPrivate;
 
 /* QuickAccessBar */
-class QX_WIDGET_EXPORT QuickAccessBar : public QToolBar
+class QX_RIBBON_EXPORT QuickAccessBar : public QToolBar
 {
     Q_OBJECT
 public:
@@ -39,4 +39,4 @@ private:
     Q_DISABLE_COPY(QuickAccessBar)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

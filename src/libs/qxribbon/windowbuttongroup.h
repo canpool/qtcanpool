@@ -4,11 +4,11 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QPushButton>
 #include <QWidget>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class WindowButtonGroupPrivate;
 
@@ -49,4 +49,4 @@ public:
     explicit WindowToolButton(QWidget *p = Q_NULLPTR);
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

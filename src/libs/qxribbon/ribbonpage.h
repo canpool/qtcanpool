@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbongroup.h"
 #include <QPushButton>
 #include <QScopedPointer>
@@ -14,7 +14,7 @@
 class QHBoxLayout;
 class QWheelEvent;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonPageProxyPrivate;
 class RibbonPagePrivate;
@@ -26,7 +26,7 @@ class RibbonBarPrivate;
  * @note RibbonPage 的 windowTitle 影响了其在 RibbonBar 的标签显示，
  * 如果要改标签名字，直接调用 RibbonPage 的 setWindowTitle 函数
  */
-class QX_WIDGET_EXPORT RibbonPage : public QWidget
+class QX_RIBBON_EXPORT RibbonPage : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool isCanCustomize READ isCanCustomize WRITE setCanCustomize)
@@ -91,4 +91,4 @@ private:
     friend class RibbonPageContext;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

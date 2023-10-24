@@ -4,13 +4,13 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QDialog>
 
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonActionsManager;
 class RibbonCustomizeDialogUi;
@@ -26,7 +26,7 @@ class RibbonWindow;
  * 那么在对话框执行前为了保证同步需要调用 @ref RibbonCustomizeDialog::fromXml
  * 同步配置文件，这样再次修改后的配置文件就一致
  */
-class QX_WIDGET_EXPORT RibbonCustomizeDialog : public QDialog
+class QX_RIBBON_EXPORT RibbonCustomizeDialog : public QDialog
 {
     Q_OBJECT
 public:
@@ -70,7 +70,7 @@ private:
  * }
  * @endcode
  */
-bool QX_WIDGET_EXPORT QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonWindow *w,
+bool QX_RIBBON_EXPORT QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonWindow *w,
                                                         RibbonActionsManager *mgr);
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

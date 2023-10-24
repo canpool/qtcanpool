@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QObject>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /**
  * @def 属性，用于标记是否可以进行自定义，用于动态设置到 @ref RibbonPage 和 @ref RibbonGroup
@@ -762,4 +762,4 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     return res;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

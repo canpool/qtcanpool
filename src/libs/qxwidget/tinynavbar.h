@@ -4,10 +4,10 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxwidget_global.h"
 #include "tinytabbar.h"
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class TinyNavBarPrivate;
 
@@ -30,4 +30,4 @@ private:
     Q_DISABLE_COPY(TinyNavBar)
 };
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

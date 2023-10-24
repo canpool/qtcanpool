@@ -5,7 +5,7 @@
 #include "ribbonfactory.h"
 #include "ribboncontrols.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 RibbonFactory::RibbonFactory()
     : m_opt(new RibbonStyleOption())
@@ -35,4 +35,4 @@ void RibbonFactory::setRibbonStyleOption(RibbonStyleOption *opt)
     m_opt.reset(opt);
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

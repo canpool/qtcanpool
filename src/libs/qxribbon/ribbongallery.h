@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbongallerygroup.h"
 
 #include <QFrame>
@@ -13,7 +13,7 @@
 class QLabel;
 class QVBoxLayout;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGalleryPrivate;
 class RibbonGalleryViewport;
@@ -39,7 +39,7 @@ class RibbonGalleryViewport;
  * gallery->setCurrentViewGroup(group1);
  * @endcode
  */
-class QX_WIDGET_EXPORT RibbonGallery : public QFrame
+class QX_RIBBON_EXPORT RibbonGallery : public QFrame
 {
     Q_OBJECT
 public:
@@ -76,7 +76,7 @@ private:
 
 class RibbonGalleryViewportPrivate;
 /* RibbonGalleryViewport */
-class QX_WIDGET_EXPORT RibbonGalleryViewport : public QWidget
+class QX_RIBBON_EXPORT RibbonGalleryViewport : public QWidget
 {
     Q_OBJECT
 public:
@@ -93,4 +93,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonGalleryViewport)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

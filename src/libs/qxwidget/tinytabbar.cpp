@@ -13,7 +13,7 @@
 #include <QToolButton>
 #include <QDebug>
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 
 TinyTabBarPrivate::TinyTabBarPrivate()
@@ -281,4 +281,4 @@ void TinyTabBar::actionEvent(QActionEvent *event)
     QToolBar::actionEvent(event);
 }
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

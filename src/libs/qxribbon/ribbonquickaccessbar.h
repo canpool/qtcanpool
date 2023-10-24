@@ -4,18 +4,18 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribboncontainers.h"
 
 #include <QMenu>
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class QuickAccessBar;
 class RibbonQuickAccessBarPrivate;
 
-class QX_WIDGET_EXPORT RibbonQuickAccessBar : public RibbonCtrlContainer
+class QX_RIBBON_EXPORT RibbonQuickAccessBar : public RibbonCtrlContainer
 {
     Q_OBJECT
 public:
@@ -27,4 +27,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonQuickAccessBar)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

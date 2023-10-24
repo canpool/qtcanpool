@@ -4,10 +4,10 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QWidget>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /**
  * @brief Control Widget Container
@@ -27,7 +27,7 @@ QX_BEGIN_NAMESPACE
  *  ------------------------
  */
 class RibbonCtrlContainerPrivate;
-class QX_WIDGET_EXPORT RibbonCtrlContainer : public QWidget
+class QX_RIBBON_EXPORT RibbonCtrlContainer : public QWidget
 {
     Q_OBJECT
 public:
@@ -56,4 +56,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonCtrlContainer)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

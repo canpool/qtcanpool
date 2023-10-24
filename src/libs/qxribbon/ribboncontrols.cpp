@@ -7,7 +7,7 @@
 #include <QWidgetAction>
 #include <QPainter>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* RibbonControl */
 RibbonControl::RibbonControl(QWidget *parent) : QWidget(parent)
@@ -114,4 +114,4 @@ void RibbonSeparator::paintEvent(QPaintEvent *event)
                      QPoint(x1, rect().bottom() - m_bottomMargin));
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

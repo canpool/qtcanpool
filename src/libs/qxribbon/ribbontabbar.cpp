@@ -4,7 +4,7 @@
 **/
 #include "ribbontabbar.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 RibbonTabBar::RibbonTabBar(QWidget *parent)
     : QTabBar(parent)
@@ -23,4 +23,4 @@ void RibbonTabBar::setTabMargin(const QMargins &margin)
     m_tabMargin = margin;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

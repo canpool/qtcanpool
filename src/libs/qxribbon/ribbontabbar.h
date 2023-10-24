@@ -4,13 +4,13 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QMargins>
 #include <QTabBar>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
-class QX_WIDGET_EXPORT RibbonTabBar : public QTabBar
+class QX_RIBBON_EXPORT RibbonTabBar : public QTabBar
 {
     Q_OBJECT
 public:
@@ -22,4 +22,4 @@ private:
     QMargins m_tabMargin;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

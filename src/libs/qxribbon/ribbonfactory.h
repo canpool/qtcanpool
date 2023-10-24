@@ -4,16 +4,16 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonstyleoption.h"
 
 #include <QScopedPointer>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonControlButton;
 
-class QX_WIDGET_EXPORT RibbonFactory
+class QX_RIBBON_EXPORT RibbonFactory
 {
 public:
     RibbonFactory();
@@ -28,4 +28,4 @@ private:
     QScopedPointer<RibbonStyleOption> m_opt;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

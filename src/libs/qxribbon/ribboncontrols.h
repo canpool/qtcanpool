@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 
 #include <QWidget>
 #include <QCheckBox>
@@ -13,10 +13,10 @@
 #include <QLineEdit>
 #include <QMenu>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* RibbonControl */
-class QX_WIDGET_EXPORT RibbonControl : public QWidget
+class QX_RIBBON_EXPORT RibbonControl : public QWidget
 {
     Q_OBJECT
 public:
@@ -24,7 +24,7 @@ public:
 };
 
 /* RibbonCheckBox */
-class QX_WIDGET_EXPORT RibbonCheckBox : public QCheckBox
+class QX_RIBBON_EXPORT RibbonCheckBox : public QCheckBox
 {
     Q_OBJECT
 public:
@@ -32,7 +32,7 @@ public:
 };
 
 /* RibbonComboBox */
-class QX_WIDGET_EXPORT RibbonComboBox : public QComboBox
+class QX_RIBBON_EXPORT RibbonComboBox : public QComboBox
 {
     Q_OBJECT
 public:
@@ -40,7 +40,7 @@ public:
 };
 
 /* RibbonControlButton */
-class QX_WIDGET_EXPORT RibbonControlButton : public QToolButton
+class QX_RIBBON_EXPORT RibbonControlButton : public QToolButton
 {
     Q_OBJECT
 public:
@@ -48,7 +48,7 @@ public:
 };
 
 /* RibbonLineEdit */
-class QX_WIDGET_EXPORT RibbonLineEdit : public QLineEdit
+class QX_RIBBON_EXPORT RibbonLineEdit : public QLineEdit
 {
     Q_OBJECT
 public:
@@ -56,7 +56,7 @@ public:
 };
 
 /* RibbonMenu */
-class QX_WIDGET_EXPORT RibbonMenu : public QMenu
+class QX_RIBBON_EXPORT RibbonMenu : public QMenu
 {
     Q_OBJECT
 public:
@@ -70,7 +70,7 @@ public:
 };
 
 /* RibbonSeparator */
-class QX_WIDGET_EXPORT RibbonSeparator : public QWidget
+class QX_RIBBON_EXPORT RibbonSeparator : public QWidget
 {
     Q_OBJECT
 public:
@@ -86,4 +86,4 @@ private:
     int m_bottomMargin;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

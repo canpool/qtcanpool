@@ -9,7 +9,7 @@
 #include <QStyleOptionToolButton>
 #include <QStyle>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 const int c_colorHeight = 5;   ///< 颜色块的高度
 
@@ -107,4 +107,4 @@ void RibbonColorButton::onButtonClicked(bool checked)
     emit colorClicked(d->m_color, checked);
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

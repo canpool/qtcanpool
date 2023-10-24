@@ -9,7 +9,7 @@
 #include <QList>
 #include <QVariant>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 /* RibbonPageData */
 class RibbonPageData
@@ -179,4 +179,4 @@ bool RibbonPageContext::takePage(RibbonPage *page)
     return false;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -10,7 +10,7 @@
 #include <QStyleOptionToolButton>
 #include <QStyle>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonButtonPrivate
 {
@@ -54,4 +54,4 @@ public:
     static bool s_liteStyleEnableWordWrap; ///< 在lite模式下是否允许文字换行，如果允许，则图标相对比较小，默认不允许
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

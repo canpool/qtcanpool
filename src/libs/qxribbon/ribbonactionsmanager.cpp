@@ -10,7 +10,7 @@
 #include <QHash>
 #include <QMap>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonActionsManagerPrivate
 {
@@ -666,4 +666,4 @@ void RibbonActionsManagerModel::onActionTagChanged(int tag, bool isdelete)
     }
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

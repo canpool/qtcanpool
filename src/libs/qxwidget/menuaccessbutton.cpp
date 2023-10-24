@@ -6,7 +6,7 @@
 
 #include <QStyle>
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class MenuAccessButtonPrivate
 {
@@ -53,4 +53,4 @@ void MenuAccessButton::setOrientation(Qt::Orientation orientation)
     updateGeometry();
 }
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

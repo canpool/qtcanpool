@@ -48,7 +48,8 @@
 #include "aboutdialog.h"
 #include "editablecontainer.h"
 
-QX_USE_NAMESPACE
+QX_RIBBON_USE_NAMESPACE
+QX_WIDGET_USE_NAMESPACE
 
 #define COST_START()                                                                                                   \
     QElapsedTimer __TMP_COST;                                                                                          \
@@ -383,7 +384,7 @@ void MainWindow::createPageHome()
     btn = groupToolButtonStyle->addLargeAction(act);
     btn->setArrowType(Qt::DownArrow);
 
-    act = new QAction(Qx::colorIcon(Qt::red, QSize(32, 32)), tr("Color Action"), this);
+    act = new QAction(QxRibbon::colorIcon(Qt::red, QSize(32, 32)), tr("Color Action"), this);
     groupToolButtonStyle->addLargeAction(act);
 
     act = createAction(tr("Color Button"), ":/icon/res/long-text.svg");
@@ -1093,7 +1094,7 @@ void MainWindow::onActionHelpTriggered()
 {
     QString url("https://gitee.com/icanpool/qtcanpool");
 
-    AboutDialog ad(QLatin1String(":/icon/res/logo64.svg"), tr("QxRibbon"), QLatin1String(QX_VERSION_STR),
+    AboutDialog ad(QLatin1String(":/icon/res/logo64.svg"), tr("QxRibbon"), QLatin1String(QX_RIBBON_VERSION_STR),
                    tr(
 "Copyleft (C) 2023 maminjie &lt;canpool@163.com&gt;<br/>"
 "<br/>QxRibbon is a QxWidget componet like to Microsoft Ribbon style. "

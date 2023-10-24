@@ -4,7 +4,7 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonpage.h"
 #include "ribbonpagecontext.h"
 
@@ -14,7 +14,7 @@
 
 class QAbstractButton;
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonFactory;
 class RibbonBarPrivate;
@@ -96,7 +96,7 @@ class QuickAccessBar;
  * }
  * @endcode
  */
-class QX_WIDGET_EXPORT RibbonBar : public QMenuBar
+class QX_RIBBON_EXPORT RibbonBar : public QMenuBar
 {
     Q_OBJECT
     Q_PROPERTY(RibbonStyle ribbonStyle READ currentRibbonStyle WRITE setRibbonStyle)
@@ -220,4 +220,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonBar)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

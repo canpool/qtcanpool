@@ -4,11 +4,11 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonbar.h"
 #include <QDebug>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonStyleOptionPrivate;
 
@@ -25,7 +25,7 @@ class RibbonStyleOptionPrivate;
  *
  * @todo 后续开发通过配置文件定义 ribbon 的尺寸布局
  */
-class QX_WIDGET_EXPORT RibbonStyleOption
+class QX_RIBBON_EXPORT RibbonStyleOption
 {
 public:
     RibbonStyleOption();
@@ -41,6 +41,6 @@ private:
     QX_DECLARE_PRIVATE(RibbonStyleOption)
 };
 
-QX_WIDGET_EXPORT QDebug operator<<(QDebug debug, const RibbonStyleOption &c);
+QX_RIBBON_EXPORT QDebug operator<<(QDebug debug, const RibbonStyleOption &c);
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -4,16 +4,16 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QFrame>
 #include <QMenu>
 #include <QToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonButtonGroupPrivate;
 
-class QX_WIDGET_EXPORT RibbonButtonGroup : public QFrame
+class QX_RIBBON_EXPORT RibbonButtonGroup : public QFrame
 {
     Q_OBJECT
 public:
@@ -37,4 +37,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonButtonGroup)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

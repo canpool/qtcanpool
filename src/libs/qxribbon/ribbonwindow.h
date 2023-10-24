@@ -4,10 +4,10 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QMainWindow>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonWindowPrivate;
 class RibbonBar;
@@ -42,7 +42,7 @@ class RibbonBar;
  * 常用方法：在 RibbonWindow 继承类中自定义 Theme 枚举类型，如: RibbonThemeCustom, 然后首个类型值定义为 CustomTheme + 1
  *
  */
-class QX_WIDGET_EXPORT RibbonWindow : public QMainWindow
+class QX_RIBBON_EXPORT RibbonWindow : public QMainWindow
 {
     Q_OBJECT
     Q_PROPERTY(int ribbonTheme READ ribbonTheme WRITE setRibbonTheme)
@@ -81,4 +81,4 @@ private:
     QX_DECLARE_PRIVATE(RibbonWindow)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -4,14 +4,14 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonbutton.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonColorButtonPrivate;
 
-class QX_WIDGET_EXPORT RibbonColorButton : public RibbonButton
+class QX_RIBBON_EXPORT RibbonColorButton : public RibbonButton
 {
     Q_OBJECT
 public:
@@ -31,4 +31,4 @@ private:
     Q_DECLARE_PRIVATE(RibbonColorButton)
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

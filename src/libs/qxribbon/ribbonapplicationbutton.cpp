@@ -4,7 +4,7 @@
 **/
 #include "ribbonapplicationbutton.h"
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 RibbonApplicationButton::RibbonApplicationButton(QWidget *parent)
     : RibbonApplicationButton(QIcon(), QString(), parent)
@@ -24,4 +24,4 @@ RibbonApplicationButton::RibbonApplicationButton(const QIcon &icon, const QStrin
     setMinimumWidth(40);
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

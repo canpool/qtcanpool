@@ -4,13 +4,13 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include "ribbonactionsmanager.h"
 #include "ribbongroup.h"
 
 #include <QList>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonWindow;
 
@@ -150,6 +150,6 @@ private:
 
 typedef QList<RibbonCustomizeData> RibbonCustomizeDataList;
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE
 
-Q_DECLARE_METATYPE(QX_PREPEND_NAMESPACE(RibbonCustomizeData))
+Q_DECLARE_METATYPE(QX_RIBBON_PREPEND_NAMESPACE(RibbonCustomizeData))

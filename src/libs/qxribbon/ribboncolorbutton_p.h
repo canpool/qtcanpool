@@ -8,7 +8,7 @@
 
 #include <QStyleOptionToolButton>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonColorButton;
 
@@ -23,4 +23,4 @@ public:
     QColor m_color;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

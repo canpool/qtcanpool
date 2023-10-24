@@ -13,7 +13,7 @@
 #include <QWidgetAction>
 #include <set>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 #define RibbonGroupLayout_DEBUG_PRINT 0
 #define HELP_DRAW_RECT(p, rect)                                                                                        \
@@ -790,4 +790,4 @@ void RibbonGroupLayout::setGeometry(const QRect &rect)
     d->layoutActions();
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

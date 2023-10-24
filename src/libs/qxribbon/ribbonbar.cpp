@@ -27,7 +27,7 @@
 #include <QMouseEvent>
 #include <QEvent>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 const int tabBarBaseLineHeight = 1;
 
@@ -1756,4 +1756,4 @@ void RibbonBar::resizeEvent(QResizeEvent *e)
     update();
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

@@ -4,10 +4,10 @@
 **/
 #pragma once
 
-#include "qxglobal.h"
+#include "qxwidget_global.h"
 #include <QToolBar>
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class TinyTabBarPrivate;
 
@@ -60,4 +60,4 @@ private:
     Q_DISABLE_COPY(TinyTabBar)
 };
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

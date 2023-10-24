@@ -15,13 +15,13 @@
 // We mean it.
 //
 
-#include "qxglobal.h"
+#include "qxribbon_global.h"
 #include <QObject>
 #include <QToolBar>
 #include <QToolButton>
 #include <QAction>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 class QuickAccessBar;
 
@@ -89,4 +89,4 @@ public:
     bool m_removingAction : 1;
 };
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

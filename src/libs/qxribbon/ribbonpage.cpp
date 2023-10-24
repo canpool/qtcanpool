@@ -16,7 +16,7 @@
 #include <QPainter>
 #include <QResizeEvent>
 
-QX_BEGIN_NAMESPACE
+QX_RIBBON_BEGIN_NAMESPACE
 
 RibbonPageScrollButton::RibbonPageScrollButton(Qt::ArrowType arr, QWidget *p)
     : QToolButton(p)
@@ -862,4 +862,4 @@ void RibbonPage::setRibbonBar(RibbonBar *bar)
     d->m_ribbonBar = bar;
 }
 
-QX_END_NAMESPACE
+QX_RIBBON_END_NAMESPACE

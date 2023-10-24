@@ -10,7 +10,7 @@
 #include <QActionEvent>
 #include <QStyle>
 
-QX_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 TinyNavBarPrivate::TinyNavBarPrivate()
     : TinyTabBarPrivate()
@@ -157,4 +157,4 @@ void TinyNavBar::actionEvent(QActionEvent *event)
     }
 }
 
-QX_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE
