@@ -62,9 +62,9 @@ void RibbonGalleryPrivate::init()
     m_buttonUp->setMaximumWidth(s_galleryButtonMaximumWidth);
     m_buttonDown->setMaximumWidth(s_galleryButtonMaximumWidth);
     m_buttonMore->setMaximumWidth(s_galleryButtonMaximumWidth);
-    m_buttonUp->setIcon(QIcon(":/image/res/ArrowUp.png"));
-    m_buttonDown->setIcon(QIcon(":/image/res/ArrowDown.png"));
-    m_buttonMore->setIcon(QIcon(":/image/res/ArrowMore.png"));
+    m_buttonUp->setIcon(QIcon(":/image/res/arrow_up.png"));
+    m_buttonDown->setIcon(QIcon(":/image/res/arrow_down.png"));
+    m_buttonMore->setIcon(QIcon(":/image/res/arrow_more.png"));
     QObject::connect(m_buttonUp, &QAbstractButton::clicked, q, &RibbonGallery::pageUp);
     QObject::connect(m_buttonDown, &QAbstractButton::clicked, q, &RibbonGallery::pageDown);
     QObject::connect(m_buttonMore, &QAbstractButton::clicked, q, &RibbonGallery::showMoreDetail);

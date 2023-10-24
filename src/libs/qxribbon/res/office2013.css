@@ -123,7 +123,7 @@ QxRibbon--RibbonGroupOptionButton:hover {
 }
 
 QxRibbon--RibbonGroupOptionButton {
-  qproperty-icon: url(:/image/res/ribbonGroupOptionButton.png);
+  qproperty-icon: url(:/image/res/group_option.png);
 }
 
 /*RibbonGallery*/
@@ -266,15 +266,15 @@ QxRibbon--RibbonControlButton#RibbonGalleryButtonUp, #RibbonGalleryButtonDown, #
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonUp {
-  qproperty-icon: url(:/image/res/ArrowUp.png);
+  qproperty-icon: url(:/image/res/arrow_up.png);
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonDown {
-  qproperty-icon: url(:/image/res/ArrowDown.png);
+  qproperty-icon: url(:/image/res/arrow_down.png);
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonMore {
-  qproperty-icon: url(:/image/res/ArrowMore.png);
+  qproperty-icon: url(:/image/res/arrow_more.png);
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
@@ -282,8 +282,8 @@ QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
-  titlebar-shade-icon: url(:/image/res/Titlebar_Shade.png);
-  titlebar-unshade-icon: url(:/image/res/Titlebar_Unshade.png);
+  titlebar-shade-icon: url(:/image/res/titlebar_shade.png);
+  titlebar-unshade-icon: url(:/image/res/titlebar_unshade.png);
 }
 
 /*RibbonMenu*/
@@ -355,7 +355,7 @@ QxRibbon--RibbonComboBox::drop-down:hover {
 }
 
 QxRibbon--RibbonComboBox::down-arrow {
-  image: url(:/image/res/ArrowDown.png);
+  image: url(:/image/res/arrow_down.png);
 }
 
 /*RibbonSeparator*/
@@ -394,15 +394,15 @@ QxRibbon--WindowToolButton:focus {
 }
 
 QxRibbon--WindowToolButton#qx_MinimizeWindowButton {
-  image: url(:/image/res/Titlebar_Min.png);
+  image: url(:/image/res/titlebar_min.png);
 }
 
 QxRibbon--WindowToolButton#qx_MaximizeWindowButton {
-  image: url(:/image/res/Titlebar_Max.png);
+  image: url(:/image/res/titlebar_max.png);
 }
 
 QxRibbon--WindowToolButton#qx_MaximizeWindowButton:checked {
-  image: url(:/image/res/Titlebar_Normal.png);
+  image: url(:/image/res/titlebar_normal.png);
 }
 
 QxRibbon--WindowToolButton#qx_MinimizeWindowButton:hover,#qx_MaximizeWindowButton:hover {
@@ -414,15 +414,15 @@ QxRibbon--WindowToolButton#qx_MinimizeWindowButton:pressed,#qx_MaximizeWindowBut
 }
 
 QxRibbon--WindowToolButton#qx_CloseWindowButton {
-  image: url(:/image/res/Titlebar_Close.png);
+  image: url(:/image/res/titlebar_close.png);
 }
 
 QxRibbon--WindowToolButton#qx_CloseWindowButton:hover {
   background-color: #e81123;
-  image: url(:/image/res/Titlebar_Close_Hover.png);
+  image: url(:/image/res/titlebar_close_hover.png);
 }
 
 QxRibbon--WindowToolButton#qx_CloseWindowButton:pressed {
   background-color: #f1707a;
-  image: url(:/image/res/Titlebar_Close_Hover.png);
+  image: url(:/image/res/titlebar_close_hover.png);
 }

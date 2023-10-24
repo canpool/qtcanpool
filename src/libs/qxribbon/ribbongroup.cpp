@@ -47,7 +47,7 @@ RibbonGroupOptionButton::RibbonGroupOptionButton(QWidget *parent) : QToolButton(
     setToolButtonStyle(Qt::ToolButtonIconOnly);
     setFixedSize(16, 16);
     setIconSize(QSize(10, 10));
-    setIcon(QIcon(":/image/res/ribbonGroupOptionButton.png"));
+    setIcon(QIcon(":/image/res/group_option.png"));
 }
 
 void RibbonGroupOptionButton::connectAction(QAction *action)

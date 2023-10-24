@@ -658,7 +658,7 @@ QxRibbon--RibbonGroupOptionButton:hover {
 }
 
 QxRibbon--RibbonGroupOptionButton {
-  qproperty-icon: url(:/image/res/lighter/ribbonGroupOptionButton.png);
+  qproperty-icon: url(:/image/res/lighter/group_option.png);
 }
 
 /*RibbonGallery*/
@@ -826,15 +826,15 @@ QxRibbon--RibbonControlButton#RibbonGalleryButtonUp, #RibbonGalleryButtonDown, #
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonUp {
-  qproperty-icon: url(:/image/res/lighter/ArrowUp.png);
+  qproperty-icon: url(:/image/res/lighter/arrow_up.png);
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonDown {
-  qproperty-icon: url(:/image/res/lighter/ArrowDown.png);
+  qproperty-icon: url(:/image/res/lighter/arrow_down.png);
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonMore {
-  qproperty-icon: url(:/image/res/lighter/ArrowMore.png);
+  qproperty-icon: url(:/image/res/lighter/arrow_more.png);
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
@@ -842,8 +842,8 @@ QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
-  titlebar-shade-icon: url(:/image/res/lighter/Titlebar_Shade.png);
-  titlebar-unshade-icon: url(:/image/res/lighter/Titlebar_Unshade.png);
+  titlebar-shade-icon: url(:/image/res/lighter/titlebar_shade.png);
+  titlebar-unshade-icon: url(:/image/res/lighter/titlebar_unshade.png);
 }
 
 /*RibbonMenu*/
@@ -914,7 +914,7 @@ QComboBox::drop-down:hover {
 }
 
 QComboBox::down-arrow {
-  image: url(:/image/res/lighter/ArrowDown.png);
+  image: url(:/image/res/lighter/arrow_down.png);
 }
 
 /*RibbonSeparator*/
@@ -957,16 +957,16 @@ QxRibbon--WindowToolButton:focus {
 }
 
 QxRibbon--WindowToolButton#qx_MinimizeWindowButton {
-  image: url(:/image/res/lighter/Titlebar_Min.png);
+  image: url(:/image/res/lighter/titlebar_min.png);
 }
 
 QxRibbon--WindowToolButton#qx_MaximizeWindowButton {
-  image: url(:/image/res/lighter/Titlebar_Max.png);
+  image: url(:/image/res/lighter/titlebar_max.png);
 }
 
 QxRibbon--WindowToolButton#qx_MaximizeWindowButton:checked {
   background-color: transparent;
-  image: url(:/image/res/lighter/Titlebar_Normal.png);
+  image: url(:/image/res/lighter/titlebar_normal.png);
 }
 
 QxRibbon--WindowToolButton#qx_MinimizeWindowButton:hover,QxRibbon--WindowToolButton#qx_MaximizeWindowButton:hover {
@@ -978,15 +978,15 @@ QxRibbon--WindowToolButton#qx_MinimizeWindowButton:pressed,QxRibbon--WindowToolB
 }
 
 QxRibbon--WindowToolButton#qx_CloseWindowButton {
-  image: url(:/image/res/lighter/Titlebar_Close.png);
+  image: url(:/image/res/lighter/titlebar_close.png);
 }
 
 QxRibbon--WindowToolButton#qx_CloseWindowButton:hover {
   background-color: #e81123;
-  image: url(:/image/res/lighter/Titlebar_Close_Hover.png);
+  image: url(:/image/res/lighter/titlebar_close_hover.png);
 }
 
 QxRibbon--WindowToolButton#qx_CloseWindowButton:pressed {
   background-color: #f1707a;
-  image: url(:/image/res/lighter/Titlebar_Close_Hover.png);
+  image: url(:/image/res/lighter/titlebar_close_hover.png);
 }
