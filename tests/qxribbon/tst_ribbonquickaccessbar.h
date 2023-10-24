@@ -2,7 +2,7 @@
 
 #include <QtTest/QtTest>
 
-class TestQuickAccessBar: public QObject
+class TestRibbonQuickAccessBar: public QObject
 {
     Q_OBJECT
 private slots:

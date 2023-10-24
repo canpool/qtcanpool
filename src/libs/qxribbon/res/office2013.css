@@ -172,7 +172,7 @@ QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
 /*RibbonQuickAccessBar*/
 
 QxRibbon--RibbonQuickAccessBar {
-  background-color: #cee8fc;
+  background-color: transparent;
 }
 
 /*RibbonCtrlContainer*/

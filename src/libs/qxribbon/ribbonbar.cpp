@@ -8,9 +8,8 @@
 #include "ribbonbuttongroup.h"
 #include "ribboncontrols.h"
 #include "ribbonmanager.h"
-#include "ribbonquickaccessbar.h"
 #include "ribbontabbar.h"
-#include "quickaccessbar.h"
+#include "ribbonquickaccessbar.h"
 
 #include <QAction>
 #include <QApplication>
@@ -104,6 +103,25 @@ void RibbonStackedWidget::moveWidget(int from, int to)
     insertWidget(to, w);
 }
 
+/* RibbonQuickAccessBarContainer */
+RibbonQuickAccessBarContainer::RibbonQuickAccessBarContainer(QWidget *parent)
+    : RibbonCtrlContainer(parent)
+{
+    m_quickAccessBar = new RibbonQuickAccessBar(this);
+    m_quickAccessBar->setObjectName(QStringLiteral("qx_QuickAccessBar"));
+    setWidget(m_quickAccessBar);
+    setTitleVisible(false);
+}
+
+RibbonQuickAccessBarContainer::~RibbonQuickAccessBarContainer()
+{
+}
+
+RibbonQuickAccessBar *RibbonQuickAccessBarContainer::quickAccessBar() const
+{
+    return m_quickAccessBar;
+}
+
 RibbonBarPrivate::RibbonBarPrivate()
     : m_applicationButton(Q_NULLPTR)
     , m_tabBar(Q_NULLPTR)
@@ -153,7 +171,7 @@ void RibbonBarPrivate::init()
     m_stack->installEventFilter(q);
     setMinimizedFlag(false);
 
-    m_quickAccessBar = new RibbonQuickAccessBar(q);
+    m_quickAccessBar = new RibbonQuickAccessBarContainer(q);
     m_quickAccessBar->setObjectName(QStringLiteral("qx_RibbonQuickAccessBar"));
     m_quickAccessBar->setIcon(q->windowIcon());
 }
@@ -1499,10 +1517,10 @@ void RibbonBar::activeRightButtonGroup()
     d->m_rightButtonGroup->show();
 }
 
-QuickAccessBar *RibbonBar::quickAccessBar() const
+RibbonQuickAccessBar *RibbonBar::quickAccessBar() const
 {
     Q_D(const RibbonBar);
-    return d->m_quickAccessBar->accessBar();
+    return d->m_quickAccessBar->quickAccessBar();
 }
 
 void RibbonBar::setQuickAccessBarPosition(QuickAccessBarPosition position)

@@ -1,18 +1,18 @@
-#include "tst_quickaccessbar.h"
+#include "tst_ribbonquickaccessbar.h"
 
-#include "qxribbon/quickaccessbar.h"
+#include "qxribbon/ribbonquickaccessbar.h"
 
 QX_RIBBON_USE_NAMESPACE
 
-void TestQuickAccessBar::visibleCount()
+void TestRibbonQuickAccessBar::visibleCount()
 {
-    QuickAccessBar qab;
+    RibbonQuickAccessBar qab;
     QVERIFY(qab.visibleCount() == 0);
 }
 
-void TestQuickAccessBar::addAction()
+void TestRibbonQuickAccessBar::addAction()
 {
-    QuickAccessBar qab;
+    RibbonQuickAccessBar qab;
 
     {
         QAction action(0);

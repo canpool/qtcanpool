@@ -196,41 +196,42 @@ QxRibbon--RibbonQuickAccessBar {
   background-color: #cee8fc;
 }
 
-QxRibbon--QuickAccessBar {
+QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
 }
 
-QxRibbon--QuickAccessBar QToolButton {
+QxRibbon--RibbonQuickAccessBar QToolButton {
   border: none;
   color: white;
 }
 
-QxRibbon--QuickAccessBar QToolButton:hover,
-QxRibbon--QuickAccessBar QToolButton:focus {
+QxRibbon--RibbonQuickAccessBar QToolButton:hover,
+QxRibbon--RibbonQuickAccessBar QToolButton:focus {
   background-color: #124078;
 }
 
-QxRibbon--QuickAccessBar QToolButton:pressed,
-QxRibbon--QuickAccessBar QToolButton:checked {
+QxRibbon--RibbonQuickAccessBar QToolButton:pressed,
+QxRibbon--RibbonQuickAccessBar QToolButton:checked {
   background-color: #002050;
 }
 
-QxRibbon--QuickAccessBar QToolButton {
+QxRibbon--RibbonQuickAccessBar QToolButton {
   width: 18px;
   height: 18px;
 }
 
-QxRibbon--QuickAccessBar QToolButton[popupMode="1"] {
+QxRibbon--RibbonQuickAccessBar QToolButton[popupMode="1"] {
   padding-right: 12px;
 }
 
-QxRibbon--QuickAccessBar QAbstractButton {
+QxRibbon--RibbonQuickAccessBar QAbstractButton {
   padding: 0px;
 }
 
-QxRibbon--QuickAccessBar QToolButton#qx_QuickAccessButton::menu-indicator {
-  width: 8px;
-  height: 8px;
+QxRibbon--RibbonQuickAccessButton::menu-indicator {
+  width: 6px;
+  height: 6px;
+  padding-right: 3px;
 }
 
 /*RibbonCtrlContainer*/

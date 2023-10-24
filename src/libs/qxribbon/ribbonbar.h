@@ -20,7 +20,7 @@ class RibbonFactory;
 class RibbonBarPrivate;
 class RibbonTabBar;
 class RibbonButtonGroup;
-class QuickAccessBar;
+class RibbonQuickAccessBar;
 
 /**
  * @brief RibbonBar 继承 QMenuBar, 在 RibbonWindow 中直接替换了原来的 QMenuBar
@@ -179,7 +179,7 @@ public:
     RibbonButtonGroup *rightButtonGroup();
     void activeRightButtonGroup();
 
-    QuickAccessBar *quickAccessBar() const;
+    RibbonQuickAccessBar *quickAccessBar() const;
     void setQuickAccessBarPosition(QuickAccessBarPosition position);
     QuickAccessBarPosition quickAccessBarPosition() const;
 

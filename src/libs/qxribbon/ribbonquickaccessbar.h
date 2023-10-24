@@ -1,30 +1,45 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
 **/
 #pragma once
 
 #include "qxribbon_global.h"
-#include "ribboncontainers.h"
-
+#include <QToolBar>
 #include <QMenu>
-#include <QToolButton>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-class QuickAccessBar;
 class RibbonQuickAccessBarPrivate;
 
-class QX_RIBBON_EXPORT RibbonQuickAccessBar : public RibbonCtrlContainer
+/* RibbonQuickAccessBar */
+class QX_RIBBON_EXPORT RibbonQuickAccessBar : public QToolBar
 {
     Q_OBJECT
 public:
-    RibbonQuickAccessBar(QWidget *parent = Q_NULLPTR);
-    ~RibbonQuickAccessBar();
+    explicit RibbonQuickAccessBar(QWidget *parent = Q_NULLPTR);
+    virtual ~RibbonQuickAccessBar();
+
 public:
-    QuickAccessBar *accessBar() const;
+    QAction *actionCustomizeButton() const;
+    void setActionVisible(QAction *action, bool visible);
+    bool isActionVisible(QAction *action) const;
+    int visibleCount() const;
+
+    QByteArray state() const;
+    void setState(const QByteArray &s);
+
+Q_SIGNALS:
+    void showCustomizeMenu(QMenu *menu);
+    void customizeActionChanged();
+
+protected:
+    virtual bool event(QEvent *event);
+    virtual void actionEvent(QActionEvent *event);
+
 private:
     QX_DECLARE_PRIVATE(RibbonQuickAccessBar)
 };
 
 QX_RIBBON_END_NAMESPACE
+

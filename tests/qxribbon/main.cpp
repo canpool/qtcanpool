@@ -1,7 +1,7 @@
 #include <QtTest/QtTest>
 #include <QApplication>
 
-#include "tst_quickaccessbar.h"
+#include "tst_ribbonquickaccessbar.h"
 
 
 #define TEST_RUN(TestObject) \
@@ -13,5 +13,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    TEST_RUN(TestQuickAccessBar)
+    TEST_RUN(TestRibbonQuickAccessBar)
+
+    return 0;
 }

@@ -13,8 +13,9 @@
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpage.h"
 #include "qxribbon/ribboncontainers.h"
-#include "qxribbon/quickaccessbar.h"
+#include "qxribbon/ribbonquickaccessbar.h"
 #include "qxribbon/ribbonutils.h"
+
 #include "qxwidget/menubutton.h"
 
 #include <QAbstractButton>
@@ -896,8 +897,8 @@ void MainWindow::createPageContext2(RibbonPage *page)
 
 void MainWindow::createQuickAccessBar()
 {
-    QuickAccessBar *quickAccessBar = ribbonBar()->quickAccessBar();
-    connect(quickAccessBar, &QuickAccessBar::customizeActionChanged, this, [this]() {
+    RibbonQuickAccessBar *quickAccessBar = ribbonBar()->quickAccessBar();
+    connect(quickAccessBar, &RibbonQuickAccessBar::customizeActionChanged, this, [this]() {
         this->ribbonBar()->resizeRibbon();
     });
     quickAccessBar->addAction(createAction(tr("save"), ":/icon/res/save.svg", "save-quickbar"));
@@ -1097,7 +1098,7 @@ void MainWindow::onActionHelpTriggered()
     AboutDialog ad(QLatin1String(":/icon/res/logo64.svg"), tr("QxRibbon"), QLatin1String(QX_RIBBON_VERSION_STR),
                    tr(
 "Copyleft (C) 2023 maminjie &lt;canpool@163.com&gt;<br/>"
-"<br/>QxRibbon is a QxWidget componet like to Microsoft Ribbon style. "
+"<br/>QxRibbon is a Qx componet like to Microsoft Ribbon style. "
 "For more information, please visit <a href=\"%1\">%1</a>").arg(url),
                    this);
     ad.exec();

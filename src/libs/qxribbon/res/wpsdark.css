@@ -712,31 +712,32 @@ QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
 
 /*RibbonQuickAccessBar*/
 
+QWidget#qx_RibbonQuickAccessBar QLabel {
+  background-color: transparent;
+}
+
 QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
 }
 
-QxRibbon--RibbonQuickAccessBar QWidget {
-  background-color: transparent;
-}
-
-QxRibbon--QuickAccessBar {
+QxRibbon--RibbonQuickAccessBar {
   border: none;
   background: transparent;
 }
 
-QxRibbon--QuickAccessBar QToolButton {
+QxRibbon--RibbonQuickAccessBar QToolButton {
   width: 18px;
   height: 18px;
 }
 
-QxRibbon--QuickAccessBar QAbstractButton {
+QxRibbon--RibbonQuickAccessBar QAbstractButton {
   padding: 0px;
 }
 
-QxRibbon--QuickAccessBar QToolButton#qx_QuickAccessButton::menu-indicator {
-  width: 8px;
-  height: 8px;
+QxRibbon--RibbonQuickAccessButton::menu-indicator {
+  width: 6px;
+  height: 6px;
+  padding-right: 3px;
 }
 
 /*RibbonCtrlContainer*/

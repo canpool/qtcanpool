@@ -8,8 +8,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     $$PWD/framelesshelper.h \
-    $$PWD/quickaccessbar.h \
-    $$PWD/quickaccessbar_p.h \
     $$PWD/qxribbon_global.h \
     $$PWD/ribbonactionsmanager.h \
     $$PWD/ribbonapplicationbutton.h \
@@ -37,6 +35,7 @@ HEADERS += \
     $$PWD/ribbonpage_p.h \
     $$PWD/ribbonpagecontext.h \
     $$PWD/ribbonquickaccessbar.h \
+    $$PWD/ribbonquickaccessbar_p.h \
     $$PWD/ribbonstyleoption.h \
     $$PWD/ribbontabbar.h \
     $$PWD/ribbonutils.h \
@@ -45,7 +44,6 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/framelesshelper.cpp \
-    $$PWD/quickaccessbar.cpp \
     $$PWD/ribbonactionsmanager.cpp \
     $$PWD/ribbonapplicationbutton.cpp \
     $$PWD/ribbonbar.cpp \
