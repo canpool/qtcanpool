@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QDebug>
 
-#include "qxwidget/QxQuickAccessBar.h"
+#include "qxwidget/quickaccessbar.h"
 
 QX_USE_NAMESPACE
 
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
     addToolBar(qab);
 
-    setWindowTitle(tr("QxQuickAccessBar Example"));
+    setWindowTitle(tr("QuickAccessBar Example"));
     setWindowIcon(icon);
     resize(400, 200);
 }

@@ -1,7 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "qxwidget/QxRibbonWindow.h"
+#include "qxwidget/ribbonwindow.h"
 
 class QTextEdit;
 class QActionGroup;

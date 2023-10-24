@@ -1,7 +1,7 @@
 #include <QtTest/QtTest>
 #include <QApplication>
 
-#include "tst_QxQuickAccessBar.h"
+#include "tst_quickaccessbar.h"
 
 
 #define TEST_RUN(TestObject) \

@@ -1,62 +1,62 @@
 SOURCES += \
-    $$PWD/QxRibbonActionsManager.cpp \
-    $$PWD/QxRibbonBar.cpp \
-    $$PWD/QxRibbonButton.cpp \
-    $$PWD/QxRibbonButtonGroup.cpp \
-    $$PWD/QxRibbonColorButton.cpp \
-    $$PWD/QxRibbonContainers.cpp \
-    $$PWD/QxRibbonControls.cpp \
-    $$PWD/QxRibbonCustomizeData.cpp \
-    $$PWD/QxRibbonCustomizeDialog.cpp \
-    $$PWD/QxRibbonCustomizeWidget.cpp \
-    $$PWD/QxRibbonFactory.cpp \
-    $$PWD/QxRibbonGroup.cpp \
-    $$PWD/QxRibbonGroupLayout.cpp \
-    $$PWD/QxRibbonManager.cpp \
-    $$PWD/QxRibbonPage.cpp \
-    $$PWD/QxRibbonPageContext.cpp \
-    $$PWD/QxRibbonStyleOption.cpp \
-    $$PWD/QxRibbonWindow.cpp \
-    $$PWD/QxWindowButtonGroup.cpp \
-    $$PWD/QxRibbonApplicationButton.cpp \
-    $$PWD/QxRibbonTabBar.cpp \
-    $$PWD/QxRibbonGallery.cpp \
-    $$PWD/QxRibbonGalleryGroup.cpp \
-    $$PWD/QxRibbonQuickAccessBar.cpp
+    $$PWD/ribbonactionsmanager.cpp \
+    $$PWD/ribbonapplicationbutton.cpp \
+    $$PWD/ribbonbar.cpp \
+    $$PWD/ribbonbutton.cpp \
+    $$PWD/ribbonbuttongroup.cpp \
+    $$PWD/ribboncolorbutton.cpp \
+    $$PWD/ribboncontainers.cpp \
+    $$PWD/ribboncontrols.cpp \
+    $$PWD/ribboncustomizedata.cpp \
+    $$PWD/ribboncustomizedialog.cpp \
+    $$PWD/ribboncustomizewidget.cpp \
+    $$PWD/ribbonfactory.cpp \
+    $$PWD/ribbongallery.cpp \
+    $$PWD/ribbongallerygroup.cpp \
+    $$PWD/ribbongroup.cpp \
+    $$PWD/ribbongrouplayout.cpp \
+    $$PWD/ribbonmanager.cpp \
+    $$PWD/ribbonpage.cpp \
+    $$PWD/ribbonpagecontext.cpp \
+    $$PWD/ribbonquickaccessbar.cpp \
+    $$PWD/ribbonstyleoption.cpp \
+    $$PWD/ribbontabbar.cpp \
+    $$PWD/ribbonwindow.cpp \
+    $$PWD/windowbuttongroup.cpp
 
 PUBLIC_HEADERS = \
-    $$PWD/QxRibbonActionsManager.h \
-    $$PWD/QxRibbonBar.h \
-    $$PWD/QxRibbonButton.h \
-    $$PWD/QxRibbonButtonGroup.h \
-    $$PWD/QxRibbonColorButton.h \
-    $$PWD/QxRibbonContainers.h \
-    $$PWD/QxRibbonControls.h \
-    $$PWD/QxRibbonCustomizeDialog.h \
-    $$PWD/QxRibbonFactory.h \
-    $$PWD/QxRibbonGroup.h \
-    $$PWD/QxRibbonManager.h \
-    $$PWD/QxRibbonPage.h \
-    $$PWD/QxRibbonPageContext.h \
-    $$PWD/QxRibbonStyleOption.h \
-    $$PWD/QxRibbonWindow.h \
-    $$PWD/QxRibbonApplicationButton.h \
-    $$PWD/QxRibbonTabBar.h \
-    $$PWD/QxRibbonGallery.h \
-    $$PWD/QxRibbonGalleryGroup.h \
-    $$PWD/QxRibbonQuickAccessBar.h
+    $$PWD/ribbonactionsmanager.h \
+    $$PWD/ribbonbar.h \
+    $$PWD/ribbonbutton.h \
+    $$PWD/ribbonbuttongroup.h \
+    $$PWD/ribboncolorbutton.h \
+    $$PWD/ribboncontainers.h \
+    $$PWD/ribboncontrols.h \
+    $$PWD/ribboncustomizedialog.h \
+    $$PWD/ribbonfactory.h \
+    $$PWD/ribbongroup.h \
+    $$PWD/ribbonmanager.h \
+    $$PWD/ribbonpage.h \
+    $$PWD/ribbonpagecontext.h \
+    $$PWD/ribbonstyleoption.h \
+    $$PWD/ribbonwindow.h \
+    $$PWD/ribbonapplicationbutton.h \
+    $$PWD/ribbontabbar.h \
+    $$PWD/ribbongallery.h \
+    $$PWD/ribbongallerygroup.h \
+    $$PWD/ribbonquickaccessbar.h
 
 PRIVATE_HEADERS = \
-    $$PWD/QxRibbonBarPrivate.h \
-    $$PWD/QxRibbonButtonPrivate.h \
-    $$PWD/QxRibbonColorButtonPrivate.h \
-    $$PWD/QxRibbonCustomizeData.h \
-    $$PWD/QxRibbonCustomizeWidget.h \
-    $$PWD/QxRibbonGalleryGroupPrivate.h \
-    $$PWD/QxRibbonGroupLayout.h \
-    $$PWD/QxRibbonGroupPrivate.h \
-    $$PWD/QxRibbonPagePrivate.h \
-    $$PWD/QxWindowButtonGroup.h
+    $$PWD/ribbonbar_p.h \
+    $$PWD/ribbonbutton_p.h \
+    $$PWD/ribboncolorbutton_p.h \
+    $$PWD/ribboncustomizedata.h \
+    $$PWD/ribboncustomizewidget.h \
+    $$PWD/ribbongallerygroup_p.h \
+    $$PWD/ribbongrouplayout.h \
+    $$PWD/ribbongroup_p.h \
+    $$PWD/ribbonpage_p.h \
+    $$PWD/windowbuttongroup.h
 
 HEADERS  += \
     $$PUBLIC_HEADERS \

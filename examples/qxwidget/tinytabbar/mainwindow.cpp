@@ -7,8 +7,8 @@
 #include <QLayout>
 #include <QStatusBar>
 
-#include "qxwidget/QxTinyTabBar.h"
-#include "qxwidget/QxTinyNavBar.h"
+#include "qxwidget/tinytabbar.h"
+#include "qxwidget/tinynavbar.h"
 
 QX_USE_NAMESPACE
 
@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    addToolBar(Qt::BottomToolBarArea, nb);
     sb->addWidget(nb);
 
-    setWindowTitle(tr("QxTinyTabBar Example"));
+    setWindowTitle(tr("TinyTabBar Example"));
     setWindowIcon(icon);
     resize(400, 200);
 }

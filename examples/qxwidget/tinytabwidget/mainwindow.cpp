@@ -8,8 +8,8 @@
 #include <QStatusBar>
 #include <QTextEdit>
 
-#include "qxwidget/QxTinyTabBar.h"
-#include "qxwidget/QxTinyTabWidget.h"
+#include "qxwidget/tinytabbar.h"
+#include "qxwidget/tinytabwidget.h"
 
 QX_USE_NAMESPACE
 
@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     statusBar();
 
-    setWindowTitle(tr("QxTinyTabWidget Example"));
+    setWindowTitle(tr("TinyTabWidget Example"));
     setWindowIcon(icon);
     resize(400, 200);
 }

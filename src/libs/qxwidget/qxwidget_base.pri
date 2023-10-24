@@ -1,24 +1,24 @@
 HEADERS += \
-    $$PWD/QxFramelessHelper.h \
-    $$PWD/QxGlobal.h \
-    $$PWD/QxMenuButton.h \
-    $$PWD/QxQuickAccessBar.h \
-    $$PWD/QxQuickAccessBarPrivate.h \
-    $$PWD/QxTinyNavBar.h \
-    $$PWD/QxTinyNavBarPrivate.h \
-    $$PWD/QxTinyTabBar.h \
-    $$PWD/QxTinyTabBarPrivate.h \
-    $$PWD/QxTinyTabWidget.h \
-    $$PWD/QxUtils.h
+    $$PWD/framelesshelper.h \
+    $$PWD/menubutton.h \
+    $$PWD/quickaccessbar.h \
+    $$PWD/quickaccessbar_p.h \
+    $$PWD/qxglobal.h \
+    $$PWD/ribbonutils.h \
+    $$PWD/tinynavbar.h \
+    $$PWD/tinynavbar_p.h \
+    $$PWD/tinytabbar.h \
+    $$PWD/tinytabbar_p.h \
+    $$PWD/tinytabwidget.h
 
 SOURCES += \
-    $$PWD/QxFramelessHelper.cpp \
-    $$PWD/QxMenuButton.cpp \
-    $$PWD/QxQuickAccessBar.cpp \
-    $$PWD/QxTinyNavBar.cpp \
-    $$PWD/QxTinyTabBar.cpp \
-    $$PWD/QxTinyTabWidget.cpp \
-    $$PWD/QxUtils.cpp
+    $$PWD/framelesshelper.cpp \
+    $$PWD/menubutton.cpp \
+    $$PWD/quickaccessbar.cpp \
+    $$PWD/ribbonutils.cpp \
+    $$PWD/tinynavbar.cpp \
+    $$PWD/tinytabbar.cpp \
+    $$PWD/tinytabwidget.cpp
 
 win32 {
     # for FramelessHelper

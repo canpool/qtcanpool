@@ -17,7 +17,7 @@ LIBS *= -l$$qtLibraryNameVersion(qxwidget, 0)
 
 SOURCES += \
     main.cpp \
-    tst_QxQuickAccessBar.cpp
+    tst_quickaccessbar.cpp
 
 HEADERS += \
-    tst_QxQuickAccessBar.h
+    tst_quickaccessbar.h
