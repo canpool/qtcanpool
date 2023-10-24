@@ -1,2 +1,2 @@
 include(../../qtlibrary.pri)
-include(qxwidget-lib.pri)
+include(qxribbon-lib.pri)

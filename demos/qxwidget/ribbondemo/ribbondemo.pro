@@ -17,7 +17,8 @@ DESTDIR = $$IDE_APP_PATH
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
 # lib
-LIBS *= -l$$qtLibraryNameVersion(qxwidget, 0)
+LIBS *= -l$$qtLibraryNameVersion(qxwidget, 0) \
+        -l$$qtLibraryNameVersion(qxribbon, 0)
 
 SOURCES += \
     aboutdialog.cpp \

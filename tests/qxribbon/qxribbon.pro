@@ -3,7 +3,7 @@ include(../../qtproject.pri)
 QT += widgets testlib
 
 CONFIG += c++11
-TARGET = Test_qxwidget
+TARGET = Test_QxRibbon
 DESTDIR = $$IDE_APP_PATH
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -13,7 +13,7 @@ DESTDIR = $$IDE_APP_PATH
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
 # lib
-LIBS *= -l$$qtLibraryNameVersion(qxwidget, 0)
+LIBS *= -l$$qtLibraryNameVersion(qxribbon, 0)
 
 SOURCES += \
     main.cpp \

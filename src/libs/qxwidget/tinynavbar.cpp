@@ -4,7 +4,6 @@
 **/
 #include "tinynavbar.h"
 #include "tinynavbar_p.h"
-#include "quickaccessbar_p.h"
 
 #include <QMenu>
 #include <QAction>
@@ -12,7 +11,6 @@
 #include <QStyle>
 
 QX_BEGIN_NAMESPACE
-
 
 TinyNavBarPrivate::TinyNavBarPrivate()
     : TinyTabBarPrivate()
@@ -32,9 +30,7 @@ void TinyNavBarPrivate::init()
     const int sz = q->style()->pixelMetric(QStyle::PM_SmallIconSize, Q_NULLPTR, q);
     q->setIconSize(QSize(sz, sz));
 
-    m_accessPopup = new QuickAccessButton(q);
-    m_accessPopup->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_accessPopup->setPopupMode(QToolButton::InstantPopup);
+    m_accessPopup = new MenuAccessButton(q);
     connect(q, SIGNAL(orientationChanged(Qt::Orientation)), m_accessPopup, SLOT(setOrientation(Qt::Orientation)));
     m_menu = new QMenu(q);
     m_accessPopup->setMenu(m_menu);

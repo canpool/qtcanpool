@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QDebug>
 
-#include "qxwidget/quickaccessbar.h"
+#include "qxribbon/quickaccessbar.h"
 
 QX_USE_NAMESPACE
 

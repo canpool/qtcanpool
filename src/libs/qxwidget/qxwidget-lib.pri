@@ -1,10 +1,14 @@
+VERSION = 0.1.0
+
+QT += core gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+DEFINES += QX_WIDGET_LIBRARY
+DEFINES += QT_DEPRECATED_WARNINGS
+
 HEADERS += \
-    $$PWD/framelesshelper.h \
+    $$PWD/menuaccessbutton.h \
     $$PWD/menubutton.h \
-    $$PWD/quickaccessbar.h \
-    $$PWD/quickaccessbar_p.h \
-    $$PWD/qxglobal.h \
-    $$PWD/ribbonutils.h \
     $$PWD/tinynavbar.h \
     $$PWD/tinynavbar_p.h \
     $$PWD/tinytabbar.h \
@@ -12,15 +16,8 @@ HEADERS += \
     $$PWD/tinytabwidget.h
 
 SOURCES += \
-    $$PWD/framelesshelper.cpp \
+    $$PWD/menuaccessbutton.cpp \
     $$PWD/menubutton.cpp \
-    $$PWD/quickaccessbar.cpp \
-    $$PWD/ribbonutils.cpp \
     $$PWD/tinynavbar.cpp \
     $$PWD/tinytabbar.cpp \
     $$PWD/tinytabwidget.cpp
-
-win32 {
-    # for FramelessHelper
-    LIBS += -lUser32
-}

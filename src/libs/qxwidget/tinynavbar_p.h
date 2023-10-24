@@ -6,13 +6,13 @@
 
 #include "qxglobal.h"
 #include "tinytabbar_p.h"
+#include "menuaccessbutton.h"
 #include <QMap>
 
 class QMenu;
 
 QX_BEGIN_NAMESPACE
 
-class QuickAccessButton;
 class TinyNavBar;
 
 class TinyNavBarPrivate : public TinyTabBarPrivate
@@ -31,7 +31,7 @@ public:
     QMenu *m_menu;
     QAction *m_actionAccessPopup;
     QActionGroup *m_customizeGroup;
-    QuickAccessButton *m_accessPopup;
+    MenuAccessButton *m_accessPopup;
     QList<QAction *> m_actionList;
     QMap<QAction *, QAction *> m_actionMap; // lowAction,checkAction
     bool m_removingAction : 1;
