@@ -168,7 +168,7 @@ WidgetData::WidgetData(FramelessHelperPrivate *_d, QWidget *pTopLevelWidget)
     m_bLeftButtonPressed = false;
     m_bCursorShapeChanged = false;
     m_bLeftButtonTitlePressed = false;
-    m_pRubberBand = Q_NULLPTR;
+    m_pRubberBand = nullptr;
 
     m_windowFlags = m_pWidget->windowFlags();
     m_pWidget->setMouseTracking(true);
@@ -183,7 +183,7 @@ WidgetData::~WidgetData()
     m_pWidget->setAttribute(Qt::WA_Hover, false);
 
     delete m_pRubberBand;
-    m_pRubberBand = Q_NULLPTR;
+    m_pRubberBand = nullptr;
 }
 
 QWidget *WidgetData::widget()
@@ -215,12 +215,12 @@ bool WidgetData::handleWidgetEvent(QEvent *event)
 void WidgetData::updateRubberBandStatus()
 {
     if (d->m_bRubberBandOnMove || d->m_bRubberBandOnResize) {
-        if (Q_NULLPTR == m_pRubberBand) {
+        if (nullptr == m_pRubberBand) {
             m_pRubberBand = new QRubberBand(QRubberBand::Rectangle);
         }
     } else {
         delete m_pRubberBand;
-        m_pRubberBand = Q_NULLPTR;
+        m_pRubberBand = nullptr;
     }
 }
 
@@ -552,7 +552,7 @@ bool FramelessHelper::nativeEventFilter(const QByteArray &eventType, void *messa
         MSG *msg = reinterpret_cast<MSG *>(message);
         QWidget *widget = QWidget::find(reinterpret_cast<WId>(msg->hwnd));
         WidgetData *data = d->m_widgetDataHash.value(widget);
-        if (data == Q_NULLPTR) {
+        if (data == nullptr) {
             return false;
         }
         switch (msg->message) {

@@ -16,10 +16,6 @@
 #endif // QTRESULT
 #endif // Q_OS_WINDOWS
 
-#ifndef Q_NULLPTR
-#define Q_NULLPTR 0
-#endif
-
 class QWidget;
 class FramelessHelperPrivate;
 
