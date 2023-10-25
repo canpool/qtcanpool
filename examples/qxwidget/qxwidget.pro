@@ -4,4 +4,5 @@ CONFIG += ordered
 SUBDIRS = \
     tinytabbar \
     tinytabwidget \
-    windowlogo
+    windowlogo \
+    windowtoolbar

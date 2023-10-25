@@ -15,7 +15,9 @@ HEADERS += \
     $$PWD/tinytabbar.h \
     $$PWD/tinytabbar_p.h \
     $$PWD/tinytabwidget.h \
-    $$PWD/windowlogo.h
+    $$PWD/windowlogo.h \
+    $$PWD/windowtoolbar.h \
+    $$PWD/windowtoolbar_p.h
 
 SOURCES += \
     $$PWD/menuaccessbutton.cpp \
@@ -23,4 +25,5 @@ SOURCES += \
     $$PWD/tinynavbar.cpp \
     $$PWD/tinytabbar.cpp \
     $$PWD/tinytabwidget.cpp \
-    $$PWD/windowlogo.cpp
+    $$PWD/windowlogo.cpp \
+    $$PWD/windowtoolbar.cpp
