@@ -7,6 +7,7 @@ DEFINES += QX_WIDGET_LIBRARY
 DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
+    $$PWD/extensionbutton.h \
     $$PWD/menuaccessbutton.h \
     $$PWD/menubutton.h \
     $$PWD/qxwidget_global.h \
@@ -20,6 +21,7 @@ HEADERS += \
     $$PWD/windowtoolbar_p.h
 
 SOURCES += \
+    $$PWD/extensionbutton.cpp \
     $$PWD/menuaccessbutton.cpp \
     $$PWD/menubutton.cpp \
     $$PWD/tinynavbar.cpp \
