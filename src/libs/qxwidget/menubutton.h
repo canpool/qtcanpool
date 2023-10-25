@@ -16,7 +16,7 @@ public:
     explicit MenuButton(QWidget *parent = Q_NULLPTR);
     explicit MenuButton(const QString &text, QWidget *parent = Q_NULLPTR);
     MenuButton(const QIcon &icon, const QString &text, QWidget *parent = Q_NULLPTR);
-    virtual ~MenuButton();
+    ~MenuButton();
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
