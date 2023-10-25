@@ -104,14 +104,14 @@ void RibbonGroupPrivate::init()
     // internal controls layout
     m_inLayout = new QHBoxLayout();
     m_inLayout->setSpacing(0);
-    m_inLayout->setMargin(0);
+    m_inLayout->setContentsMargins(0, 0, 0, 0);
     // external controls layout
     m_extLayout = new QHBoxLayout();
     m_extLayout->setSpacing(0);
-    m_extLayout->setMargin(0);
+    m_extLayout->setContentsMargins(0, 0, 0, 0);
     QHBoxLayout *controlLayout = new QHBoxLayout();
     controlLayout->setSpacing(0);
-    controlLayout->setMargin(0);
+    controlLayout->setContentsMargins(0, 0, 0, 0);
     controlLayout->addLayout(m_inLayout);
     controlLayout->addLayout(m_extLayout);
 
@@ -120,13 +120,13 @@ void RibbonGroupPrivate::init()
 
     QVBoxLayout *bodyLayout = new QVBoxLayout();
     bodyLayout->setSpacing(0);
-    bodyLayout->setMargin(0);
+    bodyLayout->setContentsMargins(0, 0, 0, 0);
     bodyLayout->addWidget(container);
     bodyLayout->addLayout(m_titleLayout);
 
     QHBoxLayout *mainLayout = new QHBoxLayout();
     mainLayout->setSpacing(0);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addLayout(bodyLayout);
     mainLayout->addWidget(line);
 

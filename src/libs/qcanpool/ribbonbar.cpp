@@ -129,18 +129,18 @@ void RibbonBarPrivate::init()
     m_topLayout->setSpacing(0);
 
     m_bottomLayout = new QHBoxLayout();
-    m_bottomLayout->setMargin(0);
+    m_bottomLayout->setContentsMargins(0, 0, 0, 0);
     m_bottomLayout->setSpacing(0);
 
     QVBoxLayout *titleLayout = new QVBoxLayout();
-    titleLayout->setMargin(0);
+    titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
     titleLayout->addLayout(m_topLayout);
     titleLayout->addLayout(m_bottomLayout);
     m_titleWidget->setLayout(titleLayout);
 
     m_mainLayout = new QVBoxLayout();
-    m_mainLayout->setMargin(0);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
     m_mainLayout->setSpacing(0);
     m_mainLayout->addWidget(m_titleWidget);
     m_mainLayout->addWidget(m_stack);

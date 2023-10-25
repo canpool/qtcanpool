@@ -4,9 +4,12 @@ TEMPLATE  = subdirs
 
 SUBDIRS =   \
     qcanpool \
-    qribbon \
     qxwidget \
     qxribbon
+
+lessThan(QT_MAJOR_VERSION, 6) {
+    SUBDIRS += qribbon
+}
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =

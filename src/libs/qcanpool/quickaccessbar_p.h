@@ -21,6 +21,8 @@
 #include <QToolButton>
 #include <QAction>
 
+class QActionGroup;
+
 QCANPOOL_BEGIN_NAMESPACE
 
 class QuickAccessBar;

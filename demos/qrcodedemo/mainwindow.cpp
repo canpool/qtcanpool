@@ -38,6 +38,7 @@ void MainWindow::on_genButton_clicked()
 
 void MainWindow::on_saveButton_clicked()
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     const QPixmap *pixmap = ui->label->pixmap();
     if (!pixmap || pixmap->isNull()) {
         return;
@@ -47,4 +48,15 @@ void MainWindow::on_saveButton_clicked()
     if (!fileName.isEmpty()) {
         pixmap->save(fileName);
     }
+#else
+    QPixmap pixmap = ui->label->pixmap();
+    if (pixmap.isNull()) {
+        return;
+    }
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save file"), QString(),
+                                                    tr("Image file (*.png)"));
+    if (!fileName.isEmpty()) {
+        pixmap.save(fileName);
+    }
+#endif
 }

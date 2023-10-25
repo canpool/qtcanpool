@@ -43,7 +43,7 @@ void FancyTabWidgetPrivate::init()
     m_stack->setLineWidth(0);
 
     m_layout = new QBoxLayout(QBoxLayout::TopToBottom);
-    m_layout->setMargin(0);
+    m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(1);
     m_layout->addWidget(m_tabBar);
     m_layout->addWidget(m_stack);

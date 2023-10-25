@@ -19,7 +19,7 @@ void GaugeWidget::createWindow()
     createGaugeProgress();
 
     QHBoxLayout *mainLayout = new QHBoxLayout();
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addWidget(m_pTabWidget);
     setLayout(mainLayout);
 }
@@ -53,7 +53,7 @@ void GaugeWidget::createGaugeProgress()
     gaugeProgress6->setTextColor(QColor(255, 0, 128));
 
     QGridLayout *gridLayout = new QGridLayout();
-    gridLayout->setMargin(0);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(gaugeProgress1, 0, 1);
     gridLayout->addWidget(gaugeProgress2, 0, 2);
     gridLayout->addWidget(gaugeProgress3, 0, 3);

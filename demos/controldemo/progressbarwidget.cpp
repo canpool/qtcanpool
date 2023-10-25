@@ -26,7 +26,7 @@ void ProgressBarWidget::createWindow()
      */
 
     QVBoxLayout *stateLayout = new QVBoxLayout();
-    stateLayout->setMargin(0);
+    stateLayout->setContentsMargins(0, 0, 0, 0);
     stateLayout->setSpacing(2);
 
     QSlider *slider = new QSlider(Qt::Horizontal);
@@ -326,7 +326,7 @@ void ProgressBarWidget::createWindow()
     pTabWidget->addTab(waitProgressWidget, tr("Wait"));
 
     QHBoxLayout *mainLayout = new QHBoxLayout();
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addWidget(pTabWidget);
     setLayout(mainLayout);
 }

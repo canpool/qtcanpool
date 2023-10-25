@@ -4,7 +4,10 @@ CONFIG += ordered
 SUBDIRS = \
     helloworld \
     qcanpool \
-    qribbon \
     qxwidget \
     qrcodedemo \
     controldemo \
+
+lessThan(QT_MAJOR_VERSION, 6) {
+    SUBDIRS += qribbon
+}

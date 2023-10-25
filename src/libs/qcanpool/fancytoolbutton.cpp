@@ -524,7 +524,11 @@ QSize FancyToolButton::sizeHint() const
         }
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return QSize(w, h).expandedTo(QApplication::globalStrut());
+#else
+    return QSize(w, h);
+#endif
 }
 
 void FancyToolButton::paintEvent(QPaintEvent *event)

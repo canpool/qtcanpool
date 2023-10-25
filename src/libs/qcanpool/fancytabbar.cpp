@@ -35,23 +35,23 @@ void FancyTabBarPrivate::init()
     QBoxLayout::Direction direction = QBoxLayout::LeftToRight;
 
     m_frontActionLayout = new QBoxLayout(direction);
-    m_frontActionLayout->setMargin(0);
+    m_frontActionLayout->setContentsMargins(0, 0, 0, 0);
     m_frontActionLayout->setSpacing(m_spacing);
 
     m_middleActionLayout = new QBoxLayout(direction);
-    m_middleActionLayout->setMargin(0);
+    m_middleActionLayout->setContentsMargins(0, 0, 0, 0);
     m_middleActionLayout->setSpacing(m_spacing);
 
     m_backActionLayout = new QBoxLayout(direction);
-    m_backActionLayout->setMargin(0);
+    m_backActionLayout->setContentsMargins(0, 0, 0, 0);
     m_backActionLayout->setSpacing(m_spacing);
 
     m_tabLayout = new QBoxLayout(direction);
-    m_tabLayout->setMargin(0);
+    m_tabLayout->setContentsMargins(0, 0, 0, 0);
     m_tabLayout->setSpacing(m_spacing);
 
     m_mainLayout = new QBoxLayout(direction);
-    m_mainLayout->setMargin(0);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
     m_mainLayout->setSpacing(1);
     m_mainLayout->addLayout(m_frontActionLayout);
     m_mainLayout->addLayout(m_tabLayout);

@@ -50,7 +50,7 @@ void FancyBarPrivate::init()
     createMenuWidget();
 
     QVBoxLayout *rightLayout = new QVBoxLayout();
-    rightLayout->setMargin(0);
+    rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(0);
     rightLayout->addWidget(m_titleWidget);
     rightLayout->addWidget(m_menuWidget);
@@ -63,7 +63,7 @@ void FancyBarPrivate::init()
     setLayout(layout);
 
     QVBoxLayout *qlayout = new QVBoxLayout();
-    qlayout->setMargin(0);
+    qlayout->setContentsMargins(0, 0, 0, 0);
     qlayout->setSpacing(0);
     qlayout->addWidget(this);
     q->setLayout(qlayout);
@@ -110,7 +110,7 @@ void FancyBarPrivate::createMenuWidget()
     m_menuWidget->hide();
 
     m_menuBarArea = new QHBoxLayout();
-    m_menuBarArea->setMargin(0);
+    m_menuBarArea->setContentsMargins(0, 0, 0, 0);
     m_menuBarArea->setSpacing(0);
 
     m_middleSpacerItem = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);

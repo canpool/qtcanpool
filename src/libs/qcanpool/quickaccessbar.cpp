@@ -10,6 +10,7 @@
 #include <QStyle>
 #include <QEvent>
 #include <QActionEvent>
+#include <QActionGroup>
 #include <QLayout>
 
 QCANPOOL_BEGIN_NAMESPACE
