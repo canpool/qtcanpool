@@ -14,11 +14,13 @@ HEADERS += \
     $$PWD/tinynavbar_p.h \
     $$PWD/tinytabbar.h \
     $$PWD/tinytabbar_p.h \
-    $$PWD/tinytabwidget.h
+    $$PWD/tinytabwidget.h \
+    $$PWD/windowlogo.h
 
 SOURCES += \
     $$PWD/menuaccessbutton.cpp \
     $$PWD/menubutton.cpp \
     $$PWD/tinynavbar.cpp \
     $$PWD/tinytabbar.cpp \
-    $$PWD/tinytabwidget.cpp
+    $$PWD/tinytabwidget.cpp \
+    $$PWD/windowlogo.cpp
