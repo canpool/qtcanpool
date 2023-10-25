@@ -33,8 +33,7 @@ public:
 private Q_SLOTS:
     void onTriggered(QAction *action);
 public:
-    QList<QToolButton *> m_tabs;
-    QMap<QToolButton *, QAction *> m_buttonActionMap;
+    QList<QAction *> m_tabs;
     QActionGroup *m_group;
     int m_currentIndex;
     bool m_togglable;

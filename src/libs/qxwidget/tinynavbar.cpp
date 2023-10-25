@@ -118,22 +118,19 @@ void TinyNavBar::actionEvent(QActionEvent *event)
             }
             QAction *checkAction = d->m_actionMap.value(lowAction);
             if (lowAction != d->m_actionAccessPopup && !checkAction) {
-                QToolButton *button = qobject_cast<QToolButton *>(widgetForAction(lowAction));
-                if (button) {
-                    int curIndex = d->m_tabs.indexOf(button);
-                    int cnt = d->m_tabs.count();
-                    QAction *act = new QAction(button->text(), this);
-                    act->setCheckable(true);
-                    act->setChecked(lowAction->isVisible());
-                    if (curIndex + 1 == cnt) {
-                        d->m_actionList.append(act);
-                    } else {
-                        d->m_actionList.insert(curIndex, act);
-                    }
-                    d->m_customizeGroup->addAction(act);
-                    d->m_actionMap[lowAction] = act;
-                    adjustSize();
+                int curIndex = d->m_tabs.indexOf(lowAction);
+                int cnt = d->m_tabs.count();
+                QAction *act = new QAction(lowAction->text(), this);
+                act->setCheckable(true);
+                act->setChecked(lowAction->isVisible());
+                if (curIndex + 1 == cnt) {
+                    d->m_actionList.append(act);
+                } else {
+                    d->m_actionList.insert(curIndex, act);
                 }
+                d->m_customizeGroup->addAction(act);
+                d->m_actionMap[lowAction] = act;
+                adjustSize();
             } else if (checkAction) {
                 checkAction->setChecked(lowAction->isVisible());
             }

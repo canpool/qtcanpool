@@ -42,7 +42,7 @@ void TinyTabBarPrivate::init()
 int TinyTabBarPrivate::indexOf(QAction *action)
 {
     for (int i = 0; i < m_tabs.count(); ++i) {
-        if (m_tabs.at(i)->defaultAction() == action) {
+        if (m_tabs.at(i) == action) {
             return i;
         }
     }
@@ -101,27 +101,35 @@ int TinyTabBar::insertTab(int index, const QString &text)
 int TinyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 {
     Q_D(TinyTabBar);
-    QAction *action = new QAction(icon, text, this);
+    QWidgetAction *action = new QWidgetAction(this);
+    action->setIcon(icon);
+    action->setText(text);
     action->setCheckable(true);
+
     QToolButton *button = new QToolButton(this);
     button->setAutoRaise(true);
     button->setFocusPolicy(Qt::NoFocus);
     button->setDefaultAction(action);
     button->setToolButtonStyle(toolButtonStyle());
     button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    QObject::connect(this, SIGNAL(iconSizeChanged(QSize)),
+                     button, SLOT(setIconSize(QSize)));
+    QObject::connect(this, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
+                     button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
+    QObject::connect(button, SIGNAL(triggered(QAction*)), this, SIGNAL(actionTriggered(QAction*)));
 
-    QAction *lowAction = Q_NULLPTR;
+    action->setDefaultWidget(button);
+
     if (!d->validIndex(index)) {
         index = d->m_tabs.count();
         // add to list first, so that inheritance class knows whether to append or insert
-        d->m_tabs.append(button);
-        lowAction = addWidget(button);
+        d->m_tabs.append(action);
+        addAction(action);
     } else {
-        QAction *beforeAction = d->m_buttonActionMap.value(d->m_tabs.at(index));
-        d->m_tabs.insert(index, button);
-        lowAction = insertWidget(beforeAction, button);
+        QAction *beforeAction = d->m_tabs.at(index);
+        d->m_tabs.insert(index, action);
+        insertAction(beforeAction, action);
     }
-    d->m_buttonActionMap[button] = lowAction;
     d->m_group->addAction(action);
 
     if (d->m_tabs.count() == 1) {
@@ -139,13 +147,10 @@ void TinyTabBar::removeTab(int index)
     if (!d->validIndex(index)) {
         return;
     }
-    QToolButton *button = d->m_tabs.takeAt(index);
-    QAction *lowAction = d->m_buttonActionMap.take(button);
-    removeAction(lowAction);
-    QAction *action = button->defaultAction();
+    QAction *action = d->m_tabs.takeAt(index);
+    removeAction(action);
     d->m_group->removeAction(action);
     delete action;
-    delete button;
 
     int newIndex = -1;
     if (index == d->m_currentIndex) {
@@ -190,7 +195,7 @@ void TinyTabBar::setTabVisible(int index, bool visible)
 {
     Q_D(TinyTabBar);
     if (d->validIndex(index)) {
-        d->m_buttonActionMap.value(d->m_tabs.at(index))->setVisible(visible);
+        d->m_tabs.at(index)->setVisible(visible);
     }
 }
 
@@ -234,7 +239,7 @@ void TinyTabBar::setCurrentIndex(int index)
     Q_D(TinyTabBar);
     if (d->m_currentIndex != index && isTabEnabled(index)) {
         // update m_currentIndex in onTriggered
-        d->m_tabs.at(index)->click();
+        d->m_tabs.at(index)->trigger();
     }
 }
 
@@ -263,10 +268,6 @@ bool TinyTabBar::isTogglable() const
 
 void TinyTabBar::setTabStyle(Qt::ToolButtonStyle style)
 {
-    Q_D(TinyTabBar);
-    foreach (QToolButton *button, d->m_tabs) {
-        button->setToolButtonStyle(style);
-    }
     setToolButtonStyle(style);
 }
 
