@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QActionEvent>
+#include <QActionGroup>
 #include <QStyle>
 
 QX_WIDGET_BEGIN_NAMESPACE

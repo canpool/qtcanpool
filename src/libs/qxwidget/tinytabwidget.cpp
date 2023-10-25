@@ -46,13 +46,13 @@ void TinyTabWidgetPrivate::init()
     m_stack->setLineWidth(0);
 
     m_tabLayout = new QBoxLayout(QBoxLayout::TopToBottom);
-    m_tabLayout->setMargin(0);
+    m_tabLayout->setContentsMargins(0, 0, 0, 0);
     m_tabLayout->setSpacing(0);
     m_tabLayout->addWidget(m_tabBar);
     m_tabLayout->addStretch();
 
     m_layout = new QBoxLayout(QBoxLayout::TopToBottom);
-    m_layout->setMargin(0);
+    m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(0);
     m_layout->addLayout(m_tabLayout);
     m_layout->addWidget(m_stack);
