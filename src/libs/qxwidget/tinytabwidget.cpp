@@ -217,6 +217,7 @@ QToolButton *TinyTabWidget::addButton(const QIcon &icon, const QString &text)
     Q_D(TinyTabWidget);
     QToolButton *button = new QToolButton(this);
     button->setText(text);
+    button->setToolTip(text);
     button->setIcon(icon);
     button->setIconSize(d->m_tabBar->iconSize());
     button->setAutoRaise(true);
