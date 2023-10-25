@@ -10,6 +10,8 @@
 
 #include "qxwidget/tinytabbar.h"
 #include "qxwidget/tinytabwidget.h"
+#include "qxwidget/tinynavbar.h"
+#include "qxwidget/menuaccessbutton.h"
 
 QX_WIDGET_USE_NAMESPACE
 
@@ -41,19 +43,30 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "currentToggled:" << index << checked;
     });
 
-    QToolButton *button = new QToolButton(this);
-    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    button->setPopupMode(QToolButton::InstantPopup);
+//    QToolButton *button = new QToolButton(this);
+//    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+//    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
+//    button->setPopupMode(QToolButton::InstantPopup);
+
+    MenuAccessButton *button = new MenuAccessButton(this);
+    connect(tb, &TinyTabBar::orientationChanged, button, &MenuAccessButton::setOrientation);
+    connect(tb, &TinyTabBar::toolButtonStyleChanged, button, &MenuAccessButton::setToolButtonStyle);
+
     tb->addWidget(button);
 
     QMenu *menu = new QMenu(tr("tab position"), this);
     button->setMenu(menu);
     QActionGroup *group = new QActionGroup(this);
-    addPositionAction(group, menu->addAction(tr("North")), TinyTabWidget::North);
-    addPositionAction(group, menu->addAction(tr("South")), TinyTabWidget::South);
-    addPositionAction(group, menu->addAction(tr("West")), TinyTabWidget::West);
-    addPositionAction(group, menu->addAction(tr("East")), TinyTabWidget::East);
+
+    auto lambdaAddPositionAction = [this](QActionGroup *group, QAction *action, int position) {
+        group->addAction(action);
+        action->setCheckable(true);
+        action->setData(QVariant(position));
+    };
+    lambdaAddPositionAction(group, menu->addAction(tr("North")), TinyTabWidget::North);
+    lambdaAddPositionAction(group, menu->addAction(tr("South")), TinyTabWidget::South);
+    lambdaAddPositionAction(group, menu->addAction(tr("West")), TinyTabWidget::West);
+    lambdaAddPositionAction(group, menu->addAction(tr("East")), TinyTabWidget::East);
     connect(group, &QActionGroup::triggered, this, [this, tw](QAction *action) {
         tw->setTabPosition(static_cast<TinyTabWidget::TabPosition>(action->data().toInt()));
     });
@@ -63,7 +76,21 @@ MainWindow::MainWindow(QWidget *parent)
     tw->addButton(icon, tr("button2"));
     tw->addButton(icon, tr("button3"));
 
-    statusBar();
+    // TinyNavBar
+    TinyNavBar *nb = new TinyNavBar(this);
+    nb->layout()->setSpacing(2);
+    nb->addTab(tr("nav1"));
+    nb->addTab(tr("nav2"));
+    nb->addTab(tr("nav3"));
+    nb->addTab(tr("nav4"));
+    nb->addTab(tr("nav5"));
+    nb->removeTab(3);
+    nb->insertTab(2, tr("navN"));
+    nb->setTabVisible(3, false);
+//    nb->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    QStatusBar *sb = statusBar();
+    sb->addWidget(nb);
 
     setWindowTitle(tr("TinyTabWidget Example"));
     setWindowIcon(icon);
@@ -73,11 +100,3 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 }
-
-void MainWindow::addPositionAction(QActionGroup *group, QAction *action, int position)
-{
-    group->addAction(action);
-    action->setCheckable(true);
-    action->setData(QVariant(position));
-}
-

@@ -9,6 +9,7 @@
 
 #include "qxwidget/tinytabbar.h"
 #include "qxwidget/tinynavbar.h"
+#include "qxwidget/menuaccessbutton.h"
 
 QX_WIDGET_USE_NAMESPACE
 
@@ -38,10 +39,15 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "currentToggled:" << index << checked;
     });
 
-    QToolButton *button = new QToolButton(this);
-    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    button->setPopupMode(QToolButton::InstantPopup);
+//    QToolButton *button = new QToolButton(this);
+//    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+//    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
+//    button->setPopupMode(QToolButton::InstantPopup);
+
+    MenuAccessButton *button = new MenuAccessButton(this);
+    connect(tb, &TinyTabBar::orientationChanged, button, &MenuAccessButton::setOrientation);
+    connect(tb, &TinyTabBar::toolButtonStyleChanged, button, &MenuAccessButton::setToolButtonStyle);
+
     tb->addWidget(button);
 
     QMenu *menu = new QMenu(this);
@@ -51,16 +57,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     QAction *act = new QAction(tr("ToolButtonTextOnly"), this);
     act->setCheckable(true);
-    connect(act, &QAction::triggered, this, [tb]() {
+    connect(act, &QAction::triggered, this, [tb, button]() {
         tb->setTabStyle(Qt::ToolButtonTextOnly);
+        qDebug() << button->toolButtonStyle();
         tb->layout()->setSpacing(2);
     });
     menu->addAction(act);
     actGroup->addAction(act);
     act = new QAction(tr("ToolButtonIconOnly"), this);
     act->setCheckable(true);
-    connect(act, &QAction::triggered, this, [tb]() {
+    connect(act, &QAction::triggered, this, [tb, button]() {
         tb->setTabStyle(Qt::ToolButtonIconOnly);
+        qDebug() << button->toolButtonStyle();
         tb->layout()->setSpacing(0);
     });
     menu->addAction(act);
@@ -77,8 +85,8 @@ MainWindow::MainWindow(QWidget *parent)
     nb->removeTab(3);
     nb->insertTab(2, tr("navN"));
     nb->setTabVisible(3, false);
-    QStatusBar *sb = statusBar();
 //    addToolBar(Qt::BottomToolBarArea, nb);
+    QStatusBar *sb = statusBar();
     sb->addWidget(nb);
 
     setWindowTitle(tr("TinyTabBar Example"));
@@ -89,4 +97,3 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 }
-
