@@ -4,6 +4,7 @@
 **/
 #include "tinynavbar.h"
 #include "tinynavbar_p.h"
+#include "menuaccessbutton.h"
 
 #include <QMenu>
 #include <QAction>
@@ -23,15 +24,13 @@ TinyNavBarPrivate::TinyNavBarPrivate()
 void TinyNavBarPrivate::init()
 {
     Q_Q(TinyNavBar);
-    q->setAutoFillBackground(false);
-    q->setAttribute(Qt::WA_NoSystemBackground);
-    q->setTabStyle(Qt::ToolButtonTextOnly);
 
     const int sz = q->style()->pixelMetric(QStyle::PM_SmallIconSize, Q_NULLPTR, q);
     q->setIconSize(QSize(sz, sz));
 
     m_accessPopup = new MenuAccessButton(q);
-    connect(q, SIGNAL(orientationChanged(Qt::Orientation)), m_accessPopup, SLOT(setOrientation(Qt::Orientation)));
+    connect(q, &TinyNavBar::orientationChanged, m_accessPopup, &MenuAccessButton::setOrientation);
+    connect(q, &TinyNavBar::toolButtonStyleChanged, m_accessPopup, &MenuAccessButton::setToolButtonStyle);
     m_menu = new QMenu(q);
     m_accessPopup->setMenu(m_menu);
 
@@ -43,6 +42,10 @@ void TinyNavBarPrivate::init()
 
     connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowCustomizeMenu()));
     connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideCustomizeMenu()));
+
+    q->setAutoFillBackground(false);
+    q->setAttribute(Qt::WA_NoSystemBackground);
+    q->setTabStyle(Qt::ToolButtonTextOnly);
 }
 
 void TinyNavBarPrivate::customizeAction(QAction *action)

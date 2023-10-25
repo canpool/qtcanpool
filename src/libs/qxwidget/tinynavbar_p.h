@@ -6,13 +6,14 @@
 
 #include "qxwidget_global.h"
 #include "tinytabbar_p.h"
-#include "menuaccessbutton.h"
+#include <QToolButton>
 #include <QMap>
 
 class QMenu;
 
 QX_WIDGET_BEGIN_NAMESPACE
 
+class MenuAccessButton;
 class TinyNavBar;
 
 class TinyNavBarPrivate : public TinyTabBarPrivate
