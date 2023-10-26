@@ -24,4 +24,4 @@
 #include "ribbonworkspace.h"
 #include "stylehelpers.h"
 
-using namespace QRibbon;
+QRIBBON_USE_NAMESPACE
