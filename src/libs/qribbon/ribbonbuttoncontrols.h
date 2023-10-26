@@ -45,7 +45,7 @@ public:
     virtual void sizeChanged(RibbonControlSizeDefinition::GroupSize size);
     virtual void actionChanged();
 private:
-    QTC_DECLARE_PRIVATE(RibbonButtonControl)
+    QRN_DECLARE_PRIVATE(RibbonButtonControl)
     Q_DISABLE_COPY(RibbonButtonControl)
 };
 

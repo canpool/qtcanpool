@@ -497,7 +497,7 @@ int OfficeFrameHelperWin::tabBarHeight() const
     return 0;
 }
 
-struct QTC_DLLVERSIONINFO {
+struct QRN_DLLVERSIONINFO {
     DWORD cbSize;
     DWORD dwMajorVersion;   // Major version
     DWORD dwMinorVersion;   // Minor version
@@ -505,9 +505,9 @@ struct QTC_DLLVERSIONINFO {
     DWORD dwPlatformID;     // DLLVER_PLATFORM_*
 };
 
-typedef HRESULT(CALLBACK *QTC_DLLGETVERSIONPROC)(QTC_DLLVERSIONINFO *);
+typedef HRESULT(CALLBACK *QRN_DLLGETVERSIONPROC)(QRN_DLLVERSIONINFO *);
 
-#define QTC_VERSION_WIN4 MAKELONG(0, 4)
+#define QRN_VERSION_WIN4 MAKELONG(0, 4)
 static DWORD comCtlVersion()
 {
     static DWORD dwComCtlVersion = (DWORD)-1;
@@ -516,14 +516,14 @@ static DWORD comCtlVersion()
 
     QLibrary ctlLib(QString::fromLatin1("COMCTL32"));
 
-    QTC_DLLGETVERSIONPROC pfn;
-    pfn = (QTC_DLLGETVERSIONPROC)ctlLib.resolve("DllGetVersion");
+    QRN_DLLGETVERSIONPROC pfn;
+    pfn = (QRN_DLLGETVERSIONPROC)ctlLib.resolve("DllGetVersion");
     Q_ASSERT(pfn != NULL);
 
-    DWORD dwVersion = QTC_VERSION_WIN4;
+    DWORD dwVersion = QRN_VERSION_WIN4;
 
     if (pfn != NULL) {
-        QTC_DLLVERSIONINFO dvi;
+        QRN_DLLVERSIONINFO dvi;
         memset(&dvi, 0, sizeof(dvi));
         dvi.cbSize = sizeof(dvi);
         HRESULT hr = (*pfn)(&dvi);
@@ -541,7 +541,7 @@ static DWORD comCtlVersion()
 bool OfficeFrameHelperWin::clientMetrics(int &iCaptionWidth, int &iCaptionHeight) const
 {
     NONCLIENTMETRICS ncm;
-    struct QTC_OLDNONCLIENTMETRICS {
+    struct QRN_OLDNONCLIENTMETRICS {
         UINT cbSize;
         int iBorderWidth;
         int iScrollWidth;
@@ -560,7 +560,7 @@ bool OfficeFrameHelperWin::clientMetrics(int &iCaptionWidth, int &iCaptionHeight
     };
 
     const UINT cbProperSize =
-        (comCtlVersion() < MAKELONG(1, 6)) ? sizeof(QTC_OLDNONCLIENTMETRICS) : sizeof(NONCLIENTMETRICS);
+        (comCtlVersion() < MAKELONG(1, 6)) ? sizeof(QRN_OLDNONCLIENTMETRICS) : sizeof(NONCLIENTMETRICS);
 
     ZeroMemory(&ncm, sizeof(NONCLIENTMETRICS));
     ncm.cbSize = cbProperSize;
@@ -1218,7 +1218,7 @@ void OfficeFrameHelperWin::processClickedSubControl(QStyle::SubControl subContro
         ::PostMessage(m_hwndFrame, WM_SYSCOMMAND, idCommand, 0);
 }
 
-static bool _qtcModifyStyle(HWND hWnd, int nStyleOffset, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
+static bool _qrnModifyStyle(HWND hWnd, int nStyleOffset, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 {
     Q_ASSERT(hWnd != Q_NULL);
     DWORD dwStyle = GetWindowLongPtrW(hWnd, nStyleOffset);
@@ -1234,7 +1234,7 @@ static bool _qtcModifyStyle(HWND hWnd, int nStyleOffset, DWORD dwRemove, DWORD d
 
 bool OfficeFrameHelperWin::modifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 {
-    return _qtcModifyStyle(hWnd, GWL_STYLE, dwRemove, dwAdd, nFlags);
+    return _qrnModifyStyle(hWnd, GWL_STYLE, dwRemove, dwAdd, nFlags);
 }
 
 bool OfficeFrameHelperWin::isFrameHasStatusBar(int *statusHeight) const
@@ -1765,7 +1765,7 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
             bShow = true;
             // TODO: optimize
             int val = true ? m_frameBorder - 3 : 0;
-            bool visible = true ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
+            bool visible = true ? true : m_ribbonBar->d_func()->m_ribbonBarVisible;
             int valTitle = m_dwmEnabled ? (visible ? captionSize() + (m_frameBorder * 2) : 0)
                                         : (visible ? captionSize() + m_frameBorder * 0.5 : m_frameBorder * 0.5);
 
@@ -1784,7 +1784,7 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
             // TODO: optimize
             int val = m_dwmEnabled ? 0 : m_frameBorder;
             int valLeft = m_dwmEnabled ? (true ? 0 : m_frameBorder + m_frameBorder / 2) : m_frameBorder;
-            bool visible = true ? true : m_ribbonBar->qtc_d()->m_ribbonBarVisible;
+            bool visible = true ? true : m_ribbonBar->d_func()->m_ribbonBarVisible;
             int valTitle = m_dwmEnabled ? (visible ? captionSize() + (m_frameBorder * 2) : 0)
                                         : (visible ? captionSize() + m_frameBorder / 2 - 1 : m_frameBorder / 2 - 1);
 

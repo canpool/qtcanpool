@@ -110,7 +110,7 @@ protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(OfficePopupWindow)
+    QRN_DECLARE_PRIVATE(OfficePopupWindow)
     Q_DISABLE_COPY(OfficePopupWindow)
 };
 

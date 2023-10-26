@@ -160,7 +160,7 @@ bool RibbonPaintManager::drawFrame(const QStyleOption *opt, QPainter *p, const Q
 {
 #ifdef Q_OS_WIN
     Q_UNUSED(p);
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     if (qobject_cast<const RibbonMainWindow *>(w)) {
         if (const StyleOptionFrame *optFrame = qstyleoption_cast<const StyleOptionFrame *>(opt)) {
             HDC hdc = (HDC)optFrame->hdc;

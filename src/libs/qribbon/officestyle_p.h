@@ -93,7 +93,7 @@ QRIBBON_BEGIN_NAMESPACE
 class OfficeStylePrivate : public CommonStylePrivate
 {
 public:
-    QTC_DECLARE_EX_PUBLIC(OfficeStyle)
+    Q_DECLARE_PUBLIC(OfficeStyle)
 public:
     explicit OfficeStylePrivate();
     virtual ~OfficeStylePrivate();

@@ -70,7 +70,7 @@ class RibbonBackstageViewPrivate : public QObject
 {
 public:
     Q_OBJECT
-    QTC_DECLARE_PUBLIC(RibbonBackstageView)
+    QRN_DECLARE_PUBLIC(RibbonBackstageView)
 public:
     explicit RibbonBackstageViewPrivate();
     virtual ~RibbonBackstageViewPrivate();

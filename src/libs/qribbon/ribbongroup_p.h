@@ -24,7 +24,7 @@ class RibbonGroupPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonGroup)
+    QRN_DECLARE_PUBLIC(RibbonGroup)
 public:
     explicit RibbonGroupPrivate();
     virtual ~RibbonGroupPrivate();

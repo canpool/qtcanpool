@@ -42,7 +42,7 @@ class RibbonBarPrivate : public QObject
 {
 public:
     Q_OBJECT
-    QTC_DECLARE_PUBLIC(RibbonBar)
+    QRN_DECLARE_PUBLIC(RibbonBar)
 public:
     explicit RibbonBarPrivate();
     virtual ~RibbonBarPrivate();

@@ -13,17 +13,17 @@
 
 QRIBBON_USE_NAMESPACE
 
-#define QTC_DIC_TAGNAME_RIBBON        "RibbonStorage"
-#define QTC_DIC_TAGNAME_RIBBON_QABAR  "QuickAccessBar"
-#define QTC_DIC_TAGNAME_RIBBON_BAR    "RibbonBar"
-#define QTC_DIC_TAGNAME_RIBBON_PAGE   "RibbonPage"
-#define QTC_DIC_TAGNAME_RIBBON_GROUP  "RibbonGroup"
-#define QTC_DIC_TAGNAME_RIBBON_ACTION "RibbonAction"
+#define QRN_DIC_TAGNAME_RIBBON        "RibbonStorage"
+#define QRN_DIC_TAGNAME_RIBBON_QABAR  "QuickAccessBar"
+#define QRN_DIC_TAGNAME_RIBBON_BAR    "RibbonBar"
+#define QRN_DIC_TAGNAME_RIBBON_PAGE   "RibbonPage"
+#define QRN_DIC_TAGNAME_RIBBON_GROUP  "RibbonGroup"
+#define QRN_DIC_TAGNAME_RIBBON_ACTION "RibbonAction"
 
-#define QTC_DIC_ATTRNAME_RIBBON_ID      "nameId"
-#define QTC_DIC_ATTRNAME_RIBBON_TITLE   "title"
-#define QTC_DIC_ATTRNAME_RIBBON_VISIBLE "visible"
-#define QTC_DIC_ATTRNAME_RIBBON_TYPE    "type"
+#define QRN_DIC_ATTRNAME_RIBBON_ID      "nameId"
+#define QRN_DIC_ATTRNAME_RIBBON_TITLE   "title"
+#define QRN_DIC_ATTRNAME_RIBBON_VISIBLE "visible"
+#define QRN_DIC_ATTRNAME_RIBBON_TYPE    "type"
 
 /* CustomizeEngineAbstract */
 CustomizeEngineAbstract::CustomizeEngineAbstract(QObject *parent) : QObject(parent) {}
@@ -108,7 +108,7 @@ void CustomizeEngineAbstract::addToCategory(const QString &category, QAction *ac
 
 QString CustomizeEngineAbstract::generateUniqueNameIdentifier(int hint)
 {
-    static QString prefix = "__qtc_Action_%1";
+    static QString prefix = "__qrn_Action_%1";
 
     if (hint >= UserNameID && hint <= MaxUserNameID && !m_setUniqueIdentifier.contains(hint)) {
         m_setUniqueIdentifier.insert(hint);
@@ -128,7 +128,7 @@ QString CustomizeEngineAbstract::generateUniqueNameIdentifier(int hint)
 
 QString CustomizeEngineAbstract::generateUniqueNameIdentifierGroup(int hint /* = -1*/)
 {
-    static QString prefix = "__qtc_Group_%1";
+    static QString prefix = "__qrn_Group_%1";
 
     if (hint >= UserNameID && hint <= MaxUserNameID && !m_setUniqueIdentifierGroup.contains(hint)) {
         m_setUniqueIdentifierGroup.insert(hint);
@@ -148,7 +148,7 @@ QString CustomizeEngineAbstract::generateUniqueNameIdentifierGroup(int hint /* =
 
 QString CustomizeEngineAbstract::generateUniqueNameIdentifierPage(int hint /* = -1*/)
 {
-    static QString prefix = "__qtc_Page_%1";
+    static QString prefix = "__qrn_Page_%1";
 
     if (hint >= UserNameID && hint <= MaxUserNameID && !m_setUniqueIdentifierPage.contains(hint)) {
         m_setUniqueIdentifierPage.insert(hint);
@@ -263,8 +263,8 @@ void ToolBarCustomizeEngine::addDefaultToolBar(QToolBar *toolBar)
     while (itAction.hasNext()) {
         QAction *action = itAction.next();
         if (action->isVisible() &&
-            action->property(__qtc_Action_Invisible).toString() != QLatin1String("__qtc_Action_Invisible") &&
-            action->property(__qtc_Quick_Access_Button).toString() != QLatin1String("__qtc_Quick_Access_Button")) {
+            action->property(__qrn_Action_Invisible).toString() != QLatin1String("__qrn_Action_Invisible") &&
+            action->property(__qrn_Quick_Access_Button).toString() != QLatin1String("__qrn_Quick_Access_Button")) {
             setActionId(action);
 
             if (m_widgetActions.contains(action))
@@ -365,11 +365,11 @@ void ToolBarCustomizeEngine::setToolBar(QToolBar *toolBar, const QList<QAction *
 
 void ToolBarCustomizeEngine::saveStateQuickAccessBar(QXmlStreamWriter &stream) const
 {
-    // stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_QABAR);
+    // stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_QABAR);
 
     QMap<QToolBar *, QList<QAction *> >::ConstIterator itToolBar = m_defaultToolBars.constBegin();
     while (itToolBar != m_defaultToolBars.constEnd()) {
-        stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_QABAR);
+        stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_QABAR);
 
         QToolBar *tb = itToolBar.key();
         QString title = tb->objectName();
@@ -380,13 +380,13 @@ void ToolBarCustomizeEngine::saveStateQuickAccessBar(QXmlStreamWriter &stream) c
             title = tb->windowTitle();
         }
 
-        stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_TITLE, title);
+        stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_TITLE, title);
 
         QListIterator<QAction *> itAction(m_toolBars[tb]);
         while (itAction.hasNext()) {
             QString id;
             if (QAction *action = itAction.next()) {
-                stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_ACTION);
+                stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_ACTION);
                 id = m_allActionsToName.value(action);
                 if (id.isEmpty()) {
                     qWarning("ToolBarCustomizeEngine::saveStateQuickAccessBar(): 'objectName' not set for QAction "
@@ -394,11 +394,11 @@ void ToolBarCustomizeEngine::saveStateQuickAccessBar(QXmlStreamWriter &stream) c
                              action, action->text().toLocal8Bit().constData());
                     id = action->text();
                 }
-                stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_ID, id);
+                stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_ID, id);
                 stream.writeEndElement();
             } else {
-                stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_ACTION);
-                stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_ID, id);
+                stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_ACTION);
+                stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_ID, id);
                 stream.writeEndElement();
             }
         }
@@ -414,29 +414,29 @@ bool ToolBarCustomizeEngine::restoreStateQuickAccessBar(QXmlStreamReader &stream
     if (stream.readNext() != QXmlStreamReader::StartElement)
         return false;
 
-    if (stream.name() != QTC_DIC_TAGNAME_RIBBON_QABAR)
+    if (stream.name() != QRN_DIC_TAGNAME_RIBBON_QABAR)
         return false;
 
     while (stream.tokenType() == QXmlStreamReader::StartElement) {
         QXmlStreamAttributes attrsToolBar = stream.attributes();
 
-        if (!attrsToolBar.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_TITLE))
+        if (!attrsToolBar.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_TITLE))
             return false;
 
-        QString title = attrsToolBar.value(QTC_DIC_ATTRNAME_RIBBON_TITLE).toString();
+        QString title = attrsToolBar.value(QRN_DIC_ATTRNAME_RIBBON_TITLE).toString();
 
         QList<QAction *> actions;
         if (stream.readNext() == QXmlStreamReader::StartElement) {
-            if (stream.name() != QTC_DIC_TAGNAME_RIBBON_ACTION)
+            if (stream.name() != QRN_DIC_TAGNAME_RIBBON_ACTION)
                 return false;
 
             while (stream.tokenType() == QXmlStreamReader::StartElement) {
                 QXmlStreamAttributes attrs = stream.attributes();
 
-                if (!attrs.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_ID))
+                if (!attrs.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_ID))
                     return false;
 
-                QString id = attrs.value(QTC_DIC_ATTRNAME_RIBBON_ID).toString();
+                QString id = attrs.value(QRN_DIC_ATTRNAME_RIBBON_ID).toString();
 
                 if (id.isEmpty())
                     actions.append(0);
@@ -679,12 +679,12 @@ void RibbonBarCustomizeEngine::addDefaultPages(RibbonBar *ribbonBar)
 
     while (itPages.hasNext()) {
         RibbonPage *page = itPages.next();
-        // if (page->objectName() != QLatin1String("__qtc_Page_Invisible"))
+        // if (page->objectName() != QLatin1String("__qrn_Page_Invisible"))
         {
             setPageId(page);
             newPages.append(page);
 
-            if (page->qtc_d()->m_associativeTab->isHidden())
+            if (page->d_func()->m_associativeTab->isHidden())
                 m_defaultHiddenPages.append(page);
         }
         m_defaultPagesName.insert(page, page->title());
@@ -707,7 +707,7 @@ void RibbonBarCustomizeEngine::addDefaultGroups(RibbonPage *page)
 
     while (itGroups.hasNext()) {
         RibbonGroup *group = itGroups.next();
-        // if (group->objectName() != QLatin1String("__qtc_Group_Invisible") )
+        // if (group->objectName() != QLatin1String("__qrn_Group_Invisible") )
         {
             setGroupId(group);
             newGroups.append(group);
@@ -752,7 +752,7 @@ void RibbonBarCustomizeEngine::setRibbonBar()
         while (itRegularPage.hasNext()) {
             RibbonPage *currentPage = itRegularPage.next();
             if (!m_regularPages.contains(currentPage)) {
-                if (currentPage->property(__qtc_Widget_Custom).toString() == QLatin1String("__qtc_Page_Custom"))
+                if (currentPage->property(__qrn_Widget_Custom).toString() == QLatin1String("__qrn_Page_Custom"))
                     m_ribbonBar->removePage(currentPage);
             }
         }
@@ -809,10 +809,10 @@ void RibbonBarCustomizeEngine::setRibbonGroups()
                     while (itRegularGroups.hasNext()) {
                         RibbonGroup *regularGroup = itRegularGroups.next();
                         if (!groupsPage.contains(regularGroup) &&
-                            (regularGroup->property(__qtc_Widget_Custom).toString() ==
-                                 QLatin1String("__qtc_Group_Custom") ||
-                             regularGroup->property(__qtc_Widget_Copy).toString() ==
-                                 QLatin1String("__qtc_Group_Copy"))) {
+                            (regularGroup->property(__qrn_Widget_Custom).toString() ==
+                                 QLatin1String("__qrn_Group_Custom") ||
+                             regularGroup->property(__qrn_Widget_Copy).toString() ==
+                                 QLatin1String("__qrn_Group_Copy"))) {
                             realGroups.removeOne(regularGroup);
                             page->removeGroup(regularGroup);
                         }
@@ -833,7 +833,7 @@ void RibbonBarCustomizeEngine::setRibbonGroups()
                 if (m_regularNameGroups.contains(group))
                     group->setTitle(m_regularNameGroups.value(group));
 
-                if (group->property(__qtc_Widget_Custom).toString() == QLatin1String("__qtc_Group_Custom")) {
+                if (group->property(__qrn_Widget_Custom).toString() == QLatin1String("__qrn_Group_Custom")) {
                     group->clear();
                     QList<QAction *> actions = m_regularGroupsActions[group];
                     QListIterator<QAction *> itActions(actions);
@@ -909,10 +909,10 @@ void RibbonBarCustomizeEngine::saveStateGroup(QXmlStreamWriter &stream, RibbonPa
     QListIterator<RibbonGroup *> itGroup(groups);
     while (itGroup.hasNext()) {
         if (RibbonGroup *group = itGroup.next()) {
-            stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_GROUP);
+            stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_GROUP);
 
-            bool custom = group->property(__qtc_Widget_Custom).toString() == QLatin1String("__qtc_Group_Custom");
-            bool copy = group->property(__qtc_Widget_Copy).toString() == QLatin1String("__qtc_Group_Copy");
+            bool custom = group->property(__qrn_Widget_Custom).toString() == QLatin1String("__qrn_Group_Custom");
+            bool copy = group->property(__qrn_Widget_Copy).toString() == QLatin1String("__qrn_Group_Copy");
 
             QString nameId = m_allGroupsToNameId.value(group);
 
@@ -925,13 +925,13 @@ void RibbonBarCustomizeEngine::saveStateGroup(QXmlStreamWriter &stream, RibbonPa
                 nameId = page->title();
             }
 
-            stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_ID, nameId);
-            stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_TITLE, group->title());
+            stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_ID, nameId);
+            stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_TITLE, group->title());
 
             if (custom)
-                stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_TYPE, "CustomGroup");
+                stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_TYPE, "CustomGroup");
             else if (copy)
-                stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_TYPE, "CopyGroup");
+                stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_TYPE, "CopyGroup");
 
             if (custom || copy) {
                 QList<QAction *> actions = group->actions();
@@ -939,8 +939,8 @@ void RibbonBarCustomizeEngine::saveStateGroup(QXmlStreamWriter &stream, RibbonPa
                 while (itActions.hasNext()) {
                     QString nameAction = m_allActionsToName.value(itActions.next());
                     if (!nameAction.isEmpty()) {
-                        stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_ACTION);
-                        stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_ID, nameAction);
+                        stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_ACTION);
+                        stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_ID, nameAction);
                         stream.writeEndElement();
                     }
                 }
@@ -954,7 +954,7 @@ bool RibbonBarCustomizeEngine::restoreStateGroup(QXmlStreamReader &stream, Ribbo
 {
     if (stream.readNext() != QXmlStreamReader::StartElement)
         return false;
-    if (stream.name() != QTC_DIC_TAGNAME_RIBBON_GROUP)
+    if (stream.name() != QRN_DIC_TAGNAME_RIBBON_GROUP)
         return false;
 
     QList<RibbonGroup *> groups;
@@ -962,19 +962,19 @@ bool RibbonBarCustomizeEngine::restoreStateGroup(QXmlStreamReader &stream, Ribbo
 
     while (stream.tokenType() == QXmlStreamReader::StartElement) {
         QXmlStreamAttributes attrs = stream.attributes();
-        if (!attrs.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_ID))
+        if (!attrs.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_ID))
             return false;
 
-        QString nameId = attrs.value(QTC_DIC_ATTRNAME_RIBBON_ID).toString();
+        QString nameId = attrs.value(QRN_DIC_ATTRNAME_RIBBON_ID).toString();
 
-        if (!attrs.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_TITLE))
+        if (!attrs.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_TITLE))
             return false;
 
-        QString title = attrs.value(QTC_DIC_ATTRNAME_RIBBON_TITLE).toString();
+        QString title = attrs.value(QRN_DIC_ATTRNAME_RIBBON_TITLE).toString();
 
         bool customGroup = false;
         bool copyGroup = false;
-        QString strType = attrs.value(QTC_DIC_ATTRNAME_RIBBON_TYPE).toString();
+        QString strType = attrs.value(QRN_DIC_ATTRNAME_RIBBON_TYPE).toString();
         if (!strType.isEmpty()) {
             if (strType == "CustomGroup")
                 customGroup = true;
@@ -1007,19 +1007,19 @@ bool RibbonBarCustomizeEngine::restoreStateGroup(QXmlStreamReader &stream, Ribbo
             groups.append(newGroup);
 
             if (customGroup)
-                newGroup->setProperty(__qtc_Widget_Custom, QLatin1String("__qtc_Group_Custom"));
+                newGroup->setProperty(__qrn_Widget_Custom, QLatin1String("__qrn_Group_Custom"));
             else
-                newGroup->setProperty(__qtc_Widget_Copy, QLatin1String("__qtc_Group_Copy"));
+                newGroup->setProperty(__qrn_Widget_Copy, QLatin1String("__qrn_Group_Copy"));
 
             next = false;
 
             QList<QAction *> actions;
 
             if (stream.readNext() == QXmlStreamReader::StartElement) {
-                if (stream.name() == QTC_DIC_TAGNAME_RIBBON_ACTION) {
+                if (stream.name() == QRN_DIC_TAGNAME_RIBBON_ACTION) {
                     while (stream.tokenType() == QXmlStreamReader::StartElement) {
                         QXmlStreamAttributes attrsAction = stream.attributes();
-                        QString idName = attrsAction.value(QTC_DIC_ATTRNAME_RIBBON_ID).toString();
+                        QString idName = attrsAction.value(QRN_DIC_ATTRNAME_RIBBON_ID).toString();
                         if (!idName.isEmpty()) {
                             QAction *action = m_allNameToActions.value(idName);
                             newGroup->addAction(action);
@@ -1056,12 +1056,12 @@ void RibbonBarCustomizeEngine::saveStatePage(QXmlStreamWriter &stream) const
     QListIterator<RibbonPage *> itPage(m_ribbonBar->pages());
     while (itPage.hasNext()) {
         if (RibbonPage *page = itPage.next()) {
-            stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_PAGE);
+            stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_PAGE);
 
             QString nameId = m_allPagesToNameId.value(page);
 
             if (nameId.isEmpty()) {
-                if (page->property(__qtc_Widget_Custom).toString() != QLatin1String("__qtc_Page_Custom")) {
+                if (page->property(__qrn_Widget_Custom).toString() != QLatin1String("__qrn_Page_Custom")) {
                     qWarning("RibbonBarCustomizeEngine::saveState(): 'pageId' not set for RibbonPage "
                              "%p '%s', using 'text' instead",
                              page, page->title().toLocal8Bit().constData());
@@ -1069,12 +1069,12 @@ void RibbonBarCustomizeEngine::saveStatePage(QXmlStreamWriter &stream) const
                 nameId = page->title();
             }
 
-            stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_ID, nameId);
-            stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_TITLE, page->title());
-            stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_VISIBLE, QVariant(page->isVisible()).toString());
+            stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_ID, nameId);
+            stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_TITLE, page->title());
+            stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_VISIBLE, QVariant(page->isVisible()).toString());
 
-            if (page->property(__qtc_Widget_Custom).toString() == QLatin1String("__qtc_Page_Custom"))
-                stream.writeAttribute(QTC_DIC_ATTRNAME_RIBBON_TYPE, "CustomPage");
+            if (page->property(__qrn_Widget_Custom).toString() == QLatin1String("__qrn_Page_Custom"))
+                stream.writeAttribute(QRN_DIC_ATTRNAME_RIBBON_TYPE, "CustomPage");
 
             saveStateGroup(stream, page);
 
@@ -1089,7 +1089,7 @@ bool RibbonBarCustomizeEngine::restoreStatePage(QXmlStreamReader &stream)
 
     if (stream.readNext() != QXmlStreamReader::StartElement)
         return false;
-    if (stream.name() != QTC_DIC_TAGNAME_RIBBON_PAGE)
+    if (stream.name() != QRN_DIC_TAGNAME_RIBBON_PAGE)
         return false;
 
     m_regularHiddenPages.clear();
@@ -1097,22 +1097,22 @@ bool RibbonBarCustomizeEngine::restoreStatePage(QXmlStreamReader &stream)
     //    QList<RibbonPage*> pages;
     while (stream.tokenType() == QXmlStreamReader::StartElement) {
         QXmlStreamAttributes attrs = stream.attributes();
-        if (!attrs.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_ID))
+        if (!attrs.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_ID))
             return false;
 
-        QString nameId = attrs.value(QTC_DIC_ATTRNAME_RIBBON_ID).toString();
+        QString nameId = attrs.value(QRN_DIC_ATTRNAME_RIBBON_ID).toString();
 
-        if (!attrs.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_TITLE))
+        if (!attrs.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_TITLE))
             return false;
 
-        QString title = attrs.value(QTC_DIC_ATTRNAME_RIBBON_TITLE).toString();
+        QString title = attrs.value(QRN_DIC_ATTRNAME_RIBBON_TITLE).toString();
 
-        if (!attrs.hasAttribute(QTC_DIC_ATTRNAME_RIBBON_VISIBLE))
+        if (!attrs.hasAttribute(QRN_DIC_ATTRNAME_RIBBON_VISIBLE))
             return false;
 
-        bool visible = QVariant(attrs.value(QTC_DIC_ATTRNAME_RIBBON_VISIBLE).toString()).toBool();
+        bool visible = QVariant(attrs.value(QRN_DIC_ATTRNAME_RIBBON_VISIBLE).toString()).toBool();
 
-        QString strType = attrs.value(QTC_DIC_ATTRNAME_RIBBON_TYPE).toString();
+        QString strType = attrs.value(QRN_DIC_ATTRNAME_RIBBON_TYPE).toString();
         bool customPage = !strType.isEmpty() && strType == "CustomPage";
 
         if (nameId.isEmpty())
@@ -1140,7 +1140,7 @@ bool RibbonBarCustomizeEngine::restoreStatePage(QXmlStreamReader &stream)
             newPage->setTitle(title);
             newPage->setObjectName(nameId);
             m_regularPages.append(newPage);
-            newPage->setProperty(__qtc_Widget_Custom, QLatin1String("__qtc_Page_Custom"));
+            newPage->setProperty(__qrn_Widget_Custom, QLatin1String("__qrn_Page_Custom"));
 
             if (!visible)
                 m_regularHiddenPages.append(newPage);
@@ -1161,7 +1161,7 @@ bool RibbonBarCustomizeEngine::restoreStatePage(QXmlStreamReader &stream)
 
 void RibbonBarCustomizeEngine::saveStateRibbonBar(QXmlStreamWriter &stream) const
 {
-    stream.writeStartElement(QTC_DIC_TAGNAME_RIBBON_BAR);
+    stream.writeStartElement(QRN_DIC_TAGNAME_RIBBON_BAR);
     saveStatePage(stream);
 }
 
@@ -1170,7 +1170,7 @@ bool RibbonBarCustomizeEngine::restoreStateRibbonBar(QXmlStreamReader &stream)
     if (stream.readNext() != QXmlStreamReader::StartElement)
         return false;
 
-    if (stream.name() != QTC_DIC_TAGNAME_RIBBON_BAR)
+    if (stream.name() != QRN_DIC_TAGNAME_RIBBON_BAR)
         return false;
 
     bool ok = restoreStatePage(stream);
@@ -1209,7 +1209,7 @@ RibbonCustomizeManagerPrivate::~RibbonCustomizeManagerPrivate() {}
 
 void RibbonCustomizeManagerPrivate::init(RibbonBar *ribbonBar)
 {
-    QTC_Q(RibbonCustomizeManager)
+    Q_Q(RibbonCustomizeManager);
     m_ribbonBar = ribbonBar;
     m_ribbonManager = new RibbonBarCustomizeEngine(q, ribbonBar);
 }
@@ -1221,22 +1221,22 @@ RibbonCustomizeManager is a base class to customize actions on the RibbonBar
 */
 RibbonCustomizeManager::RibbonCustomizeManager(RibbonBar *ribbonBar) : QObject(ribbonBar)
 {
-    QTC_INIT_PRIVATE(RibbonCustomizeManager);
-    QTC_D(RibbonCustomizeManager);
+    QRN_INIT_PRIVATE(RibbonCustomizeManager);
+    Q_D(RibbonCustomizeManager);
     d->init(ribbonBar);
 }
 
 /*!
 Destructor.
 */
-RibbonCustomizeManager::~RibbonCustomizeManager() { QTC_FINI_PRIVATE(); }
+RibbonCustomizeManager::~RibbonCustomizeManager() { QRN_FINI_PRIVATE(); }
 
 /*!
 Returns list of all categories.
 */
 QStringList RibbonCustomizeManager::categories() const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->categories();
 }
 
@@ -1245,7 +1245,7 @@ Returns a list of all actions which are subject to customize.
 */
 QList<QAction *> RibbonCustomizeManager::actionsAll() const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->actionsAll();
 }
 
@@ -1254,7 +1254,7 @@ Adds QToolBar \a toolBar to customize manager.
 */
 void RibbonCustomizeManager::addToolBar(QToolBar *toolBar)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->addDefaultToolBar(toolBar);
 }
 
@@ -1263,7 +1263,7 @@ Adds new \a category to customize manager.
 */
 void RibbonCustomizeManager::addAllActionsCategory(const QString &category)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->addAllActionsCategory(category);
 }
 
@@ -1272,7 +1272,7 @@ Returns all actions from the specific \a category.
 */
 QList<QAction *> RibbonCustomizeManager::actionsByCategory(const QString &category) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->actionsByCategory(category);
 }
 
@@ -1281,7 +1281,7 @@ Adds action to the specific \a category.
 */
 void RibbonCustomizeManager::addToCategory(const QString &category, QAction *action)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->addToCategory(category, action);
 }
 
@@ -1290,7 +1290,7 @@ Returns all toolbars from the specific \a category.
 */
 QList<QToolBar *> RibbonCustomizeManager::toolBarsByCategory(const QString &category) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->toolBarsByCategory(category);
 }
 
@@ -1299,7 +1299,7 @@ Adds \a toolBar to the specific \a category.
 */
 void RibbonCustomizeManager::addToCategory(const QString &category, QToolBar *toolBar)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->ToolBarCustomizeEngine::addToCategory(category, toolBar);
 }
 
@@ -1308,7 +1308,7 @@ Returns all ribbon pages from the specific \a category.
 */
 QList<RibbonPage *> RibbonCustomizeManager::pagesByCategory(const QString &category) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->pagesByCategory(category);
 }
 
@@ -1317,7 +1317,7 @@ Adds ribbon \a page to the specific \a category.
 */
 void RibbonCustomizeManager::addToCategory(const QString &category, RibbonPage *page)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     return d->m_ribbonManager->addToCategory(category, page);
 }
 
@@ -1326,7 +1326,7 @@ Returns all ribbon groups from the specific \a category.
 */
 QList<RibbonGroup *> RibbonCustomizeManager::groupsByCategory(const QString &category) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->groupsByCategory(category);
 }
 
@@ -1335,7 +1335,7 @@ Adds ribbon \a group to the specific \a category.
 */
 void RibbonCustomizeManager::addToCategory(const QString &category, RibbonGroup *group)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->addToCategory(category, group);
 }
 
@@ -1344,7 +1344,7 @@ Returns unique identifier for \a action.
 */
 QString RibbonCustomizeManager::actionId(QAction *action) const
 {
-    QTC_D(const RibbonCustomizeManager);
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->actionId(action);
 }
 
@@ -1353,7 +1353,7 @@ Assigns the unique identifier \a id for \a action.
 */
 void RibbonCustomizeManager::setActionId(QAction *action, const QString &id)
 {
-    QTC_D(RibbonCustomizeManager);
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->setActionId(action, id);
 }
 
@@ -1362,7 +1362,7 @@ Returns unique identifier for \a page.
 */
 QString RibbonCustomizeManager::pageId(RibbonPage *page) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->pageId(page);
 }
 
@@ -1371,7 +1371,7 @@ Assign the unique identifier \a id for \a page.
 */
 void RibbonCustomizeManager::setPageId(RibbonPage *page, const QString &id)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->setPageId(page, id);
 }
 
@@ -1380,7 +1380,7 @@ Returns unique identifier for \a group.
 */
 QString RibbonCustomizeManager::groupId(RibbonGroup *group) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->groupId(group);
 }
 
@@ -1389,7 +1389,7 @@ Assign the unique identifier \a id for \a group.
 */
 void RibbonCustomizeManager::setGroupId(RibbonGroup *group, const QString &id)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->setGroupId(group, id);
 }
 
@@ -1398,7 +1398,7 @@ Sets customize manager to the edit mode.
 */
 void RibbonCustomizeManager::setEditMode(bool set)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (d->m_editMode == set)
         return;
 
@@ -1456,7 +1456,7 @@ Returns true if customize manager in edit mode. Otherwise, returns false.
 */
 bool RibbonCustomizeManager::isEditMode() const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_editMode;
 }
 
@@ -1465,7 +1465,7 @@ Reset all changes to the default for additional \a toolBar. If \a toolBar is NUL
 */
 void RibbonCustomizeManager::reset(QToolBar *toolBar)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (toolBar == Q_NULL) {
         d->m_ribbonManager->m_regularHiddenPages.clear();
         d->m_ribbonManager->m_regularHiddenPages = d->m_ribbonManager->defaultHiddenPages();
@@ -1516,7 +1516,7 @@ Cancel all changes that were made.
 */
 void RibbonCustomizeManager::cancel()
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->m_regularToolBars.clear();
     d->m_ribbonManager->m_regularHiddenPages.clear();
     d->m_ribbonManager->m_regularPagesName.clear();
@@ -1533,7 +1533,7 @@ Apply all changes to the toolBars.
 */
 void RibbonCustomizeManager::commit()
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (isEditMode()) {
         d->m_ribbonManager->setQuickAccessBar();
         d->m_ribbonManager->setRibbonBar();
@@ -1547,7 +1547,7 @@ Returns all actions from \a toolBar.
 */
 QList<QAction *> RibbonCustomizeManager::actions(QToolBar *toolBar) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     if (qobject_cast<RibbonQuickAccessBar *>(toolBar))
         return d->m_ribbonManager->m_regularToolBars.value(toolBar);
     else
@@ -1559,7 +1559,7 @@ Insert \a action to \a toolBar in the position \a index.
 */
 void RibbonCustomizeManager::insertAction(QToolBar *toolBar, QAction *action, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
 
@@ -1571,7 +1571,7 @@ Remove an action from \a toolBar in the position \a index.
 */
 void RibbonCustomizeManager::removeActionAt(QToolBar *toolBar, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
 
@@ -1583,7 +1583,7 @@ Returns true if \a toolBar contains the \a action.
 */
 bool RibbonCustomizeManager::containsAction(QToolBar *toolBar, QAction *action) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularToolBars[toolBar].contains(action);
 }
 
@@ -1592,7 +1592,7 @@ Returns all pages that were added to customize manager.
 */
 QList<RibbonPage *> RibbonCustomizeManager::pages() const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularPages;
 }
 
@@ -1602,14 +1602,14 @@ the last position.
 */
 RibbonPage *RibbonCustomizeManager::createPage(const QString &pageName, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
 
     if (!isEditMode())
         setEditMode(true);
 
     RibbonPage *newPage = new RibbonPage();
     newPage->setTitle(pageName);
-    newPage->setProperty(__qtc_Widget_Custom, QLatin1String("__qtc_Page_Custom"));
+    newPage->setProperty(__qrn_Widget_Custom, QLatin1String("__qrn_Page_Custom"));
 
     if (index == -1)
         d->m_ribbonManager->m_regularPages.append(newPage);
@@ -1623,7 +1623,7 @@ Deletes the \a page.
 */
 void RibbonCustomizeManager::deletePage(RibbonPage *page)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
 
@@ -1640,7 +1640,7 @@ Returns an index of the \a page.
 */
 int RibbonCustomizeManager::pageIndex(RibbonPage *page) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularPages.indexOf(page);
 }
 
@@ -1649,7 +1649,7 @@ Moves page from position \a oldIndex to \a newIndex.
 */
 void RibbonCustomizeManager::movePage(int oldIndex, int newIndex)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
 
     RibbonPage *page = d->m_ribbonManager->m_regularPages.at(oldIndex);
     d->m_ribbonManager->m_regularPages.removeAt(oldIndex);
@@ -1661,7 +1661,7 @@ Returns all groups in \a page.
 */
 QList<RibbonGroup *> RibbonCustomizeManager::pageGroups(RibbonPage *page) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularPageGroups.value(page);
 }
 
@@ -1671,7 +1671,7 @@ added to the last position.
 */
 RibbonGroup *RibbonCustomizeManager::createGroup(RibbonPage *page, const QString &groupName, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
 
@@ -1690,7 +1690,7 @@ Deletes group by \a index from \a page.
 */
 void RibbonCustomizeManager::deleteGroup(RibbonPage *page, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
 
@@ -1705,7 +1705,7 @@ Moves group from position \a oldIndex to \a newIndex in \a page.
 */
 void RibbonCustomizeManager::moveGroup(RibbonPage *page, int oldIndex, int newIndex)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
 
@@ -1719,7 +1719,7 @@ Inserts \a action to the \a group in the position \a index.
 */
 void RibbonCustomizeManager::insertAction(RibbonGroup *group, QAction *action, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
     d->m_ribbonManager->m_regularGroupsActions[group].insert(index, action);
@@ -1730,7 +1730,7 @@ Inserts a list of \a actions to the \a group in last postion.
 */
 void RibbonCustomizeManager::appendActions(RibbonGroup *group, const QList<QAction *> &actions)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
     d->m_ribbonManager->m_regularGroupsActions[group] = actions;
@@ -1741,7 +1741,7 @@ Clear all actions in \a group.
 */
 void RibbonCustomizeManager::clearActions(RibbonGroup *group)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
     d->m_ribbonManager->m_regularGroupsActions.remove(group);
@@ -1752,7 +1752,7 @@ Removes an action from \a group in the position \a index.
 */
 void RibbonCustomizeManager::removeActionAt(RibbonGroup *group, int index)
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (!isEditMode())
         setEditMode(true);
     d->m_ribbonManager->m_regularGroupsActions[group].removeAt(index);
@@ -1763,7 +1763,7 @@ Returns true if \a group contains the \a action.
 */
 bool RibbonCustomizeManager::containsAction(RibbonGroup *group, QAction *action) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularGroupsActions.value(group).contains(action);
 }
 
@@ -1772,7 +1772,7 @@ Returns all actions from \a group.
 */
 QList<QAction *> RibbonCustomizeManager::actionsGroup(RibbonGroup *group) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularGroupsActions.value(group);
 }
 
@@ -1781,7 +1781,7 @@ Returns true if page is hidden.
 */
 bool RibbonCustomizeManager::isPageHidden(RibbonPage *page) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularHiddenPages.contains(page);
 }
 
@@ -1793,7 +1793,7 @@ void RibbonCustomizeManager::setPageHidden(RibbonPage *page, bool hide)
     if (!isEditMode())
         setEditMode(true);
 
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (hide)
         d->m_ribbonManager->m_regularHiddenPages.append(page);
     else
@@ -1816,7 +1816,7 @@ Returns the name of the \a page.
 */
 QString RibbonCustomizeManager::pageName(RibbonPage *page) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularPagesName.value(page);
 }
 
@@ -1825,7 +1825,7 @@ Assigns the name \a pageName for the \a page.
 */
 void RibbonCustomizeManager::setPageName(RibbonPage *page, const QString &pageName)
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     d->m_ribbonManager->m_regularPagesName.insert(page, pageName);
 }
 
@@ -1834,7 +1834,7 @@ Returns the name of the \a group.
 */
 QString RibbonCustomizeManager::groupName(RibbonGroup *group) const
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     return d->m_ribbonManager->m_regularNameGroups.value(group);
 }
 
@@ -1843,7 +1843,7 @@ Assigns the name \a groupName for the \a group.
 */
 void RibbonCustomizeManager::setGroupName(RibbonGroup *group, const QString &groupName)
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
     d->m_ribbonManager->m_regularNameGroups.insert(group, groupName);
 }
 
@@ -1851,7 +1851,7 @@ void RibbonCustomizeManager::setGroupName(RibbonGroup *group, const QString &gro
  */
 void RibbonCustomizeManager::addDefaultStateQAccessBar()
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     if (RibbonQuickAccessBar *quickAccessBar = d->m_ribbonBar->quickAccessBar())
         d->m_ribbonManager->addDefaultToolBar(quickAccessBar);
 }
@@ -1860,7 +1860,7 @@ void RibbonCustomizeManager::addDefaultStateQAccessBar()
  */
 void RibbonCustomizeManager::addDefaultStateRibbonBar()
 {
-    QTC_D(RibbonCustomizeManager)
+    Q_D(RibbonCustomizeManager);
     d->m_ribbonManager->addDefaultPages(d->m_ribbonBar);
 }
 
@@ -1869,13 +1869,13 @@ Save the toolbars state to the \a device.
 */
 bool RibbonCustomizeManager::saveStateToDevice(QIODevice *device)
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
 
     QXmlStreamWriter xmlwriter(device);
 
     xmlwriter.writeStartDocument("1.0");
     xmlwriter.writeNamespace("http://gitee.com/icanpool/qtcanpool", "QRibbon");
-    xmlwriter.writeStartElement(QTC_DIC_TAGNAME_RIBBON);
+    xmlwriter.writeStartElement(QRN_DIC_TAGNAME_RIBBON);
     xmlwriter.writeAttribute("type", "customize");
     xmlwriter.writeAttribute("version", "1.0");
 
@@ -1892,7 +1892,7 @@ Restore the toolbars state from the \a device.
 */
 bool RibbonCustomizeManager::loadStateFromDevice(QIODevice *device)
 {
-    QTC_D(const RibbonCustomizeManager)
+    Q_D(const RibbonCustomizeManager);
 
     QXmlStreamReader xmlreader(device);
     if (xmlreader.readNext() != QXmlStreamReader::StartDocument)
@@ -1900,7 +1900,7 @@ bool RibbonCustomizeManager::loadStateFromDevice(QIODevice *device)
     if (xmlreader.readNext() != QXmlStreamReader::StartElement)
         return false;
 
-    if (xmlreader.name() != QTC_DIC_TAGNAME_RIBBON)
+    if (xmlreader.name() != QRN_DIC_TAGNAME_RIBBON)
         return false;
 
     d->m_ribbonManager->restoreState(xmlreader);

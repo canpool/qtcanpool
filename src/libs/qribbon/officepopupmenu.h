@@ -41,7 +41,7 @@ protected:
     virtual void resizeEvent(QResizeEvent *event);
 private:
     friend class RibbonGalleryPrivate;
-    QTC_DECLARE_PRIVATE(OfficePopupMenu)
+    QRN_DECLARE_PRIVATE(OfficePopupMenu)
     Q_DISABLE_COPY(OfficePopupMenu)
 };
 

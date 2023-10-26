@@ -31,7 +31,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event);
 private:
     Q_DISABLE_COPY(RibbonSystemButton)
-    QTC_DECLARE_PRIVATE(RibbonSystemButton)
+    QRN_DECLARE_PRIVATE(RibbonSystemButton)
 };
 
 class RibbonPageSystemRecentFileList;
@@ -61,7 +61,7 @@ protected:
 private:
     friend class RibbonPageSystemPopup;
     Q_DISABLE_COPY(RibbonSystemPopupBar)
-    QTC_DECLARE_PRIVATE(RibbonSystemPopupBar)
+    QRN_DECLARE_PRIVATE(RibbonSystemPopupBar)
 };
 
 class QRIBBON_EXPORT RibbonPageSystemPopupListCaption : public QWidget
@@ -112,7 +112,7 @@ protected:
     virtual void resizeEvent(QResizeEvent *event);
 private:
     Q_DISABLE_COPY(RibbonPageSystemRecentFileList)
-    QTC_DECLARE_PRIVATE(RibbonPageSystemRecentFileList)
+    QRN_DECLARE_PRIVATE(RibbonPageSystemRecentFileList)
 };
 
 class RibbonPageSystemPopupPrivate;
@@ -128,7 +128,7 @@ protected:
     virtual void leaveEvent(QEvent *event);
 private:
     Q_DISABLE_COPY(RibbonPageSystemPopup)
-    QTC_DECLARE_PRIVATE(RibbonPageSystemPopup)
+    QRN_DECLARE_PRIVATE(RibbonPageSystemPopup)
 };
 
 QRIBBON_END_NAMESPACE

@@ -32,7 +32,7 @@ private:
 class RibbonSliderPanePrivate : QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonSliderPane)
+    QRN_DECLARE_PUBLIC(RibbonSliderPane)
 public:
     explicit RibbonSliderPanePrivate();
 public:
@@ -82,7 +82,7 @@ RibbonSliderPanePrivate::RibbonSliderPanePrivate()
 
 void RibbonSliderPanePrivate::initSlider()
 {
-    QTC_Q(RibbonSliderPane);
+    Q_Q(RibbonSliderPane);
     m_slider = new QSlider(Qt::Horizontal, q);
     m_slider->setTickPosition(QSlider::NoTicks);
 
@@ -97,25 +97,25 @@ void RibbonSliderPanePrivate::initSlider()
 /* RibbonSliderPane */
 RibbonSliderPane::RibbonSliderPane(QWidget *parent) : QWidget(parent)
 {
-    QTC_INIT_PRIVATE(RibbonSliderPane);
-    QTC_D(RibbonSliderPane);
+    QRN_INIT_PRIVATE(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     d->initSlider();
     connect(d->m_slider, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
     connect(d->m_slider, SIGNAL(sliderMoved(int)), this, SIGNAL(sliderMoved(int)));
 }
 
-RibbonSliderPane::~RibbonSliderPane() { QTC_FINI_PRIVATE(); }
+RibbonSliderPane::~RibbonSliderPane() { QRN_FINI_PRIVATE(); }
 
 void RibbonSliderPane::setRange(int min, int max)
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     d->m_slider->setMinimum(min);   // min - Range
     d->m_slider->setMaximum(max);   // max - Range
 }
 
 void RibbonSliderPane::setScrollButtons(bool on)
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     if (on) {
         d->m_buttonDown = new RibbonSliderButton(this, QStyle::PE_IndicatorArrowDown);
         d->m_layout->insertWidget(0, d->m_buttonDown, 0, Qt::AlignLeft);
@@ -135,43 +135,43 @@ void RibbonSliderPane::setScrollButtons(bool on)
 
 void RibbonSliderPane::setSliderPosition(int position)
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     d->m_slider->setSliderPosition(position);
 }
 
 int RibbonSliderPane::sliderPosition() const
 {
-    QTC_D(const RibbonSliderPane);
+    Q_D(const RibbonSliderPane);
     return d->m_slider->sliderPosition();
 }
 
 void RibbonSliderPane::setSingleStep(int nPos)
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     d->m_slider->setSingleStep(nPos);
 }
 
 int RibbonSliderPane::singleStep() const
 {
-    QTC_D(const RibbonSliderPane);
+    Q_D(const RibbonSliderPane);
     return d->m_slider->singleStep();
 }
 
 int RibbonSliderPane::value() const
 {
-    QTC_D(const RibbonSliderPane);
+    Q_D(const RibbonSliderPane);
     return d->m_slider->value();
 }
 
 void RibbonSliderPane::setValue(int value)
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     d->m_slider->setValue(value);
 }
 
 void RibbonSliderPane::increment()
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     int nPos = d->m_slider->sliderPosition() + d->m_slider->singleStep();
     if (nPos <= d->m_slider->maximum())
         d->m_slider->setSliderPosition(nPos);
@@ -179,7 +179,7 @@ void RibbonSliderPane::increment()
 
 void RibbonSliderPane::decrement()
 {
-    QTC_D(RibbonSliderPane);
+    Q_D(RibbonSliderPane);
     int nPos = d->m_slider->sliderPosition() - d->m_slider->singleStep();
     if (nPos >= d->m_slider->minimum())
         d->m_slider->setSliderPosition(nPos);

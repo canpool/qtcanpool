@@ -98,7 +98,7 @@ private:
     friend class RibbonQuickAccessBar;
     friend class RibbonSystemButton;
     friend class RibbonTabBarPrivate;
-    QTC_DECLARE_PRIVATE(RibbonTab)
+    QRN_DECLARE_PRIVATE(RibbonTab)
     Q_DISABLE_COPY(RibbonTab)
 };
 
@@ -171,7 +171,7 @@ private:
     friend class RibbonBar;
     friend class RibbonBarPrivate;
     friend class RibbonPaintManager;
-    QTC_DECLARE_PRIVATE(RibbonTabBar)
+    QRN_DECLARE_PRIVATE(RibbonTabBar)
     Q_DISABLE_COPY(RibbonTabBar)
 };
 

@@ -27,7 +27,7 @@ public Q_SLOTS:
 protected:
     virtual void showEvent(QShowEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonQuickAccessBarCustomizePage)
+    QRN_DECLARE_PRIVATE(RibbonQuickAccessBarCustomizePage)
     Q_DISABLE_COPY(RibbonQuickAccessBarCustomizePage)
 };
 
@@ -51,7 +51,7 @@ protected:
     virtual void showEvent(QShowEvent *event);
     virtual void hideEvent(QHideEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonBarCustomizePage)
+    QRN_DECLARE_PRIVATE(RibbonBarCustomizePage)
     Q_DISABLE_COPY(RibbonBarCustomizePage)
 };
 

@@ -133,9 +133,9 @@ RibbonGroupPrivate::~RibbonGroupPrivate()
 
 void RibbonGroupPrivate::init()
 {
-    QTC_Q(RibbonGroup);
+    Q_Q(RibbonGroup);
     q->setMouseTracking(true);
-    q->setProperty(_qtc_TitleGroupsVisible, true);
+    q->setProperty(_qrn_TitleGroupsVisible, true);
 
     m_buttonScrollGroupLeft = new RibbonGroupScroll(q, true);
     m_buttonScrollGroupLeft->setVisible(false);
@@ -148,7 +148,7 @@ void RibbonGroupPrivate::init()
 
     m_optionButton = new RibbonGroupOption(q);
     m_actOption = new QAction(q);
-    m_actOption->setObjectName("__qtc_Action_Option");
+    m_actOption->setObjectName("__qrn_Action_Option");
     m_optionButton->setDefaultAction(m_actOption);
     QObject::connect(m_optionButton, SIGNAL(triggered(QAction *)), q, SIGNAL(actionTriggered(QAction *)));
     m_optionButton->hide();
@@ -156,7 +156,7 @@ void RibbonGroupPrivate::init()
 
 void RibbonGroupPrivate::clear(bool deleteControls)
 {
-    QTC_Q(RibbonGroup);
+    Q_Q(RibbonGroup);
     if (q->isControlsGrouping()) {
         m_toolBar->clear();
         return;
@@ -169,7 +169,7 @@ void RibbonGroupPrivate::clear(bool deleteControls)
     while (m_controls.size() > 0) {
         RibbonControl *control = m_controls[0];
         if (RibbonWidgetControl *widgetcontrol = qobject_cast<RibbonWidgetControl *>(control))
-            widgetcontrol->qtc_d()->clearWidget();
+            widgetcontrol->d_func()->clearWidget();
 
         q->removeControl(control);
 
@@ -180,7 +180,7 @@ void RibbonGroupPrivate::clear(bool deleteControls)
 
 void RibbonGroupPrivate::enableGroupScroll(bool scrollLeft, bool scrollRight)
 {
-    QTC_Q(RibbonGroup);
+    Q_Q(RibbonGroup);
 
     Q_ASSERT(m_buttonScrollGroupLeft);
     Q_ASSERT(m_buttonScrollGroupRight);
@@ -215,7 +215,7 @@ void RibbonGroupPrivate::enableGroupScroll(bool scrollLeft, bool scrollRight)
 
 void RibbonGroupPrivate::showGroupScroll()
 {
-    QTC_Q(RibbonGroup);
+    Q_Q(RibbonGroup);
     if (q->isReduced() && q->isVisible()) {
         QRect screen = QApplication::desktop()->availableGeometry(q);
         int totalWidth = q->layout()->minimumSize().width();
@@ -238,7 +238,7 @@ void RibbonGroupPrivate::showGroupScroll()
 
 void RibbonGroupPrivate::initStyleOption(QStyleOptionGroupBox &opt) const
 {
-    QTC_Q(const RibbonGroup)
+    Q_Q(const RibbonGroup);
     opt.init(q);
     opt.text = m_title;
     if (m_font)
@@ -249,7 +249,7 @@ void RibbonGroupPrivate::initStyleOption(QStyleOptionGroupBox &opt) const
 
 int RibbonGroupPrivate::calcMinimumWidth(RibbonControlSizeDefinition::GroupSize size) const
 {
-    QTC_Q(const RibbonGroup)
+    Q_Q(const RibbonGroup);
 
     QStyleOptionToolButton opt;
     opt.init(q);   // opt.text = m_title;
@@ -267,7 +267,7 @@ int RibbonGroupPrivate::calcMinimumWidth(RibbonControlSizeDefinition::GroupSize 
 int RibbonGroupPrivate::arrangeRowContent(QList<RibbonControl *> &row, int leftOffset, int rowItemHeight,
                                           int rowItemCount, QWidget *parent) const
 {
-    QTC_Q(const RibbonGroup)
+    Q_Q(const RibbonGroup);
     static int margin = 4;
 
     int max = 0;
@@ -307,7 +307,7 @@ int RibbonGroupPrivate::arrangeRowContent(QList<RibbonControl *> &row, int leftO
 
 void RibbonGroupPrivate::reposition(const QRect &rect)
 {
-    QTC_Q(RibbonGroup)
+    Q_Q(RibbonGroup);
     QSize sz(rect.width(), q->sizeHint().height());
     q->setGeometry(QRect(rect.topLeft(), /*p.sizeHint()*/ sz));
     if (q->isReduced()) {
@@ -337,7 +337,7 @@ void RibbonGroupPrivate::reposition(const QRect &rect)
 
 void RibbonGroupPrivate::updateOptionButtonLayout()
 {
-    QTC_Q(RibbonGroup);
+    Q_Q(RibbonGroup);
     if (m_optionButton && m_butOptionVisible) {
         QStyleOption opt;
         opt.init(q);
@@ -348,13 +348,13 @@ void RibbonGroupPrivate::updateOptionButtonLayout()
         QSize sz(qMax(width - 3, m_optionButton->width()), qMax(width - 3, m_optionButton->height()));
         QRect rectButOption(QPoint(rc.right() - sz.width() - 2, rc.bottom() - sz.height() - 1), sz);
         m_optionButton->setGeometry(rectButOption);
-        m_optionButton->setVisible(!q->isReduced() && q->property(_qtc_TitleGroupsVisible).toBool());
+        m_optionButton->setVisible(!q->isReduced() && q->property(_qrn_TitleGroupsVisible).toBool());
     }
 }
 
 QSize RibbonGroupPrivate::updateControlsLayout(QWidget *parent, int leftOffset) const
 {
-    QTC_Q(const RibbonGroup);
+    Q_Q(const RibbonGroup);
 
     const RibbonBar *rb = q->ribbonBar();
     if (rb == NULL)
@@ -439,7 +439,7 @@ void RibbonGroupPrivate::adjustCurrentSize(bool expand)
 
 void RibbonGroupPrivate::updateLayoutParent(bool first)
 {
-    QTC_Q(const RibbonGroup);
+    Q_Q(const RibbonGroup);
     if (RibbonPage *page = qobject_cast<RibbonPage *>(q->parentWidget())) {
         if (first)
             page->updateLayout();
@@ -450,7 +450,7 @@ void RibbonGroupPrivate::updateLayoutParent(bool first)
 
 QSize RibbonGroupPrivate::sizeHint() const
 {
-    QTC_Q(const RibbonGroup);
+    Q_Q(const RibbonGroup);
 
     const RibbonBar *rb = q->ribbonBar();
     if (rb == NULL)
@@ -530,7 +530,7 @@ static void listPageWidth(int totalWidth, int realWidth, QList<int> &pagesWidth)
 
 void RibbonGroupPrivate::pressLeftScrollButton()
 {
-    QTC_Q(RibbonGroup)
+    Q_Q(RibbonGroup);
     QList<int> pagesWidth;
     listPageWidth(q->layout()->sizeHint().width(), q->geometry().width(), pagesWidth);
 
@@ -544,7 +544,7 @@ void RibbonGroupPrivate::pressLeftScrollButton()
 
 void RibbonGroupPrivate::pressRightScrollButton()
 {
-    QTC_Q(RibbonGroup)
+    Q_Q(RibbonGroup);
     QList<int> pagesWidth;
     listPageWidth(q->layout()->sizeHint().width(), q->geometry().width(), pagesWidth);
 
@@ -559,7 +559,7 @@ void RibbonGroupPrivate::pressRightScrollButton()
 void RibbonGroupPrivate::hidePopupMode(QAction *action)
 {
     Q_UNUSED(action);
-    QTC_Q(RibbonGroup)
+    Q_Q(RibbonGroup);
     q->setVisible(false);
 }
 
@@ -568,13 +568,13 @@ bool RibbonGroupPrivate::visualIndexLessThan(RibbonControl *first, RibbonControl
     int v1 = first->sizeDefinition(first->currentSize())->visualIndex();
     if (v1 == -1) {
         RibbonGroup *group = first->parentGroup();
-        v1 = group->qtc_d()->m_controls.indexOf(first);
+        v1 = group->d_func()->m_controls.indexOf(first);
     }
 
     int v2 = second->sizeDefinition(second->currentSize())->visualIndex();
     if (v2 == -1) {
         RibbonGroup *group = second->parentGroup();
-        v2 = group->qtc_d()->m_controls.indexOf(second);
+        v2 = group->d_func()->m_controls.indexOf(second);
     }
     return v1 < v2;
 }
@@ -589,24 +589,24 @@ RibbonBar *RibbonGroup::ribbonBar() const
 /* RibbonGroup */
 RibbonGroup::RibbonGroup(RibbonPage *page, const QString &title) : QWidget(page)
 {
-    QTC_INIT_PRIVATE(RibbonGroup);
-    QTC_D(RibbonGroup);
+    QRN_INIT_PRIVATE(RibbonGroup);
+    Q_D(RibbonGroup);
     d->init();
     setTitle(title);
 }
 
 RibbonGroup::RibbonGroup(QWidget *parent) : QWidget(parent)
 {
-    QTC_INIT_PRIVATE(RibbonGroup);
-    QTC_D(RibbonGroup);
+    QRN_INIT_PRIVATE(RibbonGroup);
+    Q_D(RibbonGroup);
     d->init();
 }
 
 RibbonGroup::~RibbonGroup()
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     d->clear(true);
-    QTC_FINI_PRIVATE();
+    QRN_FINI_PRIVATE();
 }
 
 /*!
@@ -614,7 +614,7 @@ Returns true if the group is reduced->
 */
 bool RibbonGroup::isReduced() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     if (d->m_controls.size() == 1) {
         if (!d->m_controls.at(0)->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->isStretchable())
             return false;
@@ -627,7 +627,7 @@ Returns the title of the group.
 */
 const QString &RibbonGroup::title() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_title;
 }
 
@@ -636,7 +636,7 @@ Sets the \a title for the group.
  */
 void RibbonGroup::setTitle(const QString &title)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (d->m_title == title)
         return;
@@ -651,7 +651,7 @@ Returns the title font of the group.
 */
 const QFont &RibbonGroup::titleFont() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_font != Q_NULL ? *d->m_font : font();
 }
 
@@ -660,7 +660,7 @@ Sets the \a title font for the group.
  */
 void RibbonGroup::setTitleFont(const QFont &font)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (d->m_font && *d->m_font == font)
         return;
@@ -683,7 +683,7 @@ Returns the title color of the group.
 */
 const QColor &RibbonGroup::titleColor() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_color;
 }
 
@@ -692,7 +692,7 @@ Sets the \a title color for the group.
  */
 void RibbonGroup::setTitleColor(const QColor &color)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (d->m_color == color)
         return;
@@ -705,7 +705,7 @@ Returns the icon of the group.
 */
 const QIcon &RibbonGroup::icon() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_icon;
 }
 
@@ -714,7 +714,7 @@ Sets the \a icon for the group.
  */
 void RibbonGroup::setIcon(const QIcon &icon)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     d->m_icon = icon;
     adjustSize();
 }
@@ -724,7 +724,7 @@ Returns the visible state for the option button used in the caption of the group
 */
 bool RibbonGroup::isOptionButtonVisible() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_optionButton->isVisible();
 }
 
@@ -734,7 +734,7 @@ Notes: Option button is usually used to start the dialogue associated with the g
 */
 void RibbonGroup::setOptionButtonVisible(bool visible)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     d->m_butOptionVisible = visible;
     d->m_optionButton->setVisible(visible);
     d->updateOptionButtonLayout();
@@ -748,7 +748,7 @@ define custom events.
 */
 QAction *RibbonGroup::optionButtonAction() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_actOption;
 }
 
@@ -758,7 +758,7 @@ QAction *RibbonGroup::optionButtonAction() const
 */
 void RibbonGroup::setOptionButtonAction(QAction *action)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (d->m_actOption != NULL)
         delete d->m_actOption;
 
@@ -771,7 +771,7 @@ Returns the enum that describes the ribbon control alignment for the control's c
 */
 Qt::Alignment RibbonGroup::contentAlignment() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_contentAlignment;
 }
 
@@ -780,7 +780,7 @@ Sets the enum that describes the ribbon control alignment for the control's colu
 */
 void RibbonGroup::setContentAlignment(Qt::Alignment alignment)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     d->m_contentAlignment = alignment;
 }
 
@@ -789,7 +789,7 @@ Returns the alignment of block ribbon controls if width of the all controls is m
 */
 Qt::Alignment RibbonGroup::controlsAlignment() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_controlsAlignment;
 }
 
@@ -798,7 +798,7 @@ Sets the alignment of the block ribbon controls.
 */
 void RibbonGroup::setControlsAlignment(Qt::Alignment alignment)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (d->m_controlsAlignment != alignment) {
         d->m_controlsAlignment = alignment;
         if (parentWidget()) {
@@ -814,13 +814,13 @@ Returns the count of ribbon controls within the group.
 */
 int RibbonGroup::controlCount() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_controls.size();
 }
 
 void RibbonGroup::setControlsCentering(bool controlsCentering)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (controlsCentering)
         d->m_contentAlignment = Qt::AlignVCenter;
     else
@@ -829,13 +829,13 @@ void RibbonGroup::setControlsCentering(bool controlsCentering)
 
 bool RibbonGroup::isControlsCentering() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_contentAlignment.testFlag(Qt::AlignVCenter);
 }
 
 void RibbonGroup::setControlsGrouping(bool controlsGrouping)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (controlsGrouping) {
         if (isControlsGrouping())
             return;
@@ -850,7 +850,7 @@ void RibbonGroup::setControlsGrouping(bool controlsGrouping)
 
 bool RibbonGroup::isControlsGrouping() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_toolBar != Q_NULL;
 }
 
@@ -860,7 +860,7 @@ Returns the ribbon control by \a index.
 */
 RibbonControl *RibbonGroup::controlByIndex(int index) const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_controls[index];
 }
 
@@ -870,7 +870,7 @@ Returns the ribbon control by \a action.
 */
 RibbonControl *RibbonGroup::controlByAction(QAction *action) const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     Q_ASSERT(action != Q_NULL);
     for (QList<RibbonControl *>::const_iterator it = d->m_controls.constBegin(); it != d->m_controls.constEnd(); ++it) {
         if ((*it)->defaultAction() == action)
@@ -885,7 +885,7 @@ Returns the widget ribbon control by \a widget.
 */
 RibbonWidgetControl *RibbonGroup::controlByWidget(QWidget *widget) const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     Q_ASSERT(widget != Q_NULL);
     for (QList<RibbonControl *>::const_iterator it = d->m_controls.constBegin(); it != d->m_controls.constEnd(); ++it) {
         if (RibbonWidgetControl *widgetControl = qobject_cast<RibbonWidgetControl *>((*it))) {
@@ -898,7 +898,7 @@ RibbonWidgetControl *RibbonGroup::controlByWidget(QWidget *widget) const
 
 RibbonControlSizeDefinition::GroupSize RibbonGroup::currentSize() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_currentSize;
 }
 
@@ -907,11 +907,11 @@ Adds the ribbon \a control to the group. In most cases you have to use addAction
 */
 void RibbonGroup::addControl(RibbonControl *control)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (d->m_controls.indexOf(control) != -1)
         return;   // Already was added.
 
-    control->qtc_d()->m_parentGroup = this;
+    control->d_func()->m_parentGroup = this;
 
     d->m_controls.append(control);
     control->setFont(font());
@@ -919,7 +919,7 @@ void RibbonGroup::addControl(RibbonControl *control)
 
     RibbonPage *page = qobject_cast<RibbonPage *>(parentWidget());
     if (page != Q_NULL)
-        page->qtc_d()->updateLayout();
+        page->d_func()->updateLayout();
 }
 
 /*!
@@ -927,14 +927,14 @@ Removes the ribbon \a control from the group.
 */
 void RibbonGroup::removeControl(RibbonControl *control)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (d->m_controls.removeAll(control) > 0) {
-        control->qtc_d()->m_parentGroup = Q_NULL;
+        control->d_func()->m_parentGroup = Q_NULL;
         control->setParent(Q_NULL);
 
         RibbonPage *page = qobject_cast<RibbonPage *>(parentWidget());
         if (page != Q_NULL)
-            page->qtc_d()->updateLayout();
+            page->d_func()->updateLayout();
     }
 }
 
@@ -946,7 +946,7 @@ void RibbonGroup::removeControl(RibbonControl *control)
 QAction *RibbonGroup::addAction(const QIcon &icon, const QString &text, Qt::ToolButtonStyle style, QMenu *menu,
                                 QToolButton::ToolButtonPopupMode mode)
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->addAction(icon, text, style, menu, mode);
@@ -962,7 +962,7 @@ QAction *RibbonGroup::addAction(const QIcon &icon, const QString &text, Qt::Tool
 QAction *RibbonGroup::addAction(QAction *action, Qt::ToolButtonStyle style, QMenu *menu,
                                 QToolButton::ToolButtonPopupMode mode)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->addAction(action, style, menu, mode);
@@ -988,7 +988,7 @@ QAction *RibbonGroup::addAction(QAction *action, Qt::ToolButtonStyle style, QMen
 QAction *RibbonGroup::insertAction(QAction *before, QAction *action, Qt::ToolButtonStyle style, QMenu *menu,
                                    QToolButton::ToolButtonPopupMode mode)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->insertAction(before, action, style, menu, mode);
@@ -1012,7 +1012,7 @@ Adds the \a widget to the group. As alternative can be created QWidgetAction and
 */
 QAction *RibbonGroup::addWidget(QWidget *widget)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->addWidget(widget);
@@ -1026,7 +1026,7 @@ QWidgetAction and added it via addAction method.
 */
 QAction *RibbonGroup::addWidget(const QIcon &icon, const QString &text, QWidget *widget)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->addWidget(icon, text, widget);
@@ -1051,7 +1051,7 @@ on the control's column width within the group.
 */
 QAction *RibbonGroup::addWidget(const QIcon &icon, const QString &text, bool stretch, QWidget *widget)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->addWidget(icon, text, widget);
@@ -1070,7 +1070,7 @@ QAction *RibbonGroup::addWidget(const QIcon &icon, const QString &text, bool str
 
 QMenu *RibbonGroup::addMenu(const QIcon &icon, const QString &text, Qt::ToolButtonStyle style)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     QMenu *menu = new QMenu(text, this);
     if (isControlsGrouping()) {
@@ -1087,7 +1087,7 @@ Adds a separator action to the given group.
 */
 QAction *RibbonGroup::addSeparator()
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (isControlsGrouping())
         return d->m_toolBar->addSeparator();
@@ -1113,7 +1113,7 @@ void RibbonGroup::remove(QWidget *widget)
         return;
 
     if (RibbonWidgetControl *widgetcontrol = controlByWidget(widget))
-        widgetcontrol->qtc_d()->clearWidget();
+        widgetcontrol->d_func()->clearWidget();
 
     QList<QAction *> actions = this->actions();
     for (int i = 0; i < actions.size(); i++) {
@@ -1131,7 +1131,7 @@ Removes all ribbon controls from the given group.
 */
 void RibbonGroup::clear()
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     d->clear(false);
 }
 
@@ -1141,7 +1141,7 @@ reduced and the group minimum width will equal the size of the text in the group
 */
 Qt::TextElideMode RibbonGroup::titleElideMode() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     return d->m_titleElideMode;
 }
 
@@ -1150,7 +1150,7 @@ Sets the enum where ellipsis should be added for group title.
 */
 void RibbonGroup::setTitleElideMode(Qt::TextElideMode mode)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (d->m_titleElideMode != mode) {
         d->m_titleElideMode = mode;
         d->updateLayoutParent(true);
@@ -1159,7 +1159,7 @@ void RibbonGroup::setTitleElideMode(Qt::TextElideMode mode)
 
 QSize RibbonGroup::sizeHint() const
 {
-    QTC_D(const RibbonGroup);
+    Q_D(const RibbonGroup);
     QSize size = d->sizeHint();
 
     if (isReduced()) {
@@ -1201,7 +1201,7 @@ void qtc_set_font_to_group_children(RibbonGroup *group, const QFont &font)
 /*! \reimp */
 bool RibbonGroup::event(QEvent *event)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     if (d->m_dirty && event->type() == QEvent::LayoutRequest) {
         d->updateLayoutParent(true);
@@ -1264,7 +1264,7 @@ bool RibbonGroup::event(QEvent *event)
 /*! \reimp */
 void RibbonGroup::paintEvent(QPaintEvent *event)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     QPainter p(this);
     if (isReduced()) {
@@ -1330,7 +1330,7 @@ void RibbonGroup::paintEvent(QPaintEvent *event)
 /*! \reimp */
 void RibbonGroup::actionEvent(QActionEvent *event)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
 
     QAction *action = event->action();
     RibbonControl *control = controlByAction(action);
@@ -1406,7 +1406,7 @@ void RibbonGroup::leaveEvent(QEvent *event)
 /*! \reimp */
 void RibbonGroup::mousePressEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonGroup);
+    Q_D(RibbonGroup);
     if (isReduced()) {
         Q_ASSERT(d->m_groupPopup != Q_NULL);
         if (event->button() == Qt::LeftButton) {

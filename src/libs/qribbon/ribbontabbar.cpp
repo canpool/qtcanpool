@@ -41,7 +41,7 @@ QRIBBON_BEGIN_NAMESPACE
 class RibbonTabPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonTab)
+    QRN_DECLARE_PUBLIC(RibbonTab)
 public:
     explicit RibbonTabPrivate();
 public:
@@ -83,7 +83,7 @@ public:
 class RibbonTabBarPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonTabBar)
+    QRN_DECLARE_PUBLIC(RibbonTabBar)
 public:
     explicit RibbonTabBarPrivate();
 public:
@@ -110,7 +110,7 @@ RibbonTabPrivate::RibbonTabPrivate() : m_width(-1), m_page(Q_NULL), m_shortcutId
 
 void RibbonTabPrivate::init()
 {
-    QTC_Q(RibbonTab);
+    Q_Q(RibbonTab);
     m_contextColor = RibbonPage::ContextColorNone;
     m_contextHeader = Q_NULL;
     m_valid_hints = false;
@@ -132,7 +132,7 @@ void RibbonTabPrivate::init()
 
 QSize RibbonTabPrivate::sizeForWidth(int w) const
 {
-    QTC_Q(const RibbonTab);
+    Q_Q(const RibbonTab);
     if (q->minimumWidth() > 0)
         w = qMax(w, q->minimumWidth());
 
@@ -212,7 +212,7 @@ QSize RibbonTabPrivate::sizeForWidth(int w) const
 
 void RibbonTabPrivate::updateLabel()
 {
-    QTC_Q(RibbonTab);
+    Q_Q(RibbonTab);
     m_valid_hints = false;
 
     if (m_isTextLabel) {
@@ -233,7 +233,7 @@ void RibbonTabPrivate::updateLabel()
  */
 QRect RibbonTabPrivate::documentRect() const
 {
-    QTC_Q(const RibbonTab);
+    Q_Q(const RibbonTab);
     Q_ASSERT_X(m_isTextLabel, "documentRect", "document rect called for tab that is not a m_text tab!");
     QRect cr = q->contentsRect();
     cr.setLeft(cr.left());
@@ -264,8 +264,8 @@ QRectF RibbonTabPrivate::layoutRect() const { return documentRect(); }
 /* RibbonTab */
 RibbonTab::RibbonTab(const QString &text, QWidget *parent) : QWidget(parent), lastTab(-1)
 {
-    QTC_INIT_PRIVATE(RibbonTab);
-    QTC_D(RibbonTab);
+    QRN_INIT_PRIVATE(RibbonTab);
+    Q_D(RibbonTab);
 
     d->init();
     setTextTab(text);
@@ -275,56 +275,56 @@ RibbonTab::RibbonTab(const QString &text, QWidget *parent) : QWidget(parent), la
 
 RibbonTab::~RibbonTab()
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     QWidget *pParent = parentWidget();
     pParent->releaseShortcut(d->m_shortcutId);
 
     if (d->m_page)
         d->m_page->setAssociativeTab(Q_NULL);
-    QTC_FINI_PRIVATE();
+    QRN_FINI_PRIVATE();
 }
 
 void RibbonTab::setPage(RibbonPage *page)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_page = page;
 }
 
 void RibbonTab::setSelect(bool select)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_select = select;
     d->updateLabel();
 }
 
 bool RibbonTab::select() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_select;
 }
 
 void RibbonTab::setIndent(int indent)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_indent = indent;
     d->updateLabel();
 }
 
 int RibbonTab::indent() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_indent;
 }
 
 int RibbonTab::margin() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_margin;
 }
 
 void RibbonTab::setMargin(int margin)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     if (d->m_margin == margin)
         return;
     d->m_margin = margin;
@@ -333,13 +333,13 @@ void RibbonTab::setMargin(int margin)
 
 Qt::Alignment RibbonTab::alignment() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return QFlag(d->m_align & (Qt::AlignVertical_Mask | Qt::AlignHorizontal_Mask));
 }
 
 void RibbonTab::setAlignment(Qt::Alignment alignment)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     if (alignment == (d->m_align & (Qt::AlignVertical_Mask | Qt::AlignHorizontal_Mask)))
         return;
     d->m_align = (d->m_align & ~(Qt::AlignVertical_Mask | Qt::AlignHorizontal_Mask)) |
@@ -350,7 +350,7 @@ void RibbonTab::setAlignment(Qt::Alignment alignment)
 
 void RibbonTab::setTextTab(const QString &text)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     if (d->m_text == text)
         return;
     d->m_text = text;
@@ -368,31 +368,31 @@ void RibbonTab::setTextTab(const QString &text)
 
 void RibbonTab::setContextTextTab(const QString &contextText)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_contextText = contextText;
 }
 
 const QString &RibbonTab::contextTextTab() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_contextText;
 }
 
 void RibbonTab::setContextGroupName(const QString &groupName)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_contextGroupName = groupName;
 }
 
 const QString &RibbonTab::contextGroupName() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_contextGroupName;
 }
 
 void RibbonTab::setContextTab(RibbonPage::ContextColor color)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_contextColor = color;
     if (d->m_contextHeader)
         d->m_contextHeader->color = color;
@@ -400,44 +400,44 @@ void RibbonTab::setContextTab(RibbonPage::ContextColor color)
 
 RibbonPage::ContextColor RibbonTab::contextColor() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_contextColor;
 }
 
 const QString &RibbonTab::textTab() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_text;
 }
 
 void RibbonTab::setContextHeader(ContextHeader *contextHeader)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_contextHeader = contextHeader;
 }
 
 ContextHeader *RibbonTab::getContextHeader() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_contextHeader;
 }
 
 void RibbonTab::setTrackingMode(bool tracking)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_tracking = tracking;
     update();
 }
 
 bool RibbonTab::isTrackingMode() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_tracking;
 }
 
 void RibbonTab::setTabWidth(int width)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     if (width == d->m_width)
         return;
     d->m_width = width;
@@ -445,25 +445,25 @@ void RibbonTab::setTabWidth(int width)
 
 int RibbonTab::tabWidth() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_width;
 }
 
 QAction *RibbonTab::defaultAction() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_defaultAction;
 }
 
 int RibbonTab::shortcut() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     return d->m_shortcutId;
 }
 
 bool RibbonTab::validRect() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     int wid = 0;
     StyleRibbonOptionHeader opt;
     opt.init(this);
@@ -484,7 +484,7 @@ bool RibbonTab::validRect() const
 
 void RibbonTab::paintEvent(QPaintEvent *event)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     QPainter p(this);
     StyleRibbonOptionHeader opt;
     opt.init(this);
@@ -530,7 +530,7 @@ void RibbonTab::paintEvent(QPaintEvent *event)
 
 QSize RibbonTab::sizeHint() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     if (!d->m_valid_hints)
         (void)RibbonTab::minimumSizeHint();
 
@@ -543,7 +543,7 @@ QSize RibbonTab::sizeHint() const
 
 QSize RibbonTab::minimumSizeHint() const
 {
-    QTC_D(const RibbonTab);
+    Q_D(const RibbonTab);
     if (d->m_valid_hints && d->m_sizePolicy == sizePolicy())
         return d->m_msh;
 
@@ -566,7 +566,7 @@ QSize RibbonTab::minimumSizeHint() const
 
     int nHeightTabs = 31;
     if (RibbonBar *rb = qobject_cast<RibbonBar *>(parentWidget()->parentWidget()))
-        nHeightTabs = rb->qtc_d()->heightTabs();
+        nHeightTabs = rb->d_func()->heightTabs();
 
     d->m_sh.setHeight(nHeightTabs - 1);
     d->m_msh = m_msh;
@@ -577,7 +577,7 @@ QSize RibbonTab::minimumSizeHint() const
 void RibbonTab::enterEvent(QEvent *event)
 {
     QWidget::enterEvent(event);
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_tabMouseOver = true;
     update();
 }
@@ -585,14 +585,14 @@ void RibbonTab::enterEvent(QEvent *event)
 void RibbonTab::leaveEvent(QEvent *event)
 {
     QWidget::leaveEvent(event);
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     d->m_tabMouseOver = false;
     update();
 }
 
 void RibbonTab::mousePressEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
     if (event->button() != Qt::LeftButton) {
         QWidget::mousePressEvent(event);
         return;
@@ -638,7 +638,7 @@ void RibbonTab::mouseReleaseEvent(QMouseEvent *event)
 
 void RibbonTab::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonTab);
+    Q_D(RibbonTab);
 
     if (event->button() != Qt::LeftButton) {
         event->setAccepted(false);
@@ -662,7 +662,7 @@ RibbonTabBarPrivate::RibbonTabBarPrivate()
 
 void RibbonTabBarPrivate::layoutWidgets()
 {
-    QTC_Q(RibbonTabBar);
+    Q_Q(RibbonTabBar);
     RibbonBar *ribBar = ribbonBar();
     Q_ASSERT(ribBar != NULL);
 
@@ -704,7 +704,7 @@ void RibbonTabBarPrivate::layoutWidgets()
     QList<QRect> rectTabs;
     for (int i = 0, count = m_tabList.count(); count > i; i++) {
         RibbonTab *tab = m_tabList.at(i);
-        tab->qtc_d()->m_valid_hints = false;
+        tab->d_func()->m_valid_hints = false;
         QRect rect = !tab->isHidden() ? QRect(QPoint(sumWidth + m_margin, 0), tab->sizeHint()) : QRect();
         if (!rect.isEmpty())
             sumCount++;
@@ -747,14 +747,14 @@ bool RibbonTabBarPrivate::validWidth() const { return m_validRect; }
 
 RibbonBar *RibbonTabBarPrivate::ribbonBar() const
 {
-    QTC_Q(const RibbonTabBar);
+    Q_Q(const RibbonTabBar);
     return qobject_cast<RibbonBar *>(q->parentWidget());
 }
 
 /* RibbonTabBar */
-RibbonTabBar::RibbonTabBar(QWidget *pParent) : QWidget(pParent) { QTC_INIT_PRIVATE(RibbonTabBar); }
+RibbonTabBar::RibbonTabBar(QWidget *pParent) : QWidget(pParent) { QRN_INIT_PRIVATE(RibbonTabBar); }
 
-RibbonTabBar::~RibbonTabBar() { QTC_FINI_PRIVATE(); }
+RibbonTabBar::~RibbonTabBar() { QRN_FINI_PRIVATE(); }
 
 int RibbonTabBar::addTab(const QString &text) { return insertTab(-1, text); }
 
@@ -765,7 +765,7 @@ int RibbonTabBar::insertTab(int index, const QString &text) { return insertTab(i
 int RibbonTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 {
     Q_UNUSED(icon);
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
 
     QString strName = text;
 
@@ -809,7 +809,7 @@ int RibbonTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 
 void RibbonTabBar::moveTab(int index, int newIndex)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     if (d->validIndex(index) && d->validIndex(newIndex)) {
         // save pointer active tab
         RibbonTab *saveTab = d->m_tabList[d->m_currentIndex];
@@ -826,7 +826,7 @@ void RibbonTabBar::moveTab(int index, int newIndex)
 
 void RibbonTabBar::removeTab(int index)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     if (d->validIndex(index)) {
         int newIndex = d->m_tabList[index]->lastTab;
         RibbonTab *tab = d->m_tabList[index];
@@ -885,7 +885,7 @@ void RibbonTabBar::removeTab(int index)
 
 int RibbonTabBar::currentIndex() const
 {
-    QTC_D(const RibbonTabBar);
+    Q_D(const RibbonTabBar);
     if (d->validIndex(d->m_currentIndex))
         return d->m_currentIndex;
     return -1;
@@ -893,7 +893,7 @@ int RibbonTabBar::currentIndex() const
 
 RibbonTab *RibbonTabBar::getTab(int nIndex) const
 {
-    QTC_D(const RibbonTabBar);
+    Q_D(const RibbonTabBar);
     if (d->validIndex(nIndex))
         return d->m_tabList[nIndex];
     return Q_NULL;
@@ -901,7 +901,7 @@ RibbonTab *RibbonTabBar::getTab(int nIndex) const
 
 int RibbonTabBar::getTabCount() const
 {
-    QTC_D(const RibbonTabBar);
+    Q_D(const RibbonTabBar);
     return d->m_tabList.count();
 }
 
@@ -916,19 +916,19 @@ int RibbonTabBar::getIndex(const RibbonTab *tab) const
 
 RibbonTabBar::SelectionBehavior RibbonTabBar::selectionBehaviorOnRemove() const
 {
-    QTC_D(const RibbonTabBar);
+    Q_D(const RibbonTabBar);
     return d->selectionBehaviorOnRemove;
 }
 
 void RibbonTabBar::setSelectionBehaviorOnRemove(RibbonTabBar::SelectionBehavior behavior)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     d->selectionBehaviorOnRemove = behavior;
 }
 
 void RibbonTabBar::setEnabledWidgets(bool enabled)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     if (enabled) {
         for (int i = 0, count = d->m_listEnabledWidgets.size(); count > i; i++) {
             QWidget *widget = d->m_listEnabledWidgets.at(i);
@@ -958,7 +958,7 @@ QAction *RibbonTabBar::addAction(const QIcon &icon, const QString &text, Qt::Too
 
 QAction *RibbonTabBar::addAction(QAction *action, Qt::ToolButtonStyle style)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     if (Qt::ToolButtonTextUnderIcon == style) {
         Q_ASSERT(false);
         style = Qt::ToolButtonTextBesideIcon;
@@ -985,7 +985,7 @@ QAction *RibbonTabBar::addAction(QAction *action, Qt::ToolButtonStyle style)
 
 QMenu *RibbonTabBar::addMenu(const QString &title)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     QMenu *menu = new QMenu(title, this);
 
     RibbonButton *button = new RibbonButton(this);
@@ -1005,7 +1005,7 @@ QMenu *RibbonTabBar::addMenu(const QString &title)
 
 void RibbonTabBar::setCurrentIndex(int index)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
 
     bool allowSetCurrentIndex = false;
     if (RibbonBar *rb = d->ribbonBar())
@@ -1024,7 +1024,7 @@ void RibbonTabBar::setCurrentIndex(int index)
 
 void RibbonTabBar::currentNextTab(bool next)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
 
     int nextIndex = -1;
     if (next) {
@@ -1048,26 +1048,26 @@ void RibbonTabBar::currentNextTab(bool next)
 
 void RibbonTabBar::layoutWidgets()
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     d->layoutWidgets();
 }
 
 void RibbonTabBar::refresh()
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     for (int i = 0; i < d->m_tabList.count(); i++)
-        d->m_tabList.at(i)->qtc_d()->updateLabel();
+        d->m_tabList.at(i)->d_func()->updateLabel();
 }
 
 bool RibbonTabBar::validWidth() const
 {
-    QTC_D(const RibbonTabBar);
+    Q_D(const RibbonTabBar);
     return d->validWidth();
 }
 
 bool RibbonTabBar::event(QEvent *event)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
     switch (event->type()) {
     case QEvent::Shortcut:
         if (QShortcutEvent *se = static_cast<QShortcutEvent *>(event)) {
@@ -1135,17 +1135,17 @@ void RibbonTabBar::mouseDoubleClickEvent(QMouseEvent *event)
 
 QSize RibbonTabBar::sizeHint() const
 {
-    QTC_D(const RibbonTabBar);
+    Q_D(const RibbonTabBar);
     if (!d->ribbonBar())
         return QWidget::sizeHint();
 
-    int heightTabs = d->ribbonBar()->qtc_d()->heightTabs();
+    int heightTabs = d->ribbonBar()->d_func()->heightTabs();
     return QSize(0, heightTabs - 2).expandedTo(QApplication::globalStrut());
 }
 
 void RibbonTabBar::activateTab(QWidget *widget)
 {
-    QTC_D(RibbonTabBar);
+    Q_D(RibbonTabBar);
 
     for (int i = 0; i < d->m_tabList.count(); ++i) {
         if (d->m_tabList.at(i) == widget) {

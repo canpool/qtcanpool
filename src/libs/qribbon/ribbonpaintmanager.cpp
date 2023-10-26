@@ -175,7 +175,7 @@ void RibbonPaintManager::drawPixTitleBackground(QPainter *p, const QRect &rectDs
 void RibbonPaintManager::drawRibbonTabBar(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
 
     if (d->m_clrRibbonTabBarBackground != d->m_clrRibbonFace)
         p->fillRect(opt->rect,
@@ -186,7 +186,7 @@ void RibbonPaintManager::drawRibbonTabBar(const QStyleOption *opt, QPainter *p, 
 void RibbonPaintManager::drawRibbonGroups(const QStyleOption *option, QPainter *p, const QWidget *widget) const
 {
     Q_UNUSED(widget);
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     if (const StyleOptionRibbon *optGroups = qstyleoption_cast<const StyleOptionRibbon *>(option)) {
         p->fillRect(optGroups->rect, m_clrRibbonGroupsFill);
 
@@ -257,7 +257,7 @@ void RibbonPaintManager::drawRibbonGroups(const QStyleOption *option, QPainter *
 void RibbonPaintManager::drawGroup(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
     Q_UNUSED(widget)
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     QRect rect = opt->rect;
     QPen savePen = p->pen();
     p->setPen(d->m_clrRibbonSeparator);
@@ -268,7 +268,7 @@ void RibbonPaintManager::drawGroup(const QStyleOption *opt, QPainter *p, const Q
 /*! \internal */
 void RibbonPaintManager::drawReducedGroup(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     if (const QStyleOptionToolButton *optGroup = qstyleoption_cast<const QStyleOptionToolButton *>(opt)) {
         QRect rcEntry(opt->rect);
         if (optGroup->features & QStyleOptionToolButton::HasMenu)
@@ -393,7 +393,7 @@ bool RibbonPaintManager::drawIndicatorToolBarSeparator(const QStyleOption *opt, 
 {
     if (qobject_cast<const RibbonGroup *>(widget)) {
         if (const QStyleOptionGroupBox *optGroup = qstyleoption_cast<const QStyleOptionGroupBox *>(opt)) {
-            QTC_D_STYLE(RibbonStyle)
+            Q_D_STYLE(RibbonStyle);
             QRect rect = opt->rect;
 
             if (optGroup->text.isEmpty()) {
@@ -772,7 +772,7 @@ void RibbonPaintManager::drawGroupScrollButton(const QStyleOption *option, QPain
 {
     Q_UNUSED(widget)
     if (const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
-        QTC_D_STYLE(const RibbonStyle)
+        Q_D_STYLE(const RibbonStyle);
         QRect rc = toolbutton->rect;
 
         bool enabled = toolbutton->state & QStyle::State_Enabled;
@@ -811,7 +811,7 @@ void RibbonPaintManager::drawGroupScrollButton(const QStyleOption *option, QPain
 /*! \internal */
 bool RibbonPaintManager::drawFrameMenu(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     if (qobject_cast<const RibbonSystemPopupBar *>(w) || qobject_cast<const RibbonPageSystemPopup *>(w)) {
         QRect rect = opt->rect;
         DrawHelpers::draw3dRectEx(*p, rect, d->m_clrMenubarBorder, d->m_clrMenubarBorder);
@@ -831,7 +831,7 @@ bool RibbonPaintManager::drawFrameMenu(const QStyleOption *opt, QPainter *p, con
 /*! \internal */
 void RibbonPaintManager::drawTabShape(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     if (const StyleRibbonOptionHeader *optTab = qstyleoption_cast<const StyleRibbonOptionHeader *>(opt)) {
         if (optTab->state & QStyle::State_Selected) {
             QRect rectTab = optTab->rect;
@@ -877,7 +877,7 @@ void RibbonPaintManager::drawTabShape(const QStyleOption *opt, QPainter *p, cons
 /*! \internal */
 void RibbonPaintManager::drawTabShapeLabel(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     if (const QStyleOptionHeader *optTab = qstyleoption_cast<const QStyleOptionHeader *>(opt)) {
         bool selected = opt->state & QStyle::State_Selected;
         bool highlighted = opt->state & QStyle::State_MouseOver;
@@ -932,7 +932,7 @@ bool RibbonPaintManager::drawShapedFrame(const QStyleOption *opt, QPainter *p, c
 /*! \internal */
 void RibbonPaintManager::drawSystemButton(const QStyleOption *option, QPainter *p, const QWidget *widget) const
 {
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     if (const StyleSystemToolButton *toolbutton = qstyleoption_cast<const StyleSystemToolButton *>(option)) {
         if (qobject_cast<const RibbonBar *>(widget->parentWidget())) {
             if (toolbutton->toolButtonStyle != Qt::ToolButtonFollowStyle) {
@@ -1039,7 +1039,7 @@ void RibbonPaintManager::drawPopupResizeGripper(const QStyleOption *opt, QPainte
 {
     Q_UNUSED(w);
 
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     if (const QStyleOptionSizeGrip *sizeGrip = qstyleoption_cast<const QStyleOptionSizeGrip *>(opt)) {
         p->fillRect(sizeGrip->rect, d->m_clrBackgroundLight);
 
@@ -1116,7 +1116,7 @@ void RibbonPaintManager::drawRectangle(QPainter *p, const QRect &rect, bool sele
 void RibbonPaintManager::drawKeyTip(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     p->fillRect(opt->rect, m_clrBarHilite);
     DrawHelpers::draw3dRectEx(*p, opt->rect, d->m_clrRibbonSeparator, d->m_clrRibbonSeparator);
 }
@@ -1125,7 +1125,7 @@ void RibbonPaintManager::drawKeyTip(const QStyleOption *opt, QPainter *p, const 
 void RibbonPaintManager::drawBackstage(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     if (const StyleOptionRibbonBackstage *optBackstage = qstyleoption_cast<const StyleOptionRibbonBackstage *>(opt)) {
         p->fillRect(opt->rect, m_clrBarLight);
         int top =
@@ -1138,7 +1138,7 @@ void RibbonPaintManager::drawBackstage(const QStyleOption *opt, QPainter *p, con
 /*! \internal */
 void RibbonPaintManager::drawRibbonBackstageMenu(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     if (const QStyleOptionMenuItem *menuitem = qstyleoption_cast<const QStyleOptionMenuItem *>(opt)) {
         bool act = menuitem->state & QStyle::State_Selected;
         bool focus = menuitem->state & QStyle::State_HasFocus;
@@ -1269,7 +1269,7 @@ void RibbonPaintManager::setupPalette(QWidget *widget) const
 void RibbonPaintManager::modifyColors()
 {
     OfficePaintManager::modifyColors();
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     d->m_clrRibbonFace = m_clrBarFace;
     m_clrRibbonGroupsFill = m_clrBarLight;
     d->m_clrRibbonGroupCaptionText = m_clrBarText;
@@ -1290,21 +1290,21 @@ QColor RibbonPaintManager::titleButtonHiliteColor(bool disabled, const QWidget *
 QColor RibbonPaintManager::buttonHiliteColor(const QWidget *widget, bool highlightDn) const
 {
     Q_UNUSED(widget);
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     return highlightDn ? m_clrHighlightDn : d->m_clrHighlight;
 }
 
 /*! \internal */
 QColor RibbonPaintManager::ribbonBarColor(bool isBackstageVisible) const
 {
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     return isBackstageVisible ? QColor(255, 255, 255) : d->m_clrRibbonFace;
 }
 
 /*! \internal */
 QColor RibbonPaintManager::backstageCloseButton() const
 {
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     return d->m_clrAccent;
 }
 
@@ -1312,7 +1312,7 @@ QColor RibbonPaintManager::backstageCloseButton() const
 void RibbonPaintManager::drawRibbonSliderButton(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(const RibbonStyle)
+    Q_D_STYLE(const RibbonStyle);
     bool left = opt->direction != Qt::RightToLeft;
 
     bool highlighted = opt->state & QStyle::State_MouseOver;
@@ -1403,7 +1403,7 @@ void RibbonPaintManager::fillRibbonTabControl(const QStyleOption *opt, QPainter 
 void RibbonPaintManager::drawPanelBackstageButton(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(RibbonStyle)
+    Q_D_STYLE(RibbonStyle);
     if (const StyleOptionBackstageButton *btnStyle = qstyleoption_cast<const StyleOptionBackstageButton *>(opt)) {
         // QRect rc = btnStyle->rect;
         bool enabled = opt->state & QStyle::State_Enabled;

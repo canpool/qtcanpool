@@ -221,7 +221,7 @@ private:
     friend class ManagerPopup;
     friend class OfficePaintManager;
     Q_DISABLE_COPY(OfficeStyle)
-    QTC_DECLARE_EX_PRIVATE(OfficeStyle)
+    Q_DECLARE_PRIVATE(OfficeStyle)
 };
 
 class OfficeStylePlugin : public QStylePlugin

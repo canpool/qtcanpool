@@ -39,7 +39,7 @@ protected:
 #endif   // Q_OS_WIN
 private:
     friend class OfficeFrameHelperWin;
-    QTC_DECLARE_PRIVATE(RibbonMainWindow)
+    QRN_DECLARE_PRIVATE(RibbonMainWindow)
     Q_DISABLE_COPY(RibbonMainWindow)
 };
 

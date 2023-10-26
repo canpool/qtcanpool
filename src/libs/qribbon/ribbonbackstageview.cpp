@@ -136,8 +136,8 @@ void RibbonBackstageViewMenu::initStyleOption(QStyleOptionMenuItem *option, cons
     option->font = action->font().resolve(font());
     option->fontMetrics = QFontMetrics(option->font);
 
-    if (m_backstageView->qtc_d()->m_currentAction && m_backstageView->qtc_d()->m_currentAction == action &&
-        !m_backstageView->qtc_d()->m_currentAction->isSeparator())
+    if (m_backstageView->d_func()->m_currentAction && m_backstageView->d_func()->m_currentAction == action &&
+        !m_backstageView->d_func()->m_currentAction->isSeparator())
         option->state |= QStyle::State_Selected | (m_mouseDown ? QStyle::State_Sunken : QStyle::State_None);
 
     option->menuItemType = QStyleOptionMenuItem::Normal;
@@ -324,7 +324,7 @@ void RibbonBackstageViewMenu::mouseMoveEvent(QMouseEvent *event)
 {
     if (rect().contains(event->pos())) {
         QAction *action = actionAt(event->pos());
-        m_backstageView->qtc_d()->setCurrentAction(action ? action : Q_NULL);
+        m_backstageView->d_func()->setCurrentAction(action ? action : Q_NULL);
         setFocus();
     }
 }
@@ -338,10 +338,10 @@ void RibbonBackstageViewMenu::mouseReleaseEvent(QMouseEvent *event)
         QAction *action = actionAt(event->pos());
 
         if (action &&
-            (action->isSeparator() || !action->isEnabled() || m_backstageView->qtc_d()->m_widgetItems.contains(action)))
+            (action->isSeparator() || !action->isEnabled() || m_backstageView->d_func()->m_widgetItems.contains(action)))
             return;
 
-        if (action && action == m_backstageView->qtc_d()->m_currentAction) {
+        if (action && action == m_backstageView->d_func()->m_currentAction) {
             if (!m_backstageView->isClosePrevented())
                 m_backstageView->close();
             action->activate(QAction::Trigger);
@@ -352,7 +352,7 @@ void RibbonBackstageViewMenu::mouseReleaseEvent(QMouseEvent *event)
 void RibbonBackstageViewMenu::leaveEvent(QEvent *event)
 {
     QWidget::leaveEvent(event);
-    m_backstageView->qtc_d()->setCurrentAction(Q_NULL);
+    m_backstageView->d_func()->setCurrentAction(Q_NULL);
 }
 
 /* RibbonBackstageSeparator */
@@ -379,7 +379,7 @@ QRIBBON_BEGIN_NAMESPACE
 class RibbonBackstageButtonPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonBackstageButton)
+    QRN_DECLARE_PUBLIC(RibbonBackstageButton)
 public:
     explicit RibbonBackstageButtonPrivate();
     virtual ~RibbonBackstageButtonPrivate();
@@ -401,33 +401,33 @@ RibbonBackstageButtonPrivate::~RibbonBackstageButtonPrivate() {}
 /* RibbonBackstageButton */
 RibbonBackstageButton::RibbonBackstageButton(QWidget *parent) : QToolButton(parent)
 {
-    QTC_INIT_PRIVATE(RibbonBackstageButton);
+    QRN_INIT_PRIVATE(RibbonBackstageButton);
 }
 
-RibbonBackstageButton::~RibbonBackstageButton() { QTC_FINI_PRIVATE(); }
+RibbonBackstageButton::~RibbonBackstageButton() { QRN_FINI_PRIVATE(); }
 
 bool RibbonBackstageButton::tabStyle() const
 {
-    QTC_D(const RibbonBackstageButton);
+    Q_D(const RibbonBackstageButton);
     return d->m_tabStyle;
 }
 
 void RibbonBackstageButton::setTabStyle(bool style)
 {
-    QTC_D(RibbonBackstageButton);
+    Q_D(RibbonBackstageButton);
     d->m_tabStyle = style;
     update();
 }
 
 bool RibbonBackstageButton::flatStyle()
 {
-    QTC_D(const RibbonBackstageButton);
+    Q_D(const RibbonBackstageButton);
     return d->m_flatStyle;
 }
 
 void RibbonBackstageButton::setFlatStyle(bool flat)
 {
-    QTC_D(RibbonBackstageButton);
+    Q_D(RibbonBackstageButton);
     d->m_flatStyle = flat;
     update();
 }
@@ -436,7 +436,7 @@ void RibbonBackstageButton::setFlatStyle(bool flat)
 void RibbonBackstageButton::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonBackstageButton);
+    Q_D(RibbonBackstageButton);
 
     QPainter p(this);
     StyleOptionBackstageButton option;
@@ -479,7 +479,7 @@ RibbonBackstageViewPrivate::RibbonBackstageViewPrivate()
 
 RibbonBackstageViewPrivate::~RibbonBackstageViewPrivate()
 {
-    QTC_Q(RibbonBackstageView);
+    Q_Q(RibbonBackstageView);
     QWidget *parent = q->parentWidget();
     Q_ASSERT(parent != Q_NULL);
     parent->removeEventFilter(q);
@@ -487,7 +487,7 @@ RibbonBackstageViewPrivate::~RibbonBackstageViewPrivate()
 
 void RibbonBackstageViewPrivate::init(RibbonBar *ribbonBar)
 {
-    QTC_Q(RibbonBackstageView);
+    Q_Q(RibbonBackstageView);
     m_ribbon = ribbonBar;
 
     QWidget *parent = q->parentWidget();
@@ -507,7 +507,7 @@ void RibbonBackstageViewPrivate::init(RibbonBar *ribbonBar)
 
 void RibbonBackstageViewPrivate::layoutBackstage()
 {
-    QTC_Q(RibbonBackstageView);
+    Q_Q(RibbonBackstageView);
     if (!m_ribbon)
         return;
 
@@ -548,7 +548,7 @@ void RibbonBackstageViewPrivate::updateGeometryPage(QWidget *widget)
     if (widget == Q_NULL)
         return;
 
-    QTC_Q(const RibbonBackstageView);
+    Q_Q(const RibbonBackstageView);
     QSize minimumSize = widget->minimumSize();
     int top = (bool)q->style()->styleHint((QStyle::StyleHint)RibbonStyle::SH_RibbonBackstageHideTabs) ? 0 : 2;
 
@@ -588,7 +588,7 @@ QAction *RibbonBackstageViewPrivate::currentAction() const { return m_currentAct
 
 QWidgetAction *RibbonBackstageViewPrivate::getAction(QWidget *w) const
 {
-    QTC_Q(const RibbonBackstageView);
+    Q_Q(const RibbonBackstageView);
     QList<QAction *> actions = q->actions();
     for (int i = 0, count = actions.count(); i < count; i++) {
         QWidgetAction *action = dynamic_cast<QWidgetAction *>(actions.at(i));
@@ -601,22 +601,22 @@ QWidgetAction *RibbonBackstageViewPrivate::getAction(QWidget *w) const
 /* RibbonBackstageView */
 RibbonBackstageView::RibbonBackstageView(RibbonBar *ribbonBar) : QWidget(ribbonBar->parentWidget())
 {
-    QTC_INIT_PRIVATE(RibbonBackstageView);
-    QTC_D(RibbonBackstageView);
+    QRN_INIT_PRIVATE(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     d->init(ribbonBar);
 }
 
-RibbonBackstageView::~RibbonBackstageView() { QTC_FINI_PRIVATE(); }
+RibbonBackstageView::~RibbonBackstageView() { QRN_FINI_PRIVATE(); }
 
 void RibbonBackstageView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     d->m_tabBarPosition = d->m_ribbon->tabBarPosition();
     d->m_ribbon->setTabBarPosition(RibbonBar::TabBarTopPosition);
     d->updateLayout();
     d->m_backstageMenu->setVisible(true);
-    d->m_ribbon->qtc_d()->setVisibleBackstage(true);
+    d->m_ribbon->d_func()->setVisibleBackstage(true);
     setFocus();
     emit aboutToShow();
 }
@@ -624,22 +624,22 @@ void RibbonBackstageView::showEvent(QShowEvent *event)
 void RibbonBackstageView::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     d->m_ribbon->setTabBarPosition(d->m_tabBarPosition);
     d->m_backstageMenu->setVisible(false);
-    d->m_ribbon->qtc_d()->setVisibleBackstage(false);
+    d->m_ribbon->d_func()->setVisibleBackstage(false);
     emit aboutToHide();
 }
 
 bool RibbonBackstageView::isClosePrevented() const
 {
-    QTC_D(const RibbonBackstageView);
+    Q_D(const RibbonBackstageView);
     return d->m_closePrevented;
 }
 
 void RibbonBackstageView::setClosePrevented(bool prevent)
 {
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     d->m_closePrevented = prevent;
 }
 
@@ -670,7 +670,7 @@ QAction *RibbonBackstageView::addPage(QWidget *widget)
 
 void RibbonBackstageView::setActivePage(QWidget *widget)
 {
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
 
     bool find = false;
     QList<QAction *> acts = actions();
@@ -716,19 +716,19 @@ void RibbonBackstageView::setActivePage(QWidget *widget)
 
 QWidget *RibbonBackstageView::getActivePage() const
 {
-    QTC_D(const RibbonBackstageView);
+    Q_D(const RibbonBackstageView);
     return d->m_activePage;
 }
 
 QRect RibbonBackstageView::actionGeometry(QAction *act) const
 {
-    QTC_D(const RibbonBackstageView);
+    Q_D(const RibbonBackstageView);
     return d->m_backstageMenu->actionRect(act);
 }
 
 QRect RibbonBackstageView::menuGeometry() const
 {
-    QTC_D(const RibbonBackstageView);
+    Q_D(const RibbonBackstageView);
     return d->m_backstageMenu->geometry();
 }
 
@@ -758,7 +758,7 @@ bool RibbonBackstageView::event(QEvent *event)
 void RibbonBackstageView::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     QPainter p(this);
 
     StyleOptionRibbonBackstage opt;
@@ -769,7 +769,7 @@ void RibbonBackstageView::paintEvent(QPaintEvent *event)
 
 bool RibbonBackstageView::eventFilter(QObject *object, QEvent *event)
 {
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     if (parentWidget() == object && isVisible()) {
         switch (event->type()) {
         case QEvent::Resize:
@@ -786,7 +786,7 @@ void RibbonBackstageView::actionEvent(QActionEvent *event)
 {
     QWidget::actionEvent(event);
 
-    QTC_D(RibbonBackstageView);
+    Q_D(RibbonBackstageView);
     if (event->type() == QEvent::ActionAdded) {
         if (QWidgetAction *wa = qobject_cast<QWidgetAction *>(event->action())) {
             QWidget *widget = wa->requestWidget(this);

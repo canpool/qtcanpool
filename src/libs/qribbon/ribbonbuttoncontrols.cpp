@@ -14,7 +14,7 @@ RibbonButtonControlPrivate::~RibbonButtonControlPrivate() {}
 
 void RibbonButtonControlPrivate::init()
 {
-    QTC_Q(RibbonButtonControl);
+    Q_Q(RibbonButtonControl);
     q->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setStretchable(false);
     q->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setStretchable(false);
     q->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setStretchable(false);
@@ -27,76 +27,76 @@ void RibbonButtonControlPrivate::init()
 /* RibbonButtonControl */
 RibbonButtonControl::RibbonButtonControl(RibbonGroup *parentGroup) : RibbonWidgetControl(parentGroup, true)
 {
-    QTC_INIT_PRIVATE(RibbonButtonControl);
-    QTC_D(RibbonButtonControl);
+    QRN_INIT_PRIVATE(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->init();
 }
 
-RibbonButtonControl::~RibbonButtonControl() { QTC_FINI_PRIVATE(); }
+RibbonButtonControl::~RibbonButtonControl() { QRN_FINI_PRIVATE(); }
 
 const QPixmap &RibbonButtonControl::largeIcon() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_largeIcon;
 }
 
 void RibbonButtonControl::setLargeIcon(const QPixmap &icon)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->m_largeIcon = icon;
 }
 
 const QPixmap &RibbonButtonControl::smallIcon() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_smallIcon;
 }
 
 void RibbonButtonControl::setSmallIcon(const QPixmap &icon)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->m_smallIcon = icon;
 }
 
 const QString &RibbonButtonControl::label() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_label;
 }
 
 void RibbonButtonControl::setLabel(const QString &label)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->m_label = label;
 }
 
 void RibbonButtonControl::setMenu(QMenu *menu)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->m_toolButton->setMenu(menu);
 }
 
 QMenu *RibbonButtonControl::menu() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_toolButton->menu();
 }
 
 void RibbonButtonControl::setPopupMode(QToolButton::ToolButtonPopupMode mode)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->m_toolButton->setPopupMode(mode);
 }
 
 QToolButton::ToolButtonPopupMode RibbonButtonControl::popupMode() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_toolButton->popupMode();
 }
 
 void RibbonButtonControl::setToolButtonStyle(Qt::ToolButtonStyle style)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     d->m_toolButton->setToolButtonStyle(style);
     if (style == Qt::ToolButtonIconOnly) {
         sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setImageSize(RibbonControlSizeDefinition::ImageSmall);
@@ -126,19 +126,19 @@ void RibbonButtonControl::setToolButtonStyle(Qt::ToolButtonStyle style)
 
 Qt::ToolButtonStyle RibbonButtonControl::toolButtonStyle() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_toolButton->toolButtonStyle();
 }
 
 QToolButton *RibbonButtonControl::widget() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     return d->m_toolButton;
 }
 
 QSize RibbonButtonControl::sizeHint() const
 {
-    QTC_D(const RibbonButtonControl);
+    Q_D(const RibbonButtonControl);
     QSize sz = RibbonWidgetControl::sizeHint();
 
     if (d->m_toolButton && parentGroup()) {
@@ -157,7 +157,7 @@ QSize RibbonButtonControl::sizeHint() const
 
 void RibbonButtonControl::sizeChanged(RibbonControlSizeDefinition::GroupSize size)
 {
-    QTC_D(RibbonButtonControl);
+    Q_D(RibbonButtonControl);
     RibbonControl::sizeChanged(size);
 
     d->m_toolButton->setDefaultAction(defaultAction());

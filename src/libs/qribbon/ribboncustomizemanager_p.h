@@ -16,10 +16,10 @@ QRIBBON_BEGIN_NAMESPACE
 #define UserNameID    1000    // first user name id
 #define MaxUserNameID 65535   // last user name id
 
-#define __qtc_Widget_Custom       "WidgetCustom"
-#define __qtc_Widget_Copy         "WidgetCopy"
-#define __qtc_Action_Invisible    "__qtc_Action_Invisible"
-#define __qtc_Quick_Access_Button "__qtc_Quick_Access_Button"
+#define __qrn_Widget_Custom       "WidgetCustom"
+#define __qrn_Widget_Copy         "WidgetCopy"
+#define __qrn_Action_Invisible    "__qrn_Action_Invisible"
+#define __qrn_Quick_Access_Button "__qrn_Quick_Access_Button"
 
 /* CustomizeEngineAbstract */
 class CustomizeEngineAbstract : public QObject
@@ -201,7 +201,7 @@ private:
 class RibbonCustomizeManagerPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonCustomizeManager)
+    QRN_DECLARE_PUBLIC(RibbonCustomizeManager)
 public:
     explicit RibbonCustomizeManagerPrivate();
     virtual ~RibbonCustomizeManagerPrivate();

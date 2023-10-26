@@ -82,7 +82,7 @@ QRIBBON_BEGIN_NAMESPACE
 class RibbonStylePrivate : public OfficeStylePrivate
 {
 public:
-    QTC_DECLARE_EX_PUBLIC(RibbonStyle)
+    Q_DECLARE_PUBLIC(RibbonStyle)
 public:
     explicit RibbonStylePrivate();
 public:

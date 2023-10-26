@@ -17,7 +17,7 @@ class RibbonPagePrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonPage)
+    QRN_DECLARE_PUBLIC(RibbonPage)
 public:
     explicit RibbonPagePrivate();
     virtual ~RibbonPagePrivate();

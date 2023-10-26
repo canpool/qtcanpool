@@ -73,7 +73,7 @@ public:
         int transparency;
     };
 public:
-    QTC_DECLARE_PUBLIC(OfficePopupWindow)
+    QRN_DECLARE_PUBLIC(OfficePopupWindow)
 public:
     explicit OfficePopupWindowPrivate();
     virtual ~OfficePopupWindowPrivate();
@@ -212,7 +212,7 @@ OfficePopupWindowPrivate::~OfficePopupWindowPrivate() {}
 
 void OfficePopupWindowPrivate::init()
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     q->setAttribute(Qt::WA_MouseTracking);
 
     m_titleFont = QApplication::font("QDockWidgetTitle");
@@ -252,7 +252,7 @@ void OfficePopupWindowPrivate::init()
 
 void OfficePopupWindowPrivate::onCollapsing()
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     setPopupState(PopupStateCollapsing);
 
     if (m_popupAnimation == PopupAnimationNone || m_animationSpeed <= 0) {
@@ -278,7 +278,7 @@ void OfficePopupWindowPrivate::onCollapsing()
 
 void OfficePopupWindowPrivate::onExpanding(bool updateCurrent)
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     setPopupState(PopupStateExpanding);
 
     QPoint positionPopup = q->getPosition();
@@ -311,7 +311,7 @@ void OfficePopupWindowPrivate::onExpanding(bool updateCurrent)
 
 void OfficePopupWindowPrivate::updateState(bool repaint)
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     QRect rc = m_stateCurrent.rcPopup;
 
     q->setGeometry(rc);
@@ -326,7 +326,7 @@ void OfficePopupWindowPrivate::updateState(bool repaint)
 
 bool OfficePopupWindowPrivate::closePopup()
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     bool result = false;
     m_capture = false;
 
@@ -344,7 +344,7 @@ bool OfficePopupWindowPrivate::closePopup()
 
 void OfficePopupWindowPrivate::showPopup()
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
 
     setPopupState(PopupStateShow);
 
@@ -386,7 +386,7 @@ void OfficePopupWindowPrivate::animate(int step)
 
 void OfficePopupWindowPrivate::handleMousePressEvent(QMouseEvent *event)
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
 
     StyleOptionPopupTitleBar optTitle;
     initTitleBarStyleOption(&optTitle);
@@ -423,7 +423,7 @@ void OfficePopupWindowPrivate::handleMousePressEvent(QMouseEvent *event)
 void OfficePopupWindowPrivate::handleMouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
 
     if (event->button() == Qt::LeftButton) {
         m_pressed = false;
@@ -449,7 +449,7 @@ void OfficePopupWindowPrivate::handleMouseReleaseEvent(QMouseEvent *event)
 
 void OfficePopupWindowPrivate::handleMouseMoveEvent(QMouseEvent *event)
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     if (m_dragging && m_form) {
         const QPoint delta = event->pos() - m_dragPressPosition;
 
@@ -507,7 +507,7 @@ void OfficePopupWindowPrivate::handleMouseMoveEvent(QMouseEvent *event)
 
 void OfficePopupWindowPrivate::initTitleBarStyleOption(StyleOptionPopupTitleBar *option) const
 {
-    QTC_Q(const OfficePopupWindow);
+    Q_Q(const OfficePopupWindow);
     option->init(q);
     option->palette = m_titlePalette;
     option->text = m_titleTxt;
@@ -549,7 +549,7 @@ void OfficePopupWindowPrivate::initTitleBarStyleOption(StyleOptionPopupTitleBar 
 
 void OfficePopupWindowPrivate::initFormStyleOption(QStyleOptionFrame *option) const
 {
-    QTC_Q(const OfficePopupWindow);
+    Q_Q(const OfficePopupWindow);
     option->init(q);
     option->palette = m_titlePalette;
 
@@ -595,7 +595,7 @@ PopupState OfficePopupWindowPrivate::getPopupState() const { return m_popupState
 
 void OfficePopupWindowPrivate::createStyle()
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     if (OfficeStyle *officeStyle = qobject_cast<OfficeStyle *>(q->style()))
         officeStyle->setPopupDecoration(OfficeStyle::PopupSystemDecoration);
     else
@@ -604,7 +604,7 @@ void OfficePopupWindowPrivate::createStyle()
 
 void OfficePopupWindowPrivate::calclayout()
 {
-    QTC_Q(OfficePopupWindow);
+    Q_Q(OfficePopupWindow);
     if (OfficeStyle *officeStyle = qobject_cast<OfficeStyle *>(q->style())) {
         if (!officeStyle->isExistPopupProxy())
             createStyle();
@@ -659,8 +659,8 @@ void OfficePopupWindowPrivate::calclayout()
 OfficePopupWindow::OfficePopupWindow(QWidget *parent)
     : QWidget(parent, Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint)
 {
-    QTC_INIT_PRIVATE(OfficePopupWindow);
-    QTC_D(OfficePopupWindow);
+    QRN_INIT_PRIVATE(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->init();
 }
 
@@ -671,7 +671,7 @@ OfficePopupWindow::~OfficePopupWindow()
 {
     if (OfficeStyle *officeStyle = qobject_cast<OfficeStyle *>(style()))
         officeStyle->unsetPopupProxy();
-    QTC_FINI_PRIVATE();
+    QRN_FINI_PRIVATE();
 }
 
 /*!
@@ -727,7 +727,7 @@ the titleText(), titleIcon() and bodyText() will be ignored and given \a widget 
 */
 void OfficePopupWindow::setCentralWidget(QWidget *widget)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     if (!widget)
         return;
 
@@ -746,7 +746,7 @@ Returns the central widget for the office popup window.
 */
 QWidget *OfficePopupWindow::centralWidget() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_form;
 }
 
@@ -755,7 +755,7 @@ Sets the body \a text for the popup window. The body text can be pure text or HT
 */
 void OfficePopupWindow::setBodyText(const QString &text)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_bodyTxtRef = text;
     if (QLabel *label = qobject_cast<QLabel *>(d->m_form))
         label->setText(text);
@@ -766,7 +766,7 @@ Returns the text of the popup window body. Returned text is the same you have pa
 */
 const QString &OfficePopupWindow::bodyText() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_bodyTxtRef;
 }
 
@@ -775,7 +775,7 @@ Sets the \a icon for the office popup window title.
 */
 void OfficePopupWindow::setTitleIcon(const QIcon &icon)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     if (!icon.isNull())
         d->m_title->labelIcon->setVisible(true);
     else
@@ -788,7 +788,7 @@ Returns the icon of the office popup window title.
 */
 const QIcon &OfficePopupWindow::titleIcon() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_titleIcon;
 }
 
@@ -797,7 +797,7 @@ Sets the \a text for the office popup window title. Text can be pure text or HTM
 */
 void OfficePopupWindow::setTitleText(const QString &text)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_titleTxtRef = text;
     d->m_title->labelTitle->setText(text);
     d->m_title->labelTitle->setVisible(!text.isEmpty());
@@ -808,7 +808,7 @@ Returns the text of the popup window title. Returned text is the same you have p
 */
 const QString &OfficePopupWindow::titleText() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_titleTxtRef;
 }
 
@@ -817,7 +817,7 @@ Sets the close button \a pixmap for painting on the office popup window title.
 */
 void OfficePopupWindow::setCloseButtonPixmap(const QPixmap &pixmap)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_closePixmap = pixmap;
 }
 
@@ -826,7 +826,7 @@ Returns the close button pixmap for painting on the office popup window title.
 */
 const QPixmap &OfficePopupWindow::closeButtonPixmap() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_closePixmap;
 }
 
@@ -835,7 +835,7 @@ Sets the visibility of the title's close button. Parameter \a visible is a visib
 */
 void OfficePopupWindow::setTitleCloseButtonVisible(bool visible)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_closeButton = visible;
 }
 
@@ -844,7 +844,7 @@ Returns the visibility of the title's close buttone.
 */
 bool OfficePopupWindow::isTitleCloseButtonVisible() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_closeButton;
 }
 
@@ -863,7 +863,7 @@ code.
 */
 bool OfficePopupWindow::showPopup(const QPoint &pos)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
 
     if (OfficeStyle *officeStyle = qobject_cast<OfficeStyle *>(style()))
         officeStyle->createPopupProxy();
@@ -886,7 +886,7 @@ Returns the current popup window position on the desktop.
 */
 QPoint OfficePopupWindow::getPosition() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     if (d->m_positionPopup != QPoint(-1, -1))
         return d->m_positionPopup;
 
@@ -933,7 +933,7 @@ QPoint OfficePopupWindow::getPosition() const
 */
 void OfficePopupWindow::setPosition(const QPoint &pos)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_positionPopup = pos;
 }
 
@@ -942,7 +942,7 @@ void OfficePopupWindow::setPosition(const QPoint &pos)
 */
 void OfficePopupWindow::setAnimation(PopupAnimation popupAnimation)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_popupAnimation = popupAnimation;
 }
 
@@ -951,7 +951,7 @@ Returns the popup window animation type.
 */
 PopupAnimation OfficePopupWindow::animation() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_popupAnimation;
 }
 
@@ -960,7 +960,7 @@ PopupAnimation OfficePopupWindow::animation() const
 */
 void OfficePopupWindow::setTransparency(qreal transparency)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_transparency = (int)(transparency * 255.0);
 }
 
@@ -969,7 +969,7 @@ void OfficePopupWindow::setTransparency(qreal transparency)
 */
 qreal OfficePopupWindow::transparency() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return (qreal)d->m_transparency / 255.0;
 }
 
@@ -978,7 +978,7 @@ qreal OfficePopupWindow::transparency() const
 */
 void OfficePopupWindow::setDisplayTime(int time)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_notCloseTimer = time < 0;
     d->m_showDelay = time;
 }
@@ -988,7 +988,7 @@ void OfficePopupWindow::setDisplayTime(int time)
 */
 int OfficePopupWindow::displayTime() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_showDelay;
 }
 
@@ -997,7 +997,7 @@ int OfficePopupWindow::displayTime() const
 */
 void OfficePopupWindow::setAnimationSpeed(int time)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_animationSpeed = time;
 }
 
@@ -1006,7 +1006,7 @@ void OfficePopupWindow::setAnimationSpeed(int time)
 */
 int OfficePopupWindow::animationSpeed() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_animationSpeed;
 }
 
@@ -1016,7 +1016,7 @@ drag-and-drop window over desktop.
 */
 void OfficePopupWindow::setDragDropEnabled(bool enabled)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_allowMove = enabled;
 }
 
@@ -1026,7 +1026,7 @@ drag-and-drop window over desktop.
 */
 bool OfficePopupWindow::dragDropEnabled() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_allowMove;
 }
 
@@ -1035,7 +1035,7 @@ bool OfficePopupWindow::dragDropEnabled() const
 */
 void OfficePopupWindow::setLocation(PopupLocation location)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->m_popupLocation = location;
 }
 
@@ -1044,14 +1044,14 @@ void OfficePopupWindow::setLocation(PopupLocation location)
 */
 PopupLocation OfficePopupWindow::location() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     return d->m_popupLocation;
 }
 
 /*! \internal */
 void OfficePopupWindow::showDelayTimer()
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     if (!d->m_capture) {
         d->m_showDelayTimer.stop();
         d->onCollapsing();
@@ -1061,7 +1061,7 @@ void OfficePopupWindow::showDelayTimer()
 /*! \internal */
 void OfficePopupWindow::collapsingTimer()
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->animate(d->m_step);
     d->m_step--;
 
@@ -1075,7 +1075,7 @@ void OfficePopupWindow::collapsingTimer()
 /*! \internal */
 void OfficePopupWindow::expandingTimer()
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->animate(d->m_step);
     d->m_step--;
 
@@ -1088,7 +1088,7 @@ void OfficePopupWindow::expandingTimer()
 /*! \reimp */
 QSize OfficePopupWindow::sizeHint() const
 {
-    QTC_D(const OfficePopupWindow);
+    Q_D(const OfficePopupWindow);
     QStyleOptionFrame option;
     d->initFormStyleOption(&option);
     return option.rect.size().expandedTo(QApplication::globalStrut());
@@ -1099,7 +1099,7 @@ Hides the office popup window.
 */
 void OfficePopupWindow::closePopup()
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     d->closePopup();
 }
 
@@ -1114,7 +1114,7 @@ static void setChildStyle(QWidget *widget, QStyle *style)
 /*! \reimp */
 bool OfficePopupWindow::event(QEvent *event)
 {
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
         d->handleMousePressEvent((QMouseEvent *)event);
@@ -1167,7 +1167,7 @@ bool OfficePopupWindow::event(QEvent *event)
 void OfficePopupWindow::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     QPainter p(this);
 
     QStyleOptionFrame opt;
@@ -1183,7 +1183,7 @@ void OfficePopupWindow::paintEvent(QPaintEvent *event)
 void OfficePopupWindow::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     QMouseEvent ev(QEvent::MouseMove, QPoint(1, 1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
     d->handleMouseMoveEvent(&ev);
 }
@@ -1192,7 +1192,7 @@ void OfficePopupWindow::enterEvent(QEvent *event)
 void OfficePopupWindow::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(OfficePopupWindow);
+    Q_D(OfficePopupWindow);
     QMouseEvent ev(QEvent::MouseMove, QPoint(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
     d->handleMouseMoveEvent(&ev);
 }

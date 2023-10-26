@@ -64,7 +64,7 @@ void RibbonGroupPopupButton::resetReducedGroup()
 {
     Q_ASSERT(false);
     if (m_ribbonGroup->isReduced()) {
-        // m_ribbonGroup->qtc_d()->m_reduced = false;
+        // m_ribbonGroup->d_func()->m_reduced = false;
         m_ribbonGroup->show();
     }
 }
@@ -120,7 +120,7 @@ void RibbonGroupPopupButton::mousePressEvent(QMouseEvent *event)
                 else
                     pnt = this->mapToGlobal(rc.topLeft() - QPoint(0, h));
 
-                int width = m_ribbonGroup->qtc_d()->updateControlsLayout(Q_NULL).width();
+                int width = m_ribbonGroup->d_func()->updateControlsLayout(Q_NULL).width();
                 QSize size = m_ribbonGroup->sizeHint();
                 size.setWidth(width);
                 const int desktopFrame = style()->pixelMetric(QStyle::PM_MenuDesktopFrameWidth, 0, this);
@@ -161,7 +161,7 @@ void RibbonGroupPopupButton::mouseReleaseEvent(QMouseEvent *event)
 RibbonGroupPopup::RibbonGroupPopup(RibbonGroup *group) : QMenu(), m_group(group)
 {
     setFont(group->font());
-    setProperty(_qtc_TitleGroupsVisible, true);
+    setProperty(_qrn_TitleGroupsVisible, true);
     setPalette(group->palette());
 }
 
@@ -169,7 +169,7 @@ RibbonGroupPopup::~RibbonGroupPopup() {}
 
 QSize RibbonGroupPopup::sizeHint() const
 {
-    QSize size = m_group->qtc_d()->sizeHint();
+    QSize size = m_group->d_func()->sizeHint();
     return size.expandedTo(QApplication::globalStrut());
 }
 
@@ -189,7 +189,7 @@ void RibbonGroupPopup::paintEvent(QPaintEvent *event)
     }
 
     QStyleOptionGroupBox opt;
-    m_group->qtc_d()->initStyleOption(opt);
+    m_group->d_func()->initStyleOption(opt);
     opt.rect.setWidth(width());
     opt.rect.adjust(0, 0, 1, 1);
     if (rectEvent.intersects(opt.rect))
@@ -202,8 +202,8 @@ void RibbonGroupPopup::paintEvent(QPaintEvent *event)
     rcEntryCaption.setTop(rcEntryCaption.bottom() - opt.lineWidth);
 
     int indent = 0;
-    if (m_group->qtc_d()->m_optionButton->isVisible())
-        indent = m_group->qtc_d()->m_optionButton->width();
+    if (m_group->d_func()->m_optionButton->isVisible())
+        indent = m_group->d_func()->m_optionButton->width();
 
     rcEntryCaption.adjust(0, -1, -indent, -2);
     opt.text =

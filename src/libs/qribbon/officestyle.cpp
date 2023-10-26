@@ -108,7 +108,7 @@ void OfficeStylePrivate::unsetBrush(QWidget *widget)
 
 void OfficeStylePrivate::updateColors()
 {
-    QTC_Q(OfficeStyle);
+    Q_Q(OfficeStyle);
     m_clrMenuBarGrayText = QColor(167, 167, 167);
     m_clrToolBarGrayText = QColor(141, 141, 141);
     m_clrHighlightDisabledBorder = QColor(141, 141, 141);
@@ -247,7 +247,7 @@ void OfficeStylePrivate::updateColors()
 
 void OfficeStylePrivate::refreshMetrics()
 {
-    QTC_Q(OfficeStyle);
+    Q_Q(OfficeStyle);
     QWidgetList all = q->allWidgets();
 
     // clean up the old style
@@ -318,20 +318,20 @@ QString OfficeStylePrivate::theme(const QString &str) const
 
 OfficePaintManagerInterface *OfficeStylePrivate::officePaintManager() const
 {
-    QTC_Q(const OfficeStyle);
+    Q_Q(const OfficeStyle);
     OfficePaintManagerInterface *officePaintManager = qobject_cast<OfficePaintManagerInterface *>(q->paintManager());
     return officePaintManager;
 }
 
 void OfficeStylePrivate::makePaintManager()
 {
-    QTC_Q(OfficeStyle)
+    Q_Q(OfficeStyle);
     setPaintManager(*new OfficePaintManager(q));
 }
 
 QColor OfficeStylePrivate::accentIndexToColor(OfficeStyle::AccentColor accentcolor) const
 {
-    QTC_Q(const OfficeStyle)
+    Q_Q(const OfficeStyle);
     switch (accentcolor) {
     case OfficeStyle::AccentColorBlue:
     default:
@@ -376,18 +376,18 @@ bool OfficeStylePrivate::isScrollBarsIgnored() const { return m_ignoreScrollBars
 /*!
 Constuctor of OfficeStyle class
 */
-OfficeStyle::OfficeStyle() : CommonStyle(new OfficeStylePrivate)
+OfficeStyle::OfficeStyle() : OfficeStyle(new OfficeStylePrivate)
 {
-    QTC_D(OfficeStyle);
+}
+
+OfficeStyle::OfficeStyle(OfficeStylePrivate *d) : CommonStyle(d)
+{
     d->initialization();
 }
 
-OfficeStyle::OfficeStyle(OfficeStylePrivate *d) : CommonStyle(d) { d->initialization(); }
-
-OfficeStyle::OfficeStyle(QMainWindow *mainWindow, OfficeStylePrivate *d) : CommonStyle(d)
+OfficeStyle::OfficeStyle(QMainWindow *mainWindow, OfficeStylePrivate *d) : OfficeStyle(d)
 {
     Q_UNUSED(mainWindow);
-    d->initialization();
     qApp->setStyle(this);
 }
 
@@ -395,12 +395,9 @@ OfficeStyle::OfficeStyle(QMainWindow *mainWindow, OfficeStylePrivate *d) : Commo
 Constructor of OfficeStyle class. The application is usually required to use this constructor only once.
 After this, the call QApplcation::setStyle(...) is not required. Parameter \a mainWindow is not used.
 */
-OfficeStyle::OfficeStyle(QMainWindow *mainWindow) : CommonStyle(new OfficeStylePrivate)
+OfficeStyle::OfficeStyle(QMainWindow *mainWindow) : OfficeStyle(new OfficeStylePrivate)
 {
     Q_UNUSED(mainWindow);
-    // QTC_INIT_PRIVATE(OfficeStyle);
-    QTC_D(OfficeStyle);
-    d->initialization();
     qApp->setStyle(this);
 }
 
@@ -410,7 +407,7 @@ Destructor of OfficeStyle class.
 OfficeStyle::~OfficeStyle()
 {
     unsetPopupProxy();
-    // QTC_FINI_PRIVATE();
+    // d is destroyed in CommonStyle
 }
 
 /*!
@@ -418,7 +415,7 @@ Returns an accent color for Office style.
 */
 QColor OfficeStyle::accentColor() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_clrAccent;
 }
 
@@ -427,7 +424,7 @@ Sets an accent color for Office style by color index.
 */
 void OfficeStyle::setAccentColor(AccentColor index)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->m_curAccentColor = index;
     d->m_clrAccent = d->accentIndexToColor(index);
     d->updateColors();
@@ -439,7 +436,7 @@ Returns an accent index color for Office style.
 */
 OfficeStyle::AccentColor OfficeStyle::accentIndexColor() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_curAccentColor;
 }
 
@@ -448,7 +445,7 @@ Sets an accent color for Office style.
 */
 void OfficeStyle::setAccentColor(const QColor &accentcolor)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->m_curAccentColor = (AccentColor)-1;
     d->m_clrAccent = accentcolor;
     d->updateColors();
@@ -462,7 +459,7 @@ Sets the \a theme of the office style. You can choose from Office 2007 or Office
 */
 void OfficeStyle::setTheme(Theme theme)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     if (d->m_themeType != theme) {
         d->m_themeType = theme;
         clearCache();
@@ -477,7 +474,7 @@ Returns the theme of the style.
 */
 OfficeStyle::Theme OfficeStyle::getTheme() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_themeType;
 }
 
@@ -488,7 +485,7 @@ animation is set.
  */
 void OfficeStyle::setAnimationEnabled(bool enable /*= true*/)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->m_animEnabled = enable;
 }
 
@@ -497,7 +494,7 @@ Returns animation state for Microsoft Office's controls when mouse over the elem
  */
 bool OfficeStyle::isAnimationEnabled() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_animEnabled;
 }
 
@@ -508,7 +505,7 @@ standard Qt style will be used for dialog. By default this flag is false.
 */
 void OfficeStyle::setDialogsIgnored(bool ignore)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     if (d->m_ignoreDialogs != ignore) {
         d->m_ignoreDialogs = ignore;
         d->refreshMetrics();
@@ -520,7 +517,7 @@ Returns the ignore dialog flag.
 */
 bool OfficeStyle::isDialogsIgnored() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_ignoreDialogs;
 }
 
@@ -531,7 +528,7 @@ is false.
 */
 void OfficeStyle::setScrollBarsIgnored(bool ignore /*= false*/)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     if (d->m_ignoreScrollBars != ignore) {
         d->m_ignoreScrollBars = ignore;
         d->refreshMetrics();
@@ -543,7 +540,7 @@ Returns the value of ignore scroll bars flag.
 */
 bool OfficeStyle::isScrollBarsIgnored() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_ignoreScrollBars;
 }
 
@@ -553,7 +550,7 @@ Sets the flag for drawing MDI window title with native style or with office/ribb
 */
 void OfficeStyle::setMDIWindowTitleIgnored(bool ignore)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->m_ignoreMDIWindowTitle = ignore;
 }
 
@@ -562,7 +559,7 @@ Returs the flag for drawing MDI window title with native style or with office/ri
 */
 bool OfficeStyle::isMDIWindowTitleIgnored() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_ignoreMDIWindowTitle;
 }
 
@@ -573,7 +570,7 @@ If parameter \a aware is true then the application is sensitive to DPI settings.
 */
 void OfficeStyle::setDPIAware(bool aware)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     if (d->m_dpiAware == aware)
         return;
 
@@ -586,7 +583,7 @@ Returns the feature of style reaction to the system DPI settings.
 */
 bool OfficeStyle::isDPIAware() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_dpiAware;
 }
 
@@ -614,7 +611,7 @@ Returns the value of the popupDecoration flag.
 */
 OfficeStyle::OfficePopupDecoration OfficeStyle::popupDecoration() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_typePopupStyle;
 }
 
@@ -623,7 +620,7 @@ Sets the style of the \a decoration for OfficePopupWindow.
 */
 void OfficeStyle::setPopupDecoration(OfficeStyle::OfficePopupDecoration decoration)
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->m_typePopupStyle = decoration;
 }
 
@@ -631,7 +628,7 @@ void OfficeStyle::setPopupDecoration(OfficeStyle::OfficePopupDecoration decorati
 void OfficeStyle::polish(QApplication *app)
 {
     CommonStyle::polish(app);
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->updateColors();
 }
 
@@ -654,7 +651,7 @@ void OfficeStyle::polish(QWidget *widget)
 {
     CommonStyle::polish(widget);
 
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->unsetBrush(widget);
     d->setBrush(widget);
 
@@ -894,7 +891,7 @@ void OfficeStyle::unpolish(QWidget *widget)
 {
     CommonStyle::unpolish(widget);
 
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     d->unsetBrush(widget);
 
     if (qobject_cast<QCheckBox *>(widget) || qobject_cast<QRadioButton *>(widget) ||
@@ -909,7 +906,7 @@ bool OfficeStyle::isStyle2010() const { return false; }
 
 void OfficeStyle::createPopupProxy()
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
 
     if (d->m_popupProxy) {
         ++d->m_refCountProxy;
@@ -947,13 +944,13 @@ void OfficeStyle::createPopupProxy()
 
 bool OfficeStyle::isExistPopupProxy() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_popupProxy;
 }
 
 void OfficeStyle::unsetPopupProxy()
 {
-    QTC_D(OfficeStyle);
+    Q_D(OfficeStyle);
     if (!--d->m_refCountProxy) {
         delete d->m_popupProxy;
         d->m_popupProxy = Q_NULL;
@@ -962,7 +959,7 @@ void OfficeStyle::unsetPopupProxy()
 
 bool OfficeStyle::transitionsEnabled() const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->m_animEnabled;
 }
 
@@ -1009,7 +1006,7 @@ QSize OfficeStyle::sizeFromContents(ContentsType ct, const QStyleOption *opt, co
 QRect OfficeStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex *opt, SubControl sc,
                                   const QWidget *widget) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     switch (cc) {
     case CC_TitleBar: {
         if (widget && (qobject_cast<const OfficePopupWindow *>(widget)) && d->m_popupProxy)
@@ -1147,7 +1144,7 @@ QRect OfficeStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex *
 /*! \reimp */
 int OfficeStyle::pixelMetric(PixelMetric pm, const QStyleOption *opt, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     int ret = 0;
     if (d->officePaintManager()->pixelMetric(pm, opt, w, ret))
         return ret;
@@ -1215,7 +1212,7 @@ int OfficeStyle::pixelMetric(PixelMetric pm, const QStyleOption *opt, const QWid
 int OfficeStyle::styleHint(StyleHint hint, const QStyleOption *opt, const QWidget *widget,
                            QStyleHintReturn *returnData) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     int retval = 0;
     if (d->officePaintManager()->styleHint(hint, opt, widget, returnData, retval))
         return retval;
@@ -1279,7 +1276,7 @@ QStyle::SubControl OfficeStyle::hitTestComplexControl(ComplexControl control, co
                                                       const QPoint &pt, const QWidget *widget) const
 {
     if (control == CC_TitleBar) {
-        QTC_D(const OfficeStyle);
+        Q_D(const OfficeStyle);
         if (widget && qobject_cast<const OfficePopupWindow *>(widget) && d->m_popupProxy)
             return d->m_popupProxy->hitTestComplexControl(control, opt, pt, widget);
     }
@@ -1291,7 +1288,7 @@ void OfficeStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComple
                                      const QWidget *widget) const
 {
     if (cc == CC_TitleBar) {
-        QTC_D(const OfficeStyle);
+        Q_D(const OfficeStyle);
         if (widget && qobject_cast<const OfficePopupWindow *>(widget) && d->m_popupProxy) {
             d->m_popupProxy->drawComplexControl(cc, opt, p, widget);
             return;
@@ -1305,7 +1302,7 @@ void OfficeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *op
                                 const QWidget *widget) const
 {
     if (element == PE_FrameWindow) {
-        QTC_D(const OfficeStyle);
+        Q_D(const OfficeStyle);
         if (widget && qobject_cast<const OfficePopupWindow *>(widget) && d->m_popupProxy) {
             d->m_popupProxy->drawPrimitive(element, option, painter, widget);
             return;
@@ -1316,25 +1313,25 @@ void OfficeStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *op
 
 QPixmap OfficeStyle::cached(const QString &img) const
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     return CommonStyle::cached(d->theme(img));
 }
 
 QIcon OfficeStyle::standardIconEx(StandardPixmap px, const QStyleOption *opt, const QWidget *wd, bool &ret) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->standardIconEx(px, opt, wd, ret);
 }
 
 bool OfficeStyle::drawWorkspace(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawWorkspace(opt, p, w);
 }
 
 bool OfficeStyle::drawWidget(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     if (qobject_cast<const QMainWindow *>(w)) {
         QRect rc(opt->rect);
         p->fillRect(rc, d->m_clrFrame);
@@ -1355,26 +1352,26 @@ bool OfficeStyle::drawFrameTabWidget(const QStyleOption *opt, QPainter *p, const
 
 bool OfficeStyle::drawIndicatorTabClose(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorTabClose(opt, p, w);
 }
 
 bool OfficeStyle::drawShapedFrame(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawShapedFrame(opt, p, w);
 }
 
 bool OfficeStyle::drawFrameWindow(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawFrameWindow(opt, p, w);
 }
 
 // for statusBar
 bool OfficeStyle::drawPanelStatusBar(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawPanelStatusBar(opt, p, w);
 }
 
@@ -1389,7 +1386,7 @@ bool OfficeStyle::drawMenuBarEmptyArea(const QStyleOption *opt, QPainter *p, con
 
 bool OfficeStyle::drawPanelMenu(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawPanelMenu(opt, p, w);
 }
 
@@ -1428,13 +1425,13 @@ bool OfficeStyle::drawMenuBarItem(const QStyleOption *opt, QPainter *p, const QW
 
 bool OfficeStyle::drawIndicatorMenuCheckMark(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorMenuCheckMark(opt, p, w);
 }
 
 bool OfficeStyle::drawMenuItem(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     if (const QStyleOptionMenuItem *menuitem = qstyleoption_cast<const QStyleOptionMenuItem *>(opt)) {
         int x, y, w, h;
         menuitem->rect.getRect(&x, &y, &w, &h);
@@ -1457,7 +1454,7 @@ bool OfficeStyle::drawMenuItem(const QStyleOption *opt, QPainter *p, const QWidg
             drawRectangle(p, menuitem->rect, true /*selected*/, false /*pressed*/, !dis /*enabled*/, false /*checked*/,
                           false /*popuped*/, TypePopup, BarPopup);
 
-        if (menuitem->text.count(QString(_qtc_SplitActionPopup)) != 0)
+        if (menuitem->text.count(QString(_qrn_SplitActionPopup)) != 0)
             drawSplitButtonPopup(p, menuitem->rect, act, !dis, menuitem->checkType == QStyleOptionMenuItem::Exclusive);
 
         if (menuitem->menuItemType == QStyleOptionMenuItem::Separator) {
@@ -1538,7 +1535,7 @@ bool OfficeStyle::drawMenuItem(const QStyleOption *opt, QPainter *p, const QWidg
         QRect textRect(xpos, y + windowsItemVMargin, w - xm - windowsRightBorder - tab + 1, h - 2 * windowsItemVMargin);
         QRect vTextRect = visualRect(opt->direction, menuitem->rect, textRect);
         QString s = menuitem->text;
-        s = s.remove(QString(_qtc_SplitActionPopup));
+        s = s.remove(QString(_qrn_SplitActionPopup));
         // draw text
         if (!s.isEmpty()) {
             p->save();
@@ -1602,7 +1599,7 @@ bool OfficeStyle::drawMenuItem(const QStyleOption *opt, QPainter *p, const QWidg
 
 bool OfficeStyle::drawFrameMenu(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     if (d->officePaintManager()->drawPanelMenu(opt, p, w))
         return true;
     return CommonStyle::drawFrameMenu(opt, p, w);
@@ -1611,13 +1608,13 @@ bool OfficeStyle::drawFrameMenu(const QStyleOption *opt, QPainter *p, const QWid
 // for toolBar
 bool OfficeStyle::drawToolBar(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawToolBar(opt, p, w);
 }
 
 bool OfficeStyle::drawTitleBar(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawTitleBar(opt, p, w);
 }
 
@@ -1652,7 +1649,7 @@ static void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbut
 
 bool OfficeStyle::drawToolButtonLabel(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
 
     if (w && !qobject_cast<const RibbonButton *>(w)) {
         if (!qobject_cast<const PopupColorButton *>(w)) {
@@ -1847,7 +1844,7 @@ bool OfficeStyle::drawPanelButtonTool(const QStyleOption *opt, QPainter *p, cons
 
 bool OfficeStyle::drawToolButton(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     if (const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(opt)) {
         if (d->officePaintManager()->drawGalleryToolButton(opt, p, widget))
             return true;
@@ -1920,13 +1917,13 @@ bool OfficeStyle::drawGroupControlEntry(const QStyleOption *, QPainter *, const 
 
 bool OfficeStyle::drawPanelButtonCommand(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawPanelButtonCommand(opt, p, w);
 }
 
 bool OfficeStyle::drawIndicatorToolBarSeparator(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     d->officePaintManager()->drawIndicatorToolBarSeparator(opt, p, w);
     return false;
 }
@@ -1940,14 +1937,14 @@ bool OfficeStyle::drawIndicatorCheckRadioButton(PrimitiveElement element, const 
             return true;
     }
 
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorCheckRadioButton(element, option, painter, widget);
 }
 
 bool OfficeStyle::drawIndicatorViewItemCheck(PrimitiveElement element, const QStyleOption *option, QPainter *painter,
                                              const QWidget *widget) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorViewItemCheck(element, option, painter, widget);
     // return d->officePaintManager()->drawIndicatorCheckRadioButton(element, option, painter, widget);
 }
@@ -1963,7 +1960,7 @@ bool OfficeStyle::drawFrameDefaultButton(const QStyleOption *opt, QPainter *p, c
 bool OfficeStyle::drawIndicatorToolBarHandle(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
 
     p->translate(opt->rect.x(), opt->rect.y());
     QRect rect(opt->rect);
@@ -1984,7 +1981,7 @@ bool OfficeStyle::drawIndicatorToolBarHandle(const QStyleOption *opt, QPainter *
 // for SizeGrip
 bool OfficeStyle::drawSizeGrip(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawSizeGrip(opt, p, w);
 }
 
@@ -2000,51 +1997,51 @@ bool OfficeStyle::drawSlider(const QStyleOptionComplex *opt, QPainter *p, const 
 // for ScrollBar
 bool OfficeStyle::drawScrollBar(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawScrollBar(opt, p, w);
 }
 
 bool OfficeStyle::drawScrollBarLine(ControlElement element, const QStyleOption *opt, QPainter *p,
                                     const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawScrollBarLine(element, opt, p, w);
 }
 
 bool OfficeStyle::drawScrollBarSlider(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawScrollBarSlider(opt, p, w);
 }
 
 bool OfficeStyle::drawScrollBarPage(ControlElement element, const QStyleOption *opt, QPainter *p,
                                     const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawScrollBarPage(element, opt, p, w);
 }
 
 bool OfficeStyle::drawControlEdit(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawControlEdit(opt, p, w);
 }
 
 bool OfficeStyle::drawFrameLineEdit(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawFrameLineEdit(opt, p, w);
 }
 
 bool OfficeStyle::drawComboBox(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawComboBox(opt, p, w);
 }
 
 bool OfficeStyle::drawDockWidgetTitle(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     if (const QStyleOptionDockWidget *dwOpt = qstyleoption_cast<const QStyleOptionDockWidget *>(opt)) {
         QRect rect = opt->rect;
 #if (QT_VERSION < QT_VERSION_CHECK(5, 7, 0))
@@ -2143,7 +2140,7 @@ bool OfficeStyle::drawDockWidgetTitle(const QStyleOption *opt, QPainter *p, cons
 // docksplitter
 bool OfficeStyle::drawIndicatorDockWidgetResizeHandle(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorDockWidgetResizeHandle(opt, p, w);
 }
 
@@ -2251,7 +2248,7 @@ bool OfficeStyle::drawTabBarTab(const QStyleOption *opt, QPainter *p, const QWid
 
 bool OfficeStyle::drawTabBarTabShape(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawTabBarTabShape(opt, p, w);
 }
 
@@ -2303,7 +2300,7 @@ bool OfficeStyle::drawTabBarTabLabel(const QStyleOption *opt, QPainter *p, const
 // for SpinBox
 bool OfficeStyle::drawSpinBox(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawSpinBox(opt, p, w);
 }
 
@@ -2318,7 +2315,7 @@ bool OfficeStyle::drawComboBoxLabel(ControlElement element, const QStyleOption *
             QStyleOptionComboBox cpyOpt(*comboBox);
             cpyOpt.palette.setColor(QPalette::HighlightedText, Qt::black);
 
-            QTC_D(const CommonStyle);
+            Q_D(const CommonStyle);
             if (d->m_defaultStyle)
                 d->m_defaultStyle->drawControl(element, &cpyOpt, p, widget);
             else
@@ -2337,7 +2334,7 @@ bool OfficeStyle::drawComboBoxLabel(ControlElement element, const QStyleOption *
 bool OfficeStyle::drawProgressBarGroove(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
 
     p->save();
     QRect r = opt->rect;
@@ -2363,7 +2360,7 @@ bool OfficeStyle::drawToolBoxTab(const QStyleOption *opt, QPainter *p, const QWi
 
 bool OfficeStyle::drawToolBoxTabShape(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawToolBoxTabShape(opt, p, w);
 }
 
@@ -2470,38 +2467,38 @@ bool OfficeStyle::drawHeader(const QStyleOption *opt, QPainter *p, const QWidget
 
 bool OfficeStyle::drawHeaderSection(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawHeaderSection(opt, p, w);
 }
 
 bool OfficeStyle::drawHeaderEmptyArea(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawHeaderEmptyArea(opt, p, w);
 }
 
 bool OfficeStyle::drawIndicatorHeaderArrow(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorHeaderArrow(opt, p, w);
 }
 
 bool OfficeStyle::drawIndicatorArrow(PrimitiveElement pe, const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawIndicatorArrow(pe, opt, p, w);
 }
 
 bool OfficeStyle::drawPanelTipLabel(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawPanelTipLabel(opt, p, w);
 }
 
 void OfficeStyle::drawRectangle(QPainter *p, const QRect &rect, bool selected, bool pressed, bool enabled, bool checked,
                                 bool popuped, BarType barType, BarPosition barPos) const
 {
-    QTC_D(const OfficeStyle);
+    Q_D(const OfficeStyle);
     return d->officePaintManager()->drawRectangle(p, rect, selected, pressed, enabled, checked, popuped, barType,
                                                   barPos);
 }
@@ -2517,7 +2514,7 @@ void OfficeStyle::drawSplitButtonPopup(QPainter *p, const QRect &rect, bool sele
 
 void OfficeStyle::drawLabelGallery(QPainter *p, RibbonGalleryItem *item, const QRect &rect)
 {
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
     QRect rectItem = rect;
     p->fillRect(rect, d->m_clrControlGalleryLabel);
     p->fillRect(rectItem.left(), rectItem.bottom() - 1, rectItem.width(), 1, QColor(197, 197, 197));
@@ -2540,7 +2537,7 @@ QColor OfficeStyle::getTextColor(bool selected, bool pressed, bool enabled, bool
                                  BarPosition barPosition) const
 {
     Q_UNUSED(barPosition);
-    QTC_D(const OfficeStyle)
+    Q_D(const OfficeStyle);
 
     if (barType == TypeMenuBar && !selected && enabled && !pressed && !checked && !popuped)
         return d->m_clrMenuBarText;

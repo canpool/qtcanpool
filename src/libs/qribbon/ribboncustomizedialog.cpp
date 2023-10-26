@@ -126,7 +126,7 @@ RibbonCustomizeDialogPrivate::~RibbonCustomizeDialogPrivate() {}
 
 void RibbonCustomizeDialogPrivate::init()
 {
-    QTC_Q(RibbonCustomizeDialog);
+    Q_Q(RibbonCustomizeDialog);
     q->setWindowTitle(RibbonBar::tr_compatible(RibbonCustomizeDialogOptionsString));
 
     q->resize(734, 465);
@@ -287,19 +287,19 @@ RibbonCustomizeDialog::RibbonCustomizeDialog(QWidget *parent) : QDialog(parent)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    QTC_INIT_PRIVATE(RibbonCustomizeDialog);
-    QTC_D(RibbonCustomizeDialog);
+    QRN_INIT_PRIVATE(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     d->init();
 }
 
-RibbonCustomizeDialog::~RibbonCustomizeDialog() { QTC_FINI_PRIVATE(); }
+RibbonCustomizeDialog::~RibbonCustomizeDialog() { QRN_FINI_PRIVATE(); }
 
 /*!
 Adds a widget to the dialogue as a setting \a page.
 */
 void RibbonCustomizeDialog::addPage(QWidget *page)
 {
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     Q_ASSERT(page != Q_NULL);
     RibbonCustomizePageWidget *pageWidget = new RibbonCustomizePageWidget(this);
     pageWidget->setContent(page);
@@ -321,7 +321,7 @@ Inserts a widget to the dialogue in a position \a index as a setting \a page.
 */
 void RibbonCustomizeDialog::insertPage(int index, QWidget *page)
 {
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     Q_ASSERT(page != Q_NULL);
     RibbonCustomizePageWidget *pageWidget = new RibbonCustomizePageWidget(this);
     pageWidget->setContent(page);
@@ -337,7 +337,7 @@ Returns index of the \a page.
 */
 int RibbonCustomizeDialog::indexOf(QWidget *page) const
 {
-    QTC_D(const RibbonCustomizeDialog);
+    Q_D(const RibbonCustomizeDialog);
     return d->m_listWidget.indexOf(page);
 }
 
@@ -346,7 +346,7 @@ Returns a \a page that is active at the moment.
 */
 QWidget *RibbonCustomizeDialog::currentPage() const
 {
-    QTC_D(const RibbonCustomizeDialog);
+    Q_D(const RibbonCustomizeDialog);
     return d->m_listWidget.at(d->m_currentPage);
 }
 
@@ -365,7 +365,7 @@ Returns an index of the page that is active at the moment.
 */
 int RibbonCustomizeDialog::currentPageIndex() const
 {
-    QTC_D(const RibbonCustomizeDialog);
+    Q_D(const RibbonCustomizeDialog);
     return d->m_currentPage;
 }
 
@@ -374,7 +374,7 @@ Makes the page with the \a index an active.
 */
 void RibbonCustomizeDialog::setCurrentPageIndex(int index)
 {
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
 
     if (index == -1) {
         Q_ASSERT(false);
@@ -394,7 +394,7 @@ Returns a count of the pages in the dialogue.
 */
 int RibbonCustomizeDialog::pageCount() const
 {
-    QTC_D(const RibbonCustomizeDialog);
+    Q_D(const RibbonCustomizeDialog);
     return d->m_listWidget.count();
 }
 
@@ -403,14 +403,14 @@ Returns a page by its \a index.
 */
 QWidget *RibbonCustomizeDialog::pageByIndex(int index) const
 {
-    QTC_D(const RibbonCustomizeDialog);
+    Q_D(const RibbonCustomizeDialog);
     return d->m_listWidget[index];
 }
 
 /*! \reimp */
 void RibbonCustomizeDialog::accept()
 {
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     QDialog::accept();
     d->setCustomizeMode(false);
 }
@@ -418,7 +418,7 @@ void RibbonCustomizeDialog::accept()
 /*! \reimp */
 void RibbonCustomizeDialog::reject()
 {
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     QDialog::reject();
     d->setCustomizeMode(false);
 }
@@ -427,7 +427,7 @@ void RibbonCustomizeDialog::reject()
 void RibbonCustomizeDialog::showEvent(QShowEvent *event)
 {
     QDialog::showEvent(event);
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     d->setCustomizeMode(true);
     if (d->m_currentPage != -1)
         setCurrentPageIndex(d->m_currentPage);
@@ -436,7 +436,7 @@ void RibbonCustomizeDialog::showEvent(QShowEvent *event)
 /*! \reimp */
 void RibbonCustomizeDialog::hideEvent(QHideEvent *event)
 {
-    QTC_D(RibbonCustomizeDialog);
+    Q_D(RibbonCustomizeDialog);
     QDialog::hideEvent(event);
     for (int index = 0, count = d->m_listPage->count(); count > index; ++index) {
         if (RibbonCustomizePageItem *posItem = dynamic_cast<RibbonCustomizePageItem *>(d->m_listPage->item(index))) {

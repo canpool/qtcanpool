@@ -7,7 +7,7 @@
 
 QRIBBON_BEGIN_NAMESPACE
 
-#define QRIBBON_VERSION_STR QTC_QUOTE(QRIBBON_VERSION)
+#define QRIBBON_VERSION_STR QRN_QUOTE(QRIBBON_VERSION)
 
 extern const char *RibbonCustomizeQuickAccessToolBarDotString;
 extern const char *RibbonCustomizeQuickAccessToolBarString;

@@ -38,7 +38,7 @@ public:
 class RibbonSystemButtonPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonSystemButton)
+    QRN_DECLARE_PUBLIC(RibbonSystemButton)
 public:
     explicit RibbonSystemButtonPrivate() { m_widget = Q_NULL; }
 public:
@@ -60,7 +60,7 @@ private:
 class RibbonSystemPopupBarPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonSystemPopupBar)
+    QRN_DECLARE_PUBLIC(RibbonSystemPopupBar)
 public:
     explicit RibbonSystemPopupBarPrivate();
 public:
@@ -72,7 +72,7 @@ public:
 class RibbonPageSystemRecentFileListPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonPageSystemRecentFileList)
+    QRN_DECLARE_PUBLIC(RibbonPageSystemRecentFileList)
 public:
     explicit RibbonPageSystemRecentFileListPrivate();
 public:
@@ -94,7 +94,7 @@ public:
 
 class RibbonPageSystemPopupPrivate : public QObject
 {
-    QTC_DECLARE_PUBLIC(RibbonPageSystemPopup)
+    QRN_DECLARE_PUBLIC(RibbonPageSystemPopup)
 public:
     explicit RibbonPageSystemPopupPrivate() { m_parentMenu = Q_NULL; }
 public:
@@ -105,9 +105,9 @@ public:
 QRIBBON_END_NAMESPACE
 
 /* RibbonSystemButton */
-RibbonSystemButton::RibbonSystemButton(QWidget *parent) : QToolButton(parent) { QTC_INIT_PRIVATE(RibbonSystemButton); }
+RibbonSystemButton::RibbonSystemButton(QWidget *parent) : QToolButton(parent) { QRN_INIT_PRIVATE(RibbonSystemButton); }
 
-RibbonSystemButton::~RibbonSystemButton() { QTC_FINI_PRIVATE(); }
+RibbonSystemButton::~RibbonSystemButton() { QRN_FINI_PRIVATE(); }
 
 void RibbonSystemButton::setBackstage(RibbonBackstageView *backstage)
 {
@@ -115,7 +115,7 @@ void RibbonSystemButton::setBackstage(RibbonBackstageView *backstage)
     if (!backstage)
         return;
 
-    QTC_D(RibbonSystemButton);
+    Q_D(RibbonSystemButton);
     if (QAction *action = defaultAction()) {
         d->m_widget = Q_NULL;
         if (QMenu *menu = action->menu()) {
@@ -130,7 +130,7 @@ void RibbonSystemButton::setBackstage(RibbonBackstageView *backstage)
 
 RibbonBackstageView *RibbonSystemButton::backstage() const
 {
-    QTC_D(const RibbonSystemButton);
+    Q_D(const RibbonSystemButton);
     return qobject_cast<RibbonBackstageView *>(d->m_widget);
 }
 
@@ -166,7 +166,7 @@ QSize RibbonSystemButton::sizeHint() const
     else if (opt.toolButtonStyle == Qt::ToolButtonIconOnly)
         indent = 24;
 
-    int heightTabs = ribbonBar->qtc_d()->heightTabs() - 2;
+    int heightTabs = ribbonBar->d_func()->heightTabs() - 2;
     return QSize(sz.width() + indent, heightTabs).expandedTo(QApplication::globalStrut());
 }
 
@@ -219,7 +219,7 @@ void RibbonSystemButton::paintEvent(QPaintEvent *event)
 /*! \reimp */
 void RibbonSystemButton::mousePressEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonSystemButton);
+    Q_D(RibbonSystemButton);
     if (RibbonBackstageView *backstage = qobject_cast<RibbonBackstageView *>(d->m_widget)) {
         if (backstage->isVisible()) {
             backstage->close();
@@ -264,13 +264,13 @@ RibbonSystemPopupBarPrivate::RibbonSystemPopupBarPrivate()
 }
 
 /* RibbonSystemPopupBar */
-RibbonSystemPopupBar::RibbonSystemPopupBar(QWidget *parent) : QMenu(parent) { QTC_INIT_PRIVATE(RibbonSystemPopupBar); }
+RibbonSystemPopupBar::RibbonSystemPopupBar(QWidget *parent) : QMenu(parent) { QRN_INIT_PRIVATE(RibbonSystemPopupBar); }
 
-RibbonSystemPopupBar::~RibbonSystemPopupBar() { QTC_FINI_PRIVATE(); }
+RibbonSystemPopupBar::~RibbonSystemPopupBar() { QRN_FINI_PRIVATE(); }
 
 QAction *RibbonSystemPopupBar::addPopupBarAction(const QString &text)
 {
-    QTC_D(RibbonSystemPopupBar);
+    Q_D(RibbonSystemPopupBar);
     SysPopupRibbonButton *systemPopupBarButton = new SysPopupRibbonButton(this);
     systemPopupBarButton->setAutoRaise(true);
     systemPopupBarButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
@@ -285,7 +285,7 @@ QAction *RibbonSystemPopupBar::addPopupBarAction(const QString &text)
 
 void RibbonSystemPopupBar::addPopupBarAction(QAction *pAction, Qt::ToolButtonStyle style)
 {
-    QTC_D(RibbonSystemPopupBar);
+    Q_D(RibbonSystemPopupBar);
     if (style == Qt::ToolButtonTextUnderIcon) {
         Q_ASSERT_X(false, Q_FUNC_INFO, "Invalid style button");
         return;
@@ -305,7 +305,7 @@ RibbonPageSystemRecentFileList *RibbonSystemPopupBar::addPageRecentFile(const QS
 {
     RibbonPageSystemRecentFileList *recentFileList = new RibbonPageSystemRecentFileList(caption);
     recentFileList->setParent(this);
-    QTC_D(RibbonSystemPopupBar);
+    Q_D(RibbonSystemPopupBar);
     d->m_pageList.append(recentFileList);
     adjustSize();
     return recentFileList;
@@ -317,7 +317,7 @@ RibbonPageSystemPopup *RibbonSystemPopupBar::addPageSystemPopup(const QString &c
     RibbonPageSystemPopup *pageSystemPopupBar = new RibbonPageSystemPopup(caption, this);
     pageSystemPopupBar->setDefaultAction(defaultAction);
     if (splitAction)
-        defaultAction->setObjectName(_qtc_SplitActionPopup);
+        defaultAction->setObjectName(_qrn_SplitActionPopup);
     defaultAction->setMenu(pageSystemPopupBar);
 
     QtcEventParent e(this);
@@ -329,7 +329,7 @@ RibbonPageSystemPopup *RibbonSystemPopupBar::addPageSystemPopup(const QString &c
 /*! \reimp */
 QSize RibbonSystemPopupBar::sizeHint() const
 {
-    QTC_D(const RibbonSystemPopupBar);
+    Q_D(const RibbonSystemPopupBar);
 
     QSize sz = QMenu::sizeHint();
     sz.setHeight(sz.height() + 12);
@@ -358,13 +358,13 @@ void RibbonSystemPopupBar::showEvent(QShowEvent *event)
                             if (ribbonBar->tabBarPosition() != RibbonBar::TabBarBottomPosition) {
                                 QPoint posParent = ribbonBar->mapToGlobal(ribbonBar->pos());
                                 move(QPoint(posMenu.x(), posParent.y() + ribbonBar->titleBarHeight() +
-                                                             ribbonBar->qtc_d()->topBorder()));
+                                                             ribbonBar->d_func()->topBorder()));
                             } else {
                                 QPoint posParent = ribbonBar->mapToGlobal(ribbonBar->pos());
                                 RibbonSystemButton *systemButton = ribbonBar->getSystemButton();
                                 move(QPoint(posMenu.x(), posParent.y() + systemButton->geometry().top() +
                                                              systemButton->geometry().height() / 2 +
-                                                             ribbonBar->qtc_d()->topBorder()));
+                                                             ribbonBar->d_func()->topBorder()));
                             }
                         }
                     }
@@ -400,7 +400,7 @@ void RibbonSystemPopupBar::mousePressEvent(QMouseEvent *event)
 void RibbonSystemPopupBar::mouseReleaseEvent(QMouseEvent *event)
 {
     QAction *action = actionAt(event->pos());
-    if (action && (action->objectName() == QString(_qtc_SplitActionPopup))) {
+    if (action && (action->objectName() == QString(_qrn_SplitActionPopup))) {
         QRect rect = actionGeometry(action);
         rect.adjust(0, 0, -splitActionPopupWidth, 0);
         if (rect.contains(event->pos())) {
@@ -414,7 +414,7 @@ void RibbonSystemPopupBar::mouseReleaseEvent(QMouseEvent *event)
 /*! \reimp */
 void RibbonSystemPopupBar::paintEvent(QPaintEvent *event)
 {
-    QTC_D(RibbonSystemPopupBar);
+    Q_D(RibbonSystemPopupBar);
 
     QPainter p(this);
 
@@ -439,8 +439,8 @@ void RibbonSystemPopupBar::paintEvent(QPaintEvent *event)
         initStyleOption(&opt, action);
         opt.rect = adjustedActionRect;
 
-        if (action->objectName() == QString(_qtc_SplitActionPopup)) {
-            opt.text = QString(_qtc_SplitActionPopup) + opt.text;
+        if (action->objectName() == QString(_qrn_SplitActionPopup)) {
+            opt.text = QString(_qrn_SplitActionPopup) + opt.text;
 
             QPoint pnt = mapFromGlobal(QCursor::pos());
             if (opt.rect.adjusted(0, 0, -splitActionPopupWidth, 0).contains(pnt))
@@ -537,7 +537,7 @@ void RibbonSystemPopupBar::keyPressEvent(QKeyEvent *event)
     QMenu::keyPressEvent(event);
 
     if (!event->isAccepted()) {
-        QTC_D(RibbonSystemPopupBar);
+        Q_D(RibbonSystemPopupBar);
         for (int i = 0; i < d->m_pageList.count(); i++) {
             if (RibbonPageSystemPopupListCaption *page =
                     qobject_cast<RibbonPageSystemPopupListCaption *>(d->m_pageList.at(i))) {
@@ -553,7 +553,7 @@ void RibbonSystemPopupBar::resizeEvent(QResizeEvent *event)
 {
     QMenu::resizeEvent(event);
 
-    QTC_D(RibbonSystemPopupBar);
+    Q_D(RibbonSystemPopupBar);
 
     QSize sz(rect().size());
 
@@ -671,7 +671,7 @@ RibbonPageSystemRecentFileListPrivate::RibbonPageSystemRecentFileListPrivate()
 
 QAction *RibbonPageSystemRecentFileListPrivate::actionAt(const QPoint &pt) const
 {
-    QTC_Q(const RibbonPageSystemRecentFileList);
+    Q_Q(const RibbonPageSystemRecentFileList);
 
     if (!q->rect().contains(pt))   // sanity check
         return 0;
@@ -697,7 +697,7 @@ QRect RibbonPageSystemRecentFileListPrivate::actionRect(QAction *act) const
 
 void RibbonPageSystemRecentFileListPrivate::setCurrentAction(QAction *currentAction)
 {
-    QTC_Q(RibbonPageSystemRecentFileList);
+    Q_Q(RibbonPageSystemRecentFileList);
 
     if (m_currentAction && m_currentAction != currentAction)
         q->update(actionRect(m_currentAction));
@@ -714,7 +714,7 @@ void RibbonPageSystemRecentFileListPrivate::activateAction(QAction *action, QAct
     Q_UNUSED(self);
     Q_UNUSED(action_e);
 
-    QTC_Q(RibbonPageSystemRecentFileList);
+    Q_Q(RibbonPageSystemRecentFileList);
     q->parentWidget()->hide();
 
     //    action->activate(action_e);
@@ -723,7 +723,7 @@ void RibbonPageSystemRecentFileListPrivate::activateAction(QAction *action, QAct
 
 void RibbonPageSystemRecentFileListPrivate::updateActionRects() const
 {
-    QTC_Q(const RibbonPageSystemRecentFileList);
+    Q_Q(const RibbonPageSystemRecentFileList);
     if (!m_itemsDirty)
         return;
 
@@ -794,7 +794,7 @@ void RibbonPageSystemRecentFileListPrivate::initStyleOption(QStyleOptionMenuItem
     if (!option || !action)
         return;
 
-    QTC_Q(const RibbonPageSystemRecentFileList);
+    Q_Q(const RibbonPageSystemRecentFileList);
 
     option->initFrom(q);
     option->palette = q->palette();
@@ -843,7 +843,7 @@ void RibbonPageSystemRecentFileListPrivate::initStyleOption(QStyleOptionMenuItem
 RibbonPageSystemRecentFileList::RibbonPageSystemRecentFileList(const QString &caption)
     : RibbonPageSystemPopupListCaption(caption)
 {
-    QTC_INIT_PRIVATE(RibbonPageSystemRecentFileList);
+    QRN_INIT_PRIVATE(RibbonPageSystemRecentFileList);
 
     if (caption.isEmpty())
         setWindowTitle(RibbonBar::tr_compatible(RibbonRecentDocumentsString));
@@ -851,11 +851,11 @@ RibbonPageSystemRecentFileList::RibbonPageSystemRecentFileList(const QString &ca
     setAttribute(Qt::WA_MouseTracking, true);
 }
 
-RibbonPageSystemRecentFileList::~RibbonPageSystemRecentFileList() { QTC_FINI_PRIVATE(); }
+RibbonPageSystemRecentFileList::~RibbonPageSystemRecentFileList() { QRN_FINI_PRIVATE(); }
 
 void RibbonPageSystemRecentFileList::setSize(int size)
 {
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
 
     if (size < 0 || size > 9) {
         Q_ASSERT_X(false, Q_FUNC_INFO, "Number of files could not be more than 9.");
@@ -880,13 +880,13 @@ void RibbonPageSystemRecentFileList::setSize(int size)
 
 int RibbonPageSystemRecentFileList::getSize() const
 {
-    QTC_D(const RibbonPageSystemRecentFileList);
+    Q_D(const RibbonPageSystemRecentFileList);
     return d->m_recentFileActs.size();
 }
 
 QAction *RibbonPageSystemRecentFileList::getCurrentAction() const
 {
-    QTC_D(const RibbonPageSystemRecentFileList);
+    Q_D(const RibbonPageSystemRecentFileList);
     return d->m_currentAction;
 }
 
@@ -894,7 +894,7 @@ static QString strippedName(const QString &fullFileName) { return QFileInfo(full
 
 void RibbonPageSystemRecentFileList::updateRecentFileActions(const QStringList &files)
 {
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
 
     if (d->m_recentFileActs.size() == 0) {
         Q_ASSERT_X(false, Q_FUNC_INFO, "Number of files not defined.");
@@ -920,7 +920,7 @@ void RibbonPageSystemRecentFileList::updateRecentFileActions(const QStringList &
 
 void RibbonPageSystemRecentFileList::drawEvent(QPaintEvent *event, QPainter *p)
 {
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
 
     QRegion emptyArea = QRegion(rect());
     // draw the items that need updating..
@@ -964,7 +964,7 @@ void RibbonPageSystemRecentFileList::mousePressEvent(QMouseEvent *event)
 /*! \reimp */
 void RibbonPageSystemRecentFileList::mouseMoveEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
 
     if (!isVisible())
         return;
@@ -974,7 +974,7 @@ void RibbonPageSystemRecentFileList::mouseMoveEvent(QMouseEvent *event)
 /*! \reimp */
 void RibbonPageSystemRecentFileList::mouseReleaseEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
 
     QAction *action = d->actionAt(event->pos());
     if (action && action == d->m_currentAction) {
@@ -1003,7 +1003,7 @@ void RibbonPageSystemRecentFileList::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
 
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
     d->setCurrentAction(Q_NULL);
     parentWidget()->setFocus();
 }
@@ -1011,7 +1011,7 @@ void RibbonPageSystemRecentFileList::leaveEvent(QEvent *event)
 /*! \reimp */
 void RibbonPageSystemRecentFileList::keyPressEvent(QKeyEvent *event)
 {
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
 
     int key = event->key();
     bool key_consumed = false;
@@ -1168,35 +1168,35 @@ void RibbonPageSystemRecentFileList::resizeEvent(QResizeEvent *event)
 {
     RibbonPageSystemPopupListCaption::resizeEvent(event);
 
-    QTC_D(RibbonPageSystemRecentFileList);
+    Q_D(RibbonPageSystemRecentFileList);
     d->updateActionRects();
 }
 
 /* RibbonPageSystemPopup */
 RibbonPageSystemPopup::RibbonPageSystemPopup(const QString &caption, QWidget *parent) : QMenu(parent)
 {
-    QTC_INIT_PRIVATE(RibbonPageSystemPopup);
-    QTC_D(RibbonPageSystemPopup);
+    QRN_INIT_PRIVATE(RibbonPageSystemPopup);
+    Q_D(RibbonPageSystemPopup);
     d->m_caption = caption;
 
-    QString text = QString(_qtc_PopupLable) + d->m_caption;
+    QString text = QString(_qrn_PopupLable) + d->m_caption;
     QAction *actLabel = new QAction(text, this);
     addAction(actLabel);
 }
 
-RibbonPageSystemPopup::~RibbonPageSystemPopup() { QTC_FINI_PRIVATE(); }
+RibbonPageSystemPopup::~RibbonPageSystemPopup() { QRN_FINI_PRIVATE(); }
 
 /*! \reimp */
 bool RibbonPageSystemPopup::event(QEvent *event)
 {
-    QTC_D(RibbonPageSystemPopup);
+    Q_D(RibbonPageSystemPopup);
     bool result = QMenu::event(event);
 
     if (event->type() == QEvent::Move) {
-        QTC_D(RibbonPageSystemPopup);
+        Q_D(RibbonPageSystemPopup);
         if (RibbonSystemPopupBar *parent = qobject_cast<RibbonSystemPopupBar *>(d->m_parentMenu)) {
             QSize sz = parent->QMenu::sizeHint();
-            QRect rcBorders = parent->qtc_d()->m_rcBorders;
+            QRect rcBorders = parent->d_func()->m_rcBorders;
             QPoint pnt(sz.width() - rcBorders.left() + 1, rcBorders.top() + 1);
             pnt = parent->mapToGlobal(pnt);
             setGeometry(QRect(pnt, QSize(sizeHint().width(), sz.height() - rcBorders.bottom() - rcBorders.top() / 2)));
@@ -1215,7 +1215,7 @@ bool RibbonPageSystemPopup::event(QEvent *event)
 /*! \reimp */
 void RibbonPageSystemPopup::paintEvent(QPaintEvent *event)
 {
-    QTC_D(RibbonPageSystemPopup);
+    Q_D(RibbonPageSystemPopup);
 
     QPainter p(this);
 
@@ -1241,7 +1241,7 @@ void RibbonPageSystemPopup::paintEvent(QPaintEvent *event)
         initStyleOption(&opt, action);
         opt.rect = adjustedActionRect;
 
-        if (opt.text.count(QString(_qtc_PopupLable)) == 0)
+        if (opt.text.count(QString(_qrn_PopupLable)) == 0)
             opt.text = opt.text + QString("\n") + action->toolTip();
 
         style()->drawControl(QStyle::CE_MenuItem, &opt, &p, this);

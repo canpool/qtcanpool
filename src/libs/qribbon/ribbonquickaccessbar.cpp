@@ -62,7 +62,7 @@ public:
     QuickAccessActionInvisible(QObject *p, QActionGroup *data) : QAction(p)
     {
         m_data = data;
-        setProperty(__qtc_Action_Invisible, QLatin1String("__qtc_Action_Invisible"));
+        setProperty(__qrn_Action_Invisible, QLatin1String("__qrn_Action_Invisible"));
         setVisible(false);
     }
 public:
@@ -74,7 +74,7 @@ private:
 class RibbonQuickAccessBarPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonQuickAccessBar)
+    QRN_DECLARE_PUBLIC(RibbonQuickAccessBar)
 public:
     explicit RibbonQuickAccessBarPrivate();
     virtual ~RibbonQuickAccessBarPrivate();
@@ -139,7 +139,7 @@ RibbonQuickAccessBarPrivate::~RibbonQuickAccessBarPrivate() {}
 
 void RibbonQuickAccessBarPrivate::init()
 {
-    QTC_Q(RibbonQuickAccessBar);
+    Q_Q(RibbonQuickAccessBar);
     q->setIconSize(QSize(16, 16));
     m_accessPopup = new RibbonQuickAccessButton(q);
     m_accessPopup->setPopupMode(QToolButton::InstantPopup);
@@ -147,7 +147,7 @@ void RibbonQuickAccessBarPrivate::init()
     m_accessPopup->setMenu(m_menu);
 
     m_actionAccessPopup = q->addWidget(m_accessPopup);
-    m_actionAccessPopup->setProperty(__qtc_Quick_Access_Button, QLatin1String("__qtc_Quick_Access_Button"));
+    m_actionAccessPopup->setProperty(__qrn_Quick_Access_Button, QLatin1String("__qrn_Quick_Access_Button"));
 
     m_customizeGroupAction = new QActionGroup(q);
     m_customizeGroupAction->setExclusive(false);
@@ -198,7 +198,7 @@ void RibbonQuickAccessBarPrivate::updateAction(QAction *action)
 
 void RibbonQuickAccessBarPrivate::updateParentLayout() const
 {
-    QTC_Q(const RibbonQuickAccessBar);
+    Q_Q(const RibbonQuickAccessBar);
     if (!q->isVisible())
         return;
 
@@ -210,7 +210,7 @@ void RibbonQuickAccessBarPrivate::updateParentLayout() const
 
 void RibbonQuickAccessBarPrivate::setActionVisible(QAction *action, bool visible)
 {
-    QTC_Q(RibbonQuickAccessBar);
+    Q_Q(RibbonQuickAccessBar);
     if (QuickAccessAction *wrapper = findQuickAccessAction(action)) {
         if (visible) {
             if (m_customizeAction) {
@@ -230,19 +230,19 @@ void RibbonQuickAccessBarPrivate::setActionVisible(QAction *action, bool visible
 /* RibbonQuickAccessBar */
 RibbonQuickAccessBar::RibbonQuickAccessBar(QWidget *parent) : QToolBar(parent)
 {
-    QTC_INIT_PRIVATE(RibbonQuickAccessBar);
-    QTC_D(RibbonQuickAccessBar);
+    QRN_INIT_PRIVATE(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
     d->init();
 }
 
-RibbonQuickAccessBar::~RibbonQuickAccessBar() { QTC_FINI_PRIVATE(); }
+RibbonQuickAccessBar::~RibbonQuickAccessBar() { QRN_FINI_PRIVATE(); }
 
 /*!
 \brief Returns a pointer to the QAction that is associated with the customize button of Ribbon's Quick Access Bar.
 */
 QAction *RibbonQuickAccessBar::actionCustomizeButton() const
 {
-    QTC_D(const RibbonQuickAccessBar);
+    Q_D(const RibbonQuickAccessBar);
     return d->m_actionAccessPopup;
 }
 
@@ -252,7 +252,7 @@ action, parameter \a visible is a visibility.
 */
 void RibbonQuickAccessBar::setActionVisible(QAction *action, bool visible)
 {
-    QTC_D(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
     d->setActionVisible(action, visible);
 }
 
@@ -261,7 +261,7 @@ void RibbonQuickAccessBar::setActionVisible(QAction *action, bool visible)
 */
 bool RibbonQuickAccessBar::isActionVisible(QAction *action) const
 {
-    QTC_D(const RibbonQuickAccessBar);
+    Q_D(const RibbonQuickAccessBar);
     if (QuickAccessAction *wrapper = d->findQuickAccessAction(action))
         return wrapper->isChecked();
     return false;
@@ -272,7 +272,7 @@ bool RibbonQuickAccessBar::isActionVisible(QAction *action) const
 */
 int RibbonQuickAccessBar::visibleCount() const
 {
-    QTC_D(const RibbonQuickAccessBar);
+    Q_D(const RibbonQuickAccessBar);
     int visibleCount = 0;
     QList<QAction *> list = d->m_customizeGroupAction->actions();
     for (int i = 0, count = list.count(); i < count; ++i) {
@@ -293,21 +293,21 @@ QSize RibbonQuickAccessBar::sizeHint() const
     if (ribbonBar == Q_NULL)
         return QToolBar::sizeHint();
 
-    int heightTabs = ribbonBar->qtc_d()->heightTabs();
+    int heightTabs = ribbonBar->d_func()->heightTabs();
     return QSize(QToolBar::sizeHint().width(), heightTabs + 1).expandedTo(QApplication::globalStrut());
 }
 
 /*! \internal */
 void RibbonQuickAccessBar::customizeAction(QAction *action)
 {
-    QTC_D(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
     d->m_customizeAction = true;
     if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(action)) {
         setActionVisible(act->m_srcAction, !widgetForAction(act->m_srcAction));
         if (RibbonBar *ribbonBar = qobject_cast<RibbonBar *>(parentWidget())) {
             if (RibbonCustomizeManager *manager = ribbonBar->customizeManager()) {
                 manager->setEditMode();
-                manager->qtc_d()->m_ribbonManager->setQuickAccessBar();
+                manager->d_func()->m_ribbonManager->setQuickAccessBar();
                 manager->setEditMode(false);
             }
         }
@@ -318,7 +318,7 @@ void RibbonQuickAccessBar::customizeAction(QAction *action)
 /*! \internal */
 void RibbonQuickAccessBar::aboutToShowCustomizeMenu()
 {
-    QTC_D(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
     d->m_menu->clear();
 
     d->m_menu->setSeparatorsCollapsible(false);
@@ -336,7 +336,7 @@ void RibbonQuickAccessBar::aboutToShowCustomizeMenu()
 /*! \internal */
 void RibbonQuickAccessBar::aboutToHideCustomizeMenu()
 {
-    QTC_D(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
     d->m_menu->clear();
 }
 
@@ -354,7 +354,7 @@ bool RibbonQuickAccessBar::event(QEvent *event)
 /*! \reimp */
 void RibbonQuickAccessBar::actionEvent(QActionEvent *event)
 {
-    QTC_D(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
 
     QToolBar::actionEvent(event);
 
@@ -374,7 +374,7 @@ void RibbonQuickAccessBar::actionEvent(QActionEvent *event)
                     if (RibbonCustomizeManager *manager = ribbonBar->customizeManager()) {
                         if (manager->isEditMode()) {
                             QList<QAction *> defaultActions =
-                                manager->qtc_d()->m_ribbonManager->defaultToolBars().value(this);
+                                manager->d_func()->m_ribbonManager->defaultToolBars().value(this);
                             if (!defaultActions.contains(event->action()))
                                 addActionToMenu = false;
                         }
@@ -432,6 +432,6 @@ void RibbonQuickAccessBar::paintEvent(QPaintEvent *event)
 void RibbonQuickAccessBar::resizeEvent(QResizeEvent *event)
 {
     QToolBar::resizeEvent(event);
-    QTC_D(RibbonQuickAccessBar);
+    Q_D(RibbonQuickAccessBar);
     d->updateParentLayout();
 }

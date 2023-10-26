@@ -66,22 +66,22 @@ RibbonControlSizeDefinition::RibbonControlSizeDefinition(RibbonControl *parentCo
                                                          RibbonControlSizeDefinition::GroupSize size)
     : QObject()
 {
-    QTC_INIT_PRIVATE(RibbonControlSizeDefinition);
-    QTC_D(RibbonControlSizeDefinition);
+    QRN_INIT_PRIVATE(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->init(parentControl, size);
 }
 
-RibbonControlSizeDefinition::~RibbonControlSizeDefinition() { QTC_FINI_PRIVATE(); }
+RibbonControlSizeDefinition::~RibbonControlSizeDefinition() { QRN_FINI_PRIVATE(); }
 
 RibbonControlSizeDefinition::ControlImageSize RibbonControlSizeDefinition::imageSize() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_imageSize;
 }
 
 void RibbonControlSizeDefinition::setImageSize(RibbonControlSizeDefinition::ControlImageSize size)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     if (d->m_imageSize != size) {
         d->m_imageSize = size;
         d->updateSizeDefinition();
@@ -90,13 +90,13 @@ void RibbonControlSizeDefinition::setImageSize(RibbonControlSizeDefinition::Cont
 
 bool RibbonControlSizeDefinition::isLabelVisible() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_labelVisible;
 }
 
 void RibbonControlSizeDefinition::setLabelVisible(bool visible)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     if (d->m_labelVisible != visible) {
         d->m_labelVisible = visible;
         d->updateSizeDefinition();
@@ -105,97 +105,97 @@ void RibbonControlSizeDefinition::setLabelVisible(bool visible)
 
 bool RibbonControlSizeDefinition::isPopup() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_popup;
 }
 
 void RibbonControlSizeDefinition::setPopup(bool popup)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_popup = popup;
 }
 
 int RibbonControlSizeDefinition::visualIndex() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_visualIndex;
 }
 
 void RibbonControlSizeDefinition::setVisualIndex(int index)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_visualIndex = index;
 }
 
 bool RibbonControlSizeDefinition::showSeparator() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_showSeparator;
 }
 
 void RibbonControlSizeDefinition::setShowSeparator(bool showSeparator)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_showSeparator = showSeparator;
 }
 
 bool RibbonControlSizeDefinition::isVisible() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_visible;
 }
 
 void RibbonControlSizeDefinition::setVisible(bool visible)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_visible = visible;
 }
 
 bool RibbonControlSizeDefinition::isEnabled() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_enabled;
 }
 
 void RibbonControlSizeDefinition::setEnabled(bool enabled)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_enabled = enabled;
 }
 
 bool RibbonControlSizeDefinition::isStretchable() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_stretchable;
 }
 
 void RibbonControlSizeDefinition::setStretchable(bool stretchable)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_stretchable = stretchable;
 }
 
 int RibbonControlSizeDefinition::minimumItemCount() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_minItemCount;
 }
 
 void RibbonControlSizeDefinition::setMinimumItemCount(int count)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_minItemCount = count;
 }
 
 int RibbonControlSizeDefinition::maximumItemCount() const
 {
-    QTC_D(const RibbonControlSizeDefinition);
+    Q_D(const RibbonControlSizeDefinition);
     return d->m_maxItemCount;
 }
 
 void RibbonControlSizeDefinition::setMaximumItemCount(int count)
 {
-    QTC_D(RibbonControlSizeDefinition);
+    Q_D(RibbonControlSizeDefinition);
     d->m_maxItemCount = count;
 }
 
@@ -216,7 +216,7 @@ RibbonControlPrivate::~RibbonControlPrivate()
 
 void RibbonControlPrivate::init(RibbonGroup *parentGroup)
 {
-    QTC_Q(RibbonControl)
+    Q_Q(RibbonControl);
     m_parentGroup = parentGroup;
     m_allSizes.append(new RibbonControlSizeDefinition(q, RibbonControlSizeDefinition::GroupLarge));    // Large
     m_allSizes.append(new RibbonControlSizeDefinition(q, RibbonControlSizeDefinition::GroupMedium));   // Medium
@@ -229,8 +229,8 @@ void RibbonControlPrivate::changed() {}
 /* RibbonControl */
 RibbonControl::RibbonControl(RibbonGroup *parentGroup) : QWidget(Q_NULL)
 {
-    QTC_INIT_PRIVATE(RibbonControl);
-    QTC_D(RibbonControl);
+    QRN_INIT_PRIVATE(RibbonControl);
+    Q_D(RibbonControl);
     d->init(parentGroup);
 }
 
@@ -238,24 +238,24 @@ RibbonControl::~RibbonControl()
 {
     if (parentGroup())
         parentGroup()->removeControl(this);
-    QTC_FINI_PRIVATE();
+    QRN_FINI_PRIVATE();
 }
 
 RibbonGroup *RibbonControl::parentGroup() const
 {
-    QTC_D(const RibbonControl);
+    Q_D(const RibbonControl);
     return d->m_parentGroup;
 }
 
 QAction *RibbonControl::defaultAction() const
 {
-    QTC_D(const RibbonControl);
+    Q_D(const RibbonControl);
     return d->m_action;
 }
 
 void RibbonControl::setDefaultAction(QAction *action)
 {
-    QTC_D(RibbonControl);
+    Q_D(RibbonControl);
     if (d->m_action == action)
         return;
     d->m_action = action;
@@ -264,7 +264,7 @@ void RibbonControl::setDefaultAction(QAction *action)
 
 RibbonControlSizeDefinition *RibbonControl::sizeDefinition(RibbonControlSizeDefinition::GroupSize size) const
 {
-    QTC_D(const RibbonControl);
+    Q_D(const RibbonControl);
     return d->m_allSizes[(int)size];
 }
 
@@ -272,13 +272,13 @@ void RibbonControl::adjustCurrentSize(bool expand) { Q_UNUSED(expand); }
 
 void RibbonControl::sizeChanged(RibbonControlSizeDefinition::GroupSize size)
 {
-    QTC_D(RibbonControl);
+    Q_D(RibbonControl);
     d->m_size = size;
 }
 
 void RibbonControl::actionChanged()
 {
-    QTC_D(RibbonControl);
+    Q_D(RibbonControl);
     d->changed();
 }
 
@@ -286,7 +286,7 @@ void RibbonControl::updateLayout() {}
 
 RibbonControlSizeDefinition::GroupSize RibbonControl::currentSize() const
 {
-    QTC_D(const RibbonControl);
+    Q_D(const RibbonControl);
     return d->m_size;
 }
 
@@ -300,7 +300,7 @@ RibbonWidgetControlPrivate::~RibbonWidgetControlPrivate() {}
 
 void RibbonWidgetControlPrivate::init(bool ignoreActionSettings)
 {
-    QTC_Q(RibbonWidgetControl);
+    Q_Q(RibbonWidgetControl);
     m_ignoreActionSettings = ignoreActionSettings;
 
     q->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(true);
@@ -314,7 +314,7 @@ void RibbonWidgetControlPrivate::init(bool ignoreActionSettings)
 
 void RibbonWidgetControlPrivate::initStyleOption(QStyleOptionButton *option) const
 {
-    QTC_Q(const RibbonWidgetControl);
+    Q_Q(const RibbonWidgetControl);
     option->init(q);
     QAction *action = q->defaultAction();
     if (action && !m_ignoreActionSettings) {
@@ -338,34 +338,34 @@ void RibbonWidgetControlPrivate::clearWidget()
 RibbonWidgetControl::RibbonWidgetControl(RibbonGroup *parentGroup, bool ignoreActionSettings)
     : RibbonControl(parentGroup)
 {
-    QTC_INIT_PRIVATE(RibbonWidgetControl);
-    QTC_D(RibbonWidgetControl);
+    QRN_INIT_PRIVATE(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     d->init(ignoreActionSettings);
 }
 
-RibbonWidgetControl::~RibbonWidgetControl() { QTC_FINI_PRIVATE(); }
+RibbonWidgetControl::~RibbonWidgetControl() { QRN_FINI_PRIVATE(); }
 
 int RibbonWidgetControl::margin() const
 {
-    QTC_D(const RibbonWidgetControl);
+    Q_D(const RibbonWidgetControl);
     return d->m_margin;
 }
 
 void RibbonWidgetControl::setMargin(int margin)
 {
-    QTC_D(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     d->m_margin = margin;
 }
 
 QWidget *RibbonWidgetControl::contentWidget() const
 {
-    QTC_D(const RibbonWidgetControl);
+    Q_D(const RibbonWidgetControl);
     return d->m_widget;
 }
 
 void RibbonWidgetControl::setContentWidget(QWidget *widget)
 {
-    QTC_D(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     if (d->m_widget != Q_NULL)
         delete d->m_widget;
 
@@ -383,7 +383,7 @@ void RibbonWidgetControl::setContentWidget(QWidget *widget)
 
 void RibbonWidgetControl::sizeChanged(RibbonControlSizeDefinition::GroupSize size)
 {
-    QTC_D(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     RibbonControl::sizeChanged(size);
     d->m_visibleText = sizeDefinition(size)->isLabelVisible();
 }
@@ -400,7 +400,7 @@ static QSize getBoundedSizeHint(const QWidget *widget)
 
 QSize RibbonWidgetControl::sizeHint() const
 {
-    QTC_D(const RibbonWidgetControl);
+    Q_D(const RibbonWidgetControl);
     if (d->m_widget != Q_NULL) {
         QSize sz = getBoundedSizeHint(d->m_widget);
 
@@ -423,7 +423,7 @@ QSize RibbonWidgetControl::sizeHint() const
 
 void RibbonWidgetControl::childEvent(QChildEvent *event)
 {
-    QTC_D(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     RibbonControl::childEvent(event);
 
     if (event->type() == QEvent::ChildRemoved) {
@@ -444,7 +444,7 @@ void RibbonWidgetControl::childEvent(QChildEvent *event)
 void RibbonWidgetControl::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     if (!d->m_ignoreActionSettings && d->m_widget != Q_NULL) {
         QPainter painter(this);
 
@@ -483,7 +483,7 @@ void RibbonWidgetControl::paintEvent(QPaintEvent *event)
 
 void RibbonWidgetControl::resizeEvent(QResizeEvent *event)
 {
-    QTC_D(RibbonWidgetControl);
+    Q_D(RibbonWidgetControl);
     if (d->m_widget != Q_NULL) {
         int x = 0;
         int y = 0;
@@ -521,7 +521,7 @@ RibbonColumnBreakControlPrivate::~RibbonColumnBreakControlPrivate() {}
 
 void RibbonColumnBreakControlPrivate::init()
 {
-    QTC_Q(RibbonColumnBreakControl);
+    Q_Q(RibbonColumnBreakControl);
     QFont fnt = QApplication::font("QMenuBar");
     qreal pointSize = 0.8 * fnt.pointSizeF();
     fnt.setPointSizeF(pointSize);
@@ -530,7 +530,7 @@ void RibbonColumnBreakControlPrivate::init()
 
 void RibbonColumnBreakControlPrivate::initStyleOption(QStyleOptionGroupBox *option) const
 {
-    QTC_Q(const RibbonColumnBreakControl);
+    Q_Q(const RibbonColumnBreakControl);
     option->initFrom(q);
     option->state |= QStyle::State_Horizontal;
     option->textAlignment = m_textAlignment;
@@ -541,22 +541,22 @@ void RibbonColumnBreakControlPrivate::initStyleOption(QStyleOptionGroupBox *opti
 /* RibbonWidgetControl */
 RibbonColumnBreakControl::RibbonColumnBreakControl(RibbonGroup *parentGroup) : RibbonWidgetControl(parentGroup, true)
 {
-    QTC_INIT_PRIVATE(RibbonColumnBreakControl);
-    QTC_D(RibbonColumnBreakControl);
+    QRN_INIT_PRIVATE(RibbonColumnBreakControl);
+    Q_D(RibbonColumnBreakControl);
     d->init();
 }
 
-RibbonColumnBreakControl::~RibbonColumnBreakControl() { QTC_FINI_PRIVATE(); }
+RibbonColumnBreakControl::~RibbonColumnBreakControl() { QRN_FINI_PRIVATE(); }
 
 Qt::Alignment RibbonColumnBreakControl::alignmentText() const
 {
-    QTC_D(const RibbonColumnBreakControl);
+    Q_D(const RibbonColumnBreakControl);
     return d->m_textAlignment;
 }
 
 void RibbonColumnBreakControl::setAlignmentText(Qt::Alignment alignment)
 {
-    QTC_D(RibbonColumnBreakControl);
+    Q_D(RibbonColumnBreakControl);
     if (d->m_textAlignment != alignment) {
         switch (alignment) {
         case Qt::AlignTop:
@@ -586,7 +586,7 @@ void RibbonColumnBreakControl::sizeChanged(RibbonControlSizeDefinition::GroupSiz
 
 QSize RibbonColumnBreakControl::sizeHint() const
 {
-    QTC_D(const RibbonColumnBreakControl);
+    Q_D(const RibbonColumnBreakControl);
     if (!parentGroup() || !parentGroup()->ribbonBar())
         return QWidget::sizeHint();
 
@@ -606,7 +606,7 @@ QSize RibbonColumnBreakControl::sizeHint() const
 void RibbonColumnBreakControl::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonColumnBreakControl);
+    Q_D(RibbonColumnBreakControl);
     QPainter p(this);
     QStyleOptionGroupBox opt;
     d->initStyleOption(&opt);
@@ -666,7 +666,7 @@ RibbonToolBarControlPrivate::~RibbonToolBarControlPrivate() {}
 
 void RibbonToolBarControlPrivate::recalcWidths(int height)
 {
-    QTC_Q(RibbonToolBarControl);
+    Q_Q(RibbonToolBarControl);
     if (q->parentGroup() == Q_NULL)
         return;
 
@@ -724,7 +724,7 @@ void RibbonToolBarControlPrivate::recalcWidths(int height)
 
 void RibbonToolBarControlPrivate::showDefaultButton()
 {
-    QTC_Q(RibbonToolBarControl);
+    Q_Q(RibbonToolBarControl);
     if (q->parentGroup() == Q_NULL)
         return;
     QStyleOptionToolButton opt;
@@ -788,7 +788,7 @@ void RibbonToolBarControlPrivate::removeActionFromGroup(QAction *action)
 
 void RibbonToolBarControlPrivate::updateGroupsGeometry(const QRect &rect)
 {
-    QTC_Q(RibbonToolBarControl);
+    Q_Q(RibbonToolBarControl);
 
     if (q->parentGroup() == Q_NULL)
         return;
@@ -1025,7 +1025,7 @@ void RibbonToolBarControlPrivate::updateGroupsGeometry(const QRect &rect)
 
 void RibbonToolBarControlPrivate::updateGeometryWidget()
 {
-    QTC_Q(RibbonToolBarControl);
+    Q_Q(RibbonToolBarControl);
 
     if (q->parentGroup() == Q_NULL)
         return;
@@ -1110,18 +1110,18 @@ void RibbonToolBarControlPrivate::updateGroupProperties(RibbonToolBarActionGroup
             firstWidget = it->widget;
 
         lastWidget = it->widget;
-        lastWidget->setProperty(_qtc_Begin_Group, firstWidget == it->widget);
-        lastWidget->setProperty(_qtc_Group, true);
-        lastWidget->setProperty(_qtc_End_Group, false);
+        lastWidget->setProperty(_qrn_Begin_Group, firstWidget == it->widget);
+        lastWidget->setProperty(_qrn_Group, true);
+        lastWidget->setProperty(_qrn_End_Group, false);
     }
 
     if (lastWidget != Q_NULL)
-        lastWidget->setProperty(_qtc_End_Group, true);
+        lastWidget->setProperty(_qrn_End_Group, true);
 }
 
 QSize RibbonToolBarControlPrivate::calculateSizeHint(const RibbonToolBarActionGroupItems &group) const
 {
-    QTC_Q(const RibbonToolBarControl);
+    Q_Q(const RibbonToolBarControl);
 
     if (q->parentGroup() == Q_NULL)
         return QSize();
@@ -1159,7 +1159,7 @@ QSize RibbonToolBarControlPrivate::calculateSizeHint(const RibbonToolBarActionGr
 
 void RibbonToolBarControlPrivate::updateLayoutParent(bool calcLayoutParent)
 {
-    QTC_Q(RibbonToolBarControl);
+    Q_Q(RibbonToolBarControl);
 
     RibbonGroup *parentGroup = q->parentGroup();
     if (parentGroup == Q_NULL)
@@ -1185,7 +1185,7 @@ void RibbonToolBarControlPrivate::updateLayoutParent(bool calcLayoutParent)
 
 bool RibbonToolBarControlPrivate::isMixedWidgets() const
 {
-    QTC_Q(const RibbonToolBarControl);
+    Q_Q(const RibbonToolBarControl);
     if (q->parentGroup() == Q_NULL)
         return false;
 
@@ -1212,15 +1212,15 @@ bool RibbonToolBarControlPrivate::isMixedWidgets() const
 /* RibbonToolBarControl*/
 RibbonToolBarControl::RibbonToolBarControl(RibbonGroup *parentGroup) : RibbonControl(parentGroup)
 {
-    QTC_INIT_PRIVATE(RibbonToolBarControl);
+    QRN_INIT_PRIVATE(RibbonToolBarControl);
 }
 
-RibbonToolBarControl::~RibbonToolBarControl() { QTC_FINI_PRIVATE(); }
+RibbonToolBarControl::~RibbonToolBarControl() { QRN_FINI_PRIVATE(); }
 
 void RibbonToolBarControl::sizeChanged(RibbonControlSizeDefinition::GroupSize size)
 {
     RibbonControl::sizeChanged(size);
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     if (d->m_vecWidths.isEmpty())
         return;
 
@@ -1242,13 +1242,13 @@ void RibbonToolBarControl::sizeChanged(RibbonControlSizeDefinition::GroupSize si
 
 int RibbonToolBarControl::rowsCount()
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     return d->m_rowsCount;
 }
 
 void RibbonToolBarControl::setRowsCount(int count)
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     d->m_rowsCount = count;
 }
 
@@ -1390,13 +1390,13 @@ QAction *RibbonToolBarControl::addSeparator()
 
 QSize RibbonToolBarControl::sizeHint() const
 {
-    QTC_D(const RibbonToolBarControl);
+    Q_D(const RibbonToolBarControl);
     return d->m_sizeHint;
 }
 
 QWidget *RibbonToolBarControl::widgetByAction(QAction *action)
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     for (RibbonToolBarControlPrivate::RibbonToolBarActionGroupList::iterator it = d->m_groups.begin();
          it != d->m_groups.end(); ++it) {
         RibbonToolBarControlPrivate::RibbonToolBarActionsGroup &group = *it;
@@ -1410,7 +1410,7 @@ QWidget *RibbonToolBarControl::widgetByAction(QAction *action)
 
 void RibbonToolBarControl::updateLayout()
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     if (parentGroup() == NULL)
         return;
     if (d->m_vecWidths.isEmpty())
@@ -1433,7 +1433,7 @@ void RibbonToolBarControl::updateLayout()
 
 bool RibbonToolBarControl::event(QEvent *event)
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     if (d->m_dirty && event->type() == QEvent::LayoutRequest) {
         d->updateLayoutParent();
         d->m_dirty = false;
@@ -1443,7 +1443,7 @@ bool RibbonToolBarControl::event(QEvent *event)
 
 void RibbonToolBarControl::actionEvent(QActionEvent *event)
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     QAction *action = event->action();
 
     switch (event->type()) {
@@ -1489,7 +1489,7 @@ void RibbonToolBarControl::actionEvent(QActionEvent *event)
 
 void RibbonToolBarControl::changeEvent(QEvent *event)
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     switch (event->type()) {
     case QEvent::StyleChange:
         d->updateLayoutParent(false);
@@ -1507,12 +1507,12 @@ void RibbonToolBarControl::changeEvent(QEvent *event)
 
 void RibbonToolBarControl::setMargin(int margin)
 {
-    QTC_D(RibbonToolBarControl);
+    Q_D(RibbonToolBarControl);
     d->m_margin = margin;
 }
 
 int RibbonToolBarControl::margin() const
 {
-    QTC_D(const RibbonToolBarControl);
+    Q_D(const RibbonToolBarControl);
     return d->m_margin;
 }

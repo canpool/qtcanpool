@@ -100,7 +100,7 @@ public:
 private:
     friend class RibbonQuickAccessBar;
     friend class RibbonBarCustomizePagePrivate;
-    QTC_DECLARE_PRIVATE(RibbonCustomizeManager)
+    QRN_DECLARE_PRIVATE(RibbonCustomizeManager)
     Q_DISABLE_COPY(RibbonCustomizeManager)
 };
 

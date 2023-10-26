@@ -20,7 +20,7 @@ public:
 protected:
     virtual void actionEvent(QActionEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonStatusBarSwitchGroup)
+    QRN_DECLARE_PRIVATE(RibbonStatusBarSwitchGroup)
     Q_DISABLE_COPY(RibbonStatusBarSwitchGroup)
 };
 
@@ -47,7 +47,7 @@ protected:
     virtual void actionEvent(QActionEvent *event);
     virtual void resizeEvent(QResizeEvent *);
 private:
-    QTC_DECLARE_PRIVATE(RibbonStatusBar)
+    QRN_DECLARE_PRIVATE(RibbonStatusBar)
     Q_DISABLE_COPY(RibbonStatusBar)
 };
 

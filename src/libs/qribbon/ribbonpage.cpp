@@ -59,7 +59,7 @@ RibbonPagePrivate::~RibbonPagePrivate() {}
 
 void RibbonPagePrivate::init()
 {
-    QTC_Q(RibbonPage);
+    Q_Q(RibbonPage);
 
     m_buttonScrollGroupLeft = new RibbonGroupScroll(q, true);
     m_buttonScrollGroupLeft->setVisible(false);
@@ -94,9 +94,9 @@ bool RibbonPagePrivate::collapseGroups(int &leftOffset, int actualWidth, RibbonC
             if (group->currentSize() <= size) {
                 int width_0 = group->sizeHint().width();
                 if (adjust)
-                    group->qtc_d()->adjustCurrentSize(false);
+                    group->d_func()->adjustCurrentSize(false);
                 else
-                    group->qtc_d()->reduce();
+                    group->d_func()->reduce();
                 int width_1 = group->sizeHint().width();
                 int delta = width_0 - width_1;
                 leftOffset -= delta;
@@ -127,9 +127,9 @@ bool RibbonPagePrivate::expandGroups(int &leftOffset, int actualWidth, RibbonCon
         if (group->currentSize() >= size) {
             int width_0 = group->sizeHint().width();
             if (adjust)
-                group->qtc_d()->adjustCurrentSize(true);
+                group->d_func()->adjustCurrentSize(true);
             else
-                group->qtc_d()->expand();
+                group->d_func()->expand();
             int width_1 = group->sizeHint().width();
             int delta = width_0 - width_1;
             leftOffset -= delta;
@@ -168,7 +168,7 @@ bool RibbonPagePrivate::canReduce() const
     for (QList<RibbonGroup *>::const_iterator it = m_listGroups.constBegin(); it != m_listGroups.constEnd(); ++it) {
         RibbonGroup *group = *it;
 
-        if (group->qtc_d()->canReduce())
+        if (group->d_func()->canReduce())
             return true;
     }
     return false;
@@ -224,17 +224,17 @@ int RibbonPagePrivate::calculateGroupsWidth()
 
 void RibbonPagePrivate::updateLayout(bool updateScroll)
 {
-    QTC_Q(RibbonPage);
+    Q_Q(RibbonPage);
 
     int leftOffset = 0;
     int actualWidth = q->width();
     if (RibbonBar *ribbon = qobject_cast<RibbonBar *>(q->parentWidget())) {
-        if (!(q->windowFlags() & Qt::Popup) && ribbon->qtc_d()->m_logotypeLabel->isVisible()) {
-            QRect rectLogotype = ribbon->qtc_d()->m_logotypeLabel->geometry();
+        if (!(q->windowFlags() & Qt::Popup) && ribbon->d_func()->m_logotypeLabel->isVisible()) {
+            QRect rectLogotype = ribbon->d_func()->m_logotypeLabel->geometry();
             if (!rectLogotype.isNull()) {
                 actualWidth -= rectLogotype.width();
 
-                if (ribbon->qtc_d()->m_logotypeLabel->alignmentLogotype() == Qt::AlignLeft)
+                if (ribbon->d_func()->m_logotypeLabel->alignmentLogotype() == Qt::AlignLeft)
                     leftOffset += rectLogotype.width();
             }
         }
@@ -263,27 +263,27 @@ void RibbonPagePrivate::updateLayout(bool updateScroll)
         QWidget *parentWidget = group;
         if (group->isReduced()) {
             // Is the group in a popup stage then create a sub-window RibbonGroupPopup
-            group->qtc_d()->reposition(QRect(QPoint(-m_groupScrollPos + leftOffset, margin - 1),
+            group->d_func()->reposition(QRect(QPoint(-m_groupScrollPos + leftOffset, margin - 1),
                                              QSize(groupSizeHint.width(), q->size().height())));
-            Q_ASSERT(group->qtc_d()->m_groupPopup != 0);
-            parentWidget = group->qtc_d()->m_groupPopup;
+            Q_ASSERT(group->d_func()->m_groupPopup != 0);
+            parentWidget = group->d_func()->m_groupPopup;
         }
 
         if (!(group->controlsAlignment() & Qt::AlignLeft)) {
-            QSize contentSize = group->qtc_d()->updateControlsLayout(Q_NULL);
+            QSize contentSize = group->d_func()->updateControlsLayout(Q_NULL);
             QSize parentSize = parentWidget->sizeHint();
             controlsLeftOffset = QStyle::alignedRect(Qt::LeftToRight, group->controlsAlignment(), contentSize,
                                                      QRect(QPoint(0, 0), parentSize))
                                      .left();
         }
 
-        group->qtc_d()->updateControlsLayout(parentWidget, controlsLeftOffset);
+        group->d_func()->updateControlsLayout(parentWidget, controlsLeftOffset);
 
         if (!group->isReduced())
-            group->qtc_d()->reposition(QRect(QPoint(-m_groupScrollPos + leftOffset, margin - 1),
+            group->d_func()->reposition(QRect(QPoint(-m_groupScrollPos + leftOffset, margin - 1),
                                              QSize(groupSizeHint.width(), q->size().height())));
 
-        group->qtc_d()->updateOptionButtonLayout();
+        group->d_func()->updateOptionButtonLayout();
         leftOffset += groupSizeHint.width();
     }
 
@@ -321,7 +321,7 @@ int RibbonPagePrivate::groupIndex(RibbonGroup *group) const
 
 int RibbonPagePrivate::calcReducedGroupsWidth() const
 {
-    QTC_Q(const RibbonPage);
+    Q_Q(const RibbonPage);
     static int margin = 4;
     int totalWidth = 0;
     for (QList<RibbonGroup *>::const_iterator it = m_listGroups.constBegin(); it != m_listGroups.constEnd(); ++it) {
@@ -329,7 +329,7 @@ int RibbonPagePrivate::calcReducedGroupsWidth() const
         if (!group->isVisible())
             continue;
 
-        if (group->qtc_d()->canReduce()) {
+        if (group->d_func()->canReduce()) {
             totalWidth = 0;
             break;
         }
@@ -343,8 +343,8 @@ int RibbonPagePrivate::calcReducedGroupsWidth() const
 
     int widthLogotype = 0;
     if (RibbonBar *ribbon = qobject_cast<RibbonBar *>(q->parentWidget())) {
-        if (!(q->windowFlags() & Qt::Popup) && ribbon->qtc_d()->m_logotypeLabel->isVisible()) {
-            QRect rectLogotype = ribbon->qtc_d()->m_logotypeLabel->geometry();
+        if (!(q->windowFlags() & Qt::Popup) && ribbon->d_func()->m_logotypeLabel->isVisible()) {
+            QRect rectLogotype = ribbon->d_func()->m_logotypeLabel->geometry();
             if (!rectLogotype.isNull())
                 widthLogotype = rectLogotype.width();
         }
@@ -355,7 +355,7 @@ int RibbonPagePrivate::calcReducedGroupsWidth() const
 
 void RibbonPagePrivate::enableGroupScroll(bool scrollLeft, bool scrollRight)
 {
-    QTC_Q(RibbonPage);
+    Q_Q(RibbonPage);
 
     Q_ASSERT(m_buttonScrollGroupLeft);
     Q_ASSERT(m_buttonScrollGroupRight);
@@ -371,9 +371,9 @@ void RibbonPagePrivate::enableGroupScroll(bool scrollLeft, bool scrollRight)
 
         int leftOffset = 0;
         if (RibbonBar *ribbon = qobject_cast<RibbonBar *>(q->parentWidget())) {
-            if (!(q->windowFlags() & Qt::Popup) && ribbon->qtc_d()->m_logotypeLabel->isVisible() &&
-                ribbon->qtc_d()->m_logotypeLabel->alignmentLogotype() == Qt::AlignLeft) {
-                QRect rectLogotype = ribbon->qtc_d()->m_logotypeLabel->geometry();
+            if (!(q->windowFlags() & Qt::Popup) && ribbon->d_func()->m_logotypeLabel->isVisible() &&
+                ribbon->d_func()->m_logotypeLabel->alignmentLogotype() == Qt::AlignLeft) {
+                QRect rectLogotype = ribbon->d_func()->m_logotypeLabel->geometry();
                 if (!rectLogotype.isNull())
                     leftOffset = rectLogotype.width() - 2;
             }
@@ -396,9 +396,9 @@ void RibbonPagePrivate::enableGroupScroll(bool scrollLeft, bool scrollRight)
 
         int leftOffset = 0;
         if (RibbonBar *ribbon = qobject_cast<RibbonBar *>(q->parentWidget())) {
-            if (!(q->windowFlags() & Qt::Popup) && ribbon->qtc_d()->m_logotypeLabel->isVisible() &&
-                ribbon->qtc_d()->m_logotypeLabel->alignmentLogotype() == Qt::AlignRight) {
-                QRect rectLogotype = ribbon->qtc_d()->m_logotypeLabel->geometry();
+            if (!(q->windowFlags() & Qt::Popup) && ribbon->d_func()->m_logotypeLabel->isVisible() &&
+                ribbon->d_func()->m_logotypeLabel->alignmentLogotype() == Qt::AlignRight) {
+                QRect rectLogotype = ribbon->d_func()->m_logotypeLabel->geometry();
                 if (!rectLogotype.isNull())
                     leftOffset = rectLogotype.width() - 3;
             }
@@ -420,7 +420,7 @@ void RibbonPagePrivate::enableGroupScroll(bool scrollLeft, bool scrollRight)
 
 void RibbonPagePrivate::showGroupScroll(bool onlyCalc)
 {
-    QTC_Q(RibbonPage);
+    Q_Q(RibbonPage);
     int totalWidth = calcReducedGroupsWidth();
     if (totalWidth == 0 && !m_buttonScrollGroupLeft->isVisible() && !m_buttonScrollGroupRight->isVisible())
         return;
@@ -458,7 +458,7 @@ void RibbonPagePrivate::scrollGroupAnimate()
 
 void RibbonPagePrivate::startScrollGropsAnimate(int groupScrollPos, int scrollPosTarget)
 {
-    QTC_Q(RibbonPage)
+    Q_Q(RibbonPage);
     m_animation = true;
     m_scrollPosTarget = scrollPosTarget;
     m_groupScrollPos = groupScrollPos;
@@ -487,7 +487,7 @@ static void listPageWidth(int totalWidth, int realWidth, QList<int> &pagesWidth)
 
 void RibbonPagePrivate::pressLeftScrollButton()
 {
-    QTC_Q(RibbonPage)
+    Q_Q(RibbonPage);
     QList<int> pagesWidth;
     listPageWidth(calcReducedGroupsWidth(), q->width(), pagesWidth);
 
@@ -502,7 +502,7 @@ void RibbonPagePrivate::pressLeftScrollButton()
 
 void RibbonPagePrivate::pressRightScrollButton()
 {
-    QTC_Q(RibbonPage)
+    Q_Q(RibbonPage);
     QList<int> pagesWidth;
     listPageWidth(calcReducedGroupsWidth(), q->width(), pagesWidth);
 
@@ -556,33 +556,33 @@ bool RibbonPagePrivate::eventFilter(QObject *obj, QEvent *event)
 /* RibbonPage */
 RibbonPage::RibbonPage(QWidget *parent) : QWidget(parent)
 {
-    QTC_INIT_PRIVATE(RibbonPage);
-    QTC_D(RibbonPage);
+    QRN_INIT_PRIVATE(RibbonPage);
+    Q_D(RibbonPage);
     d->init();
 }
 
 RibbonPage::RibbonPage(RibbonBar *ribbonBar, const QString &title) : QWidget(ribbonBar)
 {
-    QTC_INIT_PRIVATE(RibbonPage);
-    QTC_D(RibbonPage);
+    QRN_INIT_PRIVATE(RibbonPage);
+    Q_D(RibbonPage);
     d->init();
     setTitle(title);
 }
 
 RibbonPage::~RibbonPage()
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     if (d->m_associativeTab)
         d->m_associativeTab->setPage(Q_NULL);
 
     if (RibbonBar *ribbon = qobject_cast<RibbonBar *>(parentWidget()))
         ribbon->detachPage(this);
-    QTC_FINI_PRIVATE();
+    QRN_FINI_PRIVATE();
 }
 
 bool RibbonPage::isVisible() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return QWidget::isVisible() || (d->m_associativeTab && d->m_associativeTab->isVisible());
 }
 
@@ -603,12 +603,12 @@ RibbonGroup *RibbonPage::addGroup(const QIcon &icon, const QString &title)
 
 void RibbonPage::insertGroup(int index, RibbonGroup *group)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
 
     group->setParent(this);
 
     if (RibbonBar *ribbonBar = qobject_cast<RibbonBar *>(parentWidget()))
-        group->setProperty(_qtc_TitleGroupsVisible, ribbonBar->isTitleGroupsVisible());
+        group->setProperty(_qrn_TitleGroupsVisible, ribbonBar->isTitleGroupsVisible());
 
     if (!d->validateGroupIndex(index)) {
         index = d->m_listGroups.count();
@@ -641,38 +641,38 @@ RibbonGroup *RibbonPage::insertGroup(int index, const QIcon &icon, const QString
 
 void RibbonPage::removeGroup(RibbonGroup *group)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     removeGroup(d->groupIndex(group));
 }
 
 void RibbonPage::removeGroup(int index)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->removeGroup(index, true);
 }
 
 void RibbonPage::detachGroup(RibbonGroup *group)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     detachGroup(d->groupIndex(group));
 }
 
 void RibbonPage::detachGroup(int index)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->removeGroup(index, false);
 }
 
 void RibbonPage::clearGroups()
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     for (int i = (int)d->m_listGroups.count() - 1; i >= 0; i--)
         removeGroup(i);
 }
 
 QAction *RibbonPage::defaultAction() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     if (d->m_associativeTab)
         return d->m_associativeTab->defaultAction();
     return Q_NULL;
@@ -680,13 +680,13 @@ QAction *RibbonPage::defaultAction() const
 
 int RibbonPage::groupCount() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return d->m_listGroups.count();
 }
 
 RibbonGroup *RibbonPage::getGroup(int index) const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     if (index < 0 || index >= d->m_listGroups.size())
         return Q_NULL;
     return d->m_listGroups[index];
@@ -694,7 +694,7 @@ RibbonGroup *RibbonPage::getGroup(int index) const
 
 int RibbonPage::groupIndex(RibbonGroup *group) const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     Q_ASSERT(group != Q_NULL);
     if (group && d->m_listGroups.contains(group))
         return d->m_listGroups.indexOf(group);
@@ -703,7 +703,7 @@ int RibbonPage::groupIndex(RibbonGroup *group) const
 
 QList<RibbonGroup *> RibbonPage::groups() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return d->m_listGroups;
 }
 
@@ -712,7 +712,7 @@ QList<RibbonGroup *> RibbonPage::groups() const
  */
 void RibbonPage::setContextColor(ContextColor color)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_contextColor = color;
 
     if (d->m_associativeTab) {
@@ -732,13 +732,13 @@ void RibbonPage::setContextColor(ContextColor color)
  */
 RibbonPage::ContextColor RibbonPage::contextColor() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return d->m_contextColor;
 }
 
 void RibbonPage::setVisible(bool visible)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     if (d->m_associativeTab) {
         d->m_associativeTab->setContextTab(d->m_contextColor);
         d->m_associativeTab->setContextTextTab(d->m_contextTitle);
@@ -785,7 +785,7 @@ void RibbonPage::setVisible(bool visible)
 
                 for (int i = 0, count = ribbonBar->getPageCount(); count > i && !setCurrentPage; ++i) {
                     RibbonPage *page = ribbonBar->getPage(i);
-                    if (page->qtc_d()->m_associativeTab && page->qtc_d()->m_associativeTab->isVisible()) {
+                    if (page->d_func()->m_associativeTab && page->d_func()->m_associativeTab->isVisible()) {
                         ribbonBar->setCurrentPageIndex(i);
                         break;
                     }
@@ -794,7 +794,7 @@ void RibbonPage::setVisible(bool visible)
                 for (int i = 0, count = ribbonBar->getPageCount(); count > i; ++i) {
                     if (i == ribbonBar->currentPageIndex()) {
                         RibbonPage *page = ribbonBar->getPage(i);
-                        if (page == this && page->qtc_d()->m_associativeTab->isVisible()) {
+                        if (page == this && page->d_func()->m_associativeTab->isVisible()) {
                             QWidget::setVisible(visible);
                             break;
                         }
@@ -815,7 +815,7 @@ void RibbonPage::setVisible(bool visible)
 
 void RibbonPage::setTitle(const QString &title)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
 
     if (d->m_title == title)
         return;
@@ -836,13 +836,13 @@ Sets the title of the page.
 */
 const QString &RibbonPage::title() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return d->m_associativeTab ? d->m_associativeTab->textTab() : d->m_title;
 }
 
 void RibbonPage::setContextTitle(const QString &title)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_contextTitle = title;
 
     if (d->m_associativeTab) {
@@ -856,14 +856,14 @@ void RibbonPage::setContextTitle(const QString &title)
 
 void RibbonPage::released()
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     if (d->m_minimazeRibbon && isVisible() && QApplication::activePopupWidget() == this)
         hide();
 }
 
 void RibbonPage::actionTriggered(QAction *action)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
 
     if (d->m_listShortcuts.indexOf(action) != -1)
         return;
@@ -884,13 +884,13 @@ Sets the context title of the page. Context title is located on main window fram
 
 const QString &RibbonPage::contextTitle() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return d->m_associativeTab ? d->m_associativeTab->contextTextTab() : d->m_title;
 }
 
 void RibbonPage::setContextGroupName(const QString &groupName)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_contextGroupName = groupName;
 
     if (d->m_associativeTab) {
@@ -909,7 +909,7 @@ Sets the width of the tab in pixels. By default the width is calculated automati
 */
 void RibbonPage::setTabWidth(int width)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     if (d->m_associativeTab == Q_NULL)
         return;
     d->m_associativeTab->setTabWidth(width);
@@ -917,7 +917,7 @@ void RibbonPage::setTabWidth(int width)
 
 int RibbonPage::tabWidth() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     if (d->m_associativeTab == Q_NULL)
         return -1;
     return d->m_associativeTab->tabWidth();
@@ -925,13 +925,13 @@ int RibbonPage::tabWidth() const
 
 void RibbonPage::updateLayout()
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->updateLayout();
 }
 
 void RibbonPage::setAssociativeTab(QWidget *widget)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_associativeTab = qobject_cast<RibbonTab *>(widget);
 
     if (!d->m_associativeTab)
@@ -956,13 +956,13 @@ void RibbonPage::setAssociativeTab(QWidget *widget)
 
 QWidget *RibbonPage::associativeTab() const
 {
-    QTC_D(const RibbonPage);
+    Q_D(const RibbonPage);
     return d->m_associativeTab;
 }
 
 void RibbonPage::setPageVisible(bool visible)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_doVisiblePage = true;
     if (visible && d->m_associativeTab && !d->m_associativeTab->isHidden()) {
         setVisible(true);
@@ -974,14 +974,14 @@ void RibbonPage::setPageVisible(bool visible)
 
 void RibbonPage::popup()
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_doPopupPage = true;
     setVisible(true);
 }
 
 void RibbonPage::setRibbonMinimized(bool minimized)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     if (d->m_minimazeRibbon != minimized) {
         d->m_minimazeRibbon = minimized;
     }
@@ -994,13 +994,13 @@ void RibbonPage::activatingPage(bool &allow)
 
 void RibbonPage::setGroupsHeight(int height)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     d->m_groupsHeight = height;
 }
 
 bool RibbonPage::event(QEvent *event)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     switch (event->type()) {
     case QEvent::LayoutRequest:
         d->updateLayout();
@@ -1139,7 +1139,7 @@ void RibbonPage::paintEvent(QPaintEvent *event)
 
 void RibbonPage::changeEvent(QEvent *event)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     switch (event->type()) {
     case QEvent::StyleChange:
         d->updateLayout();
@@ -1159,7 +1159,7 @@ void RibbonPage::changeEvent(QEvent *event)
 
 void RibbonPage::resizeEvent(QResizeEvent *event)
 {
-    QTC_D(RibbonPage);
+    Q_D(RibbonPage);
     QWidget::resizeEvent(event);
 
     if ((windowFlags() & Qt::Popup)) {

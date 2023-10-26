@@ -15,7 +15,7 @@ QRIBBON_BEGIN_NAMESPACE
 class RibbonMainWindowPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonMainWindow)
+    QRN_DECLARE_PUBLIC(RibbonMainWindow)
 public:
     explicit RibbonMainWindowPrivate();
 public:
@@ -40,9 +40,9 @@ RibbonMainWindowPrivate::RibbonMainWindowPrivate() { m_frameHelper = Q_NULL; }
 RibbonMainWindow::RibbonMainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
 {
     RibbonBar::loadTranslation();
-    QTC_INIT_PRIVATE(RibbonMainWindow);
+    QRN_INIT_PRIVATE(RibbonMainWindow);
     setObjectName("RibbonMainWindow");
-    QTC_D(RibbonMainWindow);
+    Q_D(RibbonMainWindow);
     d->m_attrOpaquePaintEvent = testAttribute(Qt::WA_OpaquePaintEvent);
     d->m_attrNoSystemBackground = testAttribute(Qt::WA_NoSystemBackground);
 }
@@ -50,7 +50,7 @@ RibbonMainWindow::RibbonMainWindow(QWidget *parent, Qt::WindowFlags flags) : QMa
 /*!
 \brief Destructor of the RibbonMainWindow object.
 */
-RibbonMainWindow::~RibbonMainWindow() { QTC_FINI_PRIVATE(); }
+RibbonMainWindow::~RibbonMainWindow() { QRN_FINI_PRIVATE(); }
 
 /*
 \brief Returns a pointer to RibbonBar object. If RibbonBar does not exist, then the function will create an empty Ribbon
@@ -86,7 +86,7 @@ void RibbonMainWindow::setCentralWidget(QStyle *style) { Q_UNUSED(style); }
 /*! \internal */
 void RibbonMainWindow::setFrameHelper(OfficeFrameHelper *helper)
 {
-    QTC_D(RibbonMainWindow);
+    Q_D(RibbonMainWindow);
     d->m_frameHelper = helper;
 
     if (helper) {
@@ -107,7 +107,7 @@ bool RibbonMainWindow::nativeEvent(const QByteArray &eventType, void *message, l
 bool RibbonMainWindow::winEvent(MSG *message, long *result)
     #endif
 {
-    QTC_D(RibbonMainWindow);
+    Q_D(RibbonMainWindow);
     #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     if (d->m_frameHelper) {
         MSG *msg = static_cast<MSG *>(message);

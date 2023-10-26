@@ -3,7 +3,46 @@
 **/
 #pragma once
 
-#include "qtc_global.h"
+#include <QtCore/qglobal.h>
+
+#define QRN_QUOTE_(x) #x
+#define QRN_QUOTE(x) QRN_QUOTE_(x)
+
+#ifndef Q_NULL
+#ifdef Q_COMPILER_NULLPTR
+#define Q_NULL    nullptr
+#else
+#define Q_NULL    NULL
+#endif // Q_COMPILER_NULLPTR
+#endif // Q_NULL
+
+#define Q_MAXINT INT_MAX
+#define Q_DELETE_AND_NULL(x) delete x; x = Q_NULL;
+
+#ifndef Q_DECL_NOTHROW
+#define Q_DECL_NOTHROW throw()
+#endif
+
+#define QRN_DECLARE_PRIVATE(Class) \
+    Class##Private *d_ptr; \
+    Q_DECLARE_PRIVATE(Class)
+
+#define QRN_DECLARE_PUBLIC(Class) \
+    Class *q_ptr; \
+    inline void setPublic(Class *ptr) { q_ptr = ptr; } \
+    Q_DECLARE_PUBLIC(Class)
+
+#define QRN_INIT_PRIVATE(Class) \
+    d_ptr = new Class##Private(); \
+    d_func()->setPublic(this);
+
+#define QRN_FINI_PRIVATE() \
+    delete d_ptr; d_ptr = Q_NULL;
+
+#define QRN_SET_PRIVATE(Dptr) \
+    d_ptr = Dptr; \
+    d_func()->setPublic(this);
+
 
 #define QRIBBON_NAMESPACE QRibbon
 

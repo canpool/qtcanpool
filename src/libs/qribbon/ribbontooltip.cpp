@@ -34,7 +34,7 @@ QRIBBON_BEGIN_NAMESPACE
 class RibbonToolTipPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonToolTip)
+    QRN_DECLARE_PUBLIC(RibbonToolTip)
 public:
     explicit RibbonToolTipPrivate();
 public:
@@ -59,7 +59,7 @@ public:
 class RibbonKeyTipPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonKeyTip)
+    QRN_DECLARE_PUBLIC(RibbonKeyTip)
 public:
     explicit RibbonKeyTipPrivate();
 public:
@@ -93,7 +93,7 @@ RibbonToolTipPrivate::RibbonToolTipPrivate()
 
 void RibbonToolTipPrivate::updateTool()
 {
-    QTC_Q(RibbonToolTip);
+    Q_Q(RibbonToolTip);
     if (m_label) {
         m_label->setText(m_text);
         m_label->setWordWrap(/*Qt::mightBeRichText(m_text)*/ true);
@@ -115,8 +115,8 @@ RibbonToolTip::RibbonToolTip(const QString &title, const QString &text, const QI
     delete RibbonToolTipPrivate::m_instance;
     RibbonToolTipPrivate::m_instance = this;
 
-    QTC_INIT_PRIVATE(RibbonToolTip);
-    QTC_D(RibbonToolTip);
+    QRN_INIT_PRIVATE(RibbonToolTip);
+    Q_D(RibbonToolTip);
 
     if (d->m_label) {
         d->m_label->setForegroundRole(QPalette::ToolTipText);
@@ -149,7 +149,7 @@ RibbonToolTip::RibbonToolTip(const QString &title, const QString &text, const QI
 RibbonToolTip::~RibbonToolTip()
 {
     RibbonToolTipPrivate::m_instance = Q_NULL;
-    QTC_FINI_PRIVATE();
+    QRN_FINI_PRIVATE();
 }
 
 RibbonToolTip *RibbonToolTip::instance() { return RibbonToolTipPrivate::m_instance; }
@@ -255,7 +255,7 @@ Returns the margin \a mode for the tolltip's text in pixels.
 */
 int RibbonToolTip::margin() const
 {
-    QTC_D(const RibbonToolTip);
+    Q_D(const RibbonToolTip);
     return d->m_margin;
 }
 
@@ -264,7 +264,7 @@ Sets the margin \a mode for the tolltip's text in in pixels.
 */
 void RibbonToolTip::setMargin(int margin)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (d->m_margin == margin)
         return;
     d->m_margin = margin;
@@ -273,7 +273,7 @@ void RibbonToolTip::setMargin(int margin)
 
 void RibbonToolTip::setTitle(const QString &text)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (d->m_textTitle == text)
         return;
     d->m_textTitle = text;
@@ -282,13 +282,13 @@ void RibbonToolTip::setTitle(const QString &text)
 
 const QString &RibbonToolTip::title() const
 {
-    QTC_D(const RibbonToolTip);
+    Q_D(const RibbonToolTip);
     return d->m_textTitle;
 }
 
 void RibbonToolTip::setText(const QString &text)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (d->m_text == text)
         return;
     d->m_text = text;
@@ -297,26 +297,26 @@ void RibbonToolTip::setText(const QString &text)
 
 const QString &RibbonToolTip::text() const
 {
-    QTC_D(const RibbonToolTip);
+    Q_D(const RibbonToolTip);
     return d->m_text;
 }
 
 void RibbonToolTip::setIcon(const QIcon &icon)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     d->m_icon = icon;
     d->updateTool();
 }
 
 const QIcon &RibbonToolTip::icon() const
 {
-    QTC_D(const RibbonToolTip);
+    Q_D(const RibbonToolTip);
     return d->m_icon;
 }
 
 void RibbonToolTip::restartExpireTimer()
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     int time = 10000 + 40 * qMax(0, text().length() - 100);
     d->m_expireTimer.start(time, this);
     d->m_hideTimer.stop();
@@ -339,7 +339,7 @@ void RibbonToolTip::reuseTip(const QString &textTitle, const QString &text)
 /*! \reimp */
 QSize RibbonToolTip::sizeHint() const
 {
-    QTC_D(const RibbonToolTip);
+    Q_D(const RibbonToolTip);
 
     QFontMetrics fm = fontMetrics();
 
@@ -408,7 +408,7 @@ QSize RibbonToolTip::sizeHint() const
 void RibbonToolTip::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
 
     QStylePainter p(this);
     drawFrame(&p);
@@ -490,7 +490,7 @@ void RibbonToolTip::resizeEvent(QResizeEvent *event)
 /*! \reimp */
 void RibbonToolTip::mouseMoveEvent(QMouseEvent *event)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (d->m_rect.isNull())
         return;
     QPoint pos = event->globalPos();
@@ -503,7 +503,7 @@ void RibbonToolTip::mouseMoveEvent(QMouseEvent *event)
 
 void RibbonToolTip::hideTip()
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (!d->m_hideTimer.isActive())
         d->m_hideTimer.start(300, this);
 }
@@ -516,7 +516,7 @@ void RibbonToolTip::closeToolTip()
 
 void RibbonToolTip::setTipRect(QWidget *w, const QRect &r)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (!d->m_rect.isNull() && !w)
         qWarning("RibbonToolTip::setTipRect: Cannot pass null widget if rect is set");
     else {
@@ -528,7 +528,7 @@ void RibbonToolTip::setTipRect(QWidget *w, const QRect &r)
 /*! \reimp */
 void RibbonToolTip::timerEvent(QTimerEvent *event)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (event->timerId() == d->m_hideTimer.timerId() || event->timerId() == d->m_expireTimer.timerId()) {
         d->m_hideTimer.stop();
         d->m_expireTimer.stop();
@@ -539,7 +539,7 @@ void RibbonToolTip::timerEvent(QTimerEvent *event)
 /*! \reimp */
 bool RibbonToolTip::eventFilter(QObject *o, QEvent *event)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     switch (event->type()) {
     case QEvent::Leave:
         hideTip();
@@ -594,7 +594,7 @@ void RibbonToolTip::placeTip(const QPoint &pos, QWidget *w)
 
 bool RibbonToolTip::tipChanged(const QPoint &pos, const QString &text, const QString &textTitle, QObject *o)
 {
-    QTC_D(RibbonToolTip);
+    Q_D(RibbonToolTip);
     if (RibbonToolTipPrivate::m_instance->text() != text)
         return true;
 
@@ -612,7 +612,7 @@ bool RibbonToolTip::tipChanged(const QPoint &pos, const QString &text, const QSt
 
 bool RibbonToolTip::fadingOut() const
 {
-    QTC_D(const RibbonToolTip);
+    Q_D(const RibbonToolTip);
     return d->m_fadingOut;
 }
 
@@ -636,8 +636,8 @@ RibbonKeyTip::RibbonKeyTip(QWidget *bars, QWidget *owner, const QString &caption
                            bool enabled, QAction *action)
     : QFrame(bars, Qt::ToolTip | Qt::BypassGraphicsProxyWidget)
 {
-    QTC_INIT_PRIVATE(RibbonKeyTip);
-    QTC_D(RibbonKeyTip);
+    QRN_INIT_PRIVATE(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
     d->action_ = action;
     d->owner_ = owner;
     d->strCaption_ = caption;
@@ -661,108 +661,108 @@ RibbonKeyTip::RibbonKeyTip(QWidget *bars, QWidget *owner, const QString &caption
         setWindowOpacity(0.5);
 }
 
-RibbonKeyTip::~RibbonKeyTip() { QTC_FINI_PRIVATE(); }
+RibbonKeyTip::~RibbonKeyTip() { QRN_FINI_PRIVATE(); }
 
 QPoint RibbonKeyTip::posTip() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->pt_;
 }
 
 void RibbonKeyTip::setVisibleTip(bool visible)
 {
-    QTC_D(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
     d->visible_ = visible;
 }
 
 bool RibbonKeyTip::isVisibleTip() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->visible_;
 }
 
 bool RibbonKeyTip::isEnabledTip() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->enabled_;
 }
 
 QWidget *RibbonKeyTip::getBars() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->bars_;
 }
 
 uint RibbonKeyTip::getAlign() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->align_;
 }
 
 void RibbonKeyTip::setExplicit(bool exp)
 {
-    QTC_D(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
     d->explicit_ = exp;
 }
 
 bool RibbonKeyTip::isExplicit() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->explicit_;
 }
 
 QString RibbonKeyTip::getStringTip() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->strTip_;
 }
 
 void RibbonKeyTip::setStringTip(const QString &str)
 {
-    QTC_D(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
     d->strTip_ = str;
 }
 
 QString RibbonKeyTip::getCaption() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->strCaption_;
 }
 
 void RibbonKeyTip::setCaption(const QString &str)
 {
-    QTC_D(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
     d->strCaption_ = str;
 }
 
 QString RibbonKeyTip::getPrefix() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->strPrefix_;
 }
 
 void RibbonKeyTip::setPrefix(const QString &pref)
 {
-    QTC_D(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
     d->strPrefix_ = pref;
 }
 
 QWidget *RibbonKeyTip::getOwner() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->owner_;
 }
 
 QAction *RibbonKeyTip::getAction() const
 {
-    QTC_D(const RibbonKeyTip);
+    Q_D(const RibbonKeyTip);
     return d->action_;
 }
 
 void RibbonKeyTip::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(RibbonKeyTip);
+    Q_D(RibbonKeyTip);
 
     QPainter p(this);
     QStyleOption opt;

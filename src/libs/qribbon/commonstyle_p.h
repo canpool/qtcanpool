@@ -16,29 +16,29 @@ class QStyleOption;
 
 QRIBBON_BEGIN_NAMESPACE
 
-#define _qtc_Index      "Index"
-#define _qtc_Wrap       "Wrap"
-#define _qtc_Wrap_Group "WrapGroup"
+#define _qrn_Index      "Index"
+#define _qrn_Wrap       "Wrap"
+#define _qrn_Wrap_Group "WrapGroup"
 
-#define _qtc_Begin_Group "BeginToolBarGroup"
-#define _qtc_Group       "ToolBarGroup"
-#define _qtc_End_Group   "EndToolBarGroup"
+#define _qrn_Begin_Group "BeginToolBarGroup"
+#define _qrn_Group       "ToolBarGroup"
+#define _qrn_End_Group   "EndToolBarGroup"
 
-#define _qtc_Index_Group        "IndexGroup"
-#define _qtc_Switch_Count       "SwitchCount"
-#define _qtc_TitleGroupsVisible "TitleGroupsVisible"
+#define _qrn_Index_Group        "IndexGroup"
+#define _qrn_Switch_Count       "SwitchCount"
+#define _qrn_TitleGroupsVisible "TitleGroupsVisible"
 
-#define _qtc_KeyTip "QRibbon::KeyTip"
+#define _qrn_KeyTip "QRibbon::KeyTip"
 
-#define _qtc_PopupButtonGallery      "PopupButtonGallery"
-#define _qtc_ScrollUpButtonGallery   "ScrollUpButtonGallery"
-#define _qtc_ScrollDownButtonGallery "ScrollDownButtonGallery"
+#define _qrn_PopupButtonGallery      "PopupButtonGallery"
+#define _qrn_ScrollUpButtonGallery   "ScrollUpButtonGallery"
+#define _qrn_ScrollDownButtonGallery "ScrollDownButtonGallery"
 
-#define _qtc_PopupBar         "PopupBar"
-#define _qtc_PopupLable       "PopupLable_"
-#define _qtc_SplitActionPopup "SplitActionPopup_"
-#define _qtc_WidgetGallery    "WidgetGallery"
-#define _qtc_StyleName        "StyleName"
+#define _qrn_PopupBar         "PopupBar"
+#define _qrn_PopupLable       "PopupLable_"
+#define _qrn_SplitActionPopup "SplitActionPopup_"
+#define _qrn_WidgetGallery    "WidgetGallery"
+#define _qrn_StyleName        "StyleName"
 
 /* StyleHelper */
 class StyleHelper : public QObject
@@ -132,7 +132,7 @@ private:
 class CommonStylePrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(CommonStyle)
+    QRN_DECLARE_PUBLIC(CommonStyle)
 public:
     explicit CommonStylePrivate();
     virtual ~CommonStylePrivate();
@@ -162,6 +162,6 @@ public:
     QHash<const QWidget *, bool> m_customAutoFillBackground;
 };
 
-#define QTC_D_STYLE(Class) Class##Private *d = static_cast<Class *>(baseStyle())->qtc_d();
+#define Q_D_STYLE(Class) Class##Private *d = static_cast<Class *>(baseStyle())->d_func()
 
 QRIBBON_END_NAMESPACE

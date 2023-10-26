@@ -155,7 +155,7 @@ protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
 private:
     friend class RibbonPaintManager;
-    QTC_DECLARE_EX_PRIVATE(RibbonStyle)
+    Q_DECLARE_PRIVATE(RibbonStyle)
     Q_DISABLE_COPY(RibbonStyle)
 };
 

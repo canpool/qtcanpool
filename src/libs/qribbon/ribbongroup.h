@@ -120,7 +120,7 @@ private:
     friend class RibbonGroupPopup;
     friend class RibbonGroupPopupButton;
 
-    QTC_DECLARE_PRIVATE(RibbonGroup)
+    QRN_DECLARE_PRIVATE(RibbonGroup)
     Q_DISABLE_COPY(RibbonGroup)
 };
 

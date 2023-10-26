@@ -91,7 +91,7 @@ protected:
 
 class RibbonStatusBarSwitchGroupPrivate : public QObject
 {
-    QTC_DECLARE_PUBLIC(RibbonStatusBarSwitchGroup)
+    QRN_DECLARE_PUBLIC(RibbonStatusBarSwitchGroup)
 public:
     explicit RibbonStatusBarSwitchGroupPrivate();
 public:
@@ -105,7 +105,7 @@ public:
 class RibbonStatusBarPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonStatusBar)
+    QRN_DECLARE_PUBLIC(RibbonStatusBar)
 public:
     explicit RibbonStatusBarPrivate();
 public:
@@ -202,7 +202,7 @@ RibbonStatusBarSwitchGroupPrivate::RibbonStatusBarSwitchGroupPrivate() {}
 
 void RibbonStatusBarSwitchGroupPrivate::init()
 {
-    QTC_Q(RibbonStatusBarSwitchGroup);
+    Q_Q(RibbonStatusBarSwitchGroup);
     m_layout = new QHBoxLayout();
     m_layout->setMargin(0);
     m_layout->setSpacing(0);
@@ -222,33 +222,33 @@ StatusButton *RibbonStatusBarSwitchGroupPrivate::createButton(QAction *action) c
 
 void RibbonStatusBarSwitchGroupPrivate::updateIndexesButtons()
 {
-    QTC_Q(RibbonStatusBarSwitchGroup)
+    Q_Q(RibbonStatusBarSwitchGroup);
     int index = 0;
     int switchCount = 0;
     const QObjectList &children = q->children();
     for (int i = 0, count = children.count(); count > i; i++) {
         if (QWidget *child = qobject_cast<QWidget *>(children.at(i))) {
             switchCount++;
-            child->setProperty(_qtc_Index_Group, index);
+            child->setProperty(_qrn_Index_Group, index);
             index++;
         }
     }
-    q->setProperty(_qtc_Switch_Count, switchCount);
+    q->setProperty(_qrn_Switch_Count, switchCount);
 }
 
 /* RibbonStatusBarSwitchGroup */
 RibbonStatusBarSwitchGroup::RibbonStatusBarSwitchGroup()
 {
-    QTC_INIT_PRIVATE(RibbonStatusBarSwitchGroup);
-    QTC_D(RibbonStatusBarSwitchGroup);
+    QRN_INIT_PRIVATE(RibbonStatusBarSwitchGroup);
+    Q_D(RibbonStatusBarSwitchGroup);
     d->init();
 }
 
-RibbonStatusBarSwitchGroup::~RibbonStatusBarSwitchGroup() { QTC_FINI_PRIVATE(); }
+RibbonStatusBarSwitchGroup::~RibbonStatusBarSwitchGroup() { QRN_FINI_PRIVATE(); }
 
 void RibbonStatusBarSwitchGroup::actionEvent(QActionEvent *event)
 {
-    QTC_D(RibbonStatusBarSwitchGroup)
+    Q_D(RibbonStatusBarSwitchGroup);
 
     QAction *action = event->action();
     if (event->type() == QEvent::ActionAdded) {
@@ -294,7 +294,7 @@ RibbonStatusBarPrivate::RibbonStatusBarPrivate()
 
 QLayout *RibbonStatusBarPrivate::findLayout()
 {
-    QTC_Q(RibbonStatusBar)
+    Q_Q(RibbonStatusBar);
 
     QLayout *l = q->layout();
     const QObjectList &children = q->children();
@@ -361,9 +361,9 @@ StatusSeparator *RibbonStatusBarPrivate::createSeparator(QAction *action) const
 }
 
 /* RibbonStatusBar */
-RibbonStatusBar::RibbonStatusBar(QWidget *parent) : QStatusBar(parent) { QTC_INIT_PRIVATE(RibbonStatusBar); }
+RibbonStatusBar::RibbonStatusBar(QWidget *parent) : QStatusBar(parent) { QRN_INIT_PRIVATE(RibbonStatusBar); }
 
-RibbonStatusBar::~RibbonStatusBar() { QTC_FINI_PRIVATE(); }
+RibbonStatusBar::~RibbonStatusBar() { QRN_FINI_PRIVATE(); }
 
 QAction *RibbonStatusBar::addAction(const QString &text)
 {
@@ -382,7 +382,7 @@ QAction *RibbonStatusBar::addSeparator()
 
 void RibbonStatusBar::addPermanentAction(QAction *action)
 {
-    QTC_D(RibbonStatusBar);
+    Q_D(RibbonStatusBar);
     d->m_addPermanentAction = true;
     QStatusBar::addAction(action);
     d->m_addPermanentAction = false;
@@ -390,13 +390,13 @@ void RibbonStatusBar::addPermanentAction(QAction *action)
 
 QRect RibbonStatusBar::childrenPermanentRect() const
 {
-    QTC_D(const RibbonStatusBar);
+    Q_D(const RibbonStatusBar);
     return d->childrenPermanentRect();
 }
 
 bool RibbonStatusBar::event(QEvent *event)
 {
-    QTC_D(RibbonStatusBar);
+    Q_D(RibbonStatusBar);
     bool result = QStatusBar::event(event);
 
     if (!d->m_dirty && QEvent::ChildRemoved == event->type()) {
@@ -413,7 +413,7 @@ void RibbonStatusBar::paintEvent(QPaintEvent *event) { QStatusBar::paintEvent(ev
 
 void RibbonStatusBar::actionEvent(QActionEvent *event)
 {
-    QTC_D(RibbonStatusBar);
+    Q_D(RibbonStatusBar);
     QAction *action = event->action();
     if (event->type() == QEvent::ActionAdded) {
         Q_ASSERT_X(::findButtonByAction(this, action) == Q_NULL, "RibbonStatusBar",
@@ -451,7 +451,7 @@ void RibbonStatusBar::actionEvent(QActionEvent *event)
 
 void RibbonStatusBar::resizeEvent(QResizeEvent *event)
 {
-    QTC_D(RibbonStatusBar);
+    Q_D(RibbonStatusBar);
     QStatusBar::resizeEvent(event);
     d->updateLayout();
 }

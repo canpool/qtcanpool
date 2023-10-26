@@ -34,7 +34,7 @@ class RibbonGalleryItem;
 class RibbonGalleryItemPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonGalleryItem)
+    QRN_DECLARE_PUBLIC(RibbonGalleryItem)
 public:
     explicit RibbonGalleryItemPrivate();
 public:
@@ -55,7 +55,7 @@ class RibbonGalleryGroup;
 class RibbonGalleryGroupPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(RibbonGalleryGroup)
+    QRN_DECLARE_PUBLIC(RibbonGalleryGroup)
 public:
     explicit RibbonGalleryGroupPrivate();
     virtual ~RibbonGalleryGroupPrivate();
@@ -87,7 +87,7 @@ class RibbonGalleryPrivate : public QObject
 {
 public:
     Q_OBJECT
-    QTC_DECLARE_PUBLIC(RibbonGallery)
+    QRN_DECLARE_PUBLIC(RibbonGallery)
 public:
     explicit RibbonGalleryPrivate();
     virtual ~RibbonGalleryPrivate();

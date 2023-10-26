@@ -120,7 +120,7 @@ private:
     friend class RibbonTab;
     friend class RibbonBarCustomizeEngine;
 
-    QTC_DECLARE_PRIVATE(RibbonPage)
+    QRN_DECLARE_PRIVATE(RibbonPage)
     Q_DISABLE_COPY(RibbonPage)
 };
 

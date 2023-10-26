@@ -45,7 +45,7 @@ public:
     virtual void draw(QPainter *p, RibbonGallery *gallery, QRect rectItem, bool enabled, bool selected, bool pressed,
                       bool checked);
 private:
-    QTC_DECLARE_PRIVATE(RibbonGalleryItem)
+    QRN_DECLARE_PRIVATE(RibbonGalleryItem)
     Q_DISABLE_COPY(RibbonGalleryItem)
     friend class RibbonGalleryGroup;
     friend class RibbonGalleryGroupPrivate;
@@ -88,7 +88,7 @@ private:
     friend class RibbonGalleryItem;
     friend class RibbonGallery;
     friend class RibbonGalleryPrivate;
-    QTC_DECLARE_PRIVATE(RibbonGalleryGroup)
+    QRN_DECLARE_PRIVATE(RibbonGalleryGroup)
     Q_DISABLE_COPY(RibbonGalleryGroup)
 };
 
@@ -182,7 +182,7 @@ protected:
     virtual void resizeEvent(QResizeEvent *);
 private:
     friend class RibbonGalleryGroupPrivate;
-    QTC_DECLARE_PRIVATE(RibbonGallery)
+    QRN_DECLARE_PRIVATE(RibbonGallery)
     Q_DISABLE_COPY(RibbonGallery)
 };
 

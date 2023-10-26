@@ -23,7 +23,7 @@ QRIBBON_BEGIN_NAMESPACE
 class OfficePopupMenuPrivate : public QObject
 {
 public:
-    QTC_DECLARE_PUBLIC(OfficePopupMenu)
+    QRN_DECLARE_PUBLIC(OfficePopupMenu)
 public:
     explicit OfficePopupMenuPrivate();
 public:
@@ -52,15 +52,15 @@ OfficePopupMenuPrivate::OfficePopupMenuPrivate()
 
 void OfficePopupMenuPrivate::init()
 {
-    QTC_Q(OfficePopupMenu);
-    q->setProperty(_qtc_PopupBar, true);
+    Q_Q(OfficePopupMenu);
+    q->setProperty(_qrn_PopupBar, true);
     q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     q->setMouseTracking(true);
 }
 
 int OfficePopupMenuPrivate::calcMinimumHeight(bool without)
 {
-    QTC_Q(OfficePopupMenu);
+    Q_Q(OfficePopupMenu);
 
     int height = 11;
 
@@ -83,7 +83,7 @@ int OfficePopupMenuPrivate::calcMinimumHeight(bool without)
 
 QWidget *OfficePopupMenuPrivate::findWidget(const char *nameWidget) const
 {
-    QTC_Q(const OfficePopupMenu);
+    Q_Q(const OfficePopupMenu);
     const QObjectList &listChildren = q->children();
     for (int i = 0; i < listChildren.size(); ++i) {
         QWidget *w = qobject_cast<QWidget *>(listChildren.at(i));
@@ -96,8 +96,8 @@ QWidget *OfficePopupMenuPrivate::findWidget(const char *nameWidget) const
 
 void OfficePopupMenuPrivate::udateSizeGallery(const QSize &sz)
 {
-    QTC_Q(const OfficePopupMenu);
-    if (QWidget *w = findWidget(_qtc_WidgetGallery)) {
+    Q_Q(const OfficePopupMenu);
+    if (QWidget *w = findWidget(_qrn_WidgetGallery)) {
         if (!w->isWindow() && !w->isHidden()) {
             QSize szOld = q->sizeHint();
             QSize sizeWidget = w->geometry().size();
@@ -117,8 +117,8 @@ class OfficePopupMenu
 */
 OfficePopupMenu::OfficePopupMenu(QWidget *parent) : QMenu(parent)
 {
-    QTC_INIT_PRIVATE(OfficePopupMenu);
-    QTC_D(OfficePopupMenu);
+    QRN_INIT_PRIVATE(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     d->init();
 
     connect(this, SIGNAL(aboutToShow()), this, SLOT(aboutToShowBar()));
@@ -127,7 +127,7 @@ OfficePopupMenu::OfficePopupMenu(QWidget *parent) : QMenu(parent)
 /*!
 \brief Destructor of the OfficePopupMenu object.
 */
-OfficePopupMenu::~OfficePopupMenu() { QTC_FINI_PRIVATE(); }
+OfficePopupMenu::~OfficePopupMenu() { QRN_FINI_PRIVATE(); }
 
 /*!
 \brief Creates an instance of the OfficePopupMenu object with given \a parent.
@@ -143,7 +143,7 @@ OfficePopupMenu *OfficePopupMenu::createPopupMenu(QWidget *parent)
 */
 QAction *OfficePopupMenu::addWidget(QWidget *widget)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
 
     QWidgetAction *action = new QWidgetAction(this);
     action->setDefaultWidget(widget);
@@ -152,7 +152,7 @@ QAction *OfficePopupMenu::addWidget(QWidget *widget)
     if (widget && widget->property("isResizable").toBool())
         d->m_resizable = true;
 
-    if (RibbonGallery *gallery = qobject_cast<RibbonGallery *>(d->findWidget(_qtc_WidgetGallery))) {
+    if (RibbonGallery *gallery = qobject_cast<RibbonGallery *>(d->findWidget(_qrn_WidgetGallery))) {
         gallery->adjustSize();
         gallery->updatelayout();
     }
@@ -165,7 +165,7 @@ QAction *OfficePopupMenu::addWidget(QWidget *widget)
 */
 void OfficePopupMenu::setGripVisible(bool visible)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     d->m_showGrip = visible;
 }
 
@@ -174,14 +174,14 @@ void OfficePopupMenu::setGripVisible(bool visible)
 */
 bool OfficePopupMenu::isGripVisible() const
 {
-    QTC_D(const OfficePopupMenu);
+    Q_D(const OfficePopupMenu);
     return d->m_showGrip;
 }
 
 /*! \internal */
 void OfficePopupMenu::setWidgetBar(QWidget *widget)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     Q_ASSERT(widget != Q_NULL && d->m_widgetPopup == Q_NULL);
     d->m_widgetPopup = widget;
 }
@@ -189,9 +189,9 @@ void OfficePopupMenu::setWidgetBar(QWidget *widget)
 /*! \internal */
 void OfficePopupMenu::aboutToShowBar()
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
 
-    if (RibbonGallery *gallery = qobject_cast<RibbonGallery *>(d->findWidget(_qtc_WidgetGallery))) {
+    if (RibbonGallery *gallery = qobject_cast<RibbonGallery *>(d->findWidget(_qrn_WidgetGallery))) {
         if (!gallery->isWindow() && !gallery->isHidden())
             gallery->updatelayout();
     }
@@ -202,7 +202,7 @@ QSize OfficePopupMenu::sizeHint() const
 {
     QSize size = QMenu::sizeHint();
 
-    QTC_D(const OfficePopupMenu);
+    Q_D(const OfficePopupMenu);
 
     int height = 0;
     if (d->m_resizable)
@@ -211,7 +211,7 @@ QSize OfficePopupMenu::sizeHint() const
     QSize sz;
     if (d->m_widgetPopup)
         sz = d->m_widgetPopup->geometry().size();
-    else if (QWidget *w = d->findWidget(_qtc_WidgetGallery)) {
+    else if (QWidget *w = d->findWidget(_qrn_WidgetGallery)) {
         sz = w->geometry().size();
         if (sz.isNull()) {
             sz = size;
@@ -227,7 +227,7 @@ QSize OfficePopupMenu::sizeHint() const
 void OfficePopupMenu::paintEvent(QPaintEvent *event)
 {
     QMenu::paintEvent(event);
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
 
     if (d->m_resizable) {
         QPainter p(this);
@@ -242,7 +242,7 @@ void OfficePopupMenu::paintEvent(QPaintEvent *event)
 /*! \reimp */
 void OfficePopupMenu::mousePressEvent(QMouseEvent *event)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     if (d->m_resizable) {
         if (event->buttons() == Qt::LeftButton) {
             QRect rcResizeGripper(rect());
@@ -250,7 +250,7 @@ void OfficePopupMenu::mousePressEvent(QMouseEvent *event)
             QRect rcResizeGripperAll = rcResizeGripper;
             rcResizeGripper.setLeft(rcResizeGripper.right() - rcResizeGripper.height());
             if (rcResizeGripper.contains(event->pos())) {
-                if (QWidget *w = d->findWidget(_qtc_WidgetGallery)) {
+                if (QWidget *w = d->findWidget(_qrn_WidgetGallery)) {
                     if (w && !w->isWindow() && !w->isHidden())
                         w->setAttribute(Qt::WA_TransparentForMouseEvents, true);
                 }
@@ -266,9 +266,9 @@ void OfficePopupMenu::mousePressEvent(QMouseEvent *event)
 /*! \reimp */
 void OfficePopupMenu::mouseMoveEvent(QMouseEvent *event)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
 
-    if (QWidget *w = d->findWidget(_qtc_WidgetGallery)) {
+    if (QWidget *w = d->findWidget(_qrn_WidgetGallery)) {
         QMouseEvent evPress(event->type(), event->pos(), event->globalPos(), event->button(), event->buttons(),
                             event->modifiers());
         QApplication::sendEvent(w, &evPress);
@@ -304,10 +304,10 @@ void OfficePopupMenu::mouseMoveEvent(QMouseEvent *event)
 /*! \reimp */
 void OfficePopupMenu::mouseReleaseEvent(QMouseEvent *event)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     d->m_pressSizeGrip = false;
 
-    if (QWidget *w = d->findWidget(_qtc_WidgetGallery)) {
+    if (QWidget *w = d->findWidget(_qrn_WidgetGallery)) {
         if (w && !w->isWindow() && !w->isHidden())
             w->setAttribute(Qt::WA_TransparentForMouseEvents, false);
     }
@@ -318,7 +318,7 @@ void OfficePopupMenu::mouseReleaseEvent(QMouseEvent *event)
 void OfficePopupMenu::moveEvent(QMoveEvent *event)
 {
     Q_UNUSED(event);
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     if (d->m_pressSizeGrip)
         setCursor(Qt::SizeFDiagCursor);
 }
@@ -326,7 +326,7 @@ void OfficePopupMenu::moveEvent(QMoveEvent *event)
 /*! \reimp */
 void OfficePopupMenu::showEvent(QShowEvent *event)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     QMenu::showEvent(event);
 
     if (d->m_widgetPopup && d->m_resizable) {
@@ -338,7 +338,7 @@ void OfficePopupMenu::showEvent(QShowEvent *event)
 /*! \reimp */
 void OfficePopupMenu::resizeEvent(QResizeEvent *event)
 {
-    QTC_D(OfficePopupMenu);
+    Q_D(OfficePopupMenu);
     d->udateSizeGallery(event->size());
     QMenu::resizeEvent(event);
 }

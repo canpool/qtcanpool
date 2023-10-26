@@ -41,7 +41,7 @@ protected Q_SLOTS:
     void increment();
     void decrement();
 private:
-    QTC_DECLARE_PRIVATE(RibbonSliderPane)
+    QRN_DECLARE_PRIVATE(RibbonSliderPane)
     Q_DISABLE_COPY(RibbonSliderPane)
 };
 

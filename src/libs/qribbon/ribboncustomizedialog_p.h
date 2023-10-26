@@ -43,7 +43,7 @@ class RibbonCustomizeDialogPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonCustomizeDialog)
+    QRN_DECLARE_PUBLIC(RibbonCustomizeDialog)
 public:
     explicit RibbonCustomizeDialogPrivate();
     virtual ~RibbonCustomizeDialogPrivate();
@@ -90,7 +90,7 @@ class RibbonQuickAccessBarCustomizePagePrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonQuickAccessBarCustomizePage)
+    QRN_DECLARE_PUBLIC(RibbonQuickAccessBarCustomizePage)
     enum ColumnCommand {
         nIconCommand = 0,
         nNameCommand,
@@ -155,7 +155,7 @@ class RibbonBarCustomizePagePrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonBarCustomizePage)
+    QRN_DECLARE_PUBLIC(RibbonBarCustomizePage)
 public:
     explicit RibbonBarCustomizePagePrivate();
     virtual ~RibbonBarCustomizePagePrivate();

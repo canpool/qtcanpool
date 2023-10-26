@@ -68,7 +68,7 @@ public:
     int maximumItemCount() const;
     void setMaximumItemCount(int count);
 private:
-    QTC_DECLARE_PRIVATE(RibbonControlSizeDefinition)
+    QRN_DECLARE_PRIVATE(RibbonControlSizeDefinition)
     Q_DISABLE_COPY(RibbonControlSizeDefinition)
 };
 
@@ -96,7 +96,7 @@ public:
     RibbonControlSizeDefinition *sizeDefinition(RibbonControlSizeDefinition::GroupSize size) const;
 private:
     friend class RibbonGroup;
-    QTC_DECLARE_PRIVATE(RibbonControl)
+    QRN_DECLARE_PRIVATE(RibbonControl)
     Q_DISABLE_COPY(RibbonControl)
 };
 
@@ -124,7 +124,7 @@ protected:
 private:
     friend class RibbonGroup;
     friend class RibbonGroupPrivate;
-    QTC_DECLARE_PRIVATE(RibbonWidgetControl)
+    QRN_DECLARE_PRIVATE(RibbonWidgetControl)
     Q_DISABLE_COPY(RibbonWidgetControl)
 };
 
@@ -145,7 +145,7 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *);
 private:
-    QTC_DECLARE_PRIVATE(RibbonColumnBreakControl)
+    QRN_DECLARE_PRIVATE(RibbonColumnBreakControl)
     Q_DISABLE_COPY(RibbonColumnBreakControl)
 };
 
@@ -203,7 +203,7 @@ protected:
     virtual void actionEvent(QActionEvent *event);
     virtual void changeEvent(QEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonToolBarControl)
+    QRN_DECLARE_PRIVATE(RibbonToolBarControl)
     Q_DISABLE_COPY(RibbonToolBarControl)
 };
 

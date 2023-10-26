@@ -76,7 +76,8 @@ OfficeStyle::Theme OfficePaintManager::theme() const { return ((OfficeStyle *)ba
 
 QString OfficePaintManager::theme(const QString &str) const
 {
-    return ((OfficeStyle *)baseStyle())->qtc_d()->theme(str);
+    Q_D_STYLE(const OfficeStyle);
+    return d->theme(str);
 }
 
 QColor OfficePaintManager::textColor(bool selected, bool pressed, bool enabled, bool checked, bool popuped,
@@ -89,7 +90,7 @@ QColor OfficePaintManager::textColor(bool selected, bool pressed, bool enabled, 
 /*! \internal */
 void OfficePaintManager::polish(QWidget *widget)
 {
-    QTC_D_STYLE(OfficeStyle);
+    Q_D_STYLE(OfficeStyle);
 
     if (qobject_cast<QAbstractSpinBox *>(widget)) {
         QPalette pal = widget->palette();
@@ -131,7 +132,7 @@ QColor OfficePaintManager::menuLabelColor() const { return m_clrBarShadow; }
 /*! \internal */
 void OfficePaintManager::drawSysButton(QPainter *p, const QRect &rect, bool down, bool highlighted) const
 {
-    QTC_D_STYLE(const OfficeStyle);
+    Q_D_STYLE(const OfficeStyle);
     QColor color;
     if (down)
         color = m_clrHighlightDn;
@@ -354,7 +355,7 @@ bool OfficePaintManager::drawIndicatorDockWidgetResizeHandle(const QStyleOption 
 /*! \internal */
 bool OfficePaintManager::drawPanelMenu(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
 
     p->fillRect(opt->rect, d->m_clrBackgroundLight);
     if (qobject_cast<const QToolBar *>(w))
@@ -366,7 +367,7 @@ bool OfficePaintManager::drawPanelMenu(const QStyleOption *opt, QPainter *p, con
 bool OfficePaintManager::drawFrameMenu(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     QRect rect = opt->rect;
     DrawHelpers::draw3dRectEx(*p, rect, d->m_clrMenubarBorder, d->m_clrMenubarBorder);
     rect.adjust(1, 1, -1, -1);
@@ -405,7 +406,7 @@ bool OfficePaintManager::drawIndicatorCheckRadioButton(QStyle::PrimitiveElement 
                                                        QPainter *p, const QWidget *widget) const
 {
     Q_UNUSED(widget);
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
 
     bool isRadio = (element == QStyle::PE_IndicatorRadioButton);
 
@@ -513,7 +514,7 @@ bool OfficePaintManager::drawIndicatorViewItemCheck(QStyle::PrimitiveElement ele
 bool OfficePaintManager::drawPanelButtonCommand(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
     if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt)) {
         uint resolve_mask = btn->palette.resolve();
         if (resolve_mask & (1 << QPalette::Base))
@@ -560,7 +561,7 @@ bool OfficePaintManager::drawPanelTipLabel(const QStyleOption *opt, QPainter *p,
 /*! \internal */
 bool OfficePaintManager::drawControlEdit(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
     if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
         bool usePalette = false;
         uint resolve_mask = panel->palette.resolve();
@@ -602,7 +603,7 @@ bool OfficePaintManager::drawControlEdit(const QStyleOption *opt, QPainter *p, c
 bool OfficePaintManager::drawFrameLineEdit(const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
     if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
         bool usePalette = false;
         uint resolve_mask = panel->palette.resolve();
@@ -648,7 +649,7 @@ bool OfficePaintManager::drawFrameLineEdit(const QStyleOption *opt, QPainter *p,
 /*! \internal */
 bool OfficePaintManager::drawComboBox(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (const QStyleOptionComboBox *cmb = qstyleoption_cast<const QStyleOptionComboBox *>(opt)) {
         QStyle::State flags = cmb->state;
         QStyle::SubControls sub = cmb->subControls;
@@ -714,7 +715,7 @@ bool OfficePaintManager::drawComboBox(const QStyleOptionComplex *opt, QPainter *
 bool OfficePaintManager::drawSpinBox(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
     Q_UNUSED(w);
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
 
     if (const QStyleOptionSpinBox *sb = qstyleoption_cast<const QStyleOptionSpinBox *>(opt)) {
         bool highlighted = sb->state & QStyle::State_MouseOver;
@@ -945,7 +946,7 @@ bool OfficePaintManager::drawShapedFrame(const QStyleOption *opt, QPainter *p, c
 /*! \internal */
 bool OfficePaintManager::drawFrameWindow(const QStyleOption *opt, QPainter *p, const QWidget *wd) const
 {
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (!wd || !qobject_cast<const QMdiSubWindow *>(wd)) {
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
         QWidget *widget = (wd && wd->parentWidget()) ? wd->parentWidget() : Q_NULL;
@@ -988,7 +989,7 @@ bool OfficePaintManager::drawFrameWindow(const QStyleOption *opt, QPainter *p, c
 /*! \internal */
 bool OfficePaintManager::drawScrollBar(const QStyleOptionComplex *opt, QPainter *p, const QWidget *w) const
 {
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (d->isScrollBarsIgnored())
         return false;
 
@@ -1082,7 +1083,7 @@ bool OfficePaintManager::drawScrollBarLine(QStyle::ControlElement element, const
 {
     Q_UNUSED(w);
 
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (d->isScrollBarsIgnored())
         return false;
 
@@ -1135,7 +1136,7 @@ bool OfficePaintManager::drawScrollBarSlider(const QStyleOption *opt, QPainter *
 {
     Q_UNUSED(w);
 
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (d->isScrollBarsIgnored())
         return false;
 
@@ -1175,7 +1176,7 @@ bool OfficePaintManager::drawScrollBarPage(QStyle::ControlElement element, const
     Q_UNUSED(p);
     Q_UNUSED(w);
 
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (d->isScrollBarsIgnored())
         return false;
 
@@ -1188,7 +1189,7 @@ bool OfficePaintManager::drawPanelStatusBar(const QStyleOption *opt, QPainter *p
 {
     Q_UNUSED(w);
 
-    QTC_D_STYLE(const OfficeStyle);
+    Q_D_STYLE(const OfficeStyle);
     p->fillRect(opt->rect, d->m_clrStatusBarShadow);
     return true;
 }
@@ -1298,15 +1299,15 @@ bool OfficePaintManager::drawIndicatorArrow(QStyle::PrimitiveElement pe, const Q
 /*! \internal */
 bool OfficePaintManager::drawGalleryToolButton(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(opt)) {
         if (widget) {
             OfficePaintManager::ImageIcons id = OfficePaintManager::Icon_Check;
-            if (widget->property(_qtc_PopupButtonGallery).toBool())
+            if (widget->property(_qrn_PopupButtonGallery).toBool())
                 id = OfficePaintManager::Icon_CustomizeArowDown;
-            else if (widget->property(_qtc_ScrollUpButtonGallery).toBool())
+            else if (widget->property(_qrn_ScrollUpButtonGallery).toBool())
                 id = OfficePaintManager::Icon_ArowUp;
-            else if (widget->property(_qtc_ScrollDownButtonGallery).toBool())
+            else if (widget->property(_qrn_ScrollDownButtonGallery).toBool())
                 id = OfficePaintManager::Icon_ArowDown;
 
             if (id != OfficePaintManager::Icon_Check) {
@@ -1340,7 +1341,7 @@ bool OfficePaintManager::drawGalleryToolButton(const QStyleOption *opt, QPainter
 /*! \internal */
 void OfficePaintManager::drawMenuItemSeparator(const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
-    QTC_D_STYLE(const OfficeStyle)
+    Q_D_STYLE(const OfficeStyle);
     if (const QStyleOptionMenuItem *menuitem = qstyleoption_cast<const QStyleOptionMenuItem *>(opt)) {
         if (menuitem->text.isEmpty()) {
             int x, y, w, h;
@@ -1381,7 +1382,7 @@ void OfficePaintManager::drawRectangle(QPainter *p, const QRect &rect, bool sele
     Q_UNUSED(popuped);
     Q_UNUSED(enabled);
     Q_UNUSED(pressed);
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
     if (barType != TypePopup) {
         QRect rc = rect;
         rc.adjust(1, 1, -1, -1);
@@ -1415,7 +1416,7 @@ void OfficePaintManager::drawRectangle(QPainter *p, const QRect &rect, bool sele
 /*! \internal */
 void OfficePaintManager::setupPalette(QWidget *widget) const
 {
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
     if (qobject_cast<QToolBar *>(widget)) {
         QPalette palette = widget->palette();
         palette.setColor(QPalette::Window, d->m_clrDockBar);
@@ -1479,7 +1480,7 @@ bool OfficePaintManager::styleHint(QStyle::StyleHint hint, const QStyleOption *o
 /*! \internal */
 void OfficePaintManager::modifyColors()
 {
-    QTC_D_STYLE(OfficeStyle)
+    Q_D_STYLE(OfficeStyle);
     m_clrAccentLight = DrawHelpers::colorMakePale(d->m_clrAccent.rgb(), .9);
     m_clrAccentHilight = DrawHelpers::pixelAlpha(d->m_clrAccent.rgb(), 115);
     m_clrAccentText = DrawHelpers::pixelAlpha(d->m_clrAccent.rgb(), 75);

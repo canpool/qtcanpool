@@ -37,7 +37,7 @@ protected:
     virtual void paintEvent(QPaintEvent *);
     virtual void resizeEvent(QResizeEvent *);
 private:
-    QTC_DECLARE_PRIVATE(RibbonQuickAccessBar)
+    QRN_DECLARE_PRIVATE(RibbonQuickAccessBar)
     Q_DISABLE_COPY(RibbonQuickAccessBar)
 };
 

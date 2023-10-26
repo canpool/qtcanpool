@@ -129,7 +129,7 @@ RibbonBarPrivate::~RibbonBarPrivate() { removeAllContextHeaders(); }
 
 void RibbonBarPrivate::init()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     q->ensurePolished();
     q->setNativeMenuBar(false);
     RibbonStyle *ribbonStyle = qobject_cast<RibbonStyle *>(q->style());
@@ -155,7 +155,7 @@ void RibbonBarPrivate::init()
 
 void RibbonBarPrivate::calcHeightItem()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     //    if (m_heightItem == -1)
     {
         QFont fontRegular = q->font();
@@ -213,7 +213,7 @@ void RibbonBarPrivate::calcHeightItem()
 
 void RibbonBarPrivate::layoutRibbon()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     /* In MacOSX the font has been selected in RibbonStyle::polish(), so we have non valid reference to the tabbar. */
     if (m_tabBar == Q_NULL || m_quickAccessBar == Q_NULL)
         return;
@@ -473,7 +473,7 @@ void RibbonBarPrivate::layoutRibbon()
 
 void RibbonBarPrivate::layoutTitleButton()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     if (!q->isFrameThemeEnabled())
         return;
 
@@ -600,7 +600,7 @@ bool RibbonBarPrivate::isExistAssociativeTabWithPage(const RibbonTab *tab)
 
 void RibbonBarPrivate::layoutContextHeaders()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     removeAllContextHeaders();
 
     if (!(q->isFrameThemeEnabled() || m_showTitleAlways))
@@ -684,7 +684,7 @@ void RibbonBarPrivate::layoutContextHeaders()
 
 void RibbonBarPrivate::layoutCorner()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     if (QWidget *rightWidget = q->cornerWidget(Qt::TopRightCorner)) {
         int hmargin = q->style()->pixelMetric(QStyle::PM_MenuBarHMargin, 0, q);
 
@@ -742,7 +742,7 @@ void RibbonBarPrivate::removeAllContextHeaders()
 
 void RibbonBarPrivate::updateMinimizedModePage(RibbonPage *page)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     if (m_minimized) {
         page->setPageVisible(false);
         page->setWindowFlags(Qt::Popup);
@@ -762,7 +762,7 @@ void RibbonBarPrivate::updateMinimizedModePage(RibbonPage *page)
 
 void RibbonBarPrivate::swapVisiblePages(int index)
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
     if (validIndex(index)) {
         if (m_currentIndexPage != -1 && m_currentIndexPage != index && q->parentWidget())
             q->parentWidget()->setFocus();
@@ -776,7 +776,7 @@ void RibbonBarPrivate::swapVisiblePages(int index)
 
 void RibbonBarPrivate::setVisibleBackstage(bool visible)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     if ((bool)q->style()->styleHint((QStyle::StyleHint)RibbonStyle::SH_RibbonBackstageHideTabs)) {
         if (visible) {
             if (m_tabBar && m_tabBar->isVisible()) {
@@ -804,7 +804,7 @@ void RibbonBarPrivate::setVisibleBackstage(bool visible)
 
 QAction *RibbonBarPrivate::createSystemButton(const QIcon &icon, const QString &text)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     QAction *actionSystemPopupBar = Q_NULL;
     if (icon.isNull()) {
         QIcon iconLogo;
@@ -830,7 +830,7 @@ QAction *RibbonBarPrivate::createSystemButton(const QIcon &icon, const QString &
 
 RibbonPage *RibbonBarPrivate::insertPage(int indTab, int index)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     RibbonPage *page = new RibbonPage(q);
     page->hide();
     insertPage(indTab, index, page);
@@ -840,7 +840,7 @@ RibbonPage *RibbonBarPrivate::insertPage(int indTab, int index)
 
 void RibbonBarPrivate::insertPage(int indTab, int index, RibbonPage *page)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     Q_ASSERT(page != Q_NULL);
 
     bool layoutPage = index == 0 && m_listPages.size() == 0;
@@ -899,7 +899,7 @@ int RibbonBarPrivate::topBorder() const
 
 void RibbonBarPrivate::currentChanged(int index)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
 
     if (validIndex(index)) {
         if (!m_minimized) {
@@ -971,7 +971,7 @@ void RibbonBarPrivate::currentChanged(int index)
 
 void RibbonBarPrivate::titleBarOptions(StyleOptionTitleBar &titleBarOptions) const
 {
-    QTC_Q(const RibbonBar);
+    Q_Q(const RibbonBar);
     QWidget *widget = q->parentWidget();
     if (!widget)
         return;
@@ -1052,7 +1052,7 @@ void RibbonBarPrivate::titleBarOptions(StyleOptionTitleBar &titleBarOptions) con
 
 QStyle::SubControl RibbonBarPrivate::getSubControl(const QPoint &pos) const
 {
-    QTC_Q(const RibbonBar);
+    Q_Q(const RibbonBar);
     StyleOptionTitleBar opt;
     titleBarOptions(opt);
     return q->style()->hitTestComplexControl(QStyle::CC_TitleBar, &opt, pos, q->parentWidget());
@@ -1060,7 +1060,7 @@ QStyle::SubControl RibbonBarPrivate::getSubControl(const QPoint &pos) const
 
 RibbonTitleButton *RibbonBarPrivate::findTitleButton(QStyle::SubControl subControl) const
 {
-    QTC_Q(const RibbonBar);
+    Q_Q(const RibbonBar);
     QList<RibbonTitleButton *> buttons_list = q->findChildren<RibbonTitleButton *>();
     foreach(RibbonTitleButton * but, buttons_list)
     {
@@ -1072,7 +1072,7 @@ RibbonTitleButton *RibbonBarPrivate::findTitleButton(QStyle::SubControl subContr
 
 QAction *RibbonBarPrivate::addTitleButton(QStyle::SubControl subControl, bool add, QRect &rcControl)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
 
     RibbonTitleButton *but = findTitleButton(subControl);
 
@@ -1127,7 +1127,7 @@ ContextHeader *RibbonBarPrivate::hitTestContextHeaders(const QPoint &point) cons
 
 QMenu *RibbonBarPrivate::createContextMenu()
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
     if (q->isBackstageVisible())
         return Q_NULL;
 
@@ -1302,7 +1302,7 @@ void RibbonBarPrivate::showKeyTips(QWidget *w)
     if (m_keyTips.count() > 0)
         qApp->installEventFilter(this);
 
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     q->setFocus();
 }
 
@@ -1320,7 +1320,7 @@ bool RibbonBarPrivate::hideKeyTips()
 
 void RibbonBarPrivate::createKeyTips()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     m_levels.push(q);
 
     QList<QToolButton *> list = m_quickAccessBar->findChildren<QToolButton *>();
@@ -1332,7 +1332,7 @@ void RibbonBarPrivate::createKeyTips()
         int k = 1;
         QString strCaption;
         if (QAction *act = button->defaultAction()) {
-            strCaption = act->property(_qtc_KeyTip).toString();
+            strCaption = act->property(_qrn_KeyTip).toString();
             if (strCaption.isEmpty()) {
                 QList<QAction *> listActs = m_quickAccessBar->actions();
                 int index = listActs.indexOf(act);
@@ -1361,7 +1361,7 @@ void RibbonBarPrivate::createKeyTips()
             RibbonTab *tab = m_tabBar->getTab(i);
 
             bool propKeyTip = true;
-            QString strCaption = tab->defaultAction()->property(_qtc_KeyTip).toString();
+            QString strCaption = tab->defaultAction()->property(_qrn_KeyTip).toString();
 
             if (strCaption.isEmpty()) {
                 strCaption = tab->textTab();
@@ -1383,7 +1383,7 @@ void RibbonBarPrivate::createKeyTips()
     if (m_controlSystemButton) {
         QPoint pt(m_controlSystemButton->rect().center().x(), m_controlSystemButton->rect().center().y());
 
-        QString strCaption = m_controlSystemButton->defaultAction()->property(_qtc_KeyTip).toString();
+        QString strCaption = m_controlSystemButton->defaultAction()->property(_qrn_KeyTip).toString();
         if (strCaption.isEmpty())
             strCaption = m_controlSystemButton->text();
 
@@ -1421,7 +1421,7 @@ static QString getTextAction(const RibbonGroup &group, QWidget &widget, bool &pr
     {
         if (QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(action)) {
             if (&widget == widgetAction->defaultWidget()) {
-                strCaption = widgetAction->property(_qtc_KeyTip).toString();
+                strCaption = widgetAction->property(_qrn_KeyTip).toString();
                 if (strCaption.isEmpty()) {
                     strCaption = widgetAction->text();
                     propKeyTip = false;
@@ -1436,7 +1436,7 @@ static QString getTextAction(const RibbonGroup &group, QWidget &widget, bool &pr
 void RibbonBarPrivate::createWidgetKeyTips(RibbonGroup *group, QWidget *widget, const QString &prefix,
                                            const QRect &rcGroups, bool visible)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
 
     if (!widget)
         return;
@@ -1448,7 +1448,7 @@ void RibbonBarPrivate::createWidgetKeyTips(RibbonGroup *group, QWidget *widget, 
         if (strCaption.isEmpty()) {
             if (QToolButton *toolButton = qobject_cast<QToolButton *>(button)) {
                 if (QAction *action = toolButton->defaultAction()) {
-                    strCaption = action->property(_qtc_KeyTip).toString();
+                    strCaption = action->property(_qrn_KeyTip).toString();
                     if (strCaption.isEmpty()) {
                         strCaption = action->text();
                         propKeyTip = false;
@@ -1457,7 +1457,7 @@ void RibbonBarPrivate::createWidgetKeyTips(RibbonGroup *group, QWidget *widget, 
 
                 if (strCaption.isEmpty()) {
                     if (RibbonGallery *ribGallery = qobject_cast<RibbonGallery *>(toolButton->parentWidget())) {
-                        if (toolButton->property(_qtc_PopupButtonGallery).toBool()) {
+                        if (toolButton->property(_qrn_PopupButtonGallery).toBool()) {
                             if (OfficePopupMenu *menu = ribGallery->popupMenu()) {
                                 if (QAction *act = menu->defaultAction())
                                     strCaption = act->text();
@@ -1547,7 +1547,7 @@ void RibbonBarPrivate::createWidgetKeyTips(RibbonGroup *group, QWidget *widget, 
 
 bool RibbonBarPrivate::createPopupKeyTips(QMenu *levalMenu)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     QMenu *menu = levalMenu ? levalMenu : qobject_cast<QMenu *>(QApplication::activePopupWidget());
     if (menu) {
         m_levels.push(menu);
@@ -1556,11 +1556,11 @@ bool RibbonBarPrivate::createPopupKeyTips(QMenu *levalMenu)
         for (int i = 0; i < list.count(); i++) {
             QAction *action = list.at(i);
 
-            if (action->text().count(QString(_qtc_PopupLable)) != 0)
+            if (action->text().count(QString(_qrn_PopupLable)) != 0)
                 continue;
 
             bool propKeyTip = true;
-            QString strCaption = action->property(_qtc_KeyTip).toString();
+            QString strCaption = action->property(_qrn_KeyTip).toString();
 
             if (strCaption.isEmpty()) {
                 strCaption = action->text();
@@ -1590,7 +1590,7 @@ bool RibbonBarPrivate::createPopupKeyTips(QMenu *levalMenu)
 
             if (QToolButton *toolButton = qobject_cast<QToolButton *>(widget)) {
                 if (QAction *action = toolButton->defaultAction()) {
-                    strCaption = action->property(_qtc_KeyTip).toString();
+                    strCaption = action->property(_qrn_KeyTip).toString();
                     if (strCaption.isEmpty()) {
                         strCaption = action->text();
                         propKeyTip = false;
@@ -1658,7 +1658,7 @@ int RibbonBarPrivate::rowItemCount() const { return m_rowItemCount; }
 
 int RibbonBarPrivate::maxGroupHeight() const
 {
-    QTC_Q(const RibbonBar);
+    Q_Q(const RibbonBar);
     int ret = rowItemHeight() * rowItemCount();
     QStyleOption opt;
     opt.init(q);
@@ -1675,7 +1675,7 @@ int RibbonBarPrivate::maxGroupHeight() const
 
 bool RibbonBarPrivate::pressTipCharEvent(const QKeyEvent *key)
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     QString str = key->text().toUpper();
     if (str.isEmpty())
         return false;
@@ -1772,7 +1772,7 @@ bool RibbonBarPrivate::pressTipCharEvent(const QKeyEvent *key)
 
 bool RibbonBarPrivate::eventFilter(QObject *obj, QEvent *event)
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
     switch (event->type()) {
     case QEvent::WindowActivate:
     case QEvent::WindowDeactivate:
@@ -1828,7 +1828,7 @@ bool RibbonBarPrivate::eventFilter(QObject *obj, QEvent *event)
 
 void RibbonBarPrivate::processClickedSubControl()
 {
-    QTC_Q(RibbonBar);
+    Q_Q(RibbonBar);
     if (QAction *action = qobject_cast<QAction *>(sender())) {
         QWidget *widget = q->parentWidget();
         if (widget == Q_NULL)
@@ -1860,7 +1860,7 @@ void RibbonBarPrivate::processClickedSubControl()
 
 void RibbonBarPrivate::createCustomizeDialog()
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
 
     if (m_customizeDialog != Q_NULL)
         return;
@@ -1876,39 +1876,39 @@ void RibbonBarPrivate::createCustomizeDialog()
 
 void RibbonBarPrivate::toggledCustomizeBar()
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
     q->showCustomizeDialog();
 }
 
 void RibbonBarPrivate::toggledQuickAccessBarPos()
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
     q->setQuickAccessBarPosition(q->quickAccessBarPosition() == RibbonBar::QATopPosition ? RibbonBar::QABottomPosition
                                                                                          : RibbonBar::QATopPosition);
 }
 
 void RibbonBarPrivate::toggledMinimized()
 {
-    QTC_Q(RibbonBar)
+    Q_Q(RibbonBar);
     q->setMinimized(!q->isMinimized());
 }
 
 /* RibbonBar */
 RibbonBar::RibbonBar(QWidget *parent) : QMenuBar(parent)
 {
-    QTC_INIT_PRIVATE(RibbonBar);
-    QTC_D(RibbonBar);
+    QRN_INIT_PRIVATE(RibbonBar);
+    Q_D(RibbonBar);
     d->init();
 }
 
-RibbonBar::~RibbonBar() { QTC_FINI_PRIVATE(); }
+RibbonBar::~RibbonBar() { QRN_FINI_PRIVATE(); }
 
 /*!
 \brief Returns the visible flag of the Ribbon Bar.
 */
 bool RibbonBar::isVisible() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return QMenuBar::isVisible() && d->m_ribbonBarVisible;
 }
 
@@ -1918,7 +1918,7 @@ void RibbonBar::addPage(RibbonPage *page) { insertPage(-1, page); }
 
 RibbonPage *RibbonBar::insertPage(int index, const QString &text)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     int indTab = d->m_tabBar->insertTab(index, text);
 
     RibbonPage *page = d->insertPage(indTab, index);
@@ -1932,7 +1932,7 @@ void RibbonBar::insertPage(int index, RibbonPage *page)
 {
     Q_ASSERT(page != Q_NULL);
 
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     page->setParent(this);
     int indTab = d->m_tabBar->insertTab(index, page->title());
     page->hide();
@@ -1942,13 +1942,13 @@ void RibbonBar::insertPage(int index, RibbonPage *page)
 
 void RibbonBar::movePage(RibbonPage *page, int newIndex)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     movePage(d->indexPage(page), newIndex);
 }
 
 void RibbonBar::movePage(int index, int newIndex)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->validIndex(index) && d->validIndex(newIndex)) {
         d->m_tabBar->moveTab(index, newIndex);
         d->m_listPages.move(index, newIndex);
@@ -1958,7 +1958,7 @@ void RibbonBar::movePage(int index, int newIndex)
 
 void RibbonBar::removePage(RibbonPage *page)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     int index = d->indexPage(page);
     if (index != -1)
         removePage(index);
@@ -1966,7 +1966,7 @@ void RibbonBar::removePage(RibbonPage *page)
 
 void RibbonBar::removePage(int index)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->removePage(index);
     d->m_tabBar->removeTab(index);
     d->layoutRibbon();
@@ -1974,7 +1974,7 @@ void RibbonBar::removePage(int index)
 
 void RibbonBar::detachPage(RibbonPage *page)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     int index = d->indexPage(page);
     if (index != -1)
         detachPage(index);
@@ -1982,7 +1982,7 @@ void RibbonBar::detachPage(RibbonPage *page)
 
 void RibbonBar::detachPage(int index)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->removePage(index, false);
     d->m_tabBar->removeTab(index);
     d->layoutRibbon();
@@ -1999,7 +1999,7 @@ void RibbonBar::clearPages()
 */
 bool RibbonBar::isKeyTipsShowing() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_keyTipsShowing;
 }
 
@@ -2008,7 +2008,7 @@ bool RibbonBar::isKeyTipsShowing() const
 */
 bool RibbonBar::keyTipsEnabled() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_keyTipsEnabled;
 }
 
@@ -2017,7 +2017,7 @@ bool RibbonBar::keyTipsEnabled() const
 */
 void RibbonBar::setKeyTipsEnable(bool enable)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->m_keyTipsEnabled = enable;
 }
 
@@ -2029,7 +2029,7 @@ If return value is false keytips will be assigned only if user set it by RibbonB
 */
 bool RibbonBar::isKeyTipsComplement() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_keyTipsComplement;
 }
 
@@ -2040,7 +2040,7 @@ complement is true then the keytips assigned automatically, based on keyboard sh
 */
 void RibbonBar::setKeyTipsComplement(bool complement)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->m_keyTipsComplement = complement;
 }
 
@@ -2054,7 +2054,7 @@ void RibbonBar::setKeyTip(QAction *action, const QString &keyTip)
         Q_ASSERT(false);
         return;
     }
-    action->setProperty(_qtc_KeyTip, keyTip);
+    action->setProperty(_qrn_KeyTip, keyTip);
 }
 
 /*!
@@ -2062,7 +2062,7 @@ Sets custom logo for the ribbon bar. Logo can be aligned at the left or at the r
 */
 void RibbonBar::setLogoPixmap(Qt::AlignmentFlag alignment, const QPixmap &logotype)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (alignment == Qt::AlignRight || alignment == Qt::AlignLeft) {
         if (logotype.isNull()) {
             Q_ASSERT(false);
@@ -2075,7 +2075,7 @@ void RibbonBar::setLogoPixmap(Qt::AlignmentFlag alignment, const QPixmap &logoty
         int index = currentPageIndex();
         if (index != -1) {
             if (RibbonPage *page = getPage(index))
-                page->qtc_d()->updateLayout();
+                page->d_func()->updateLayout();
         }
         d->layoutRibbon();
         return;
@@ -2088,7 +2088,7 @@ Returns the logo of the ribbon bar. Out parametent \a alignment contains a align
 */
 QPixmap RibbonBar::logoPixmap(Qt::AlignmentFlag &alignment) const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
 
     alignment = d->m_logotypeLabel->alignmentLogotype();
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
@@ -2103,7 +2103,7 @@ Sets the background image for the title of the ribbon bar.
 */
 void RibbonBar::setTitleBackground(const QPixmap &px)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->m_pixTitleBackground = px;
     update();
 }
@@ -2113,7 +2113,7 @@ Returns the current background image of the ribbon bar title.
 */
 const QPixmap &RibbonBar::titleBackground() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_pixTitleBackground;
 }
 
@@ -2122,7 +2122,7 @@ Returns pointer to the quick access bar. See description of class RibbonQuickAcc
 */
 RibbonQuickAccessBar *RibbonBar::quickAccessBar() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_quickAccessBar;
 }
 
@@ -2131,7 +2131,7 @@ Sets the visibility of the quick access bar.
 */
 void RibbonBar::showQuickAccess(bool show)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->m_quickAccessBar->setVisible(show);
 }
 
@@ -2140,7 +2140,7 @@ Retuns the visibility of the quick access bar.
 */
 bool RibbonBar::isQuickAccessVisible() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_quickAccessBar && d->m_quickAccessBar->isVisible();
 }
 
@@ -2149,7 +2149,7 @@ Sets quick access bar position on the ribbon. \sa QuickAccessBarPosition
 */
 void RibbonBar::setQuickAccessBarPosition(RibbonBar::QuickAccessBarPosition position)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_quickAccessBarPosition != position) {
         d->m_quickAccessBarPosition = position;
         d->layoutCorner();
@@ -2163,13 +2163,13 @@ Retruns current position of quick access bar on the ribbon. \sa QuickAccessBarPo
 */
 RibbonBar::QuickAccessBarPosition RibbonBar::quickAccessBarPosition() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_quickAccessBarPosition;
 }
 
 void RibbonBar::setTabBarPosition(RibbonBar::TabBarPosition position)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_tabBarPosition != position) {
         d->m_tabBarPosition = position;
         d->layoutCorner();
@@ -2180,7 +2180,7 @@ void RibbonBar::setTabBarPosition(RibbonBar::TabBarPosition position)
 
 RibbonBar::TabBarPosition RibbonBar::tabBarPosition() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     RibbonBar::TabBarPosition pos = d->m_tabBarPosition;
     if (pos == RibbonBar::TabBarBottomPosition && isMinimized())
         pos = RibbonBar::TabBarTopPosition;
@@ -2190,7 +2190,7 @@ RibbonBar::TabBarPosition RibbonBar::tabBarPosition() const
 /*! \internal */
 void RibbonBar::setMinimizedFlag(bool flag)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_minimized != flag) {
         d->m_minimized = flag;
 
@@ -2218,7 +2218,7 @@ void RibbonBar::setMinimizedFlag(bool flag)
 #ifdef Q_OS_WIN
 void RibbonBar::updateWindowTitle()
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_frameHelper)
         d->layoutRibbon();
 }
@@ -2234,7 +2234,7 @@ Returns true if ribbon bar is minimized. Otherwise returns false.
 */
 bool RibbonBar::isMinimized() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_minimized;
 }
 
@@ -2263,7 +2263,7 @@ Sets the minimization feature of the Ribbon Bar to the \a enabled.
 */
 void RibbonBar::setMinimizationEnabled(bool enabled)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->m_minimizationEnabled = enabled;
 }
 
@@ -2272,7 +2272,7 @@ Returns the enable flag of the minimization feature of the Ribbon Bar.
 */
 bool RibbonBar::isMinimizationEnabled() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_minimizationEnabled;
 }
 
@@ -2282,7 +2282,7 @@ Returns customize manager. It is used to configure customization via a special d
 */
 RibbonCustomizeManager *RibbonBar::customizeManager()
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_customizeManager == Q_NULL)
         d->m_customizeManager = new RibbonCustomizeManager(this);
     return d->m_customizeManager;
@@ -2294,7 +2294,7 @@ Returns customize dialog. You can use the reference to add custom setting pages 
 */
 RibbonCustomizeDialog *RibbonBar::customizeDialog()
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->createCustomizeDialog();
     return d->m_customizeDialog;
 }
@@ -2305,7 +2305,7 @@ ribbon bar. \sa customizeDialog
 */
 void RibbonBar::showCustomizeDialog()
 {
-    QTC_D(RibbonBar)
+    Q_D(RibbonBar);
     RibbonCustomizeDialog *dialog = customizeDialog();
     Q_ASSERT(dialog != Q_NULL);
     if (QAction *action = qobject_cast<QAction *>(d->sender())) {
@@ -2337,7 +2337,7 @@ Make a page in the position specified by \a index, the current one.
 */
 void RibbonBar::setCurrentPageIndex(int index)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->m_tabBar->setCurrentIndex(index);
     updateLayout();
 }
@@ -2347,13 +2347,13 @@ Returns the index of the current page.
 */
 int RibbonBar::currentPageIndex() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_tabBar->currentIndex();
 }
 
 const QList<RibbonPage *> &RibbonBar::pages() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_listPages;
 }
 
@@ -2362,7 +2362,7 @@ const QList<RibbonPage *> &RibbonBar::pages() const
 */
 RibbonPage *RibbonBar::getPage(int index) const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     if (d->validIndex(index))
         return d->m_listPages[index];
     return Q_NULL;
@@ -2373,19 +2373,19 @@ Returns the number of the pages inside ribbon bar.
 */
 int RibbonBar::getPageCount() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_listPages.count();
 }
 
 QMenu *RibbonBar::addMenu(const QString &text)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     return d->m_tabBar->addMenu(text);
 }
 
 QAction *RibbonBar::addAction(const QIcon &icon, const QString &text, Qt::ToolButtonStyle style, QMenu *menu)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     QAction *action = d->m_tabBar->addAction(icon, text, style, menu);
     QMenuBar::addAction(action);
     return action;
@@ -2393,7 +2393,7 @@ QAction *RibbonBar::addAction(const QIcon &icon, const QString &text, Qt::ToolBu
 
 QAction *RibbonBar::addAction(QAction *action, Qt::ToolButtonStyle style)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     QMenuBar::addAction(action);
     return d->m_tabBar->addAction(action, style);
 }
@@ -2402,7 +2402,7 @@ QAction *RibbonBar::addSystemButton(const QString &text) { return addSystemButto
 
 QAction *RibbonBar::addSystemButton(const QIcon &icon, const QString &text)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     QAction *actionSystemPopupBar =
         d->m_controlSystemButton ? d->m_controlSystemButton->defaultAction() : d->createSystemButton(icon, text);
 
@@ -2416,7 +2416,7 @@ QAction *RibbonBar::addSystemButton(const QIcon &icon, const QString &text)
 
 RibbonSystemButton *RibbonBar::getSystemButton() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_controlSystemButton;
 }
 
@@ -2425,7 +2425,7 @@ RibbonSystemButton *RibbonBar::getSystemButton() const
 */
 bool RibbonBar::isBackstageVisible() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     if (d->m_controlSystemButton) {
         if (RibbonBackstageView *backstage = qobject_cast<RibbonBackstageView *>(d->m_controlSystemButton->backstage()))
             return backstage->isVisible();
@@ -2436,7 +2436,7 @@ bool RibbonBar::isBackstageVisible() const
 void RibbonBar::setFrameThemeEnabled(bool enable)
 {
 #ifdef Q_OS_WIN
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (!enable) {
         if (d->m_frameHelper) {
             delete d->m_frameHelper;
@@ -2468,31 +2468,31 @@ This property holds whether display the modern Office 2007, 2010, 2013 frame and
 */
 bool RibbonBar::isFrameThemeEnabled() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_frameHelper;
 }
 
 int RibbonBar::backstageViewTop() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return titleBarHeight() + d->topBorder() + tabBarHeight(true);
 }
 
 int RibbonBar::tabBarHeight(bool isVisible) const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return (d->m_tabBar && (d->m_tabBar->isVisible() || isVisible)) ? d->m_rcTabBar.height() : 2;
 }
 
 bool RibbonBar::isTitleBarVisible() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return isFrameThemeEnabled() || d->m_showTitleAlways;
 }
 
 void RibbonBar::setTitleBarVisible(bool visible)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_showTitleAlways != visible) {
         d->m_showTitleAlways = visible;
         d->layoutRibbon();
@@ -2506,20 +2506,20 @@ Sets the visibility of title on all ribbon groups.
 */
 bool RibbonBar::isTitleGroupsVisible() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->m_titleGroupsVisible;
 }
 
 void RibbonBar::setTitleGroupsVisible(bool visible)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (d->m_titleGroupsVisible != visible) {
         d->m_titleGroupsVisible = visible;
         for (int i = 0, count = d->m_listPages.count(); count > i; ++i) {
             RibbonPage *page = d->m_listPages[i];
             for (int j = 0, size = page->groupCount(); size > j; ++j) {
                 if (RibbonGroup *group = page->getGroup(j))
-                    group->setProperty(_qtc_TitleGroupsVisible, d->m_titleGroupsVisible);
+                    group->setProperty(_qrn_TitleGroupsVisible, d->m_titleGroupsVisible);
             }
         }
         d->layoutCorner();
@@ -2530,7 +2530,7 @@ void RibbonBar::setTitleGroupsVisible(bool visible)
 
 int RibbonBar::titleBarHeight() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     if (!isFrameThemeEnabled() && !d->m_showTitleAlways)
         return 0;
 
@@ -2549,19 +2549,19 @@ int RibbonBar::titleBarHeight() const
 
 int RibbonBar::rowItemHeight() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->rowItemHeight();
 }
 
 int RibbonBar::rowItemCount() const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
     return d->rowItemCount();
 }
 
 void RibbonBar::updateLayout()
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->layoutRibbon();
 }
 
@@ -2592,7 +2592,7 @@ void QRibbon::qtc_set_font_to_ribbon_children(QWidget *parent, const QFont &font
 /*! \reimp */
 bool RibbonBar::event(QEvent *event)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
 
     bool result = QMenuBar::event(event);
 
@@ -2675,7 +2675,7 @@ bool RibbonBar::event(QEvent *event)
 /*! \reimp */
 bool RibbonBar::eventFilter(QObject *object, QEvent *event)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     const QEvent::Type type = event->type();
 
     if (object == cornerWidget(Qt::TopRightCorner) || object == cornerWidget(Qt::TopLeftCorner)) {
@@ -2706,7 +2706,7 @@ bool RibbonBar::eventFilter(QObject *object, QEvent *event)
 /*! \reimp */
 void RibbonBar::paintEvent(QPaintEvent *event)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
 
     QWidget *leftCorner = cornerWidget(Qt::TopLeftCorner);
     if (leftCorner && leftCorner->isVisible())
@@ -2779,7 +2779,7 @@ void RibbonBar::changeEvent(QEvent *event) { return QMenuBar::changeEvent(event)
 void RibbonBar::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     d->layoutCorner();
     d->layoutRibbon();
 }
@@ -2792,7 +2792,7 @@ void RibbonBar::mouseDoubleClickEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton)
         return;
 
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (isFrameThemeEnabled() && isTitleBarVisible()) {
         if (d->hitTestContextHeaders(event->pos())) {
             QWidget *widget = parentWidget();
@@ -2832,7 +2832,7 @@ void RibbonBar::mousePressEvent(QMouseEvent *event)
     // block the function call QMenuBar
     QWidget::mousePressEvent(event);
 
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (event->button() == Qt::LeftButton) {
         if (ContextHeader *header = d->hitTestContextHeaders(event->pos())) {
             for (int i = 0, count = d->m_tabBar->getTabCount(); count > i; i++) {
@@ -2850,7 +2850,7 @@ void RibbonBar::mousePressEvent(QMouseEvent *event)
 /*! \reimp */
 void RibbonBar::wheelEvent(QWheelEvent *event)
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     if (QApplication::activePopupWidget())
         return;
 
@@ -2875,7 +2875,7 @@ void RibbonBar::wheelEvent(QWheelEvent *event)
 
 void RibbonBar::contextMenuEvent(QContextMenuEvent *event)
 {
-    QTC_D(RibbonBar)
+    Q_D(RibbonBar);
     if (QMenu *menu = d->createContextMenu()) {
         menu->setAttribute(Qt::WA_DeleteOnClose);
 
@@ -2890,7 +2890,7 @@ void RibbonBar::contextMenuEvent(QContextMenuEvent *event)
 
 int RibbonBar::heightForWidth(int) const
 {
-    QTC_D(const RibbonBar);
+    Q_D(const RibbonBar);
 
     const int tabsHeight = d->m_rcTabBar.height();
     const int pageAreaHeight = d->m_rcPageArea.height();
@@ -2927,7 +2927,7 @@ bool RibbonBar::nativeEvent(const QByteArray &eventType, void *message, long *re
 bool RibbonBar::winEvent(MSG *message, long *result)
     #endif
 {
-    QTC_D(RibbonBar);
+    Q_D(RibbonBar);
     #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     if (d->m_frameHelper) {
         MSG *msg = static_cast<MSG *>(message);

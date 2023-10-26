@@ -189,7 +189,7 @@ private:
 #ifdef Q_OS_WIN
     friend class OfficeFrameHelperWin;
 #endif   // Q_OS_WIN
-    QTC_DECLARE_PRIVATE(RibbonBar)
+    QRN_DECLARE_PRIVATE(RibbonBar)
     Q_DISABLE_COPY(RibbonBar)
 };
 

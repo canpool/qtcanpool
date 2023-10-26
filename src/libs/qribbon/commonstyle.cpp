@@ -244,10 +244,10 @@ void CommonPaintManager::drawPixmap(const QPixmap &dcSrc, QPainter &p, const QRe
 CommonStylePrivate::CommonStylePrivate()
 {
     if (qApp->style() != Q_NULL) {
-        QString styleName = qApp->property(_qtc_StyleName).toString();
+        QString styleName = qApp->property(_qrn_StyleName).toString();
         if (styleName.isEmpty()) {
             styleName = qApp->style()->objectName();
-            qApp->setProperty(_qtc_StyleName, styleName);
+            qApp->setProperty(_qrn_StyleName, styleName);
         }
     }
 
@@ -270,10 +270,10 @@ CommonStylePrivate::~CommonStylePrivate()
 
 void CommonStylePrivate::initialization()
 {
-    QTC_Q(CommonStyle);
+    Q_Q(CommonStyle);
     m_helper = new StyleHelper(q);
 
-    QString styleName = qApp->property(_qtc_StyleName).toString();
+    QString styleName = qApp->property(_qrn_StyleName).toString();
     if (!styleName.isEmpty())
         m_defaultStyle = QStyleFactory::create(styleName);
 }
@@ -310,7 +310,7 @@ void CommonStylePrivate::stopAnimation(const QWidget *w)
 
 void CommonStylePrivate::startAnimation(CommonAnimation *t)
 {
-    QTC_Q(CommonStyle);
+    Q_Q(CommonStyle);
     stopAnimation(t->widget());
     m_animations.append(t);
     if (m_animations.size() > 0 && !m_animationTimer.isActive())
@@ -375,12 +375,12 @@ Constuctor of CommonStyle class. You can't use this class directly.
 
 CommonStyle::CommonStyle(CommonStylePrivate *d)
 {
-    QTC_INIT_EX_PRIVATE(CommonStyle, d);
+    QRN_SET_PRIVATE(d);
     d->initialization();
     d->makePaintManager();
 }
 
-CommonStyle::~CommonStyle() { QTC_FINI_PRIVATE(); }
+CommonStyle::~CommonStyle() { QRN_FINI_PRIVATE(); }
 
 QColor CommonStyle::getThemeColor(const QString &sectionName, const QString &keyName, QColor color) const
 {
@@ -400,7 +400,7 @@ void CommonStyle::polish(QApplication *pApp)
 /*! \reimp */
 void CommonStyle::polish(QWidget *widget)
 {
-    QTC_D(CommonStyle);
+    Q_D(CommonStyle);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QCommonStyle::polish(widget);
 #else
@@ -423,7 +423,7 @@ void CommonStyle::unpolish(QApplication *app)
 /*! \reimp */
 void CommonStyle::unpolish(QWidget *widget)
 {
-    QTC_D(CommonStyle);
+    Q_D(CommonStyle);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QCommonStyle::unpolish(widget);
 #else
@@ -536,7 +536,7 @@ void CommonStyle::drawPrimitive(PrimitiveElement pe, const QStyleOption *option,
     }
 
     if (!ret) {
-        QTC_D(const CommonStyle);
+        Q_D(const CommonStyle);
         if (d->m_defaultStyle && !qtcStyle)
             d->m_defaultStyle->drawPrimitive(pe, option, p, widget);
         else
@@ -641,7 +641,7 @@ void CommonStyle::drawControl(ControlElement element, const QStyleOption *opt, Q
     }
 
     if (!ret) {
-        QTC_D(const CommonStyle);
+        Q_D(const CommonStyle);
         if (d->m_defaultStyle && !qtcStyle)
             d->m_defaultStyle->drawControl(element, opt, p, widget);
         else
@@ -695,7 +695,7 @@ void CommonStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComple
     }
 
     if (!ret) {
-        QTC_D(const CommonStyle);
+        Q_D(const CommonStyle);
         if (d->m_defaultStyle && !qtcStyle)
             d->m_defaultStyle->drawComplexControl(cc, opt, p, widget);
         else
@@ -712,7 +712,7 @@ QSize CommonStyle::sizeFromContents(ContentsType ct, const QStyleOption *opt, co
                                     const QWidget *w) const
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     if (d->m_defaultStyle)
         return d->m_defaultStyle->sizeFromContents(ct, opt, contentsSize, w);
 
@@ -729,7 +729,7 @@ QRect CommonStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex *
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     #ifdef Q_OS_WIN
     // Get sub control settings from Windows style
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     if (d->m_defaultStyle)
         return d->m_defaultStyle->subControlRect(cc, opt, sc, widget);
     #endif
@@ -743,7 +743,7 @@ QRect CommonStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex *
 /*! \reimp */
 int CommonStyle::pixelMetric(PixelMetric pm, const QStyleOption *option, const QWidget *widget) const
 {
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     if (d->m_defaultStyle && (pm == PM_DockWidgetFrameWidth || pm == PM_TitleBarHeight))
         return d->m_defaultStyle->pixelMetric(pm, option, widget);
 
@@ -771,7 +771,7 @@ int CommonStyle::styleHint(StyleHint hint, const QStyleOption *opt, const QWidge
         }
     }
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     if (d->m_defaultStyle)
         return d->m_defaultStyle->styleHint(hint, opt, widget, returnData);
     else
@@ -784,7 +784,7 @@ int CommonStyle::styleHint(StyleHint hint, const QStyleOption *opt, const QWidge
 /*! \internal */
 QPixmap CommonStyle::standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt, const QWidget *widget) const
 {
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     if (d->m_defaultStyle)
         return d->m_defaultStyle->standardPixmap(standardPixmap, opt, widget);
     else
@@ -799,7 +799,7 @@ QPixmap CommonStyle::standardPixmap(StandardPixmap standardPixmap, const QStyleO
 QIcon CommonStyle::standardIcon(QStyle::StandardPixmap standardIcon, const QStyleOption *opt,
                                 const QWidget *widget) const
 {
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     bool ret = false;
     if (!isNativeDialog(widget)) {
         QIcon icon = standardIconEx(standardIcon, opt, widget, ret);
@@ -850,7 +850,7 @@ void CommonStyle::splitString(const QString &str, QString &strFirstRow, QString 
 
 CommonPaintManager *CommonStyle::paintManager() const
 {
-    QTC_D(const CommonStyle)
+    Q_D(const CommonStyle);
     return d->m_paintManager;
 }
 
@@ -1040,21 +1040,21 @@ void CommonStyle::drawPixmap(const QPixmap &soSrc, QPainter &p, const QRect &rcD
 /*! \internal */
 void CommonStyle::setDefaultStyle(QStyle *pStyle)
 {
-    QTC_D(CommonStyle);
+    Q_D(CommonStyle);
     d->m_defaultStyle = pStyle;
 }
 
 /*! \internal */
 QStyle *CommonStyle::defaultStyle() const
 {
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     return d->m_defaultStyle;
 }
 
 /*! \internal */
 StyleHelper &CommonStyle::helper() const
 {
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
     return *d->m_helper;
 }
 
@@ -1064,7 +1064,7 @@ bool CommonStyle::transitionsEnabled() const { return false; }
 bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *option, QPainter *p,
                                  const QWidget *widget, int iDurationOver) const
 {
-    QTC_D(const CommonStyle);
+    Q_D(const CommonStyle);
 
     if (!transitionsEnabled() && widget->isVisible())
         return false;
@@ -1083,7 +1083,7 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *
     QRect oldRect;
     QRect newRect;
 
-    bool wasDetermined = widget && widget->property("_qtc_isDetermined").toBool();
+    bool wasDetermined = widget && widget->property("_qrn_isDetermined").toBool();
     if (widget && !wasDetermined && bAnimation) {
         QWidget *w = const_cast<QWidget *>(widget);
         int oldState = w->property("_q_stylestate").toInt();
@@ -1092,7 +1092,7 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *
 
         w->setProperty("_q_stylestate", (int)option->state);
         w->setProperty("_q_stylerect", w->rect());
-        w->setProperty("_qtc_isDetermined", true);
+        w->setProperty("_qrn_isDetermined", true);
 
         // Determine the animated transition
         bool doTransition =
@@ -1103,7 +1103,7 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *
 
         if (oldRect != newRect || (state & State_Enabled) != (oldState & State_Enabled) ||
             (state & State_Active) != (oldState & State_Active))
-            thisStyle->qtc_d()->stopAnimation(widget);
+            thisStyle->d_func()->stopAnimation(widget);
 
         if (doTransition) {
             QRect rect(option->rect);
@@ -1156,7 +1156,7 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *
                 }
             } else {
                 anim->paint(&startPainter, opt);
-                thisStyle->qtc_d()->stopAnimation(widget);
+                thisStyle->d_func()->stopAnimation(widget);
             }
 
             transition->setStartImage(startImage);
@@ -1188,10 +1188,10 @@ bool CommonStyle::paintAnimation(TypePaint type, int nPrim, const QStyleOption *
             else
                 transition->setDuration(300);
 
-            thisStyle->qtc_d()->startAnimation(transition);
+            thisStyle->d_func()->startAnimation(transition);
             transition->setStartTime(QTime::currentTime());
         }
-        w->setProperty("_qtc_isDetermined", false);
+        w->setProperty("_qrn_isDetermined", false);
     }
 
     if (CommonAnimation *anim = d->widgetAnimation(widget)) {
@@ -1219,7 +1219,7 @@ bool CommonStyle::showToolTip(const QPoint &pos, QWidget *w)
 /*! \reimp */
 bool CommonStyle::event(QEvent *e)
 {
-    QTC_D(CommonStyle);
+    Q_D(CommonStyle);
     switch (e->type()) {
     case QEvent::Timer: {
         QTimerEvent *pTimerEvent = (QTimerEvent *)e;
@@ -1242,7 +1242,7 @@ bool CommonStyle::event(QEvent *e)
 /*! \reimp */
 bool CommonStyle::eventFilter(QObject *watched, QEvent *event)
 {
-    QTC_D(CommonStyle);
+    Q_D(CommonStyle);
     switch (event->type()) {
     case QEvent::Destroy:
     case QEvent::Create:

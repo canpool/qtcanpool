@@ -236,7 +236,7 @@ protected:
     virtual bool event(QEvent *event);
     virtual bool eventFilter(QObject *watched, QEvent *event);
 protected:
-    QTC_DECLARE_PRIVATE(CommonStyle)
+    QRN_DECLARE_PRIVATE(CommonStyle)
 private:
     friend class CommonPaintManager;
     Q_DISABLE_COPY(CommonStyle)

@@ -43,7 +43,7 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonBackstageButton)
+    QRN_DECLARE_PRIVATE(RibbonBackstageButton)
     Q_DISABLE_COPY(RibbonBackstageButton)
 };
 
@@ -99,7 +99,7 @@ protected:
 private:
     friend class RibbonBackstageViewMenu;
     friend class RibbonBar;
-    QTC_DECLARE_PRIVATE(RibbonBackstageView)
+    QRN_DECLARE_PRIVATE(RibbonBackstageView)
     Q_DISABLE_COPY(RibbonBackstageView)
 };
 

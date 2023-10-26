@@ -41,7 +41,7 @@ protected:
     virtual void showEvent(QShowEvent *event);
     virtual void hideEvent(QHideEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonCustomizeDialog)
+    QRN_DECLARE_PRIVATE(RibbonCustomizeDialog)
     Q_DISABLE_COPY(RibbonCustomizeDialog)
 };
 

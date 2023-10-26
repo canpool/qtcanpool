@@ -15,7 +15,7 @@ class RibbonControlSizeDefinitionPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonControlSizeDefinition)
+    QRN_DECLARE_PUBLIC(RibbonControlSizeDefinition)
 public:
     explicit RibbonControlSizeDefinitionPrivate();
     virtual ~RibbonControlSizeDefinitionPrivate();
@@ -42,7 +42,7 @@ class RibbonControlPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonControl)
+    QRN_DECLARE_PUBLIC(RibbonControl)
 public:
     explicit RibbonControlPrivate();
     virtual ~RibbonControlPrivate();
@@ -62,7 +62,7 @@ class RibbonWidgetControlPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonWidgetControl)
+    QRN_DECLARE_PUBLIC(RibbonWidgetControl)
 public:
     explicit RibbonWidgetControlPrivate();
     virtual ~RibbonWidgetControlPrivate();
@@ -83,7 +83,7 @@ class RibbonColumnBreakControlPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonColumnBreakControl)
+    QRN_DECLARE_PUBLIC(RibbonColumnBreakControl)
 public:
     explicit RibbonColumnBreakControlPrivate();
     virtual ~RibbonColumnBreakControlPrivate();
@@ -100,7 +100,7 @@ class RibbonButtonControlPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonButtonControl)
+    QRN_DECLARE_PUBLIC(RibbonButtonControl)
 public:
     explicit RibbonButtonControlPrivate();
     virtual ~RibbonButtonControlPrivate();
@@ -133,7 +133,7 @@ class RibbonToolBarControlPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QTC_DECLARE_PUBLIC(RibbonToolBarControl)
+    QRN_DECLARE_PUBLIC(RibbonToolBarControl)
     struct RibbonToolBarActionGroupItem {
         QAction *action;
         QWidget *widget;

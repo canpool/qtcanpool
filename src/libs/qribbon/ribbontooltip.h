@@ -75,7 +75,7 @@ protected:
 public:
     bool fadingOut() const;
 private:
-    QTC_DECLARE_PRIVATE(RibbonToolTip)
+    QRN_DECLARE_PRIVATE(RibbonToolTip)
     Q_DISABLE_COPY(RibbonToolTip)
 };
 
@@ -124,7 +124,7 @@ protected:
     virtual void paintEvent(QPaintEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
 private:
-    QTC_DECLARE_PRIVATE(RibbonKeyTip)
+    QRN_DECLARE_PRIVATE(RibbonKeyTip)
     Q_DISABLE_COPY(RibbonKeyTip)
 };
 
