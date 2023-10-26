@@ -96,8 +96,8 @@ public:
     // window
     bool windowTitleChange(QObject *obj);
     bool windowIconChange(QObject *obj);
-    void windowSizeChange(QObject *obj);
-    void windowStateChange(QObject *obj);
+    bool windowSizeChange(QObject *obj);
+    bool windowStateChange(QObject *obj);
 
     void restoreWidget(QWidget *pWidget);
     void maximizeWidget(QWidget *pWidget);
@@ -144,20 +144,20 @@ public:
     explicit FancyTitleBarPrivateQt(QWidget *mainWidget);
     virtual ~FancyTitleBarPrivateQt();
 
-    void init();
-    void setDisabled(bool disable);
+    void init() override;
+    void setDisabled(bool disable) override;
 
     // mouse event
-    void handleWidgetMouseEvent(QObject *obj, QEvent *event);
+    bool handleWidgetMouseEvent(QObject *obj, QEvent *event);
 
 private:
     // mouse event
-    void handleMousePressEvent(QMouseEvent *event);
-    void handleMouseReleaseEvent(QMouseEvent *event);
-    void handleMouseMoveEvent(QMouseEvent *event);
-    void handleLeaveEvent(QEvent *event);
-    void handleHoverMoveEvent(QHoverEvent *event);
-    void handleMouseDblClickEvent(QMouseEvent *event);
+    bool handleMousePressEvent(QMouseEvent *event);
+    bool handleMouseReleaseEvent(QMouseEvent *event);
+    bool handleMouseMoveEvent(QMouseEvent *event);
+    bool handleLeaveEvent(QEvent *event);
+    bool handleHoverMoveEvent(QHoverEvent *event);
+    bool handleMouseDblClickEvent(QMouseEvent *event);
 
     // widget action
     void resizeWidget(const QPoint &gMousePos);
@@ -168,13 +168,6 @@ private:
     QPoint windowStartPos(QWidget *pWindow, QMouseEvent *event) const;
     QRect validDragRect();
 
-public:
-    // Simulate mouse events
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
-
 protected:
     virtual bool eventFilter(QObject *object, QEvent *event) override;
 
@@ -182,9 +175,7 @@ public:
     // main window
     FancyCursor     m_pressCursor;
     FancyCursor     m_moveCursor;
-    bool            m_bEdgePressed;
     bool            m_bLeftButtonPressed;
-    bool            m_bLeftButtonDbClicked;
     bool            m_bLeftButtonTitlePressed;
     bool            m_bCursorShapeChanged;
 
@@ -200,18 +191,18 @@ public:
     explicit FancyTitleBarPrivateNative(QWidget *mainWidget);
     virtual ~FancyTitleBarPrivateNative();
 
-    void init();
-    void setDisabled(bool disable);
+    void init() override;
+    void setDisabled(bool disable) override;
 
 #ifdef Q_OS_WINDOWS
     bool handleWindowsMessage(void *message, QTRESULT *result);
 #endif
 
 public slots:
-    void systemButtonClicked();
+    void systemButtonClicked() override;
 
 public:
-    virtual bool nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result);
+    virtual bool nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result) override;
 
 private:
     void installNativeEventFilter();

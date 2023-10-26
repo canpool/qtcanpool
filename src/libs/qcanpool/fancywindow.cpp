@@ -31,11 +31,8 @@ FancyWindow::FancyWindow(QWidget *parent)
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QLatin1String("qtc_window"));
     // When using the native title bar, it needs to be set before creating the title bar
-    QMainWindow::setWindowFlags(Qt::WindowSystemMenuHint |
-                Qt::WindowMinimizeButtonHint |
-                Qt::WindowMaximizeButtonHint |
-                Qt::FramelessWindowHint |
-                Qt::Window
+    QMainWindow::setWindowFlags(windowFlags() |
+                Qt::FramelessWindowHint
                 );
 
     d->fancyBar = new FancyBar(this);

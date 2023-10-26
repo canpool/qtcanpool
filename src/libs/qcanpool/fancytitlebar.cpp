@@ -225,9 +225,7 @@ bool FancyTitleBarPrivateNative::nativeEventFilter(const QByteArray &eventType, 
 /* FancyTitleBarPrivateQt */
 FancyTitleBarPrivateQt::FancyTitleBarPrivateQt(QWidget *mainWidget)
     : FancyTitleBarPrivate(mainWidget)
-    , m_bEdgePressed(false)
     , m_bLeftButtonPressed(false)
-    , m_bLeftButtonDbClicked(false)
     , m_bLeftButtonTitlePressed(true)
     , m_bCursorShapeChanged(false)
     , m_movePoint(QPoint(0, 0))
@@ -261,91 +259,138 @@ void FancyTitleBarPrivateQt::setDisabled(bool disable)
     }
 }
 
-void FancyTitleBarPrivateQt::handleWidgetMouseEvent(QObject *obj, QEvent *event)
+bool FancyTitleBarPrivateQt::handleWidgetMouseEvent(QObject *obj, QEvent *event)
 {
     Q_UNUSED(obj);
 
     switch (event->type()) {
         case QEvent::MouseButtonPress:
-            handleMousePressEvent(static_cast<QMouseEvent *>(event));
-            break;
+            return handleMousePressEvent(static_cast<QMouseEvent *>(event));
         case QEvent::MouseButtonRelease:
-            handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
-            break;
+            return handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
         case QEvent::MouseMove:
-            handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
-            break;
+            return handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
         case QEvent::Leave:
-            handleLeaveEvent(static_cast<QMouseEvent *>(event));
-            break;
+            return handleLeaveEvent(static_cast<QMouseEvent *>(event));
         case QEvent::HoverMove:
-            handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
-            break;
+            return handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
         case QEvent::MouseButtonDblClick:
-            handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
-            break;
+            return handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
         default:
             break;
     }
+    return false;
 }
 
-void FancyTitleBarPrivateQt::handleMousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton && !m_isMaximized) {
-        m_bEdgePressed = true;
-        QRect frameRect = m_mainWidget->frameGeometry();
-        m_pressCursor.update(event->globalPos(), frameRect);
-    }
-    mousePressEvent(event);
-    event->ignore();
-}
-
-void FancyTitleBarPrivateQt::handleMouseReleaseEvent(QMouseEvent *event)
+bool FancyTitleBarPrivateQt::handleMousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        m_bEdgePressed = false;
-        m_pressCursor.reset();
+        m_bLeftButtonPressed = true;
+        m_bLeftButtonTitlePressed = m_titleWidget ? (event->pos().y() < m_titleWidget->sizeHint().height()) : true;
 
-        if (m_bWidgetResizable) {
-            updateCursorShape(event->globalPos());
+        QRect frameRect = m_mainWidget->frameGeometry();
+        m_pressCursor.update(event->globalPos(), frameRect);
+        m_movePoint = event->globalPos() - m_mainWidget->pos();
+
+        if (m_bLeftButtonTitlePressed) {
+            if (m_isMaximized) {
+                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+            } else {
+                m_movePoint = event->globalPos() - m_mainWidget->pos();
+            }
+            return true;
         }
     }
-    mouseReleaseEvent(event);
-    event->ignore();
+    return false;
 }
 
-void FancyTitleBarPrivateQt::handleMouseMoveEvent(QMouseEvent *event)
+bool FancyTitleBarPrivateQt::handleMouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_bEdgePressed) {
+    if (event->button() == Qt::LeftButton) {
+        m_bLeftButtonPressed = false;
+        m_pressCursor.reset();
+
+        // maximize on the top of the screen
+        if (!m_isMaximized) {
+            if (event->globalY() <= 3) {
+                m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
+                if (m_bWidgetMaximizable) {
+                    emit m_maximizeAction->triggered();
+                    return true;
+                }
+            } else {
+                int y = m_mainWidget->frameGeometry().y();
+                if (y < 0) {
+                    // Always show all titlebar on screen
+                    m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool FancyTitleBarPrivateQt::handleMouseMoveEvent(QMouseEvent *event)
+{
+    if (m_bLeftButtonPressed) {
         if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
+            if (m_isMaximized) {
+                return false;
+            }
             resizeWidget(event->globalPos());
+            return true;
+        } else if (m_bWidgetMovable && m_bLeftButtonTitlePressed) {
+            if (m_isMaximized) {
+                // calculate the valid rect
+                QRect rect = validDragRect();
+                if (rect.contains(event->pos())) {
+                    m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+                    restoreWidget(m_mainWidget);
+                }
+            } else {
+                m_mainWidget->move(event->globalPos() - m_movePoint);
+            }
+            return true;
         }
     } else if (m_bWidgetResizable) {
         updateCursorShape(event->globalPos());
     }
-    mouseMoveEvent(event);
+    return false;
 }
 
-void FancyTitleBarPrivateQt::handleLeaveEvent(QEvent *event)
+bool FancyTitleBarPrivateQt::handleLeaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
 
     // if press, then leave after release
-    if (!m_bEdgePressed) {
+    if (!m_bLeftButtonPressed) {
         m_mainWidget->unsetCursor();
+        return true;
     }
+    return false;
 }
 
-void FancyTitleBarPrivateQt::handleHoverMoveEvent(QHoverEvent *event)
+bool FancyTitleBarPrivateQt::handleHoverMoveEvent(QHoverEvent *event)
 {
-    if (!m_bEdgePressed && m_bWidgetResizable) {
+    if (m_bWidgetResizable) {
         updateCursorShape(m_mainWidget->mapToGlobal(event->pos()));
     }
+    return false;
 }
 
-void FancyTitleBarPrivateQt::handleMouseDblClickEvent(QMouseEvent *event)
+bool FancyTitleBarPrivateQt::handleMouseDblClickEvent(QMouseEvent *event)
 {
-    mouseDoubleClickEvent(event);
+    if (event->button() == Qt::LeftButton) {
+        if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
+            if (m_isMaximized) {
+                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+            }
+            emit m_maximizeAction->triggered();
+            return true;
+        }
+    }
+    return false;
 }
 
 void FancyTitleBarPrivateQt::resizeWidget(const QPoint &gMousePos)
@@ -559,100 +604,18 @@ QRect FancyTitleBarPrivateQt::validDragRect()
     return rect;
 }
 
-void FancyTitleBarPrivateQt::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_bLeftButtonPressed = true;
-        m_bLeftButtonTitlePressed = m_titleWidget ? (event->pos().y() < m_titleWidget->sizeHint().height()) : true;
-        QWidget *pWindow = m_mainWidget;
-
-        if (pWindow->isTopLevel()) {
-            if (m_isMaximized && m_bLeftButtonTitlePressed) {
-                m_movePoint = event->globalPos() - windowStartPos(pWindow, event);
-            } else {
-                m_movePoint = event->globalPos() - pWindow->pos();
-            }
-        }
-    }
-}
-
-void FancyTitleBarPrivateQt::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_bLeftButtonPressed = false;
-
-    // maximize on the top of the screen
-    if (!m_isMaximized && !m_bLeftButtonDbClicked) {
-        if (event->globalY() <= 3) {
-            m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
-
-            if (m_bWidgetMaximizable) {
-                emit m_maximizeAction->triggered();
-            }
-        } else {
-            int y = m_mainWidget->frameGeometry().y();
-            if (y < 0) {
-                // Always show all titlebar on screen
-                m_mainWidget->move(m_mainWidget->frameGeometry().x(), 0);
-            }
-        }
-    }
-    m_bLeftButtonDbClicked = false;
-}
-
-void FancyTitleBarPrivateQt::mouseMoveEvent(QMouseEvent *event)
-{
-    if (!m_bLeftButtonPressed || !m_bLeftButtonTitlePressed) {
-        return;
-    }
-
-    QWidget *pWindow = m_mainWidget;
-    if (pWindow->isTopLevel()) {
-        if (m_bWidgetMaximizable && m_isMaximized) {
-            // calculate the valid rect
-            QRect rect = validDragRect();
-            if (rect.contains(event->pos())) {
-                m_movePoint = event->globalPos() - windowStartPos(pWindow, event);
-                restoreWidget(pWindow);
-            }
-        } else {
-            if (m_bWidgetResizable && m_pressCursor.m_bOnEdges) {
-                event->ignore();
-            } else {
-                pWindow->move(event->globalPos() - m_movePoint);
-            }
-        }
-    }
-}
-
-void FancyTitleBarPrivateQt::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_bLeftButtonDbClicked = true;
-        if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
-            if (m_isMaximized) {
-                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
-            }
-            emit m_maximizeAction->triggered();
-        }
-    }
-}
-
 bool FancyTitleBarPrivateQt::eventFilter(QObject *object, QEvent *event)
 {
     switch (event->type()) {
-        case QEvent::Resize: {
-            windowSizeChange(object);
-            return true;
-        }
+        case QEvent::Resize:
+            return windowSizeChange(object);
         case QEvent::MouseMove:
         case QEvent::HoverMove:
         case QEvent::Leave:
         case QEvent::MouseButtonPress:
         case QEvent::MouseButtonRelease:
-        case QEvent::MouseButtonDblClick: {
-            handleWidgetMouseEvent(object, event);
-            return true;
-        }
+        case QEvent::MouseButtonDblClick:
+            return handleWidgetMouseEvent(object, event);
         default:
             break;
     }
@@ -938,13 +901,13 @@ bool FancyTitleBarPrivate::windowIconChange(QObject *obj)
         if (!icon.isNull()) {
             m_logoButton->setIcon(icon);
             emit q->windowIconChanged(icon);
+            return true;
         }
-        return true;
     }
     return false;
 }
 
-void FancyTitleBarPrivate::windowSizeChange(QObject *obj)
+bool FancyTitleBarPrivate::windowSizeChange(QObject *obj)
 {
     QWidget *w = qobject_cast<QWidget *>(obj);
 
@@ -957,10 +920,12 @@ void FancyTitleBarPrivate::windowSizeChange(QObject *obj)
         }
 
         windowStateChange(obj);
+        return true;
     }
+    return false;
 }
 
-void FancyTitleBarPrivate::windowStateChange(QObject *obj)
+bool FancyTitleBarPrivate::windowStateChange(QObject *obj)
 {
     Q_UNUSED(obj);
 
@@ -975,6 +940,7 @@ void FancyTitleBarPrivate::windowStateChange(QObject *obj)
         m_maximizeAction->setIcon(m_maximizeIcon);
     }
     toolButton->style()->polish(toolButton);
+    return true;
 }
 
 void FancyTitleBarPrivate::restoreWidget(QWidget *pWidget)
@@ -1173,20 +1139,12 @@ void FancyTitleBar::updateWidgetFlags()
 bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)
 {
     switch (event->type()) {
-        case QEvent::WindowTitleChange: {
-            if (d->windowTitleChange(object)) {
-                return true;
-            }
-        } break;
-        case QEvent::WindowIconChange: {
-            if (d->windowIconChange(object)) {
-                return true;
-            }
-        } break;
-        case QEvent::WindowStateChange: {
-            d->windowStateChange(object);
-            return true;
-        }
+        case QEvent::WindowTitleChange:
+            return d->windowTitleChange(object);
+        case QEvent::WindowIconChange:
+            return d->windowIconChange(object);
+        case QEvent::WindowStateChange:
+            return d->windowStateChange(object);
         default:
             break;
     }
