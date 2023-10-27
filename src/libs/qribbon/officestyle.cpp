@@ -382,6 +382,7 @@ OfficeStyle::OfficeStyle() : OfficeStyle(new OfficeStylePrivate)
 
 OfficeStyle::OfficeStyle(OfficeStylePrivate *d) : CommonStyle(d)
 {
+    d->setPublic(this);
     d->initialization();
 }
 
