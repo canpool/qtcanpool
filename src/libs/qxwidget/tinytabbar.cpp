@@ -70,11 +70,10 @@ TinyTabBar::TinyTabBar(QWidget *parent)
     d->init();
 }
 
-TinyTabBar::TinyTabBar(TinyTabBarPrivate *dd, QWidget *parent)
+TinyTabBar::TinyTabBar(TinyTabBarPrivate *d, QWidget *parent)
     : QToolBar{parent}
 {
-    QX_SET_PRIVATE(dd)
-    Q_D(TinyTabBar);
+    QX_SET_PRIVATE(d)
     d->init();
 }
 

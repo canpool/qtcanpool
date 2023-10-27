@@ -6,6 +6,7 @@
 
 #include "qxwidget_global.h"
 #include "tinytabbar_p.h"
+#include "tinynavbar.h" // must, for Q_DECLARE_PUBLIC -> static_cast
 #include <QToolButton>
 #include <QMap>
 
@@ -19,7 +20,8 @@ class TinyNavBar;
 class TinyNavBarPrivate : public TinyTabBarPrivate
 {
     Q_OBJECT
-    QX_DECLARE_PUBLIC(TinyNavBar)
+public:
+    Q_DECLARE_PUBLIC(TinyNavBar)
 public:
     TinyNavBarPrivate();
 public:

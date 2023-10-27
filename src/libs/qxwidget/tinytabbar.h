@@ -53,7 +53,7 @@ Q_SIGNALS:
 protected:
     virtual void actionEvent(QActionEvent *event);
 protected:
-    explicit TinyTabBar(TinyTabBarPrivate *dd, QWidget *parent = Q_NULLPTR);
+    explicit TinyTabBar(TinyTabBarPrivate *d, QWidget *parent = Q_NULLPTR);
 protected:
     QX_DECLARE_PRIVATE(TinyTabBar)
 private:

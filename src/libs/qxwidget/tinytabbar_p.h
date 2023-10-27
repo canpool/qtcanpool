@@ -19,6 +19,7 @@ class TinyTabBar;
 class TinyTabBarPrivate : public QObject
 {
     Q_OBJECT
+public:
     QX_DECLARE_PUBLIC(TinyTabBar)
 public:
     TinyTabBarPrivate();
