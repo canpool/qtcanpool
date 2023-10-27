@@ -62,7 +62,7 @@ protected:
     virtual bool hitButton(const QPoint &pos) const Q_DECL_OVERRIDE;
     virtual void actionEvent(QActionEvent *e) Q_DECL_OVERRIDE;
 protected:
-    explicit RibbonButton(RibbonButtonPrivate *dd, QWidget *parent = Q_NULLPTR);
+    explicit RibbonButton(RibbonButtonPrivate *d, QWidget *parent = Q_NULLPTR);
 protected:
     QX_DECLARE_PRIVATE(RibbonButton)
 };

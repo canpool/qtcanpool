@@ -14,6 +14,7 @@ QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonButtonPrivate
 {
+public:
     QX_DECLARE_PUBLIC(RibbonButton)
 public:
     RibbonButtonPrivate();

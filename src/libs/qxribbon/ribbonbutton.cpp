@@ -662,10 +662,10 @@ RibbonButton::RibbonButton(QAction *defaultAction, QWidget *parent)
     setDefaultAction(defaultAction);
 }
 
-RibbonButton::RibbonButton(RibbonButtonPrivate *dd, QWidget *parent)
+RibbonButton::RibbonButton(RibbonButtonPrivate *d, QWidget *parent)
     : QToolButton(parent)
 {
-    QX_SET_PRIVATE(dd)
+    QX_SET_PRIVATE(d)
     setAutoRaise(true);
     setButtonType(SmallButton);
     setMouseTracking(true);

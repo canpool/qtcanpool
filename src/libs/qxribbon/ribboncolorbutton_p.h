@@ -5,6 +5,7 @@
 #pragma once
 
 #include "ribbonbutton_p.h"
+#include "ribboncolorbutton.h"
 
 #include <QStyleOptionToolButton>
 
@@ -14,7 +15,8 @@ class RibbonColorButton;
 
 class RibbonColorButtonPrivate : public RibbonButtonPrivate
 {
-    QX_DECLARE_PUBLIC(RibbonColorButton)
+public:
+    Q_DECLARE_PUBLIC(RibbonColorButton)
 public:
     RibbonColorButtonPrivate();
 
