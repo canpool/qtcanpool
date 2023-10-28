@@ -2,7 +2,7 @@
 
 isEmpty(RPATH_BASE) {
     RPATH_BASE = $$IDE_BIN_PATH
-    message("The default RPATH_BASE is IDE_BIN_PATH")
+    #message("The default RPATH_BASE is IDE_BIN_PATH")
 }
 
 REL_PATH_TO_LIBS = $$relative_path($$IDE_LIBRARY_PATH, $$RPATH_BASE)
