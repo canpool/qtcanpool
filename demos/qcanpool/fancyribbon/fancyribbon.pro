@@ -1,3 +1,4 @@
+QTC_LIB_DEPENDS += qcanpool
 include(../../../qtproject.pri)
 
 QT       += core gui
@@ -22,9 +23,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 include($$QTCANPOOL_DIR/src/rpath.pri)
-
-# lib
-LIBS *= -l$$qtLibraryName(qcanpool)
 
 INCLUDEPATH += ..
 

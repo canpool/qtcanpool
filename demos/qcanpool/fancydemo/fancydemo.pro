@@ -1,3 +1,4 @@
+QTC_LIB_DEPENDS += qcanpool
 include(../../../qtproject.pri)
 
 QT       += core gui
@@ -15,9 +16,6 @@ DESTDIR = $$IDE_APP_PATH
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 include($$QTCANPOOL_DIR/src/rpath.pri)
-
-# lib
-LIBS *= -l$$qtLibraryName(qcanpool)
 
 SOURCES += \
     main.cpp \

@@ -1,3 +1,4 @@
+QTC_LIB_DEPENDS += qcanpool
 include(../../../qtproject.pri)
 
 QT       += core gui
@@ -15,9 +16,6 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 include($$QTCANPOOL_DIR/src/rpath.pri)
-
-# lib
-LIBS *= -l$$qtLibraryName(qcanpool)
 
 win32 {
     DEFINES += USE_NATIVE
