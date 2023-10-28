@@ -34,11 +34,6 @@ Q_SIGNALS:
     void showCustomizeMenu(QMenu *menu);
     void customizeActionChanged();
 
-private Q_SLOTS:
-    void customizeAction(QAction *action);
-    void aboutToShowCustomizeMenu();
-    void aboutToHideCustomizeMenu();
-
 protected:
     virtual bool event(QEvent *event);
     virtual void actionEvent(QActionEvent *event);

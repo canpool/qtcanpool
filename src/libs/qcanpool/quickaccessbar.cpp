@@ -79,10 +79,10 @@ void QuickAccessBarPrivate::init()
 
     m_customizeGroup = new QActionGroup(q);
     m_customizeGroup->setExclusive(false);
-    QObject::connect(m_customizeGroup, SIGNAL(triggered(QAction *)), q, SLOT(customizeAction(QAction *)));
+    connect(m_customizeGroup, SIGNAL(triggered(QAction *)), this, SLOT(customizeAction(QAction *)));
 
-    QObject::connect(m_menu, SIGNAL(aboutToShow()), q, SLOT(aboutToShowCustomizeMenu()));
-    QObject::connect(m_menu, SIGNAL(aboutToHide()), q, SLOT(aboutToHideCustomizeMenu()));
+    connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowCustomizeMenu()));
+    connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideCustomizeMenu()));
 }
 
 QuickAccessAction *QuickAccessBarPrivate::findQuickAccessAction(QAction *action) const
@@ -148,6 +148,36 @@ void QuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction
     }
     wrapper->update();
     q->adjustSize();
+}
+
+void QuickAccessBarPrivate::customizeAction(QAction *action)
+{
+    m_customizeAction = true;
+    if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
+        setActionVisible(act, act->m_srcAction, !q->widgetForAction(act->m_srcAction));
+        emit q->customizeActionChanged();
+    }
+    m_customizeAction = false;
+}
+
+void QuickAccessBarPrivate::aboutToShowCustomizeMenu()
+{
+    m_menu->clear();
+    m_menu->setSeparatorsCollapsible(false);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_menu->addSection(tr("Customize Quick Access Toolbar"));
+#else
+    m_menu->addSeparator()->setText(tr("Customize Quick Access Toolbar"));
+#endif
+    foreach (QAction *action, m_actionList) {
+        m_menu->addAction(action);
+    }
+    emit q->showCustomizeMenu(m_menu);
+}
+
+void QuickAccessBarPrivate::aboutToHideCustomizeMenu()
+{
+    m_menu->clear();
 }
 
 QuickAccessBar::QuickAccessBar(QWidget *parent)
@@ -231,36 +261,6 @@ void QuickAccessBar::setState(const QByteArray &s)
             ++j;
         }
     }
-}
-
-void QuickAccessBar::customizeAction(QAction *action)
-{
-    d->m_customizeAction = true;
-    if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
-        d->setActionVisible(act, act->m_srcAction, !widgetForAction(act->m_srcAction));
-        emit customizeActionChanged();
-    }
-    d->m_customizeAction = false;
-}
-
-void QuickAccessBar::aboutToShowCustomizeMenu()
-{
-    d->m_menu->clear();
-    d->m_menu->setSeparatorsCollapsible(false);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    d->m_menu->addSection(tr("Customize Quick Access Toolbar"));
-#else
-    d->m_menu->addSeparator()->setText(tr("Customize Quick Access Toolbar"));
-#endif
-    foreach (QAction *action, d->m_actionList) {
-        d->m_menu->addAction(action);
-    }
-    emit showCustomizeMenu(d->m_menu);
-}
-
-void QuickAccessBar::aboutToHideCustomizeMenu()
-{
-    d->m_menu->clear();
 }
 
 bool QuickAccessBar::event(QEvent *event)

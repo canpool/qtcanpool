@@ -69,8 +69,9 @@ public:
 };
 
 /* QuickAccessBarPrivate */
-class QuickAccessBarPrivate
+class QuickAccessBarPrivate : public QObject
 {
+    Q_OBJECT
 public:
     explicit QuickAccessBarPrivate();
     virtual ~QuickAccessBarPrivate();
@@ -82,7 +83,10 @@ public:
     void updateAction(QAction *action);
     void setActionVisible(QAction *action, bool visible);
     void setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible);
-
+private Q_SLOTS:
+    void customizeAction(QAction *action);
+    void aboutToShowCustomizeMenu();
+    void aboutToHideCustomizeMenu();
 public:
     QuickAccessBar *q;
     QMenu *m_menu;
