@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2021-2022 maminjie <canpool@163.com>
+ * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
 **/
 #ifndef QUICKACCESSBAR_P_H
@@ -94,8 +94,8 @@ public:
     QActionGroup *m_customizeGroup;
     QuickAccessButton *m_accessPopup;
     QList<QAction *> m_actionList;
-    bool m_removeAction : 1;
-    bool m_customizeAction : 1;
+    bool m_removingAction : 1;
+    bool m_customizingAction : 1;
 };
 
 QCANPOOL_END_NAMESPACE

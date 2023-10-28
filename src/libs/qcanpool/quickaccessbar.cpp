@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2021-2022 maminjie <canpool@163.com>
+ * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
 **/
 #include "quickaccessbar_p.h"
@@ -48,8 +48,8 @@ QuickAccessBarPrivate::QuickAccessBarPrivate()
     , m_actionAccessPopup(Q_NULLPTR)
     , m_customizeGroup(Q_NULLPTR)
     , m_accessPopup(Q_NULLPTR)
-    , m_removeAction(false)
-    , m_customizeAction(false)
+    , m_removingAction(false)
+    , m_customizingAction(false)
 {
 
 }
@@ -136,7 +136,7 @@ void QuickAccessBarPrivate::setActionVisible(QAction *action, bool visible)
 void QuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible)
 {
     if (visible) {
-        if (m_customizeAction) {
+        if (m_customizingAction) {
             QAction *beforeAct = findBeforeAction(wrapper);
             q->insertAction(beforeAct, action);
         } else {
@@ -144,7 +144,7 @@ void QuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction
         }
     } else {
         q->removeAction(action);
-        m_removeAction = false;
+        m_removingAction = false;
     }
     wrapper->update();
     q->adjustSize();
@@ -152,12 +152,12 @@ void QuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction
 
 void QuickAccessBarPrivate::customizeAction(QAction *action)
 {
-    m_customizeAction = true;
+    m_customizingAction = true;
     if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
         setActionVisible(act, act->m_srcAction, !q->widgetForAction(act->m_srcAction));
         emit q->customizeActionChanged();
     }
-    m_customizeAction = false;
+    m_customizingAction = false;
 }
 
 void QuickAccessBarPrivate::aboutToShowCustomizeMenu()
@@ -231,11 +231,7 @@ QByteArray QuickAccessBar::state() const
 {
     QByteArray s;
     foreach (QAction *act, d->m_actionList) {
-        if (act->isChecked()) {
-            s.append('1');
-        } else {
-            s.append('0');
-        }
+        s.append(act->isChecked() ? '1' : '0');
     }
     return s;
 }
@@ -253,9 +249,8 @@ void QuickAccessBar::setState(const QByteArray &s)
             if (j < cnt) {
                 if (s.at(j) == '1') {
                     d->setActionVisible(act, act->m_srcAction, true);
-                } else {
-                    if (act->isChecked())
-                        d->setActionVisible(act, act->m_srcAction, false);
+                } else if (act->isChecked()) {
+                    d->setActionVisible(act, act->m_srcAction, false);
                 }
             }
             ++j;
@@ -279,7 +274,8 @@ void QuickAccessBar::actionEvent(QActionEvent *event)
     QToolBar::actionEvent(event);
     if (d->m_actionAccessPopup)  {
         if (event->type() == QEvent::ActionAdded) {
-            if (!d->m_removeAction) {
+            if (!d->m_removingAction) {
+                // remove, then add back in QEvent::ActionRemoved
                 removeAction(d->m_actionAccessPopup);
             }
             QuickAccessAction *quickAccessAction = d->findQuickAccessAction(event->action());
@@ -293,9 +289,9 @@ void QuickAccessBar::actionEvent(QActionEvent *event)
             }
         } else if (event->type() == QEvent::ActionRemoved) {
             if (event->action() == d->m_actionAccessPopup) {
-                d->m_removeAction = true;
+                d->m_removingAction = true;
                 addAction(d->m_actionAccessPopup);
-                d->m_removeAction = false;
+                d->m_removingAction = false;
             } else {
                 d->updateAction(event->action());
             }
