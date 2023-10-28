@@ -1,3 +1,5 @@
+VERSION = 2.0.0
+
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -45,5 +47,3 @@ include($$PWD/fancy.pri)
 
 RESOURCES += \
     $$PWD/qcanpool.qrc
-
-TRANSLATIONS += resource/qm/qcanpool_zh_CN.ts
