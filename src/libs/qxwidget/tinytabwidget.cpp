@@ -38,7 +38,6 @@ void TinyTabWidgetPrivate::init()
     Q_Q(TinyTabWidget);
     m_tabBar = new TinyTabBar(q);
     m_tabBar->setTogglable(false);
-    m_tabBar->layout()->setSizeConstraint(QLayout::SetFixedSize);
     m_tabBar->setObjectName(QLatin1String("qx_TinyTabWidget_tabbar"));
 
     m_stack = new QStackedWidget(q);

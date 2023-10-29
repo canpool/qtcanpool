@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     TinyTabBar *tb = tw->tabBar();
     tb->setTabStyle(Qt::ToolButtonTextUnderIcon);
+//    tb->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
     connect(tb, &TinyTabBar::currentChanged, this, [tb](int index) {
         qDebug() << "currentChanged:" << index << tb->isTabChecked(index);
