@@ -37,6 +37,8 @@ void TinyTabBarPrivate::init()
     m_group = new QActionGroup(q);
     m_group->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
     connect(m_group, &QActionGroup::triggered, this, &TinyTabBarPrivate::onTriggered);
+
+    connect(q, &TinyTabBar::orientationChanged, this, &TinyTabBarPrivate::onOrientationChanged);
 }
 
 int TinyTabBarPrivate::indexOf(QAction *action)
@@ -47,6 +49,26 @@ int TinyTabBarPrivate::indexOf(QAction *action)
         }
     }
     return -1;
+}
+
+void TinyTabBarPrivate::layoutActions()
+{
+    Q_Q(TinyTabBar);
+    if (q->orientation() == Qt::Vertical) {
+        int w = 0;
+        foreach (QAction *act, m_tabs) {
+            int aw = q->widgetForAction(act)->sizeHint().width();
+            if (w < aw) w = aw;
+        }
+        foreach (QAction *act, m_tabs) {
+            q->widgetForAction(act)->setFixedWidth(w);
+        }
+    } else {
+        foreach (QAction *act, m_tabs) {
+            QWidget *widget = q->widgetForAction(act);
+            widget->setFixedWidth(widget->sizeHint().width());
+        }
+    }
 }
 
 void TinyTabBarPrivate::onTriggered(QAction *action)
@@ -60,6 +82,12 @@ void TinyTabBarPrivate::onTriggered(QAction *action)
     if (m_togglable) {
         emit q->currentToggled(index, action->isChecked());
     }
+}
+
+void TinyTabBarPrivate::onOrientationChanged(Qt::Orientation orientation)
+{
+    Q_UNUSED(orientation);
+    layoutActions();
 }
 
 TinyTabBar::TinyTabBar(QWidget *parent)
@@ -100,24 +128,10 @@ int TinyTabBar::insertTab(int index, const QString &text)
 int TinyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 {
     Q_D(TinyTabBar);
-    QWidgetAction *action = new QWidgetAction(this);
+    QAction *action = new QAction(this);
     action->setIcon(icon);
     action->setText(text);
     action->setCheckable(true);
-
-    QToolButton *button = new QToolButton(this);
-    button->setAutoRaise(true);
-    button->setFocusPolicy(Qt::NoFocus);
-    button->setDefaultAction(action);
-    button->setToolButtonStyle(toolButtonStyle());
-    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    QObject::connect(this, SIGNAL(iconSizeChanged(QSize)),
-                     button, SLOT(setIconSize(QSize)));
-    QObject::connect(this, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
-                     button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
-    QObject::connect(button, SIGNAL(triggered(QAction*)), this, SIGNAL(actionTriggered(QAction*)));
-
-    action->setDefaultWidget(button);
 
     if (!d->validIndex(index)) {
         index = d->m_tabs.count();
@@ -136,6 +150,8 @@ int TinyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
     } else if (index <= d->m_currentIndex) {
         ++d->m_currentIndex;
     }
+
+    d->layoutActions();
 
     return index;
 }
@@ -267,7 +283,12 @@ bool TinyTabBar::isTogglable() const
 
 void TinyTabBar::setTabStyle(Qt::ToolButtonStyle style)
 {
+    Q_D(TinyTabBar);
     setToolButtonStyle(style);
+    // If layoutActions are called in the slot function of toolButtonStyleChanged,
+    // the size of Actions cannot be updated immediately (the size after the last
+    // format change is retrieved at the next format change)
+    d->layoutActions();
 }
 
 int TinyTabBar::count() const

@@ -55,30 +55,34 @@ MainWindow::MainWindow(QWidget *parent)
     QActionGroup *actGroup = new QActionGroup(this);
     actGroup->setExclusive(true);
 
-    QAction *act = new QAction(tr("ToolButtonTextOnly"), this);
-    act->setCheckable(true);
-    connect(act, &QAction::triggered, this, [tb, button]() {
-        tb->setTabStyle(Qt::ToolButtonTextOnly);
-        qDebug() << button->toolButtonStyle();
-        tb->layout()->setSpacing(2);
-    });
-    menu->addAction(act);
-    actGroup->addAction(act);
-    act = new QAction(tr("ToolButtonIconOnly"), this);
-    act->setCheckable(true);
-    connect(act, &QAction::triggered, this, [tb, button]() {
-        tb->setTabStyle(Qt::ToolButtonIconOnly);
-        qDebug() << button->toolButtonStyle();
-        tb->layout()->setSpacing(0);
-    });
-    menu->addAction(act);
-    actGroup->addAction(act);
+    QAction *act = nullptr;
+
+    QMap<QString, int> styles;
+    styles["ToolButtonTextOnly"] = Qt::ToolButtonTextOnly;
+    styles["ToolButtonIconOnly"] = Qt::ToolButtonIconOnly;
+    styles["ToolButtonTextUnderIcon"] = Qt::ToolButtonTextUnderIcon;
+    styles["ToolButtonTextBesideIcon"] = Qt::ToolButtonTextBesideIcon;
+
+    QMap<QString, int>::const_iterator i = styles.cbegin();
+    while (i != styles.cend()) {
+        act = new QAction(i.key(), this);
+        act->setData(i.value());
+        act->setCheckable(true);
+        connect(act, &QAction::triggered, this, [tb, button, act]() {
+            tb->setTabStyle(static_cast<Qt::ToolButtonStyle>(act->data().toInt()));
+            qDebug() << button->toolButtonStyle();
+            tb->layout()->setSpacing(1);
+        });
+        menu->addAction(act);
+        actGroup->addAction(act);
+        ++i;
+    }
 
     // TinyNavBar
     TinyNavBar *nb = new TinyNavBar(this);
     nb->layout()->setSpacing(2);
     nb->addTab(tr("nav1"));
-    nb->addTab(tr("nav2"));
+    nb->addTab(tr("nav2222"));
     nb->addTab(tr("nav3"));
     nb->addTab(tr("nav4"));
     nb->addTab(tr("nav5"));

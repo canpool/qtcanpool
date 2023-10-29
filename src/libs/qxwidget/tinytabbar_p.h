@@ -31,8 +31,11 @@ public:
 
     int indexOf(QAction *action);
 
+    void layoutActions();
+
 private Q_SLOTS:
     void onTriggered(QAction *action);
+    void onOrientationChanged(Qt::Orientation orientation);
 public:
     QList<QAction *> m_tabs;
     QActionGroup *m_group;
