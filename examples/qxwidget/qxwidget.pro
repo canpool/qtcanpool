@@ -6,4 +6,5 @@ SUBDIRS = \
     tinytabwidget \
     windowlogo \
     windowtoolbar \
-    extensionbutton
+    extensionbutton \
+    minitabwidget

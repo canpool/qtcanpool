@@ -10,6 +10,8 @@ HEADERS += \
     $$PWD/extensionbutton.h \
     $$PWD/menuaccessbutton.h \
     $$PWD/menubutton.h \
+    $$PWD/minitabbar.h \
+    $$PWD/minitabwidget.h \
     $$PWD/qxwidget_global.h \
     $$PWD/tinynavbar.h \
     $$PWD/tinynavbar_p.h \
@@ -24,6 +26,8 @@ SOURCES += \
     $$PWD/extensionbutton.cpp \
     $$PWD/menuaccessbutton.cpp \
     $$PWD/menubutton.cpp \
+    $$PWD/minitabbar.cpp \
+    $$PWD/minitabwidget.cpp \
     $$PWD/tinynavbar.cpp \
     $$PWD/tinytabbar.cpp \
     $$PWD/tinytabwidget.cpp \
