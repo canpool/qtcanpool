@@ -28,6 +28,7 @@
 #include "environmentfwd.h"
 #include "optional.h"
 #include "utils_global.h"
+#include "namevalueitem.h"
 
 #include <QDialog>
 

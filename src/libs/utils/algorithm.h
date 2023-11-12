@@ -280,7 +280,8 @@ template<template<typename> class C, // result container type
          typename Result = std::decay_t<std::result_of_t<F(Value &)>>,
          typename ResultContainer = C<Result>>
 Q_REQUIRED_RESULT decltype(auto) transform(SC &&container, F function);
-//#ifdef Q_CC_CLANG // modified by maminjie <canpool@163.com> 2023-3-24 22:09:53
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0) // modified by maminjie <canpool@163.com> 2023-10-15 12:57:04
+#ifdef Q_CC_CLANG // modified by maminjie <canpool@163.com> 2023-3-24 22:09:53
 // "Matching of template template-arguments excludes compatible templates"
 // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0522r0.html (P0522R0)
 // in C++17 makes the above match e.g. C=std::vector even though that takes two
@@ -297,7 +298,16 @@ template<template<typename, typename> class C, // result container type
          typename Result = std::decay_t<std::result_of_t<F(Value &)>>,
          typename ResultContainer = C<Result, std::allocator<Result>>>
 Q_REQUIRED_RESULT decltype(auto) transform(SC &&container, F function);
-//#endif
+#endif
+#else
+template<template<typename, typename> class C, // result container type
+         typename SC,                          // input container type
+         typename F,                           // function type
+         typename Value = typename std::decay_t<SC>::value_type,
+         typename Result = std::decay_t<std::result_of_t<F(Value &)>>,
+         typename ResultContainer = C<Result, std::allocator<Result>>>
+Q_REQUIRED_RESULT decltype(auto) transform(SC &&container, F function);
+#endif
 
 // member function without result type deduction:
 template<template<typename...> class C, // result container type
