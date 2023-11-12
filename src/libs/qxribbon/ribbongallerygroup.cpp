@@ -1,6 +1,6 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
- * SPDX-License-Identifier: MulanPSL-2.0
+ * SPDX-License-Identifier: MIT
 **/
 #include "ribbongallerygroup.h"
 #include "ribbongallerygroup_p.h"

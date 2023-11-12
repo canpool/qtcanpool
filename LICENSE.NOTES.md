@@ -3,6 +3,7 @@
 - [说明](#说明)
 - [MulanPSL-2.0](#mulanpsl-20)
 - [LGPL-2.1](#lgpl-21)
+- [MIT](#mit)
 
 <!-- /TOC -->
 
@@ -43,3 +44,6 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; If not, see <http://www.gnu.org/licenses/>.
 ```
+
+# MIT
+- src/libs/qxribbon

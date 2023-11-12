@@ -1,6 +1,6 @@
 /**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
- * SPDX-License-Identifier: MulanPSL-2.0
+ * SPDX-License-Identifier: MIT
  **/
 #ifndef WINDOWBUTTONGROUP_P_H
 #define WINDOWBUTTONGROUP_P_H
