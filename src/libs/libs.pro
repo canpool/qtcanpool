@@ -5,10 +5,19 @@ TEMPLATE  = subdirs
 SUBDIRS =   \
     qcanpool \
     qxwidget \
-    qxribbon
+    qxribbon \
+    qcustomplot
 
 lessThan(QT_MAJOR_VERSION, 6) {
     SUBDIRS += qribbon
+}
+
+QTC_BUILD_EXTENSIONSYSTEM = 0
+equals(QTC_BUILD_EXTENSIONSYSTEM, 1) {
+    SUBDIRS += \
+        aggregation \
+        extensionsystem \
+        utils
 }
 
 for(l, SUBDIRS) {
