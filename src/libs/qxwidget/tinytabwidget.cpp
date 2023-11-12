@@ -44,7 +44,7 @@ void TinyTabWidgetPrivate::init()
     m_stack->setObjectName(QLatin1String("qx_TinyTabWidget_stackedwidget"));
     m_stack->setLineWidth(0);
 
-    m_tabLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+    m_tabLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     m_tabLayout->setContentsMargins(0, 0, 0, 0);
     m_tabLayout->setSpacing(0);
     m_tabLayout->addWidget(m_tabBar);
@@ -59,6 +59,8 @@ void TinyTabWidgetPrivate::init()
 
     QObject::connect(m_tabBar, SIGNAL(currentChanged(int)), m_stack, SLOT(setCurrentIndex(int)));
     QObject::connect(m_stack, SIGNAL(currentChanged(int)), q, SIGNAL(currentChanged(int)));
+
+    updateTabBarPosition();
 }
 
 void TinyTabWidgetPrivate::updateTabBarPosition()
