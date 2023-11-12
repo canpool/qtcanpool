@@ -27,11 +27,12 @@
 
 #include "extensionsystem_global.h"
 
-#include <aggregation/aggregate.h>
 #include <utils/qtcsettings.h>
 
 #include <QObject>
 #include <QStringList>
+#include <QReadWriteLock>
+#include <QReadLocker>
 
 QT_BEGIN_NAMESPACE
 class QTextStream;
