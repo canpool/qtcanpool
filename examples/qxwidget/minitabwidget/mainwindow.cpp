@@ -27,7 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     tw->addTab(new QTextEdit(tr("tab4444"), this), icon, tr("tab4444"));
     tw->setTabEnabled(1, false);
     tw->insertTab(2, new QTextEdit(tr("tabN"), this), icon, tr("tabN"));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     tw->setTabVisible(3, false);
+#endif
     tw->setCurrentIndex(0);
 
     QMenuBar *mb = menuBar();

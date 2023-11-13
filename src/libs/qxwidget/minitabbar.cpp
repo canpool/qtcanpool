@@ -52,9 +52,11 @@ void MiniTabBar::paintEvent(QPaintEvent *event)
         QStyleOptionTab opt;
 
         for (int i = 0; i < count(); i++) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
             if (!isTabVisible(i)) {
                 continue;
             }
+#endif
             initStyleOption(&opt, i);
             painter.drawControl(QStyle::CE_TabBarTabShape, opt);
 
