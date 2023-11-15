@@ -1422,16 +1422,16 @@ void OfficeFrameHelperWin::collapseTopFrame()
 }
 #endif   // QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 
-#define qtc_GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
-#define qtc_GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
+#define qrn_GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#define qrn_GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
 {
     if (m_hwndFrame && msg->hwnd != m_hwndFrame &&
         (m_ribbonBar && m_ribbonBar->testAttribute(Qt::WA_NativeWindow) && msg->hwnd == (HWND)m_ribbonBar->winId())) {
         if (msg->message == WM_NCHITTEST) {
             POINT point;
-            point.x = (short)qtc_GET_X_LPARAM((DWORD)msg->lParam);
-            point.y = (short)qtc_GET_Y_LPARAM((DWORD)msg->lParam);
+            point.x = (short)qrn_GET_X_LPARAM((DWORD)msg->lParam);
+            point.y = (short)qrn_GET_Y_LPARAM((DWORD)msg->lParam);
 
             RECT rc;
             ::GetWindowRect(m_hwndFrame, &rc);
@@ -1534,8 +1534,8 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
             *result = DefWindowProcW(msg->hwnd, msg->message, msg->wParam, msg->lParam);
 
             POINT point;
-            point.x = (short)qtc_GET_X_LPARAM((DWORD)msg->lParam);
-            point.y = (short)qtc_GET_Y_LPARAM((DWORD)msg->lParam);
+            point.x = (short)qrn_GET_X_LPARAM((DWORD)msg->lParam);
+            point.y = (short)qrn_GET_Y_LPARAM((DWORD)msg->lParam);
 
             if (*result == HTCLIENT) {
                 RECT rc;
@@ -1576,8 +1576,8 @@ bool OfficeFrameHelperWin::winEvent(MSG *msg, long *result)
         return true;
     } else if (m_hwndFrame != Q_NULL && msg->message == WM_NCHITTEST && !isTitleVisible() && m_dwmEnabled) {
         POINT point, clientPoint;
-        point.x = (short)qtc_GET_X_LPARAM((DWORD)msg->lParam);
-        point.y = (short)qtc_GET_Y_LPARAM((DWORD)msg->lParam);
+        point.x = (short)qrn_GET_X_LPARAM((DWORD)msg->lParam);
+        point.y = (short)qrn_GET_Y_LPARAM((DWORD)msg->lParam);
         clientPoint.x = point.x;
         clientPoint.y = point.y;
         ::ScreenToClient(m_hwndFrame, &clientPoint);

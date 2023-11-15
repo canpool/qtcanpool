@@ -439,7 +439,7 @@ void CommonStyle::drawPrimitive(PrimitiveElement pe, const QStyleOption *option,
                                 const QWidget *widget) const
 {
     bool ret = false;
-    bool qtcStyle = false;
+    bool qrnStyle = false;
     if (!isNativeDialog(widget)) {
         switch (pe) {
         case PE_Workspace:
@@ -450,7 +450,7 @@ void CommonStyle::drawPrimitive(PrimitiveElement pe, const QStyleOption *option,
             break;
         case PE_FrameGroupBox:
             ret = false;
-            qtcStyle = true;
+            qrnStyle = true;
             break;
         case PE_FrameDefaultButton:
             ret = drawFrameDefaultButton(option, p, widget);
@@ -537,7 +537,7 @@ void CommonStyle::drawPrimitive(PrimitiveElement pe, const QStyleOption *option,
 
     if (!ret) {
         Q_D(const CommonStyle);
-        if (d->m_defaultStyle && !qtcStyle)
+        if (d->m_defaultStyle && !qrnStyle)
             d->m_defaultStyle->drawPrimitive(pe, option, p, widget);
         else
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -552,7 +552,7 @@ void CommonStyle::drawPrimitive(PrimitiveElement pe, const QStyleOption *option,
 void CommonStyle::drawControl(ControlElement element, const QStyleOption *opt, QPainter *p, const QWidget *widget) const
 {
     bool ret = false;
-    bool qtcStyle = false;
+    bool qrnStyle = false;
     switch (element) {
     case CE_ShapedFrame:
         ret = !isNativeDialog(widget) && drawShapedFrame(opt, p, widget);
@@ -560,12 +560,12 @@ void CommonStyle::drawControl(ControlElement element, const QStyleOption *opt, Q
     case CE_PushButton:
     case CE_PushButtonBevel:
         ret = false;
-        qtcStyle = !isNativeDialog(widget) && true;
+        qrnStyle = !isNativeDialog(widget) && true;
         break;
     case CE_RadioButton:
     case CE_CheckBox:
         ret = false;
-        qtcStyle = !isNativeDialog(widget) && true;
+        qrnStyle = !isNativeDialog(widget) && true;
         break;
     case CE_MenuBarEmptyArea:
         ret = !isNativeDialog(widget) && drawMenuBarEmptyArea(opt, p, widget);
@@ -642,7 +642,7 @@ void CommonStyle::drawControl(ControlElement element, const QStyleOption *opt, Q
 
     if (!ret) {
         Q_D(const CommonStyle);
-        if (d->m_defaultStyle && !qtcStyle)
+        if (d->m_defaultStyle && !qrnStyle)
             d->m_defaultStyle->drawControl(element, opt, p, widget);
         else
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -658,12 +658,12 @@ void CommonStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComple
                                      const QWidget *widget) const
 {
     bool ret = false;
-    bool qtcStyle = false;
+    bool qrnStyle = false;
     if (!isNativeDialog(widget)) {
         switch (cc) {
         case CC_GroupBox:
             ret = false;
-            qtcStyle = true;
+            qrnStyle = true;
             break;
         case CC_Slider:
             ret = drawSlider(opt, p, widget);
@@ -696,7 +696,7 @@ void CommonStyle::drawComplexControl(ComplexControl cc, const QStyleOptionComple
 
     if (!ret) {
         Q_D(const CommonStyle);
-        if (d->m_defaultStyle && !qtcStyle)
+        if (d->m_defaultStyle && !qrnStyle)
             d->m_defaultStyle->drawComplexControl(cc, opt, p, widget);
         else
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -910,7 +910,7 @@ void CommonStyle::drawImage(const QPixmap &dcSrc, QPainter &p, const QRect &rcDe
     drawPixmap(copyPix, p, rcDest, rcSrc, alpha, rcSizingMargins, alphaBlend);
 }
 
-static bool qtc_isRectNull(const QRect &rect)
+static bool qrn_isRectNull(const QRect &rect)
 {
     return (rect.left() == 0 && rect.right() == 0 && rect.top() == 0 && rect.bottom() == 0);
 }
@@ -952,13 +952,13 @@ void CommonStyle::drawPixmap(const QPixmap &soSrc, QPainter &p, const QRect &rcD
     if (rcDest.left() >= rcDest.right() || rcDest.top() >= rcDest.bottom())
         return;
 
-    if (::qtc_isRectNull(rcSizingMargins)) {
+    if (::qrn_isRectNull(rcSizingMargins)) {
         p.drawPixmap(rcDest, dcSrc, rcSrc);
     } else {
-        class qtc_Rect : public QRect
+        class qrn_Rect : public QRect
         {
         public:
-            qtc_Rect(int l, int t, int r, int b)
+            qrn_Rect(int l, int t, int r, int b)
             {
                 setLeft(l);
                 setRight(r - 1);
@@ -974,64 +974,64 @@ void CommonStyle::drawPixmap(const QPixmap &soSrc, QPainter &p, const QRect &rcD
         // left-top
         drawImagePart(
             dcSrc, p,
-            qtc_Rect(rc.left(), rc.top(), rc.left() + rcDestSizingMargins.left(), rc.top() + rcDestSizingMargins.top()),
-            qtc_Rect(rcImage.left(), rcImage.top(), rcImage.left() + rcSizingMargins.left(),
+            qrn_Rect(rc.left(), rc.top(), rc.left() + rcDestSizingMargins.left(), rc.top() + rcDestSizingMargins.top()),
+            qrn_Rect(rcImage.left(), rcImage.top(), rcImage.left() + rcSizingMargins.left(),
                      rcImage.top() + rcSizingMargins.top()),
             alpha);
         // top-center
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.left() + rcDestSizingMargins.left(), rc.top(),
+                      qrn_Rect(rc.left() + rcDestSizingMargins.left(), rc.top(),
                                rc.right() - rcDestSizingMargins.right(), rc.top() + rcDestSizingMargins.top()),
-                      qtc_Rect(rcImage.left() + rcSizingMargins.left(), rcImage.top(),
+                      qrn_Rect(rcImage.left() + rcSizingMargins.left(), rcImage.top(),
                                rcImage.right() - rcSizingMargins.right(), rcImage.top() + rcSizingMargins.top()),
                       alpha);
         // right-top
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.right() - rcDestSizingMargins.right(), rc.top(), rc.right(),
+                      qrn_Rect(rc.right() - rcDestSizingMargins.right(), rc.top(), rc.right(),
                                rc.top() + rcDestSizingMargins.top()),
-                      qtc_Rect(rcImage.right() - rcSizingMargins.right(), rcImage.top(), rcImage.right(),
+                      qrn_Rect(rcImage.right() - rcSizingMargins.right(), rcImage.top(), rcImage.right(),
                                rcImage.top() + rcSizingMargins.top()),
                       alpha);
         // left-center
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.left(), rc.top() + rcDestSizingMargins.top(), rc.left() + rcDestSizingMargins.left(),
+                      qrn_Rect(rc.left(), rc.top() + rcDestSizingMargins.top(), rc.left() + rcDestSizingMargins.left(),
                                rc.bottom() - rcDestSizingMargins.bottom()),
-                      qtc_Rect(rcImage.left(), rcImage.top() + rcSizingMargins.top(),
+                      qrn_Rect(rcImage.left(), rcImage.top() + rcSizingMargins.top(),
                                rcImage.left() + rcSizingMargins.left(), rcImage.bottom() - rcSizingMargins.bottom()),
                       alpha);
         // center
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.left() + rcDestSizingMargins.left(), rc.top() + rcDestSizingMargins.top(),
+                      qrn_Rect(rc.left() + rcDestSizingMargins.left(), rc.top() + rcDestSizingMargins.top(),
                                rc.right() - rcDestSizingMargins.right(), rc.bottom() - rcDestSizingMargins.bottom()),
-                      qtc_Rect(rcImage.left() + rcSizingMargins.left(), rcImage.top() + rcSizingMargins.top(),
+                      qrn_Rect(rcImage.left() + rcSizingMargins.left(), rcImage.top() + rcSizingMargins.top(),
                                rcImage.right() - rcSizingMargins.right(), rcImage.bottom() - rcSizingMargins.bottom()),
                       alpha);
         // right-center
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.right() - rcDestSizingMargins.right(), rc.top() + rcDestSizingMargins.top(),
+                      qrn_Rect(rc.right() - rcDestSizingMargins.right(), rc.top() + rcDestSizingMargins.top(),
                                rc.right(), rc.bottom() - rcDestSizingMargins.bottom()),
-                      qtc_Rect(rcImage.right() - rcSizingMargins.right(), rcImage.top() + rcSizingMargins.top(),
+                      qrn_Rect(rcImage.right() - rcSizingMargins.right(), rcImage.top() + rcSizingMargins.top(),
                                rcImage.right(), rcImage.bottom() - rcSizingMargins.bottom()),
                       alpha);
         // left-bottom
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.left(), rc.bottom() - rcDestSizingMargins.bottom(),
+                      qrn_Rect(rc.left(), rc.bottom() - rcDestSizingMargins.bottom(),
                                rc.left() + rcDestSizingMargins.left(), rc.bottom()),
-                      qtc_Rect(rcImage.left(), rcImage.bottom() - rcSizingMargins.bottom(),
+                      qrn_Rect(rcImage.left(), rcImage.bottom() - rcSizingMargins.bottom(),
                                rcImage.left() + rcSizingMargins.left(), rcImage.bottom()),
                       alpha);
         // bottom-center
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.left() + rcDestSizingMargins.left(), rc.bottom() - rcDestSizingMargins.bottom(),
+                      qrn_Rect(rc.left() + rcDestSizingMargins.left(), rc.bottom() - rcDestSizingMargins.bottom(),
                                rc.right() - rcDestSizingMargins.right(), rc.bottom()),
-                      qtc_Rect(rcImage.left() + rcSizingMargins.left(), rcImage.bottom() - rcSizingMargins.bottom(),
+                      qrn_Rect(rcImage.left() + rcSizingMargins.left(), rcImage.bottom() - rcSizingMargins.bottom(),
                                rcImage.right() - rcSizingMargins.right(), rcImage.bottom()),
                       alpha);
         // right-bottom
         drawImagePart(dcSrc, p,
-                      qtc_Rect(rc.right() - rcDestSizingMargins.right(), rc.bottom() - rcDestSizingMargins.bottom(),
+                      qrn_Rect(rc.right() - rcDestSizingMargins.right(), rc.bottom() - rcDestSizingMargins.bottom(),
                                rc.right(), rc.bottom()),
-                      qtc_Rect(rcImage.right() - rcSizingMargins.right(), rcImage.bottom() - rcSizingMargins.bottom(),
+                      qrn_Rect(rcImage.right() - rcSizingMargins.right(), rcImage.bottom() - rcSizingMargins.bottom(),
                                rcImage.right(), rcImage.bottom()),
                       alpha);
     }

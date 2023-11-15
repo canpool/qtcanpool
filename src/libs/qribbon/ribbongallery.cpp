@@ -447,7 +447,7 @@ void RibbonGalleryPrivate::drawItems(QPainter *painter)
 
     int selected = m_hideSelection ? -1 : m_selected;
     for (int i = 0; i < m_arrRects.size(); ++i) {
-        const qtc_galleryitem_rect &pos = m_arrRects[i];
+        const qrn_galleryitem_rect &pos = m_arrRects[i];
 
         QRect rcItem = pos.rect;
         rcItem.translate(0, -m_scrollPos);
@@ -1029,7 +1029,7 @@ void RibbonGallery::ensureVisible(int index)
     if (itemCount() == 0 || index == -1 || index >= itemCount() || index >= d->m_arrRects.size())
         return;
 
-    const qtc_galleryitem_rect &pos = d->m_arrRects.at(index);
+    const qrn_galleryitem_rect &pos = d->m_arrRects.at(index);
 
     QRect rcItem = pos.rect;
     rcItem.translate(0, -d->m_scrollPos);
@@ -1040,7 +1040,7 @@ void RibbonGallery::ensureVisible(int index)
         int scrollPos = pos.rect.top() - rcItems.top();
         if (d->m_showLabels) {
             for (int i = index - 1; i >= 0; i--) {
-                const qtc_galleryitem_rect &posLabel = d->m_arrRects.at(i);
+                const qrn_galleryitem_rect &posLabel = d->m_arrRects.at(i);
                 if (posLabel.item->isSeparator() &&
                     pos.rect.top() - posLabel.rect.top() <= rcItems.height() - rcItem.height()) {
                     scrollPos = posLabel.rect.top() - rcItems.top();
@@ -1277,7 +1277,7 @@ int RibbonGallery::hitTestItem(QPoint point, QRect *pRect) const
     QRect rcItems = getItemsRect();
 
     for (int i = 0; i < d->m_arrRects.size(); ++i) {
-        const qtc_galleryitem_rect &pos = d->m_arrRects[i];
+        const qrn_galleryitem_rect &pos = d->m_arrRects[i];
 
         QRect rcItem = pos.rect;
         rcItem.translate(0, -d->m_scrollPos);

@@ -146,7 +146,7 @@ void RibbonBarPrivate::init()
     QObject::connect(m_tabBar, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)), Qt::DirectConnection);
 
     m_quickAccessBar = new RibbonQuickAccessBar(q);
-    m_quickAccessBar->setObjectName("qtc_Ribbon_Quick_Access_Bar");
+    m_quickAccessBar->setObjectName("qrn_Ribbon_Quick_Access_Bar");
     m_quickAccessBar->setVisible(false);
 
     m_logotypeLabel = new LogotypeLabel(q);
@@ -2565,7 +2565,7 @@ void RibbonBar::updateLayout()
     d->layoutRibbon();
 }
 
-void QRibbon::qtc_set_font_to_ribbon_children(QWidget *parent, const QFont &font)
+void QRibbon::qrn_set_font_to_ribbon_children(QWidget *parent, const QFont &font)
 {
     QObjectList list = parent->children();
     for (QObjectList::iterator it = list.begin(); it != list.end(); ++it) {
@@ -2584,7 +2584,7 @@ void QRibbon::qtc_set_font_to_ribbon_children(QWidget *parent, const QFont &font
             group->setFont(font);
         else {
             widget->setFont(font);
-            qtc_set_font_to_ribbon_children(widget, font);
+            qrn_set_font_to_ribbon_children(widget, font);
         }
     }
 }
@@ -2606,14 +2606,14 @@ bool RibbonBar::event(QEvent *event)
                     qobject_cast<RibbonPage *>(widget)->setFont(font());
                 else {
                     widget->setFont(font());
-                    qtc_set_font_to_ribbon_children(widget, font());
+                    qrn_set_font_to_ribbon_children(widget, font());
                 }
             }
         }
     } break;
     case QEvent::StyleChange:
     case QEvent::FontChange: {
-        qtc_set_font_to_ribbon_children(this, font());
+        qrn_set_font_to_ribbon_children(this, font());
         d->layoutCorner();
         d->layoutRibbon();
     } break;

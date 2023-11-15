@@ -163,7 +163,7 @@ class RibbonStylePlugin : public QStylePlugin
 {
     Q_OBJECT
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    // Q_PLUGIN_METADATA(IID "org.qtc-project.Qt.QStyleFactoryInterface" FILE "ribbonstyle.json")
+    // Q_PLUGIN_METADATA(IID "org.qrn-project.Qt.QStyleFactoryInterface" FILE "ribbonstyle.json")
 #endif
 public:
     QStringList keys() const;

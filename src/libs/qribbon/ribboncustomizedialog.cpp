@@ -15,7 +15,7 @@ QRIBBON_USE_NAMESPACE
 
 QRIBBON_BEGIN_NAMESPACE
 
-static QWidget *qtc_WantTheFocus(QWidget *ancestor)
+static QWidget *qrn_WantTheFocus(QWidget *ancestor)
 {
     const int MaxIterations = 100;
 
@@ -261,7 +261,7 @@ void RibbonCustomizeDialogPrivate::switchToPage(int currentRow)
         page->setUpdatesEnabled(true);
         page->show();
 
-        if (QWidget *candidate = qtc_WantTheFocus(page))
+        if (QWidget *candidate = qrn_WantTheFocus(page))
             candidate->setFocus();
 
         bool expandPage = !page->layout();

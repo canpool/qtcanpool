@@ -44,7 +44,7 @@
 QRIBBON_USE_NAMESPACE
 
 /*
-static QString qtc_getColorName(RibbonPage::ContextColor color)
+static QString qrn_getColorName(RibbonPage::ContextColor color)
 {
     switch (color) {
     case RibbonPage::ContextColorBlue:
@@ -68,7 +68,7 @@ static QString qtc_getColorName(RibbonPage::ContextColor color)
 }
 */
 
-static QColor qtc_getColorToRGB(RibbonPage::ContextColor color)
+static QColor qrn_getColorToRGB(RibbonPage::ContextColor color)
 {
     switch (color) {
     case RibbonPage::ContextColorRed:
@@ -687,7 +687,7 @@ void RibbonPaintManager::drawContextHeaders(const QStyleOption *opt, QPainter *p
         {
             QRect rc = header->rcRect;
             rc.translate(0, 2);
-            QColor color = qtc_getColorToRGB(header->color);
+            QColor color = qrn_getColorToRGB(header->color);
 
             QColor clrDark = DrawHelpers::colorMakeDarker(color.rgb());
             QColor clrLight = DrawHelpers::colorMakePale(color.rgb());
@@ -896,7 +896,7 @@ void RibbonPaintManager::drawTabShapeLabel(const QStyleOption *opt, QPainter *p,
             textColor = d->m_clrRibbonTabBarText;
 
         if (selected && pageColor != RibbonPage::ContextColorNone) {
-            textColor = ::qtc_getColorToRGB(pageColor);
+            textColor = ::qrn_getColorToRGB(pageColor);
             textColor = DrawHelpers::colorMakeDarker(textColor.rgb(), .4);
         } else if (selected || highlighted)
             textColor = d->m_clrTabSelectedText;
@@ -1385,7 +1385,7 @@ void RibbonPaintManager::fillRibbonTabControl(const QStyleOption *opt, QPainter 
                 contextHeader->color == RibbonPage::ContextColorNone)
                 return;
 
-            QColor color = qtc_getColorToRGB(contextHeader->color);
+            QColor color = qrn_getColorToRGB(contextHeader->color);
 
             QColor clrLight = DrawHelpers::colorMakePale(color.rgb());
 

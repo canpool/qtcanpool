@@ -193,6 +193,6 @@ private:
     Q_DISABLE_COPY(RibbonBar)
 };
 
-extern void qtc_set_font_to_ribbon_children(QWidget *widget, const QFont &font);
+extern void qrn_set_font_to_ribbon_children(QWidget *widget, const QFont &font);
 
 QRIBBON_END_NAMESPACE

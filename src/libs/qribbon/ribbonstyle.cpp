@@ -137,7 +137,7 @@ RibbonStylePrivate::RibbonStylePrivate()
 
 #ifdef Q_OS_WIN
 const double g_logPixel = 96.0;
-static QFont qtc_LOGFONTtoQFont(LOGFONT &lf, bool dpiaware)
+static QFont qrn_LOGFONTtoQFont(LOGFONT &lf, bool dpiaware)
 {
     QString family = QString::fromWCharArray(lf.lfFaceName);
     QFont qf(family);
@@ -439,7 +439,7 @@ QFont RibbonStyle::font(const QWidget *widget) const
         NONCLIENTMETRICS ncm;
         ncm.cbSize = FIELD_OFFSET(NONCLIENTMETRICS, lfMessageFont) + sizeof(LOGFONT);
         ::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0);
-        return qtc_LOGFONTtoQFont(ncm.lfMenuFont, isDPIAware());
+        return qrn_LOGFONTtoQFont(ncm.lfMenuFont, isDPIAware());
 #else
         QMenuBar menu;
         menu.setAttribute(Qt::WA_MacSmallSize);

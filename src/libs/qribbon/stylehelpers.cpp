@@ -330,7 +330,7 @@ QRgb DrawHelpers::colorMakeDarker(const QRgb &clr, double ratio)
     return HLStoRGB_ONE(h, qMin(1., l * ratio), qMin(1., s * ratio));
 }
 
-inline int qtc_round(double val) { return int((val - int(val - 0.5)) >= 0.5 ? val + 0.5 : val - 0.5); }
+inline int qrn_round(double val) { return int((val - int(val - 0.5)) >= 0.5 ? val + 0.5 : val - 0.5); }
 
 QRgb DrawHelpers::colorMakeLighter(const QRgb &clr, double ratio)
 {
@@ -342,7 +342,7 @@ QRgb DrawHelpers::colorMakeLighter(const QRgb &clr, double ratio)
     DrawHelpers::RGBtoHSL(clr, h, s, l);
 
     if (h < min && s < min && l < min) {
-        int val = qtc_round(ratio * 255.0);
+        int val = qrn_round(ratio * 255.0);
         return qRgb(val, val, val);
     } else {
         ratio += 1.;

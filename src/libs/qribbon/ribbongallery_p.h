@@ -75,7 +75,7 @@ public:
 
 class RibbonGallery;
 
-struct qtc_galleryitem_rect {
+struct qrn_galleryitem_rect {
     RibbonGalleryItem *item;
     QRect rect;
     bool beginRow;
@@ -125,7 +125,7 @@ public:
     QToolButton *m_buttonScrollDown;
     QToolButton *m_buttonPopup;
     OfficePopupMenu *m_menuBar;
-    QVector<qtc_galleryitem_rect> m_arrRects;
+    QVector<qrn_galleryitem_rect> m_arrRects;
 
     bool m_showBorders : 1;
     bool m_showLabels : 1;

@@ -25,7 +25,7 @@ enum HBitmapFormat {
 };
 #endif
 
-static QImage qtc_fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h)
+static QImage qrn_fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h)
 {
     BITMAPINFO bmi;
     memset(&bmi, 0, sizeof(bmi));
@@ -58,7 +58,7 @@ static QImage qtc_fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h)
                 memcpy(dest, src, image.bytesPerLine());
         }
     } else {
-        qWarning("qtc_fromWinHBITMAP(), failed to get bitmap bits");
+        qWarning("qrn_fromWinHBITMAP(), failed to get bitmap bits");
     }
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     Q_ASSERT(false);
@@ -90,7 +90,7 @@ QPixmap StyleHelper::alphaBlend(const QPixmap &src)
 
     HGDIOBJ oldhdc = (HBITMAP)SelectObject(hdc, winBitmap);
 
-    QImage image = qtc_fromWinHBITMAP(hdc, winBitmap, w, h);
+    QImage image = qrn_fromWinHBITMAP(hdc, winBitmap, w, h);
 
     for (int y = 0; y < h && !foundAlpha; y++) {
         QRgb *scanLine = reinterpret_cast<QRgb *>(image.scanLine(y));
@@ -104,7 +104,7 @@ QPixmap StyleHelper::alphaBlend(const QPixmap &src)
 
     if (!foundAlpha) {
         // If no alpha was found, we use the mask to set alpha values
-        QImage mask = qtc_fromWinHBITMAP(hdc, winBitmap, w, h);
+        QImage mask = qrn_fromWinHBITMAP(hdc, winBitmap, w, h);
 
         for (int y = 0; y < h; y++) {
             QRgb *scanlineImage = reinterpret_cast<QRgb *>(image.scanLine(y));

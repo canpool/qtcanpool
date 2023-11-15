@@ -174,14 +174,14 @@ bool RibbonPagePrivate::canReduce() const
     return false;
 }
 
-static RibbonControlSizeDefinition::GroupSize qtc_size_inc(RibbonControlSizeDefinition::GroupSize &size)
+static RibbonControlSizeDefinition::GroupSize qrn_size_inc(RibbonControlSizeDefinition::GroupSize &size)
 {
     RibbonControlSizeDefinition::GroupSize ret = size;
     size = (RibbonControlSizeDefinition::GroupSize)(size + 1);
     return ret;
 }
 
-static RibbonControlSizeDefinition::GroupSize qtc_size_dec(RibbonControlSizeDefinition::GroupSize &size)
+static RibbonControlSizeDefinition::GroupSize qrn_size_dec(RibbonControlSizeDefinition::GroupSize &size)
 {
     RibbonControlSizeDefinition::GroupSize ret = size;
     size = (RibbonControlSizeDefinition::GroupSize)(size - 1);
@@ -194,7 +194,7 @@ int RibbonPagePrivate::adjustGroups(int leftOffset, int actualWidth)
     while (size > RibbonControlSizeDefinition::GroupLarge && leftOffset < actualWidth) {
         if (expandGroups(leftOffset, actualWidth, size, true))
             continue;
-        if (!expandGroups(leftOffset, actualWidth, qtc_size_dec(size), false))
+        if (!expandGroups(leftOffset, actualWidth, qrn_size_dec(size), false))
             break;
     }
 
@@ -203,7 +203,7 @@ int RibbonPagePrivate::adjustGroups(int leftOffset, int actualWidth)
         while (canReduce() && leftOffset > actualWidth) {
             if (collapseGroups(leftOffset, actualWidth, size, true))
                 continue;
-            if (!collapseGroups(leftOffset, actualWidth, qtc_size_inc(size), false))
+            if (!collapseGroups(leftOffset, actualWidth, qrn_size_inc(size), false))
                 break;
         }
     }
@@ -1034,7 +1034,7 @@ bool RibbonPage::event(QEvent *event)
     } break;
     case QEvent::StyleChange:
     case QEvent::FontChange: {
-        qtc_set_font_to_ribbon_children(this, font());
+        qrn_set_font_to_ribbon_children(this, font());
     } break;
     case QEvent::ChildAdded: {
         QChildEvent *childEvent = static_cast<QChildEvent *>(event);
@@ -1048,7 +1048,7 @@ bool RibbonPage::event(QEvent *event)
                     qobject_cast<RibbonGroup *>(widget)->setFont(font());
                 else {
                     widget->setFont(font());
-                    qtc_set_font_to_ribbon_children(widget, font());
+                    qrn_set_font_to_ribbon_children(widget, font());
                 }
             }
         }

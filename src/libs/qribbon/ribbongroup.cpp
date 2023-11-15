@@ -1188,12 +1188,12 @@ void RibbonGroup::currentIndexChanged(int index)
     }
 }
 
-void qtc_set_font_to_group_children(RibbonGroup *group, const QFont &font)
+void qrn_set_font_to_group_children(RibbonGroup *group, const QFont &font)
 {
     for (int i = 0, count = group->controlCount(); count > i; ++i) {
         if (RibbonControl *control = group->controlByIndex(i)) {
             control->setFont(font);
-            qtc_set_font_to_ribbon_children(control, font);
+            qrn_set_font_to_ribbon_children(control, font);
         }
     }
 }
@@ -1215,13 +1215,13 @@ bool RibbonGroup::event(QEvent *event)
             QWidget *widget = qobject_cast<QWidget *>(e->child());
             if (widget != Q_NULL) {
                 widget->setFont(font());
-                qtc_set_font_to_ribbon_children(widget, font());
+                qrn_set_font_to_ribbon_children(widget, font());
             }
         }
     } break;
     case QEvent::StyleChange:
     case QEvent::FontChange:
-        qtc_set_font_to_group_children(this, font());
+        qrn_set_font_to_group_children(this, font());
         break;
     default:
         break;

@@ -43,7 +43,7 @@ static int findIndexByAction(const QWidget *parent, const QAction *action)
     return -1;
 }
 
-static QLayout *qtcfindLayout(QLayout *lay, QWidget *wd)
+static QLayout *qrnfindLayout(QLayout *lay, QWidget *wd)
 {
     if (!lay)
         return Q_NULL;
@@ -56,7 +56,7 @@ static QLayout *qtcfindLayout(QLayout *lay, QWidget *wd)
             return lay;
 
         if (QLayout *itemLayout = item->layout())
-            return qtcfindLayout(itemLayout, wd);
+            return qrnfindLayout(itemLayout, wd);
     }
 
     return Q_NULL;
@@ -300,7 +300,7 @@ QLayout *RibbonStatusBarPrivate::findLayout()
     const QObjectList &children = q->children();
     for (int i = 0; i < children.size(); ++i) {
         if (QWidget *child = qobject_cast<QWidget *>(children.at(i))) {
-            if (QLayout *internalLayout = ::qtcfindLayout(l, child))
+            if (QLayout *internalLayout = ::qrnfindLayout(l, child))
                 return internalLayout;
             else if (QSizeGrip *grip = qobject_cast<QSizeGrip *>(child))
                 m_sizeGripWidget = grip;

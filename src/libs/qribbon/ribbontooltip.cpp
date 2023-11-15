@@ -195,7 +195,7 @@ void RibbonToolTip::showToolTip(const QPoint &pos, const QString &title, const Q
 #endif
         RibbonToolTipPrivate::m_instance->setTipRect(w, rect);
         RibbonToolTipPrivate::m_instance->placeTip(pos, w);
-        RibbonToolTipPrivate::m_instance->setObjectName("qtctooltip_label");
+        RibbonToolTipPrivate::m_instance->setObjectName("qrntooltip_label");
 
 #if !defined(QT_NO_EFFECTS) && !defined(Q_WS_MAC)
         if (QApplication::isEffectEnabled(Qt::UI_FadeTooltip))
