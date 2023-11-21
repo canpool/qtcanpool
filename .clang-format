@@ -34,7 +34,7 @@ AllowShortCaseLabelsOnASingleLine: false
 # 允许短的枚举放在同一行
 AllowShortEnumsOnASingleLine: false
 # 允许短的函数放在同一行
-AllowShortFunctionsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: false
 # 允许短的if语句保持在同一行
 AllowShortIfStatementsOnASingleLine: Never
 # 允许短的匿名函数lamda表达式放在同一行
@@ -184,7 +184,7 @@ ObjCSpaceAfterProperty: false
 # 在ObjC的protocol列表前添加一个空格
 ObjCSpaceBeforeProtocolList: true
 # 缩进预处理器语句的列数
-PPIndentWidth:   -1
+PPIndentWidth:   0
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
