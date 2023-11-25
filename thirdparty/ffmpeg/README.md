@@ -6,7 +6,7 @@
 - 下载地址：https://www.gyan.dev/ffmpeg/builds/#release-builds
 
 # 使用
-由于ffmpeg库较大，只提供连接库文件ffmpeg.pri，如果要使用ffmpeg，只需下载上述压缩包，然后加压到 qtcanpool 的同级目录 3rdparty 目录下的 ffmpeg 目录中。
+由于 ffmpeg 库较大，只提供连接库文件 ffmpeg.pri，如果要使用 ffmpeg，只需下载上述压缩包，然后解压到 qtcanpool 的同级目录 3rdparty 目录下的 ffmpeg 目录中。
 
 目录结构示例如下：
 ```

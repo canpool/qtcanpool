@@ -1,8 +1,13 @@
 # Copyright (c) 2023 maminjie <canpool@163.com>
 # SPDX-License-Identifier: MulanPSL-2.0
 
-BOOST_ROOT = $$PWD/../../../3rdparty/Boost
 BOOST_VERSION = 1_83
+BOOST_ROOT = $$PWD/../../../3rdparty/Boost
+BOOST_ROOT = $$absolute_path($$BOOST_ROOT)
+
+!exists($$BOOST_ROOT) {
+    error("$$BOOST_ROOT: No such directory")
+}
 
 # mingw
 COMPILER_VERSION = mgw8-mt

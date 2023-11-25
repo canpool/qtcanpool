@@ -3,6 +3,11 @@
 
 FFMPEG_TOPDIR = $$PWD/../..
 FFMPEG_ROOT = $$FFMPEG_TOPDIR/../3rdparty/ffmpeg/ffmpeg-6.1-full_build-shared
+FFMPEG_ROOT = $$absolute_path($$FFMPEG_ROOT)
+
+!exists($$FFMPEG_ROOT) {
+    error("$$FFMPEG_ROOT: No such directory")
+}
 
 include($$FFMPEG_TOPDIR/qtproject.pri)
 
@@ -25,8 +30,8 @@ win32 {
     }
 }
 
-files = $$files($$FFMPEG_DLL_PATH/*, false)
-for(file, files):contains(file, ".*\\.dll$"):!exists($$file/*): \
+ffmpeg_dll_files = $$files($$FFMPEG_DLL_PATH/*, false)
+for(file, ffmpeg_dll_files):contains(file, ".*\\.dll$"):!exists($$file/*): \
     STATIC_FILES += $$file
 
 STATIC_BASE = $$FFMPEG_DLL_PATH
