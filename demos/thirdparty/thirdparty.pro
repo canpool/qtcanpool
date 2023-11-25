@@ -2,4 +2,11 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS = \
-    boostdemo
+    ffmpegdemo
+
+win32 {
+    win32-g++ {
+        SUBDIRS += \
+            boostdemo
+    }
+}
