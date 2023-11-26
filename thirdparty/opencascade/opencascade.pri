@@ -1,0 +1,63 @@
+# Copyright (c) 2023 maminjie <canpool@163.com>
+# SPDX-License-Identifier: MulanPSL-2.0
+
+OPENCASCADE_TOPDIR = $$PWD/../..
+include($$OPENCASCADE_TOPDIR/qtproject.pri)
+
+OPENCASCADE_VERSION = 7.7.0
+COMPILER_VERSION = vc14
+COMPILER_ARCH = 64
+
+OPENCASCADE_ROOT = $$OPENCASCADE_TOPDIR/../3rdparty/OpenCASCADE-7.7.0-vc14-64
+OPENCASCADE_ROOT = $$absolute_path($$OPENCASCADE_ROOT)
+
+!exists($$OPENCASCADE_ROOT) {
+    error("$$OPENCASCADE_ROOT: No such directory")
+}
+
+# dependecies
+FFMPEG_DIR = $$OPENCASCADE_ROOT/ffmpeg-3.3.4-64
+FFMPEG_DLL_PATH = $$FFMPEG_DIR/bin
+tmp_dll_files = $$files($$FFMPEG_DLL_PATH/*.dll, false)
+for(file, tmp_dll_files): STATIC_FILES += $$file
+
+FREEIMAGE_DIR = $$OPENCASCADE_ROOT/freeimage-3.17.0-vc14-64
+FREEIMAGE_DLL_PATH = $$FREEIMAGE_DIR/bin
+STATIC_FILES += $$FREEIMAGE_DLL_PATH/FreeImage.dll
+
+FREETYPE_DIR = $$OPENCASCADE_ROOT/freetype-2.5.5-vc14-64
+FREETYPE_DLL_PATH = $$FREETYPE_DIR/bin
+tmp_dll_files = $$files($$FREETYPE_DLL_PATH/*.dll, false)
+for(file, tmp_dll_files): STATIC_FILES += $$file
+
+OPENVR_DIR = $$OPENCASCADE_ROOT/openvr-1.14.15-64
+OPENVR_DLL_PATH = $$OPENVR_DIR/bin/win$$COMPILER_ARCH
+tmp_dll_files = $$files($$OPENVR_DLL_PATH/*.dll, false)
+for(file, tmp_dll_files): STATIC_FILES += $$file
+
+TBB_DIR = $$OPENCASCADE_ROOT/tbb_2021.5-vc14-64
+TBB_DLL_PATH = $$TBB_DIR/bin
+STATIC_FILES += $$TBB_DLL_PATH/tbb12.dll
+
+# opencascade
+OPENCASCADE_DIR = $$OPENCASCADE_ROOT/opencascade-$$OPENCASCADE_VERSION
+OPENCASCADE_OUT_DIR = $$OPENCASCADE_DIR/win$$COMPILER_ARCH/$$COMPILER_VERSION
+
+OPENCASCADE_INC_PATH = $$OPENCASCADE_DIR/inc
+OPENCASCADE_LIB_PATH = $$OPENCASCADE_OUT_DIR/lib
+OPENCASCADE_DLL_PATH = $$OPENCASCADE_OUT_DIR/bin
+
+INCLUDEPATH += $$OPENCASCADE_INC_PATH
+LIBS *= -L$$OPENCASCADE_LIB_PATH
+
+win32 {
+    win32-msvc {
+        for(occlib, OPENCASCADE_LIBS) {
+            LIBS *= -l$$occlib
+            STATIC_FILES += $$OPENCASCADE_DLL_PATH/$${occlib}.dll
+        }
+    }
+}
+
+STATIC_BASE = $$OPENCASCADE_DLL_PATH
+STATIC_INSTALL_BASE = $$INSTALL_DATA_PATH

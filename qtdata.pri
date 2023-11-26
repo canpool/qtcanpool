@@ -12,7 +12,14 @@
 # used in custom compilers which just copy files
 defineReplace(stripStaticBase) {
 #    return($$relative_path($$1, $$STATIC_BASE))
-    return($$relative_path($$absolute_path($$1, $$OUT_PWD), $$STATIC_BASE))
+    static_file = $$absolute_path($$1, $$OUT_PWD)
+    match_string = $$find(static_file, $$STATIC_BASE)
+    equals(static_file, $$match_string) {
+        RET = $$relative_path($$static_file, $$STATIC_BASE)
+    } else {
+        RET = $$basename(static_file)
+    }
+    return($$RET)
 }
 
 # handle conditional copying based on STATIC_BASE compared to STATIC_OUTPUT_BASE
@@ -40,7 +47,7 @@ defineReplace(stripStaticBase) {
     }
 
     static.files = $$STATIC_FILES
-    static.base = $$STATIC_BASE
+#    static.base = $$STATIC_BASE
     static.path = $$STATIC_INSTALL_BASE
     INSTALLS += static
 }

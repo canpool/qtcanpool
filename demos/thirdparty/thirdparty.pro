@@ -9,4 +9,10 @@ win32 {
         SUBDIRS += \
             boostdemo
     }
+    win32-msvc {
+        exists($$PWD/occQt/occQt.pro) {
+            SUBDIRS += \
+                occQt
+        }
+    }
 }
