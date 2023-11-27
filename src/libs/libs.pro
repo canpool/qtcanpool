@@ -6,6 +6,7 @@ SUBDIRS =   \
     qcanpool \
     qxwidget \
     qxribbon \
+    qgood \
     qcustomplot
 
 lessThan(QT_MAJOR_VERSION, 6) {

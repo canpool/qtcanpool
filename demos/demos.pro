@@ -5,6 +5,7 @@ SUBDIRS = \
     helloworld \
     qcanpool \
     qxwidget \
+    qgood \
     plotdemo \
     qrcodedemo \
     controldemo \
