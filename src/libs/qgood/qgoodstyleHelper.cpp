@@ -6,6 +6,9 @@
 
 #ifdef _WIN32
 
+#include <windows.h>
+#include <shellapi.h>
+
 #ifdef NTDDI_VERSION
 #undef NTDDI_VERSION
 #endif
@@ -19,9 +22,10 @@
 
 #include "qgoodstyleHelper.h"
 #include <QLibrary>
+
+#ifdef QT_VERSION_QT5
 #include <QtWin>
-#include <shellapi.h>
-#include <windows.h>
+#endif
 
 QPixmap QGoodStyleHelper::winStandardPixmap(QStyle::StandardPixmap standardPixmap)
 {
