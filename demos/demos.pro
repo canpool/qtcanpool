@@ -6,7 +6,6 @@ SUBDIRS = \
     qcanpool \
     qxwidget \
     qgood \
-    qrcodedemo \
     misc \
 
 lessThan(QT_MAJOR_VERSION, 6) {

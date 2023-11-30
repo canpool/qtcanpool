@@ -1,4 +1,4 @@
-include(../../qtproject.pri)
+include(../../../qtproject.pri)
 
 QT       += core gui
 
