@@ -6,8 +6,10 @@
 
 #ifdef _WIN32
 
+#ifdef QT_VERSION_QT6
 #include <windows.h>
 #include <shellapi.h>
+#endif
 
 #ifdef NTDDI_VERSION
 #undef NTDDI_VERSION
@@ -19,6 +21,11 @@
 
 #define NTDDI_VERSION NTDDI_VISTA
 #define _WIN32_WINNT  _WIN32_WINNT_VISTA
+
+#ifdef QT_VERSION_QT5
+#include <windows.h>
+#include <shellapi.h>
+#endif
 
 #include "qgoodstyleHelper.h"
 #include <QLibrary>
