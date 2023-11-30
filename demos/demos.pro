@@ -8,7 +8,7 @@ SUBDIRS = \
     qgood \
     plotdemo \
     qrcodedemo \
-    controldemo \
+    misc \
 
 lessThan(QT_MAJOR_VERSION, 6) {
     SUBDIRS += qribbon
