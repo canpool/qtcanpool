@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS = \
-    controldemo
+    controldemo \
+    plotdemo \

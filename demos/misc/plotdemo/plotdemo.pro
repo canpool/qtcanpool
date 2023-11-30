@@ -1,7 +1,7 @@
 #
 #  QCustomPlot Plot Examples
 #
-include(../../qtproject.pri)
+include(../../../qtproject.pri)
 
 QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
