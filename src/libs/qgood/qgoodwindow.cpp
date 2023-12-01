@@ -2158,7 +2158,7 @@ void QGoodWindow::initGW()
     QMainWindow::move(0, 0);
 
     setProperty("_q_embedded_native_parent_handle", WId(m_hwnd));
-    QMainWindow::setWindowFlags(Qt::FramelessWindowHint);
+    QMainWindow::setWindowFlags(QMainWindow::windowFlags() | Qt::FramelessWindowHint);
 
     QEvent event(QEvent::EmbeddingControl);
     QApplication::sendEvent(this, &event);
