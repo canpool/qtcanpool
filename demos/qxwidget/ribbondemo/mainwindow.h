@@ -23,7 +23,7 @@ class MainWindow : public RibbonWindow
     Q_OBJECT
 public:
     enum RibbonThemeCustom {
-        Office2016BlueTheme = CustomTheme + 1,
+        Office2016BlueTheme = RibbonTheme::CustomTheme + 1,
     };
 public:
     MainWindow(QWidget *par = nullptr);

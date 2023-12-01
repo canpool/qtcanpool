@@ -6,6 +6,7 @@
 
 #include "qxribbon_global.h"
 #include <QMainWindow>
+#include "ribbontheme.h"
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -47,19 +48,12 @@ class QX_RIBBON_EXPORT RibbonWindow : public QMainWindow
     Q_OBJECT
     Q_PROPERTY(int ribbonTheme READ ribbonTheme WRITE setRibbonTheme)
 public:
-    enum RibbonTheme {
-        NormalTheme,
-        Office2013Theme,
-        WpsdarkTheme,
-        CustomTheme,
-    };
-    Q_ENUM(RibbonTheme)
-public:
     RibbonWindow(QWidget *parent = Q_NULLPTR, bool useRibbon = true);
     ~RibbonWindow() Q_DECL_OVERRIDE;
 
     RibbonBar *ribbonBar() const;
 
+    /** theme, see to RibbonTheme::ThemeStyle */
     void setRibbonTheme(int theme);
     int ribbonTheme() const;
 

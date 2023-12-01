@@ -927,9 +927,9 @@ void MainWindow::createRightButtonGroup()
     QAction *actionTheme = createAction(tr("theme"), ":/icon/res/theme.svg");
     RibbonMenu *menu = new RibbonMenu(tr("theme"), this);
     actionTheme->setMenu(menu);
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Normal")), RibbonWindow::NormalTheme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2013")), RibbonWindow::Office2013Theme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Wpsdark")), RibbonWindow::WpsdarkTheme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Normal")), RibbonTheme::NormalTheme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2013")), RibbonTheme::Office2013Theme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Wpsdark")), RibbonTheme::WpsdarkTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2016Blue")), MainWindow::Office2016BlueTheme));
     rightBar->addAction(actionTheme);
 
@@ -1159,7 +1159,7 @@ void MainWindow::onActionChangeThemeTriggered()
     if (action) {
         int theme = action->data().toInt();
         // 暗色系
-        if (theme == RibbonWindow::WpsdarkTheme || theme == MainWindow::Office2016BlueTheme) {
+        if (theme == RibbonTheme::WpsdarkTheme || theme == MainWindow::Office2016BlueTheme) {
             ribbonBar()->setPageContextCoverTab(false);
             ribbonBar()->setTabBarBaseLineColor(QColor("#456DA4")); // from qss file
         } else {

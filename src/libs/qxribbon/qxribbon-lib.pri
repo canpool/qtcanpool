@@ -38,6 +38,7 @@ HEADERS += \
     $$PWD/ribbonquickaccessbar_p.h \
     $$PWD/ribbonstyleoption.h \
     $$PWD/ribbontabbar.h \
+    $$PWD/ribbontheme.h \
     $$PWD/ribbonutils.h \
     $$PWD/ribbonwindow.h \
     $$PWD/windowbuttongroup.h \
@@ -67,6 +68,7 @@ SOURCES += \
     $$PWD/ribbonquickaccessbar.cpp \
     $$PWD/ribbonstyleoption.cpp \
     $$PWD/ribbontabbar.cpp \
+    $$PWD/ribbontheme.cpp \
     $$PWD/ribbonutils.cpp \
     $$PWD/ribbonwindow.cpp \
     $$PWD/windowbuttongroup.cpp

@@ -34,7 +34,7 @@ RibbonWindowPrivate::RibbonWindowPrivate()
     : m_ribbonBar(Q_NULLPTR)
     , m_windowButtonGroup(Q_NULLPTR)
     , m_framelessHelper(Q_NULLPTR)
-    , m_theme(RibbonWindow::Office2013Theme)
+    , m_theme(RibbonTheme::Office2013Theme)
     , m_useRibbon(true)
     , m_frameless(true)
 {
@@ -133,19 +133,7 @@ RibbonBar *RibbonWindow::ribbonBar() const
 void RibbonWindow::setRibbonTheme(int theme)
 {
     Q_D(RibbonWindow);
-    switch (theme) {
-    case Office2013Theme:
-        loadTheme(":/theme/res/office2013.css");
-        break;
-    case WpsdarkTheme:
-        loadTheme(":/theme/res/wpsdark.css");
-        break;
-    case NormalTheme:
-        loadTheme(":/theme/res/default.css");
-        break;
-    default:
-        break;
-    }
+    RibbonTheme::setTheme(theme, this);
     d->m_theme = theme;
 
     if (d->m_ribbonBar) {
@@ -283,13 +271,7 @@ bool RibbonWindow::event(QEvent *e)
 
 void RibbonWindow::loadTheme(const QString &themeFile)
 {
-    QFile file(themeFile);
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return;
-    }
-    setStyleSheet(QString::fromUtf8(file.readAll()));
-    file.close();
+    RibbonTheme::loadTheme(themeFile, this);
 }
 
 QX_RIBBON_END_NAMESPACE
