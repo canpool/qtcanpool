@@ -208,6 +208,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clearColor) : QMainWindo
     m_isCaptionButtonPressed = false;
     m_lastCaptionButtonHovered = -1;
     m_captionButtonPressed = -1;
+    m_captionClassNameList << "QWidget";
 
     m_hoverTimer = new QTimer(this);
     m_hoverTimer->setSingleShot(true);
@@ -2152,6 +2153,15 @@ bool QGoodWindow::nativeEvent(const QByteArray &eventType, void *message, qgoodi
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 
+#ifdef QGOOD_WINDOW_ENABLE
+void QGoodWindow::addCaptionClassName(const QString &name)
+{
+    if (!m_captionClassNameList.contains(name)) {
+        m_captionClassNameList.append(name);
+    }
+}
+#endif // QGOOD_WINDOW_ENABLE
+
 #ifdef Q_OS_WIN
 void QGoodWindow::initGW()
 {
@@ -3721,6 +3731,19 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
 #endif
         else if (m_titleBarMask.contains(cursor_pos_map))
             return HTNOWHERE;   // user title bar mask.
+        else {
+            QWidget *child = this->childAt(windowHandle()->mapFromGlobal(cursor_pos));
+            if (child) {
+                const char *cn = child->metaObject()->className();
+                foreach (const QString &name, m_captionClassNameList) {
+                    if (name.compare(cn) == 0) {
+                        // some classes in the title bar belong to the blank area
+                        return HTCAPTION;
+                    }
+                }
+                return HTNOWHERE;
+            }
+        }
     }
 
     // Hit test (HTTOPLEFT, ... HTBOTTOMRIGHT)

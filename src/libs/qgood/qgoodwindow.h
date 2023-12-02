@@ -199,8 +199,10 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
     bool nativeEvent(const QByteArray &eventType, void *message, qgoodintptr *result) override;
 
-private:
 #ifdef QGOOD_WINDOW_ENABLE
+public:
+    void addCaptionClassName(const QString &name);
+private:
 #ifdef Q_OS_WIN
     // Functions
     void initGW();
@@ -334,6 +336,7 @@ private:
     bool m_isCaptionButtonPressed;
     qintptr m_lastCaptionButtonHovered;
     qintptr m_captionButtonPressed;
+    QList<QString> m_captionClassNameList;
 #endif // QGOOD_WINDOW_ENABLE
 };
 
