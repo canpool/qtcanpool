@@ -2,8 +2,8 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS = \
-    ExampleMinimal \
-    ExampleMinimalWindow \
+    GoodMinimal \
+    GoodMinimalWindow \
     GoodPlayground \
     GoodShowCase \
     GoodShowCaseGL \
