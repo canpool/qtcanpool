@@ -5,7 +5,7 @@
  **/
 
 #include "qgooddialog.h"
-#include "qgoodwindow.h"
+#include "qgood/qgoodwindow.h"
 
 #ifdef Q_OS_MAC
 #include "macosnative.h"

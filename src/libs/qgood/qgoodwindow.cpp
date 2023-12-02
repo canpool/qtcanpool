@@ -499,8 +499,6 @@ Qt::WindowFlags QGoodWindow::windowFlags() const
 void QGoodWindow::setup()
 {
 #ifdef QGOOD_WINDOW_ENABLE
-    // Init resources
-    Q_INIT_RESOURCE(qgood);
 
 #ifdef Q_OS_LINUX
     qputenv("XDG_SESSION_TYPE", "xcb");

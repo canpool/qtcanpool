@@ -7,7 +7,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "qgood/qgoodcentralwidget.h"
+#include "qgoodbye/qgoodcentralwidget.h"
 #include "qgood/qgoodwindow.h"
 
 #include "glwidget.h"

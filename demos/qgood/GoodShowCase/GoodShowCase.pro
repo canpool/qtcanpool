@@ -2,7 +2,7 @@
 # Copyright (C) 2021-2023 Antonio Dias (https://github.com/antonypro)
 # SPDX-License-Identifier: MIT
 
-QTC_LIB_DEPENDS += qgood
+QTC_LIB_DEPENDS += qgood qgoodbye
 include(../../../qtproject.pri)
 
 QT += core gui widgets

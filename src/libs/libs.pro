@@ -7,6 +7,7 @@ SUBDIRS =   \
     qxwidget \
     qxribbon \
     qgood \
+    qgoodbye \
     qcustomplot
 
 lessThan(QT_MAJOR_VERSION, 6) {

@@ -11,7 +11,7 @@
 #include "qgoodiconwidget.h"
 #include "qgoodstateholder.h"
 #include "qgoodtitlewidget.h"
-#include "qgoodwindow.h"
+#include "qgood/qgoodwindow.h"
 
 #include <QFrame>
 

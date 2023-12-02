@@ -7,10 +7,10 @@
 #ifndef QGOODSTATEHOLDER
 #define QGOODSTATEHOLDER
 
-#include "qgood_global.h"
+#include "qgoodbye_global.h"
 #include <QObject>
 
-class QGOOD_SHARED_EXPORT QGoodStateHolder : public QObject
+class QGOODBYE_SHARED_EXPORT QGoodStateHolder : public QObject
 {
     Q_OBJECT
 public:

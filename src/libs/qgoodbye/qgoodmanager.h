@@ -5,9 +5,9 @@
 #ifndef QGOODMANAGER_H
 #define QGOODMANAGER_H
 
-#include "qgood_global.h"
+#include "qgoodbye_global.h"
 
-class QGOOD_SHARED_EXPORT QGoodManager
+class QGOODBYE_SHARED_EXPORT QGoodManager
 {
 public:
     /** Set the app theme to the dark theme. */

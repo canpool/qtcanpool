@@ -18,8 +18,8 @@
 #endif
 
 #include "mainwindow.h"
-#include "qgood/qgoodmanager.h"
-#include "qgood/qgoodstateholder.h"
+#include "qgoodbye/qgoodmanager.h"
+#include "qgoodbye/qgoodstateholder.h"
 
 #include <QCloseEvent>
 #include <QGuiApplication>

@@ -5,8 +5,8 @@
  **/
 
 #include "mainwindow.h"
-#include "qgood/qgoodmanager.h"
-#include "qgood/qgoodstateholder.h"
+#include "qgoodbye/qgoodmanager.h"
+#include "qgoodbye/qgoodstateholder.h"
 
 MainWindow::MainWindow(QWidget *parent) : QGoodWindow(parent, QColor("#303030"))
 {

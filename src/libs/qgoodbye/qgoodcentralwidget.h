@@ -7,8 +7,8 @@
 #ifndef QGOODCENTRALWIDGET_H
 #define QGOODCENTRALWIDGET_H
 
-#include "qgood_global.h"
-#include "qgoodwindow.h"
+#include "qgoodbye_global.h"
+#include "qgood/qgoodwindow.h"
 
 #ifdef QGOOD_WINDOW_ENABLE
 class QFrame;
@@ -17,7 +17,7 @@ class QGoodTitleBar;
 #endif
 
 /** **QGoodCentralWidget** class contains the public API's to control the behavior of **QGoodWindow**. */
-class QGOOD_SHARED_EXPORT QGoodCentralWidget : public QWidget
+class QGOODBYE_SHARED_EXPORT QGoodCentralWidget : public QWidget
 {
     Q_OBJECT
 public:

@@ -1,6 +1,6 @@
 VERSION = 0.1.0
 
-QT += core gui widgets svg
+QT += core gui widgets
 
 win32:equals(QT_MAJOR_VERSION, 5){
     QT += winextras
@@ -18,35 +18,12 @@ DEFINES -= \
     "QT_DISABLE_DEPRECATED_BEFORE=0x050900"
 
 SOURCES += \
-    $$PWD/qgoodcaptionbutton.cpp \
-    $$PWD/qgooddialog.cpp \
-    $$PWD/qgoodiconwidget.cpp \
-    $$PWD/qgoodmanager.cpp \
-    $$PWD/qgoodstyle.cpp \
-    $$PWD/qgoodstyleHelper.cpp \
-    $$PWD/qgoodtitlebar.cpp \
-    $$PWD/qgoodtitlewidget.cpp \
-    $$PWD/qgoodwindow.cpp \
-    $$PWD/qgoodstateholder.cpp \
-    $$PWD/qgoodcentralwidget.cpp
+    $$PWD/qgoodwindow.cpp
 
 HEADERS += \
     $$PWD/qgood_global.h \
-    $$PWD/qgoodcaptionbutton.h \
-    $$PWD/qgooddialog.h \
-    $$PWD/qgoodiconwidget.h \
-    $$PWD/qgoodmanager.h \
-    $$PWD/qgoodstyle.h \
-    $$PWD/qgoodstyleHelper.h \
-    $$PWD/qgoodtitlebar.h \
-    $$PWD/qgoodtitlewidget.h \
     $$PWD/qgoodwindow_p.h \
-    $$PWD/qgoodwindow.h \
-    $$PWD/qgoodstateholder.h \
-    $$PWD/qgoodcentralwidget.h
-
-RESOURCES += \
-    $$PWD/qgood.qrc
+    $$PWD/qgoodwindow.h
 
 INCLUDEPATH += $$PWD
 
