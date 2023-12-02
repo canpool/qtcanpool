@@ -84,18 +84,14 @@ bool RibbonCustomizeData::isValid() const
 }
 
 /**
- * @brief 应用RibbonCustomizeData到RibbonWindow
- * @param m
+ * @brief 应用RibbonCustomizeData到RibbonBar
+ * @param bar
  * @return 如果应用失败，返回false,如果actionType==UnknowActionType直接返回false
  */
-bool RibbonCustomizeData::apply(RibbonWindow *m)
+bool RibbonCustomizeData::apply(RibbonBar *bar)
 {
     if (customized) {
         return true;
-    }
-    RibbonBar *bar = m->ribbonBar();
-    if (Q_NULLPTR == bar) {
-        return false;
     }
     switch (actionType()) {
     case UnknowActionType:

@@ -14,7 +14,7 @@ QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonActionsManager;
 class RibbonCustomizeDialogUi;
-class RibbonWindow;
+class RibbonBar;
 
 /**
  * @brief RibbonCustomizeWidget 的对话框封装
@@ -30,7 +30,7 @@ class QX_RIBBON_EXPORT RibbonCustomizeDialog : public QDialog
 {
     Q_OBJECT
 public:
-    RibbonCustomizeDialog(RibbonWindow *ribbonWindow, QWidget *p = Q_NULLPTR,
+    RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p = Q_NULLPTR,
                           Qt::WindowFlags f = Qt::WindowFlags());
 
     // 设置action管理器
@@ -59,18 +59,18 @@ private:
 /**
  * @brief 直接加载xml自定义ribbon配置文件用于ribbon的自定义显示
  * @param filePath xml配置文件
- * @param w 主窗体
+ * @param bar
  * @param mgr action管理器
  * @return 成功返回true
  * @note 重复加载一个配置文件会发生异常，为了避免此类事件发生，一般通过一个变量保证只加载一次，如：
  * @code
  * static bool has_call = false;
  * if (!has_call) {
- *     has_call = QxRibbonCustomizeApplyFromXmlFile("customize.xml", this, m_actMgr);
+ *     has_call = QxRibbonCustomizeApplyFromXmlFile("customize.xml", this->ribbonBar(), m_actMgr);
  * }
  * @endcode
  */
-bool QX_RIBBON_EXPORT QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonWindow *w,
+bool QX_RIBBON_EXPORT QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonBar *bar,
                                                         RibbonActionsManager *mgr);
 
 QX_RIBBON_END_NAMESPACE

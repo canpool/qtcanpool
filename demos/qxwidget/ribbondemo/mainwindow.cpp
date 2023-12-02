@@ -960,19 +960,20 @@ void MainWindow::createApplicationButton()
 
 void MainWindow::addSomeOtherAction()
 {
+    RibbonBar *bar = this->ribbonBar();
     // 添加其他的action，这些action并不在ribbon管理范围，主要用于RibbonCustomizeWidget自定义用
-    QAction *acttext1 = new QAction(tr("text action1"), this);
-    QAction *acttext2 = new QAction(tr("text action2"), this);
-    QAction *acttext3 = new QAction(tr("text action3"), this);
-    QAction *acttext4 = new QAction(tr("text action4"), this);
-    QAction *acttext5 = new QAction(tr("text action5"), this);
+    QAction *acttext1 = new QAction(tr("text action1"), bar);
+    QAction *acttext2 = new QAction(tr("text action2"), bar);
+    QAction *acttext3 = new QAction(tr("text action3"), bar);
+    QAction *acttext4 = new QAction(tr("text action4"), bar);
+    QAction *acttext5 = new QAction(tr("text action5"), bar);
 
-    QAction *actIcon1 = new QAction(QIcon(":/icon/res/file.svg"), tr("action with icon"), this);
+    QAction *actIcon1 = new QAction(QIcon(":/icon/res/file.svg"), tr("action with icon"), bar);
 
     m_actionTagText = RibbonActionsManager::UserDefineActionTag + 1;
     m_actionTagWithIcon = RibbonActionsManager::UserDefineActionTag + 2;
 
-    m_actMgr = new RibbonActionsManager(this);   // 申明过程已经自动注册所有action
+    m_actMgr = new RibbonActionsManager(bar);   // 申明过程已经自动注册所有action
 
     // 以下注册特别的action
     m_actMgr->registeAction(acttext1, RibbonActionsManager::CommonlyUsedActionTag);
@@ -1060,7 +1061,7 @@ void MainWindow::onStyleClicked(int id)
 void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
 {
     Q_UNUSED(b);
-    RibbonCustomizeDialog dlg(this, this);
+    RibbonCustomizeDialog dlg(this->ribbonBar(), this);
     dlg.setupActionsManager(m_actMgr);
     dlg.fromXml("customize.xml");
     if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
@@ -1140,7 +1141,7 @@ void MainWindow::onActionLoadCustomizeXmlFileTriggered()
     // 只能调用一次
     static bool has_call = false;
     if (!has_call) {
-        has_call = QxRibbonCustomizeApplyFromXmlFile("customize.xml", this, m_actMgr);
+        has_call = QxRibbonCustomizeApplyFromXmlFile("customize.xml", this->ribbonBar(), m_actMgr);
     }
 }
 

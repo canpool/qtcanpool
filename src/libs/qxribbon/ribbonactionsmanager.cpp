@@ -4,7 +4,6 @@
 **/
 #include "ribbonactionsmanager.h"
 #include "ribbonbar.h"
-#include "ribbonwindow.h"
 
 #include <QDebug>
 #include <QHash>
@@ -43,7 +42,7 @@ void RibbonActionsManagerPrivate::clear()
     m_sale = 0;
 }
 
-RibbonActionsManager::RibbonActionsManager(RibbonWindow *p)
+RibbonActionsManager::RibbonActionsManager(RibbonBar *p)
     : QObject(p)
 {
     QX_INIT_PRIVATE(RibbonActionsManager);
@@ -299,40 +298,33 @@ QList<QAction *> RibbonActionsManager::allActions() const
 }
 
 /**
- * @brief 自动加载RibbonWindow的action
- * 此函数会遍历@ref RibbonWindow 下的所有子object，找到action注册，
+ * @brief 自动加载RibbonBar的action
+ * 此函数会遍历@ref RibbonBar 下的所有子object，找到action注册，
  * 并会遍历所有@ref RibbonPage,把RibbonPage下的action按RibbonPage的title name进行分类
  *
  * 此函数会把所有page下的action生成tag并注册，返回的QMap<int, RibbonPage *>是记录了page对应的tag
  *
- * 此函数还会把RibbonWindow下面的action，但不在任何一个page下的作为NotInRibbonPageTag标签注册，默认名字会赋予not
+ * 此函数还会把RibbonBar下面的action，但不在任何一个page下的作为NotInRibbonPageTag标签注册，默认名字会赋予not
  * in ribbon， 可以通过@ref setTagName 改变
  *
- * @param w
+ * @param bar
  * @return
  * @note 此函数的调用最好在page设置了标题后调用，因为会以page的标题作为标签的命名
  */
-QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonWindow *w)
+QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
 {
     Q_D(RibbonActionsManager);
     QMap<int, RibbonPage *> res;
-    // 先遍历RibbonWindow下的所有子对象，把所有action找到
-    QSet<QAction *> mainwindowActions;
+    // 先遍历RibbonBar下的所有子对象，把所有action找到
+    QSet<QAction *> ribbonBarActions;
 
-    for (QObject *o : w->children()) {
+    for (QObject *o : bar->children()) {
         if (QAction *a = qobject_cast<QAction *>(o)) {
             // 说明是action
             if (!a->objectName().isEmpty()) {
-                mainwindowActions.insert(a);
+                ribbonBarActions.insert(a);
             }
         }
-    }
-    // 开始遍历每个page，加入action
-    RibbonBar *bar = w->ribbonBar();
-
-    if (Q_NULLPTR == bar) {
-        // 非ribbon模式，直接退出
-        return res;
     }
     QSet<QAction *> pageActions;
     QList<RibbonPage *> pages = bar->pages();
@@ -348,7 +340,7 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonWindow *w
         ++tag;
     }
     // 找到不在功能区的actions
-    QSet<QAction *> notinpage = mainwindowActions - pageActions;
+    QSet<QAction *> notinpage = ribbonBarActions - pageActions;
 
     for (QAction *a : notinpage) {
         if (!a->objectName().isEmpty()) {
@@ -425,9 +417,9 @@ void RibbonActionsManager::clear()
     d->clear();
 }
 
-RibbonWindow *RibbonActionsManager::ribbonWindow() const
+RibbonBar *RibbonActionsManager::ribbonBar() const
 {
-    return qobject_cast<RibbonWindow *>(parent());
+    return qobject_cast<RibbonBar *>(parent());
 }
 
 /**

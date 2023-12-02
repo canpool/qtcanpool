@@ -131,12 +131,12 @@ QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml
     return res;
 }
 
-int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonWindow *w)
+int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonBar *bar)
 {
     int c = 0;
 
     for (RibbonCustomizeData &d : cds) {
-        if (d.apply(w)) {
+        if (d.apply(bar)) {
             ++c;
         }
     }
@@ -406,7 +406,7 @@ public:
 public:
     RibbonCustomizeWidget *q;
     RibbonCustomizeWidget::RibbonTreeShowType m_showType;   ///< 显示类型
-    RibbonWindow *m_ribbonWindow;                       ///< 保存RibbonWindow的指针
+    RibbonBar *m_ribbonBar;                             ///< 保存RibbonBar的指针
     RibbonActionsManager *m_actionMgr;                  ///< action管理器
     RibbonActionsManagerModel *m_acionModel;            ///< action管理器对应的model
     QStandardItemModel *m_ribbonModel;                  ///< 用于生成ribbon的树
@@ -420,7 +420,7 @@ public:
 RibbonCustomizeWidgetPrivate::RibbonCustomizeWidgetPrivate(RibbonCustomizeWidget *p)
     : q(p)
     , m_showType(RibbonCustomizeWidget::ShowAllPage)
-    , m_ribbonWindow(Q_NULLPTR)
+    , m_ribbonBar(Q_NULLPTR)
     , m_actionMgr(Q_NULLPTR)
     , m_acionModel(new RibbonActionsManagerModel(p))
     , m_ribbonModel(new QStandardItemModel(p))
@@ -431,11 +431,11 @@ RibbonCustomizeWidgetPrivate::RibbonCustomizeWidgetPrivate(RibbonCustomizeWidget
 
 void RibbonCustomizeWidgetPrivate::updateModel()
 {
-    if (m_ribbonWindow == Q_NULLPTR) {
+    if (m_ribbonBar == Q_NULLPTR) {
         return;
     }
     m_ribbonModel->clear();
-    RibbonBar *ribbonbar = m_ribbonWindow->ribbonBar();
+    RibbonBar *ribbonbar = m_ribbonBar;
     QList<RibbonPage *> pages = ribbonbar->pages();
 
     for (RibbonPage *page : qAsConst(pages)) {
@@ -642,14 +642,14 @@ QAction *RibbonCustomizeWidgetPrivate::itemToAction(QStandardItem *item) const
 
 /**
  * @brief RibbonCustomizeWidget::RibbonCustomizeWidget
- * @param ribbonWindow 传入需要管理的RibbonWindow指针
- * @param parent 用于界面生成的parent，可以和RibbonWindow一样
+ * @param ribbonBar 传入需要管理的ribbonBar指针
+ * @param parent 用于界面生成的parent
  * @param f 同QWidget::QWidget的第二个参数
  */
-RibbonCustomizeWidget::RibbonCustomizeWidget(RibbonWindow *ribbonWindow, QWidget *parent, Qt::WindowFlags f)
+RibbonCustomizeWidget::RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent, Qt::WindowFlags f)
     : QWidget(parent, f), ui(new RibbonCustomizeWidgetUi), d(new RibbonCustomizeWidgetPrivate(this))
 {
-    d->m_ribbonWindow = ribbonWindow;
+    d->m_ribbonBar = ribbonBar;
 
     ui->setupUi(this);
     ui->listViewSelect->setModel(d->m_acionModel);
@@ -734,18 +734,15 @@ const QStandardItemModel *RibbonCustomizeWidget::model() const
 void RibbonCustomizeWidget::updateModel()
 {
     updateModel(ui->radioButtonAllPage->isChecked() ? ShowAllPage : ShowMainPage);
-    if (d->m_ribbonWindow) {
-        RibbonBar *bar = d->m_ribbonWindow->ribbonBar();
-        if (bar) {
-            ui->comboBoxActionProportion->clear();
-            if (bar->isTwoRowStyle()) {
-                ui->comboBoxActionProportion->addItem(tr("large"), RibbonGroup::Large);
-                ui->comboBoxActionProportion->addItem(tr("small"), RibbonGroup::Small);
-            } else {
-                ui->comboBoxActionProportion->addItem(tr("large"), RibbonGroup::Large);
-                ui->comboBoxActionProportion->addItem(tr("medium"), RibbonGroup::Medium);
-                ui->comboBoxActionProportion->addItem(tr("small"), RibbonGroup::Small);
-            }
+    if (d->m_ribbonBar) {
+        ui->comboBoxActionProportion->clear();
+        if (d->m_ribbonBar->isTwoRowStyle()) {
+            ui->comboBoxActionProportion->addItem(tr("large"), RibbonGroup::Large);
+            ui->comboBoxActionProportion->addItem(tr("small"), RibbonGroup::Small);
+        } else {
+            ui->comboBoxActionProportion->addItem(tr("large"), RibbonGroup::Large);
+            ui->comboBoxActionProportion->addItem(tr("medium"), RibbonGroup::Medium);
+            ui->comboBoxActionProportion->addItem(tr("small"), RibbonGroup::Small);
         }
     }
 }
@@ -775,7 +772,7 @@ void RibbonCustomizeWidget::updateModel(RibbonTreeShowType type)
  */
 bool RibbonCustomizeWidget::applys()
 {
-    int res = QxRibbonCustomizeDataApply(d->m_customizeDatas, d->m_ribbonWindow);
+    int res = QxRibbonCustomizeDataApply(d->m_customizeDatas, d->m_ribbonBar);
     simplify();
     return (res > 0);
 }
@@ -907,14 +904,14 @@ void RibbonCustomizeWidget::fromXml(const QString &xmlpath)
  * }
  * @endcode
  * @param xml
- * @param w
+ * @param bar
  * @return 所有设定有一个应用成功都会返回true
  * @see QxRibbonCustomizeDataGetFromXml QxRibbonCustomizeDataApply QxRibbonCustomizeApplyFromXmlFile
  */
-bool RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml, RibbonWindow *w, RibbonActionsManager *mgr)
+bool RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml, RibbonBar *bar, RibbonActionsManager *mgr)
 {
     QList<RibbonCustomizeData> cds = QxRibbonCustomizeDataGetFromXml(xml, mgr);
-    return (QxRibbonCustomizeDataApply(cds, w) > 0);
+    return (QxRibbonCustomizeDataApply(cds, bar) > 0);
 }
 
 /**

@@ -12,7 +12,7 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-class RibbonWindow;
+class RibbonBar;
 
 /**
  * @brief 记录所有自定义操作的数据类
@@ -50,7 +50,7 @@ public:
     bool isValid() const;
 
     // 应用RibbonCustomizeData
-    bool apply(RibbonWindow *m);
+    bool apply(RibbonBar *bar);
 
     // 获取actionsmanager指针
     RibbonActionsManager *actionsManager();

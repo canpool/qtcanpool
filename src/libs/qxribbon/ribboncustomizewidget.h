@@ -22,7 +22,7 @@ QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonCustomizeWidgetUi;
 class RibbonCustomizeWidgetPrivate;
-class RibbonWindow;
+class RibbonBar;
 
 /**
  * @brief 自定义界面窗口
@@ -50,7 +50,7 @@ public:
         CustomizeObjNameRole,   ///< 记录了临时的自定义内容的obj名 QString
     };
 public:
-    RibbonCustomizeWidget(RibbonWindow *ribbonWindow, QWidget *parent = Q_NULLPTR,
+    RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent = Q_NULLPTR,
                            Qt::WindowFlags f = Qt::WindowFlags());
     ~RibbonCustomizeWidget();
 
@@ -81,7 +81,7 @@ public:
     void fromXml(const QString &xmlpath);
 
     // 应用xml配置，可以结合customize_datas_from_xml和customize_datas_apply函数
-    static bool fromXml(QXmlStreamReader *xml, RibbonWindow *w, RibbonActionsManager *mgr);
+    static bool fromXml(QXmlStreamReader *xml, RibbonBar *bar, RibbonActionsManager *mgr);
 
     // 清除所有动作，在执行applys函数后，如果要继续调用，应该clear，否则会导致异常
     void clear();
@@ -165,6 +165,6 @@ QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml
  * @param w RibbonWindow指针
  * @return 成功应用的个数
  */
-int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonWindow *w);
+int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonBar *bar);
 
 QX_RIBBON_END_NAMESPACE

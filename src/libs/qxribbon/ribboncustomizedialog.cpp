@@ -27,7 +27,7 @@ public:
     QPushButton *pushButtonApply;
     QSpacerItem *spacerItemleft;
 
-    void setupUi(RibbonWindow *ribbonWindow, QWidget *customizeDialog)
+    void setupUi(RibbonBar *ribbonBar, QWidget *customizeDialog)
     {
         if (customizeDialog->objectName().isEmpty()) {
             customizeDialog->setObjectName(QStringLiteral("RibbonCustomizeDialog"));
@@ -36,7 +36,7 @@ public:
         verticalLayoutMain = new QVBoxLayout(customizeDialog);
         verticalLayoutMain->setObjectName(QStringLiteral("verticalLayoutMain"));
 
-        customWidget = new RibbonCustomizeWidget(ribbonWindow, customizeDialog);
+        customWidget = new RibbonCustomizeWidget(ribbonBar, customizeDialog);
         customWidget->setObjectName(QStringLiteral("customWidget"));
         verticalLayoutMain->addWidget(customWidget);
 
@@ -69,10 +69,10 @@ public:
 
 ////////////////////////////////////////////////////////////////////
 
-RibbonCustomizeDialog::RibbonCustomizeDialog(RibbonWindow *ribbonWindow, QWidget *p, Qt::WindowFlags f)
+RibbonCustomizeDialog::RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p, Qt::WindowFlags f)
     : QDialog(p, f), ui(new RibbonCustomizeDialogUi)
 {
-    ui->setupUi(ribbonWindow, this);
+    ui->setupUi(ribbonBar, this);
     initConnection();
 }
 
@@ -158,7 +158,7 @@ void RibbonCustomizeDialog::fromXml(const QString &xmlpath)
     ui->customWidget->fromXml(xmlpath);
 }
 
-bool QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonWindow *w, RibbonActionsManager *mgr)
+bool QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonBar *bar, RibbonActionsManager *mgr)
 {
     QFile f(filePath);
 
@@ -168,7 +168,7 @@ bool QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonWindow *w,
     f.seek(0);
     QXmlStreamReader xml(&f);
 
-    return RibbonCustomizeWidget::fromXml(&xml, w, mgr);
+    return RibbonCustomizeWidget::fromXml(&xml, bar, mgr);
 }
 
 QX_RIBBON_END_NAMESPACE
