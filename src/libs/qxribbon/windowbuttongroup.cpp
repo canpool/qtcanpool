@@ -32,6 +32,7 @@ WindowButtonGroupPrivate::WindowButtonGroupPrivate()
     , m_maxStretch(3)
     , m_minStretch(3)
     , m_iconScale(0.5)
+    , m_signalEnabled(false)
 {
 }
 
