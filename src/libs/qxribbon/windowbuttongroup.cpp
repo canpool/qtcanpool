@@ -183,19 +183,29 @@ void WindowButtonGroupPrivate::buttonClicked()
 {
     Q_Q(WindowButtonGroup);
     WindowButton *button = qobject_cast<WindowButton *>(sender());
-    QWidget *pw = q->parentWidget();
 
-    if (pw) {
+    if (m_signalEnabled) {
         if (button == m_minimizeButton) {
-            pw->showMinimized();
+            emit q->buttonMinimizeClicked();
         } else if (button == m_maximizeButton) {
-            if (pw->isMaximized()) {
-                pw->showNormal();
-            } else {
-                pw->showMaximized();
-            }
+            emit q->buttonMaximzieClicked();
         } else if (button == m_closeButton) {
-            pw->close();
+            emit q->buttonCloseClicked();
+        }
+    } else {
+        QWidget *pw = q->parentWidget();
+        if (pw) {
+            if (button == m_minimizeButton) {
+                pw->showMinimized();
+            } else if (button == m_maximizeButton) {
+                if (pw->isMaximized()) {
+                    pw->showNormal();
+                } else {
+                    pw->showMaximized();
+                }
+            } else if (button == m_closeButton) {
+                pw->close();
+            }
         }
     }
 }
@@ -261,6 +271,23 @@ QSize WindowButtonGroup::sizeHint() const
 {
     Q_D(const WindowButtonGroup);
     return d->sizeHint();
+}
+
+/**
+ * If the signal is disabled, the window button's signal
+ * will be directly applied to the parent window; otherwise,
+ * only the button signal will be sent
+ */
+bool WindowButtonGroup::signalIsEnabled() const
+{
+    Q_D(const WindowButtonGroup);
+    return d->m_signalEnabled;
+}
+
+void WindowButtonGroup::setSignalEnabled(bool enable)
+{
+    Q_D(WindowButtonGroup);
+    d->m_signalEnabled = enable;
 }
 
 bool WindowButtonGroup::eventFilter(QObject *watched, QEvent *e)

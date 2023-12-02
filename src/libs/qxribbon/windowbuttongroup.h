@@ -25,6 +25,15 @@ public:
     void setWindowStates(Qt::WindowStates s);
 
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+
+    /** default is disabled */
+    bool signalIsEnabled() const;
+public Q_SLOTS:
+    void setSignalEnabled(bool enable);
+Q_SIGNALS:
+    void buttonMinimizeClicked();
+    void buttonMaximzieClicked();
+    void buttonCloseClicked();
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *e) Q_DECL_OVERRIDE;
     virtual void parentResize();
