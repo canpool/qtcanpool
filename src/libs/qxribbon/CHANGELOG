@@ -1,0 +1,35 @@
+0.8.0-rc
+---
+Feature
+- Add RibbonTheme class to support custom ribbon window
+
+Interface
+- Change the dependency of modules from RibbonWindow to RibbonBar
+- Add button clicked signals in WindowButtonGroup to support custom ribbon window
+- Export WindowButtonGroup
+
+
+0.7.0
+---
+Interface
+- Optimize WindowButtonGroup and rename WindowToolButton to WindowButton
+- Merge QuickAccessBar to RibbonQuickAccessBar
+
+Other
+- Rename png files
+- Move ribbon component from qxwidget to qxribbon
+
+
+0.6.0
+---
+Feature
+- Add QuickAccessBar
+
+Other
+- Drop Qx prefix and rename to lower case for files
+- Add QxRibbon to qxwidget
+
+
+0.5.x
+---
+- See to https://gitee.com/icanpool/QxRibbon
