@@ -1,3 +1,4 @@
+QTC_LIB_DEPENDS += qgood qxribbon qxwidget
 include(../../../qtproject.pri)
 
 QT       += core gui
@@ -16,19 +17,17 @@ DESTDIR = $$IDE_APP_PATH
 
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
-# lib
-LIBS *= -l$$qtLibraryNameVersion(qxwidget, 0) \
-        -l$$qtLibraryNameVersion(qxribbon, 0)
-
 SOURCES += \
     aboutdialog.cpp \
     editablecontainer.cpp \
+    goodribbonwindow.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     aboutdialog.h \
     editablecontainer.h \
+    goodribbonwindow.h \
     mainwindow.h
 
 # Default rules for deployment.

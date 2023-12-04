@@ -1,7 +1,16 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
+#define QXRIBBON_USE_GOODWINDOW
+
+#ifdef QXRIBBON_USE_GOODWINDOW
+#include "goodribbonwindow.h"
+#define RibbonMainWindow GoodRibbonWindow
+#else
 #include "qxribbon/ribbonwindow.h"
+#define RibbonMainWindow RibbonWindow
+#endif
 
 class QTextEdit;
 class QActionGroup;
@@ -18,7 +27,7 @@ QX_RIBBON_END_NAMESPACE
 
 QX_RIBBON_USE_NAMESPACE
 
-class MainWindow : public RibbonWindow
+class MainWindow : public RibbonMainWindow
 {
     Q_OBJECT
 public:

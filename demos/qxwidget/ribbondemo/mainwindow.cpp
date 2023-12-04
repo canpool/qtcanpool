@@ -69,7 +69,7 @@ QX_WIDGET_USE_NAMESPACE
 #define QXRIBBON_TEST_CUSTOMIZE_APPBTN  1
 
 MainWindow::MainWindow(QWidget *par)
-    : RibbonWindow(par)
+    : RibbonMainWindow(par)
     , m_customizeWidget(nullptr)
     , m_themeGroup(nullptr)
 {
@@ -102,7 +102,7 @@ void MainWindow::setRibbonTheme(int theme)
     default:
         break;
     }
-    RibbonWindow::setRibbonTheme(theme);
+    RibbonMainWindow::setRibbonTheme(theme);
 }
 
 void MainWindow::createCentralWidget()
@@ -247,7 +247,10 @@ void MainWindow::createPageHome()
             &MainWindow::onStyleClicked);
 #endif
 
-    QCheckBox *cb = new QCheckBox();
+    QCheckBox *cb = nullptr;
+
+#ifndef QXRIBBON_USE_GOODWINDOW
+    cb = new QCheckBox();
     cb->setObjectName(QStringLiteral("use frameless"));
     cb->setText(tr("use frameless"));
     cb->setWindowTitle(cb->text());
@@ -257,6 +260,7 @@ void MainWindow::createPageHome()
         this->setFrameless(checked);
     });
     QCheckBox *framelessCB = cb;
+#endif
 
     cb = new QCheckBox();
     cb->setObjectName(QStringLiteral("left QAB in wps style"));
@@ -288,14 +292,20 @@ void MainWindow::createPageHome()
     cb->setWindowTitle(cb->text());
     cb->setChecked(false);
     groupStyle->addSmallWidget(cb);
+#ifndef QXRIBBON_USE_GOODWINDOW
     connect(cb, &QCheckBox::clicked, this, [this, framelessCB](bool checked) {
+#else
+    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
+#endif
         if (checked) {
             this->showFullScreen();
         } else {
             this->showNormal();
         }
+#ifndef QXRIBBON_USE_GOODWINDOW
         // FIXME: 全屏显示时，如果切换有边框和无边框会影响全屏显示，所以当全屏显示时，暂时先禁止有无边框切换
         framelessCB->setDisabled(checked);
+#endif
     });
 
     RibbonGroup *groupToolButtonStyle = page->addGroup(tr("ribbon toolbutton style"));
