@@ -265,6 +265,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clearColor) : QMainWindo
     m_selfGeneratedCloseEvent = false;
     m_selfGeneratedShowEvent = false;
     m_selfGeneratedResizeEvent = false;
+    m_blockChildResizeEvent = false;
 
     HINSTANCE hInstance = GetModuleHandleW(nullptr);
     HWND hWndParent = nullptr;
@@ -1502,7 +1503,7 @@ bool QGoodWindow::event(QEvent *event)
         const QSize mw_size = m_mainWindow->size();
 
         if (current_size != mw_size)
-            resize(mw_size);
+             resize(mw_size);
 
         break;
     }
@@ -1693,9 +1694,11 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
                 break;
             }
             case QEvent::Resize: {
-                QTimer::singleShot(0, this, [=] {
-                    moveCenterWindow(widget);
-                });
+                if (!m_blockChildResizeEvent) {
+                    QTimer::singleShot(0, this, [=] {
+                        moveCenterWindow(widget);
+                    });
+                }
 
                 break;
             }
@@ -3214,10 +3217,12 @@ void QGoodWindow::moveCenterWindow(QWidget *widget)
         window_rect.moveBottom(qMin(window_rect.bottom(), screen_rect.bottom() - border_width));
     }
 
+    m_blockChildResizeEvent = true;
     if (childGw)
         childGw->setGeometry(window_rect);
     else
         widget->setGeometry(window_rect);
+    m_blockChildResizeEvent = false;
 }
 
 bool QGoodWindow::winButtonHover(qintptr button)
