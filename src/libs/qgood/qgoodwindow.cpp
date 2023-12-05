@@ -1095,6 +1095,9 @@ void QGoodWindow::showFullScreen()
     m_windowState = Qt::WindowFullScreen;
 
     ShowWindow(m_hwnd, SW_SHOWNORMAL);
+    if (m_normalRect.isNull()) {
+        m_normalRect = QMainWindow::normalGeometry();
+    }
 
     SetWindowLongW(m_hwnd, GWL_STYLE, GetWindowLongW(m_hwnd, GWL_STYLE) & ~WS_OVERLAPPEDWINDOW);
 
@@ -1113,7 +1116,7 @@ void QGoodWindow::showFullScreen()
     screen_geom.setHeight(monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top);
 
     SetWindowPos(m_hwnd, nullptr, screen_geom.x(), screen_geom.y(), screen_geom.width(), screen_geom.height(),
-                 SWP_NOACTIVATE);
+                 SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
     QRect window_rect = rect();
 
