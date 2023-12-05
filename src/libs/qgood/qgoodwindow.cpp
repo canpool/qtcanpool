@@ -1094,7 +1094,9 @@ void QGoodWindow::showFullScreen()
 
     m_windowState = Qt::WindowFullScreen;
 
-    ShowWindow(m_hwnd, SW_SHOWNORMAL);
+    if (isHidden()) {
+        ShowWindow(m_hwnd, SW_SHOWNORMAL);
+    }
     if (m_normalRect.isNull()) {
         m_normalRect = QMainWindow::normalGeometry();
     }
