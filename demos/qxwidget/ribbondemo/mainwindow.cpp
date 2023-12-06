@@ -307,6 +307,9 @@ void MainWindow::createPageHome()
         framelessCB->setDisabled(checked);
 #endif
     });
+    connect(this, &MainWindow::windowStateChanged, cb, [cb](Qt::WindowStates s) {
+        cb->setChecked(s.testFlag(Qt::WindowFullScreen));
+    });
 
     RibbonGroup *groupToolButtonStyle = page->addGroup(tr("ribbon toolbutton style"));
 

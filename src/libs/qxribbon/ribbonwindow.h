@@ -66,6 +66,8 @@ public:
 
     void setMenuWidget(QWidget *menuBar);
     void setMenuBar(QMenuBar *menuBar);
+signals:
+    void windowStateChanged(Qt::WindowStates state);
 protected:
     void loadTheme(const QString &themeFile);
     virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;

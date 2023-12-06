@@ -179,8 +179,8 @@ bool GoodRibbonWindow::event(QEvent *e)
     Q_D(GoodRibbonWindow);
     switch (e->type()) {
     case QEvent::WindowStateChange: {
+        Qt::WindowStates s = windowState();
         if (d->m_windowButtonGroup) {
-            Qt::WindowStates s = windowState();
             if (s.testFlag(Qt::WindowFullScreen)) {
                 d->m_windowButtonGroup->setVisible(false);
             } else {
@@ -189,6 +189,7 @@ bool GoodRibbonWindow::event(QEvent *e)
             d->m_windowButtonGroup->setWindowStates(s);
             d->resizeRibbon();
         }
+        emit windowStateChanged(s);
         break;
     }
     default:
