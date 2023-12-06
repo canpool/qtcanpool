@@ -1698,6 +1698,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
 
                 break;
             }
+#if 0
             case QEvent::Resize: {
                 if (!m_blockChildResizeEvent) {
                     QTimer::singleShot(0, this, [=] {
@@ -1707,6 +1708,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
 
                 break;
             }
+#endif
             default:
                 break;
             }
