@@ -1469,7 +1469,8 @@ bool QGoodWindow::event(QEvent *event)
 
         bool is_file_dialog = bool(qobject_cast<QFileDialog *>(widget));
 
-        widget->adjustSize();
+        // Do not adjust the child window size; otherwise, the resize() of the child window will be affected
+        // widget->adjustSize();
         widget->installEventFilter(this);
         widget->setParent(bestParentForModalWindow(), (!is_file_dialog ? widget->windowFlags() : Qt::WindowFlags(0)));
 
