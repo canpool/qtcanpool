@@ -70,6 +70,7 @@ void WindowToolBarPrivate::init()
     QHBoxLayout *lay = new QHBoxLayout(q);
     lay->setContentsMargins(0, 0, 0, 0);
     lay->setSpacing(0);
+    lay->addStretch();
     lay->addWidget(m_toolBar);
 }
 
