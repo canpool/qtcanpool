@@ -17,6 +17,7 @@ QX_WIDGET_BEGIN_NAMESPACE
 
 
 WindowToolBarPrivate::WindowToolBarPrivate()
+    : m_signalEnabled(false)
 {
 
 }
@@ -94,18 +95,29 @@ void WindowToolBarPrivate::buttonClicked()
 {
     Q_Q(WindowToolBar);
     QAction *action = qobject_cast<QAction *>(sender());
-    QWidget *pw = q->parentWidget();
-    if (pw) {
+
+    if (m_signalEnabled) {
         if (action == m_minimizeAction) {
-            pw->showMinimized();
+            emit q->buttonMinimizeClicked();
         } else if (action == m_maximizeAction) {
-            if (pw->isMaximized()) {
-                pw->showNormal();
-            } else {
-                pw->showMaximized();
-            }
+            emit q->buttonMaximzieClicked();
         } else if (action == m_closeAction) {
-            pw->close();
+            emit q->buttonCloseClicked();
+        }
+    } else {
+        QWidget *pw = q->parentWidget();
+        if (pw) {
+            if (action == m_minimizeAction) {
+                pw->showMinimized();
+            } else if (action == m_maximizeAction) {
+                if (pw->isMaximized()) {
+                    pw->showNormal();
+                } else {
+                    pw->showMaximized();
+                }
+            } else if (action == m_closeAction) {
+                pw->close();
+            }
         }
     }
 }
@@ -209,13 +221,33 @@ void WindowToolBar::setIconSize(const QSize &size)
     d->m_toolBar->setIconSize(size);
 }
 
+/**
+ * If the signal is disabled, the window button's signal
+ * will be directly applied to the parent window; otherwise,
+ * only the button signal will be sent
+ */
+bool WindowToolBar::signalIsEnabled() const
+{
+    Q_D(const WindowToolBar);
+    return d->m_signalEnabled;
+}
+
+void WindowToolBar::setSignalEnabled(bool enable)
+{
+    Q_D(WindowToolBar);
+    d->m_signalEnabled = enable;
+}
+
 bool WindowToolBar::eventFilter(QObject *object, QEvent *event)
 {
     Q_D(WindowToolBar);
     switch (event->type()) {
     case QEvent::WindowStateChange: {
-        d->windowStateChange(object);
-        return true;
+        if (!d->m_signalEnabled) {
+            d->windowStateChange(object);
+            return true;
+        }
+        break;
     }
     default:
         break;

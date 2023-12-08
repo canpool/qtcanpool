@@ -6,6 +6,7 @@ SUBDIRS = \
     qcanpool \
     qxwidget \
     qgood \
+    application \
     misc \
 
 lessThan(QT_MAJOR_VERSION, 6) {

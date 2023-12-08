@@ -29,9 +29,16 @@ public:
     void updateWindowFlags(Qt::WindowFlags flags);
     void setWindowStates(Qt::WindowStates states);
 
+    /** default is disabled */
+    bool signalIsEnabled() const;
     QSize iconSize() const;
 public Q_SLOTS:
     void setIconSize(const QSize &size);
+    void setSignalEnabled(bool enable);
+Q_SIGNALS:
+    void buttonMinimizeClicked();
+    void buttonMaximzieClicked();
+    void buttonCloseClicked();
 protected:
     virtual bool eventFilter(QObject *object, QEvent *event);
 private:

@@ -38,6 +38,7 @@ public:
     QIcon m_normalIcon;
     QString m_maximizeTip;
     QString m_normalTip;
+    bool m_signalEnabled;
 };
 
 QX_WIDGET_END_NAMESPACE
