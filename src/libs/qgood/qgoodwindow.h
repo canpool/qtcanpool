@@ -259,8 +259,6 @@ private:
     bool m_selfGeneratedShowEvent;
     bool m_selfGeneratedResizeEvent;
 
-    bool m_blockChildResizeEvent;
-
     QRect m_normalRect;
 
     Qt::WindowStates m_windowState;
