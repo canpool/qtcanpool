@@ -1447,8 +1447,8 @@ bool QGoodWindow::event(QEvent *event)
 #ifdef Q_OS_WIN
     switch (event->type()) {
     case QEvent::ScreenChangeInternal: {
-//        if (!FIXED_SIZE(this))
-//            updateWindowSize();
+       if (!FIXED_SIZE(this))
+           updateWindowSize();
 
         break;
     }
@@ -3011,8 +3011,7 @@ void QGoodWindow::updateScreen(QScreen *screen)
     setCurrentScreen(screen);
     moveShadow();
 
-    // NOTES: Calling this function causes the window to blink
-    // updateWindowSize();
+    updateWindowSize();
 }
 
 void QGoodWindow::setCurrentScreen(QScreen *screen)
@@ -3028,10 +3027,7 @@ void QGoodWindow::setCurrentScreen(QScreen *screen)
 void QGoodWindow::updateWindowSize()
 {
     QTimer::singleShot(0, this, [=] {
-        const int border_width = BORDERWIDTH();
         m_selfGeneratedResizeEvent = true;
-        m_mainWindow->resize(1, 1);
-        m_mainWindow->resize(width() + border_width, height() + border_width);
         m_mainWindow->resize(size());
         m_selfGeneratedResizeEvent = false;
     });
