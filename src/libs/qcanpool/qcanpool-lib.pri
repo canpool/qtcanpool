@@ -69,5 +69,4 @@ SOURCES += \
 include($$PWD/fancy.pri)
 
 RESOURCES += \
-    $$PWD/qcanpool.qrc \
     $$PWD/qcanpool.qrc
