@@ -2724,6 +2724,15 @@ LRESULT QGoodWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
         if (!screen)
             break;
 
+        RECT * const prcNewWindow = (RECT *)lParam;
+        SetWindowPos(hwnd,
+                     NULL,
+                     prcNewWindow ->left,
+                     prcNewWindow ->top,
+                     prcNewWindow->right - prcNewWindow->left,
+                     prcNewWindow->bottom - prcNewWindow->top,
+                     SWP_NOZORDER | SWP_NOACTIVATE);
+
         if (FIXED_SIZE(gw) && (gw->windowHandle()->screen() != screen)) {
             gw->screenChangeMoveWindow(screen);
         } else {
