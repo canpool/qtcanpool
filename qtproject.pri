@@ -329,8 +329,3 @@ for(ever) {
     QTC_LIB_DEPENDS = $$unique(QTC_LIB_DEPENDS)
     QTC_LIB_DEPENDS -= $$unique(done_libs)
 }
-
-QTPROJECT_INC_DIR = $$PWD/include
-exists($$QTPROJECT_INC_DIR) {
-    INCLUDEPATH += $$QTPROJECT_INC_DIR
-}
