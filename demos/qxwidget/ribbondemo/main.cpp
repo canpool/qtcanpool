@@ -45,9 +45,16 @@ void log_out_put(QtMsgType type, const QMessageLogContext &context, const QStrin
 
 int main(int argc, char *argv[])
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+#endif
+#endif
+
     QApplication a(argc, argv);
     qInstallMessageHandler(log_out_put);
     QFont f = a.font();
