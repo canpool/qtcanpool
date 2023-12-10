@@ -16,7 +16,7 @@
 #include "qxribbon/ribbonquickaccessbar.h"
 #include "qxribbon/ribbonutils.h"
 
-#include "qxwidget/menubutton.h"
+#include "qcanpool/menubutton.h"
 
 #include <QAbstractButton>
 #include <QAction>
@@ -50,7 +50,7 @@
 #include "editablecontainer.h"
 
 QX_RIBBON_USE_NAMESPACE
-QX_WIDGET_USE_NAMESPACE
+QCANPOOL_USE_NAMESPACE
 
 #define COST_START()                                                                                                   \
     QElapsedTimer __TMP_COST;                                                                                          \

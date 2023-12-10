@@ -4,14 +4,14 @@
 #include <QEvent>
 #include <QDebug>
 
-#include "qxwidget/windowtoolbar.h"
+#include "qcanpool/windowtoolbar.h"
 
-QX_WIDGET_USE_NAMESPACE
+QCANPOOL_USE_NAMESPACE
 
 GoodMainWindow::GoodMainWindow(QWidget *parent)
     : QGoodWindow(parent)
 {
-    addCaptionClassName("QxWidget::WindowToolBar");
+    addCaptionClassName("QCanpool::WindowToolBar");
 
     QIcon icon(":/logo");
 

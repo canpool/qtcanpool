@@ -23,6 +23,11 @@ win32 {
 }
 
 HEADERS += \
+    $$PWD/extensionbutton.h \
+    $$PWD/menuaccessbutton.h \
+    $$PWD/menubutton.h \
+    $$PWD/minitabbar.h \
+    $$PWD/minitabwidget.h \
     $$PWD/qcanpool.h \
     $$PWD/quickaccessbar.h \
     $$PWD/quickaccessbar_p.h \
@@ -33,17 +38,36 @@ HEADERS += \
     $$PWD/ribbongroup_p.h \
     $$PWD/ribbonpage.h \
     $$PWD/ribbonpage_p.h \
-    $$PWD/ribbonwindow.h
+    $$PWD/ribbonwindow.h \
+    $$PWD/tinynavbar.h \
+    $$PWD/tinynavbar_p.h \
+    $$PWD/tinytabbar.h \
+    $$PWD/tinytabbar_p.h \
+    $$PWD/tinytabwidget.h \
+    $$PWD/windowlogo.h \
+    $$PWD/windowtoolbar.h \
+    $$PWD/windowtoolbar_p.h
 
 SOURCES += \
+    $$PWD/extensionbutton.cpp \
+    $$PWD/menuaccessbutton.cpp \
+    $$PWD/menubutton.cpp \
+    $$PWD/minitabbar.cpp \
+    $$PWD/minitabwidget.cpp \
     $$PWD/quickaccessbar.cpp \
     $$PWD/ribbonbar.cpp \
     $$PWD/ribboncontainers.cpp \
     $$PWD/ribbongroup.cpp \
     $$PWD/ribbonpage.cpp \
-    $$PWD/ribbonwindow.cpp
+    $$PWD/ribbonwindow.cpp \
+    $$PWD/tinynavbar.cpp \
+    $$PWD/tinytabbar.cpp \
+    $$PWD/tinytabwidget.cpp \
+    $$PWD/windowlogo.cpp \
+    $$PWD/windowtoolbar.cpp
 
 include($$PWD/fancy.pri)
 
 RESOURCES += \
+    $$PWD/qcanpool.qrc \
     $$PWD/qcanpool.qrc

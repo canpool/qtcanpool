@@ -1,4 +1,4 @@
-QTC_LIB_DEPENDS += qgood qxribbon qxwidget
+QTC_LIB_DEPENDS += qgood qxribbon qcanpool
 include(../../../qtproject.pri)
 
 QT       += core gui

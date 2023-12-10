@@ -4,7 +4,6 @@ TEMPLATE  = subdirs
 
 SUBDIRS =   \
     qcanpool \
-    qxwidget \
     qxribbon \
     qgood \
     qgoodbye \
