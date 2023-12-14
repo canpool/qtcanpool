@@ -355,8 +355,9 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clearColor) : QMainWindo
     m_windowFlags = Qt::Window | Qt::FramelessWindowHint;
 
     if (!m_parent) {
-        QMainWindow::setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-        m_windowFlags |= Qt::WindowMinMaxButtonsHint;
+        QMainWindow::setWindowFlags(Qt::Window | Qt::FramelessWindowHint |
+                                    Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+        m_windowFlags |= (Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
     } else {
         QMainWindow::setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::Tool);
     }
