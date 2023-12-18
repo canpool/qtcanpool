@@ -182,6 +182,13 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
                 return true;
             }
         }
+    } else if (msg->message == WM_MOVE) {
+        RECT rcClient;
+        GetWindowRect(msg->hwnd, &rcClient);
+        // Inform application of the frame change.
+        SetWindowPos(msg->hwnd, NULL, rcClient.left, rcClient.top,
+                     rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
+                     SWP_FRAMECHANGED);
     }
 
     return false;
@@ -977,11 +984,7 @@ FancyTitleBar::FancyTitleBar(QWidget *mainWidget)
     Q_ASSERT(mainWidget);
 
 #ifdef QTC_USE_NATIVE
-    if (QApplication::screens().size() == 1) {
-        d = new FancyTitleBarPrivateNative(mainWidget);
-    } else {
-        d = new FancyTitleBarPrivateQt(mainWidget);
-    }
+    d = new FancyTitleBarPrivateNative(mainWidget);
 #else
     d = new FancyTitleBarPrivateQt(mainWidget);
 #endif
