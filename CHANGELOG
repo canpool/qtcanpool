@@ -1,0 +1,15 @@
+
+2.0.0-rc
+---
+- qt: support Qt 5 and 6
+- qcanpool: release version 2.0.0-rc
+- qgood: release version 0.1.0-rc
+- qxribbon: release version 0.8.0-rc
+- qribbon: release version 1.0.0-rc
+- qcustomplot: upgrade to 2.1.1
+- qtqrcode: sync to qrencode-4.1.1
+- qads: sync to Qt-Advanced-Docking-System-4.1.1
+- project: sync to qtcreator-4.15.2
+- aggregation: powered by qtcreator-4.15.2
+- extensionsystem: powered by qtcreator-4.15.2
+- utils: powered by qtcreator-4.15.2
