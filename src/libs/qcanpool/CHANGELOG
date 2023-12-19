@@ -1,0 +1,8 @@
+
+2.0.0-rc
+---
+Feature
+- Support windows native features for FancyTitleBar
+- Support simple ribbon control
+- Simplify implement of qcanpool
+- Merge qcanpool-1.1.0 and qlite-1.1.0
