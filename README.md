@@ -25,10 +25,11 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 |scripts||辅助的脚本文件
 |src||源代码文件
 ||libs|基础类库
-||modules|基础模块，实用的代码，但不具备类库的体量
+||modules|基础模块，实用的代码，但不具备类库的规模
 ||plugins|基础插件
 ||shared|共享的实用代码文件
 |tests||测试用例
+|thirdparty||使用第三方库的案例
 
 ### 环境
 - Qt 6.5.1 MinGW/MSVC2019 64bit
@@ -81,7 +82,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ![fancytitlebar](./doc/pics/fancytitlebar.png)
 
-支持 windows 原生特性（毛玻璃预览，半屏和¼屏等显示效果），仅支持单屏
+支持 windows 原生特性（毛玻璃预览，半屏和¼屏等显示效果）
 
 - <font size=4>fancyribbon</font>
 
@@ -105,6 +106,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 其它
 - QxRibbon：[https://gitee.com/icanpool/QxRibbon](https://gitee.com/icanpool/QxRibbon)：Microsoft Ribbon for Qt
+- QxFrameless：[https://gitee.com/icanpool/qxframeless](https://gitee.com/icanpool/qxframeless)：A fancy Qt widget frameless helper
 
 
 ### 案例
