@@ -112,23 +112,15 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         // if msg->wParam is TRUE, then lParam is NCCALCSIZE_PARAMS
         // reference to windows terminal
         NCCALCSIZE_PARAMS &params = *reinterpret_cast<NCCALCSIZE_PARAMS *>(msg->lParam);
-        const int originalTop = params.rgrc[0].top;
         const RECT originalRect = params.rgrc[0];
         const auto ret = ::DefWindowProc(msg->hwnd, WM_NCCALCSIZE, msg->wParam, msg->lParam);
         if (ret != 0) {
             *result = ret;
             return true;
         }
-        params.rgrc[0].top = originalTop;
         bool isMaximized = GetWindowStyle(msg->hwnd) & WS_MAXIMIZE;
         if (isMaximized) {
-#ifdef SM_CXPADDEDBORDER
-            int border = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-#else
-            int border = GetSystemMetrics(SM_CXSIZEFRAME);
-#endif
-            RECT &rect = params.rgrc[0];
-            rect.top += border;
+            params.rgrc[0].top = 0;
         } else {
             params.rgrc[0] = originalRect;
         }
