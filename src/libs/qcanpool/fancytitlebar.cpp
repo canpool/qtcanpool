@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MulanPSL-2.0
 **/
 #include "fancytitlebar_p.h"
+#include "qxribbon/framelesshelper.h"
 #include "fancytitlebar.h"
 
 #include <QLabel>
@@ -168,7 +169,7 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
 
         if (m_bWidgetMovable && m_titleWidget && m_titleWidget->rect().contains(pos)) {
             QWidget *child = m_titleWidget->childAt(pos);
-            if (!child || qstrcmp(child->metaObject()->className(), "QWidget") == 0) {
+            if (!child || isCaptionClassName(child->metaObject()->className())) {
                 // A non-QWidget or non-QWidget-derived class in the title bar belongs to the blank area
                 *result = HTCAPTION;
                 return true;
@@ -761,6 +762,8 @@ FancyTitleBarPrivate::FancyTitleBarPrivate(QWidget *mainWidget)
     m_windowFlags = m_mainWidget->windowFlags();
     m_mainWidget->setMouseTracking(true);
     m_mainWidget->setAttribute(Qt::WA_Hover, true);
+
+    m_captionClassNameList << "QWidget";
 }
 
 FancyTitleBarPrivate::~FancyTitleBarPrivate()
@@ -880,6 +883,16 @@ void FancyTitleBarPrivate::updateWindowButtons()
     m_minimizeAction->setVisible(m_windowFlags & Qt::WindowMinimizeButtonHint);
 
     setWidgetMaximizable(m_windowFlags & Qt::WindowMaximizeButtonHint);
+}
+
+bool FancyTitleBarPrivate::isCaptionClassName(const char *name)
+{
+    foreach (const QString &cn, m_captionClassNameList) {
+        if (cn.compare(QLatin1String(name)) == 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool FancyTitleBarPrivate::windowTitleChange(QObject *obj)
@@ -1129,6 +1142,13 @@ void FancyTitleBar::updateWidgetFlags()
 {
     d->m_windowFlags = d->m_mainWidget->windowFlags();
     d->updateWindowButtons();
+}
+
+void FancyTitleBar::addCaptionClassName(const QString &name)
+{
+    if (!d->m_captionClassNameList.contains(name)) {
+        d->m_captionClassNameList.append(name);
+    }
 }
 
 bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)

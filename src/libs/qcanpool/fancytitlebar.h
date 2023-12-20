@@ -78,6 +78,8 @@ public:
     void setDisabled(bool disable);
     void updateWidgetFlags();
 
+    void addCaptionClassName(const QString &name);
+
 signals:
     void windowResizable(bool resizable);
     void windowMovable(bool movable);

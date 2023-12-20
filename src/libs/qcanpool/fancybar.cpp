@@ -230,6 +230,7 @@ void FancyBarPrivate::registerWidget(QWidget *widget)
 {
     m_titleBar = new FancyTitleBar(widget);
     m_titleBar->setTitleWidget(q);
+    m_titleBar->addCaptionClassName("QLabel"); // title label is caption
 
     connect(m_titleBar, SIGNAL(windowResizable(bool)), q, SIGNAL(maximizationChanged(bool)));
 }

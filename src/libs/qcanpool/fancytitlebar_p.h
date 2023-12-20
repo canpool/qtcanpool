@@ -92,6 +92,8 @@ public:
 
     void updateWindowButtons();
 
+    bool isCaptionClassName(const char *name);
+
 public:
     // window
     bool windowTitleChange(QObject *obj);
@@ -134,6 +136,8 @@ public:
     bool            m_bWidgetMovable;
     QRect           m_normalRect;
     int             m_currentScreen;
+
+    QList<QString> m_captionClassNameList;
 };
 
 /* FancyTitleBarPrivateQt */
