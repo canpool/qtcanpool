@@ -140,7 +140,7 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         int borderWidth = 5;
         long x = GET_X_LPARAM(msg->lParam);
         long y = GET_Y_LPARAM(msg->lParam);
-        QPoint pos = m_mainWidget->mapFromGlobal(QPoint(x, y));
+        QPoint pos = m_mainWidget->mapFromGlobal(QPoint(x, y) / m_mainWidget->screen()->devicePixelRatio());
         int w = m_mainWidget->width();
         int h = m_mainWidget->height();
 
