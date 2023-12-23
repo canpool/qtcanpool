@@ -1,4 +1,17 @@
-QTC_LIB_DEPENDS += qgood qxribbon qcanpool
+QTC_LIB_DEPENDS += qxribbon qcanpool
+
+win32 {
+    QTC_LIB_DEPENDS += qxframeless
+    DEFINES += QXRIBBON_USE_APPWINDOW
+    SOURCES += ribbonappwindow.cpp
+    HEADERS += ribbonappwindow.h
+} else {
+    QTC_LIB_DEPENDS += qgood
+    DEFINES += QXRIBBON_USE_GOODWINDOW
+    SOURCES += goodribbonwindow.cpp
+    HEADERS += goodribbonwindow.h
+}
+
 include(../../../qtproject.pri)
 
 QT       += core gui
@@ -20,14 +33,12 @@ include($$QTCANPOOL_DIR/src/rpath.pri)
 SOURCES += \
     aboutdialog.cpp \
     editablecontainer.cpp \
-    goodribbonwindow.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     aboutdialog.h \
     editablecontainer.h \
-    goodribbonwindow.h \
     mainwindow.h
 
 # Default rules for deployment.
