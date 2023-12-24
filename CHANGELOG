@@ -4,7 +4,7 @@
 - qt: support Qt 5 and 6
 - qcanpool: release version 2.0.0-rc
 - qgood: release version 0.1.0-rc
-- qxribbon: release version 0.8.0-rc
+- qxribbon: release version 0.8.0
 - qxframeless: add qxframeless-0.1.0
 - qribbon: release version 1.0.0-rc
 - qcustomplot: upgrade to 2.1.1
