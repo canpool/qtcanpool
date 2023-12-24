@@ -129,6 +129,10 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         return true;
     } else if (msg->message == WM_NCHITTEST) {
         // handleNonClientHitTest
+        *result = HTNOWHERE;
+        if (m_mainWidget->isFullScreen()) {
+            return false;
+        }
         // https://docs.microsoft.com/en-us/windows/win32/dwm/customframe#appendix-c-hittestnca-function
         int borderWidth = 5;
         long x = GET_X_LPARAM(msg->lParam);
@@ -142,7 +146,6 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         bool top = pos.y() < borderWidth;
         bool bottom = pos.y() > h - borderWidth;
 
-        *result = 0;
         if (m_bWidgetResizable) {
             if (top && left) {
                 *result = HTTOPLEFT;
