@@ -119,6 +119,7 @@ public:
     QAction         *m_minimizeAction;
     QAction         *m_maximizeAction;
     QAction         *m_closeAction;
+    QToolButton     *m_maximizeButton;
 
     QIcon           m_maximizeIcon;
     QIcon           m_normalIcon;

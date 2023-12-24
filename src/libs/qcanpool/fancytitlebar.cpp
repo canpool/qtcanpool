@@ -169,6 +169,7 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
 
         if (m_bWidgetMovable && m_titleWidget && m_titleWidget->rect().contains(pos)) {
             QWidget *child = m_titleWidget->childAt(pos);
+            // TODO: handle HTMAXBUTTON
             if (!child || isCaptionClassName(child->metaObject()->className())) {
                 // A non-QWidget or non-QWidget-derived class in the title bar belongs to the blank area
                 *result = HTCAPTION;
@@ -814,6 +815,7 @@ void FancyTitleBarPrivate::init()
     m_normalIcon = actionToolButton->style()->standardIcon(QStyle::SP_TitleBarNormalButton);
     m_maximizeAction->setIcon(m_maximizeIcon);
     actionToolButton->setObjectName(QLatin1String("maximize"));
+    m_maximizeButton = actionToolButton;
 
     actionToolButton = qobject_cast<QToolButton *>(m_toolBar->widgetForAction(m_closeAction));
     m_closeAction->setIcon(actionToolButton->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
@@ -941,17 +943,16 @@ bool FancyTitleBarPrivate::windowStateChange(QObject *obj)
 {
     Q_UNUSED(obj);
 
-    QToolButton *toolButton = qobject_cast<QToolButton *>(m_toolBar->widgetForAction(m_maximizeAction));
     if (m_isMaximized) {
-        toolButton->setProperty("state", "maximize");
+        m_maximizeButton->setProperty("state", "maximize");
         m_maximizeAction->setToolTip(m_normalTip);
         m_maximizeAction->setIcon(m_normalIcon);
     } else {
-        toolButton->setProperty("state", "restore");
+        m_maximizeButton->setProperty("state", "restore");
         m_maximizeAction->setToolTip(m_maximizeTip);
         m_maximizeAction->setIcon(m_maximizeIcon);
     }
-    toolButton->style()->polish(toolButton);
+    m_maximizeButton->style()->polish(m_maximizeButton);
     return true;
 }
 
