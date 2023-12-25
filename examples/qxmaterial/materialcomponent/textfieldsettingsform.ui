@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TextFieldSettingsForm</class>
+ <widget class="QWidget" name="TextFieldSettingsForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>416</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="formLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>321</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="disabledLabel">
+      <property name="text">
+       <string>Disabled</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QCheckBox" name="disabledCheckBox"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="textLabel">
+      <property name="text">
+       <string>Text</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="textLineEdit"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="placeholderLabel">
+      <property name="text">
+       <string>Placeholder</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="placeholderLineEdit"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="labelLabel_2">
+      <property name="text">
+       <string>Label</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QCheckBox" name="labelCheckBox"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="labelLabel">
+      <property name="text">
+       <string>Label text</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="labelTextLineEdit"/>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="useThemeColorsLabel">
+      <property name="text">
+       <string>Use theme colors</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QCheckBox" name="useThemeColorsCheckBox"/>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="textColorLabel">
+      <property name="text">
+       <string>Text color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="textColorLineEdit"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="textColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="inkColorLabel">
+      <property name="text">
+       <string>Ink color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLineEdit" name="inkColorLineEdit"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="inkColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="inputLineColorLabel">
+      <property name="text">
+       <string>Input line color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QLineEdit" name="inputLineColorLineEdit"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="inputLineColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="labelColorLabel">
+      <property name="text">
+       <string>Label color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <item>
+       <widget class="QLineEdit" name="labelColorLineEdit"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="labelColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="labelShowInputLine">
+      <property name="text">
+       <string>Input line</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QCheckBox" name="inputLineCheckBox"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

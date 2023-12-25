@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DrawerSettingsForm</class>
+ <widget class="QWidget" name="DrawerSettingsForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>474</width>
+    <height>387</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="formLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>180</width>
+     <height>94</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="overlayModeLabel">
+      <property name="text">
+       <string>Overlay mode</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QCheckBox" name="overlayModeCheckBox"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="clickToCloseLabel">
+      <property name="text">
+       <string>Click to close</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QCheckBox" name="clickToCloseCheckBox"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="showDrawerButton">
+      <property name="text">
+       <string>Show drawer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="hideDrawerButton">
+      <property name="text">
+       <string>Hide drawer</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

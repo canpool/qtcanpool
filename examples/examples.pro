@@ -3,4 +3,5 @@ CONFIG += ordered
 
 SUBDIRS = \
     qcanpool \
-    qxribbon
+    qxribbon \
+    qxmaterial

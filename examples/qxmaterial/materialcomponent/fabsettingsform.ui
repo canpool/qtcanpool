@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FloatingActionButtonSettingsForm</class>
+ <widget class="QWidget" name="FloatingActionButtonSettingsForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>599</width>
+    <height>418</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="formLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>234</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <property name="formAlignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <item row="0" column="0">
+     <widget class="QLabel" name="disabledLabel">
+      <property name="text">
+       <string>Disabled</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QCheckBox" name="disabledCheckBox"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="cornerLabel">
+      <property name="text">
+       <string>Corner</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="cornerComboBox">
+      <item>
+       <property name="text">
+        <string>Top Left</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Top Right</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Bottom Left</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Bottom Right</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="buttonRoleLabel">
+      <property name="text">
+       <string>Button role</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="buttonRoleComboBox">
+      <item>
+       <property name="text">
+        <string>Default</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Primary</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Secondary</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="horizontalOffsetLabel">
+      <property name="text">
+       <string>Horizontal offset</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="horizontalOffsetSpinBox"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="verticalOffsetLabel">
+      <property name="text">
+       <string>Vertical offset</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QSpinBox" name="verticalOffsetSpinBox"/>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="miniLabel">
+      <property name="text">
+       <string>Mini</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QCheckBox" name="miniCheckBox"/>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="rippleStyleLabel">
+      <property name="text">
+       <string>Ripple style</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QComboBox" name="rippleStyleComboBox">
+      <item>
+       <property name="text">
+        <string>Centered</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Positioned</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>No Ripple</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="useThemeColorsLabel">
+      <property name="text">
+       <string>Use theme colors</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QCheckBox" name="useThemeColorsCheckBox"/>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="backgroundColorLabel">
+      <property name="text">
+       <string>Background color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="backgroundColorLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="backgroundColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="foregroundColorLabel">
+      <property name="text">
+       <string>Foreground color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="disabledBgColorLabel">
+      <property name="text">
+       <string>Disabled bg color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0">
+     <widget class="QLabel" name="disabledFgColorLabel">
+      <property name="text">
+       <string>Disabled fg color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLineEdit" name="foregroundColorLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="foregroundColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="10" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLineEdit" name="disabledBgColorLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="disabledBgColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="11" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLineEdit" name="disabledFgColorLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="disabledFgColorToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

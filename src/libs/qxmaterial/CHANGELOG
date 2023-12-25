@@ -1,0 +1,13 @@
+
+0.1.0
+---
+- Support static and shared library
+- Support msvc compiler for examples
+- Add namespace QxMaterial
+- Merge merge internal files to private files
+- Remove unimplemented files
+- Remove lib and layouts directory
+- Remove qt prefix of files
+- Rename class MaterialTabs to MaterialTabBar
+- Rename components directory to src
+- Powered by qt-material-widgets 3a0e2265972e5203e240489bc975623c85127813
