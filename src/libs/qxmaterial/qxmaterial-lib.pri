@@ -95,4 +95,4 @@ HEADERS = \
     $$PWD/qxmaterial_global.h
 
 RESOURCES += \
-    qxmaterial.qrc
+    $$PWD/qxmaterial.qrc

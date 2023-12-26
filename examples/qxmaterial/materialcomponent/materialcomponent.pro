@@ -12,71 +12,71 @@ TEMPLATE = app
 DESTDIR = $$IDE_APP_PATH
 
 SOURCES = \
-    mainwindow.cpp \
-    main.cpp \
-    avatarsettingseditor.cpp \
-    badgesettingseditor.cpp \
-    checkboxsettingseditor.cpp \
-    fabsettingseditor.cpp \
-    raisedbuttonsettingseditor.cpp \
-    flatbuttonsettingseditor.cpp \
-    iconbuttonsettingseditor.cpp \
-    progresssettingseditor.cpp \
-    circularprogresssettingseditor.cpp \
-    slidersettingseditor.cpp \
-    radiobuttonsettingseditor.cpp \
-    togglesettingseditor.cpp \
-    textfieldsettingseditor.cpp \
-    tabssettingseditor.cpp \
-    snackbarsettingseditor.cpp \
-    dialogsettingseditor.cpp \
-    drawersettingseditor.cpp \
-    scrollbarsettingseditor.cpp \
-    appbarsettingseditor.cpp \
-    autocompletesettingseditor.cpp
+    $$PWD/mainwindow.cpp \
+    $$PWD/main.cpp \
+    $$PWD/avatarsettingseditor.cpp \
+    $$PWD/badgesettingseditor.cpp \
+    $$PWD/checkboxsettingseditor.cpp \
+    $$PWD/fabsettingseditor.cpp \
+    $$PWD/raisedbuttonsettingseditor.cpp \
+    $$PWD/flatbuttonsettingseditor.cpp \
+    $$PWD/iconbuttonsettingseditor.cpp \
+    $$PWD/progresssettingseditor.cpp \
+    $$PWD/circularprogresssettingseditor.cpp \
+    $$PWD/slidersettingseditor.cpp \
+    $$PWD/radiobuttonsettingseditor.cpp \
+    $$PWD/togglesettingseditor.cpp \
+    $$PWD/textfieldsettingseditor.cpp \
+    $$PWD/tabssettingseditor.cpp \
+    $$PWD/snackbarsettingseditor.cpp \
+    $$PWD/dialogsettingseditor.cpp \
+    $$PWD/drawersettingseditor.cpp \
+    $$PWD/scrollbarsettingseditor.cpp \
+    $$PWD/appbarsettingseditor.cpp \
+    $$PWD/autocompletesettingseditor.cpp
 
 HEADERS = \
-    mainwindow.h \
-    avatarsettingseditor.h \
-    badgesettingseditor.h \
-    checkboxsettingseditor.h \
-    fabsettingseditor.h \
-    raisedbuttonsettingseditor.h \
-    flatbuttonsettingseditor.h \
-    iconbuttonsettingseditor.h \
-    progresssettingseditor.h \
-    circularprogresssettingseditor.h \
-    slidersettingseditor.h \
-    radiobuttonsettingseditor.h \
-    togglesettingseditor.h \
-    textfieldsettingseditor.h \
-    tabssettingseditor.h \
-    snackbarsettingseditor.h \
-    dialogsettingseditor.h \
-    drawersettingseditor.h \
-    scrollbarsettingseditor.h \
-    appbarsettingseditor.h \
-    autocompletesettingseditor.h
+    $$PWD/mainwindow.h \
+    $$PWD/avatarsettingseditor.h \
+    $$PWD/badgesettingseditor.h \
+    $$PWD/checkboxsettingseditor.h \
+    $$PWD/fabsettingseditor.h \
+    $$PWD/raisedbuttonsettingseditor.h \
+    $$PWD/flatbuttonsettingseditor.h \
+    $$PWD/iconbuttonsettingseditor.h \
+    $$PWD/progresssettingseditor.h \
+    $$PWD/circularprogresssettingseditor.h \
+    $$PWD/slidersettingseditor.h \
+    $$PWD/radiobuttonsettingseditor.h \
+    $$PWD/togglesettingseditor.h \
+    $$PWD/textfieldsettingseditor.h \
+    $$PWD/tabssettingseditor.h \
+    $$PWD/snackbarsettingseditor.h \
+    $$PWD/dialogsettingseditor.h \
+    $$PWD/drawersettingseditor.h \
+    $$PWD/scrollbarsettingseditor.h \
+    $$PWD/appbarsettingseditor.h \
+    $$PWD/autocompletesettingseditor.h
 
 RESOURCES += \
-    examples.qrc
+    $$PWD/examples.qrc
 
 FORMS += \
-    avatarsettingsform.ui \
-    badgesettingsform.ui \
-    checkboxsettingsform.ui \
-    fabsettingsform.ui \
-    flatbuttonsettingsform.ui \
-    iconbuttonsettingsform.ui \
-    progresssettingsform.ui \
-    circularprogresssettingsform.ui \
-    slidersettingsform.ui \
-    snackbarsettingsform.ui \
-    radiobuttonsettingsform.ui \
-    togglesettingsform.ui \
-    textfieldsettingsform.ui \
-    tabssettingsform.ui \
-    dialogsettingsform.ui \
-    drawersettingsform.ui \
-    scrollbarsettingsform.ui \
-    appbarsettingsform.ui
+    $$PWD/avatarsettingsform.ui \
+    $$PWD/badgesettingsform.ui \
+    $$PWD/checkboxsettingsform.ui \
+    $$PWD/fabsettingsform.ui \
+    $$PWD/flatbuttonsettingsform.ui \
+    $$PWD/iconbuttonsettingsform.ui \
+    $$PWD/progresssettingsform.ui \
+    $$PWD/circularprogresssettingsform.ui \
+    $$PWD/slidersettingsform.ui \
+    $$PWD/snackbarsettingsform.ui \
+    $$PWD/radiobuttonsettingsform.ui \
+    $$PWD/togglesettingsform.ui \
+    $$PWD/textfieldsettingsform.ui \
+    $$PWD/tabssettingsform.ui \
+    $$PWD/dialogsettingsform.ui \
+    $$PWD/drawersettingsform.ui \
+    $$PWD/scrollbarsettingsform.ui \
+    $$PWD/appbarsettingsform.ui

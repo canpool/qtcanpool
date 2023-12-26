@@ -14,11 +14,11 @@ DESTDIR = $$IDE_APP_PATH
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
 SOURCES += \
-    main.cpp \
-    mainwindow.cpp
+    $$PWD/main.cpp \
+    $$PWD/mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h
+    $$PWD/mainwindow.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
