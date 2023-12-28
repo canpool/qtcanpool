@@ -316,7 +316,7 @@ QColor MaterialTextField::textColor() const
     Q_D(const MaterialTextField);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
-        return MaterialStyle::instance().themeColor("text");
+        return MaterialStyle::instance().themeColor(MK_text);
     } else {
         return d->textColor;
     }
@@ -337,7 +337,7 @@ QColor MaterialTextField::labelColor() const
     Q_D(const MaterialTextField);
 
     if (d->useThemeColors || !d->labelColor.isValid()) {
-        return MaterialStyle::instance().themeColor("accent3");
+        return MaterialStyle::instance().themeColor(MK_accent3);
     } else {
         return d->labelColor;
     }
@@ -358,7 +358,7 @@ QColor MaterialTextField::inkColor() const
     Q_D(const MaterialTextField);
 
     if (d->useThemeColors || !d->inkColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->inkColor;
     }
@@ -379,7 +379,7 @@ QColor MaterialTextField::inputLineColor() const
     Q_D(const MaterialTextField);
 
     if (d->useThemeColors || !d->inputLineColor.isValid()) {
-        return MaterialStyle::instance().themeColor("border");
+        return MaterialStyle::instance().themeColor(MK_border);
     } else {
         return d->inputLineColor;
     }

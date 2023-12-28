@@ -281,7 +281,7 @@ QColor MaterialTabBar::inkColor() const
     Q_D(const MaterialTabBar);
 
     if (d->useThemeColors || !d->inkColor.isValid()) {
-        return MaterialStyle::instance().themeColor("accent1");
+        return MaterialStyle::instance().themeColor(MK_accent1);
     } else {
         return d->inkColor;
     }
@@ -303,7 +303,7 @@ QColor MaterialTabBar::backgroundColor() const
     Q_D(const MaterialTabBar);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->backgroundColor;
     }
@@ -325,7 +325,7 @@ QColor MaterialTabBar::textColor() const
     Q_D(const MaterialTabBar);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
-        return MaterialStyle::instance().themeColor("canvas");
+        return MaterialStyle::instance().themeColor(MK_canvas);
     } else {
         return d->textColor;
     }

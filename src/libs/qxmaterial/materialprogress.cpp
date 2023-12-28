@@ -126,7 +126,7 @@ QColor MaterialProgress::progressColor() const
     Q_D(const MaterialProgress);
 
     if (d->useThemeColors || !d->progressColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->progressColor;
     }
@@ -147,7 +147,7 @@ QColor MaterialProgress::backgroundColor() const
     Q_D(const MaterialProgress);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("border");
+        return MaterialStyle::instance().themeColor(MK_border);
     } else {
         return d->backgroundColor;
     }
@@ -167,7 +167,7 @@ void MaterialProgress::paintEvent(QPaintEvent *event)
 
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
-    brush.setColor(isEnabled() ? backgroundColor() : MaterialStyle::instance().themeColor("disabled"));
+    brush.setColor(isEnabled() ? backgroundColor() : MaterialStyle::instance().themeColor(MK_disabled1));
     painter.setBrush(brush);
     painter.setPen(Qt::NoPen);
 

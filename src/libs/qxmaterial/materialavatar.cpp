@@ -120,7 +120,7 @@ QColor MaterialAvatar::textColor() const
     Q_D(const MaterialAvatar);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
-        return MaterialStyle::instance().themeColor("canvas");
+        return MaterialStyle::instance().themeColor(MK_canvas);
     } else {
         return d->textColor;
     }
@@ -141,7 +141,7 @@ QColor MaterialAvatar::backgroundColor() const
     Q_D(const MaterialAvatar);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->backgroundColor;
     }
@@ -236,7 +236,7 @@ void MaterialAvatar::paintEvent(QPaintEvent *event)
     if (!isEnabled()) {
         QBrush brush;
         brush.setStyle(Qt::SolidPattern);
-        brush.setColor(MaterialStyle::instance().themeColor("disabled"));
+        brush.setColor(MaterialStyle::instance().themeColor(MK_disabled1));
         painter.setPen(Qt::NoPen);
         painter.setBrush(brush);
         painter.drawEllipse(QRectF((width() - d->size) / 2, (height() - d->size) / 2, d->size, d->size));

@@ -5,6 +5,21 @@
 #ifndef MATERIALNAMESPACE_H
 #define MATERIALNAMESPACE_H
 
+/* default theme keys */
+#define MK_primary1         "primary1"
+#define MK_primary2         "primary2"
+#define MK_primary3         "primary3"
+#define MK_accent1          "accent1"
+#define MK_accent2          "accent2"
+#define MK_accent3          "accent3"
+#define MK_text             "text"
+#define MK_textAlt          "textAlt"
+#define MK_canvas           "canvas"
+#define MK_border           "border"
+#define MK_disabled1        "disabled1"
+#define MK_disabled2        "disabled2"
+#define MK_disabled3        "disabled3"
+
 namespace QxMaterial
 {
 

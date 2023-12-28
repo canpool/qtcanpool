@@ -202,7 +202,7 @@ QColor MaterialSnackbar::backgroundColor() const
     Q_D(const MaterialSnackbar);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("text");
+        return MaterialStyle::instance().themeColor(MK_text);
     } else {
         return d->backgroundColor;
     }
@@ -238,7 +238,7 @@ QColor MaterialSnackbar::textColor() const
     Q_D(const MaterialSnackbar);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
-        return MaterialStyle::instance().themeColor("canvas");
+        return MaterialStyle::instance().themeColor(MK_canvas);
     } else {
         return d->textColor;
     }

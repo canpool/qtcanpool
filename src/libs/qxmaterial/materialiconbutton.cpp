@@ -109,7 +109,7 @@ QColor MaterialIconButton::color() const
     Q_D(const MaterialIconButton);
 
     if (d->useThemeColors || !d->color.isValid()) {
-        return MaterialStyle::instance().themeColor("text");
+        return MaterialStyle::instance().themeColor(MK_text);
     }
     return d->color;
 }
@@ -129,7 +129,7 @@ QColor MaterialIconButton::disabledColor() const
     Q_D(const MaterialIconButton);
 
     if (d->useThemeColors || !d->disabledColor.isValid()) {
-        return MaterialStyle::instance().themeColor("disabled");
+        return MaterialStyle::instance().themeColor(MK_disabled1);
     }
     return d->disabledColor;
 }

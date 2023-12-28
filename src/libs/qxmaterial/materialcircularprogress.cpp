@@ -195,7 +195,7 @@ QColor MaterialCircularProgress::color() const
     Q_D(const MaterialCircularProgress);
 
     if (d->useThemeColors || !d->color.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->color;
     }
@@ -228,7 +228,7 @@ void MaterialCircularProgress::paintEvent(QPaintEvent *event)
         QPen pen;
         pen.setCapStyle(Qt::RoundCap);
         pen.setWidthF(d->penWidth);
-        pen.setColor(MaterialStyle::instance().themeColor("border"));
+        pen.setColor(MaterialStyle::instance().themeColor(MK_border));
         painter.setPen(pen);
         painter.drawLine(rect().center() - QPointF(20, 20), rect().center() + QPointF(20, 20));
         painter.drawLine(rect().center() + QPointF(20, -20), rect().center() - QPointF(20, -20));

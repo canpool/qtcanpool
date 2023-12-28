@@ -249,7 +249,7 @@ QColor MaterialCheckable::checkedColor() const
     Q_D(const MaterialCheckable);
 
     if (d->useThemeColors || !d->checkedColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->checkedColor;
     }
@@ -270,7 +270,7 @@ QColor MaterialCheckable::uncheckedColor() const
     Q_D(const MaterialCheckable);
 
     if (d->useThemeColors || !d->uncheckedColor.isValid()) {
-        return MaterialStyle::instance().themeColor("text");
+        return MaterialStyle::instance().themeColor(MK_text);
     } else {
         return d->uncheckedColor;
     }
@@ -291,7 +291,7 @@ QColor MaterialCheckable::textColor() const
     Q_D(const MaterialCheckable);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
-        return MaterialStyle::instance().themeColor("text");
+        return MaterialStyle::instance().themeColor(MK_text);
     } else {
         return d->textColor;
     }
@@ -312,7 +312,7 @@ QColor MaterialCheckable::disabledColor() const
     Q_D(const MaterialCheckable);
 
     if (d->useThemeColors || !d->disabledColor.isValid()) {
-        return MaterialStyle::instance().themeColor("accent3");
+        return MaterialStyle::instance().themeColor(MK_accent3);
     } else {
         return d->disabledColor;
     }

@@ -6,6 +6,7 @@
 #define QXMATERIALSTYLE_H
 
 #include "materialstyle_p.h"
+#include "materialnamespace.h"
 #include <QtWidgets/QCommonStyle>
 
 QX_MATERIAL_BEGIN_NAMESPACE

@@ -400,16 +400,16 @@ QColor MaterialFlatButton::foregroundColor() const
 
     if (d->useThemeColors || !d->foregroundColor.isValid()) {
         if (Qt::OpaqueMode == d->bgMode) {
-            return MaterialStyle::instance().themeColor("canvas");
+            return MaterialStyle::instance().themeColor(MK_canvas);
         }
         switch (d->role) {
         case QxMaterial::Primary:
-            return MaterialStyle::instance().themeColor("primary1");
+            return MaterialStyle::instance().themeColor(MK_primary1);
         case QxMaterial::Secondary:
-            return MaterialStyle::instance().themeColor("accent1");
+            return MaterialStyle::instance().themeColor(MK_accent1);
         case QxMaterial::Default:
         default:
-            return MaterialStyle::instance().themeColor("text");
+            return MaterialStyle::instance().themeColor(MK_text);
         }
     }
     return d->foregroundColor;
@@ -432,12 +432,12 @@ QColor MaterialFlatButton::backgroundColor() const
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
         switch (d->role) {
         case QxMaterial::Primary:
-            return MaterialStyle::instance().themeColor("primary1");
+            return MaterialStyle::instance().themeColor(MK_primary1);
         case QxMaterial::Secondary:
-            return MaterialStyle::instance().themeColor("accent1");
+            return MaterialStyle::instance().themeColor(MK_accent1);
         case QxMaterial::Default:
         default:
-            return MaterialStyle::instance().themeColor("text");
+            return MaterialStyle::instance().themeColor(MK_text);
         }
     }
     return d->backgroundColor;
@@ -480,7 +480,7 @@ QColor MaterialFlatButton::disabledForegroundColor() const
     Q_D(const MaterialFlatButton);
 
     if (d->useThemeColors || !d->disabledColor.isValid()) {
-        return MaterialStyle::instance().themeColor("disabled");
+        return MaterialStyle::instance().themeColor(MK_disabled1);
     } else {
         return d->disabledColor;
     }
@@ -501,7 +501,7 @@ QColor MaterialFlatButton::disabledBackgroundColor() const
     Q_D(const MaterialFlatButton);
 
     if (d->useThemeColors || !d->disabledBackgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("disabled3");
+        return MaterialStyle::instance().themeColor(MK_disabled3);
     } else {
         return d->disabledBackgroundColor;
     }

@@ -114,7 +114,7 @@ QColor MaterialBadge::textColor() const
     Q_D(const MaterialBadge);
 
     if (d->useThemeColors || !d->textColor.isValid()) {
-        return MaterialStyle::instance().themeColor("canvas");
+        return MaterialStyle::instance().themeColor(MK_canvas);
     } else {
         return d->textColor;
     }
@@ -135,7 +135,7 @@ QColor MaterialBadge::backgroundColor() const
     Q_D(const MaterialBadge);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("accent1");
+        return MaterialStyle::instance().themeColor(MK_accent1);
     } else {
         return d->backgroundColor;
     }
@@ -254,7 +254,7 @@ void MaterialBadge::paintEvent(QPaintEvent *event)
 
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
-    brush.setColor(isEnabled() ? backgroundColor() : MaterialStyle::instance().themeColor("disabled"));
+    brush.setColor(isEnabled() ? backgroundColor() : MaterialStyle::instance().themeColor(MK_disabled1));
     painter.setBrush(brush);
     painter.setPen(Qt::NoPen);
 

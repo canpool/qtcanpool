@@ -112,7 +112,7 @@ QColor MaterialAppBar::foregroundColor() const
     Q_D(const MaterialAppBar);
 
     if (d->useThemeColors || !d->foregroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->foregroundColor;
     }
@@ -135,7 +135,7 @@ QColor MaterialAppBar::backgroundColor() const
     Q_D(const MaterialAppBar);
 
     if (d->useThemeColors || !d->backgroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->backgroundColor;
     }

@@ -30,19 +30,19 @@ MaterialThemePrivate::~MaterialThemePrivate()
 
 MaterialTheme::MaterialTheme(QObject *parent) : QObject(parent), d_ptr(new MaterialThemePrivate(this))
 {
-    setColor("primary1", QxMaterial::cyan500);
-    setColor("primary2", QxMaterial::cyan700);
-    setColor("primary3", QxMaterial::lightBlack);
-    setColor("accent1", QxMaterial::pinkA200);
-    setColor("accent2", QxMaterial::grey100);
-    setColor("accent3", QxMaterial::grey500);
-    setColor("text", QxMaterial::darkBlack);
-    setColor("alternateText", QxMaterial::white);
-    setColor("canvas", QxMaterial::white);
-    setColor("border", QxMaterial::grey300);
-    setColor("disabled", QxMaterial::minBlack);
-    setColor("disabled2", QxMaterial::faintBlack);
-    setColor("disabled3", QxMaterial::grey300);
+    setColor(MK_primary1,        QxMaterial::cyan500);
+    setColor(MK_primary2,        QxMaterial::cyan700);
+    setColor(MK_primary3,        QxMaterial::lightBlack);
+    setColor(MK_accent1,         QxMaterial::pinkA200);
+    setColor(MK_accent2,         QxMaterial::grey100);
+    setColor(MK_accent3,         QxMaterial::grey500);
+    setColor(MK_text,            QxMaterial::darkBlack);
+    setColor(MK_textAlt,         QxMaterial::white);
+    setColor(MK_canvas,          QxMaterial::white);
+    setColor(MK_border,          QxMaterial::grey300);
+    setColor(MK_disabled1,       QxMaterial::minBlack);
+    setColor(MK_disabled2,       QxMaterial::faintBlack);
+    setColor(MK_disabled3,       QxMaterial::grey300);
 }
 
 MaterialTheme::~MaterialTheme()

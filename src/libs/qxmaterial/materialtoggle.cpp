@@ -398,7 +398,7 @@ QColor MaterialToggle::disabledColor() const
     Q_D(const MaterialToggle);
 
     if (d->useThemeColors || !d->disabledColor.isValid()) {
-        return MaterialStyle::instance().themeColor("disabled");
+        return MaterialStyle::instance().themeColor(MK_disabled1);
     } else {
         return d->disabledColor;
     }
@@ -419,7 +419,7 @@ QColor MaterialToggle::activeColor() const
     Q_D(const MaterialToggle);
 
     if (d->useThemeColors || !d->activeColor.isValid()) {
-        return MaterialStyle::instance().themeColor("primary1");
+        return MaterialStyle::instance().themeColor(MK_primary1);
     } else {
         return d->activeColor;
     }
@@ -440,7 +440,7 @@ QColor MaterialToggle::inactiveColor() const
     Q_D(const MaterialToggle);
 
     if (d->useThemeColors || !d->inactiveColor.isValid()) {
-        return MaterialStyle::instance().themeColor("canvas");
+        return MaterialStyle::instance().themeColor(MK_canvas);
     } else {
         return d->inactiveColor;
     }
@@ -461,7 +461,7 @@ QColor MaterialToggle::trackColor() const
     Q_D(const MaterialToggle);
 
     if (d->useThemeColors || !d->trackColor.isValid()) {
-        return MaterialStyle::instance().themeColor("accent3");
+        return MaterialStyle::instance().themeColor(MK_accent3);
     } else {
         return d->trackColor;
     }
