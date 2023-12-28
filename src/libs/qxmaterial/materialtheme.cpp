@@ -86,8 +86,7 @@ QIcon MaterialTheme::icon(QString category, QString icon)
 const QColor &MaterialTheme::color(QxMaterial::Color color)
 {
     static const QColor palette[] = {
-        // red
-        QColor("#ffebee"),
+        QColor("#ffebee"), // red
         QColor("#ffcdd2"),
         QColor("#ef9a9a"),
         QColor("#e57373"),
@@ -101,8 +100,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#ff5252"),
         QColor("#ff1744"),
         QColor("#d50000"),
-        // pink
-        QColor("#fce4ec"),
+        QColor("#fce4ec"), // pink
         QColor("#f8bbd0"),
         QColor("#f48fb1"),
         QColor("#f06292"),
@@ -116,8 +114,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#ff4081"),
         QColor("#f50057"),
         QColor("#c51162"),
-        // purple
-        QColor("#f3e5f5"),
+        QColor("#f3e5f5"), // purple
         QColor("#e1bee7"),
         QColor("#ce93d8"),
         QColor("#ba68c8"),
@@ -131,8 +128,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#e040fb"),
         QColor("#d500f9"),
         QColor("#aa00ff"),
-        // deepPurple
-        QColor("#ede7f6"),
+        QColor("#ede7f6"), // deepPurple
         QColor("#d1c4e9"),
         QColor("#b39ddb"),
         QColor("#9575cd"),
@@ -146,8 +142,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#7c4dff"),
         QColor("#651fff"),
         QColor("#6200ea"),
-        // indigo
-        QColor("#e8eaf6"),
+        QColor("#e8eaf6"), // indigo
         QColor("#c5cae9"),
         QColor("#9fa8da"),
         QColor("#7986cb"),
@@ -161,8 +156,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#536dfe"),
         QColor("#3d5afe"),
         QColor("#304ffe"),
-        // blue
-        QColor("#e3f2fd"),
+        QColor("#e3f2fd"), // blue
         QColor("#bbdefb"),
         QColor("#90caf9"),
         QColor("#64b5f6"),
@@ -176,8 +170,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#448aff"),
         QColor("#2979ff"),
         QColor("#2962ff"),
-        // lightBlue
-        QColor("#e1f5fe"),
+        QColor("#e1f5fe"), // lightBlue
         QColor("#b3e5fc"),
         QColor("#81d4fa"),
         QColor("#4fc3f7"),
@@ -191,8 +184,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#40c4ff"),
         QColor("#00b0ff"),
         QColor("#0091ea"),
-        // cyan
-        QColor("#e0f7fa"),
+        QColor("#e0f7fa"), // cyan
         QColor("#b2ebf2"),
         QColor("#80deea"),
         QColor("#4dd0e1"),
@@ -206,8 +198,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#18ffff"),
         QColor("#00e5ff"),
         QColor("#00b8d4"),
-        // teal
-        QColor("#e0f2f1"),
+        QColor("#e0f2f1"), // teal
         QColor("#b2dfdb"),
         QColor("#80cbc4"),
         QColor("#4db6ac"),
@@ -221,8 +212,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#64ffda"),
         QColor("#1de9b6"),
         QColor("#00bfa5"),
-        // green
-        QColor("#e8f5e9"),
+        QColor("#e8f5e9"), // green
         QColor("#c8e6c9"),
         QColor("#a5d6a7"),
         QColor("#81c784"),
@@ -236,8 +226,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#69f0ae"),
         QColor("#00e676"),
         QColor("#00c853"),
-        // lightGreen
-        QColor("#f1f8e9"),
+        QColor("#f1f8e9"), // lightGreen
         QColor("#dcedc8"),
         QColor("#c5e1a5"),
         QColor("#aed581"),
@@ -251,8 +240,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#b2ff59"),
         QColor("#76ff03"),
         QColor("#64dd17"),
-        // lime
-        QColor("#f9fbe7"),
+        QColor("#f9fbe7"), // lime
         QColor("#f0f4c3"),
         QColor("#e6ee9c"),
         QColor("#dce775"),
@@ -266,8 +254,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#eeff41"),
         QColor("#c6ff00"),
         QColor("#aeea00"),
-        // yellow
-        QColor("#fffde7"),
+        QColor("#fffde7"), // yellow
         QColor("#fff9c4"),
         QColor("#fff59d"),
         QColor("#fff176"),
@@ -281,8 +268,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#ffff00"),
         QColor("#ffea00"),
         QColor("#ffd600"),
-        // amber
-        QColor("#fff8e1"),
+        QColor("#fff8e1"), // amber
         QColor("#ffecb3"),
         QColor("#ffe082"),
         QColor("#ffd54f"),
@@ -296,8 +282,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#ffd740"),
         QColor("#ffc400"),
         QColor("#ffab00"),
-        // orange
-        QColor("#fff3e0"),
+        QColor("#fff3e0"), // orange
         QColor("#ffe0b2"),
         QColor("#ffcc80"),
         QColor("#ffb74d"),
@@ -311,8 +296,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#ffab40"),
         QColor("#ff9100"),
         QColor("#ff6d00"),
-        // deepOrange
-        QColor("#fbe9e7"),
+        QColor("#fbe9e7"), // deepOrange
         QColor("#ffccbc"),
         QColor("#ffab91"),
         QColor("#ff8a65"),
@@ -326,8 +310,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#ff6e40"),
         QColor("#ff3d00"),
         QColor("#dd2c00"),
-        // brown
-        QColor("#efebe9"),
+        QColor("#efebe9"), // brown
         QColor("#d7ccc8"),
         QColor("#bcaaa4"),
         QColor("#a1887f"),
@@ -337,8 +320,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#5d4037"),
         QColor("#4e342e"),
         QColor("#3e2723"),
-        // grey
-        QColor("#eceff1"),
+        QColor("#eceff1"), // blueGrey
         QColor("#cfd8dc"),
         QColor("#b0bec5"),
         QColor("#90a4ae"),
@@ -348,8 +330,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#455a64"),
         QColor("#37474f"),
         QColor("#263238"),
-        // blueGrey
-        QColor("#fafafa"),
+        QColor("#fafafa"), // grey
         QColor("#f5f5f5"),
         QColor("#eeeeee"),
         QColor("#e0e0e0"),
@@ -359,8 +340,7 @@ const QColor &MaterialTheme::color(QxMaterial::Color color)
         QColor("#616161"),
         QColor("#424242"),
         QColor("#212121"),
-        // other
-        QColor("#000000"),
+        QColor("#000000"), // other
         QColor("#ffffff"),
         rgba(0, 0, 0, 0),
         rgba(0, 0, 0, 0.87),
