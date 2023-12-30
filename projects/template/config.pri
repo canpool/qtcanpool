@@ -16,3 +16,5 @@ isEmpty(QTCANPOOL_DIR):             QTCANPOOL_DIR = $$quote($$PWD/../..)
 !exists($$QTCANPOOL_DIR) {
     error("QTCANPOOL_DIR was not configured correctly")
 }
+
+include($$QTCANPOOL_DIR/qtconfig.pri)
