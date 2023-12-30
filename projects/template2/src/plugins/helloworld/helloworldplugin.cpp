@@ -25,6 +25,8 @@
 
 #include "helloworldplugin.h"
 
+#include <QMessageBox>
+
 namespace HelloWorld {
 namespace Internal {
 
