@@ -1,7 +1,7 @@
 #ifndef WINDOWSTYLEAGENT_H
 #define WINDOWSTYLEAGENT_H
 
-#include "qwkglobal.h"
+#include "qxwindow/qxwindow_global.h"
 #include <QtCore/QObject>
 #include <QtGui/QWindow>
 #include <memory>

@@ -96,6 +96,29 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
             $$PWD/widgetwindowagent_mac.cpp \
 
     }
-
 }
 
+equals(QX_WINDOW_CONFIG_ENABLE_STYLE_AGENT, 1) {
+    HEADERS += \
+        $$PWD/style/windowstyleagent.h \
+        $$PWD/style/windowstyleagent_p.h
+
+    SOURCES += \
+        $$PWD/style/windowstyleagent.cpp \
+
+    win32 {
+        SOURCES += \
+            $$PWD/style/windowstyleagent_win.cpp \
+
+    }
+    linux* {
+        SOURCES += \
+            $$PWD/style/windowstyleagent_linux.cpp \
+
+    }
+    macx {
+        SOURCES += \
+            $$PWD/style/windowstyleagent_mac.cpp \
+
+    }
+}

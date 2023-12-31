@@ -10,7 +10,7 @@
 // version without notice, or may even be removed.
 //
 
-#include <QWKCore/windowstyleagent.h>
+#include "windowstyleagent.h"
 #include <QtCore/QHash>
 
 QX_WINDOW_BEGIN_NAMESPACE

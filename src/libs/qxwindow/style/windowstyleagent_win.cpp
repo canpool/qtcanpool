@@ -1,6 +1,6 @@
 #include "windowstyleagent_p.h"
-#include "windowevent_p.h"
-#include <QWKCore/private/windowkit_win_p.h>
+#include "qxwindow/windowevent_p.h"
+#include "qxwindow/windowkit_win_p.h"
 #include <QtCore/QSet>
 #include <QtCore/QVariant>
 #include <QtGui/QColor>
