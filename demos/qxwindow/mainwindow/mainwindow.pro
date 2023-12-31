@@ -14,11 +14,11 @@ DESTDIR = $$IDE_APP_PATH
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    main.cpp \
-    mainwindow.cpp
+    $$PWD/main.cpp \
+    $$PWD/mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h
+    $$PWD/mainwindow.h
 
 include($$PWD/../shared/shared.pri)
 
@@ -28,4 +28,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    mainwindow.qrc
+    $$PWD/mainwindow.qrc
