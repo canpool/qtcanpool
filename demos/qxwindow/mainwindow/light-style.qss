@@ -1,0 +1,156 @@
+/* Window bar */
+
+QxWindow--WindowBar[bar-active=true] {
+    background-color: #195ABE;
+}
+
+QxWindow--WindowBar[bar-active=false] {
+    background-color: #195ABE;
+}
+
+
+/* Title label */
+
+QxWindow--WindowBar>QLabel#win-title-label {
+    padding: 0;
+    border: none;
+    color: #ECECEC;
+    background-color: transparent;
+    min-height: 28px;
+}
+
+
+/* System buttons */
+
+QxWindow--WindowBar>QAbstractButton[system-button=true] {
+    qproperty-iconSize: 12px 12px;
+    min-width: 50px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+QxWindow--WindowBar>QAbstractButton#min-button {
+    qproperty-iconNormal: url(":/window-bar/minimize.svg");
+    qproperty-iconSize: 12px 12px;
+}
+
+QxWindow--WindowBar>QAbstractButton#min-button:hover,
+QxWindow--WindowBar>QAbstractButton#min-button:pressed {
+    background-color: rgba(0, 0, 0, 15%);
+}
+
+QxWindow--WindowBar>QAbstractButton#max-button {
+    qproperty-iconNormal: url(":/window-bar/maximize.svg");
+    qproperty-iconChecked: url(":/window-bar/restore.svg");
+}
+
+QxWindow--WindowBar>QAbstractButton#max-button:hover,
+QxWindow--WindowBar>QAbstractButton#max-button:pressed {
+    background-color: rgba(0, 0, 0, 15%);
+}
+
+QxWindow--WindowBar>QAbstractButton#close-button {
+    qproperty-iconNormal: url(":/window-bar/close.svg");
+}
+
+QxWindow--WindowBar>QAbstractButton#close-button:hover,
+QxWindow--WindowBar>QAbstractButton#close-button:pressed {
+    background-color: #e81123;
+}
+
+
+/* Icon button */
+
+QxWindow--WindowBar>QAbstractButton#icon-button {
+    qproperty-iconNormal: url(":/app/example.png");
+    qproperty-iconSize: 18px 18px;
+    min-width: 40px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+
+/* Menu Bar */
+
+QMenuBar {
+    background-color: transparent;
+    border: none;
+}
+
+QMenuBar>QToolButton#qt_menubar_ext_button {
+    qproperty-icon: url(":/window-bar/more-line.svg");
+}
+
+QMenuBar>QToolButton#qt_menubar_ext_button:hover,
+QMenuBar>QToolButton#qt_menubar_ext_button:pressed {
+    background-color: rgba(255, 255, 255, 10%);
+}
+
+QMenuBar::item {
+    color: #EEEEEE;
+    border: none;
+    padding: 8px 12px;
+}
+
+QMenuBar::item:selected {
+    background-color: rgba(255, 255, 255, 10%);
+}
+
+
+/* Menu */
+
+QMenu {
+    padding: 4px;
+    background: white;
+    border: 1px solid #E0E0E0;
+}
+
+QMenu::indicator {
+    left: 6px;
+    width: 20px;
+    height: 20px;
+}
+
+QMenu::icon {
+    left: 6px;
+}
+
+QMenu::item {
+    background: transparent;
+    color: #333333;
+    padding: 6px 24px;
+}
+
+QMenu::item:selected {
+    background-color: rgba(0, 0, 0, 10%);
+}
+
+QMenu::item:disabled {
+    color: #CCCCCC;
+}
+
+QMenu::separator {
+    height: 2px;
+    background-color: #CCCCCC;
+    margin: 6px 0;
+}
+
+
+/* Window */
+
+MainWindow {
+    background-color: #F3F3F3;
+}
+
+MainWindow[custom-style=true] {
+    background-color: transparent;
+}
+
+QWidget#clock-widget {
+    font-size: 75px;
+    color: #333333;
+    font-weight: bold;
+    background-color: transparent;
+}

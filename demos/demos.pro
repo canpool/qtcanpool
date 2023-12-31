@@ -5,6 +5,7 @@ SUBDIRS = \
     helloworld \
     qcanpool \
     qxwidget \
+    qxwindow \
     qgood \
     application \
     misc \

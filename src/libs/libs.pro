@@ -7,6 +7,7 @@ SUBDIRS =   \
     qxribbon \
     qxframeless \
     qxmaterial \
+    qxwindow \
     qgood \
     qgoodbye \
     qcustomplot
