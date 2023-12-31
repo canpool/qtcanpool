@@ -6,14 +6,15 @@ SUBDIRS =   \
     qcanpool \
     qxribbon \
     qxframeless \
-    qxmaterial \
     qxwindow \
     qgood \
     qgoodbye \
     qcustomplot
 
 lessThan(QT_MAJOR_VERSION, 6) {
-    SUBDIRS += qribbon
+    SUBDIRS += \
+        qribbon \
+        qxmaterial
 }
 
 QTC_BUILD_EXTENSIONSYSTEM = 0
