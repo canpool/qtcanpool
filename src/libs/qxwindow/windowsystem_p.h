@@ -39,6 +39,11 @@ protected:
     {
         switch (event->type()) {
         case QEvent::MouseMove: {
+            Qt::WindowStates states = target->windowStates();
+            // FIXME: don't know the normal size of target, so disable move when maximized
+            if (states.testFlag(Qt::WindowMaximized) || states.testFlag(Qt::WindowFullScreen)) {
+                return false;
+            }
             auto mouseEvent = static_cast<QMouseEvent *>(event);
             QPoint delta = getMouseEventGlobalPos(mouseEvent) - initialMousePosition;
             target->setPosition(initialWindowPosition + delta);
