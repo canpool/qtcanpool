@@ -33,8 +33,6 @@ HEADERS += \
     $$PWD/windowsystem_p.h
 
 SOURCES += \
-    $$PWD/widgetitemdelegate.cpp \
-    $$PWD/widgetwindowagent.cpp \
     $$PWD/windowagentbase.cpp \
     $$PWD/windowcontext.cpp \
     $$PWD/windowevent.cpp \
@@ -52,7 +50,6 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
         SOURCES += \
             $$PWD/windowkit_win.cpp \
             $$PWD/windowcontext_win.cpp \
-            $$PWD/widgetwindowagent_win.cpp \
 
         LIBS += -lUser32 -lShell32 -lGdi32
     }
@@ -67,7 +64,6 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
     macx {
         SOURCES += \
             $$PWD/windowcontext_cocoa.mm \
-            $$PWD/widgetwindowagent_mac.cpp \
 
     }
 } else {
@@ -86,15 +82,17 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
         $$PWD/widgetitemdelegate.cpp \
         $$PWD/widgetwindowagent.cpp \
 
-    win32 {
-        SOURCES += \
-            $$PWD/widgetwindowagent_win.cpp \
+    equals(QX_WINDOW_CONFIG_NATIVE, 1) {
+        win32 {
+            SOURCES += \
+                $$PWD/widgetwindowagent_win.cpp \
 
-    }
-    macx {
-        SOURCES += \
-            $$PWD/widgetwindowagent_mac.cpp \
+        }
+        macx {
+            SOURCES += \
+                $$PWD/widgetwindowagent_mac.cpp \
 
+        }
     }
 }
 

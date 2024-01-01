@@ -36,7 +36,7 @@ public:
     std::unique_ptr<QObject> systemButtonAreaWidgetEventFilter;
 #endif
 
-#if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS)
+#if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS) && defined(QX_WINDOW_NATIVE)
     void setupWindows10BorderWorkaround();
     std::unique_ptr<QObject> borderHandler;
 #endif

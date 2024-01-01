@@ -61,7 +61,7 @@ bool WidgetWindowAgent::setup(QWidget *w)
     d->setup(w, new WidgetItemDelegate());
     d->hostWidget = w;
 
-#if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS)
+#if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS) && defined(QX_WINDOW_NATIVE)
     d->setupWindows10BorderWorkaround();
 #endif
     return true;
