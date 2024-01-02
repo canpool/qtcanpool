@@ -75,10 +75,10 @@ static inline void emulateLeaveEvent(QWidget *widget)
                 const auto event = new QHoverEvent(QEvent::HoverLeave, scenePos, globalPos, oldPos, modifiers);
                 Q_UNUSED(localPos);
 #elif (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
-                const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, globalPos, oldPos, modifiers);
+                const auto event = new QHoverEvent(QEvent::HoverLeave, localPos, globalPos, oldPos, modifiers);
                 Q_UNUSED(scenePos);
 #else
-                const auto event =  new QHoverEvent(QEvent::HoverLeave, localPos, oldPos, modifiers);
+                const auto event = new QHoverEvent(QEvent::HoverLeave, localPos, oldPos, modifiers);
                 Q_UNUSED(scenePos);
 #endif
                 QCoreApplication::postEvent(widget, event);
@@ -93,16 +93,18 @@ bool MainWindow::event(QEvent *event)
 {
     switch (event->type()) {
     case QEvent::WindowActivate: {
-        auto menu = menuWidget();
-        menu->setProperty("bar-active", true);
-        style()->polish(menu);
+        if (auto menu = menuWidget()) {
+            menu->setProperty("bar-active", true);
+            style()->polish(menu);
+        }
         break;
     }
 
     case QEvent::WindowDeactivate: {
-        auto menu = menuWidget();
-        menu->setProperty("bar-active", false);
-        style()->polish(menu);
+        if (auto menu = menuWidget()) {
+            menu->setProperty("bar-active", false);
+            style()->polish(menu);
+        }
         break;
     }
 
