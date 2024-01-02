@@ -612,7 +612,9 @@ void WindowContextWin::virtual_hook(int id, void *data)
         auto args = static_cast<void **>(data);
         auto &painter = *static_cast<QPainter *>(args[0]);
         const auto &rect = *static_cast<const QRect *>(args[1]);
+        Q_UNUSED(rect)
         const auto &region = *static_cast<const QRegion *>(args[2]);
+        Q_UNUSED(region)
         const auto hwnd = reinterpret_cast<HWND>(windowId);
 
         QPen pen;

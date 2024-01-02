@@ -4,7 +4,6 @@
 **/
 #include "widgetwindowagent_p.h"
 #include "windowkit_p.h"
-#include "windowkit_win.h"
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
@@ -113,6 +112,7 @@ protected:
     bool nativeEventFilter(const QByteArray &eventType, void *message, QT_NATIVE_EVENT_RESULT_TYPE *result) override
     {
         Q_UNUSED(eventType)
+        Q_UNUSED(result)
 
         const auto msg = static_cast<const MSG *>(message);
         switch (msg->message) {
