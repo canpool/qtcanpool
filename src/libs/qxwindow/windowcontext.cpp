@@ -307,6 +307,9 @@ bool WindowContext::setWindowAttribute(const QString &key, const QVariant &attri
 bool WindowContext::windowAttributeChanged(const QString &key, const QVariant &attribute,
                                                    const QVariant &oldAttribute)
 {
+    Q_UNUSED(key);
+    Q_UNUSED(attribute);
+    Q_UNUSED(oldAttribute);
     return false;
 }
 

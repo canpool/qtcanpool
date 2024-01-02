@@ -30,6 +30,7 @@ public:
 protected:
     void timerEvent(QTimerEvent *event) override
     {
+        Q_UNUSED(event);
         setText(QTime::currentTime().toString(QStringLiteral("hh:mm:ss")));
     }
 };

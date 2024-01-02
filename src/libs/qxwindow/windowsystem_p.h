@@ -37,6 +37,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override
     {
+        Q_UNUSED(obj);
         switch (event->type()) {
         case QEvent::MouseMove: {
             Qt::WindowStates states = target->windowStates();
@@ -73,14 +74,15 @@ class WindowResizeManipulator : public QObject
 {
 public:
     WindowResizeManipulator(QWindow *targetWindow, Qt::Edges edges)
-        : QObject(targetWindow), target(targetWindow), resizeEdges(edges), initialMousePosition(QCursor::pos()),
-          initialWindowRect(target->geometry())
+        : QObject(targetWindow), target(targetWindow), initialMousePosition(QCursor::pos()),
+          initialWindowRect(target->geometry()), resizeEdges(edges)
     {
         target->installEventFilter(this);
     }
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override
     {
+        Q_UNUSED(obj);
         switch (event->type()) {
         case QEvent::MouseMove: {
             auto mouseEvent = static_cast<QMouseEvent *>(event);
