@@ -1,6 +1,8 @@
 include(../../qtlibrary.pri)
 
-win32-msvc {
+win32-g++ {
+    QX_WINDOW_CONFIG_NATIVE = 0
+} else {
     QX_WINDOW_CONFIG_NATIVE = 1
 }
 QX_WINDOW_CONFIG_ENABLE_SYSTEM_BORDERS = 1
