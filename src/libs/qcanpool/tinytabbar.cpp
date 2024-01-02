@@ -20,7 +20,9 @@ TinyTabBarPrivate::TinyTabBarPrivate()
     : m_currentIndex(-1)
     , m_togglable(true)
 {
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    m_togglable = false;
+#endif
 }
 
 TinyTabBarPrivate::~TinyTabBarPrivate()
@@ -35,7 +37,11 @@ void TinyTabBarPrivate::init()
     q->layout()->setContentsMargins(0, 0, 0, 0);
 
     m_group = new QActionGroup(q);
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    m_group->setExclusive(true);
+#else
     m_group->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
+#endif
     connect(m_group, &QActionGroup::triggered, this, &TinyTabBarPrivate::onTriggered);
 
     connect(q, &TinyTabBar::orientationChanged, this, &TinyTabBarPrivate::onOrientationChanged);
@@ -266,6 +272,9 @@ int TinyTabBar::currentIndex() const
 
 void TinyTabBar::setTogglable(bool able)
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    Q_UNUSED(able);
+#else
     Q_D(TinyTabBar);
     if (d->m_togglable == able) {
         return;
@@ -273,6 +282,7 @@ void TinyTabBar::setTogglable(bool able)
     d->m_togglable = able;
     d->m_group->setExclusionPolicy(able ? QActionGroup::ExclusionPolicy::ExclusiveOptional
                                         : QActionGroup::ExclusionPolicy::Exclusive);
+#endif
 }
 
 bool TinyTabBar::isTogglable() const

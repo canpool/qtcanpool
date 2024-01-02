@@ -24,7 +24,7 @@ static WindowStyleAgent::SystemTheme getSystemTheme()
 static void notifyAllWindowStyleAgents()
 {
     auto theme = getSystemTheme();
-    for (auto &&ap : std::as_const(*g_styleAgentSet())) {
+    for (auto &&ap : qAsConst(*g_styleAgentSet())) {
         ap->notifyThemeChanged(theme);
     }
 }

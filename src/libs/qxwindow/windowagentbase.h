@@ -40,7 +40,7 @@ public Q_SLOTS:
 protected:
     explicit WindowAgentBase(WindowAgentBasePrivate &d, QObject *parent = nullptr);
 
-    const std::unique_ptr<WindowAgentBasePrivate> d_ptr;
+    WindowAgentBasePrivate *d_ptr;
 };
 
 QX_WINDOW_END_NAMESPACE
