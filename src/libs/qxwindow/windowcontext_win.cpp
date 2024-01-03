@@ -688,12 +688,16 @@ QVariant WindowContextWin::windowAttribute(const QString &key) const
         // According to MSDN, WS_OVERLAPPED is not allowed for AdjustWindowRect.
         auto style = static_cast<DWORD>(::GetWindowLongPtrW(hwnd, GWL_STYLE) & ~WS_OVERLAPPED);
         auto exStyle = static_cast<DWORD>(::GetWindowLongPtrW(hwnd, GWL_EXSTYLE));
+#ifdef Q_CC_MSVC
         const DynamicApis &apis = DynamicApis::instance();
         if (apis.pAdjustWindowRectExForDpi) {
             apis.pAdjustWindowRectExForDpi(&frame, style, FALSE, exStyle, getDpiForWindow(hwnd));
         } else {
             ::AdjustWindowRectEx(&frame, style, FALSE, exStyle);
         }
+#else
+        ::AdjustWindowRectEx(&frame, style, FALSE, exStyle);
+#endif
         return QVariant::fromValue(rect2qrect(frame));
     }
 

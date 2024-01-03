@@ -21,8 +21,10 @@
 
 #include "windowkit_win.h"
 #include <dwmapi.h>
+#ifdef Q_CC_MSVC
 #include <shellscalingapi.h>
 #include <timeapi.h>
+#endif
 
 // Don't include this header in any header files.
 
@@ -171,10 +173,12 @@ struct DynamicApis {
     DYNAMIC_API_DECLARE(DwmSetWindowAttribute);
     DYNAMIC_API_DECLARE(DwmExtendFrameIntoClientArea);
     DYNAMIC_API_DECLARE(DwmEnableBlurBehindWindow);
+#ifdef Q_CC_MSVC
     DYNAMIC_API_DECLARE(GetDpiForWindow);
     DYNAMIC_API_DECLARE(GetSystemMetricsForDpi);
     DYNAMIC_API_DECLARE(AdjustWindowRectExForDpi);
     DYNAMIC_API_DECLARE(GetDpiForMonitor);
+#endif
     DYNAMIC_API_DECLARE(timeGetDevCaps);
     DYNAMIC_API_DECLARE(timeBeginPeriod);
     DYNAMIC_API_DECLARE(timeEndPeriod);
@@ -193,13 +197,17 @@ private:
 #define DYNAMIC_API_RESOLVE(DLL, NAME) p##NAME = reinterpret_cast<decltype(p##NAME)>(DLL.resolve(#NAME))
 
         QSystemLibrary user32(QStringLiteral("user32"));
+#ifdef Q_CC_MSVC
         DYNAMIC_API_RESOLVE(user32, GetDpiForWindow);
         DYNAMIC_API_RESOLVE(user32, GetSystemMetricsForDpi);
-        DYNAMIC_API_RESOLVE(user32, SetWindowCompositionAttribute);
         DYNAMIC_API_RESOLVE(user32, AdjustWindowRectExForDpi);
+#endif
+        DYNAMIC_API_RESOLVE(user32, SetWindowCompositionAttribute);
 
         QSystemLibrary shcore(QStringLiteral("shcore"));
+#ifdef Q_CC_MSVC
         DYNAMIC_API_RESOLVE(shcore, GetDpiForMonitor);
+#endif
 
         QSystemLibrary dwmapi(QStringLiteral("dwmapi"));
         DYNAMIC_API_RESOLVE(dwmapi, DwmFlush);
@@ -428,6 +436,7 @@ static inline QColor getAccentColor()
 
 static inline quint32 getDpiForWindow(HWND hwnd)
 {
+#ifdef Q_CC_MSVC
     const DynamicApis &apis = DynamicApis::instance();
     if (apis.pGetDpiForWindow) {   // Win10
         return apis.pGetDpiForWindow(hwnd);
@@ -438,6 +447,9 @@ static inline quint32 getDpiForWindow(HWND hwnd)
         apis.pGetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
         return dpiX;
     } else {   // Win2K
+#else
+    {
+#endif
         HDC hdc = ::GetDC(nullptr);
         const int dpiX = ::GetDeviceCaps(hdc, LOGPIXELSX);
         // const int dpiY = ::GetDeviceCaps(hdc, LOGPIXELSY);
@@ -448,10 +460,14 @@ static inline quint32 getDpiForWindow(HWND hwnd)
 
 static inline quint32 getSystemMetricsForDpi(int index, quint32 dpi)
 {
+#ifdef Q_CC_MSVC
     const DynamicApis &apis = DynamicApis::instance();
     if (apis.pGetSystemMetricsForDpi) {
         return ::GetSystemMetricsForDpi(index, dpi);
     }
+#else
+    Q_UNUSED(dpi)
+#endif
     return ::GetSystemMetrics(index);
 }
 

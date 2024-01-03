@@ -55,6 +55,18 @@
 #define WM_NCUAHDRAWFRAME (0x00AF)
 #endif
 
+#ifndef SM_CXPADDEDBORDER
+#define SM_CXPADDEDBORDER 92
+#endif
+
+#ifndef WM_DPICHANGED
+#define WM_DPICHANGED 0x02E0
+#endif
+
+#ifndef ABM_GETAUTOHIDEBAREX
+#define ABM_GETAUTOHIDEBAREX 0x0000000b
+#endif
+
 QX_WINDOW_BEGIN_NAMESPACE
 
 namespace Private {
