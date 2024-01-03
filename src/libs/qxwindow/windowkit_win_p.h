@@ -14,6 +14,11 @@
 // version without notice, or may even be removed.
 //
 
+// it is known to be 6.5.3
+#if defined(Q_CC_MINGW) && (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3))
+#define Q_CC_MINGW_SUPPORT_DPI_API
+#endif
+
 #include <QtCore/private/qsystemlibrary_p.h>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QPalette>
@@ -21,7 +26,7 @@
 
 #include "windowkit_win.h"
 #include <dwmapi.h>
-#ifdef Q_CC_MSVC
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
 #include <shellscalingapi.h>
 #include <timeapi.h>
 #endif
@@ -173,7 +178,7 @@ struct DynamicApis {
     DYNAMIC_API_DECLARE(DwmSetWindowAttribute);
     DYNAMIC_API_DECLARE(DwmExtendFrameIntoClientArea);
     DYNAMIC_API_DECLARE(DwmEnableBlurBehindWindow);
-#ifdef Q_CC_MSVC
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
     DYNAMIC_API_DECLARE(GetDpiForWindow);
     DYNAMIC_API_DECLARE(GetSystemMetricsForDpi);
     DYNAMIC_API_DECLARE(AdjustWindowRectExForDpi);
@@ -197,15 +202,15 @@ private:
 #define DYNAMIC_API_RESOLVE(DLL, NAME) p##NAME = reinterpret_cast<decltype(p##NAME)>(DLL.resolve(#NAME))
 
         QSystemLibrary user32(QStringLiteral("user32"));
-#ifdef Q_CC_MSVC
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
         DYNAMIC_API_RESOLVE(user32, GetDpiForWindow);
         DYNAMIC_API_RESOLVE(user32, GetSystemMetricsForDpi);
         DYNAMIC_API_RESOLVE(user32, AdjustWindowRectExForDpi);
 #endif
         DYNAMIC_API_RESOLVE(user32, SetWindowCompositionAttribute);
 
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
         QSystemLibrary shcore(QStringLiteral("shcore"));
-#ifdef Q_CC_MSVC
         DYNAMIC_API_RESOLVE(shcore, GetDpiForMonitor);
 #endif
 
@@ -436,7 +441,7 @@ static inline QColor getAccentColor()
 
 static inline quint32 getDpiForWindow(HWND hwnd)
 {
-#ifdef Q_CC_MSVC
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
     const DynamicApis &apis = DynamicApis::instance();
     if (apis.pGetDpiForWindow) {   // Win10
         return apis.pGetDpiForWindow(hwnd);
@@ -460,7 +465,7 @@ static inline quint32 getDpiForWindow(HWND hwnd)
 
 static inline quint32 getSystemMetricsForDpi(int index, quint32 dpi)
 {
-#ifdef Q_CC_MSVC
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
     const DynamicApis &apis = DynamicApis::instance();
     if (apis.pGetSystemMetricsForDpi) {
         return ::GetSystemMetricsForDpi(index, dpi);

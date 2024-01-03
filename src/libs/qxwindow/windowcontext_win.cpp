@@ -49,7 +49,7 @@ static inline bool
     constexpr
 #endif
 
-    isSystemBorderEnabled()
+isSystemBorderEnabled()
 {
     return
 #if defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS)
@@ -688,7 +688,7 @@ QVariant WindowContextWin::windowAttribute(const QString &key) const
         // According to MSDN, WS_OVERLAPPED is not allowed for AdjustWindowRect.
         auto style = static_cast<DWORD>(::GetWindowLongPtrW(hwnd, GWL_STYLE) & ~WS_OVERLAPPED);
         auto exStyle = static_cast<DWORD>(::GetWindowLongPtrW(hwnd, GWL_EXSTYLE));
-#ifdef Q_CC_MSVC
+#if defined(Q_CC_MSVC) || defined(Q_CC_MINGW_SUPPORT_DPI_API)
         const DynamicApis &apis = DynamicApis::instance();
         if (apis.pAdjustWindowRectExForDpi) {
             apis.pAdjustWindowRectExForDpi(&frame, style, FALSE, exStyle, getDpiForWindow(hwnd));
@@ -1826,8 +1826,14 @@ bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM 
         // then the window is clipped to the monitor so that the resize handle
         // do not appear because you don't need them (because you can't resize
         // a window when it's maximized unless you restore it).
-        const quint32 frameSize = getResizeBorderThickness(hWnd);
+        quint32 frameSize = getResizeBorderThickness(hWnd);
         clientRect->top += frameSize;
+#if defined(Q_CC_MINGW) && !defined(Q_CC_MINGW_SUPPORT_DPI_API)
+        if (clientRect->top != 0) {
+            frameSize -= clientRect->top;
+            clientRect->top = 0;
+        }
+#endif
         if (!isSystemBorderEnabled()) {
             clientRect->bottom -= frameSize;
             clientRect->left += frameSize;
