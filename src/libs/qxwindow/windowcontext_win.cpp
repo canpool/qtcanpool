@@ -370,7 +370,7 @@ static bool isValidWindow(HWND hWnd, bool checkVisible, bool checkTopLevel)
 // DefWindowProc(). Consequently, we have to add a global native filter that forwards the result
 // of the hook function, telling Qt whether we have filtered the events before. Since Qt only
 // handles Windows window messages in the main thread, it is safe to do so.
-class WindowsNativeEventFilter : public AppNativeEventFilter
+class WinNativeEventFilter : public AppNativeEventFilter
 {
 public:
     bool nativeEventFilter(const QByteArray &eventType, void *message, QT_NATIVE_EVENT_RESULT_TYPE *result) override
@@ -397,7 +397,7 @@ public:
         return false;
     }
 
-    static inline WindowsNativeEventFilter *instance = nullptr;
+    static inline WinNativeEventFilter *instance = nullptr;
     static inline WindowContextWin *lastMessageContext = nullptr;
 
     static inline void install()
@@ -405,7 +405,7 @@ public:
         if (instance) {
             return;
         }
-        instance = new WindowsNativeEventFilter();
+        instance = new WinNativeEventFilter();
     }
 
     static inline void uninstall()
@@ -486,9 +486,9 @@ extern "C" LRESULT QT_WIN_CALLBACK QWKHookedWndProc(HWND hWnd, UINT message, WPA
     // Since Qt does the necessary processing of the WM_NCCALCSIZE message, we need to
     // forward it right away and process it in our native event filter.
     if (message == WM_NCCALCSIZE) {
-        WindowsNativeEventFilter::lastMessageContext = ctx;
+        WinNativeEventFilter::lastMessageContext = ctx;
         LRESULT result = ::CallWindowProcW(g_qtWindowProc, hWnd, message, wParam, lParam);
-        WindowsNativeEventFilter::lastMessageContext = nullptr;
+        WinNativeEventFilter::lastMessageContext = nullptr;
         return result;
     }
 
@@ -526,7 +526,7 @@ static inline void addManagedWindow(QWindow *window, HWND hWnd, WindowContextWin
     ::SetWindowLongPtrW(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(QWKHookedWndProc));
 
     // Install global native event filter
-    WindowsNativeEventFilter::install();
+    WinNativeEventFilter::install();
 
     // Save window handle mapping
     g_wndProcHash->insert(hWnd, ctx);
@@ -540,7 +540,7 @@ static inline void removeManagedWindow(HWND hWnd)
 
     // Remove event filter if the all windows has been destroyed
     if (g_wndProcHash->empty()) {
-        WindowsNativeEventFilter::uninstall();
+        WinNativeEventFilter::uninstall();
     }
 }
 
