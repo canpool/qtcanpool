@@ -454,6 +454,7 @@ static inline quint32 getDpiForWindow(HWND hwnd)
     } else {   // Win2K
 #else
     {
+        Q_UNUSED(hwnd)
 #endif
         HDC hdc = ::GetDC(nullptr);
         const int dpiX = ::GetDeviceCaps(hdc, LOGPIXELSX);

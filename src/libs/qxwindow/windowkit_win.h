@@ -77,34 +77,34 @@ inline bool IsWindows1122H2OrGreater_Real()
 {
     RTL_OSVERSIONINFOW rovi = GetRealOSVersion();
     return (rovi.dwMajorVersion > 10) ||
-           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion >= 0 && rovi.dwBuildNumber >= 22621);
+           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion == 0 && rovi.dwBuildNumber >= 22621);
 }
 
 inline bool IsWindows11OrGreater_Real()
 {
     RTL_OSVERSIONINFOW rovi = GetRealOSVersion();
     return (rovi.dwMajorVersion > 10) ||
-           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion >= 0 && rovi.dwBuildNumber >= 22000);
+           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion == 0 && rovi.dwBuildNumber >= 22000);
 }
 
 inline bool IsWindows101903OrGreater_Real()
 {
     RTL_OSVERSIONINFOW rovi = GetRealOSVersion();
     return (rovi.dwMajorVersion > 10) ||
-           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion >= 0 && rovi.dwBuildNumber >= 18362);
+           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion == 0 && rovi.dwBuildNumber >= 18362);
 }
 
 inline bool IsWindows101809OrGreater_Real()
 {
     RTL_OSVERSIONINFOW rovi = GetRealOSVersion();
     return (rovi.dwMajorVersion > 10) ||
-           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion >= 0 && rovi.dwBuildNumber >= 17763);
+           (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion == 0 && rovi.dwBuildNumber >= 17763);
 }
 
 inline bool IsWindows10OrGreater_Real()
 {
     RTL_OSVERSIONINFOW rovi = GetRealOSVersion();
-    return (rovi.dwMajorVersion > 10) || (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion >= 0);
+    return (rovi.dwMajorVersion > 10) || (rovi.dwMajorVersion == 10 && rovi.dwMinorVersion == 0);
 }
 
 inline bool IsWindows8Point1OrGreater_Real()
