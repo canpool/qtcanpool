@@ -77,9 +77,12 @@ static void setInternalWindowFrameMargins(QWindow *window, const QMargins &margi
         }
     }
 #else
+    // FIXME: test on qt 6.5.3 (issue #I8SPBC,#I8SPC8)
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     if (const auto platformWindow = dynamic_cast<QNativeInterface::Private::QWindowsWindow *>(window->handle())) {
         platformWindow->setCustomMargins(margins);
     }
+#endif
 #endif
 }
 
