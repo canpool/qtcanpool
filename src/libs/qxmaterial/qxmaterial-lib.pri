@@ -2,6 +2,11 @@ VERSION = 0.1.0
 
 QT += widgets
 
+greaterThan(QT_MAJOR_VERSION, 5) {
+    # Need to install Qt State Machines (Additional Libraries)
+    QT += statemachine
+}
+
 equals(QX_MATERIAL_CONFIG_BUILD_STATIC, 1) {
     DEFINES += QX_MATERIAL_LIBRARY_STATIC
 } else {

@@ -205,7 +205,7 @@ void MaterialTabBarPrivate::MaterialTabBarPrivate::init()
     q->setStyle(&MaterialStyle::instance());
 
     tabLayout->setSpacing(0);
-    tabLayout->setMargin(0);
+    tabLayout->setContentsMargins(0, 0, 0, 0);
 }
 
 /*!

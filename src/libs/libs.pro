@@ -6,6 +6,7 @@ SUBDIRS =   \
     qcanpool \
     qxribbon \
     qxframeless \
+    qxmaterial \
     qxwindow \
     qgood \
     qgoodbye \
@@ -13,8 +14,7 @@ SUBDIRS =   \
 
 lessThan(QT_MAJOR_VERSION, 6) {
     SUBDIRS += \
-        qribbon \
-        qxmaterial
+        qribbon
 }
 
 QTC_BUILD_EXTENSIONSYSTEM = 0
