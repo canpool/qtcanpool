@@ -5,20 +5,15 @@
 #ifndef QXMATERIALSTYLE_H
 #define QXMATERIALSTYLE_H
 
-#include "materialstyle_p.h"
-#include "materialnamespace.h"
+#include "qxmaterial_global.h"
 #include <QtWidgets/QCommonStyle>
 
 QX_MATERIAL_BEGIN_NAMESPACE
 
-#define MATERIAL_DISABLE_THEME_COLORS                                                                                  \
-    if (d->useThemeColors == true) {                                                                                   \
-        d->useThemeColors = false;                                                                                     \
-    }
-
 class MaterialTheme;
+class MaterialStylePrivate;
 
-class MaterialStyle : public QCommonStyle
+class QX_MATERIAL_EXPORT MaterialStyle : public QCommonStyle
 {
     Q_OBJECT
 public:
@@ -26,15 +21,11 @@ public:
 
     void setTheme(MaterialTheme *theme);
     QColor themeColor(const QString &key) const;
-protected:
-    const QScopedPointer<MaterialStylePrivate> d_ptr;
 private:
-    Q_DECLARE_PRIVATE(MaterialStyle)
-
     MaterialStyle();
-
-    MaterialStyle(MaterialStyle const &);
-    void operator=(MaterialStyle const &);
+    ~MaterialStyle();
+private:
+    QX_DECLARE_PRIVATE(MaterialStyle)
 };
 
 inline MaterialStyle &MaterialStyle::instance()

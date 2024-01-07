@@ -4,7 +4,7 @@
  **/
 #include "materialtoggle.h"
 #include "materialtoggle_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include "materialripple.h"
 #include <QPropertyAnimation>
 #include <QSignalTransition>

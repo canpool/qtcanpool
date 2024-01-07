@@ -4,7 +4,7 @@
  **/
 #include "materialavatar.h"
 #include "materialavatar_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QPainter>
 #include <QPainterPath>
 

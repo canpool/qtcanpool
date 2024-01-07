@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  **/
 #include "materialstyle.h"
+#include "materialstyle_p.h"
 #include "materialtheme.h"
 #include <QFontDatabase>
 
@@ -13,8 +14,7 @@ QX_MATERIAL_BEGIN_NAMESPACE
  *  \internal
  */
 
-MaterialStylePrivate::MaterialStylePrivate(MaterialStyle *q)
-    : q_ptr(q)
+MaterialStylePrivate::MaterialStylePrivate()
 {
 }
 
@@ -55,9 +55,15 @@ QColor MaterialStyle::themeColor(const QString &key) const
     return d->theme->getColor(key);
 }
 
-MaterialStyle::MaterialStyle() : QCommonStyle(), d_ptr(new MaterialStylePrivate(this))
+MaterialStyle::MaterialStyle() : QCommonStyle()
 {
+    QX_INIT_PRIVATE(MaterialStyle)
     d_func()->init();
+}
+
+MaterialStyle::~MaterialStyle()
+{
+    QX_FINI_PRIVATE()
 }
 
 QX_MATERIAL_END_NAMESPACE

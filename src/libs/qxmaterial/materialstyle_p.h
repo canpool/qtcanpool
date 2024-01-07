@@ -7,22 +7,29 @@
 
 #include "qxmaterial_global.h"
 
+// for internal
+#include "materialnamespace.h"
+#include "materialstyle.h"
+
 QX_MATERIAL_BEGIN_NAMESPACE
+
+#define MATERIAL_DISABLE_THEME_COLORS                                                                                  \
+    if (d->useThemeColors == true) {                                                                                   \
+        d->useThemeColors = false;                                                                                     \
+    }
 
 class MaterialStyle;
 class MaterialTheme;
 
 class MaterialStylePrivate
 {
-    Q_DISABLE_COPY(MaterialStylePrivate)
-    Q_DECLARE_PUBLIC(MaterialStyle)
+    QX_DECLARE_PUBLIC(MaterialStyle)
 public:
-    MaterialStylePrivate(MaterialStyle *q);
+    MaterialStylePrivate();
     ~MaterialStylePrivate();
 
     void init();
 
-    MaterialStyle *const q_ptr;
     MaterialTheme *theme;
 };
 

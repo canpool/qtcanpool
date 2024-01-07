@@ -4,7 +4,7 @@
  **/
 #include "materialscrollbar.h"
 #include "materialscrollbar_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QDebug>
 #include <QPainter>
 #include <QPainterPath>

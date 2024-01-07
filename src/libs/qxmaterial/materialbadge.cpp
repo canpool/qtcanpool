@@ -4,7 +4,7 @@
  **/
 #include "materialbadge.h"
 #include "materialbadge_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QPainter>
 
 QX_MATERIAL_BEGIN_NAMESPACE

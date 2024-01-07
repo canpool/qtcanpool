@@ -4,7 +4,7 @@
  **/
 #include "materialtabbar.h"
 #include "materialtabbar_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QtWidgets/QHBoxLayout>
 #include <QEvent>
 #include <QPainter>

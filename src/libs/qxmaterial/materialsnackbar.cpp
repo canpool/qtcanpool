@@ -5,7 +5,7 @@
 #include "materialsnackbar.h"
 #include "materialsnackbar_p.h"
 #include "materialstatetransition.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QDebug>
 #include <QPainter>
 #include <QtWidgets/QApplication>

@@ -4,7 +4,7 @@
  **/
 #include "materialtextfield.h"
 #include "materialtextfield_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QDebug>
 #include <QPainter>
 #include <QtWidgets/QApplication>

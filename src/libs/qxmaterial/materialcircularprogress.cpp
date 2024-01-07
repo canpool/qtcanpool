@@ -4,7 +4,7 @@
  **/
 #include "materialcircularprogress.h"
 #include "materialcircularprogress_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QParallelAnimationGroup>

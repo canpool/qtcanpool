@@ -6,7 +6,7 @@
 #include "materialflatbutton_p.h"
 #include "materialripple.h"
 #include "materialrippleoverlay.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include "materialstatetransition.h"
 #include <QBitmap>
 #include <QIcon>

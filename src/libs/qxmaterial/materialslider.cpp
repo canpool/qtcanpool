@@ -6,7 +6,7 @@
 #include "materialslider_p.h"
 #include "materialstatetransitionevent.h"
 #include "materialstatetransition.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QMouseEvent>
 #include <QtWidgets/QApplication>
 #include <QAbstractTransition>

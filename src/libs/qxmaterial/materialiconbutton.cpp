@@ -5,7 +5,7 @@
 #include "materialiconbutton.h"
 #include "materialiconbutton_p.h"
 #include "materialrippleoverlay.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QEvent>
 #include <QPainter>
 

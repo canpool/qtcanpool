@@ -4,7 +4,7 @@
  **/
 #include "materialprogress.h"
 #include "materialprogress_p.h"
-#include "materialstyle.h"
+#include "materialstyle_p.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QPropertyAnimation>
