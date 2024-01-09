@@ -1,5 +1,7 @@
 
-0.1.0-rc
+0.1.0
 ---
+- Optimize window native feature on Qt 6.5.3
+- Support window native feature on mingw compiler
 - Rename files and classes
 - Powered by qwindowkit baaefab217758ffe51322ad16b6f12a05228db8c
