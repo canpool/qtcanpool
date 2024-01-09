@@ -348,7 +348,7 @@ void MainWindow::loadStyleSheet(Theme theme)
         return;
     currentTheme = theme;
 
-    if (QFile qss(theme == Dark ? QStringLiteral(":/dark-style.qss") : QStringLiteral(":/light-style.qss"));
+    if (QFile qss(theme == Dark ? QStringLiteral(":/dark-style.css") : QStringLiteral(":/light-style.css"));
         qss.open(QIODevice::ReadOnly | QIODevice::Text)) {
         setStyleSheet(QString::fromUtf8(qss.readAll()));
         Q_EMIT themeChanged();
