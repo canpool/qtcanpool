@@ -18,7 +18,7 @@ QX_MATERIAL_BEGIN_NAMESPACE
 /*!
  *  \internal
  */
-MaterialAppBarPrivate::MaterialAppBarPrivate(MaterialAppBar *q) : q_ptr(q)
+MaterialAppBarPrivate::MaterialAppBarPrivate()
 {
 }
 
@@ -45,21 +45,23 @@ void MaterialAppBarPrivate::init()
 
     q->setGraphicsEffect(effect);
 
-    QHBoxLayout *layout = new QHBoxLayout;
-    q->setLayout(layout);
+    m_layout = new QHBoxLayout(q);
 }
 
 /*!
  *  \class MaterialAppBar
  */
 
-MaterialAppBar::MaterialAppBar(QWidget *parent) : QWidget(parent), d_ptr(new MaterialAppBarPrivate(this))
+MaterialAppBar::MaterialAppBar(QWidget *parent) : QWidget(parent)
 {
-    d_func()->init();
+    QX_INIT_PRIVATE(MaterialAppBar)
+    Q_D(MaterialAppBar);
+    d->init();
 }
 
 MaterialAppBar::~MaterialAppBar()
 {
+    QX_FINI_PRIVATE()
 }
 
 QSize MaterialAppBar::sizeHint() const
@@ -101,9 +103,7 @@ void MaterialAppBar::setForegroundColor(const QColor &color)
 
     d->foregroundColor = color;
 
-    if (d->useThemeColors == true) {
-        d->useThemeColors = false;
-    }
+    MATERIAL_DISABLE_THEME_COLORS
     update();
 }
 
@@ -112,7 +112,7 @@ QColor MaterialAppBar::foregroundColor() const
     Q_D(const MaterialAppBar);
 
     if (d->useThemeColors || !d->foregroundColor.isValid()) {
-        return MaterialStyle::instance().themeColor(MK_primary1);
+        return MaterialStyle::instance().themeColor(MK_textAlt);
     } else {
         return d->foregroundColor;
     }
@@ -124,9 +124,7 @@ void MaterialAppBar::setBackgroundColor(const QColor &color)
 
     d->backgroundColor = color;
 
-    if (d->useThemeColors == true) {
-        d->useThemeColors = false;
-    }
+    MATERIAL_DISABLE_THEME_COLORS
     update();
 }
 
@@ -139,6 +137,12 @@ QColor MaterialAppBar::backgroundColor() const
     } else {
         return d->backgroundColor;
     }
+}
+
+QHBoxLayout *MaterialAppBar::appBarLayout() const
+{
+    Q_D(const MaterialAppBar);
+    return d->m_layout;
 }
 
 QX_MATERIAL_END_NAMESPACE

@@ -35,26 +35,29 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(cw);
 
     // appbar
+    MaterialAppBar *appBar = new MaterialAppBar();
+    const QColor &foregroundColor = appBar->foregroundColor();
+
     QLabel *label = new QLabel("Inbox");
     label->setAttribute(Qt::WA_TranslucentBackground);
     label->setForegroundRole(QPalette::WindowText);
     label->setContentsMargins(6, 0, 0, 0);
 
     QPalette palette = label->palette();
-    palette.setColor(label->foregroundRole(), Qt::white);
+    palette.setColor(label->foregroundRole(), foregroundColor);
     label->setPalette(palette);
 
     label->setFont(QFont("Roboto", 18, QFont::Normal));
 
     MaterialIconButton *button = new MaterialIconButton(MaterialTheme::icon("navigation", "menu"));
     button->setIconSize(QSize(24, 24));
-    button->setColor(Qt::white);
+    button->setColor(foregroundColor);
     button->setFixedWidth(42);
 
-    MaterialAppBar *appBar = new MaterialAppBar();
-    appBar->appBarLayout()->addWidget(button);
-    appBar->appBarLayout()->addWidget(label);
-    appBar->appBarLayout()->addStretch(1);
+    QHBoxLayout *appBarLayout = appBar->appBarLayout();
+    appBarLayout->addWidget(button);
+    appBarLayout->addWidget(label);
+    appBarLayout->addStretch(1);
 
     mainLayout->addWidget(appBar);
 

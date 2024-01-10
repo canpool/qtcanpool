@@ -34,20 +34,13 @@ public:
     void setBackgroundColor(const QColor &color);
     QColor backgroundColor() const;
 
-    inline QHBoxLayout *appBarLayout() const;
+    QHBoxLayout *appBarLayout() const;
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
-    const QScopedPointer<MaterialAppBarPrivate> d_ptr;
 private:
-    Q_DISABLE_COPY(MaterialAppBar)
-    Q_DECLARE_PRIVATE(MaterialAppBar)
+    QX_DECLARE_PRIVATE(MaterialAppBar)
 };
-
-inline QHBoxLayout *MaterialAppBar::appBarLayout() const
-{
-    return static_cast<QHBoxLayout *>(layout());
-}
 
 QX_MATERIAL_END_NAMESPACE
 

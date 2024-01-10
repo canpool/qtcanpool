@@ -8,6 +8,8 @@
 #include "qxmaterial_global.h"
 #include <QColor>
 
+class QHBoxLayout;
+
 QX_MATERIAL_BEGIN_NAMESPACE
 
 class MaterialAppBar;
@@ -15,14 +17,15 @@ class MaterialAppBar;
 class MaterialAppBarPrivate
 {
     Q_DISABLE_COPY(MaterialAppBarPrivate)
-    Q_DECLARE_PUBLIC(MaterialAppBar)
+    QX_DECLARE_PUBLIC(MaterialAppBar)
 public:
-    MaterialAppBarPrivate(MaterialAppBar *q);
+    MaterialAppBarPrivate();
     ~MaterialAppBarPrivate();
 
     void init();
 
-    MaterialAppBar *const q_ptr;
+public:
+    QHBoxLayout *m_layout;
     bool useThemeColors;
     QColor foregroundColor;
     QColor backgroundColor;
