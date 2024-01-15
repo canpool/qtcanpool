@@ -5,12 +5,20 @@
 #include "ribbonappwindow.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/windowbuttongroup.h"
+#ifdef QXRIBBON_USE_QXFRAMELESS
 #include "qxframeless/framelesshelper.h"
+#else
+#include "qxwindow/widgetwindowagent.h"
+#endif
 
 #include <QApplication>
 #include <QFile>
 
+#ifdef QXRIBBON_USE_QXFRAMELESS
 QX_FRAMELESS_USE_NAMESPACE
+#else
+QX_WINDOW_USE_NAMESPACE
+#endif
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -24,14 +32,22 @@ public:
 public:
     RibbonBar *m_ribbonBar;
     WindowButtonGroup *m_windowButtonGroup;
+#ifdef QXRIBBON_USE_QXFRAMELESS
     FramelessHelper *m_framelessHelper;
+#else
+    WidgetWindowAgent *m_windowAgent;
+#endif
     int m_theme;
 };
 
 RibbonAppWindowPrivate::RibbonAppWindowPrivate()
     : m_ribbonBar(Q_NULLPTR)
     , m_windowButtonGroup(Q_NULLPTR)
+#ifdef QXRIBBON_USE_QXFRAMELESS
     , m_framelessHelper(Q_NULLPTR)
+#else
+    , m_windowAgent(Q_NULLPTR)
+#endif
     , m_theme(RibbonTheme::Office2013Theme)
 {
 }
@@ -47,11 +63,22 @@ void RibbonAppWindowPrivate::setMenuWidget(QWidget *menuBar)
     } else {
         m_ribbonBar = Q_NULLPTR;
     }
+#ifdef QXRIBBON_USE_QXFRAMELESS
     if (Q_NULLPTR == m_framelessHelper) {
         m_framelessHelper = new FramelessHelper(q);
     }
-    m_framelessHelper->setTitleHeight(m_ribbonBar->titleBarHeight());
+    if (m_ribbonBar) {
+        m_framelessHelper->setTitleHeight(m_ribbonBar->titleBarHeight());
+    }
     m_framelessHelper->addCaptionClassName("QxRibbon::RibbonBar");
+#else
+    if (Q_NULLPTR == m_windowAgent) {
+        m_windowAgent = new WidgetWindowAgent(q);
+        m_windowAgent->setup(q);
+        m_windowAgent->setTitleBar(bar);
+        m_windowAgent->addCaptionClassName("QxRibbon::RibbonBar");
+    }
+#endif
 
     if (Q_NULLPTR == m_windowButtonGroup) {
         m_windowButtonGroup = new WindowButtonGroup(q);
@@ -75,6 +102,9 @@ void RibbonAppWindowPrivate::setMenuWidget(QWidget *menuBar)
         m_windowButtonGroup->setVisible(true);
     }
     m_windowButtonGroup->setWindowStates(s);
+#ifndef QXRIBBON_USE_QXFRAMELESS
+    m_windowAgent->setHitTestVisible(m_windowButtonGroup, true);
+#endif
 }
 
 void RibbonAppWindowPrivate::resizeRibbon()
