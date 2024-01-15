@@ -992,7 +992,7 @@ FancyTitleBar::FancyTitleBar(QWidget *mainWidget)
 {
     Q_ASSERT(mainWidget);
 
-#ifdef QTC_USE_NATIVE
+#if defined(QTC_USE_NATIVE) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     d = new FancyTitleBarPrivateNative(mainWidget);
 #else
     d = new FancyTitleBarPrivateQt(mainWidget);
