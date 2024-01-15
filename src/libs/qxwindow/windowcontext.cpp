@@ -183,8 +183,32 @@ bool WindowContext::isInTitleBarDraggableArea(const QPoint &pos) const
             return false;
         }
     }
+    if (!m_captionClassNameList.isEmpty()) {
+        if (auto widget = m_delegate->childAt(m_titleBar, pos)) {
+            if (!isCaptionClassName(widget->metaObject()->className())) {
+                return false;
+            }
+        }
+    }
 
     return true;
+}
+
+bool WindowContext::isCaptionClassName(const char *name) const
+{
+    foreach (const QString &cn, m_captionClassNameList) {
+        if (cn.compare(QLatin1String(name)) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void WindowContext::addCaptionClassName(const QString &name)
+{
+    if (!m_captionClassNameList.contains(name)) {
+        m_captionClassNameList.append(name);
+    }
 }
 
 QString WindowContext::key() const

@@ -32,6 +32,7 @@ public:
     virtual bool isEnabled(const QObject *obj) const = 0;
     virtual bool isVisible(const QObject *obj) const = 0;
     virtual QRect mapGeometryToScene(const QObject *obj) const = 0;
+    virtual QObject *childAt(const QObject *obj, const QPoint &pos) const = 0;
 
     // Host property query
     virtual QWindow *hostWindow(const QObject *host) const = 0;

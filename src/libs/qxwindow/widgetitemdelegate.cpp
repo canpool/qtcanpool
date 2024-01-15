@@ -38,6 +38,15 @@ QRect WidgetItemDelegate::mapGeometryToScene(const QObject *obj) const
     return {originPoint, size};
 }
 
+QObject *WidgetItemDelegate::childAt(const QObject *obj, const QPoint &pos) const
+{
+    auto widget = static_cast<const QWidget *>(obj);
+    if (widget) {
+        return widget->childAt(pos);
+    }
+    return nullptr;
+}
+
 QWindow *WidgetItemDelegate::hostWindow(const QObject *host) const
 {
     return static_cast<const QWidget *>(host)->windowHandle();

@@ -58,6 +58,9 @@ public:
     bool isInSystemButtons(const QPoint &pos, WindowAgentBase::SystemButton *button) const;
     bool isInTitleBarDraggableArea(const QPoint &pos) const;
 
+    bool isCaptionClassName(const char *name) const;
+    void addCaptionClassName(const QString &name);
+
     virtual QString key() const;
 
     enum WindowContextHook {
@@ -85,6 +88,7 @@ protected:
     QWindow *m_windowHandle{};
 
     QSet<const QObject *> m_hitTestVisibleItems;
+    QList<QString> m_captionClassNameList;
 #ifdef Q_OS_MAC
     ScreenRectCallback m_systemButtonAreaCallback;
 #endif

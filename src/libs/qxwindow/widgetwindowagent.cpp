@@ -134,6 +134,12 @@ void WidgetWindowAgent::setHitTestVisible(const QWidget *w, bool visible)
     d->context->setHitTestVisible(w, visible);
 }
 
+void WidgetWindowAgent::addCaptionClassName(const QString &name)
+{
+    Q_D(WidgetWindowAgent);
+    d->context->addCaptionClassName(name);
+}
+
 /*!
     \internal
 */

@@ -41,6 +41,8 @@ public:
     bool isHitTestVisible(const QWidget *w) const;
     void setHitTestVisible(const QWidget *w, bool visible = true);
 
+    void addCaptionClassName(const QString &name);
+
 Q_SIGNALS:
     void titleBarChanged(const QWidget *w);
     void systemButtonChanged(SystemButton button, const QWidget *w);
