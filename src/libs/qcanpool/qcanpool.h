@@ -68,7 +68,7 @@
 
 #define QCANPOOL_VERSION_MAJOR 2
 #define QCANPOOL_VERSION_MINOR 0
-#define QCANPOOL_VERSION_PATCH 0
+#define QCANPOOL_VERSION_PATCH 1
 /*
    QCANPOOL_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QCANPOOL_VERSION >= QT_VERSION_CHECK(0, 5, 3))

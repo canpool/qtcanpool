@@ -1,3 +1,6 @@
+2.0.1
+---
+- Don't support windows native features on qt6 for FancyTitleBar
 
 2.0.0
 ---
