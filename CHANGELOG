@@ -1,4 +1,12 @@
 
+2.1.0
+---
+- qt: support build on qt 5.11.1 on linux
+- qcanpool: release version 2.0.1
+- qxwindow: add and release version 0.1.1
+- qxmaterial: add and release version 0.1.1
+- project: add qtconfig.pri for project template
+
 2.0.0
 ---
 - qt: support Qt 5 and 6
