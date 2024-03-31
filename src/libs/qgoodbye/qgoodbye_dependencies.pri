@@ -1,3 +1,0 @@
-QTC_LIB_NAME = qgoodbye
-QTC_LIB_VERSION = 0.1.0
-QTC_LIB_DEPENDS += qgood
