@@ -13,14 +13,6 @@ lessThan(QT_MAJOR_VERSION, 6) {
         qribbon
 }
 
-QTC_BUILD_EXTENSIONSYSTEM = 0
-equals(QTC_BUILD_EXTENSIONSYSTEM, 1) {
-    SUBDIRS += \
-        aggregation \
-        extensionsystem \
-        utils
-}
-
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
     include($$l/$${l}_dependencies.pri)

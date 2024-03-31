@@ -4,8 +4,6 @@
 - [MulanPSL-2.0](#mulanpsl-20)
 - [LGPL-2.1](#lgpl-21)
 - [MIT](#mit)
-- [GPL-3.0 or Commercial](#gpl-30-or-commercial)
-- [GPL-3.0](#gpl-30)
 
 <!-- /TOC -->
 
@@ -49,32 +47,3 @@ License along with this library; If not, see <http://www.gnu.org/licenses/>.
 
 # MIT
 - src/libs/qxribbon
-
-# GPL-3.0 or Commercial
-主要是 qtcreator 相关组件：
-- src/libs/aggregation
-- src/libs/extensionsystem
-- src/libs/utils
-- src/plugins/coreplugin
-- src/shared/qtlockedfile
-- src/shared/qtsingleapplication
-- projects/qtcreator
-- projects/template2
-
-```
-Commercial License Usage
-Licensees holding valid commercial Qt licenses may use this file in
-accordance with the commercial license agreement provided with the
-Software or, alternatively, in accordance with the terms contained in
-a written agreement between you and The Qt Company. For licensing terms
-and conditions see https://www.qt.io/terms-conditions. For further
-information use the contact form at https://www.qt.io/contact-us.
-
-GNU General Public License Usage
-Alternatively, this file may be used under the terms of the GNU
-General Public License version 3 as published by the Free Software
-Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
-included in the packaging of this file. Please review the following
-information to ensure the GNU General Public License requirements will
-be met: https://www.gnu.org/licenses/gpl-3.0.html.
-```

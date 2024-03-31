@@ -2,8 +2,7 @@ include(../../qtproject.pri)
 
 TEMPLATE  = subdirs
 
-SUBDIRS   = \
-    coreplugin
+SUBDIRS   =
 
 for(p, SUBDIRS) {
     QTC_PLUGIN_DEPENDS =
