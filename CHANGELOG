@@ -1,4 +1,8 @@
 
+2.2.0-rc
+---
+- qgood: deprecated and removed
+
 2.1.0
 ---
 - qt: support build on qt 5.11.1 on linux

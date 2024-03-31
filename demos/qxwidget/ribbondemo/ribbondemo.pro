@@ -12,11 +12,6 @@ win32 {
     DEFINES += QXRIBBON_USE_APPWINDOW
     SOURCES += ribbonappwindow.cpp
     HEADERS += ribbonappwindow.h
-} else {
-    QTC_LIB_DEPENDS += qgood
-    DEFINES += QXRIBBON_USE_GOODWINDOW
-    SOURCES += goodribbonwindow.cpp
-    HEADERS += goodribbonwindow.h
 }
 
 include(../../../qtproject.pri)

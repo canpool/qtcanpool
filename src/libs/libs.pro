@@ -8,7 +8,6 @@ SUBDIRS =   \
     qxframeless \
     qxmaterial \
     qxwindow \
-    qgood \
     qcustomplot
 
 lessThan(QT_MAJOR_VERSION, 6) {

@@ -1,10 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#ifdef QXRIBBON_USE_GOODWINDOW
-#include "goodribbonwindow.h"
-#define RibbonMainWindow GoodRibbonWindow
-#elif defined(QXRIBBON_USE_APPWINDOW)
+#if defined(QXRIBBON_USE_APPWINDOW)
 #include "ribbonappwindow.h"
 #define RibbonMainWindow RibbonAppWindow
 #else
