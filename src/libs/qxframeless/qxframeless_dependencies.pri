@@ -1,2 +1,0 @@
-QTC_LIB_NAME = qxframeless
-QTC_LIB_VERSION = 0.1.0

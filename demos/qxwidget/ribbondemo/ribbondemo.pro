@@ -1,14 +1,7 @@
 QTC_LIB_DEPENDS += qxribbon qcanpool
 
-QXRIBBON_CONFIG_USE_QXFRMELESS = 0
-
 win32 {
-    equals(QXRIBBON_CONFIG_USE_QXFRMELESS, 1) {
-        QTC_LIB_DEPENDS += qxframeless
-        DEFINES += QXRIBBON_USE_QXFRAMELESS
-    } else {
-        QTC_LIB_DEPENDS += qxwindow
-    }
+    QTC_LIB_DEPENDS += qxwindow
     DEFINES += QXRIBBON_USE_APPWINDOW
     SOURCES += ribbonappwindow.cpp
     HEADERS += ribbonappwindow.h

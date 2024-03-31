@@ -5,7 +5,6 @@ TEMPLATE  = subdirs
 SUBDIRS =   \
     qcanpool \
     qxribbon \
-    qxframeless \
     qxmaterial \
     qxwindow \
     qcustomplot
