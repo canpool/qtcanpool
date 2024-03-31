@@ -19,7 +19,6 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 |demos||丰富的例子|
 |doc||文档|
 |examples||控件类的示例
-|include||公共头文件
 |others||子模块的示例
 |projects||项目目录，其中提供简单的模板 template，用户可以持续添加自己的项目在此目录，从而实现一套框架管理多项目
 |scripts||辅助的脚本文件
@@ -32,7 +31,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 |thirdparty||使用第三方库的案例
 
 ### 环境
-- Qt 6.5.1 MinGW/MSVC2019 64bit
+- Qt 6.5.3 MinGW/MSVC2019 64bit
 - Qt 5.15.2 MinGW/MSVC2019 64bit
 - Qt 5.14.2 MinGW 64bit
 - 其它环境未测试，推荐使用 [QT LTS](https://download.qt.io/official_releases/qt/) 版本
@@ -42,15 +41,16 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 - 说明：主版本.次版本.补丁版本
 
 ### 分支
-- [master](https://gitee.com/icanpool/qtcanpool/tree/master/)：V2 版本的主分支
-- [v1_master](https://gitee.com/icanpool/qtcanpool/tree/v1_master/)：V1 版本的主分支
+- [master](https://gitee.com/icanpool/qtcanpool/tree/master/)：主线分支
+- [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/)：开发分支
+- [release-x.y]()：版本分支，用于修复特定发布版本的问题
 
 说明：
-- v1_master 分支已停止维护，只修复严重 bug
+- 版本的发布以版本 tag 进行标记，若相应版本存在缺陷需要修复，将以版本分支的形式进行维护
 
 ### 协议
 * 遵循 [MulanPSL2](./LICENSE) 开源许可协议
-* 集成组件遵循各自开源许可协议
+* 集成组件遵循 [各自](./LICENSE.NOTES.md) 开源许可协议
 
 ### 规范
 * [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)
@@ -112,20 +112,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
 ![run](./doc/pics/run.png)
 
-### 其它
-- QxRibbon：[https://gitee.com/icanpool/QxRibbon](https://gitee.com/icanpool/QxRibbon)：Microsoft Ribbon for Qt
-- QxFrameless：[https://gitee.com/icanpool/qxframeless](https://gitee.com/icanpool/qxframeless)：A fancy Qt widget frameless helper
-
-
-### 案例
-
-虚位以待中……
-
 ### 后语
-
-欢迎广大 Qt 开源爱好者加入其中，乐在其中……
-
-### 赞助
 
 如果您觉得本项目对您有很大帮助，甚至从中获取了一定的商业回报，您可以赞助该项目，助其更好的发展。
 
