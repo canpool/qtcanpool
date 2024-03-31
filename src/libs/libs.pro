@@ -6,8 +6,7 @@ SUBDIRS =   \
     qcanpool \
     qxribbon \
     qxmaterial \
-    qxwindow \
-    qcustomplot
+    qxwindow
 
 lessThan(QT_MAJOR_VERSION, 6) {
     SUBDIRS += \

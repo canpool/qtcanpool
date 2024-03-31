@@ -3,5 +3,4 @@ CONFIG += ordered
 
 SUBDIRS = \
     controldemo \
-    plotdemo \
     qrcodedemo \
