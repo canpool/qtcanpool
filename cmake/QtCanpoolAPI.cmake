@@ -1,7 +1,7 @@
-if(QT_CREATOR_API_DEFINED)
+if(QT_CANPOOL_API_DEFINED)
   return()
 endif()
-set(QT_CREATOR_API_DEFINED TRUE)
+set(QT_CANPOOL_API_DEFINED TRUE)
 
 set(IDE_QT_VERSION_MIN "5.14.0")
 
@@ -107,7 +107,7 @@ endfunction()
 
 function(add_qtc_library name)
   cmake_parse_arguments(_arg "STATIC;OBJECT;SKIP_TRANSLATION;ALLOW_ASCII_CASTS;UNVERSIONED;FEATURE_INFO;SKIP_PCH"
-    "DESTINATION;COMPONENT;SOURCES_PREFIX;BUILD_DEFAULT"
+    "VERSION;COMPAT_VERSION;DESTINATION;COMPONENT;SOURCES_PREFIX;BUILD_DEFAULT"
     "CONDITION;DEPENDS;PUBLIC_DEPENDS;DEFINES;PUBLIC_DEFINES;INCLUDES;PUBLIC_INCLUDES;SOURCES;EXPLICIT_MOC;SKIP_AUTOMOC;EXTRA_TRANSLATIONS;PROPERTIES" ${ARGN}
   )
 
@@ -121,6 +121,13 @@ function(add_qtc_library name)
   endif()
 
   update_cached_list(__QTC_LIBRARIES "${name}")
+
+  if (NOT _arg_VERSION)
+    set(_arg_VERSION ${QTPROJECT_VERSION})
+  endif()
+  if (NOT _arg_COMPAT_VERSION)
+    set(_arg_COMPAT_VERSION ${_arg_VERSION})
+  endif()
 
   condition_info(_extra_text _arg_CONDITION)
   if (NOT _arg_CONDITION)
@@ -235,13 +242,13 @@ function(add_qtc_library name)
   endif()
 
   qtc_output_binary_dir(_output_binary_dir)
-  string(REGEX MATCH "^[0-9]*" IDE_VERSION_MAJOR ${QTPROJECT_VERSION})
+  string(REGEX MATCH "^[0-9]*" IDE_VERSION_MAJOR ${_arg_VERSION})
   set_target_properties(${name} PROPERTIES
     SOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-    VERSION "${QTPROJECT_VERSION}"
+    VERSION "${_arg_VERSION}"
     SOVERSION "${IDE_VERSION_MAJOR}"
-    MACHO_CURRENT_VERSION ${QTPROJECT_VERSION}
-    MACHO_COMPATIBILITY_VERSION ${QTPROJECT_COMPAT_VERSION}
+    MACHO_CURRENT_VERSION ${_arg_VERSION}
+    MACHO_COMPATIBILITY_VERSION ${_arg_COMPAT_VERSION}
     CXX_EXTENSIONS OFF
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
@@ -422,9 +429,9 @@ function(add_qtc_plugin target_name)
     file(READ "${name}.json.in" plugin_json_in)
     string(REPLACE "\\\"" "\"" plugin_json_in ${plugin_json_in})
     string(REPLACE "\\'" "'" plugin_json_in ${plugin_json_in})
-    string(REPLACE "$$QTCREATOR_VERSION" "\${QTPROJECT_VERSION}" plugin_json_in ${plugin_json_in})
-    string(REPLACE "$$QTCREATOR_COMPAT_VERSION" "\${QTPROJECT_COMPAT_VERSION}" plugin_json_in ${plugin_json_in})
-    string(REPLACE "$$QTCREATOR_COPYRIGHT_YEAR" "\${QTPROJECT_COPYRIGHT_YEAR}" plugin_json_in ${plugin_json_in})
+    string(REPLACE "$$QTPROJECT_VERSION" "\${QTPROJECT_VERSION}" plugin_json_in ${plugin_json_in})
+    string(REPLACE "$$QTPROJECT_COMPAT_VERSION" "\${QTPROJECT_COMPAT_VERSION}" plugin_json_in ${plugin_json_in})
+    string(REPLACE "$$QTPROJECT_COPYRIGHT_YEAR" "\${QTPROJECT_COPYRIGHT_YEAR}" plugin_json_in ${plugin_json_in})
     string(REPLACE "$$QTC_PLUGIN_REVISION" "\${QTC_PLUGIN_REVISION}" plugin_json_in ${plugin_json_in})
     string(REPLACE "$$dependencyList" "\${IDE_PLUGIN_DEPENDENCY_STRING}" plugin_json_in ${plugin_json_in})
     if(_arg_PLUGIN_JSON_IN)
@@ -494,8 +501,8 @@ function(add_qtc_plugin target_name)
   qtc_output_binary_dir(_output_binary_dir)
   set_target_properties(${target_name} PROPERTIES
     SOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-    MACHO_CURRENT_VERSION ${QTPROJECT_VERSION}
-    MACHO_COMPATIBILITY_VERSION ${QTPROJECT_COMPAT_VERSION}
+    MACHO_CURRENT_VERSION ${_arg_VERSION}
+    MACHO_COMPATIBILITY_VERSION ${_arg_COMPAT_VERSION}
     CXX_EXTENSIONS OFF
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
@@ -513,7 +520,7 @@ function(add_qtc_plugin target_name)
 
   if (WIN32)
     # Match qmake naming scheme e.g. Plugin4.dll
-    string(REGEX MATCH "^[0-9]*" IDE_VERSION_MAJOR ${QTPROJECT_VERSION})
+    string(REGEX MATCH "^[0-9]*" IDE_VERSION_MAJOR ${_arg_VERSION})
     set_target_properties(${target_name} PROPERTIES
       SUFFIX "${IDE_VERSION_MAJOR}${CMAKE_SHARED_LIBRARY_SUFFIX}"
       PREFIX ""
