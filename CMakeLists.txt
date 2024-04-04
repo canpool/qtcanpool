@@ -45,8 +45,8 @@ endif()
 
 find_package(Qt5
   ${IDE_QT_VERSION_MIN}
-  COMPONENTS Concurrent Core Gui Network PrintSupport Qml Quick
-    QuickWidgets Sql Widgets Xml Core5Compat ${QT_TEST_COMPONENT}
+  COMPONENTS Concurrent Core Gui Widgets
+    Core5Compat ${QT_TEST_COMPONENT}
   REQUIRED
 )
 if (Qt5_VERSION VERSION_LESS 6.0.0)

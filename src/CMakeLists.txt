@@ -1,17 +1,11 @@
-add_library(app_version INTERFACE)
-target_include_directories(app_version
-  INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-  INTERFACE $<INSTALL_INTERFACE:${IDE_HEADER_INSTALL_PATH}/src>)
-install(TARGETS app_version EXPORT QtCanpool)
-
 add_subdirectory(libs)
 add_subdirectory(shared)
-# add_subdirectory(plugins)
+add_subdirectory(plugins)
 
 install(
   FILES
-    ${PROJECT_SOURCE_DIR}/HACKING
-    ${PROJECT_SOURCE_DIR}/LICENSE.GPL3-EXCEPT
+    ${PROJECT_SOURCE_DIR}/LICENSE
+    ${PROJECT_SOURCE_DIR}/LICENSE.NOTES.md
     ${PROJECT_SOURCE_DIR}/README.md
   DESTINATION ${IDE_DATA_PATH}
   COMPONENT Devel EXCLUDE_FROM_ALL
@@ -48,7 +42,7 @@ endif()
 
 include(CMakeFindDependencyMacro)
 find_dependency(Qt5 ${IDE_QT_VERSION_MIN}
-  COMPONENTS Concurrent Core Gui Widgets Core5Compat Network PrintSupport Qml Quick QuickWidgets Sql REQUIRED
+  COMPONENTS Concurrent Core Gui Widgets Core5Compat REQUIRED
 )
 
 if (NOT QTPROJECT_VERSION)
