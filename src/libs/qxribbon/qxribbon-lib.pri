@@ -79,4 +79,5 @@ RESOURCES += \
 win32 {
     # for FramelessHelper
     LIBS += -lUser32
+    lessThan(QT_MAJOR_VERSION, 6): DEFINES += FRAMELESS_USE_NATIVE
 }

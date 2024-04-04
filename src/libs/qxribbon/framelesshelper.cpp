@@ -1,15 +1,19 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
 **/
 #include "framelesshelper.h"
 
+#include <QWidget>
 #include <QApplication>
 #include <QHoverEvent>
 #include <QMouseEvent>
-#include <QRect>
-#include <QRubberBand>
-#include <QMainWindow>
+#include <QIcon>
+#include <QSizeGrip>
+
+#ifdef FRAMELESS_USE_NATIVE
+#include <QWindow>
+#endif // FRAMELESS_USE_NATIVE
 
 #ifdef Q_OS_WINDOWS
 #include <windows.h>
@@ -18,57 +22,302 @@
 #include <QScreen>
 #endif
 
-class WidgetData;
+static int s_nBorderWidth = 5;
+static int s_nTitleHeight = 30;
 
-/*****
- * FramelessHelperPrivate
- * 存储界面对应的数据集合，以及是否可移动、可缩放属性
- *****/
+class FramelessWidgetData;
+
 class FramelessHelperPrivate
 {
 public:
-    QHash<QWidget *, WidgetData *> m_widgetDataHash;
-    bool m_bWidgetMovable : true;
-    bool m_bWidgetResizable : true;
-    bool m_bRubberBandOnResize : true;
-    bool m_bRubberBandOnMove : true;
+    FramelessHelperPrivate();
+    ~FramelessHelperPrivate();
+
+    bool isCaptionClassName(const char *name);
+
+public:
+    QHash<QWidget *, FramelessWidgetData *> m_widgetDataHash;
+    QList<QString> m_captionClassNameList;
+    bool m_bWidgetResizable = true;
+    bool m_bWidgetMovable = true;
 };
 
-/*****
- * CursorPosCalculator
- * 计算鼠标是否位于左、上、右、下、左上角、左下角、右上角、右下角
- *****/
-class CursorPosCalculator
+/* FramelessHelperPrivate */
+FramelessHelperPrivate::FramelessHelperPrivate()
+{
+    m_captionClassNameList << "QWidget";
+}
+
+FramelessHelperPrivate::~FramelessHelperPrivate()
+{
+
+}
+
+bool FramelessHelperPrivate::isCaptionClassName(const char *name)
+{
+    foreach (const QString &cn, m_captionClassNameList) {
+        if (cn.compare(QLatin1String(name)) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+class FramelessWidgetData
 {
 public:
-    explicit CursorPosCalculator();
-    void reset();
-    void recalculate(const QPoint &globalMousePos, const QRect &frameRect);
-public:
-    bool m_bOnEdges              : true;
-    bool m_bOnLeftEdge           : true;
-    bool m_bOnRightEdge          : true;
-    bool m_bOnTopEdge            : true;
-    bool m_bOnBottomEdge         : true;
-    bool m_bOnTopLeftEdge        : true;
-    bool m_bOnBottomLeftEdge     : true;
-    bool m_bOnTopRightEdge       : true;
-    bool m_bOnBottomRightEdge    : true;
+    explicit FramelessWidgetData(FramelessHelperPrivate *_d, QWidget *widget);
+    virtual ~FramelessWidgetData();
 
-    static int m_nBorderWidth;
-    static int m_nTitleHeight;
+    QWidget *widget();
+    virtual bool handleWidgetEvent(QEvent *event);
+
+    void handleWindowStateChangeEvent();
+
+protected:
+    FramelessHelperPrivate *d;
+    QWidget *m_pWidget;
 };
 
-int CursorPosCalculator::m_nBorderWidth = 5;
-int CursorPosCalculator::m_nTitleHeight = 30;
 
-/***** CursorPosCalculator *****/
-CursorPosCalculator::CursorPosCalculator()
+FramelessWidgetData::FramelessWidgetData(FramelessHelperPrivate *_d, QWidget *widget)
+{
+    Q_ASSERT(widget);
+    d = _d;
+    m_pWidget = widget;
+}
+
+FramelessWidgetData::~FramelessWidgetData()
+{
+
+}
+
+QWidget *FramelessWidgetData::widget()
+{
+    return m_pWidget;
+}
+
+bool FramelessWidgetData::handleWidgetEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+    return false;
+}
+
+void FramelessWidgetData::handleWindowStateChangeEvent()
+{
+    Qt::WindowStates state = m_pWidget->windowState();
+    bool resizeDisable = state.testFlag(Qt::WindowFullScreen) || state.testFlag(Qt::WindowMaximized);
+    foreach (QSizeGrip *sg, m_pWidget->findChildren<QSizeGrip *>()) {
+        sg->setVisible(!resizeDisable);
+    }
+}
+
+
+#ifdef FRAMELESS_USE_NATIVE
+
+#ifdef Q_OS_WINDOWS
+
+#ifndef WM_DPICHANGED
+#define WM_DPICHANGED   0x02E0
+#endif
+
+/* FramelessWidgetDataNativeWin */
+
+class FramelessWidgetDataNativeWin : public FramelessWidgetData
+{
+public:
+    explicit FramelessWidgetDataNativeWin(FramelessHelperPrivate *_d, QWidget *widget);
+    virtual ~FramelessWidgetDataNativeWin();
+
+    qreal devicePixelRatio();
+
+    bool handleNativeWindowsMessage(MSG *msg, QTRESULT *result);
+
+    bool handleNonClinetCalcSize(MSG *msg, QTRESULT *result);
+    bool handleNonClientHitTest(MSG *msg, QTRESULT *result);
+
+    void setFrameChanged(MSG *msg);
+
+private:
+    UINT m_dpi[2] = {96, 96}; // 0-old, 1-new
+};
+
+FramelessWidgetDataNativeWin::FramelessWidgetDataNativeWin(FramelessHelperPrivate *_d, QWidget *widget)
+    : FramelessWidgetData(_d, widget)
+{
+    HWND hwnd = (HWND)m_pWidget->winId();
+    DWORD style = ::GetWindowLongPtr(hwnd, GWL_STYLE);
+    ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_OVERLAPPEDWINDOW);
+
+    // FIXME: 96 is not real DPI, should get it through windows api
+    // there are some apis as follows: GetDpiForMonitor, GetDpiForSystem, GetDpiForWindow
+    // reference to https://learn.microsoft.com/zh-cn/windows/win32/api/_hidpi/
+}
+
+FramelessWidgetDataNativeWin::~FramelessWidgetDataNativeWin()
+{
+
+}
+
+qreal FramelessWidgetDataNativeWin::devicePixelRatio()
+{
+    return m_pWidget->screen()->devicePixelRatio();
+}
+
+bool FramelessWidgetDataNativeWin::handleNativeWindowsMessage(MSG *msg, QTRESULT *result)
+{
+    switch (msg->message) {
+    case WM_NCCALCSIZE:
+        return handleNonClinetCalcSize(msg, result);
+    case WM_NCHITTEST:
+        return handleNonClientHitTest(msg, result);
+    case WM_DPICHANGED: {
+        // handleDpiChanged
+        m_dpi[0] = m_dpi[1];
+        m_dpi[1] = HIWORD(msg->wParam);
+        break;
+    }
+    case WM_MOVE: {
+        if (m_dpi[0] != m_dpi[1]) {
+            break;
+        }
+        setFrameChanged(msg);
+        break;
+    }
+    }
+
+    return false;
+}
+
+bool FramelessWidgetDataNativeWin::handleNonClinetCalcSize(MSG *msg, QTRESULT *result)
+{
+    // https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-nccalcsize
+    *result = 0;
+    // If wParam is FALSE, no need handle
+    if (!msg->wParam) {
+        return true;
+    }
+    // https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-nccalcsize_params
+    // If wParam is TRUE, lParam points to the NCCALCSIZE_PARAMS structure, which contains information
+    // that the application can use to calculate the new size and position of the client rectangle.
+    NCCALCSIZE_PARAMS *pncsp = reinterpret_cast<NCCALCSIZE_PARAMS *>(msg->lParam);
+
+    const RECT originalRect = pncsp->rgrc[0];
+
+    // call default window proc to handle WM_NCCALCSIZE message
+    const auto ret = ::DefWindowProc(msg->hwnd, WM_NCCALCSIZE, msg->wParam, msg->lParam);
+    if (ret != 0) {
+        *result = ret;
+        return true;
+    }
+    bool isMaximized = GetWindowStyle(msg->hwnd) & WS_MAXIMIZE;
+    if (isMaximized) {
+        pncsp->rgrc[0].top = 0;
+    } else {
+        pncsp->rgrc[0] = originalRect;
+    }
+    return true;
+}
+
+bool FramelessWidgetDataNativeWin::handleNonClientHitTest(MSG *msg, QTRESULT *result)
+{
+    *result = HTNOWHERE;
+    if (m_pWidget->isFullScreen()) {
+        return false;
+    }
+
+    // https://docs.microsoft.com/en-us/windows/win32/dwm/customframe#appendix-c-hittestnca-function
+    int borderWidth = s_nBorderWidth;
+
+    long x = GET_X_LPARAM(msg->lParam);
+    long y = GET_Y_LPARAM(msg->lParam);
+    // If EnableHighDpiScaling is enabled for QApplication, then the pixelRatio is not necessarily 1.0,
+    // so pos needs to be scaled (tested on HightScreen-150% and LowScreen-100%)
+    qreal pixelRatio = devicePixelRatio();
+    QPoint pos = m_pWidget->mapFromGlobal(QPoint(x, y) / pixelRatio);
+    int w = m_pWidget->width();
+    int h = m_pWidget->height();
+
+    bool left = pos.x() < borderWidth;
+    bool right = pos.x() > w - borderWidth;
+    bool top = pos.y() < borderWidth;
+    bool bottom = pos.y() > h - borderWidth;
+
+    if (d->m_bWidgetResizable) {
+        if      (top && left)       { *result = HTTOPLEFT; }
+        else if (top && right)      { *result = HTTOPRIGHT; }
+        else if (bottom && left)    { *result = HTBOTTOMLEFT; }
+        else if (bottom && right)   { *result = HTBOTTOMRIGHT; }
+        else if (left)              { *result = HTLEFT; }
+        else if (right)             { *result = HTRIGHT; }
+        else if (top)               { *result = HTTOP; }
+        else if (bottom)            { *result = HTBOTTOM; }
+
+        if (*result != HTNOWHERE) {
+            return true;
+        }
+    }
+
+    if (d->m_bWidgetMovable && pos.y() < s_nTitleHeight) {
+        QWidget *child = m_pWidget->childAt(pos);
+        if (!child || d->isCaptionClassName(child->metaObject()->className())) {
+            *result = HTCAPTION;
+            return true;
+        }
+    }
+    return false;
+}
+
+void FramelessWidgetDataNativeWin::setFrameChanged(MSG *msg)
+{
+    // When the window is moved between two screens (neither scaled, i.e., dpi with default values),
+    // the window becomes smaller (the non-client area is lost and reduced to
+    // 8,31,8,8(left,top,right,bottom) around), so the window SWP_FRAMECHANGED needs to be reconfigured
+    // to expand the client area
+
+    RECT rcClient;
+    GetWindowRect(msg->hwnd, &rcClient);
+
+    // Inform application of the frame change.
+    // Specify the SWP_FRAMECHANGED flag to send a WM_NCCALCSIZE message to a window,
+    // even if the window size has not changed
+    SetWindowPos(msg->hwnd, NULL, rcClient.left, rcClient.top,
+                 rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
+                 SWP_FRAMECHANGED);
+}
+
+#endif // Q_OS_WINDOWS
+
+#else // not FRAMELESS_USE_NATIVE
+
+/* FramelessCursor */
+
+class FramelessCursor
+{
+public:
+    FramelessCursor();
+
+    void reset();
+    void update(const QPoint &gMousePos, const QRect &frameRect);
+
+public:
+    bool m_bOnEdges;
+    bool m_bOnLeftEdge;
+    bool m_bOnRightEdge;
+    bool m_bOnTopEdge;
+    bool m_bOnBottomEdge;
+    bool m_bOnTopLeftEdge;
+    bool m_bOnBottomLeftEdge;
+    bool m_bOnTopRightEdge;
+    bool m_bOnBottomRightEdge;
+};
+
+FramelessCursor::FramelessCursor()
 {
     reset();
 }
 
-void CursorPosCalculator::reset()
+void FramelessCursor::reset()
 {
     m_bOnEdges = false;
     m_bOnLeftEdge = false;
@@ -81,117 +330,82 @@ void CursorPosCalculator::reset()
     m_bOnBottomRightEdge = false;
 }
 
-void CursorPosCalculator::recalculate(const QPoint &gMousePos, const QRect &frameRect)
+void FramelessCursor::update(const QPoint &gMousePos, const QRect &frameRect)
 {
     int globalMouseX = gMousePos.x();
     int globalMouseY = gMousePos.y();
+    int frameX       = frameRect.x();
+    int frameY       = frameRect.y();
+    int frameWidth   = frameRect.width();
+    int frameHeight  = frameRect.height();
 
-    int frameX = frameRect.x();
-    int frameY = frameRect.y();
+    m_bOnLeftEdge    = (globalMouseX >= frameX && globalMouseX <= frameX + s_nBorderWidth);
+    m_bOnRightEdge   = (globalMouseX >= frameX + frameWidth - s_nBorderWidth &&
+                        globalMouseX <= frameX + frameWidth);
+    m_bOnTopEdge     = (globalMouseY >= frameY && globalMouseY <= frameY + s_nBorderWidth);
+    m_bOnBottomEdge  = (globalMouseY >= frameY + frameHeight - s_nBorderWidth &&
+                        globalMouseY <= frameY + frameHeight);
 
-    int frameWidth = frameRect.width();
-    int frameHeight = frameRect.height();
-
-    m_bOnLeftEdge = (globalMouseX >= frameX &&
-                  globalMouseX <= frameX + m_nBorderWidth );
-
-
-    m_bOnRightEdge = (globalMouseX >= frameX + frameWidth - m_nBorderWidth &&
-                   globalMouseX <= frameX + frameWidth);
-
-    m_bOnTopEdge = (globalMouseY >= frameY &&
-                 globalMouseY <= frameY + m_nBorderWidth );
-
-    m_bOnBottomEdge = (globalMouseY >= frameY + frameHeight - m_nBorderWidth &&
-                    globalMouseY <= frameY + frameHeight);
-
-    m_bOnTopLeftEdge = m_bOnTopEdge && m_bOnLeftEdge;
-    m_bOnBottomLeftEdge = m_bOnBottomEdge && m_bOnLeftEdge;
-    m_bOnTopRightEdge = m_bOnTopEdge && m_bOnRightEdge;
+    m_bOnTopLeftEdge     = m_bOnTopEdge && m_bOnLeftEdge;
+    m_bOnBottomLeftEdge  = m_bOnBottomEdge && m_bOnLeftEdge;
+    m_bOnTopRightEdge    = m_bOnTopEdge && m_bOnRightEdge;
     m_bOnBottomRightEdge = m_bOnBottomEdge && m_bOnRightEdge;
 
     m_bOnEdges = m_bOnLeftEdge || m_bOnRightEdge || m_bOnTopEdge || m_bOnBottomEdge;
 }
 
-/*****
- * WidgetData
- * 更新鼠标样式、移动窗体、缩放窗体
- *****/
-class WidgetData
+
+/* FramelessWidgetDataQt  */
+
+class FramelessWidgetDataQt : public FramelessWidgetData
 {
 public:
-    explicit WidgetData(FramelessHelperPrivate *d, QWidget *pTopLevelWidget);
-    ~WidgetData();
-    QWidget *widget();
-    // 处理鼠标事件-划过、按下、释放、移动
-    bool handleWidgetEvent(QEvent *event);
-    // 更新橡皮筋状态
-    void updateRubberBandStatus();
+    explicit FramelessWidgetDataQt(FramelessHelperPrivate *d, QWidget *widget);
+    ~FramelessWidgetDataQt();
+
+    bool handleWidgetEvent(QEvent *event) override;
+
 private:
-    // 更新鼠标样式
     void updateCursorShape(const QPoint &gMousePos);
-    // 重置窗体大小
     void resizeWidget(const QPoint &gMousePos);
-    // 移动窗体
     void moveWidget(const QPoint &gMousePos);
-    // 处理鼠标按下
+
     bool handleMousePressEvent(QMouseEvent *event);
-    // 处理鼠标释放
     bool handleMouseReleaseEvent(QMouseEvent *event);
-    // 处理鼠标移动
     bool handleMouseMoveEvent(QMouseEvent *event);
-    // 处理鼠标离开
     bool handleLeaveEvent(QEvent *event);
-    // 处理鼠标进入
     bool handleHoverMoveEvent(QHoverEvent *event);
-    // 处理鼠标双击事件
     bool handleDoubleClickedMouseEvent(QMouseEvent *event);
+
 private:
-    FramelessHelperPrivate *d;
-    QRubberBand *m_pRubberBand;
-    QWidget *m_pWidget;
     QPoint m_ptDragPos;
-    CursorPosCalculator m_pressedMousePos;
-    CursorPosCalculator m_moveMousePos;
+    FramelessCursor m_pressedMousePos;
+    FramelessCursor m_moveMousePos;
     bool m_bLeftButtonPressed;
     bool m_bCursorShapeChanged;
     bool m_bLeftButtonTitlePressed;
     Qt::WindowFlags m_windowFlags;
 };
 
-/***** WidgetData *****/
-WidgetData::WidgetData(FramelessHelperPrivate *_d, QWidget *pTopLevelWidget)
+FramelessWidgetDataQt::FramelessWidgetDataQt(FramelessHelperPrivate *_d, QWidget *widget)
+    : FramelessWidgetData(_d, widget)
 {
-    Q_ASSERT(pTopLevelWidget);
-    d = _d;
-    m_pWidget = pTopLevelWidget;
     m_bLeftButtonPressed = false;
     m_bCursorShapeChanged = false;
     m_bLeftButtonTitlePressed = false;
-    m_pRubberBand = nullptr;
 
     m_windowFlags = m_pWidget->windowFlags();
     m_pWidget->setMouseTracking(true);
     m_pWidget->setAttribute(Qt::WA_Hover, true);
-
-    updateRubberBandStatus();
 }
 
-WidgetData::~WidgetData()
+FramelessWidgetDataQt::~FramelessWidgetDataQt()
 {
     m_pWidget->setMouseTracking(false);
     m_pWidget->setAttribute(Qt::WA_Hover, false);
-
-    delete m_pRubberBand;
-    m_pRubberBand = nullptr;
 }
 
-QWidget *WidgetData::widget()
-{
-    return m_pWidget;
-}
-
-bool WidgetData::handleWidgetEvent(QEvent *event)
+bool FramelessWidgetDataQt::handleWidgetEvent(QEvent *event)
 {
     switch (event->type()) {
     case QEvent::MouseButtonPress:
@@ -212,19 +426,7 @@ bool WidgetData::handleWidgetEvent(QEvent *event)
     return false;
 }
 
-void WidgetData::updateRubberBandStatus()
-{
-    if (d->m_bRubberBandOnMove || d->m_bRubberBandOnResize) {
-        if (nullptr == m_pRubberBand) {
-            m_pRubberBand = new QRubberBand(QRubberBand::Rectangle);
-        }
-    } else {
-        delete m_pRubberBand;
-        m_pRubberBand = nullptr;
-    }
-}
-
-void WidgetData::updateCursorShape(const QPoint &gMousePos)
+void FramelessWidgetDataQt::updateCursorShape(const QPoint &gMousePos)
 {
     if (m_pWidget->isFullScreen() || m_pWidget->isMaximized()) {
         if (m_bCursorShapeChanged) {
@@ -233,7 +435,7 @@ void WidgetData::updateCursorShape(const QPoint &gMousePos)
         return;
     }
 
-    m_moveMousePos.recalculate(gMousePos, m_pWidget->frameGeometry());
+    m_moveMousePos.update(gMousePos, m_pWidget->frameGeometry());
 
     if (m_moveMousePos.m_bOnTopLeftEdge || m_moveMousePos.m_bOnBottomRightEdge) {
         m_pWidget->setCursor(Qt::SizeFDiagCursor);
@@ -255,15 +457,9 @@ void WidgetData::updateCursorShape(const QPoint &gMousePos)
     }
 }
 
-void WidgetData::resizeWidget(const QPoint &gMousePos)
+void FramelessWidgetDataQt::resizeWidget(const QPoint &gMousePos)
 {
-    QRect origRect;
-
-    if (d->m_bRubberBandOnResize) {
-        origRect = m_pRubberBand->frameGeometry();
-    } else {
-        origRect = m_pWidget->frameGeometry();
-    }
+    QRect origRect = m_pWidget->frameGeometry();
 
     int left = origRect.left();
     int top = origRect.top();
@@ -315,82 +511,55 @@ void WidgetData::resizeWidget(const QPoint &gMousePos)
             }
         }
 
-        if (d->m_bRubberBandOnResize) {
-            m_pRubberBand->setGeometry(newRect);
-        } else {
-            m_pWidget->setGeometry(newRect);
-        }
+        m_pWidget->setGeometry(newRect);
     }
 }
 
-void WidgetData::moveWidget(const QPoint &gMousePos)
+void FramelessWidgetDataQt::moveWidget(const QPoint &gMousePos)
 {
-    if (d->m_bRubberBandOnMove) {
-        m_pRubberBand->move(gMousePos - m_ptDragPos);
-    } else {
-        m_pWidget->move(gMousePos - m_ptDragPos);
-    }
+    m_pWidget->move(gMousePos - m_ptDragPos);
 }
 
-bool WidgetData::handleMousePressEvent(QMouseEvent *event)
+bool FramelessWidgetDataQt::handleMousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_bLeftButtonPressed = true;
-        m_bLeftButtonTitlePressed = event->pos().y() < m_moveMousePos.m_nTitleHeight;
+        m_bLeftButtonTitlePressed = event->pos().y() < s_nTitleHeight;
 
         QRect frameRect = m_pWidget->frameGeometry();
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        m_pressedMousePos.recalculate(event->globalPos(), frameRect);
+        m_pressedMousePos.update(event->globalPos(), frameRect);
         m_ptDragPos = event->globalPos() - frameRect.topLeft();
 #else
-        m_pressedMousePos.recalculate(event->globalPosition().toPoint(), frameRect);
+        m_pressedMousePos.update(event->globalPosition().toPoint(), frameRect);
         m_ptDragPos = event->globalPosition().toPoint() - frameRect.topLeft();
 #endif
 
         if (m_pressedMousePos.m_bOnEdges) {
             if (m_pWidget->isMaximized() || m_pWidget->isFullScreen()) {
-                // 窗口在最大化状态时，点击边界不做任何处理
                 return false;
             }
-            if (d->m_bRubberBandOnResize) {
-                m_pRubberBand->setGeometry(frameRect);
-                m_pRubberBand->show();
-                return true;
-            }
-        } else if (d->m_bRubberBandOnMove && m_bLeftButtonTitlePressed) {
-            if (m_pWidget->isMaximized() || m_pWidget->isFullScreen()) {
-                // 窗口在最大化状态时，点击标题栏不做任何处理
-                return false;
-            }
-            m_pRubberBand->setGeometry(frameRect);
-            m_pRubberBand->show();
-            return true;
         }
     }
     return false;
 }
 
-bool WidgetData::handleMouseReleaseEvent(QMouseEvent *event)
+bool FramelessWidgetDataQt::handleMouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_bLeftButtonPressed = false;
         m_bLeftButtonTitlePressed = false;
         m_pressedMousePos.reset();
-        if (m_pRubberBand && m_pRubberBand->isVisible()) {
-            m_pRubberBand->hide();
-            m_pWidget->setGeometry(m_pRubberBand->geometry());
-            return true;
-        }
     }
     return false;
 }
 
-bool WidgetData::handleMouseMoveEvent(QMouseEvent *event)
+bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
 {
     if (m_bLeftButtonPressed) {
         if (d->m_bWidgetResizable && m_pressedMousePos.m_bOnEdges) {
+            // 窗口在最大化状态时，点击边界不做任何处理
             if (m_pWidget->isMaximized() || m_pWidget->isFullScreen()) {
-                // 窗口在最大化状态时，点击边界不做任何处理
                 return false;
             }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -421,7 +590,7 @@ bool WidgetData::handleMouseMoveEvent(QMouseEvent *event)
                 p.ry() -= 10;
                 p.rx() -= (normalGeometry.width() / 2);
                 m_pWidget->move(p);
-                // 这时要重置m_ptDragPos
+                // 这时要重置m_ptDragPo
                 m_ptDragPos = QPoint(normalGeometry.width() / 2, 10);
                 return true;
             }
@@ -443,7 +612,7 @@ bool WidgetData::handleMouseMoveEvent(QMouseEvent *event)
     return false;
 }
 
-bool WidgetData::handleLeaveEvent(QEvent *event)
+bool FramelessWidgetDataQt::handleLeaveEvent(QEvent *event)
 {
     Q_UNUSED(event)
     if (!m_bLeftButtonPressed) {
@@ -453,7 +622,7 @@ bool WidgetData::handleLeaveEvent(QEvent *event)
     return false;
 }
 
-bool WidgetData::handleHoverMoveEvent(QHoverEvent *event)
+bool FramelessWidgetDataQt::handleHoverMoveEvent(QHoverEvent *event)
 {
     if (d->m_bWidgetResizable) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -465,54 +634,43 @@ bool WidgetData::handleHoverMoveEvent(QHoverEvent *event)
     return false;
 }
 
-bool WidgetData::handleDoubleClickedMouseEvent(QMouseEvent *event)
+bool FramelessWidgetDataQt::handleDoubleClickedMouseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        QMainWindow *mainwindow = qobject_cast<QMainWindow *>(m_pWidget);
-        if (mainwindow) {
-            if (mainwindow->windowFlags() & Qt::WindowMaximizeButtonHint) {
-                // 在最大化按钮显示时才进行showNormal处理
-                bool titlePressed = event->pos().y() < m_moveMousePos.m_nTitleHeight;
-                if (titlePressed && !m_pWidget->isFullScreen()) {
-                    if (m_pWidget->isMaximized()) {
-                        m_pWidget->showNormal();
-                    } else {
-                        m_pWidget->showMaximized();
-                    }
-                    return true;
+        if (m_pWidget->windowFlags() & Qt::WindowMaximizeButtonHint) {
+            bool titlePressed = event->pos().y() < s_nTitleHeight;
+            if (titlePressed && !m_pWidget->isFullScreen()) {
+                if (m_pWidget->isMaximized()) {
+                    m_pWidget->showNormal();
+                } else {
+                    m_pWidget->showMaximized();
                 }
+                return true;
             }
         }
     }
     return false;
 }
 
+#endif // FRAMELESS_USE_NATIVE
+
+/* FramelessHelper */
 FramelessHelper::FramelessHelper(QObject *parent)
     : QObject(parent)
-    , d(new FramelessHelperPrivate())
+    , d(new FramelessHelperPrivate)
 {
-    d->m_bWidgetMovable = true;
-    d->m_bWidgetResizable = true;
-    d->m_bRubberBandOnResize = false;
-    d->m_bRubberBandOnMove = false;
-
     if (parent) {
-        QWidget *w = qobject_cast<QWidget *>(parent);
-        if (w) {
+        if (QWidget *w = qobject_cast<QWidget *>(parent)) {
             w->setWindowFlags(w->windowFlags() | Qt::FramelessWindowHint);
-            activateOn(w);
+            addWidget(w);
         }
     }
-#ifdef Q_OS_WINDOWS
     qApp->installNativeEventFilter(this);
-#endif
 }
 
 FramelessHelper::~FramelessHelper()
 {
-#ifdef Q_OS_WINDOWS
     qApp->removeNativeEventFilter(this);
-#endif
     QList<QWidget *> keys = d->m_widgetDataHash.keys();
     int size = keys.size();
 
@@ -520,94 +678,43 @@ FramelessHelper::~FramelessHelper()
         keys[i]->removeEventFilter(this);
         delete d->m_widgetDataHash.take(keys[i]);
     }
-
     delete d;
 }
 
-bool FramelessHelper::eventFilter(QObject *obj, QEvent *event)
+void FramelessHelper::addWidget(QWidget *w)
 {
-    switch (event->type()) {
-    case QEvent::MouseMove:
-    case QEvent::HoverMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-    case QEvent::Leave: {
-        WidgetData *data = d->m_widgetDataHash.value(static_cast<QWidget *>(obj));
-        if (data) {
-            return data->handleWidgetEvent(event);
-        }
-        break;
-    }
-    default:
-        break;
-    }
-    return (QObject::eventFilter(obj, event));
-}
-
+    if (!d->m_widgetDataHash.contains(w)) {
+#ifdef FRAMELESS_USE_NATIVE
 #ifdef Q_OS_WINDOWS
-bool FramelessHelper::nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result)
-{
-    if (eventType == "windows_generic_MSG") {
-        MSG *msg = reinterpret_cast<MSG *>(message);
-        QWidget *widget = QWidget::find(reinterpret_cast<WId>(msg->hwnd));
-        WidgetData *data = d->m_widgetDataHash.value(widget);
-        if (data == nullptr) {
-            return false;
-        }
-        switch (msg->message) {
-            case WM_GETMINMAXINFO: {
-                // prevent taskbar is covered when maximized
-                if (widget->isMaximized()) {
-                    const QRect rc = widget->screen()->availableGeometry();
-                    MINMAXINFO *p = (MINMAXINFO *)(msg->lParam);
-                    p->ptMaxPosition.x = 0;
-                    p->ptMaxPosition.y = 0;
-                    p->ptMaxSize.x = rc.width();
-                    p->ptMaxSize.y = rc.height();
-                    *result = ::DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
+        FramelessWidgetDataNativeWin *data = new FramelessWidgetDataNativeWin(d, w);
+#else
+        FramelessWidgetData *data = new FramelessWidgetData(d, w);
 #endif
+#else // FRAMELESS_USE_NATIVE
+        FramelessWidgetDataQt *data = new FramelessWidgetDataQt(d, w);
+#endif
+        d->m_widgetDataHash.insert(w, data);
+        w->installEventFilter(this);
 
-void FramelessHelper::activateOn(QWidget *topLevelWidget)
-{
-    if (!d->m_widgetDataHash.contains(topLevelWidget)) {
-        WidgetData *data = new WidgetData(d, topLevelWidget);
-        d->m_widgetDataHash.insert(topLevelWidget, data);
-
-        topLevelWidget->installEventFilter(this);
+        connect(w, &QWidget::destroyed, this, [this, w]() {
+            this->removeWidget(w);
+        });
     }
 }
 
-void FramelessHelper::removeFrom(QWidget *topLevelWidget)
+void FramelessHelper::removeWidget(QWidget *w)
 {
-    WidgetData *data = d->m_widgetDataHash.take(topLevelWidget);
-
+    w->disconnect(this);
+    FramelessWidgetData *data = d->m_widgetDataHash.take(w);
     if (data) {
-        topLevelWidget->removeEventFilter(this);
+        w->removeEventFilter(this);
         delete data;
     }
 }
 
-void FramelessHelper::setRubberBandOnMove(bool movable)
+bool FramelessHelper::widgetResizable() const
 {
-    d->m_bRubberBandOnMove = movable;
-    QList<WidgetData *> list = d->m_widgetDataHash.values();
-
-    foreach (WidgetData * data, list) {
-        data->updateRubberBandStatus();
-    }
-}
-
-void FramelessHelper::setWidgetMovable(bool movable)
-{
-    d->m_bWidgetMovable = movable;
+    return d->m_bWidgetResizable;
 }
 
 void FramelessHelper::setWidgetResizable(bool resizable)
@@ -615,56 +722,108 @@ void FramelessHelper::setWidgetResizable(bool resizable)
     d->m_bWidgetResizable = resizable;
 }
 
-void FramelessHelper::setRubberBandOnResize(bool resizable)
+bool FramelessHelper::widgetMovable() const
 {
-    d->m_bRubberBandOnResize = resizable;
-    QList<WidgetData *> list = d->m_widgetDataHash.values();
-
-    foreach (WidgetData * data, list) {
-        data->updateRubberBandStatus();
-    }
+    return d->m_bWidgetMovable;
 }
 
-void FramelessHelper::setBorderWidth(int width)
+void FramelessHelper::setWidgetMovable(bool movable)
 {
-    if (width > 0) {
-        CursorPosCalculator::m_nBorderWidth = width;
-    }
+    d->m_bWidgetMovable = movable;
+}
+
+int FramelessHelper::titleHeight() const
+{
+    return s_nTitleHeight;
 }
 
 void FramelessHelper::setTitleHeight(int height)
 {
     if (height > 0) {
-        CursorPosCalculator::m_nTitleHeight = height;
+        s_nTitleHeight = height;
     }
 }
 
-bool FramelessHelper::widgetMovable()
+int FramelessHelper::borderWidth() const
 {
-    return d->m_bWidgetMovable;
+    return s_nBorderWidth;
 }
 
-bool FramelessHelper::widgetResizable()
+void FramelessHelper::setBorderWidth(int width)
 {
-    return d->m_bWidgetResizable;
+    if (width > 0) {
+        s_nBorderWidth = width;
+    }
 }
 
-bool FramelessHelper::rubberBandOnMove()
+void FramelessHelper::addCaptionClassName(const QString &name)
 {
-    return d->m_bRubberBandOnMove;
+    if (!d->m_captionClassNameList.contains(name)) {
+        d->m_captionClassNameList.append(name);
+    }
 }
 
-bool FramelessHelper::rubberBandOnResisze()
+bool FramelessHelper::eventFilter(QObject *object, QEvent *event)
 {
-    return d->m_bRubberBandOnResize;
+    QWidget *widget = static_cast<QWidget *>(object);
+    FramelessWidgetData *data = d->m_widgetDataHash.value(widget);
+    if (!data) {
+        return QObject::eventFilter(object, event);
+    }
+    switch (event->type()) {
+    case QEvent::WindowTitleChange:
+        emit windowTitleChanged(widget->windowTitle());
+        break;
+    case QEvent::WindowIconChange:
+        emit windowIconChanged(widget->windowIcon());
+        break;
+    case QEvent::WindowStateChange:
+        data->handleWindowStateChangeEvent();
+        emit windowStateChanged(widget->windowState());
+        break;
+    default:
+        return data->handleWidgetEvent(event);
+    }
+    return QObject::eventFilter(object, event);
 }
 
-uint FramelessHelper::borderWidth()
+bool FramelessHelper::nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result)
 {
-    return CursorPosCalculator::m_nBorderWidth;
-}
+#ifdef Q_OS_WINDOWS
+    if (eventType == "windows_generic_MSG") {
+        MSG *msg = reinterpret_cast<MSG *>(message);
+        QWidget *widget = QWidget::find(reinterpret_cast<WId>(msg->hwnd));
+        FramelessWidgetData *data = d->m_widgetDataHash.value(widget);
+        if (data == nullptr) {
+            return false;
+        }
+#ifndef FRAMELESS_USE_NATIVE
+        switch (msg->message) {
+            case WM_GETMINMAXINFO: {
+                // prevent taskbar is covered when maximized
+                if (widget->isMaximized()) {
+                    QScreen *screen = widget->screen();
+                    qreal ratio = screen->devicePixelRatio();
+                    const QRect rc = screen->availableGeometry();
+                    MINMAXINFO *p = (MINMAXINFO *)(msg->lParam);
+                    p->ptMaxPosition.x = 0;
+                    p->ptMaxPosition.y = 0;
+                    p->ptMaxSize.x = rc.width() * ratio;
+                    p->ptMaxSize.y = rc.height() * ratio;
+                    *result = ::DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
+                    return true;
+                }
+            }
+        }
+#else
+        FramelessWidgetDataNativeWin *winData = reinterpret_cast<FramelessWidgetDataNativeWin *>(data);
+        if (winData == nullptr) {
+            return false;
+        }
+        return winData->handleNativeWindowsMessage(msg, result);
+#endif // FRAMELESS_USE_NATIVE
+    }
+#endif // Q_OS_WINDOWS
 
-uint FramelessHelper::titleHeight()
-{
-    return CursorPosCalculator::m_nTitleHeight;
+    return false;
 }

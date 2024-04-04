@@ -32,3 +32,9 @@ add_qtc_library(qxribbon
     ribbonwindow.cpp ribbonwindow.h
     windowbuttongroup.cpp windowbuttongroup.h windowbuttongroup_p.h
 )
+
+if (WIN32)
+    if (Qt5_VERSION VERSION_LESS 6.0.0)
+        extend_qtc_library(qxribbon DEFINES FRAMELESS_USE_NATIVE)
+    endif()
+endif()
