@@ -572,8 +572,10 @@ QToolBar#qtc_quickaccessbar QToolButton {
     height: 18px;
 }
 
-QToolButton#qtc_quickaccessbutton {
-    padding: 0px 0px 0px 3px;
+QToolButton#qtc_quickaccessbutton::menu-indicator {
+    width: 6px;
+    height: 6px;
+    padding-right: 3px;
 }
 
 QToolBar#qtc_quickaccessbar,
