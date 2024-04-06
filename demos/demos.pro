@@ -11,7 +11,7 @@ lessThan(QT_MAJOR_VERSION, 6) {
 }
 
 DEMO_OTHERS_ENABLE = 0
-equals(DEMO_THIRDPARTY_ENABLE, 1) {
+equals(DEMO_OTHERS_ENABLE, 1) {
     SUBDIRS += helloworld misc
 }
 
