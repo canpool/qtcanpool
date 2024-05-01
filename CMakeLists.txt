@@ -28,6 +28,8 @@ option(WITH_TESTS "Build Tests" OFF)
 add_feature_info("Build tests" ${WITH_TESTS} "")
 option(WITH_DEBUG_CMAKE "Enabled CMake project debugging functionality (e.g. source file disk checking)" OFF)
 
+option(WITH_DEMOS "Build Demos" ON)
+
 # merge binary directories of sub projects into top level
 set(QTC_MERGE_BINARY_DIR ON)
 
@@ -117,7 +119,10 @@ if (WITH_TESTS)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(demos)
+
+if (WITH_DEMOS)
+  add_subdirectory(demos)
+endif()
 
 if (WITH_TESTS)
   add_subdirectory(tests)
