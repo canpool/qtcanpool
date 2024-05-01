@@ -91,6 +91,17 @@ MainWindow::MainWindow(QWidget *par)
     changeRibbonTheme(1);
 
     qDebug() << RibbonElementStyleOpt;
+
+#ifdef Q_OS_LINUX
+    QRadioButton *r = findChild<QRadioButton *>("use wps style");
+    if (r) {
+        r->click();
+    }
+    QCheckBox *framelessCB = findChild<QCheckBox *>("use frameless");
+    if (framelessCB) {
+        framelessCB->click();
+    }
+#endif
 }
 
 void MainWindow::setRibbonTheme(int theme)

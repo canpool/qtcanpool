@@ -823,6 +823,10 @@ bool FramelessHelper::nativeEventFilter(const QByteArray &eventType, void *messa
         return winData->handleNativeWindowsMessage(msg, result);
 #endif // FRAMELESS_USE_NATIVE
     }
+#else
+    Q_UNUSED(eventType)
+    Q_UNUSED(message)
+    Q_UNUSED(result)
 #endif // Q_OS_WINDOWS
 
     return false;
