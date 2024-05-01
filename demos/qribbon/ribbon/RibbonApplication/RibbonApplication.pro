@@ -5,7 +5,7 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
-TARGET = "Ribbon"$$member(TARGET, 0)
+TARGET = RibbonApplication
 DESTDIR = $$IDE_APP_PATH
 
 # The following define makes your compiler emit warnings if you use
@@ -24,6 +24,6 @@ include($$QTCANPOOL_DIR/src/rpath.pri)
 # lib
 LIBS *= -l$$qtLibraryNameVersion(qribbon, 1)
 
-include($$PWD/Application.pri)
+include($$PWD/RibbonApplication.pri)
 include($$PWD/../../ribbon/shared/ribbonwindow.pri)
 include($$PWD/../../shared/aboutdialog.pri)

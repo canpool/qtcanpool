@@ -10,7 +10,7 @@ SOURCES += \
     $$PWD/ribbonpopularpage.cpp
 
 RESOURCES += \
-    $$PWD/Application.qrc
+    $$PWD/RibbonApplication.qrc
 
 FORMS += \
     $$PWD/ribbonsample.ui \
