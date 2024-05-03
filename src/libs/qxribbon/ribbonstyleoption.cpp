@@ -64,9 +64,9 @@ int RibbonStyleOptionPrivate::calcRibbonBarHeight(RibbonBar::RibbonStyle s) cons
     case RibbonBar::WpsLiteStyle:
         return m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
     case RibbonBar::WpsLiteStyleTwoRow:
-        return m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight - m_lineSpacing * 1.1;
+        return m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight - m_lineSpacing * 1.5;
     case RibbonBar::OfficeStyleTwoRow:
-        return m_ribbonBarHeightOfficeStyleThreeRow - m_lineSpacing * 1.1;
+        return m_ribbonBarHeightOfficeStyleThreeRow - m_lineSpacing * 1.5;
     default:
         break;
     }
