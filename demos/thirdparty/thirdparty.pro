@@ -14,5 +14,7 @@ win32 {
             SUBDIRS += \
                 occQt
         }
+        SUBDIRS += \
+            qtitandemo
     }
 }
