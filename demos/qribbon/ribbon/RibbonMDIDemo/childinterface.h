@@ -1,6 +1,8 @@
 #ifndef CHILDINTERFACE_H
 #define CHILDINTERFACE_H
 
+#include "qribbon/ribbon.h"
+
 class QStatusBar;
 namespace QRibbon
 {
