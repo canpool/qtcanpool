@@ -3,7 +3,7 @@
 
 #include "qribbon/ribbonbackstageview.h"
 #include "ui_helppage.h"
-#include "ui_infoPage.h"
+#include "ui_infopage.h"
 #include "ui_saveemailpage.h"
 #include "ui_savepage.h"
 #include "ui_savewebpage.h"
