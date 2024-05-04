@@ -329,3 +329,5 @@ for(ever) {
     QTC_LIB_DEPENDS = $$unique(QTC_LIB_DEPENDS)
     QTC_LIB_DEPENDS -= $$unique(done_libs)
 }
+
+IDE_INC_PATH = $$IDE_BUILD_TREE/include

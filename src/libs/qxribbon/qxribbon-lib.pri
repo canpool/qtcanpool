@@ -6,43 +6,50 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 DEFINES += QX_RIBBON_LIBRARY
 DEFINES += QT_DEPRECATED_WARNINGS
 
-HEADERS += \
-    $$PWD/framelesshelper.h \
+PUBLIC_HEADERS = \
     $$PWD/qxribbon_global.h \
     $$PWD/ribbonactionsmanager.h \
     $$PWD/ribbonapplicationbutton.h \
     $$PWD/ribbonbar.h \
-    $$PWD/ribbonbar_p.h \
     $$PWD/ribbonbutton.h \
-    $$PWD/ribbonbutton_p.h \
     $$PWD/ribbonbuttongroup.h \
     $$PWD/ribboncolorbutton.h \
-    $$PWD/ribboncolorbutton_p.h \
     $$PWD/ribboncontainers.h \
     $$PWD/ribboncontrols.h \
-    $$PWD/ribboncustomizedata.h \
     $$PWD/ribboncustomizedialog.h \
-    $$PWD/ribboncustomizewidget.h \
     $$PWD/ribbonfactory.h \
     $$PWD/ribbongallery.h \
     $$PWD/ribbongallerygroup.h \
-    $$PWD/ribbongallerygroup_p.h \
     $$PWD/ribbongroup.h \
-    $$PWD/ribbongroup_p.h \
-    $$PWD/ribbongrouplayout.h \
     $$PWD/ribbonmanager.h \
     $$PWD/ribbonpage.h \
-    $$PWD/ribbonpage_p.h \
     $$PWD/ribbonpagecontext.h \
     $$PWD/ribbonquickaccessbar.h \
-    $$PWD/ribbonquickaccessbar_p.h \
     $$PWD/ribbonstyleoption.h \
     $$PWD/ribbontabbar.h \
     $$PWD/ribbontheme.h \
     $$PWD/ribbonutils.h \
     $$PWD/ribbonwindow.h \
-    $$PWD/windowbuttongroup.h \
+    $$PWD/windowbuttongroup.h
+
+PRIVATE_HEADERS = \
+    $$PWD/framelesshelper.h \
+    $$PWD/ribbonbar_p.h \
+    $$PWD/ribbonbutton_p.h \
+    $$PWD/ribboncolorbutton_p.h \
+    $$PWD/ribboncontrols.h \
+    $$PWD/ribboncustomizedata.h \
+    $$PWD/ribboncustomizewidget.h \
+    $$PWD/ribbongallerygroup_p.h \
+    $$PWD/ribbongroup_p.h \
+    $$PWD/ribbongrouplayout.h \
+    $$PWD/ribbonpage_p.h \
+    $$PWD/ribbonquickaccessbar_p.h \
     $$PWD/windowbuttongroup_p.h
+
+HEADERS += \
+    $$PUBLIC_HEADERS \
+    $$PRIVATE_HEADERS
 
 SOURCES += \
     $$PWD/framelesshelper.cpp \
