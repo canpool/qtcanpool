@@ -22,34 +22,57 @@ win32 {
     LIBS += -lUser32
 }
 
-HEADERS += \
+PUBLIC_HEADERS = \
     $$PWD/extensionbutton.h \
+    $$PWD/fancybar.h \
+    $$PWD/fancydialog.h \
+    $$PWD/fancytabbar.h \
+    $$PWD/fancytabwidget.h \
+    $$PWD/fancytitlebar.h \
+    $$PWD/fancytoolbutton.h \
+    $$PWD/fancywindow.h \
     $$PWD/menuaccessbutton.h \
     $$PWD/menubutton.h \
     $$PWD/minitabbar.h \
     $$PWD/minitabwidget.h \
     $$PWD/qcanpool.h \
     $$PWD/quickaccessbar.h \
-    $$PWD/quickaccessbar_p.h \
     $$PWD/ribbonbar.h \
-    $$PWD/ribbonbar_p.h \
     $$PWD/ribboncontainers.h \
     $$PWD/ribbongroup.h \
-    $$PWD/ribbongroup_p.h \
     $$PWD/ribbonpage.h \
-    $$PWD/ribbonpage_p.h \
     $$PWD/ribbonwindow.h \
     $$PWD/tinynavbar.h \
-    $$PWD/tinynavbar_p.h \
     $$PWD/tinytabbar.h \
-    $$PWD/tinytabbar_p.h \
     $$PWD/tinytabwidget.h \
     $$PWD/windowlogo.h \
-    $$PWD/windowtoolbar.h \
+    $$PWD/windowtoolbar.h
+
+PRIVATE_HEADERS = \
+    $$PWD/fancybar_p.h \
+    $$PWD/fancytabbar_p.h \
+    $$PWD/fancytitlebar_p.h \
+    $$PWD/quickaccessbar_p.h \
+    $$PWD/ribbonbar_p.h \
+    $$PWD/ribbongroup_p.h \
+    $$PWD/ribbonpage_p.h \
+    $$PWD/tinynavbar_p.h \
+    $$PWD/tinytabbar_p.h \
     $$PWD/windowtoolbar_p.h
+
+HEADERS += \
+    $$PUBLIC_HEADERS \
+    $$PRIVATE_HEADERS
 
 SOURCES += \
     $$PWD/extensionbutton.cpp \
+    $$PWD/fancybar.cpp \
+    $$PWD/fancydialog.cpp \
+    $$PWD/fancytabbar.cpp \
+    $$PWD/fancytabwidget.cpp \
+    $$PWD/fancytitlebar.cpp \
+    $$PWD/fancytoolbutton.cpp \
+    $$PWD/fancywindow.cpp \
     $$PWD/menuaccessbutton.cpp \
     $$PWD/menubutton.cpp \
     $$PWD/minitabbar.cpp \
@@ -65,8 +88,6 @@ SOURCES += \
     $$PWD/tinytabwidget.cpp \
     $$PWD/windowlogo.cpp \
     $$PWD/windowtoolbar.cpp
-
-include($$PWD/fancy.pri)
 
 RESOURCES += \
     $$PWD/qcanpool.qrc
