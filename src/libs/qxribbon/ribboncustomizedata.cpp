@@ -93,6 +93,9 @@ bool RibbonCustomizeData::apply(RibbonBar *bar)
     if (customized) {
         return true;
     }
+    if (Q_NULLPTR == bar) {
+        return false;
+    }
     switch (actionType()) {
     case UnknowActionType:
         return false;

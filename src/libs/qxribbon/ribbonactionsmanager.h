@@ -117,6 +117,9 @@ public:
     // 获取ribbonbar
     RibbonBar *ribbonBar() const;
 
+    // 设置所有管理的action都可以编辑
+    void setAllActionCanCustomize(bool on = true);
+
 signals:
     /**
      * @brief 标签变化触发的信号，变化包括新增和删除

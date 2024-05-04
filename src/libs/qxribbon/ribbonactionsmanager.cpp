@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbonactionsmanager.h"
+#include "ribboncustomizedata.h"
 #include "ribbonbar.h"
 
 #include <QDebug>
@@ -315,6 +316,10 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
 {
     Q_D(RibbonActionsManager);
     QMap<int, RibbonPage *> res;
+    if (Q_NULLPTR == bar) {
+        // 非ribbon模式，直接退出
+        return res;
+    }
     // 先遍历RibbonBar下的所有子对象，把所有action找到
     QSet<QAction *> ribbonBarActions;
 
@@ -326,6 +331,7 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
             }
         }
     }
+
     QSet<QAction *> pageActions;
     QList<RibbonPage *> pages = bar->pages();
     int tag = AutoPageDistinguishBeginTag;
@@ -420,6 +426,18 @@ void RibbonActionsManager::clear()
 RibbonBar *RibbonActionsManager::ribbonBar() const
 {
     return qobject_cast<RibbonBar *>(parent());
+}
+
+/**
+ * @brief 此函数用于设置所有管理的action都可以自定义编辑
+ * @param on
+ */
+void RibbonActionsManager::setAllActionCanCustomize(bool on)
+{
+    Q_D(RibbonActionsManager);
+	for (auto i = d->m_actionToKey.begin(); i != d->m_actionToKey.end(); ++i) {
+        RibbonCustomizeData::setCanCustomize(i.key(), on);
+    }
 }
 
 /**

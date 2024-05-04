@@ -1,9 +1,8 @@
 /**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
  **/
-#ifndef WINDOWBUTTONGROUP_P_H
-#define WINDOWBUTTONGROUP_P_H
+#pragma once
 
 #include "qxribbon_global.h"
 #include <QPushButton>
@@ -48,4 +47,3 @@ public:
 
 QX_RIBBON_END_NAMESPACE
 
-#endif // WINDOWBUTTONGROUP_P_H

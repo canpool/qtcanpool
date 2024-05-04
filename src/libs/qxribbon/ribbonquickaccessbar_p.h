@@ -2,8 +2,7 @@
  * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
 **/
-#ifndef RIBBONQUICKACCESSBAR_P_H
-#define RIBBONQUICKACCESSBAR_P_H
+#pragma once
 
 //
 // W A R N I N G
@@ -92,4 +91,3 @@ public:
 
 QX_RIBBON_END_NAMESPACE
 
-#endif // RIBBONQUICKACCESSBAR_P_H
