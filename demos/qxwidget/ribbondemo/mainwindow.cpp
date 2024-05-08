@@ -960,6 +960,24 @@ void MainWindow::createRightButtonGroup()
     QAction *actionHelp = createAction(tr("help"), ":/icon/res/help.svg");
     connect(actionHelp, &QAction::triggered, this, &MainWindow::onActionHelpTriggered);
     rightBar->addAction(actionHelp);
+
+
+    RibbonButtonGroup *topLeftBar = ribbonBar()->cornerButtonGroup(Qt::TopLeftCorner);
+    QLineEdit *le = new QLineEdit(this);
+    le->setPlaceholderText(tr("Search..."));
+    topLeftBar->addWidget(le);
+
+    RibbonButtonGroup *bottomLeftBar = ribbonBar()->cornerButtonGroup(Qt::BottomLeftCorner);
+    le = new QLineEdit(this);
+    le->setMinimumWidth(150);
+    le->setClearButtonEnabled(true);
+    le->setPlaceholderText(tr("Search..."));
+    bottomLeftBar->addWidget(le);
+
+    RibbonButtonGroup *topRightBar = ribbonBar()->cornerButtonGroup(Qt::TopRightCorner);
+    QComboBox *combox = new QComboBox(this);
+    combox->addItems(QStringList() << "apple" << "banana" << "orange");
+    topRightBar->addWidget(combox);
 }
 
 void MainWindow::createApplicationButton()

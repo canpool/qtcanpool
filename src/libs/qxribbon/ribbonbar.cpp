@@ -128,6 +128,9 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_stack(Q_NULLPTR)
     , m_iconRightBorderPosition(1)
     , m_minimumPageButton(Q_NULLPTR)
+    , m_topLeftButtonGroup(Q_NULLPTR)
+    , m_topRightButtonGroup(Q_NULLPTR)
+    , m_bottomLeftButtonGroup(Q_NULLPTR)
     , m_bottomRightButtonGroup(Q_NULLPTR)
     , m_quickAccessBarPosition(RibbonBar::QABRightPosition)
     , m_ribbonStyle(RibbonBar::OfficeStyle)
@@ -375,22 +378,31 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
     QWidget *parWindow = q->parentWidget();
     if (parWindow && m_titleVisible) {
         QRect titleRegion;
+        int x = border.right();
+        if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+            x = m_quickAccessBar->geometry().right() + 1;
+        } else if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
+            x = m_quickAccessBar->geometry().right() + 1;
+        }
         if (pageContextPos.y() < 0) {
-            titleRegion.setRect(m_quickAccessBar->geometry().right() + 1, border.top(),
-                                q->width() - m_iconRightBorderPosition - border.right() -
-                                    m_windowButtonsSize.width() - m_quickAccessBar->geometry().right() - 1,
-                                q->titleBarHeight());
+            int w = q->width() - m_iconRightBorderPosition - border.right() - m_windowButtonsSize.width() - x;
+            if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+                w -= m_topRightButtonGroup->width();
+            }
+            titleRegion.setRect(x, border.top(), w, q->titleBarHeight());
         } else {
-            int leftwidth =
-                pageContextPos.x() - m_quickAccessBar->geometry().right() - m_iconRightBorderPosition;
+            int leftwidth = pageContextPos.x() - m_iconRightBorderPosition - x;
             int rightwidth = q->width() - pageContextPos.y() - m_windowButtonsSize.width();
+            if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+                rightwidth -= m_topRightButtonGroup->width();
+            }
             // if (width() - pageContextPos.y() > pageContextPos.x()-x) {
             if (rightwidth > leftwidth) {
                 // 说明右边的区域大一点，标题显示在右，显示在右边需要减去windowbutton宽度
                 titleRegion.setRect(pageContextPos.y(), border.top(), rightwidth, q->titleBarHeight());
             } else {
                 // 说明左边的大一点
-                titleRegion.setRect(m_iconRightBorderPosition + m_quickAccessBar->geometry().right(),
+                titleRegion.setRect(m_iconRightBorderPosition + x,
                                     border.top(), leftwidth, q->titleBarHeight());
             }
         }
@@ -445,9 +457,14 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
     if (parWindow && m_titleVisible) {
         int start = m_tabBar->x() + m_tabBar->width();
         int width = q->width() - m_windowButtonsSize.width() - start;
-        if (m_quickAccessBarPosition == RibbonBar::QABRightPosition) {
+        if (m_quickAccessBarPosition == RibbonBar::QABRightPosition &&
+            m_quickAccessBar && m_quickAccessBar->isVisible()) {
             width = m_quickAccessBar->x() - start;
-        } else if (m_bottomRightButtonGroup) {
+        } else if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+            width = m_bottomLeftButtonGroup->x() - start;
+        } else if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+            width = m_topRightButtonGroup->x() - start;
+        } else if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
             width = m_bottomRightButtonGroup->x() - start;
         }
         if (width > 20) {
@@ -579,6 +596,17 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         }
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         m_quickAccessBar->setGeometry(x, y, quickAccessBarSize.width(), validTitleBarHeight);
+        x += quickAccessBarSize.width() + 5;
+    }
+    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+        QSize wSize = m_topLeftButtonGroup->sizeHint();
+        m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), validTitleBarHeight);
+    }
+    int endX = q->width() - border.right() - m_windowButtonsSize.width();
+    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+        QSize wSize = m_topRightButtonGroup->sizeHint();
+        endX -= wSize.width();
+        m_topRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
     // 第二行，开始布局applicationButton，tabbar，tabBarRightSizeButtonGroupWidget，TopRightCorner
     x = border.left();
@@ -592,7 +620,7 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     // 由于这个窗口一定要在最右，因此先对这个窗口进行布局
     // cornerWidget - TopRightCorner
     // 获取最右边的位置
-    int endX = q->width() - border.right();
+    endX = q->width() - border.right();
     QWidget *connerW = q->cornerWidget(Qt::TopRightCorner);
     if (connerW && connerW->isVisible()) {
         QSize connerSize = connerW->sizeHint();
@@ -612,6 +640,11 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
         m_bottomRightButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
+    }
+    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+        QSize wSize = m_bottomLeftButtonGroup->sizeHint();
+        endX -= wSize.width();
+        m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
     // 最后确定tabbar宽度
     int tabBarWidth = endX - x;
@@ -650,6 +683,16 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
         m_bottomRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
+    }
+    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+        QSize wSize = m_topRightButtonGroup->sizeHint();
+        endX -= wSize.width();
+        m_topRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
+    }
+    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+        QSize wSize = m_bottomLeftButtonGroup->sizeHint();
+        endX -= wSize.width();
+        m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
     // quick access bar定位
     if (m_quickAccessBarPosition == RibbonBar::QABRightPosition && m_quickAccessBar && m_quickAccessBar->isVisible()) {
@@ -690,6 +733,11 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         m_quickAccessBar->setGeometry(x, qabY, quickAccessBarSize.width(), tabH);
         x = m_quickAccessBar->geometry().right() + 2;
+    }
+    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+        QSize wSize = m_topLeftButtonGroup->sizeHint();
+        m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), tabH);
+        x = m_topLeftButtonGroup->geometry().right() + 2;
     }
     // tab bar 定位 wps模式下applicationButton的右边就是tab bar
     int tabBarWidth = endX - x;
@@ -1514,6 +1562,24 @@ RibbonButtonGroup *RibbonBar::cornerButtonGroup(Qt::Corner corner)
     RibbonButtonGroup *buttonGroup = Q_NULLPTR;
 
     switch (corner) {
+    case Qt::TopLeftCorner:
+        if (Q_NULLPTR == d->m_topLeftButtonGroup) {
+            d->m_topLeftButtonGroup = d->createButtonGroup();
+        }
+        buttonGroup = d->m_topLeftButtonGroup;
+        break;
+    case Qt::TopRightCorner:
+        if (Q_NULLPTR == d->m_topRightButtonGroup) {
+            d->m_topRightButtonGroup = d->createButtonGroup();
+        }
+        buttonGroup = d->m_topRightButtonGroup;
+        break;
+    case Qt::BottomLeftCorner:
+        if (Q_NULLPTR == d->m_bottomLeftButtonGroup) {
+            d->m_bottomLeftButtonGroup = d->createButtonGroup();
+        }
+        buttonGroup = d->m_bottomLeftButtonGroup;
+        break;
     case Qt::BottomRightCorner:
         if (Q_NULLPTR == d->m_bottomRightButtonGroup) {
             d->m_bottomRightButtonGroup = d->createButtonGroup();
