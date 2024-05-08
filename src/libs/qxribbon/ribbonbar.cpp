@@ -128,7 +128,7 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_stack(Q_NULLPTR)
     , m_iconRightBorderPosition(1)
     , m_minimumPageButton(Q_NULLPTR)
-    , m_rightButtonGroup(Q_NULLPTR)
+    , m_bottomRightButtonGroup(Q_NULLPTR)
     , m_quickAccessBarPosition(RibbonBar::QABRightPosition)
     , m_ribbonStyle(RibbonBar::OfficeStyle)
     , m_lastShowStyle(RibbonBar::OfficeStyle)
@@ -447,8 +447,8 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
         int width = q->width() - m_windowButtonsSize.width() - start;
         if (m_quickAccessBarPosition == RibbonBar::QABRightPosition) {
             width = m_quickAccessBar->x() - start;
-        } else if (m_rightButtonGroup) {
-            width = m_rightButtonGroup->x() - start;
+        } else if (m_bottomRightButtonGroup) {
+            width = m_bottomRightButtonGroup->x() - start;
         }
         if (width > 20) {
             QRect titleRegion(start, border.top(), width, q->titleBarHeight());
@@ -608,10 +608,10 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     // tab bar 定位
 
     // tabBar 右边的附加按钮组，这里一般会附加一些类似登录等按钮组
-    if (m_rightButtonGroup && m_rightButtonGroup->isVisible()) {
-        QSize wSize = m_rightButtonGroup->sizeHint();
+    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+        QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
-        m_rightButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
+        m_bottomRightButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
     // 最后确定tabbar宽度
     int tabBarWidth = endX - x;
@@ -646,10 +646,10 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     }
 
     // tabBar 右边的附加按钮组
-    if (m_rightButtonGroup && m_rightButtonGroup->isVisible()) {
-        QSize wSize = m_rightButtonGroup->sizeHint();
+    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+        QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
-        m_rightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
+        m_bottomRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
     // quick access bar定位
     if (m_quickAccessBarPosition == RibbonBar::QABRightPosition && m_quickAccessBar && m_quickAccessBar->isVisible()) {
@@ -784,6 +784,15 @@ int RibbonBarPrivate::tabIndex(RibbonPage *page) const
     }
     // 如果找不到就从stackedwidget中找
     return -1;
+}
+
+RibbonButtonGroup *RibbonBarPrivate::createButtonGroup()
+{
+    Q_Q(RibbonBar);
+    RibbonButtonGroup *buttonGroup = new RibbonButtonGroup(q);
+    buttonGroup->setObjectName(QStringLiteral("qx_RibbonButtonGroup"));
+    buttonGroup->setFrameShape(QFrame::NoFrame);
+    return buttonGroup;
 }
 
 void RibbonBarPrivate::onWindowTitleChanged(const QString &title)
@@ -1465,7 +1474,7 @@ void RibbonBar::showMinimumButton(bool isShow)
 {
     Q_D(RibbonBar);
     if (isShow) {
-        activeRightButtonGroup();
+        cornerButtonGroup(Qt::BottomRightCorner);
         if (Q_NULLPTR == d->m_minimumPageButton) {
             d->m_minimumPageButton = RibbonElementFactory->createHideGroupButton(this);
             d->m_minimumPageButton->ensurePolished();   // 载入样式图标
@@ -1474,7 +1483,7 @@ void RibbonBar::showMinimumButton(bool isShow)
                 this->setMinimized(!isMinimized());
             });
             d->m_minimumPageButton->setDefaultAction(action);
-            d->m_rightButtonGroup->addWidget(d->m_minimumPageButton);
+            d->m_bottomRightButtonGroup->addWidget(d->m_minimumPageButton);
             update();
         }
         d->updateMinimumButtonIcon();
@@ -1499,23 +1508,38 @@ int RibbonBar::titleBarHeight() const
     return RibbonElementStyleOpt.titleBarHeight();
 }
 
-RibbonButtonGroup *RibbonBar::rightButtonGroup()
+RibbonButtonGroup *RibbonBar::cornerButtonGroup(Qt::Corner corner)
 {
     Q_D(RibbonBar);
-    activeRightButtonGroup();
-    return d->m_rightButtonGroup;
+    RibbonButtonGroup *buttonGroup = Q_NULLPTR;
+
+    switch (corner) {
+    case Qt::BottomRightCorner:
+        if (Q_NULLPTR == d->m_bottomRightButtonGroup) {
+            d->m_bottomRightButtonGroup = d->createButtonGroup();
+        }
+        buttonGroup = d->m_bottomRightButtonGroup;
+        break;
+    default:
+        break;
+    }
+    if (buttonGroup) {
+        buttonGroup->show();
+    }
+    return buttonGroup;
+}
+
+#if QX_RIBBON_DEPRECATED_SINCE(0, 9)
+RibbonButtonGroup *RibbonBar::rightButtonGroup()
+{
+    return cornerButtonGroup(Qt::BottomRightCorner);
 }
 
 void RibbonBar::activeRightButtonGroup()
 {
-    Q_D(RibbonBar);
-    if (Q_NULLPTR == d->m_rightButtonGroup) {
-        d->m_rightButtonGroup = new RibbonButtonGroup(this);
-        d->m_rightButtonGroup->setObjectName(QStringLiteral("qx_RibbonButtonGroup"));
-        d->m_rightButtonGroup->setFrameShape(QFrame::NoFrame);
-    }
-    d->m_rightButtonGroup->show();
+    rightButtonGroup();
 }
+#endif
 
 RibbonQuickAccessBar *RibbonBar::quickAccessBar() const
 {

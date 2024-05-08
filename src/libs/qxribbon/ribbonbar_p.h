@@ -113,6 +113,8 @@ public:
 
     int tabIndex(RibbonPage *obj) const;
 
+    RibbonButtonGroup *createButtonGroup();
+
 public slots:
     void onWindowTitleChanged(const QString &title);
     void onWindowIconChanged(const QIcon &icon);
@@ -132,7 +134,7 @@ public:
     QList<RibbonTabData> m_hidedPage;
     int m_iconRightBorderPosition;   ///< 标题栏x值的最小值，在有图标和快捷启动按钮，此值都需要变化
     RibbonControlButton *m_minimumPageButton;   ///< 隐藏面板按钮
-    RibbonButtonGroup *m_rightButtonGroup;      ///< 在 tabbar 右边的按钮群
+    RibbonButtonGroup *m_bottomRightButtonGroup;      ///< 在 tabbar 右边的按钮群
     RibbonQuickAccessBarContainer *m_quickAccessBar;
     RibbonBar::QuickAccessBarPosition m_quickAccessBarPosition;
     RibbonBar::RibbonStyle m_ribbonStyle;

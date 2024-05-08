@@ -946,7 +946,7 @@ void MainWindow::createQuickAccessBar()
 
 void MainWindow::createRightButtonGroup()
 {
-    RibbonButtonGroup *rightBar = ribbonBar()->rightButtonGroup();
+    RibbonButtonGroup *rightBar = ribbonBar()->cornerButtonGroup(Qt::BottomRightCorner);
     m_themeGroup = new QActionGroup(this);
     QAction *actionTheme = createAction(tr("theme"), ":/icon/res/theme.svg");
     RibbonMenu *menu = new RibbonMenu(tr("theme"), this);
