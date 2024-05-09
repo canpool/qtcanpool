@@ -97,10 +97,11 @@ void RibbonWindowPrivate::setFrameless(bool frameless)
 
 void RibbonWindowPrivate::resizeRibbon()
 {
+    Q_Q(RibbonWindow);
     if (m_ribbonBar == Q_NULLPTR) {
         return;
     }
-    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+    if (m_windowButtonGroup && (m_windowButtonGroup->isVisible() || q->isHidden())) {
         m_ribbonBar->setWindowButtonsSize(m_windowButtonGroup->size());
     } else {
         m_ribbonBar->setWindowButtonsSize(QSize(0, 0));
