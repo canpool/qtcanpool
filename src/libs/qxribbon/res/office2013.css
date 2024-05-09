@@ -175,6 +175,15 @@ QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
 }
 
+QxRibbon--RibbonQuickAccessButton {
+  width: 22px;
+  qproperty-icon: url(:/image/res/qaccess_button.png);
+}
+
+QxRibbon--RibbonQuickAccessButton::menu-indicator {
+  image: none;
+}
+
 /*RibbonCtrlContainer*/
 
 QxRibbon--RibbonCtrlContainer {

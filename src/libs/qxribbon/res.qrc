@@ -11,6 +11,7 @@
         <file>res/titlebar_normal.png</file>
         <file>res/titlebar_shade.png</file>
         <file>res/titlebar_unshade.png</file>
+        <file>res/qaccess_button.png</file>
         <file>res/lighter/group_option.png</file>
         <file>res/lighter/arrow_down.png</file>
         <file>res/lighter/arrow_more.png</file>
@@ -22,6 +23,7 @@
         <file>res/lighter/titlebar_normal.png</file>
         <file>res/lighter/titlebar_shade.png</file>
         <file>res/lighter/titlebar_unshade.png</file>
+        <file>res/lighter/qaccess_button.png</file>
     </qresource>
     <qresource prefix="/theme">
         <file>res/default.css</file>

@@ -734,10 +734,13 @@ QxRibbon--RibbonQuickAccessBar QAbstractButton {
   padding: 0px;
 }
 
+QxRibbon--RibbonQuickAccessButton {
+  width: 22px;
+  qproperty-icon: url(:/image/res/lighter/qaccess_button.png);
+}
+
 QxRibbon--RibbonQuickAccessButton::menu-indicator {
-  width: 6px;
-  height: 6px;
-  padding-right: 3px;
+  image: none;
 }
 
 /*RibbonCtrlContainer*/

@@ -171,6 +171,10 @@ QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
 }
 
+QxRibbon--RibbonQuickAccessButton {
+  qproperty-icon: none;
+}
+
 /*RibbonCtrlContainer*/
 
 QxRibbon--RibbonCtrlContainer {
