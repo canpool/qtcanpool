@@ -976,6 +976,7 @@ void MainWindow::createRightButtonGroup()
 
     RibbonButtonGroup *topRightBar = ribbonBar()->cornerButtonGroup(Qt::TopRightCorner);
     QComboBox *combox = new QComboBox(this);
+    combox->setMinimumWidth(100);
     combox->addItems(QStringList() << "apple" << "banana" << "orange");
     topRightBar->addWidget(combox);
 }

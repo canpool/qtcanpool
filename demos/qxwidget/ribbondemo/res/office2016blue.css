@@ -167,6 +167,7 @@ QxRibbon--RibbonButtonGroup {
 }
 
 QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QWidget {
+  color: white;
   background-color: transparent;
 }
 
@@ -184,6 +185,22 @@ QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:pressed,
 QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:checked {
   border: 1px solid #002050;
   background-color: #002050;
+}
+
+QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QLineEdit {
+  border: 1px solid #124078;
+}
+
+QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QLineEdit:hover {
+  border: 1px solid #0075d1;
+}
+
+QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QComboBox {
+  border: 1px solid #124078;
+}
+
+QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QComboBox:hover {
+  border: 1px solid #0075d1;
 }
 
 QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
