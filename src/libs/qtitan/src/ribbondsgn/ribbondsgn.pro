@@ -12,7 +12,7 @@ include($$PWD/../shared/platform.pri)
 include($$PWD/../styles/styles.pri)
 include($$PWD/../ribbon/ribbon.pri)
 
-DESTDIR = $$PWD/../../bin
+DESTDIR = $$IDE_BUILD_TREE/bin
 DESTDIR = $$member(DESTDIR, 0)$$QTITAN_LIB_PREFIX
 
 VERSION = $$QTN_COMPONENT_VERSION
@@ -27,7 +27,7 @@ contains(CONFIG, demo) {
 }
 
 DSGN_HEADERS += \
-               $$PWD/QtnRibbonDsgnPlugins.h \	
+               $$PWD/QtnRibbonDsgnPlugins.h \
                $$PWD/QtnRibbonBarDsgnPlugin.h \
                $$PWD/QtnRibbonDsgnContainer.h \
                $$PWD/QtnRibbonDsgnTaskMenu.h \
@@ -61,7 +61,7 @@ DSGN_SOURCES += \
 DSGN_RESOURCES += \
     $$PWD/QtnRibbonDsgnResources.qrc \
     $$PWD/QtnRibbonDsgnFormTemplate.qrc
-	
+
 
 HEADERS += $$DSGN_HEADERS
 SOURCES += $$DSGN_SOURCES

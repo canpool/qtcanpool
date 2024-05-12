@@ -8,7 +8,7 @@ defineReplace(toNativeSeparators) {
 }
 defineReplace(fromNativeSeparators) {
     return($$replace(1, \\\\, /))
-} 
+}
 
 defineReplace(cleanPath) {
     win32:1 ~= s|\\\\|/|g
@@ -21,7 +21,7 @@ defineReplace(cleanPath) {
         else:!equals(seg, .):out += $$seg
     }
     return($$join(out, /, $$pfx))
-} 
+}
 
 RCC = $$toNativeSeparators($$cleanPath($$[QT_INSTALL_BINS]/rcc))
 LRELEASE = $$toNativeSeparators($$cleanPath($$[QT_INSTALL_BINS]/lrelease))
@@ -35,7 +35,7 @@ win32 {
     LUPDATE = $${LUPDATE}.exe
     LCONVERT = $${LCONVERT}.exe
     QMAKE_BINARY = $${QMAKE_BINARY}.exe
-} 
+}
 
 !lessThan(QT_VER_MAJ, 5) {
 }
@@ -65,5 +65,8 @@ QTN_OUTPUT_PREFIX = $$PWD/../..
 isEmpty(QTCANPOOL_DIR) {
     include($$QTITAN_ROOT/qtproject.pri)
     QTN_OUTPUT_PREFIX = $$IDE_BUILD_TREE
+}
+isEmpty(IDE_BUILD_TREE) {
+    IDE_BUILD_TREE = $$QTITAN_ROOT
 }
 QTN_OUTPUT_DIR = $$QTN_OUTPUT_PREFIX/bin$$QTITAN_LIB_PREFIX

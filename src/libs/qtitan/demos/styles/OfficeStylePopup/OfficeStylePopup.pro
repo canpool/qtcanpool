@@ -6,7 +6,7 @@ QTITANDIR = $$quote($$(QTITANDIR))
 isEmpty(QTITANDIR):QTITANDIR = $$quote($$PWD/../../../)
 include($$QTITANDIR/src/shared/qtitanribbon.pri)
 
-DESTDIR = $$QTITANDIR/bin
+DESTDIR = $$IDE_BUILD_TREE/bin
 DESTDIR = $$member(DESTDIR, 0)$$QTITAN_LIB_PREFIX
 
 !debug_and_release|build_pass {
