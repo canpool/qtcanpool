@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../../shared/res/about.png</file>
+        <file>../../shared/res/qtitanlogo32x32.png</file>
+        <file>../../shared/res/qtitan.png</file>
+        <file>../../shared/res/ribbonMaximize.png</file>
+        <file>../../shared/res/ribbonMinimize.png</file>
+        <file>res/largeNewFile.png</file>
+        <file>res/largeOpenFile.png</file>
+        <file>res/largePrint.png</file>
+        <file>res/largeWatermark.png</file>
+        <file>res/largezoom.png</file>
+        <file>res/smallnew.png</file>
+        <file>res/smallOpen.png</file>
+        <file>res/smallPrint.png</file>
+        <file>res/smallRedo.png</file>
+        <file>res/smallreplace.png</file>
+        <file>res/smallUndo.png</file>
+        <file>res/smallfontgrow.png</file>
+        <file>res/smallfontshrink.png</file>
+    </qresource>
+</RCC>

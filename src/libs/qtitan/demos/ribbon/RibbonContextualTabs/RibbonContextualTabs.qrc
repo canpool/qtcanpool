@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+      <file>../../shared/res/about.png</file>
+      <file>../../shared/res/qtitanlogo32x32.png</file>
+      <file>../../shared/res/qtitan.png</file>
+      <file>../../shared/res/ribbonMaximize.png</file>
+      <file>../../shared/res/ribbonMinimize.png</file>
+    </qresource>
+</RCC>
