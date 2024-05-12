@@ -4,6 +4,10 @@
 #include <QDebug>
 #include <QElapsedTimer>
 
+#ifdef QXRIBBON_USE_QSSEDITOR
+#include "qsseditor/qsswindow.h"
+#endif
+
 // 重定向qdebug的打印
 void log_out_put(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
@@ -66,8 +70,16 @@ int main(int argc, char *argv[])
 
     cost.start();
 
+#ifdef QXRIBBON_USE_QSSEDITOR
+    QssWindow qw;
+    MainWindow w;
+    qw.addPreviewWidget(&w, "ribbondemo");
+    QObject::connect(&qw, &QssWindow::applyCss, &w, &MainWindow::applyStyleSheet);
+    qw.showMaximized();
+#else
     MainWindow w;
     w.showMaximized();
+#endif
 
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
 
