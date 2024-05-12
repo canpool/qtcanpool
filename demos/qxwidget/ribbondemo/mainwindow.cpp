@@ -1083,7 +1083,9 @@ void MainWindow::changeRibbonTheme(int index)
 
 void MainWindow::applyStyleSheet(const QString &styleSheet)
 {
-    this->ribbonBar()->setStyleSheet(styleSheet);
+    this->setStyleSheet(styleSheet);
+    setRibbonTheme(UserCustomTheme);
+    // TODO: update theme action state
 }
 
 void MainWindow::onShowContextPage(bool on)
@@ -1178,7 +1180,7 @@ void MainWindow::onActionUseQssTriggered()
     QString qss(QString::fromLatin1(f.readAll()));
     f.close();
     m_edit->setText(qss);
-    this->ribbonBar()->setStyleSheet(qss);
+    applyStyleSheet(qss);
 }
 
 void MainWindow::onActionLoadCustomizeXmlFileTriggered()
