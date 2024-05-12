@@ -117,7 +117,7 @@ OfficeStylePrivate::OfficeStylePrivate()
 #endif /* Q_OS_MAC */
 
 #ifdef Q_OS_WIN
-    m_themeType = OfficeStyle::Office2016Colorful;
+    m_themeType = OfficeStyle::Office2013White;
 #endif /* Q_OS_WIN */
 }
 
