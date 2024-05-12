@@ -59,6 +59,10 @@ private:
     QAction *addThemeAction(QAction *action, int themeId);
 
     void changeRibbonTheme(int index);
+
+public slots:
+    void applyStyleSheet(const QString &styleSheet);
+
 private slots:
     void onMenuButtonPopupCheckableTest(bool b);
     void onInstantPopupCheckableTest(bool b);

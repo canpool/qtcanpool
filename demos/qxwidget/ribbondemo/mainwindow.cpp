@@ -1083,6 +1083,10 @@ void MainWindow::changeRibbonTheme(int index)
     }
 }
 
+void MainWindow::applyStyleSheet(const QString &styleSheet)
+{
+    this->ribbonBar()->setStyleSheet(styleSheet);
+}
 
 void MainWindow::onShowContextPage(bool on)
 {
