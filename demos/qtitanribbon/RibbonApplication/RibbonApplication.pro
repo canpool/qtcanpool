@@ -32,4 +32,4 @@ INCLUDEPATH += $$QTITANDIR/include
 # lib
 LIBS *= -l$$qtLibraryNameVersion(qtitan, 1)
 
-include($$QTITANDIR/demos/ribbon/Application/src.pri)
+include($$QTITANDIR/demos/ribbon/RibbonApplication/src.pri)

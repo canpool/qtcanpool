@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-          $$PWD/Application
+          $$PWD/RibbonApplication
 

@@ -5,7 +5,7 @@ SOURCES       = $$PWD/main.cpp \
                 $$PWD/mainwindow.cpp \
                 $$PWD/ribbonpopularpage.cpp
 
-RESOURCES     = $$PWD/Application.qrc
+RESOURCES     = $$PWD/RibbonApplication.qrc
 FORMS         = $$PWD/ribbonpopularpage.ui \
                 $$PWD/ribbonsample.ui
 

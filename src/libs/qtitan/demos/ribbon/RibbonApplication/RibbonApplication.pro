@@ -22,9 +22,9 @@ SOURCES       = main.cpp \
                 mainwindow.cpp \
                 ribbonpopularpage.cpp
 
-RESOURCES     = Application.qrc
+RESOURCES     = RibbonApplication.qrc
 FORMS         = ribbonsample.ui \
-                ribbonpopularpage.ui        
+                ribbonpopularpage.ui
 
 include($$PWD/../../shared/aboutdialog.pri)
 include($$PWD/../../ribbon/shared/ribbonwindow.pri)
