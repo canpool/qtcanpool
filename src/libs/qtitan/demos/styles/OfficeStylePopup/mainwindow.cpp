@@ -13,7 +13,7 @@ PopupDemoDialog::PopupDemoDialog()
 {
     m_defaultStyle = QStyleFactory::create(qApp->style()->objectName());
     m_officeStyle = new OfficeStyle();
-    m_officeStyle->setTheme(OfficeStyle::Office2016DarkGray);
+    m_officeStyle->setTheme(OfficeStyle::Office2013White);
     m_officeStyle->setDialogsIgnored(true);
 
     ui.setupUi(this);

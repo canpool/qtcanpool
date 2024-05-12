@@ -54,7 +54,7 @@ Widgets::Widgets(QWidget* parent)
     resize(2 * geom.width() / 3, 2 * geom.height() / 3);
 
     updateStyle(m_actOfficeStyle);
-    updateTheme(m_act2016ColorfulTheme);
+    updateTheme(m_act2013WhiteTheme);
 
     readSettings();
 }
@@ -168,21 +168,21 @@ void Widgets::createActions()
     m_groupThemesActions->addAction(m_act2013DarkTheme);
 
 
-    m_act2016ColorfulTheme = new QAction(tr("Office 2016 Colorful"), this);
-    m_act2016ColorfulTheme->setCheckable(true);
-    m_groupThemesActions->addAction(m_act2016ColorfulTheme);
+    // m_act2016ColorfulTheme = new QAction(tr("Office 2016 Colorful"), this);
+    // m_act2016ColorfulTheme->setCheckable(true);
+    // m_groupThemesActions->addAction(m_act2016ColorfulTheme);
 
-    m_act2016WhiteTheme = new QAction(tr("Office 2016 White"), this);
-    m_act2016WhiteTheme->setCheckable(true);
-    m_groupThemesActions->addAction(m_act2016WhiteTheme);
+    // m_act2016WhiteTheme = new QAction(tr("Office 2016 White"), this);
+    // m_act2016WhiteTheme->setCheckable(true);
+    // m_groupThemesActions->addAction(m_act2016WhiteTheme);
 
-    m_act2016DarkGrayTheme = new QAction(tr("Office 2016 Dark Gray"), this);
-    m_act2016DarkGrayTheme->setCheckable(true);
-    m_groupThemesActions->addAction(m_act2016DarkGrayTheme);
+    // m_act2016DarkGrayTheme = new QAction(tr("Office 2016 Dark Gray"), this);
+    // m_act2016DarkGrayTheme->setCheckable(true);
+    // m_groupThemesActions->addAction(m_act2016DarkGrayTheme);
 
-    m_act2016BlackTheme = new QAction(tr("Office 2016 Black"), this);
-    m_act2016BlackTheme->setCheckable(true);
-    m_groupThemesActions->addAction(m_act2016BlackTheme);
+    // m_act2016BlackTheme = new QAction(tr("Office 2016 Black"), this);
+    // m_act2016BlackTheme->setCheckable(true);
+    // m_groupThemesActions->addAction(m_act2016BlackTheme);
 
     // Group help
     m_actHelp = new QAction(QIcon(":/shared/res/about.png"), tr("&About Custom Styles Sample..."), this);
@@ -235,11 +235,11 @@ void Widgets::createMenubar()
     m_menuTheme->addAction(m_act2013WhiteTheme);
     m_menuTheme->addAction(m_act2013GrayTheme);
     m_menuTheme->addAction(m_act2013DarkTheme);
-    m_menuTheme->addSeparator();
-    m_menuTheme->addAction(m_act2016ColorfulTheme);
-    m_menuTheme->addAction(m_act2016WhiteTheme);
-    m_menuTheme->addAction(m_act2016DarkGrayTheme);
-    m_menuTheme->addAction(m_act2016BlackTheme);
+    // m_menuTheme->addSeparator();
+    // m_menuTheme->addAction(m_act2016ColorfulTheme);
+    // m_menuTheme->addAction(m_act2016WhiteTheme);
+    // m_menuTheme->addAction(m_act2016DarkGrayTheme);
+    // m_menuTheme->addAction(m_act2016BlackTheme);
 
     m_menuView->addMenu(m_menuTheme);
     m_menuView->addSeparator();
