@@ -1,0 +1,2 @@
+QTC_LIB_NAME = qsseditor
+QTC_LIB_VERSION = 0.7.0
