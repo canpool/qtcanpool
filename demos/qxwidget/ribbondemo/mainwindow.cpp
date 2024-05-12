@@ -85,9 +85,7 @@ MainWindow::MainWindow(QWidget *par)
     setWindowTitle(tr("ribbon mainwindow demo"));
     setWindowIcon(QIcon(":/icon/res/logo.svg"));
     setMinimumWidth(500);
-    showMaximized();
 
-    // after mainwindow show
     changeRibbonTheme(1);
 
     qDebug() << RibbonElementStyleOpt;

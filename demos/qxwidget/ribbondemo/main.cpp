@@ -65,10 +65,11 @@ int main(int argc, char *argv[])
     QElapsedTimer cost;
 
     cost.start();
+
     MainWindow w;
+    w.showMaximized();
 
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
-    w.show();
 
     return (a.exec());
 }
