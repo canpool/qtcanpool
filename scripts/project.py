@@ -51,6 +51,38 @@ def do_create(args):
     os.rename("template.pro", f"{args.name}.pro")
 
 
+def do_publish(args):
+    outdir = args.outdir
+    if not outdir:
+        outdir = os.path.join(CUR_DIR, "qtcanpool")
+        if os.path.isdir(outdir):
+            shutil.rmtree(outdir)
+    os.makedirs(outdir, exist_ok=True)
+    inc_dir = os.path.join(outdir, "include")
+    os.makedirs(inc_dir, exist_ok=True)
+    os.makedirs(os.path.join(outdir, "lib"), exist_ok=True)
+    libs_dir = os.path.join(ROOT_DIR, "src", "libs")
+    for root, _, files in os.walk(libs_dir):
+        for file in files:
+            if file != "header.list":
+                continue
+            file_path = os.path.join(root, file)
+            file_dir = os.path.dirname(file_path)
+            file_reldir = os.path.relpath(file_dir, libs_dir)
+            file_outdir = os.path.join(inc_dir, file_reldir)
+            if not os.path.isdir(file_outdir):
+                os.makedirs(file_outdir, exist_ok=True)
+            with open(file_path) as f:
+                for line in f.readlines():
+                    line = line.strip()
+                    if not line or not line.endswith(".h"):
+                        continue
+                    h_path = os.path.join(file_dir, line)
+                    if not os.path.isfile(h_path):
+                        continue
+                    shutil.copy(h_path, file_outdir)
+
+
 def do_main(args):
     print("try -h/--help for more details.")
 
@@ -60,12 +92,14 @@ def main():
     parser.set_defaults(func=do_main)
 
     subparsers = parser.add_subparsers(help="project sub-commands")
+
     # framework
     subparser = subparsers.add_parser("framework", aliases=["fw"],
         formatter_class=argparse.RawTextHelpFormatter,  help="export the project framework")
     subparser.add_argument("-o", "--outdir", type=str, metavar="DIR",
         help="archive directory, default is qtcproject")
     subparser.set_defaults(func=do_framework)
+
     # create project based on projects/template
     subparser = subparsers.add_parser("create", aliases=["c", "new"],
         formatter_class=argparse.RawTextHelpFormatter,  help="create a project based on template")
@@ -73,6 +107,13 @@ def main():
     subparser.add_argument("-o", "--outdir", type=str, metavar="DIR",
         help="project directory, default is projects")
     subparser.set_defaults(func=do_create)
+
+    # publish header files
+    subparser = subparsers.add_parser("publish", aliases=["p", "pub"],
+        formatter_class=argparse.RawTextHelpFormatter,  help="publish public header files")
+    subparser.add_argument("-o", "--outdir", type=str, metavar="DIR",
+        help="publish directory, default is qtcanpool")
+    subparser.set_defaults(func=do_publish)
 
     args = parser.parse_args()
     args.func(args)
