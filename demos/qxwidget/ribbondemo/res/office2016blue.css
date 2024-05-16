@@ -168,7 +168,7 @@ QxRibbon--RibbonButtonGroup {
 
 QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QWidget {
   color: white;
-  background-color: transparent;
+  background-color: #2B579A;
 }
 
 QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton {
@@ -189,6 +189,7 @@ QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:checked 
 
 QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QLineEdit {
   border: 1px solid #124078;
+  background-color: #2B579A;
 }
 
 QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QLineEdit:hover {
@@ -233,8 +234,8 @@ QxRibbon--RibbonQuickAccessBar QToolButton:checked {
 }
 
 QxRibbon--RibbonQuickAccessBar QToolButton {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 QxRibbon--RibbonQuickAccessBar QToolButton[popupMode="1"] {
@@ -253,6 +254,7 @@ QxRibbon--RibbonQuickAccessButton::menu-indicator {
   width: 6px;
   height: 6px;
   padding-right: 3px;
+  padding-bottom: 5px;
 }
 
 /*RibbonCtrlContainer*/

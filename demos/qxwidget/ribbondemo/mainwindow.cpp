@@ -142,7 +142,7 @@ void MainWindow::createRibbon()
 {
     COST_START();
 
-    ribbonBar()->setContentsMargins(2, 0, 2, 0);
+    ribbonBar()->setContentsMargins(0, 0, 0, 0);
 
     createPageHome();
     COST_PRINT("createPageHome");
