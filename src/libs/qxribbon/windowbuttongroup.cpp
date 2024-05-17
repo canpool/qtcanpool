@@ -120,6 +120,7 @@ void WindowButtonGroupPrivate::updateSize()
 void WindowButtonGroupPrivate::resize(QSize size)
 {
     qreal tw = 0;
+    const int border = 1;
 
     if (m_closeButton) {
         tw += m_closeStretch;
@@ -138,21 +139,21 @@ void WindowButtonGroupPrivate::resize(QSize size)
         int w = (m_minStretch / tw) * size.width();
         // m_minimizeButton->setGeometry(x, 0, w, size.height());
         m_minimizeButton->setFixedSize(w, size.height());
-        m_minimizeButton->move(x, 0);
+        m_minimizeButton->move(x, border);
         x += w;
     }
     if (m_maximizeButton) {
         int w = (m_maxStretch / tw) * size.width();
         // m_maximizeButton->setGeometry(x, 0, w, size.height());
         m_maximizeButton->setFixedSize(w, size.height());
-        m_maximizeButton->move(x, 0);
+        m_maximizeButton->move(x, border);
         x += w;
     }
     if (m_closeButton) {
         int w = (m_closeStretch / tw) * size.width();
         // m_closeButton->setGeometry(x, 0, w, size.height());
         m_closeButton->setFixedSize(w, size.height());
-        m_closeButton->move(x, 0);
+        m_closeButton->move(x, border);
     }
 }
 
@@ -216,9 +217,6 @@ WindowButtonGroup::WindowButtonGroup(QWidget *parent, Qt::WindowFlags flags)
 {
     QX_INIT_PRIVATE(WindowButtonGroup)
     updateWindowFlags(flags);
-    if (parent) {
-        parent->installEventFilter(this);
-    }
 }
 
 WindowButtonGroup::~WindowButtonGroup()
@@ -240,7 +238,6 @@ void WindowButtonGroup::updateWindowFlags(Qt::WindowFlags flags)
     d->setupMinimizeButton(flags & Qt::WindowMinimizeButtonHint);
     d->setupMaximizeButton(flags & Qt::WindowMaximizeButtonHint);
     d->setupCloseButton(flags & Qt::WindowCloseButtonHint);
-    parentResize();
 }
 
 
@@ -289,35 +286,6 @@ void WindowButtonGroup::setSignalEnabled(bool enable)
 {
     Q_D(WindowButtonGroup);
     d->m_signalEnabled = enable;
-}
-
-bool WindowButtonGroup::eventFilter(QObject *watched, QEvent *e)
-{
-    if (watched == parentWidget()) {
-        switch (e->type()) {
-        case QEvent::Resize:
-            parentResize();
-            break;
-        default:
-            break;
-        }
-    }
-    return false; // event continue
-}
-
-void WindowButtonGroup::parentResize()
-{
-    QWidget *par = parentWidget();
-    if (par) {
-        QSize parSize = par->size();
-        move(parSize.width() - width() - 1, 1);
-    }
-}
-
-void WindowButtonGroup::resizeEvent(QResizeEvent *e)
-{
-    Q_D(WindowButtonGroup);
-    d->resize(e->size());
 }
 
 QX_RIBBON_END_NAMESPACE

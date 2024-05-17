@@ -196,7 +196,7 @@ public:
     bool isOfficeStyle() const;
     bool isTwoRowStyle() const;
 
-    void setWindowButtonsSize(const QSize &size);
+    void setWindowButtonGroup(QWidget *widget);
 
     void updateRibbonGeometry();
     void updateRibbonTheme();

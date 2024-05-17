@@ -34,10 +34,6 @@ Q_SIGNALS:
     void buttonMinimizeClicked();
     void buttonMaximzieClicked();
     void buttonCloseClicked();
-protected:
-    virtual bool eventFilter(QObject *watched, QEvent *e) Q_DECL_OVERRIDE;
-    virtual void parentResize();
-    virtual void resizeEvent(QResizeEvent *e) Q_DECL_OVERRIDE;
 private:
     QX_DECLARE_PRIVATE(WindowButtonGroup)
 };

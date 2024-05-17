@@ -132,10 +132,10 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_topRightButtonGroup(Q_NULLPTR)
     , m_bottomLeftButtonGroup(Q_NULLPTR)
     , m_bottomRightButtonGroup(Q_NULLPTR)
+    , m_windowButtonGroup(Q_NULLPTR)
     , m_quickAccessBarPosition(RibbonBar::QABRightPosition)
     , m_ribbonStyle(RibbonBar::OfficeStyle)
     , m_lastShowStyle(RibbonBar::OfficeStyle)
-    , m_windowButtonsSize(RibbonElementStyleOpt.titleBarHeight() * 4, RibbonElementStyleOpt.titleBarHeight())
     , m_pageContextColorListIndex(-1)
     , m_tabBarBaseLineColor(186, 201, 219)
     , m_titleAligment(Qt::AlignCenter)
@@ -385,14 +385,20 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
             x = m_quickAccessBar->geometry().right() + 1;
         }
         if (pageContextPos.y() < 0) {
-            int w = q->width() - m_iconRightBorderPosition - border.right() - m_windowButtonsSize.width() - x;
+            int w = q->width() - m_iconRightBorderPosition - border.right() - x;
+            if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+                w -= m_windowButtonGroup->width();
+            }
             if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
                 w -= m_topRightButtonGroup->width();
             }
             titleRegion.setRect(x, border.top(), w, q->titleBarHeight());
         } else {
             int leftwidth = pageContextPos.x() - m_iconRightBorderPosition - x;
-            int rightwidth = q->width() - pageContextPos.y() - m_windowButtonsSize.width();
+            int rightwidth = q->width() - pageContextPos.y();
+            if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+                rightwidth -= m_windowButtonGroup->width();
+            }
             if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
                 rightwidth -= m_topRightButtonGroup->width();
             }
@@ -456,7 +462,10 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
     QWidget *parWindow = q->parentWidget();
     if (parWindow && m_titleVisible) {
         int start = m_tabBar->x() + m_tabBar->width();
-        int width = q->width() - m_windowButtonsSize.width() - start;
+        int width = q->width() - start;
+        if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+            width -= m_windowButtonGroup->width();
+        }
         if (m_quickAccessBarPosition == RibbonBar::QABRightPosition &&
             m_quickAccessBar && m_quickAccessBar->isVisible()) {
             width = m_quickAccessBar->x() - start;
@@ -602,7 +611,12 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         QSize wSize = m_topLeftButtonGroup->sizeHint();
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), validTitleBarHeight);
     }
-    int endX = q->width() - border.right() - m_windowButtonsSize.width();
+    int endX = q->width() - border.right();
+    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+        QSize wSize = m_windowButtonGroup->sizeHint();
+        endX -= wSize.width();
+        m_windowButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
+    }
     if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
         QSize wSize = m_topRightButtonGroup->sizeHint();
         endX -= wSize.width();
@@ -665,7 +679,12 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
 
     // 先布局右边内容
     //  cornerWidget - TopRightCorner
-    int endX = q->width() - border.right() - m_windowButtonsSize.width();
+    int endX = q->width() - border.right();
+    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+        QSize wSize = m_windowButtonGroup->sizeHint();
+        endX -= wSize.width();
+        m_windowButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
+    }
     QWidget *connerR = q->cornerWidget(Qt::TopRightCorner);
     if (connerR && connerR->isVisible()) {
         QSize connerSize = connerR->sizeHint();
@@ -1706,15 +1725,10 @@ bool RibbonBar::isTwoRowStyle() const
     return d->isTwoRowStyle();
 }
 
-/**
- * @brief 告诉 ribbonbar，window buttons 的尺寸, 此值由 RibbonWindow 传入，
- * 告诉最大，最小，关闭按钮的大小，在显示标题栏的时候好计算尺寸
- * @param size
- */
-void RibbonBar::setWindowButtonsSize(const QSize &size)
+void RibbonBar::setWindowButtonGroup(QWidget *widget)
 {
     Q_D(RibbonBar);
-    d->m_windowButtonsSize = size;
+    d->m_windowButtonGroup = widget;
 }
 
 /**

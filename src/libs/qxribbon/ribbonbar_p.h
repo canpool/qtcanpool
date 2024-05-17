@@ -138,11 +138,11 @@ public:
     RibbonButtonGroup *m_topRightButtonGroup;
     RibbonButtonGroup *m_bottomLeftButtonGroup;
     RibbonButtonGroup *m_bottomRightButtonGroup;      ///< 在 tabbar 右边的按钮群
+    QWidget *m_windowButtonGroup;
     RibbonQuickAccessBarContainer *m_quickAccessBar;
     RibbonBar::QuickAccessBarPosition m_quickAccessBarPosition;
     RibbonBar::RibbonStyle m_ribbonStyle;
     RibbonBar::RibbonStyle m_lastShowStyle;
-    QSize m_windowButtonsSize;  ///< 由 RibbonWindow 告诉的 windowbuttons 的尺寸
     QList<QColor> m_pageContextColorList;
     int m_pageContextColorListIndex;
     QColor m_tabBarBaseLineColor;
