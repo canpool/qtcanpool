@@ -217,11 +217,12 @@ void RibbonWindow::resizeEvent(QResizeEvent *event)
         if (d->m_ribbonBar->size().width() != this->size().width()) {
             d->m_ribbonBar->setFixedWidth(this->size().width());
         }
-        if (d->m_windowButtonGroup && d->m_windowButtonGroup->isVisible()) {
-            d->m_ribbonBar->setWindowButtonsSize(d->m_windowButtonGroup->size());
-        } else {
-            d->m_ribbonBar->setWindowButtonsSize(QSize(0, 0));
-        }
+        // FIXME: Comment the following statement to resolve #I9MTAT
+        // if (d->m_windowButtonGroup && d->m_windowButtonGroup->isVisible()) {
+        //     d->m_ribbonBar->setWindowButtonsSize(d->m_windowButtonGroup->size());
+        // } else {
+        //     d->m_ribbonBar->setWindowButtonsSize(QSize(0, 0));
+        // }
     }
     QMainWindow::resizeEvent(event);
 }
