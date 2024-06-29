@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/view">
-        <file alias="config.xml">resource/view/config.xml</file>
-    </qresource>
-</RCC>
