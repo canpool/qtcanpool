@@ -202,6 +202,7 @@ bool FramelessWidgetDataNativeWin::handleNonClinetCalcSize(MSG *msg, QTRESULT *r
     // that the application can use to calculate the new size and position of the client rectangle.
     NCCALCSIZE_PARAMS *pncsp = reinterpret_cast<NCCALCSIZE_PARAMS *>(msg->lParam);
 
+    const int originalTop = pncsp->rgrc[0].top;
     const RECT originalRect = pncsp->rgrc[0];
 
     // call default window proc to handle WM_NCCALCSIZE message
@@ -210,9 +211,17 @@ bool FramelessWidgetDataNativeWin::handleNonClinetCalcSize(MSG *msg, QTRESULT *r
         *result = ret;
         return true;
     }
+    // extend frame into client area
+    pncsp->rgrc[0].top = originalTop;
+
     bool isMaximized = GetWindowStyle(msg->hwnd) & WS_MAXIMIZE;
     if (isMaximized) {
-        pncsp->rgrc[0].top = 0;
+#ifdef SM_CXPADDEDBORDER
+        int border = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+#else
+        int border = GetSystemMetrics(SM_CXSIZEFRAME);
+#endif
+        pncsp->rgrc[0].top += border;
     } else {
         pncsp->rgrc[0] = originalRect;
     }
