@@ -5,4 +5,9 @@ SUBDIRS = \
     src \
     demos \
     examples \
-    tests
+
+
+TEST_BUILD_ENABLE = 0
+equals(TEST_BUILD_ENABLE, 1) {
+    SUBDIRS += tests
+}
