@@ -187,7 +187,7 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
                 return true;
             }
         }
-    } else if (msg->message == WM_MOVE) {
+    } else if (msg->message == WM_MOVE || msg->message == WM_SIZE) {
         RECT rcClient;
         GetWindowRect(msg->hwnd, &rcClient);
         // Inform application of the frame change.
