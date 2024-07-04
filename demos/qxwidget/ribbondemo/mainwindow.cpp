@@ -940,6 +940,12 @@ void MainWindow::createQuickAccessBar()
     QAction *actionCustomizeAndSave = createAction(tr("customize and save"), ":/icon/res/customize.svg");
     quickAccessBar->addAction(actionCustomizeAndSave);
     connect(actionCustomizeAndSave, &QAction::triggered, this, &MainWindow::onActionCustomizeAndSaveTriggered);
+
+    QAction *otherAction = new QAction(tr("other"), this);
+    connect(quickAccessBar, &RibbonQuickAccessBar::showCustomizeMenu, this, [otherAction](QMenu *menu) {
+        menu->addSeparator();
+        menu->addAction(otherAction);
+    });
 }
 
 void MainWindow::createRightButtonGroup()
