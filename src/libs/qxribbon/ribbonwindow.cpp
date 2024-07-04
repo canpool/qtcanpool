@@ -64,6 +64,9 @@ void RibbonWindowPrivate::destroyFrameless()
     }
     if (m_windowButtonGroup) {
         m_windowButtonGroup->hide();
+        if (m_ribbonBar) {
+            m_ribbonBar->setWindowButtonGroup(Q_NULLPTR);
+        }
         delete m_windowButtonGroup;
         m_windowButtonGroup = Q_NULLPTR;
     }
