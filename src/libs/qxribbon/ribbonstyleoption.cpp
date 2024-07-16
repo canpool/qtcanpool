@@ -50,7 +50,7 @@ void RibbonStyleOptionPrivate::calcBaseHeight()
     int m_lineSpacing = QFontMetricsF(QApplication::font()).lineSpacing();
 #endif
 
-    m_titleBarHeight = m_lineSpacing * 1.8;
+    m_titleBarHeight = m_lineSpacing * 1.65;
     m_tabBarHeight = m_lineSpacing * 1.5;
 }
 
