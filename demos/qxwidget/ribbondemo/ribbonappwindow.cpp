@@ -57,6 +57,7 @@ void RibbonAppWindowPrivate::setMenuWidget(QWidget *menuBar)
     if (Q_NULLPTR == m_windowButtonGroup) {
         m_windowButtonGroup = new WindowButtonGroup(q);
         m_windowButtonGroup->setSignalEnabled(true);
+        m_windowButtonGroup->setWindowBorder(2);
         QObject::connect(m_windowButtonGroup, &WindowButtonGroup::buttonMinimizeClicked,
                          q, &RibbonAppWindow::showMinimized);
         QObject::connect(m_windowButtonGroup, &WindowButtonGroup::buttonMaximzieClicked, q, [q]() {

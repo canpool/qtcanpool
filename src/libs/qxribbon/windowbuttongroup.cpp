@@ -31,6 +31,7 @@ WindowButtonGroupPrivate::WindowButtonGroupPrivate()
     , m_closeStretch(4)
     , m_maxStretch(3)
     , m_minStretch(3)
+    , m_windowBorder(1)
     , m_iconScale(0.5)
     , m_signalEnabled(false)
 {
@@ -120,7 +121,7 @@ void WindowButtonGroupPrivate::updateSize()
 void WindowButtonGroupPrivate::resize(QSize size)
 {
     qreal tw = 0;
-    const int border = 1;
+    const int border = m_windowBorder;
 
     if (m_closeButton) {
         tw += m_closeStretch;
@@ -262,6 +263,15 @@ void WindowButtonGroup::setWindowStates(Qt::WindowStates s)
         bool on = s.testFlag(Qt::WindowMaximized);
         d->m_maximizeButton->setChecked(on);
         d->m_maximizeButton->setToolTip(on ? tr("Restore") : tr("Maximize"));
+    }
+}
+
+void WindowButtonGroup::setWindowBorder(int border)
+{
+    Q_D(WindowButtonGroup);
+    if (border > 1) {
+        d->m_windowBorder = border;
+        d->updateSize();
     }
 }
 

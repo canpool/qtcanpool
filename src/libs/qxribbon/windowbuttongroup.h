@@ -24,6 +24,8 @@ public:
     void setIconScale(qreal iconscale = 0.5);
     void setWindowStates(Qt::WindowStates s);
 
+    void setWindowBorder(int border = 1);
+
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
     /** default is disabled */

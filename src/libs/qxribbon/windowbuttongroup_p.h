@@ -41,6 +41,7 @@ public:
     int m_closeStretch;
     int m_maxStretch;
     int m_minStretch;
+    int m_windowBorder;
     qreal m_iconScale;
     bool m_signalEnabled;
 };
