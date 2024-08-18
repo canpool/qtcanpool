@@ -1,4 +1,4 @@
-VERSION = 4.3.0
+VERSION = 4.3.1
 
 SRC_DIR = $$PWD/Qt-Advanced-Docking-System/src
 INCLUDEPATH += $$SRC_DIR
