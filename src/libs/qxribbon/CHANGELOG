@@ -1,3 +1,20 @@
+0.8.1
+---
+Interface
+- Add setWindowBorder for WindowButtonGroup
+- Refactor WindowButtonGroup
+- Add cornerButtonGroup for RibbonBar
+- Add setAllActionCanCustomize for RibbonActionsManager
+
+Optimize
+- Reduce page height in 2row style
+
+Bugfix
+- Fix crashed after setting native frame
+- Set frame changed on WM_SIZE for FramelessWidgetDataNativeWin
+- Set WindowButtonsSize even if parent widget is hidden
+- Fix m_useRibbon not being set when useRibbon is false
+
 0.8.0
 ---
 Feature
