@@ -80,6 +80,7 @@ TinyNavBar::TinyNavBar(QWidget *parent)
     Q_D(TinyNavBar);
     d->setPublic(this);
     d->init();
+    setObjectName(QLatin1String("qtc_tinynavbar"));
 }
 
 TinyNavBar::~TinyNavBar()

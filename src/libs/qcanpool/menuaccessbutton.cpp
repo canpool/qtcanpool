@@ -24,6 +24,7 @@ MenuAccessButton::MenuAccessButton(QWidget *parent)
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setPopupMode(QToolButton::InstantPopup);
+    setObjectName(QLatin1String("qtc_menuaccessbutton"));
 }
 
 MenuAccessButton::~MenuAccessButton()
