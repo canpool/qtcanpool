@@ -25,6 +25,7 @@ public:
     void createMenuBar();
     void createSystemMenu();
     void createCentralWidget();
+    void createStatusBar();
 
 private:
     void addThemeStyleItem(QActionGroup *group, QAction *action, const QString &qss);

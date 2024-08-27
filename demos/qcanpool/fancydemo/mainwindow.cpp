@@ -7,6 +7,8 @@
 #include <QMenu>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QStatusBar>
+#include <QLayout>
 
 #include <QApplication>
 #include <QFile>
@@ -19,6 +21,7 @@
 #include "qcanpool/fancytabbar.h"
 #include "qcanpool/fancytoolbutton.h"
 #include "qcanpool/quickaccessbar.h"
+#include "qcanpool/tinynavbar.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : FancyWindow(parent)
@@ -46,6 +49,7 @@ void MainWindow::createWindow()
     createMenuBar();
     createSystemMenu();
     createCentralWidget();
+    createStatusBar();
 }
 
 void MainWindow::createCentralWidget()
@@ -201,6 +205,23 @@ void MainWindow::createSystemMenu()
     addTabPositionItem(group, menu->addAction(tr("West")), FancyTabWidget::West);
     addTabPositionItem(group, menu->addAction(tr("East")), FancyTabWidget::East);
     emit group->actions().at(2)->trigger();
+}
+
+void MainWindow::createStatusBar()
+{
+    QStatusBar *sb = statusBar();
+
+    TinyNavBar *nb = new TinyNavBar(this);
+    nb->layout()->setSpacing(2);
+    nb->addTab(tr("nav1"));
+    nb->addTab(tr("nav2222"));
+    nb->addTab(tr("nav3"));
+    nb->addTab(tr("nav4"));
+    nb->addTab(tr("nav5"));
+    nb->removeTab(3);
+    nb->insertTab(2, tr("navN"));
+    nb->setTabVisible(3, false);
+    sb->addWidget(nb);
 }
 
 void MainWindow::addThemeStyleItem(QActionGroup *group, QAction *action, const QString &qss)

@@ -572,14 +572,22 @@ QToolBar#qtc_quickaccessbar QToolButton {
     height: 18px;
 }
 
-QToolButton#qtc_quickaccessbutton::menu-indicator {
+QToolButton#qtc_quickaccessbutton,
+QToolButton#qtc_menuaccessbutton {
+    width: 20px;
+}
+
+QToolButton#qtc_quickaccessbutton::menu-indicator,
+QToolButton#qtc_menuaccessbutton::menu-indicator {
     width: 6px;
     height: 6px;
-    padding-right: 3px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 QToolBar#qtc_quickaccessbar,
 QToolBar#qtc_sys_toolbar,
+QToolBar#qtc_tinynavbar,
 QToolBar#qtc_menu_toolbar {
     border: none;
     background: transparent;
