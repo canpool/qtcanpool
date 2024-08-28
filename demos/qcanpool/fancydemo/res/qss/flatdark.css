@@ -34,6 +34,7 @@ QPushButton, QToolButton {
     border-style: none;
     color: #f0f0f0;
     padding: 0px;
+    min-height: 18px;
 }
 
 QPushButton {
