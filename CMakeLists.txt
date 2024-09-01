@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 
 ## Add paths to check for cmake modules:
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(Utils)
 
+env_with_default("QTC_BUILD_WITH_PCH" ENV_QTC_BUILD_WITH_PCH ON)
+env_with_default("QTC_WITH_TESTS" ENV_QTC_WITH_TESTS OFF)
+
+option(BUILD_WITH_PCH "Build with precompiled headers" "${ENV_QTC_BUILD_WITH_PCH}")
 include(FeatureSummary)
 include(QtCanpoolBranding RESULT_VARIABLE IDE_BRANDING_FILE)
 include(QtCanpoolTranslations)
@@ -22,11 +27,18 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-qtc_handle_sccache_support()
+qtc_handle_compiler_cache_support()
 
-option(WITH_TESTS "Build Tests" OFF)
+option(BUILD_LINK_WITH_QT "Link with Qt from the parent Qt Creator" OFF)
+qtc_link_with_qt()
+option(WITH_TESTS "Build Tests" ${ENV_QTC_WITH_TESTS})
 add_feature_info("Build tests" ${WITH_TESTS} "")
-option(WITH_DEBUG_CMAKE "Enabled CMake project debugging functionality (e.g. source file disk checking)" OFF)
+option(WITH_DEBUG_CMAKE "Enabled CMake project debugging functionality" OFF)
+
+option(SHOW_BUILD_DATE "Show build date in about dialog" OFF)
+option(WITH_SANITIZE "Build with sanitizer enabled" OFF)
+set(SANITIZE_FLAGS "" CACHE STRING "Sets flags for sanitizer compilation flags used in Debug builds")
+add_feature_info("Build with sanitize" ${WITH_SANITIZE} "SANITIZE_FLAGS='${SANITIZE_FLAGS}'")
 
 option(WITH_DEMOS "Build Demos" ON)
 
@@ -45,6 +57,13 @@ if (WITH_TESTS)
   set(IMPLICIT_DEPENDS Qt5::Test)
 endif()
 
+# suppress bogus warning
+# warning C4573 requires the compiler to capture 'this' but the current default capture mode does not allow it
+# when using QObject::connect in lambda without capturing 'this' - which would lead to warnings
+# with other compilers
+if(MSVC)
+  add_compile_options(/wd4573)
+endif()
 find_package(Qt5
   ${IDE_QT_VERSION_MIN}
   COMPONENTS Concurrent Core Gui Widgets
@@ -53,28 +72,41 @@ find_package(Qt5
 )
 if (Qt5_VERSION VERSION_LESS 6.0.0)
   install(TARGETS Qt6Core5Compat EXPORT QtCanpool)
-  set(BUILD_WITH_PCH_DEFAULT ON)
 
   # Specify standards conformance mode to MSVC 2017 and later
   # Qt6 has the values as part of the Qt6::Platform target interface
   if (MSVC AND MSVC_VERSION GREATER_EQUAL 1910)
     add_compile_options(/permissive- /Zc:__cplusplus)
   endif()
+  if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+    add_compile_options(-Wno-missing-field-initializers)
+  endif()
 else()
-  set(BUILD_WITH_PCH_DEFAULT OFF)
+  # Common intermediate directory for QML modules which are defined via qt_add_qml_module()
+  set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml_modules")
+
+  # This includes the code that will enable higher compiler warnings level (/W3 for MSVC, -Wall -Wextra for GCC)
+  # This is controlled by QT_COMPILE_OPTIONS_DISABLE_WARNINGS target property.
+  include(QtCompilerFlags)
+
+  if (MSVC AND QT_FEATURE_static_runtime)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
 endif()
 find_package(Qt5 COMPONENTS LinguistTools QUIET)
 find_package(Qt5 COMPONENTS Designer DesignerComponents Help SerialPort Svg Tools QUIET)
 
-option(BUILD_WITH_PCH "Build with precompiled headers" ${BUILD_WITH_PCH_DEFAULT})
-
 find_package(Threads)
 find_package(Clang QUIET)
+if (Qt5_VERSION VERSION_LESS 6.0.0)
 find_package(KF5SyntaxHighlighting QUIET)
+endif()
 
 # Crashpad
 set(CRASHPAD_BACKEND_URL "" CACHE STRING "Crashpad backend URL")
 set(BUILD_WITH_CRASHPAD OFF)
+# Linux is not supported for now
+# x86_64;arm64 is not supported for now
 if(CRASHPAD_BACKEND_URL AND (WIN32 OR APPLE)) # Linux is not supported for now
   find_package(Crashpad QUIET)
   if(TARGET Crashpad::Crashpad)
@@ -128,8 +160,8 @@ if (WITH_TESTS)
   add_subdirectory(tests)
 endif()
 
-find_package(PythonInterp)
-if (NOT PYTHONINTERP_FOUND)
+find_package(Python3 COMPONENTS Interpreter)
+if (NOT Python3_Interpreter_FOUND)
   message("No python interpreter found, skipping \"Dependencies\" install component.")
 else()
   get_target_property(_qmake_binary Qt5::qmake IMPORTED_LOCATION)
@@ -144,7 +176,7 @@ else()
   endif()
   install(CODE "
       execute_process(COMMAND
-        \"${PYTHON_EXECUTABLE}\"
+        \"${Python3_EXECUTABLE}\"
         \"${CMAKE_CURRENT_LIST_DIR}/scripts/deployqt.py\"
         ${_llvm_arg}
         ${_elfutils_arg}

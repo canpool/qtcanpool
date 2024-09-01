@@ -1,6 +1,6 @@
-set(QTPROJECT_VERSION "2.1.0")                              # The IDE version.
+set(QTPROJECT_VERSION "2.2.0")                              # The IDE version.
 set(QTPROJECT_COMPAT_VERSION "2.1.0")                       # The IDE Compatibility version.
-set(QTPROJECT_DISPLAY_VERSION "2.1.0")                      # The IDE display version.
+set(QTPROJECT_DISPLAY_VERSION "2.2.0")                      # The IDE display version.
 set(QTPROJECT_COPYRIGHT_YEAR "2022")                        # The IDE current copyright year.
 
 set(IDE_SETTINGSVARIANT "QtProject")                        # The IDE settings variation.
