@@ -8,3 +8,11 @@ add_qtc_executable(RibbonDemo
     ribbondemo.qrc
     ribbondemo.rc
 )
+
+extend_qtc_executable(RibbonDemo
+  CONDITION WIN32
+  DEFINES QXRIBBON_USE_APPWINDOW
+  DEPENDS qxwindow
+  SOURCES
+    ribbonappwindow.cpp ribbonappwindow.h
+)
