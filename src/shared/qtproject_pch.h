@@ -27,10 +27,16 @@
 #include <QList>
 #include <QVariant>
 #include <QObject>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRegularExpression>
+#else
 #include <QRegExp>
+#endif
 #include <QString>
 #include <QStringList>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QTextCodec>
+#endif
 #include <QPointer>
 #include <QScopedPointer>
 #include <QSharedPointer>
