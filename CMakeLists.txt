@@ -73,6 +73,12 @@ find_package(Qt5
 if (Qt5_VERSION VERSION_LESS 6.0.0)
   install(TARGETS Qt6Core5Compat EXPORT QtCanpool)
 
+  if (MSVC AND MSVC_VERSION LESS_EQUAL 1916)
+    # Fix build pch failure, test on MSVC-1916 (Qt 5.14.2 MSVC2017)
+    # add_compile_options(/FS)
+    set(BUILD_WITH_PCH OFF)
+  endif()
+
   # Specify standards conformance mode to MSVC 2017 and later
   # Qt6 has the values as part of the Qt6::Platform target interface
   if (MSVC AND MSVC_VERSION GREATER_EQUAL 1910)
