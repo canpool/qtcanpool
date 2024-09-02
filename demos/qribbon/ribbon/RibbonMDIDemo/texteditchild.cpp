@@ -248,51 +248,36 @@ void TextEditChild::createGroupClipboard(QRibbon::RibbonPage *page)
 #endif
         groupClipboard->addAction(actionPaste, Qt::ToolButtonTextUnderIcon);
         RibbonControl *control = groupClipboard->controlByAction(actionPaste);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
         actionPaste->setPriority(QAction::LowPriority);
         actionPaste->setShortcut(QKeySequence::Paste);
         actionPaste->setToolTip(tr("Insert Clipboard contents"));
 
         groupClipboard->addAction(actionCut, Qt::ToolButtonTextBesideIcon);
         control = groupClipboard->controlByAction(actionCut);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
         actionCut->setShortcut(QKeySequence::Cut);
         actionCut->setToolTip(tr("Cut the selection and put it on the Clipboard"));
 
         groupClipboard->addAction(actionCopy, Qt::ToolButtonTextBesideIcon);
         control = groupClipboard->controlByAction(actionCopy);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
         actionCopy->setShortcut(QKeySequence::Copy);
 
         groupClipboard->addAction(actionFormatPointer, Qt::ToolButtonTextBesideIcon);
         control = groupClipboard->controlByAction(actionFormatPointer);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
         actionFormatPointer->setEnabled(false);
     }
 }

@@ -72,6 +72,8 @@ private:
     Q_DISABLE_COPY(RibbonControlSizeDefinition)
 };
 
+using RibbonControlSizeDef = RibbonControlSizeDefinition;
+
 class RibbonGroup;
 class RibbonControlPrivate;
 /* RibbonControl */

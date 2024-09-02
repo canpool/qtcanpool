@@ -116,9 +116,15 @@ MainWindow::MainWindow(QWidget *parent) : RibbonWindow(parent)
     readSettings();
 }
 
-MainWindow::~MainWindow() { delete m_itemsStyles; }
+MainWindow::~MainWindow()
+{
+    delete m_itemsStyles;
+}
 
-QString MainWindow::ribbonBackground() const { return m_curRibbonBackground; }
+QString MainWindow::ribbonBackground() const
+{
+    return m_curRibbonBackground;
+}
 
 void MainWindow::setRibbonBackground(const QString &name)
 {
@@ -340,12 +346,9 @@ void MainWindow::createGroupClipboard(RibbonPage *page)
         m_actionPaste2 = groupClipboard->addAction(::ribbonIcon(Image_Clipboard), tr("&Paste"),
                                                    Qt::ToolButtonTextUnderIcon, editPaste);
         RibbonControl *control = groupClipboard->controlByAction(m_actionPaste2);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         m_actionPaste2->setPriority(QAction::LowPriority);
         m_actionPaste2->setShortcut(QKeySequence::Paste);
@@ -355,23 +358,20 @@ void MainWindow::createGroupClipboard(RibbonPage *page)
 
         m_actionCut = groupClipboard->addAction(QIcon(":/res/smallcut.png"), tr("&Cut"), Qt::ToolButtonTextBesideIcon);
         control = groupClipboard->controlByAction(m_actionCut);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
         m_actionCut->setShortcut(QKeySequence::Cut);
         m_actionCut->setToolTip(tr("Cut the selection and put it on the Clipboard"));
 
         m_actionCopy =
             groupClipboard->addAction(QIcon(":/res/smallcopy.png"), tr("&Copy"), Qt::ToolButtonTextBesideIcon);
         control = groupClipboard->controlByAction(m_actionCopy);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
         m_actionCopy->setShortcut(QKeySequence::Copy);
 
         m_actionFormatPointerAction = groupClipboard->addAction(QIcon(":/res/smallformatpainter.png"),
                                                                 tr("F&ormat Pointer"), Qt::ToolButtonTextBesideIcon);
         control = groupClipboard->controlByAction(m_actionFormatPointerAction);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
     }
 }
 
@@ -567,14 +567,14 @@ void MainWindow::createGroupStyles(RibbonPage *page)
 {
     if (RibbonGroup *groupStyles = page->addGroup(QIcon(":/res/smallcenter.png"), tr("&Styles"))) {
         RibbonGalleryControl *galleryControl = new RibbonGalleryControl();
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMaximumItemCount(16);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMinimumItemCount(16);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMaximumItemCount(15);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMinimumItemCount(4);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMaximumItemCount(3);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMinimumItemCount(3);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMaximumItemCount(4);
-        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMinimumItemCount(4);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMaximumItemCount(16);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMinimumItemCount(16);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMaximumItemCount(15);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMinimumItemCount(4);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMaximumItemCount(3);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMinimumItemCount(3);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMaximumItemCount(4);
+        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMinimumItemCount(4);
         groupStyles->addControl(galleryControl);
 
         m_itemsStyles = RibbonGalleryGroup::createGalleryGroup();
@@ -630,15 +630,12 @@ void MainWindow::createGroupEditing(RibbonPage *page)
         findMenu->addAction(actionGoto);
         RibbonControl *control =
             groupEditing->controlByAction(groupEditing->addAction(actionFind, Qt::ToolButtonTextBesideIcon, findMenu));
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
 
         QAction *actionReplace =
             groupEditing->addAction(QIcon(":/res/smallreplace.png"), tr("Replace"), Qt::ToolButtonTextBesideIcon);
@@ -646,28 +643,22 @@ void MainWindow::createGroupEditing(RibbonPage *page)
         actionReplace->setStatusTip(tr("Replace specific text with different text"));
         actionReplace->setEnabled(false);
         control = groupEditing->controlByAction(actionReplace);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
 
         QMenu *selectMenu =
             groupEditing->addMenu(QIcon(":/res/smallselect.png"), tr("Select"), Qt::ToolButtonTextBesideIcon);
         control = groupEditing->controlByAction(selectMenu->menuAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
 
         m_actionSelectAll = new QAction(tr("Select All"), this);
         m_actionSelectAll->setShortcut(Qt::CTRL + Qt::Key_A);
@@ -692,44 +683,32 @@ void MainWindow::createGroupPages(RibbonPage *page)
         QMenu *menu =
             groupPages->addMenu(ribbonIcon(":/res/coverpage16x16.png", ":/res/coverpage32x32.png"), tr("Cover Page"));
         RibbonControl *control = groupPages->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         QAction *act = groupPages->addAction(ribbonIcon(":/res/blankpage16x16.png", ":/res/blankpage32x32.png"),
                                              tr("Blank Page"), Qt::ToolButtonTextBesideIcon);
         control = groupPages->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         act = groupPages->addAction(ribbonIcon(":/res/pagebreak16x16.png", ":/res/pagebreak32x32.png"),
                                     tr("Page Break"), Qt::ToolButtonTextBesideIcon);
         control = groupPages->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
     }
 }
 
@@ -738,12 +717,9 @@ void MainWindow::createGroupTables(RibbonPage *page)
     if (RibbonGroup *groupTables = page->addGroup(QIcon(":/res/tablegroup16x16.png"), tr("Tables"))) {
         QMenu *menu = groupTables->addMenu(ribbonIcon(":/res/table16x16.png", ":/res/table32x32.png"), tr("Table"));
         RibbonControl *control = groupTables->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
     }
 }
 
@@ -754,65 +730,45 @@ void MainWindow::createGroupIllustrations(RibbonPage *page)
         QAction *act = groupIllustrations->addAction(ribbonIcon(":/res/picture16x16.png", ":/res/picture32x32.png"),
                                                      tr("Picture"), Qt::ToolButtonTextBesideIcon);
         RibbonControl *control = groupIllustrations->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         act = groupIllustrations->addAction(ribbonIcon(":/res/clipart16x16.png", ":/res/clipart32x32.png"),
                                             tr("Clip Art"), Qt::ToolButtonTextBesideIcon);
         control = groupIllustrations->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         QMenu *menu =
             groupIllustrations->addMenu(ribbonIcon(":/res/shapes16x16.png", ":/res/shapes32x32.png"), tr("Shapes"));
         control = groupIllustrations->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         act = groupIllustrations->addAction(ribbonIcon(":/res/smartart16x16.png", ":/res/smartart32x32.png"),
                                             tr("Smart Art"), Qt::ToolButtonTextBesideIcon);
         control = groupIllustrations->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         act = groupIllustrations->addAction(ribbonIcon(":/res/chart16x16.png", ":/res/chart32x32.png"), tr("Chart"),
                                             Qt::ToolButtonTextBesideIcon);
         control = groupIllustrations->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
     }
 }
 
@@ -822,44 +778,32 @@ void MainWindow::createGroupLinks(RibbonPage *page)
         QAction *act = groupLinks->addAction(ribbonIcon(":/res/hyperlink16x16.png", ":/res/hyperlink32x32.png"),
                                              tr("Hyperlink"), Qt::ToolButtonTextBesideIcon);
         RibbonControl *control = groupLinks->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         act = groupLinks->addAction(ribbonIcon(":/res/bookmark16x16.png", ":/res/bookmark32x32.png"), tr("Bookmark"),
                                     Qt::ToolButtonTextBesideIcon);
         control = groupLinks->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         act = groupLinks->addAction(ribbonIcon(":/res/crossref16x16.png", ":/res/crossref32x32.png"),
                                     tr("Cross-reference"), Qt::ToolButtonTextBesideIcon);
         control = groupLinks->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
     }
 }
 
@@ -870,28 +814,22 @@ void MainWindow::createGroupHeaderFooter(RibbonPage *page)
         QMenu *menu =
             groupHeaderFooter->addMenu(ribbonIcon(":/res/header16x16.png", ":/res/header32x32.png"), tr("Header"));
         RibbonControl *control = groupHeaderFooter->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
 
         menu = groupHeaderFooter->addMenu(ribbonIcon(":/res/footer16x16.png", ":/res/footer32x32.png"), tr("Footer"));
         control = groupHeaderFooter->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
 
         menu = groupHeaderFooter->addMenu(ribbonIcon(":/res/pagenumber16x16.png", ":/res/pagenumber32x32.png"),
                                           tr("Page Number"));
         control = groupHeaderFooter->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
     }
 }
 
@@ -901,94 +839,66 @@ void MainWindow::createGroupText(RibbonPage *page)
         QMenu *menu =
             groupText->addMenu(ribbonIcon(":/res/textbox16x16.png", ":/res/textbox32x32.png"), tr("Text Box"));
         RibbonControl *control = groupText->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         menu =
             groupText->addMenu(ribbonIcon(":/res/quickparts16x16.png", ":/res/quickparts32x32.png"), tr("Quick Parts"));
         control = groupText->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         menu = groupText->addMenu(ribbonIcon(":/res/wordart16x16.png", ":/res/wordart32x32.png"), tr("WordArt"));
         control = groupText->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         menu = groupText->addMenu(ribbonIcon(":/res/dropcap16x16.png", ":/res/dropcap32x32.png"), tr("Drop Cap"));
         control = groupText->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         menu = groupText->addMenu(ribbonIcon(":/res/signatureline16x16.png", ""), tr("Signature line"));
         control = groupText->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setLabelVisible(true);
 
         QAction *act = groupText->addAction(ribbonIcon(":/res/datatime16x16.png", ""), tr("Data / Time"),
                                             Qt::ToolButtonTextUnderIcon);
         control = groupText->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setLabelVisible(true);
 
         menu = groupText->addMenu(ribbonIcon(":/res/object16x16.png", ""), tr("Object"));
         control = groupText->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setLabelVisible(true);
     }
 }
 
@@ -998,29 +908,21 @@ void MainWindow::createGroupSymbols(RibbonPage *page)
         QAction *act = groupSymbols->addAction(ribbonIcon(":/res/equation16x16.png", ":/res/equation32x32.png"),
                                                tr("Equation"), Qt::ToolButtonTextBesideIcon);
         RibbonControl *control = groupSymbols->controlByAction(act);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
         QMenu *menu = groupSymbols->addMenu(ribbonIcon(":/res/symbol16x16.png", ":/res/symbol32x32.png"), tr("Symbol"));
         control = groupSymbols->controlByAction(menu->defaultAction());
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-            ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
-        control->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)
-            ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+        control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
+        control->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setImageSize(RibbonControlSizeDef::ImageLarge);
     }
 }
 
@@ -1030,12 +932,9 @@ void MainWindow::createGroupThemes(RibbonGroup *group)
     QAction *action =
         group->addAction(QIcon(":/res/largeThemes.png"), tr("Themes"), Qt::ToolButtonTextUnderIcon, themesMenu);
     RibbonControl *control = group->controlByAction(action);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
     QMenu *colors = new QMenu(this);
     group->addAction(QIcon(":/res/smallcolors.png"), tr("Colors"), Qt::ToolButtonTextBesideIcon, colors)
@@ -1050,78 +949,57 @@ void MainWindow::createGroupPageSetup(RibbonGroup *group)
 {
     QMenu *menu = group->addMenu(QIcon(":/res/largeMargins.png"), tr("Margins"));
     RibbonControl *control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
     menu = group->addMenu(ribbonIcon(":/res/orientation16x16.png", ":/res/orientation32x32.png"), tr("Orientation"));
     control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
 
     menu = group->addMenu(ribbonIcon(":/res/size16x16.png", ":/res/size32x32.png"), tr("Size"));
     control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
 
     menu = group->addMenu(ribbonIcon(":/res/columns16x16.png", ":/res/columns32x32.png"), tr("Columns"));
     control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(true);
 
     menu = group->addMenu(QIcon(":/res/smallBreaks.png"), tr("Breaks"), Qt::ToolButtonTextBesideIcon);
     control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(false);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(false);
 
     menu = group->addMenu(QIcon(":/res/smalllinenumbers.png"), tr("Line Numbers"), Qt::ToolButtonTextBesideIcon);
     control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(false);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(false);
 
     menu = group->addMenu(QIcon(":/res/smallhyphenation.png"), tr("Hyphenation"), Qt::ToolButtonTextBesideIcon);
     control = group->controlByAction(menu->defaultAction());
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(true);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(false);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(true);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(false);
 }
 
 void MainWindow::createGroupPageBackground(RibbonGroup *group)
@@ -1200,12 +1078,9 @@ void MainWindow::createGroupTableOfContents(RibbonGroup *group)
     QAction *action = group->addAction(QIcon(":/res/largetablecontents.png"), tr("Table of Contents"),
                                        Qt::ToolButtonTextUnderIcon, editPaste);
     RibbonControl *control = group->controlByAction(action);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
     group->addAction(QIcon(":/res/smalladdtext.png"), tr("Add Text"), Qt::ToolButtonTextBesideIcon);
     group->addAction(QIcon(":/res/smallupdatetable.png"), tr("Update Table"), Qt::ToolButtonTextBesideIcon);
@@ -1216,12 +1091,9 @@ void MainWindow::createGroupFootnotes(RibbonGroup *group)
     QAction *action =
         group->addAction(QIcon(":/res/largeInsertFootnote.png"), tr("Insert Footnote"), Qt::ToolButtonTextUnderIcon);
     RibbonControl *control = group->controlByAction(action);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
     group->addAction(QIcon(":/res/smallinsertendnote.png"), tr("&Insert Endnote"), Qt::ToolButtonTextBesideIcon);
     QMenu *nextFootnote = new QMenu(this);
@@ -1236,12 +1108,9 @@ void MainWindow::createGroupCaptions(RibbonGroup *group)
     QAction *action =
         group->addAction(QIcon(":/res/largeInsertCaption.png"), tr("Insert Caption"), Qt::ToolButtonTextUnderIcon);
     RibbonControl *control = group->controlByAction(action);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
     group->addAction(QIcon(":/res/smallinserttablefigures.png"), tr("Insert Table of Figures"),
                      Qt::ToolButtonTextBesideIcon);
@@ -1255,12 +1124,9 @@ void MainWindow::createGroupIndex(RibbonGroup *group)
     QAction *action =
         group->addAction(QIcon(":/res/largeMarkEntry.png"), tr("Mark Entry"), Qt::ToolButtonTextUnderIcon);
     RibbonControl *control = group->controlByAction(action);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-    control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-        ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+    control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
     group->addAction(QIcon(":/res/smallinserttablefigures.png"), tr("Insert Index"), Qt::ToolButtonTextBesideIcon);
     group->addAction(QIcon(":/res/smallupdatetable.png"), tr("Update Index"), Qt::ToolButtonTextBesideIcon)
@@ -1493,7 +1359,10 @@ void MainWindow::filePrintPreview()
     preview.exec();
 }
 
-void MainWindow::printPreview(QPrinter *printer) { m_textEdit->print(printer); }
+void MainWindow::printPreview(QPrinter *printer)
+{
+    m_textEdit->print(printer);
+}
 
 void MainWindow::filePrintPdf()
 {
@@ -1619,7 +1488,10 @@ void MainWindow::textColor(const QColor &col)
     colorChanged(col);
 }
 
-void MainWindow::setColorText() { textColor(m_colorButton->color()); }
+void MainWindow::setColorText()
+{
+    textColor(m_colorButton->color());
+}
 
 void MainWindow::textAlign(QAction *a)
 {
@@ -1633,7 +1505,10 @@ void MainWindow::textAlign(QAction *a)
         m_textEdit->setAlignment(Qt::AlignJustify);
 }
 
-void MainWindow::selectAll() { m_textEdit->selectAll(); }
+void MainWindow::selectAll()
+{
+    m_textEdit->selectAll();
+}
 
 void MainWindow::optionParagraph()
 {
@@ -1682,7 +1557,10 @@ void MainWindow::fullScreen(bool checked)
     }
 }
 
-void MainWindow::stateStatusBar(int state) { statusBar()->setVisible(state == Qt::Checked); }
+void MainWindow::stateStatusBar(int state)
+{
+    statusBar()->setVisible(state == Qt::Checked);
+}
 
 void MainWindow::currentCharFormatChanged(const QTextCharFormat &format)
 {
@@ -1690,7 +1568,10 @@ void MainWindow::currentCharFormatChanged(const QTextCharFormat &format)
     //    colorChanged(format.foreground().color());
 }
 
-void MainWindow::cursorPositionChanged() { alignmentChanged(m_textEdit->alignment()); }
+void MainWindow::cursorPositionChanged()
+{
+    alignmentChanged(m_textEdit->alignment());
+}
 
 void MainWindow::clipboardDataChanged()
 {
@@ -1724,7 +1605,10 @@ void MainWindow::showRibbonContextMenu(QMenu *menu, QContextMenuEvent *event)
     Q_UNUSED(event);
 }
 
-void MainWindow::showCompanyWebSite() { QDesktopServices::openUrl(QUrl("http://www.devmachines.com")); }
+void MainWindow::showCompanyWebSite()
+{
+    QDesktopServices::openUrl(QUrl("http://www.devmachines.com"));
+}
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
@@ -1758,7 +1642,10 @@ void MainWindow::fontChanged(const QFont &f)
     m_actionTextUnderline->setChecked(f.underline());
 }
 
-void MainWindow::colorChanged(const QColor &c) { m_colorButton->setColor(c); }
+void MainWindow::colorChanged(const QColor &c)
+{
+    m_colorButton->setColor(c);
+}
 
 void MainWindow::alignmentChanged(Qt::Alignment a)
 {

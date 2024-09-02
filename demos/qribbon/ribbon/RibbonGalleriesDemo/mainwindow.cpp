@@ -121,12 +121,9 @@ void MainWindow::createRibbon()
             RibbonControl *control = groupPopup->controlByAction(
                 groupPopup->addAction(QIcon(":/res/largeStyleButton.png"), tr("Styles"), Qt::ToolButtonTextUnderIcon,
                                       popup, QToolButton::InstantPopup));
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
             popup = OfficePopupMenu::createPopupMenu(this);
             m_popupTableGallery = new QRibbon::RibbonGallery;
@@ -139,12 +136,9 @@ void MainWindow::createRibbon()
             control = groupPopup->controlByAction(groupPopup->addAction(QIcon(":/res/largeTable.png"), tr("Table"),
                                                                         Qt::ToolButtonTextUnderIcon, popup,
                                                                         QToolButton::InstantPopup));
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
             connect(m_popupTableGallery, SIGNAL(itemPressed(RibbonGalleryItem *)), this,
                     SLOT(itemTablePressed(RibbonGalleryItem *)));
 
@@ -159,12 +153,9 @@ void MainWindow::createRibbon()
             control = groupPopup->controlByAction(groupPopup->addAction(QIcon(":/res/largeColorButton.png"),
                                                                         tr("Color"), Qt::ToolButtonTextUnderIcon, popup,
                                                                         QToolButton::InstantPopup));
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
             popup->addSeparator();
             popup->addAction(tr("More Colors..."));
 
@@ -184,12 +175,9 @@ void MainWindow::createRibbon()
             m_actionUndo =
                 groupPopup->addAction(QIcon(":/res/largeUndo.png"), tr("Undo"), Qt::ToolButtonTextUnderIcon, popup);
             control = groupPopup->controlByAction(m_actionUndo);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
             connect(popup, SIGNAL(aboutToHide()), this, SLOT(aboutToHideUndo()));
             connect(m_popupUndoGallery, SIGNAL(itemPressed(RibbonGalleryItem *)), this,
@@ -205,14 +193,14 @@ void MainWindow::createRibbon()
             connect(act, SIGNAL(triggered()), this, SLOT(dialogGallery()));
             /*
                         RibbonGalleryControl* galleryControl = new RibbonGalleryControl();
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMaximumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMinimumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMaximumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMinimumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMaximumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMinimumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMaximumItemCount(10);
-                        galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMinimumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMaximumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMinimumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMaximumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMinimumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMaximumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMinimumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMaximumItemCount(10);
+                        galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMinimumItemCount(10);
                         groupInline->addControl(galleryControl);
 
                         m_widgetFontTextColor = galleryControl->widget();
@@ -226,14 +214,14 @@ void MainWindow::createRibbon()
                         groupInline->addSeparator();
             */
             RibbonGalleryControl *galleryControl = new RibbonGalleryControl();
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMaximumItemCount(8);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMinimumItemCount(8);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMaximumItemCount(7);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMinimumItemCount(4);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMaximumItemCount(3);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMinimumItemCount(3);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMaximumItemCount(8);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMinimumItemCount(8);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMaximumItemCount(8);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMinimumItemCount(8);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMaximumItemCount(7);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMinimumItemCount(4);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMaximumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMinimumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMaximumItemCount(8);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMinimumItemCount(8);
             groupInline->addControl(galleryControl);
 
             m_widgetStyleFont = galleryControl->widget();
@@ -274,14 +262,14 @@ void MainWindow::createRibbon()
             // gallery shapes
             RibbonGalleryControl *galleryControl = new RibbonGalleryControl();
 
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMaximumItemCount(20);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMinimumItemCount(20);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMaximumItemCount(19);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMinimumItemCount(10);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMaximumItemCount(9);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMinimumItemCount(9);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMaximumItemCount(9);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMinimumItemCount(9);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMaximumItemCount(20);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMinimumItemCount(20);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMaximumItemCount(19);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMinimumItemCount(10);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMaximumItemCount(9);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMinimumItemCount(9);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMaximumItemCount(9);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMinimumItemCount(9);
             groupPopup->addControl(galleryControl);
 
             QRibbon::RibbonGallery *widgetGallery = galleryControl->widget();
@@ -298,14 +286,14 @@ void MainWindow::createRibbon()
 
             // gallery effects
             galleryControl = new RibbonGalleryControl();
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMaximumItemCount(6);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMinimumItemCount(6);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMaximumItemCount(5);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMinimumItemCount(3);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMaximumItemCount(2);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMinimumItemCount(2);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMaximumItemCount(3);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMinimumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMaximumItemCount(6);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMinimumItemCount(6);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMaximumItemCount(5);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMinimumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMaximumItemCount(2);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMinimumItemCount(2);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMaximumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMinimumItemCount(3);
 
             groupPopup->addControl(galleryControl);
 
@@ -333,14 +321,14 @@ void MainWindow::createRibbon()
             // gallery effects
             RibbonGalleryControl *galleryControl = new RibbonGalleryControl();
 
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMaximumItemCount(6);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setMinimumItemCount(6);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMaximumItemCount(5);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setMinimumItemCount(3);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMaximumItemCount(2);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setMinimumItemCount(2);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMaximumItemCount(3);
-            galleryControl->sizeDefinition(RibbonControlSizeDefinition::GroupPopup)->setMinimumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMaximumItemCount(6);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setMinimumItemCount(6);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMaximumItemCount(5);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setMinimumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMaximumItemCount(2);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setMinimumItemCount(2);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMaximumItemCount(3);
+            galleryControl->sizeDefinition(RibbonControlSizeDef::GroupPopup)->setMinimumItemCount(3);
 
             groupPopup->addControl(galleryControl);
 

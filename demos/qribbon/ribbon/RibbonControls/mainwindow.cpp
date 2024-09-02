@@ -194,23 +194,17 @@ void MainWindow::createRibbon()
 
             QAction *action = groupClipboard->addAction(iconButtton, tr("&Button"), Qt::ToolButtonTextUnderIcon);
             RibbonControl *control = groupClipboard->controlByAction(action);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
             connect(action, SIGNAL(triggered()), this, SLOT(pressButton()));
 
             action = groupClipboard->addAction(QIcon(":/res/Edit.Create.svg"), tr("Button &SVG"),
                                                Qt::ToolButtonTextUnderIcon);
             control = groupClipboard->controlByAction(action);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
             connect(action, SIGNAL(triggered()), this, SLOT(pressButton()));
 
             action = groupClipboard->addAction(QIcon(":/res/largeToggleButton.png"), tr("Toggle Button"),
@@ -218,34 +212,25 @@ void MainWindow::createRibbon()
             action->setCheckable(true);
             action->setChecked(true);
             control = groupClipboard->controlByAction(action);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
 
             QMenu *menuPopup =
                 groupClipboard->addMenu(iconPopupButtton, tr("Popup Button"), Qt::ToolButtonTextUnderIcon);
             control = groupClipboard->controlByAction(menuPopup->defaultAction());
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
             connect(menuPopup->addAction(tr("Option 1")), SIGNAL(triggered()), this, SLOT(pressButton()));
             connect(menuPopup->addAction(tr("Option 2")), SIGNAL(triggered()), this, SLOT(pressButton()));
             connect(menuPopup->addAction(tr("Option 3")), SIGNAL(triggered()), this, SLOT(pressButton()));
 
             action = groupClipboard->addAction(iconSplit, tr("S&plit Button"), Qt::ToolButtonTextUnderIcon, splitPopup);
             control = groupClipboard->controlByAction(action);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageLarge);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageLarge);
             connect(action, SIGNAL(triggered()), this, SLOT(pressButton()));
         }
 

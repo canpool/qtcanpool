@@ -312,39 +312,30 @@ void SketchChild::createEditGroup()
 
             geomEditObject->addAction(m_createObjectAction);
             RibbonControl *control = geomEditObject->controlByAction(m_createObjectAction);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(false);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(false);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(false);
 
             geomEditObject->addAction(m_stopToolAction);
             control = geomEditObject->controlByAction(m_stopToolAction);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(false);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(false);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(false);
 
             geomEditObject->addAction(m_repeatToolAction);
             control = geomEditObject->controlByAction(m_repeatToolAction);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupLarge)->setLabelVisible(false);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupMedium)->setLabelVisible(false);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)
-                ->setImageSize(RibbonControlSizeDefinition::ImageSmall);
-            control->sizeDefinition(RibbonControlSizeDefinition::GroupSmall)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupLarge)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupMedium)->setLabelVisible(false);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setImageSize(RibbonControlSizeDef::ImageSmall);
+            control->sizeDefinition(RibbonControlSizeDef::GroupSmall)->setLabelVisible(false);
             geomEditObject->addSeparator();
 
             m_workTool->activate();
