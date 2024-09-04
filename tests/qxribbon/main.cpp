@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    TEST_RUN(TestRibbonQuickAccessBar)
+    TEST_RUN(tst_RibbonQuickAccessBar)
 
     return 0;
 }

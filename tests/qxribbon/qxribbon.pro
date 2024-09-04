@@ -4,7 +4,7 @@ include(../../qtproject.pri)
 QT += widgets testlib
 
 CONFIG += c++11
-TARGET = Test_QxRibbon
+TARGET = tst_qxribbon
 DESTDIR = $$IDE_APP_PATH
 
 include($$QTCANPOOL_DIR/src/rpath.pri)

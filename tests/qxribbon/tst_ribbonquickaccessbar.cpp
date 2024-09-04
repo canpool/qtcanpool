@@ -4,13 +4,13 @@
 
 QX_RIBBON_USE_NAMESPACE
 
-void TestRibbonQuickAccessBar::visibleCount()
+void tst_RibbonQuickAccessBar::visibleCount()
 {
     RibbonQuickAccessBar qab;
     QVERIFY(qab.visibleCount() == 0);
 }
 
-void TestRibbonQuickAccessBar::addAction()
+void tst_RibbonQuickAccessBar::addAction()
 {
     RibbonQuickAccessBar qab;
 
