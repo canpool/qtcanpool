@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "aboutdialog.h"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFontComboBox>

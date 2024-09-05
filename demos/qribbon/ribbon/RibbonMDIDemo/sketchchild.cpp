@@ -1,4 +1,3 @@
-
 #include "sketchchild.h"
 #include "qribbon/ribbon.h"
 #include "sketchdocument.h"

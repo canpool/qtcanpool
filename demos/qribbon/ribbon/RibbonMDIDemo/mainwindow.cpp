@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "aboutdialog.h"
 #include "qribbon/ribbon.h"
 #include "sketchchild.h"
 #include "texteditchild.h"

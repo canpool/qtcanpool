@@ -1,9 +1,7 @@
 #include "mainwindow.h"
-#include "aboutdialog.h"
 #include "galleryItems.h"
 #include "qribbon/officepopupmenu.h"
 #include "qribbon/ribbongallery.h"
-#include "qribbon/ribbonquickaccessbar.h"
 #include <QAction>
 #include <QApplication>
 #include <QButtonGroup>

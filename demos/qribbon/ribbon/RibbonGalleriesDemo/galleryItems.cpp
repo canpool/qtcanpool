@@ -1,5 +1,4 @@
 #include "galleryItems.h"
-#include "qribbon/ribbonstyle.h"
 #include "qribbon/stylehelpers.h"
 #include <QAction>
 #include <QLabel>

@@ -15,7 +15,6 @@ RESOURCES += \
     $$PWD/RibbonApplication.qrc
 
 FORMS += \
-    $$PWD/ribbonsample.ui \
     $$PWD/ribbonpopularpage.ui
 
 macx {

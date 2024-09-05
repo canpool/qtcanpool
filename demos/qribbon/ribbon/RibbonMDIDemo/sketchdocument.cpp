@@ -1,6 +1,5 @@
 #include "sketchdocument.h"
 #include "sketchobject.h"
-#include "sketchrepresentation.h"
 #include <qribbon/ribbon_def.h>
 
 /* SketchDocumentPrivate */

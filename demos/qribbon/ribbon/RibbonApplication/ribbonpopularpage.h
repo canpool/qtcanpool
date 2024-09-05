@@ -3,7 +3,6 @@
 
 #include "mainwindow.h"
 #include "qribbon/ribbon.h"
-#include "qribbon/ribbon_def.h"
 #include "ui_ribbonpopularpage.h"
 #include <QWidget>
 

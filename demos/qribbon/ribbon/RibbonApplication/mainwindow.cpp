@@ -1,9 +1,8 @@
 #include "mainwindow.h"
-#include "aboutdialog.h"
+#include "ribbonimages.h"
 #include "qribbon/ribboncustomizepage.h"
 #include "qribbon/ribbonstyle.h"
 #include "ribbonpopularpage.h"
-#include "ui_ribbonsample.h"
 #include <QAbstractTextDocumentLayout>
 #include <QApplication>
 #include <QBuffer>

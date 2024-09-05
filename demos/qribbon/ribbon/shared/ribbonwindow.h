@@ -2,7 +2,6 @@
 #define RIBBONWINDOW_H
 
 #include "qribbon/ribbon.h"
-#include "ribbonimages.h"
 
 /* RibbonWindow */
 class RibbonWindow : public QRibbon::RibbonMainWindow

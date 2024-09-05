@@ -1,4 +1,3 @@
-
 #include "backstagepages.h"
 #include "qribbon/ribbon_def.h"
 #include <QApplication>

@@ -1,6 +1,7 @@
 #include "aboutdialog.h"
 
-QRIBBON_USE_NAMESPACE
+namespace QRibbon
+{
 
 AboutDialog::AboutDialog(QWidget *parent) : QMessageBox(parent) {}
 
@@ -35,4 +36,6 @@ void AboutDialog::show(QWidget *parent, const QString &title, const QString &com
         msgBox->setIconPixmap(pm);
 
     msgBox->exec();
+}
+
 }

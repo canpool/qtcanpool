@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "aboutdialog.h"
+#include "ribbonimages.h"
 #include "qribbon/ribbonquickaccessbar.h"
 #include <QAction>
 #include <QApplication>
@@ -373,7 +373,7 @@ void MainWindow::createRibbon()
 
             smallButton =
                 toolBarControl->addAction(QIcon(":/shared/res/about.png"), tr("About"), Qt::ToolButtonIconOnly);
-            smallButton->setToolTip(tr("Display program information, version number and copyright"));
+            smallButton->setToolTip(tr("Display program<br />information, version number and copyright"));
             connect(smallButton, SIGNAL(triggered()), this, SLOT(about()));
 
             groupGroups->addControl(toolBarControl);
