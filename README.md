@@ -109,10 +109,6 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ![ribbondemo](./doc/pics/ribbondemo.gif#pic_center)
 
-- <font size=4>materialdemo</font>
-
-![materialdemo](./doc/pics/materialdemo.png)
-
 - <font size=4>qxwindow demo</font>
 
 ![qxwindowdemo](./doc/pics/qxwindowdemo.png)

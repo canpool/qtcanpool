@@ -6,7 +6,6 @@
   - [LGPL-2.1](#lgpl-21)
   - [MIT](#mit)
   - [Apache-2.0](#apache-20)
-  - [BSD-3-Clause](#bsd-3-clause)
 
 <!-- /TOC -->
 
@@ -34,7 +33,3 @@ qtcanpool 集成了一些第三方组件，这些组件具有自己的许可协�
 ### Apache-2.0
 
 - src/libs/qxwindow
-
-### BSD-3-Clause
-
-- src/libs/qxmaterial

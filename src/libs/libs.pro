@@ -3,7 +3,6 @@ TEMPLATE  = subdirs
 SUBDIRS =   \
     qcanpool \
     qxribbon \
-    qxmaterial \
     qxwindow
 
 lessThan(QT_MAJOR_VERSION, 6) {
