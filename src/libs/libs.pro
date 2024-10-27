@@ -7,9 +7,6 @@ SUBDIRS =   \
     qxwindow
 
 lessThan(QT_MAJOR_VERSION, 6) {
-    SUBDIRS += \
-        qribbon
-
     exists($$PWD/qtitan/qtitan.pro) {
         SUBDIRS += \
             qtitan

@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-      <file>../../shared/res/about.png</file>
-      <file>../../shared/res/logo.png</file>
-      <file>../../shared/res/ribbonMaximize.png</file>
-      <file>../../shared/res/ribbonMinimize.png</file>
-    </qresource>
-</RCC>
