@@ -1,9 +1,13 @@
 
-2.2.0-rc
+2.2.0
 ---
 - qcustomplot: deprecated and removed
 - qxframeless: deprecated and removed
 - qgood: deprecated and removed
+- qads: sync to Qt-Advanced-Docking-System-4.3.1
+- qtcreator: remove aggregation, extensionsystem, utils
+- qxribbon: release version 0.8.1
+- project: support cmake
 
 2.1.0
 ---
