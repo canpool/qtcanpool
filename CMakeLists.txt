@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 ## Add paths to check for cmake modules:
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(Utils)
+include(QtCanpoolUtils)
 
 env_with_default("QTC_BUILD_WITH_PCH" ENV_QTC_BUILD_WITH_PCH ON)
 env_with_default("QTC_WITH_TESTS" ENV_QTC_WITH_TESTS OFF)
