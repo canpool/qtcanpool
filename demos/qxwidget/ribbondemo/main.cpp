@@ -1,12 +1,7 @@
 ﻿#include "mainwindow.h"
-
 #include <QApplication>
 #include <QDebug>
 #include <QElapsedTimer>
-
-#ifdef QXRIBBON_USE_QSSEDITOR
-#include "qsseditor/qsswindow.h"
-#endif
 
 // 重定向qdebug的打印
 void log_out_put(QtMsgType type, const QMessageLogContext &context, const QString &msg);
@@ -29,10 +24,12 @@ void log_out_put(QtMsgType type, const QMessageLogContext &context, const QStrin
         fprintf(stdout, "[Info] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
     case QtWarningMsg:
-        fprintf(stdout, "[Warning] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        fprintf(stdout, "[Warning] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line,
+                context.function);
         break;
     case QtCriticalMsg:
-        fprintf(stdout, "[Critical] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        fprintf(stdout, "[Critical] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line,
+                context.function);
         break;
     case QtFatalMsg:
         fprintf(stdout, "[Fatal] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
@@ -70,16 +67,8 @@ int main(int argc, char *argv[])
 
     cost.start();
 
-#ifdef QXRIBBON_USE_QSSEDITOR
-    QssWindow qw;
-    MainWindow w;
-    qw.addPreviewWidget(&w, "ribbondemo");
-    QObject::connect(&qw, &QssWindow::applyCss, &w, &MainWindow::applyStyleSheet);
-    qw.showMaximized();
-#else
     MainWindow w;
     w.showMaximized();
-#endif
 
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
 

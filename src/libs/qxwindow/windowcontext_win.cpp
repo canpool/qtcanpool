@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowcontext_p.h"
 #include <QtCore/QDateTime>
 #include <QtCore/QHash>
@@ -49,7 +49,7 @@ static inline bool
     constexpr
 #endif
 
-isSystemBorderEnabled()
+    isSystemBorderEnabled()
 {
     return
 #if defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS)
@@ -812,7 +812,7 @@ bool WindowContextWin::windowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 }
 
 bool WindowContextWin::windowAttributeChanged(const QString &key, const QVariant &attribute,
-                                                const QVariant &oldAttribute)
+                                              const QVariant &oldAttribute)
 {
     Q_UNUSED(oldAttribute)
 
@@ -1696,8 +1696,7 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
     return false;
 }
 
-bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam,
-                                                  LRESULT *result)
+bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *result)
 {
     Q_UNUSED(message)
     Q_UNUSED(this)

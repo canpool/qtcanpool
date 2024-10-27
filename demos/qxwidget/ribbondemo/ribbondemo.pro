@@ -7,17 +7,7 @@ win32 {
     HEADERS += ribbonappwindow.h
 }
 
-DEPEND_QSSEDITOR_ENABLE = 0
-equals(DEPEND_QSSEDITOR_ENABLE, 1) {
-    QTC_LIB_DEPENDS += qsseditor
-    DEFINES += QXRIBBON_USE_QSSEDITOR
-}
-
 include(../../../qtproject.pri)
-
-equals(DEPEND_QSSEDITOR_ENABLE, 1) {
-    include($$QTCANPOOL_DIR/src/libs/qsseditor/qsseditor-inc.pri)
-}
 
 QT       += core gui
 

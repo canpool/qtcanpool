@@ -16,10 +16,6 @@ lessThan(QT_MAJOR_VERSION, 6) {
     }
 }
 
-exists($$PWD//qsseditor/qsseditor-src/qsseditor-src.pri) {
-    SUBDIRS += qsseditor
-}
-
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
     include($$l/$${l}_dependencies.pri)
