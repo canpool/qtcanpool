@@ -1,3 +1,8 @@
+2.2.1
+---
+- qtqrcode: deprecated and removed
+- qribbon: deprecated and removed
+- qxmaterial: deprecated and removed
 
 2.2.0
 ---
