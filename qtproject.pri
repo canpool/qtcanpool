@@ -313,6 +313,9 @@ for(ever) {
         for(dir, QTC_LIB_DIRS) {
             exists($$dir/$$dep/$${dep}_dependencies.pri) {
                 dependencies_file = $$dir/$$dep/$${dep}_dependencies.pri
+                exists($$dir/$$dep/$${dep}-inc.pri) {
+                    include($$dir/$$dep/$${dep}-inc.pri)
+                }
                 break()
             }
         }

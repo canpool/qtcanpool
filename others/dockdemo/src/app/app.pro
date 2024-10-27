@@ -1,5 +1,5 @@
+QTC_LIB_DEPENDS += qads
 include(../../qtproject.pri)
-include($$QTCANPOOL_DIR/src/rpath.pri)
 
 QT       += core gui widgets quick quickwidgets
 
@@ -32,11 +32,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 CONFIG += c++11
-
-# lib
-LIBS *= -l$$qtLibraryNameVersion(qads, 4)
-
-include($$QTCANPOOL_DIR/src/libs/qads/qads-inc.pri)
 
 DEMO_DIR = $$QTCANPOOL_DIR/src/libs/qads/Qt-Advanced-Docking-System/demo
 
