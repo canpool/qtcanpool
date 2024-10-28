@@ -118,6 +118,12 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
 ![run](./doc/pics/run.png)
 
+### 扩展
+
+本仓库未来将只维护四个库：qcanpool、qads、qxribbon、qxwindow，其它库将以单独的 qtcanpool-LIBNAME 仓库进行维护。可以通过 qtcanpool 标签进行检索：
+
+![extend](./doc/pics/extend.png)
+
 ### 后语
 
 如果您觉得本项目对您有很大帮助，甚至从中获取了一定的商业回报，您可以赞助该项目，助其更好的发展。
