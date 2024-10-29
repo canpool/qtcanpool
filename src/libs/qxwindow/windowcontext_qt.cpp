@@ -6,6 +6,7 @@
 #include "windowkit_p.h"
 #include "windowsystem_p.h"
 #include <QtCore/QDebug>
+#include <QScreen>
 
 QX_WINDOW_BEGIN_NAMESPACE
 
@@ -114,6 +115,7 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
     Q_UNUSED(obj)
 
     auto host = m_context->host();
+    auto window = m_context->window();
     auto delegate = m_context->delegate();
 
     auto type = event->type();
@@ -121,13 +123,13 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
         Qt::WindowStates windowState = delegate->getWindowState(host);
         if (windowState & Qt::WindowMaximized) {
             // Prevents the window from becoming full screen
+            window->setGeometry(window->screen()->availableGeometry());
             return true;
         }
     }
     if (type < QEvent::MouseButtonPress || type > QEvent::MouseMove) {
         return false;
     }
-    auto window = m_context->window();
     auto me = static_cast<const QMouseEvent *>(event);
     bool fixedSize = delegate->isHostSizeFixed(host);
 
