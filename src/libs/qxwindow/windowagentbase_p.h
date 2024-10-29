@@ -35,10 +35,6 @@ public:
     void setup(QObject *host, WindowItemDelegate *delegate);
 
     std::unique_ptr<WindowContext> context;
-public:
-    using WindowContextFactoryMethod = WindowContext *(*)();
-
-    static WindowContextFactoryMethod windowContextFactoryMethod;
 private:
     Q_DISABLE_COPY(WindowAgentBasePrivate)
 };

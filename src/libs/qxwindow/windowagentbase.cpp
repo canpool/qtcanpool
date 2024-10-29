@@ -20,8 +20,6 @@ QX_WINDOW_BEGIN_NAMESPACE
     shared methods for derived classes to call.
 */
 
-WindowAgentBasePrivate::WindowContextFactoryMethod WindowAgentBasePrivate::windowContextFactoryMethod = nullptr;
-
 WindowAgentBasePrivate::WindowAgentBasePrivate() : q_ptr(nullptr), context(nullptr)
 {
 }
@@ -34,10 +32,6 @@ void WindowAgentBasePrivate::init()
 
 WindowContext *WindowAgentBasePrivate::createContext() const
 {
-    if (windowContextFactoryMethod) {
-        return windowContextFactoryMethod();
-    }
-
 #if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_NATIVE)
     return new WindowContextWin();
 #elif defined(Q_OS_MAC) && defined(QX_WINDOW_NATIVE)
