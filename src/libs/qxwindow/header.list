@@ -1,3 +1,4 @@
 qxwindow_global.h
 windowagentbase.h
+windowagentwidget.h
 widgetwindowagent.h

@@ -2,7 +2,7 @@
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
 **/
-#include "widgetwindowagent_p.h"
+#include "windowagentwidget_p.h"
 #include "windowkit_p.h"
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
@@ -190,7 +190,7 @@ protected:
     WindowContext *ctx;
 };
 
-void WidgetWindowAgentPrivate::setupWindows10BorderWorkaround()
+void WindowAgentWidgetPrivate::setupWindows10BorderWorkaround()
 {
     // Install painting hook
     auto ctx = context.get();

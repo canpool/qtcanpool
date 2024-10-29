@@ -58,20 +58,21 @@ endif()
 if (QX_WINDOW_CONFIG_WIDGET_AGENT)
   extend_qtc_library(qxwindow
     SOURCES
-      widgetwindowagent.cpp widgetwindowagent.h widgetwindowagent_p.h
+      windowagentwidget.cpp windowagentwidget.h windowagentwidget_p.h
+      widgetwindowagent.h
       widgetitemdelegate.cpp widgetitemdelegate_p.h
   )
 
   if (QX_WINDOW_CONFIG_NATIVE)
     if (WIN32)
       extend_qtc_library(qxwindow
-        SOURCES widgetwindowagent_win.cpp
+        SOURCES windowagentwidget_win.cpp
       )
     endif()
 
     if (APPLE)
       extend_qtc_library(qxwindow
-        SOURCES widgetwindowagent_mac.cpp
+        SOURCES windowagentwidget_mac.cpp
       )
     endif()
   endif()

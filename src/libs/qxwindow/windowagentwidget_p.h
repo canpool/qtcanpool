@@ -2,8 +2,8 @@
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
 **/
-#ifndef WIDGETWINDOWAGENTPRIVATE_H
-#define WIDGETWINDOWAGENTPRIVATE_H
+#ifndef WINDOWAGENTWIDGETPRIVATE_H
+#define WINDOWAGENTWIDGETPRIVATE_H
 
 //
 //  W A R N I N G !!!
@@ -15,16 +15,16 @@
 //
 
 #include "windowagentbase_p.h"
-#include "widgetwindowagent.h"
+#include "windowagentwidget.h"
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-class WidgetWindowAgentPrivate : public WindowAgentBasePrivate
+class WindowAgentWidgetPrivate : public WindowAgentBasePrivate
 {
-    Q_DECLARE_PUBLIC(WidgetWindowAgent)
+    Q_DECLARE_PUBLIC(WindowAgentWidget)
 public:
-    WidgetWindowAgentPrivate();
-    ~WidgetWindowAgentPrivate();
+    WindowAgentWidgetPrivate();
+    ~WindowAgentWidgetPrivate();
 
     void init();
 
@@ -44,4 +44,4 @@ public:
 
 QX_WINDOW_END_NAMESPACE
 
-#endif   // WIDGETWINDOWAGENTPRIVATE_H
+#endif   // WINDOWAGENTWIDGETPRIVATE_H

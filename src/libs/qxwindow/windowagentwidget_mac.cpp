@@ -2,7 +2,7 @@
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
 **/
-#include "widgetwindowagent_p.h"
+#include "windowagentwidget_p.h"
 #include <QtGui/QtEvents>
 
 QX_WINDOW_BEGIN_NAMESPACE
@@ -48,9 +48,9 @@ protected:
 /*!
     Returns the widget that acts as the system button area.
 */
-QWidget *WidgetWindowAgent::systemButtonArea() const
+QWidget *WindowAgentWidget::systemButtonArea() const
 {
-    Q_D(const WidgetWindowAgent);
+    Q_D(const WindowAgentWidget);
     return d->systemButtonAreaWidget;
 }
 
@@ -60,9 +60,9 @@ QWidget *WidgetWindowAgent::systemButtonArea() const
 
     The system button will be visible in the system title bar area.
 */
-void WidgetWindowAgent::setSystemButtonArea(QWidget *widget)
+void WindowAgentWidget::setSystemButtonArea(QWidget *widget)
 {
-    Q_D(WidgetWindowAgent);
+    Q_D(WindowAgentWidget);
     if (d->systemButtonAreaWidget == widget)
         return;
 
@@ -79,9 +79,9 @@ void WidgetWindowAgent::setSystemButtonArea(QWidget *widget)
 /*!
     Returns the the system button area callback.
 */
-ScreenRectCallback WidgetWindowAgent::systemButtonAreaCallback() const
+ScreenRectCallback WindowAgentWidget::systemButtonAreaCallback() const
 {
-    Q_D(const WidgetWindowAgent);
+    Q_D(const WindowAgentWidget);
     return d->systemButtonAreaWidget ? nullptr : d->context->systemButtonAreaCallback();
 }
 
@@ -91,9 +91,9 @@ ScreenRectCallback WidgetWindowAgent::systemButtonAreaCallback() const
 
     The system button position will be updated when the window resizes.
 */
-void WidgetWindowAgent::setSystemButtonAreaCallback(const ScreenRectCallback &callback)
+void WindowAgentWidget::setSystemButtonAreaCallback(const ScreenRectCallback &callback)
 {
-    Q_D(WidgetWindowAgent);
+    Q_D(WindowAgentWidget);
     setSystemButtonArea(nullptr);
     d->context->setSystemButtonAreaCallback(callback);
 }

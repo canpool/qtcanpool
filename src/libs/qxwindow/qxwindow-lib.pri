@@ -75,22 +75,23 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
 !equals(QX_WINDOW_CONFIG_WIDGET_DISABLE, 1) {
     HEADERS += \
         $$PWD/widgetitemdelegate_p.h \
+        $$PWD/windowagentwidget.h \
+        $$PWD/windowagentwidget_p.h \
         $$PWD/widgetwindowagent.h \
-        $$PWD/widgetwindowagent_p.h \
 
     SOURCES += \
         $$PWD/widgetitemdelegate.cpp \
-        $$PWD/widgetwindowagent.cpp \
+        $$PWD/windowagentwidget.cpp \
 
     equals(QX_WINDOW_CONFIG_NATIVE, 1) {
         win32 {
             SOURCES += \
-                $$PWD/widgetwindowagent_win.cpp \
+                $$PWD/windowagentwidget_win.cpp \
 
         }
         macx {
             SOURCES += \
-                $$PWD/widgetwindowagent_mac.cpp \
+                $$PWD/windowagentwidget_mac.cpp \
 
         }
     }
