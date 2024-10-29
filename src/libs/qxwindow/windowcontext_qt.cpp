@@ -113,13 +113,21 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
 {
     Q_UNUSED(obj)
 
+    auto host = m_context->host();
+    auto delegate = m_context->delegate();
+
     auto type = event->type();
+    if (type == QEvent::WindowStateChange) {
+        Qt::WindowStates windowState = delegate->getWindowState(host);
+        if (windowState & Qt::WindowMaximized) {
+            // Prevents the window from becoming full screen
+            return true;
+        }
+    }
     if (type < QEvent::MouseButtonPress || type > QEvent::MouseMove) {
         return false;
     }
-    auto host = m_context->host();
     auto window = m_context->window();
-    auto delegate = m_context->delegate();
     auto me = static_cast<const QMouseEvent *>(event);
     bool fixedSize = delegate->isHostSizeFixed(host);
 
