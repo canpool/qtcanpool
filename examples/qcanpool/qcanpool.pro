@@ -8,4 +8,5 @@ SUBDIRS = \
     windowtoolbar \
     extensionbutton \
     fancytoolbutton \
+    fancytitlebar \
     minitabwidget
