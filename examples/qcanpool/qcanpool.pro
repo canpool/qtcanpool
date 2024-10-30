@@ -7,4 +7,5 @@ SUBDIRS = \
     windowlogo \
     windowtoolbar \
     extensionbutton \
+    fancytoolbutton \
     minitabwidget
