@@ -28,6 +28,8 @@ public:
 
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
+    QWidget *widgetForMaximizeButton() const;
+
     /** default is disabled */
     bool signalIsEnabled() const;
 public Q_SLOTS:

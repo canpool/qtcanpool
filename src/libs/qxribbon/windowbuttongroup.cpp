@@ -281,6 +281,12 @@ QSize WindowButtonGroup::sizeHint() const
     return d->sizeHint();
 }
 
+QWidget *WindowButtonGroup::widgetForMaximizeButton() const
+{
+    Q_D(const WindowButtonGroup);
+    return d->m_maximizeButton;
+}
+
 /**
  * If the signal is disabled, the window button's signal
  * will be directly applied to the parent window; otherwise,

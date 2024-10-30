@@ -72,6 +72,7 @@ void RibbonAppWindowPrivate::setMenuWidget(QWidget *menuBar)
         if (m_ribbonBar) {
             m_ribbonBar->setWindowButtonGroup(m_windowButtonGroup);
         }
+        m_windowAgent->setSystemButton(WindowAgentBase::Maximize, m_windowButtonGroup->widgetForMaximizeButton());
     }
     Qt::WindowStates s = q->windowState();
     if (s.testFlag(Qt::WindowFullScreen)) {
