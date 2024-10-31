@@ -37,6 +37,11 @@ RibbonBarInnerContainer::RibbonBarInnerContainer(RibbonGroup::GroupSize size, QW
         break;
     }
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+#ifdef Q_OS_LINUX
+    layout()->setContentsMargins(0, 0, 0, 0);
+    layout()->setSpacing(0);
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
+#endif
 }
 
 RibbonBarInnerContainer::~RibbonBarInnerContainer()
