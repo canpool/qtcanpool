@@ -119,6 +119,7 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
     auto delegate = m_context->delegate();
 
     auto type = event->type();
+#ifdef Q_OS_WINDOWS
     if (type == QEvent::WindowStateChange) {
         Qt::WindowStates windowState = delegate->getWindowState(host);
         if (windowState & Qt::WindowMaximized) {
@@ -127,6 +128,7 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
             return true;
         }
     }
+#endif
     if (type < QEvent::MouseButtonPress || type > QEvent::MouseMove) {
         return false;
     }
