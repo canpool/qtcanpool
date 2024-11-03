@@ -55,6 +55,12 @@ void MainWindow::createWindow()
 void MainWindow::createCentralWidget()
 {
     FancyTabBar *tabBar = m_pTabWidget->tabBar();
+    connect(tabBar, &FancyTabBar::orientationChanged, this, [tabBar](Qt::Orientation o){
+        QList<FancyToolButton*> buttons = tabBar->findChildren<FancyToolButton*>();
+        foreach (FancyToolButton *button, buttons) {
+            button->setMenuArrowType(o == Qt::Horizontal ? Qt::DownArrow : Qt::RightArrow);
+        }
+    });
 
     QLabel *label = new QLabel("I CAN DO IT");
     // ignore the label's control to continue processEvent
