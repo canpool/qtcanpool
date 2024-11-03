@@ -16,6 +16,7 @@ QCANPOOL_BEGIN_NAMESPACE
 FancyTabBarPrivate::FancyTabBarPrivate()
     : m_currentIndex(-1)
     , m_spacing(2)
+    , m_orientation(Qt::Horizontal)
     , m_iconSize(QSize(22, 22))
     , q(nullptr)
 {
@@ -32,7 +33,7 @@ FancyTabBarPrivate::~FancyTabBarPrivate()
 
 void FancyTabBarPrivate::init()
 {
-    QBoxLayout::Direction direction = QBoxLayout::LeftToRight;
+    QBoxLayout::Direction direction = layoutDirection();
 
     m_frontActionLayout = new QBoxLayout(direction);
     m_frontActionLayout->setContentsMargins(0, 0, 0, 0);
@@ -379,17 +380,24 @@ void FancyTabBar::setIconSize(QSize size)
     d->setIconSize(size);
 }
 
+Qt::Orientation FancyTabBar::orientation() const
+{
+    return d->m_orientation;
+}
+
 void FancyTabBar::setOrientation(Qt::Orientation orientation)
 {
-    QBoxLayout::Direction layoutDirection = QBoxLayout::LeftToRight;
-    if (orientation == Qt::Vertical) {
-        layoutDirection = QBoxLayout::TopToBottom;
+    if (d->m_orientation == orientation) {
+        return;
     }
+    d->m_orientation = orientation;
+    QBoxLayout::Direction layoutDirection = d->layoutDirection();
     d->m_frontActionLayout->setDirection(layoutDirection);
     d->m_middleActionLayout->setDirection(layoutDirection);
     d->m_backActionLayout->setDirection(layoutDirection);
     d->m_tabLayout->setDirection(layoutDirection);
     d->m_mainLayout->setDirection(layoutDirection);
+    emit orientationChanged(orientation);
 }
 
 void FancyTabBar::setCurrentIndex(int index)

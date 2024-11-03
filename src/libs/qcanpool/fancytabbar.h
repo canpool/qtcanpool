@@ -69,10 +69,12 @@ public:
     QSize iconSize() const;
     void setIconSize(QSize size);
 
+    Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation orientation);
 
 signals:
     void currentChanged(int index);
+    void orientationChanged(Qt::Orientation orientation);
 
 public slots:
     void setCurrentIndex(int index);

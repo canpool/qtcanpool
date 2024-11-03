@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QMap>
 #include <QSize>
+#include <QBoxLayout>
 
 class QToolButton;
 class QBoxLayout;
@@ -44,6 +45,10 @@ public:
     inline bool validIndex(int index) const { return index >= 0 && index < m_tabs.count(); }
     void setIconSize(QSize size);
 
+    inline QBoxLayout::Direction layoutDirection() const {
+        return m_orientation == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom;
+    }
+
 public slots:
     void switchTab(bool checked);
     void pressTab();
@@ -55,6 +60,7 @@ public:
 
     int m_currentIndex;
     int m_spacing;
+    Qt::Orientation m_orientation;
     QSize m_iconSize;
 
     QBoxLayout *m_frontActionLayout;
