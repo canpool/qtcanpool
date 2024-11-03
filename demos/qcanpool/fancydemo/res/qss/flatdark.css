@@ -538,7 +538,7 @@ QWidget#qtc_tabwidget[tabPosition="1"] QToolButton#tab {
 
 QWidget#qtc_tabwidget[tabPosition="0"] QToolButton#tab:pressed,
 QWidget#qtc_tabwidget[tabPosition="0"] QToolButton#tab:checked {
-    border-top-color: white;
+    border-bottom-color: white;
 }
 
 QWidget#qtc_tabwidget[tabPosition="1"] QToolButton#tab:pressed,
