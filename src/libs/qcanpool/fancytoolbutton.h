@@ -40,6 +40,9 @@ public:
 
     void setForceAlignCenter(bool b = true);
 
+public slots:
+    void setToolButtonStyle(Qt::ToolButtonStyle style);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *e) override;

@@ -90,8 +90,8 @@ void MainWindow::createCentralWidget()
     tabBar->addActionButton(button, FancyTabBar::Middle);
 
     button = new FancyToolButton();
-    button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    button->setMenuArea(FancyToolButton::RightMenuArea);
+    button->setToolButtonStyle(Qt::ToolButtonIconOnly);     // Also set to RightMenuArea
+    button->setMenuArea(FancyToolButton::RightMenuArea);    // No need
     button->setMenuArrowType(Qt::RightArrow);
     action = new QAction(QIcon(":/main/logo"), tr("testMenu"));
     menu = new QMenu(this);

@@ -548,6 +548,18 @@ void FancyToolButton::setForceAlignCenter(bool b)
     }
 }
 
+void FancyToolButton::setToolButtonStyle(Qt::ToolButtonStyle style)
+{
+    QToolButton::setToolButtonStyle(style);
+    if (style == Qt::ToolButtonTextUnderIcon) {
+        return;
+    }
+    if (d->m_menuArea == FancyToolButton::RightMenuArea) {
+        return;
+    }
+    d->m_menuArea = FancyToolButton::RightMenuArea;
+}
+
 void FancyToolButton::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
