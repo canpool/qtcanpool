@@ -44,12 +44,14 @@ public:
     QRect m_textRect;
     FancyToolButton *q;
     bool m_showMenu;
+    bool m_forceCenter;
 };
 
 FancyToolButtonPrivate::FancyToolButtonPrivate()
     : m_menuArrowType(Qt::DownArrow)
     , m_menuArea(FancyToolButton::BottomMenuArea)
     , m_showMenu(false)
+    , m_forceCenter(true)
 {
 }
 
@@ -329,7 +331,8 @@ void FancyToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPaint
             if (hasArrow) {
                 drawArrow(toolbutton, rect, p, w);
             } else {
-                style()->drawItemPixmap(p, rect, Qt::AlignCenter, pm);
+                QRect ir = m_forceCenter ? rect : m_iconRect;
+                style()->drawItemPixmap(p, ir, Qt::AlignCenter, pm);
             }
         }
     }
@@ -520,7 +523,9 @@ QSize FancyToolButton::sizeHint() const
         if ((opt.toolButtonStyle != Qt::ToolButtonTextBesideIcon &&
              opt.toolButtonStyle != Qt::ToolButtonTextUnderIcon) ||
                 (!isBottomMenuArea && opt.toolButtonStyle == Qt::ToolButtonTextUnderIcon)) {
-            w += mbi * 2 / 3;
+            if (d->m_forceCenter) {
+                w += mbi * 2 / 3;
+            }
         }
     }
 
@@ -529,6 +534,18 @@ QSize FancyToolButton::sizeHint() const
 #else
     return QSize(w, h);
 #endif
+}
+
+void FancyToolButton::setForceAlignCenter(bool b)
+{
+    if (d->m_forceCenter == b) {
+        return;
+    }
+    d->m_forceCenter = b;
+
+    if (isVisible()) {
+        update();
+    }
 }
 
 void FancyToolButton::paintEvent(QPaintEvent *event)

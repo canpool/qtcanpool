@@ -102,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
     button = new FancyToolButton(icon, tr("test"));
     button->setPopupMode(QToolButton::InstantPopup);
     button->setMenu(menu);
+    button->setForceAlignCenter(false);   // disable align center for small
     group->addToolButton(button, RibbonGroup::GroupSmall); // using QToolButton is appropriate
     button = new FancyToolButton(icon, tr("test123"));
     group->addToolButton(button, RibbonGroup::GroupSmall);

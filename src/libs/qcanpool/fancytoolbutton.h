@@ -38,6 +38,8 @@ public:
 
     QSize sizeHint() const override;
 
+    void setForceAlignCenter(bool b = true);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *e) override;
