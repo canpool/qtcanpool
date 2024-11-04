@@ -120,7 +120,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 扩展
 
-本仓库未来将只维护四个库：qcanpool、qads、qxribbon、qxwindow，其它库将以单独的 qtcanpool-LIBNAME 仓库进行维护。可以通过 qtcanpool 标签进行检索：
+本仓库未来将只维护核心库，其它库将以单独的 qtcanpool-LIBNAME 仓库进行维护。可以通过 qtcanpool 标签进行检索：
 
 ![extend](./doc/pics/extend.png)
 
