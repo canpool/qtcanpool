@@ -9,14 +9,19 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockWindow;
+
 class DockContainerPrivate;
 
 class QX_DOCK_EXPORT DockContainer : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DockContainer(QWidget *parent = nullptr);
+    explicit DockContainer(DockWindow *window, QWidget *parent = nullptr);
     virtual ~DockContainer();
+
+protected:
+    void createRootSplitter();
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)

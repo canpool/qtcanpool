@@ -16,6 +16,7 @@ class QX_DOCK_EXPORT DockSplitter : public QSplitter
     Q_OBJECT
 public:
     explicit DockSplitter(QWidget *parent = nullptr);
+    explicit DockSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
     virtual ~DockSplitter();
 
 private:

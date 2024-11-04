@@ -13,6 +13,8 @@ public:
     QX_DECLARE_PUBLIC(DockWindow)
 public:
     DockWindowPrivate();
+public:
+    QList<DockContainer *> m_containers;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -20,7 +22,7 @@ DockWindowPrivate::DockWindowPrivate()
 }
 
 DockWindow::DockWindow(QWidget *parent)
-    : DockContainer{parent}
+    : DockContainer{this, parent}
 {
     QX_INIT_PRIVATE(DockWindow)
 }
@@ -28,6 +30,12 @@ DockWindow::DockWindow(QWidget *parent)
 DockWindow::~DockWindow()
 {
     QX_FINI_PRIVATE()
+}
+
+void DockWindow::registerDockContainer(DockContainer *container)
+{
+    Q_D(DockWindow);
+    d->m_containers.append(container);
 }
 
 QX_DOCK_END_NAMESPACE
