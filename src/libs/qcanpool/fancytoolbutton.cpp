@@ -45,6 +45,7 @@ public:
     FancyToolButton *q;
     bool m_showMenu;
     bool m_forceCenter;
+    bool m_forceDefaultShowMenu;
 };
 
 FancyToolButtonPrivate::FancyToolButtonPrivate()
@@ -52,6 +53,7 @@ FancyToolButtonPrivate::FancyToolButtonPrivate()
     , m_menuArea(FancyToolButton::BottomMenuArea)
     , m_showMenu(false)
     , m_forceCenter(true)
+    , m_forceDefaultShowMenu(false)
 {
 }
 
@@ -548,6 +550,14 @@ void FancyToolButton::setForceAlignCenter(bool b)
     }
 }
 
+void FancyToolButton::setForceDefaultShowMenu(bool b)
+{
+    if (d->m_forceDefaultShowMenu == b) {
+        return;
+    }
+    d->m_forceDefaultShowMenu = b;
+}
+
 void FancyToolButton::setToolButtonStyle(Qt::ToolButtonStyle style)
 {
     QToolButton::setToolButtonStyle(style);
@@ -575,35 +585,37 @@ void FancyToolButton::paintEvent(QPaintEvent *event)
 void FancyToolButton::mousePressEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton && popupMode() == MenuButtonPopup) {
-        QRect outRect = d->m_iconRect;
-        if (toolButtonStyle() == Qt::ToolButtonTextOnly) {
-            outRect = d->m_textRect;
-        }
-        if (outRect.isValid() && !outRect.contains(e->pos())) {
-            showMenu();
-            return;
-        }
-        // RightMenu popups menu on the right
-        if (d->m_menuArea == RightMenuArea && d->m_menuArrowType == Qt::RightArrow) {
-            QStyleOptionToolButton opt;
-            initStyleOption(&opt);
-            QRect popupr = d->subControlRect(QStyle::CC_ToolButton, &opt, QStyle::SC_ToolButtonMenu, this);
-            if (popupr.isValid() && popupr.contains(e->pos())) {
-                QAction *action = defaultAction();
-                if (action && action->menu()) {
-                    d->m_showMenu = true;
-                    repaint();
-                    QPoint pos = e->globalPos();
-                    pos.setX(pos.x() - e->x() + width());
-                    pos.setY(pos.y() - e->y());
-                    action->menu()->exec(pos);
-                    d->m_showMenu = false;
-                    repaint();
-                    return;
+        if (d->m_forceDefaultShowMenu) {
+            QRect outRect = d->m_iconRect;
+            if (toolButtonStyle() == Qt::ToolButtonTextOnly) {
+                outRect = d->m_textRect;
+            }
+            if (outRect.isValid() && !outRect.contains(e->pos())) {
+                showMenu();
+                return;
+            }
+        } else {
+            // RightMenu popups menu on the right
+            if (d->m_menuArea == RightMenuArea && d->m_menuArrowType == Qt::RightArrow) {
+                QStyleOptionToolButton opt;
+                initStyleOption(&opt);
+                QRect popupr = d->subControlRect(QStyle::CC_ToolButton, &opt, QStyle::SC_ToolButtonMenu, this);
+                if (popupr.isValid() && popupr.contains(e->pos())) {
+                    QAction *action = defaultAction();
+                    if (action && action->menu()) {
+                        d->m_showMenu = true;
+                        repaint();
+                        QPoint pos = e->globalPos();
+                        pos.setX(pos.x() - e->x() + width());
+                        pos.setY(pos.y() - e->y());
+                        action->menu()->exec(pos);
+                        d->m_showMenu = false;
+                        repaint();
+                        return;
+                    }
                 }
             }
         }
-
     }
     QToolButton::mousePressEvent(e);
 }

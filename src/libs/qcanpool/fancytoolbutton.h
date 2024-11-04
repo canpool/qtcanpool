@@ -39,6 +39,7 @@ public:
     QSize sizeHint() const override;
 
     void setForceAlignCenter(bool b = true);
+    void setForceDefaultShowMenu(bool b = false);
 
 public slots:
     void setToolButtonStyle(Qt::ToolButtonStyle style);

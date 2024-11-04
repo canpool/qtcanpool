@@ -50,6 +50,7 @@ public:
 
 signals:
     void currentChanged(int index);
+    void tabPositionChanged(TabPosition pos);
 
 public slots:
     void setCurrentIndex(int index);

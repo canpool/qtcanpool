@@ -61,6 +61,12 @@ void MainWindow::createCentralWidget()
             button->setMenuArrowType(o == Qt::Horizontal ? Qt::DownArrow : Qt::RightArrow);
         }
     });
+    connect(m_pTabWidget, &FancyTabWidget::tabPositionChanged, this, [&](FancyTabWidget::TabPosition p){
+        QList<FancyToolButton*> buttons = m_pTabWidget->findChildren<FancyToolButton*>();
+        foreach (FancyToolButton *button, buttons) {
+            button->setForceDefaultShowMenu(p == FancyTabWidget::East);
+        }
+    });
 
     QLabel *label = new QLabel("I CAN DO IT");
     // ignore the label's control to continue processEvent

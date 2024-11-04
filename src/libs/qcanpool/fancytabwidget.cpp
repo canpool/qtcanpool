@@ -180,6 +180,7 @@ void FancyTabWidget::setTabPosition(FancyTabWidget::TabPosition pos)
         return;
     d->m_pos = pos;
     d->updateTabBarPosition();
+    emit tabPositionChanged(pos);
 }
 
 void FancyTabWidget::setCurrentIndex(int index)
