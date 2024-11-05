@@ -4,6 +4,7 @@
  **/
 
 #include "dockwindow.h"
+#include "dockpanel.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -30,6 +31,19 @@ DockWindow::DockWindow(QWidget *parent)
 DockWindow::~DockWindow()
 {
     QX_FINI_PRIVATE()
+}
+
+DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
+{
+    DockContainer *container = p ? p->dockContainer() : this;
+    if (container == nullptr) {
+        container = this;
+    }
+    DockPanel *panel = container->addDockWidget(area, w, p, index);
+    if (panel) {
+        Q_EMIT dockWidgetAdded(w);
+    }
+    return panel;
 }
 
 void DockWindow::registerDockContainer(DockContainer *container)

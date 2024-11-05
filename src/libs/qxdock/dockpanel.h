@@ -4,10 +4,14 @@
  **/
 #pragma once
 
+#include "qxdock/dockwidget.h"
 #include "qxdock_global.h"
 #include <QWidget>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+class DockWindow;
+class DockContainer;
 
 class DockPanelPrivate;
 
@@ -15,11 +19,17 @@ class QX_DOCK_EXPORT DockPanel : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DockPanel(QWidget *parent = nullptr);
+    explicit DockPanel(DockWindow *window, DockContainer *parent);
     ~DockPanel();
 
+    DockContainer *dockContainer() const;
+
+protected:
+    void addDockWidget(DockWidget *w);
+    void insertDockWidget(int index, DockWidget *w, bool activate = true);
 private:
     QX_DECLARE_PRIVATE(DockPanel)
+    friend class DockContainerPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

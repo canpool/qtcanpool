@@ -9,6 +9,9 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockWindow;
+class DockContainer;
+
 class DockWidgetPrivate;
 
 class QX_DOCK_EXPORT DockWidget : public QWidget
@@ -18,8 +21,11 @@ public:
     explicit DockWidget(QWidget *parent = nullptr);
     ~DockWidget();
 
+protected:
+    void setDockWindow(DockWindow *window);
 private:
     QX_DECLARE_PRIVATE(DockWidget)
+    friend class DockContainer;
 };
 
 QX_DOCK_END_NAMESPACE

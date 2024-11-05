@@ -10,6 +10,8 @@
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindow;
+class DockPanel;
+class DockWidget;
 
 class DockContainerPrivate;
 
@@ -19,6 +21,8 @@ class QX_DOCK_EXPORT DockContainer : public QWidget
 public:
     explicit DockContainer(DockWindow *window, QWidget *parent = nullptr);
     virtual ~DockContainer();
+
+    DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
 
 protected:
     void createRootSplitter();

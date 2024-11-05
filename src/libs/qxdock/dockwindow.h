@@ -9,6 +9,9 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockPanel;
+class DockWidget;
+
 class DockWindowPrivate;
 
 class QX_DOCK_EXPORT DockWindow : public DockContainer
@@ -17,6 +20,11 @@ class QX_DOCK_EXPORT DockWindow : public DockContainer
 public:
     explicit DockWindow(QWidget *parent = nullptr);
     ~DockWindow();
+
+    DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
+
+Q_SIGNALS:
+    void dockWidgetAdded(DockWidget *w);
 
 protected:
     void registerDockContainer(DockContainer *container);

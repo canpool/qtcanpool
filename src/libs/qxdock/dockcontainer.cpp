@@ -6,6 +6,7 @@
 #include "dockcontainer.h"
 #include "dockwindow.h"
 #include "docksplitter.h"
+#include "dockpanel.h"
 
 #include <QGridLayout>
 
@@ -22,6 +23,9 @@ public:
     void createRootSplitter();
 
     DockSplitter *newSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
+
+    DockPanel *addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w);
+    DockPanel *addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w, DockPanel *targetPanel, int index = -1);
 
 public:
     DockWindow *m_window = nullptr;
@@ -63,6 +67,20 @@ DockSplitter *DockContainerPrivate::newSplitter(Qt::Orientation orientation, QWi
     return s;
 }
 
+DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w)
+{
+    Q_Q(DockContainer);
+    DockPanel *panel = new DockPanel(m_window, q);
+    panel->addDockWidget(w);
+    return panel;
+}
+
+DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w,
+                                                      DockPanel *targetPanel, int index)
+{
+    return targetPanel;
+}
+
 DockContainer::DockContainer(DockWindow *window, QWidget *parent)
     : QWidget(parent)
 {
@@ -82,6 +100,20 @@ DockContainer::DockContainer(DockWindow *window, QWidget *parent)
 DockContainer::~DockContainer()
 {
     QX_FINI_PRIVATE()
+}
+
+DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
+{
+    Q_D(DockContainer);
+    w->setDockWindow(d->m_window);
+
+    DockPanel *panel = nullptr;
+    if (p) {
+        panel = d->addDockWidgetToPanel(area, w, p, index);
+    } else {
+        panel = d->addDockWidgetToContainer(area, w);
+    }
+    return panel;
 }
 
 void DockContainer::createRootSplitter()

@@ -104,3 +104,24 @@
 #else
 #define QX_DOCK_DEPRECATED_SINCE(major, minor) 0
 #endif
+
+namespace Qx {
+
+enum DockWidgetArea {
+    LeftDockWidgetArea = 0x1,
+    RightDockWidgetArea = 0x2,
+    TopDockWidgetArea = 0x4,
+    BottomDockWidgetArea = 0x8,
+
+    DockWidgetArea_Mask = 0xf,
+    AllDockWidgetAreas = DockWidgetArea_Mask,
+    NoDockWidgetArea = 0
+};
+enum DockWidgetAreaSizes {
+    NDockWidgetAreas = 4
+};
+
+Q_DECLARE_FLAGS(DockWidgetAreas, DockWidgetArea)
+Q_DECLARE_OPERATORS_FOR_FLAGS(DockWidgetAreas)
+
+}
