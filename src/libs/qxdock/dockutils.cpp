@@ -43,6 +43,20 @@ void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIc
 #endif
 }
 
+DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area)
+{
+    switch (area) {
+    case Qx::TopDockWidgetArea: return DockInsertParam(Qt::Vertical, false);
+    case Qx::RightDockWidgetArea: return DockInsertParam(Qt::Horizontal, true);
+    case Qx::CenterDockWidgetArea:
+    case Qx::BottomDockWidgetArea: return DockInsertParam(Qt::Vertical, true);
+    case Qx::LeftDockWidgetArea: return DockInsertParam(Qt::Horizontal, false);
+    default: DockInsertParam(Qt::Vertical, false);
+    } // switch (area)
+
+    return DockInsertParam(Qt::Vertical, false);
+}
+
 } // internal
 
 QX_DOCK_END_NAMESPACE

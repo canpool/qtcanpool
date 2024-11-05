@@ -190,9 +190,52 @@ DockPanel::~DockPanel()
     QX_FINI_PRIVATE()
 }
 
+DockWindow *DockPanel::dockWindow() const
+{
+    Q_D(const DockPanel);
+    return d->m_window;
+}
+
 DockContainer *DockPanel::dockContainer() const
 {
     return nullptr;
+}
+
+int DockPanel::dockWidgetsCount() const
+{
+    Q_D(const DockPanel);
+    return d->m_contentsLayout->count();
+}
+
+QList<DockWidget *> DockPanel::dockWidgets() const
+{
+    Q_D(const DockPanel);
+    QList<DockWidget *> dwList;
+    for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
+        dwList.append(dockWidget(i));
+    }
+    return dwList;
+}
+
+DockWidget *DockPanel::dockWidget(int index) const
+{
+    Q_D(const DockPanel);
+    return qobject_cast<DockWidget *>(d->m_contentsLayout->widget(index));
+}
+
+QAbstractButton *DockPanel::titleBarButton(Qx::DockTitleBarButton which) const
+{
+    Q_D(const DockPanel);
+    return d->m_titleBar->button(which);
+}
+
+bool DockPanel::isCentralWidgetArea() const
+{
+    if (dockWidgetsCount() != 1) {
+        return false;
+    }
+
+    return dockWindow()->centralWidget() == dockWidgets().constFirst();
 }
 
 void DockPanel::addDockWidget(DockWidget *w)

@@ -42,6 +42,18 @@ QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity);
 
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId);
 
+
+class DockInsertParam : public QPair<Qt::Orientation, bool>
+{
+public:
+    using QPair<Qt::Orientation, bool>::QPair;
+    Qt::Orientation orientation() const {return this->first;}
+    bool append() const {return this->second;}
+    int insertOffset() const {return append() ? 1 : 0;}
+};
+
+DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area);
+
 } // internal
 
 QX_DOCK_END_NAMESPACE

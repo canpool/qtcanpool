@@ -19,6 +19,7 @@ public:
     explicit DockSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
     virtual ~DockSplitter();
 
+    bool isResizingWithContainer() const;
 private:
     QX_DECLARE_PRIVATE(DockSplitter)
 };

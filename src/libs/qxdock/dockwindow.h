@@ -23,6 +23,8 @@ public:
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
 
+    DockWidget *centralWidget() const;
+
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
 

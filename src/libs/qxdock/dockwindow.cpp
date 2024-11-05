@@ -5,6 +5,7 @@
 
 #include "dockwindow.h"
 #include "dockpanel.h"
+#include "dockwidget.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -16,6 +17,7 @@ public:
     DockWindowPrivate();
 public:
     QList<DockContainer *> m_containers;
+    DockWidget *m_centralWidget = nullptr;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -26,6 +28,7 @@ DockWindow::DockWindow(QWidget *parent)
     : DockContainer{this, parent}
 {
     QX_INIT_PRIVATE(DockWindow)
+    createRootSplitter();
 }
 
 DockWindow::~DockWindow()
@@ -44,6 +47,12 @@ DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, Doc
         Q_EMIT dockWidgetAdded(w);
     }
     return panel;
+}
+
+DockWidget *DockWindow::centralWidget() const
+{
+    Q_D(const DockWindow);
+    return d->m_centralWidget;
 }
 
 void DockWindow::registerDockContainer(DockContainer *container)

@@ -4,6 +4,7 @@
  **/
 
 #include "docksplitter.h"
+#include "dockpanel.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -35,6 +36,17 @@ DockSplitter::DockSplitter(Qt::Orientation orientation, QWidget *parent)
 DockSplitter::~DockSplitter()
 {
     QX_FINI_PRIVATE()
+}
+
+bool DockSplitter::isResizingWithContainer() const
+{
+    for (auto panel : findChildren<DockPanel *>()) {
+        if (panel->isCentralWidgetArea()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 QX_DOCK_END_NAMESPACE

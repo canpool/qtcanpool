@@ -8,6 +8,8 @@
 #include "qxdock_global.h"
 #include <QWidget>
 
+class QAbstractButton;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindow;
@@ -22,7 +24,16 @@ public:
     explicit DockPanel(DockWindow *window, DockContainer *parent);
     ~DockPanel();
 
+    DockWindow *dockWindow() const;
     DockContainer *dockContainer() const;
+
+    int dockWidgetsCount() const;
+    QList<DockWidget *> dockWidgets() const;
+    DockWidget *dockWidget(int index) const;
+
+    QAbstractButton *titleBarButton(Qx::DockTitleBarButton which) const;
+
+    bool isCentralWidgetArea() const;
 
 protected:
     void addDockWidget(DockWidget *w);

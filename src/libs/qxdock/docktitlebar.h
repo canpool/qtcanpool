@@ -7,6 +7,8 @@
 #include "qxdock_global.h"
 #include <QWidget>
 
+class QAbstractButton;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
@@ -19,6 +21,8 @@ class QX_DOCK_EXPORT DockTitleBar : public QWidget
 public:
     explicit DockTitleBar(DockPanel *parent = nullptr);
     virtual ~DockTitleBar();
+
+    QAbstractButton *button(Qx::DockTitleBarButton which) const;
 
     QString titleBarButtonToolTip(Qx::DockTitleBarButton id) const;
 

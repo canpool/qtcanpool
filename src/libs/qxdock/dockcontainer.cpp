@@ -7,10 +7,21 @@
 #include "dockwindow.h"
 #include "docksplitter.h"
 #include "dockpanel.h"
+#include "dockutils.h"
+#include "dockmanager.h"
 
 #include <QGridLayout>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+static void insertWidgetIntoSplitter(QSplitter *s, QWidget *w, bool append)
+{
+    if (append) {
+        s->addWidget(w);
+    } else {
+        s->insertWidget(0, w);
+    }
+}
 
 class DockContainerPrivate
 {
@@ -23,14 +34,22 @@ public:
     void createRootSplitter();
 
     DockSplitter *newSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
+    void updateSplitterHandles(QSplitter *s);
+
+    bool widgetResizesWithContainer(QWidget *w);
 
     DockPanel *addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w);
     DockPanel *addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w, DockPanel *targetPanel, int index = -1);
+
+    void addDockPanel(DockPanel *np, Qx::DockWidgetArea area = Qx::CenterDockWidgetArea);
+    void addDockPanelsToList(const QList<DockPanel *> ps);
+    void appendPanels(const QList<DockPanel *> ps);
 
 public:
     DockWindow *m_window = nullptr;
     QGridLayout *m_layout = nullptr;
     DockSplitter *m_rootSplitter = nullptr;
+    QList<QPointer<DockPanel>> m_panels;
 };
 
 DockContainerPrivate::DockContainerPrivate()
@@ -63,14 +82,46 @@ void DockContainerPrivate::createRootSplitter()
 DockSplitter *DockContainerPrivate::newSplitter(Qt::Orientation orientation, QWidget *parent)
 {
     DockSplitter *s = new DockSplitter(orientation, parent);
+    s->setOpaqueResize(DockManager::testConfigFlag(DockManager::OpaqueSplitterResize));
     s->setChildrenCollapsible(false);
     return s;
+}
+
+void DockContainerPrivate::updateSplitterHandles(QSplitter *s)
+{
+    if (!m_window->centralWidget() || !s) {
+        return;
+    }
+
+    for (int i = 0; i < s->count(); ++i) {
+        s->setStretchFactor(i, widgetResizesWithContainer(s->widget(i)) ? 1 : 0);
+    }
+}
+
+bool DockContainerPrivate::widgetResizesWithContainer(QWidget *w)
+{
+    if (!m_window->centralWidget()) {
+        return true;
+    }
+
+    auto panel = qobject_cast<DockPanel *>(w);
+    if (panel) {
+        return panel->isCentralWidgetArea();
+    }
+
+    auto innerSplitter = qobject_cast<DockSplitter *>(w);
+    if (innerSplitter) {
+        return innerSplitter->isResizingWithContainer();
+    }
+
+    return false;
 }
 
 DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w)
 {
     Q_Q(DockContainer);
     DockPanel *panel = new DockPanel(m_window, q);
+    addDockPanel(panel, area);
     panel->addDockWidget(w);
     return panel;
 }
@@ -79,6 +130,54 @@ DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, D
                                                       DockPanel *targetPanel, int index)
 {
     return targetPanel;
+}
+
+void DockContainerPrivate::addDockPanel(DockPanel *np, Qx::DockWidgetArea area)
+{
+    auto param = internal::dockAreaInsertParameters(area);
+    if (m_panels.count() <= 1) {
+        m_rootSplitter->setOrientation(param.orientation());
+    }
+    QSplitter *s = m_rootSplitter;
+    if (s->orientation() == param.orientation()) {
+        insertWidgetIntoSplitter(s, np, param.append());
+        updateSplitterHandles(s);
+        if (s->isHidden()) {
+            s->show();
+        }
+    } else {
+        auto ns = newSplitter(param.orientation());
+        if (param.append()) {
+            QLayoutItem *li = m_layout->replaceWidget(s, ns);
+            ns->addWidget(s);
+            ns->addWidget(np);
+            updateSplitterHandles(ns);
+            delete li;
+        } else {
+            ns->addWidget(np);
+            QLayoutItem *li = m_layout->replaceWidget(s, ns);
+            ns->addWidget(s);
+            updateSplitterHandles(ns);
+            delete li;
+        }
+        m_rootSplitter = ns;
+    }
+    addDockPanelsToList({np});
+}
+
+void DockContainerPrivate::addDockPanelsToList(const QList<DockPanel *> ps)
+{
+    appendPanels(ps);
+    for (auto p : ps) {
+        p->titleBarButton(Qx::TitleBarButtonClose)->setVisible(true);
+    }
+}
+
+void DockContainerPrivate::appendPanels(const QList<DockPanel *> ps)
+{
+    for (auto *p : ps) {
+        m_panels.append(p);
+    }
 }
 
 DockContainer::DockContainer(DockWindow *window, QWidget *parent)

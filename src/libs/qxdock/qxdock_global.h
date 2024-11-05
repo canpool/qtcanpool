@@ -112,13 +112,14 @@ enum DockWidgetArea {
     RightDockWidgetArea = 0x2,
     TopDockWidgetArea = 0x4,
     BottomDockWidgetArea = 0x8,
+    CenterDockWidgetArea = 0x10,
 
-    DockWidgetArea_Mask = 0xf,
+    DockWidgetArea_Mask = 0x1f,
     AllDockWidgetAreas = DockWidgetArea_Mask,
     NoDockWidgetArea = 0
 };
 enum DockWidgetAreaSizes {
-    NDockWidgetAreas = 4
+    NDockWidgetAreas = 5
 };
 
 Q_DECLARE_FLAGS(DockWidgetAreas, DockWidgetArea)

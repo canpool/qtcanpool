@@ -144,6 +144,21 @@ DockTitleBar::~DockTitleBar()
     QX_FINI_PRIVATE()
 }
 
+QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
+{
+    Q_D(const DockTitleBar);
+
+    switch (which)
+    {
+    case Qx::TitleBarButtonTabsMenu: return d->m_tabsMenuButton;
+    case Qx::TitleBarButtonUndock: return d->m_undockButton;
+    case Qx::TitleBarButtonClose: return d->m_closeButton;
+    case Qx::TitleBarButtonMinimize: return d->m_minimizeButton;
+    default:
+        return nullptr;
+    }
+}
+
 QString DockTitleBar::titleBarButtonToolTip(Qx::DockTitleBarButton id) const
 {
     return QString();
