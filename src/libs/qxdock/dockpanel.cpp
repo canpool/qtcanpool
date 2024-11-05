@@ -7,6 +7,8 @@
 #include "dockcontainer.h"
 #include "dockwindow.h"
 #include "docktitlebar.h"
+#include "dockutils.h"
+#include "docksplitter.h"
 
 #include <QBoxLayout>
 
@@ -198,7 +200,14 @@ DockWindow *DockPanel::dockWindow() const
 
 DockContainer *DockPanel::dockContainer() const
 {
-    return nullptr;
+    // need include header of DockContainer
+    return internal::findParent<DockContainer *>(this);
+}
+
+DockSplitter *DockPanel::parentSplitter() const
+{
+    // need include header of DockSplitter
+    return internal::findParent<DockSplitter *>(this);
 }
 
 int DockPanel::dockWidgetsCount() const

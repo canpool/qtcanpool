@@ -28,6 +28,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
+    w = new DockWidget();
+    palette = w->palette();
+    palette.setColor(QPalette::Window, QColor(0, 0, 255));
+    w->setPalette(palette);
+    w->setAutoFillBackground(true);
+
+    dockwindow->addDockWidget(Qx::BottomDockWidgetArea, w);
+
     setCentralWidget(dockwindow);
 
     resize(800, 600);

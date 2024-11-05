@@ -14,6 +14,7 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindow;
 class DockContainer;
+class DockSplitter;
 
 class DockPanelPrivate;
 
@@ -26,6 +27,8 @@ public:
 
     DockWindow *dockWindow() const;
     DockContainer *dockContainer() const;
+
+    DockSplitter *parentSplitter() const;
 
     int dockWidgetsCount() const;
     QList<DockWidget *> dockWidgets() const;

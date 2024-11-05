@@ -38,6 +38,20 @@ void setToolTip(QObjectPtr obj, const QString &tip)
 #endif
 }
 
+template <class T>
+T findParent(const QWidget *w)
+{
+    QWidget *pw = w->parentWidget();
+    while (pw) {
+        T parentImpl = qobject_cast<T>(pw);
+        if (parentImpl) {
+            return parentImpl;
+        }
+        pw = pw->parentWidget();
+    }
+    return nullptr;
+}
+
 QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity);
 
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId);

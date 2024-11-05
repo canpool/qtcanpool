@@ -129,7 +129,30 @@ DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea are
 DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w,
                                                       DockPanel *targetPanel, int index)
 {
-    return targetPanel;
+    Q_Q(DockContainer);
+    if (area == Qx::CenterDockWidgetArea) {
+        targetPanel->insertDockWidget(index, w);
+        return targetPanel;
+    }
+    DockPanel *np = new DockPanel(m_window, q);
+    np->addDockWidget(w);
+
+    auto param = internal::dockAreaInsertParameters(area);
+    auto targetSplitter = targetPanel->parentSplitter();
+    if (targetSplitter->orientation() == param.orientation()) {
+        targetSplitter->insertWidget(index + param.insertOffset(), np);
+        updateSplitterHandles(targetSplitter);
+    } else {
+        auto sizes = targetSplitter->sizes();
+        auto ns = newSplitter(param.orientation());
+        ns->addWidget(targetPanel);
+        insertWidgetIntoSplitter(ns, np, param.append());
+        updateSplitterHandles(ns);
+        targetSplitter->insertWidget(index, ns);
+        updateSplitterHandles(targetSplitter);
+    }
+    addDockPanelsToList({np});
+    return np;
 }
 
 void DockContainerPrivate::addDockPanel(DockPanel *np, Qx::DockWidgetArea area)
