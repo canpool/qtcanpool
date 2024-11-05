@@ -38,6 +38,8 @@ public:
 
     bool isCentralWidgetArea() const;
 
+public Q_SLOTS:
+    void setCurrentIndex(int index);
 protected:
     void addDockWidget(DockWidget *w);
     void insertDockWidget(int index, DockWidget *w, bool activate = true);

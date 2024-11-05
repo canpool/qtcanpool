@@ -257,6 +257,26 @@ bool DockPanel::isCentralWidgetArea() const
     return dockWindow()->centralWidget() == dockWidgets().constFirst();
 }
 
+void DockPanel::setCurrentIndex(int index)
+{
+    Q_D(DockPanel);
+    auto tabBar = d->tabBar();
+    if (index < 0 || index > (tabBar->count() - 1)) {
+        qWarning() << Q_FUNC_INFO << "Invalid index" << index;
+        return;
+    }
+
+    auto cw = d->m_contentsLayout->currentWidget();
+    auto nw = d->m_contentsLayout->widget(index);
+    if (cw == nw && !nw->isHidden()) {
+        return;
+    }
+
+    tabBar->setCurrentIndex(index);
+    d->m_contentsLayout->setCurrentIndex(index);
+    d->m_contentsLayout->currentWidget()->show();
+}
+
 void DockPanel::addDockWidget(DockWidget *w)
 {
     Q_D(DockPanel);
@@ -276,6 +296,9 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
     d->tabBar()->blockSignals(true);
     d->tabBar()->insertTab(index, tab);
     d->tabBar()->blockSignals(false);
+    if (activate) {
+        setCurrentIndex(index);
+    }
 }
 
 QX_DOCK_END_NAMESPACE
