@@ -16,9 +16,13 @@ PUBLIC_HEADERS = \
     $$PWD/dockoverlay.h \
     $$PWD/docktitlebar.h \
     $$PWD/docktabbar.h \
-    $$PWD/docktab.h
+    $$PWD/docktab.h \
+    $$PWD/dockutils.h \
+    $$PWD/dockmanager.h \
+    $$PWD/dockiconprovider.h
 
 PRIVATE_HEADERS = \
+    $$PWD/docktitlebar_p.h
 
 HEADERS += \
     $$PUBLIC_HEADERS \
@@ -26,7 +30,10 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/dockcontainer.cpp \
+    $$PWD/dockiconprovider.cpp \
+    $$PWD/dockmanager.cpp \
     $$PWD/dockpanel.cpp \
+    $$PWD/dockutils.cpp \
     $$PWD/dockwidget.cpp \
     $$PWD/dockwindow.cpp \
     $$PWD/docksplitter.cpp \

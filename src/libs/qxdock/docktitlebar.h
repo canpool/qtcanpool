@@ -9,14 +9,18 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockPanel;
+
 class DockTitleBarPrivate;
 
 class QX_DOCK_EXPORT DockTitleBar : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DockTitleBar(QWidget *parent = nullptr);
+    explicit DockTitleBar(DockPanel *parent = nullptr);
     virtual ~DockTitleBar();
+
+    QString titleBarButtonToolTip(Qx::DockTitleBarButton id) const;
 
 private:
     QX_DECLARE_PRIVATE(DockTitleBar)

@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     w->setPalette(palette);
     w->setAutoFillBackground(true);
 
-    dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
+    DockPanel *panel = dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
 
     w = new DockWidget();
     palette = w->palette();
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     w->setPalette(palette);
     w->setAutoFillBackground(true);
 
-    dockwindow->addDockWidget(Qx::RightDockWidgetArea, w);
+    dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
     setCentralWidget(dockwindow);
 

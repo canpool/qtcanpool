@@ -124,4 +124,22 @@ enum DockWidgetAreaSizes {
 Q_DECLARE_FLAGS(DockWidgetAreas, DockWidgetArea)
 Q_DECLARE_OPERATORS_FOR_FLAGS(DockWidgetAreas)
 
+enum DockTitleBarButton {
+    TitleBarButtonTabsMenu,
+    TitleBarButtonUndock,
+    TitleBarButtonClose,
+    TitleBarButtonMinimize
+};
+
+enum DockIcon {
+    DockTabCloseIcon,
+    DockPanelMenuIcon,
+    DockPanelUndockIcon,
+    DockPanelCloseIcon,
+    DockPanelMinimizeIcon
+};
+enum DockIconSizes {
+    NDockIconSizes = 5
+};
+
 }

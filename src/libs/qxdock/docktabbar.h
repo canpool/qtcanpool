@@ -5,17 +5,19 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QScrollArea>
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockPanel;
+
 class DockTabBarPrivate;
 
-class QX_DOCK_EXPORT DockTabBar : public QWidget
+class QX_DOCK_EXPORT DockTabBar : public QScrollArea
 {
     Q_OBJECT
 public:
-    explicit DockTabBar(QWidget *parent = nullptr);
+    explicit DockTabBar(DockPanel *parent = nullptr);
     virtual ~DockTabBar();
 
 private:

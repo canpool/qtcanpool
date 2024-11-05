@@ -4,6 +4,7 @@
  **/
 
 #include "docktabbar.h"
+#include "dockpanel.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -13,6 +14,8 @@ public:
     QX_DECLARE_PUBLIC(DockTabBar)
 public:
     DockTabBarPrivate();
+public:
+    DockPanel *m_panel = nullptr;
 };
 
 DockTabBarPrivate::DockTabBarPrivate()
@@ -20,10 +23,12 @@ DockTabBarPrivate::DockTabBarPrivate()
 
 }
 
-DockTabBar::DockTabBar(QWidget *parent)
-    : QWidget(parent)
+DockTabBar::DockTabBar(DockPanel *parent)
+    : QScrollArea(parent)
 {
-    QX_INIT_PRIVATE(DockTabBar);
+    QX_INIT_PRIVATE(DockTabBar)
+    Q_D(DockTabBar);
+    d->m_panel = parent;
 }
 
 DockTabBar::~DockTabBar()
