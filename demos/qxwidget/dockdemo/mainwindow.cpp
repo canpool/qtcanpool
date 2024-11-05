@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     DockWidget *w = nullptr;
 
-    w = new DockWidget();
+    w = new DockWidget(tr("dock1"));
     QPalette palette = w->palette();
     palette.setColor(QPalette::Window, QColor(255, 0, 0));
     w->setPalette(palette);
@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     DockPanel *panel = dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
 
-    w = new DockWidget();
+    w = new DockWidget(tr("dock2"));
     palette = w->palette();
     palette.setColor(QPalette::Window, QColor(0, 255, 0));
     w->setPalette(palette);
@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
-    w = new DockWidget();
+    w = new DockWidget(tr("dock3"));
     palette = w->palette();
     palette.setColor(QPalette::Window, QColor(0, 0, 255));
     w->setPalette(palette);

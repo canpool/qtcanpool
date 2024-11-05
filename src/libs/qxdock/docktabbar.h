@@ -10,6 +10,7 @@
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
+class DockTab;
 
 class DockTabBarPrivate;
 
@@ -19,6 +20,13 @@ class QX_DOCK_EXPORT DockTabBar : public QScrollArea
 public:
     explicit DockTabBar(DockPanel *parent = nullptr);
     virtual ~DockTabBar();
+
+    void insertTab(int index, DockTab *tab);
+
+    int count() const;
+
+public Q_SLOTS:
+    void setCurrentIndex(int index);
 
 private:
     QX_DECLARE_PRIVATE(DockTabBar)

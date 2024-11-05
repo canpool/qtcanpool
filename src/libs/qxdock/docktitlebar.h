@@ -12,6 +12,7 @@ class QAbstractButton;
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
+class DockTabBar;
 
 class DockTitleBarPrivate;
 
@@ -21,6 +22,8 @@ class QX_DOCK_EXPORT DockTitleBar : public QWidget
 public:
     explicit DockTitleBar(DockPanel *parent = nullptr);
     virtual ~DockTitleBar();
+
+    DockTabBar *tabBar() const;
 
     QAbstractButton *button(Qx::DockTitleBarButton which) const;
 

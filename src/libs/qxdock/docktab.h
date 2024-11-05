@@ -9,14 +9,19 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockWidget;
+class DockPanel;
+
 class DockTabPrivate;
 
 class QX_DOCK_EXPORT DockTab : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DockTab(QWidget *parent = nullptr);
+    explicit DockTab(DockWidget *w, QWidget *parent = nullptr);
     virtual ~DockTab();
+
+    void setDockPanel(DockPanel *panel);
 
 private:
     QX_DECLARE_PRIVATE(DockTab)

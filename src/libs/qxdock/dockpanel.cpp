@@ -9,6 +9,8 @@
 #include "docktitlebar.h"
 #include "dockutils.h"
 #include "docksplitter.h"
+#include "docktabbar.h"
+#include "docktab.h"
 
 #include <QBoxLayout>
 
@@ -146,6 +148,9 @@ public:
     DockPanelPrivate();
     ~DockPanelPrivate();
     void init();
+
+    DockTabBar *tabBar() const;
+
 public:
     DockWindow *m_window = nullptr;
     QBoxLayout *m_layout = nullptr;
@@ -175,6 +180,11 @@ void DockPanelPrivate::init()
     m_layout->addWidget(m_titleBar);
 
     m_contentsLayout = new DockAreaLayout(m_layout);
+}
+
+DockTabBar *DockPanelPrivate::tabBar() const
+{
+    return m_titleBar->tabBar();
 }
 
 DockPanel::DockPanel(DockWindow *window, DockContainer *parent)
@@ -260,6 +270,12 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
         index = d->m_contentsLayout->count();
     }
     d->m_contentsLayout->insertWidget(index, w);
+    w->setDockPanel(this);
+    auto tab = w->tab();
+    tab->setDockPanel(this);
+    d->tabBar()->blockSignals(true);
+    d->tabBar()->insertTab(index, tab);
+    d->tabBar()->blockSignals(false);
 }
 
 QX_DOCK_END_NAMESPACE

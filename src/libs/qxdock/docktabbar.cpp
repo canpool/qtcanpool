@@ -22,6 +22,7 @@ public:
     DockPanel *m_panel = nullptr;
     QWidget *m_tabsContainerWidget;
     QBoxLayout *m_tabsLayout;
+    int m_currentIndex = -1;
 };
 
 DockTabBarPrivate::DockTabBarPrivate()
@@ -63,6 +64,38 @@ DockTabBar::DockTabBar(DockPanel *parent)
 DockTabBar::~DockTabBar()
 {
     QX_FINI_PRIVATE()
+}
+
+void DockTabBar::insertTab(int index, DockTab *tab)
+{
+    Q_D(DockTabBar);
+    d->m_tabsLayout->insertWidget(index, tab);
+    if (index <= d->m_currentIndex) {
+        setCurrentIndex(d->m_currentIndex + 1);
+    } else if (d->m_currentIndex == -1) {
+        setCurrentIndex(index);
+    }
+    updateGeometry();
+}
+
+int DockTabBar::count() const
+{
+    Q_D(const DockTabBar);
+    // The tab bar contains a stretch item as last item
+    return d->m_tabsLayout->count() - 1;
+}
+
+void DockTabBar::setCurrentIndex(int index)
+{
+    Q_D(DockTabBar);
+    if (index == d->m_currentIndex) {
+        return;
+    }
+    if (index < -1 || index > (count() -1)) {
+        return;
+    }
+    d->m_currentIndex = index;
+    updateGeometry();
 }
 
 QX_DOCK_END_NAMESPACE

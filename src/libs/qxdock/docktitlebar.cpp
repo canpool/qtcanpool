@@ -144,6 +144,12 @@ DockTitleBar::~DockTitleBar()
     QX_FINI_PRIVATE()
 }
 
+DockTabBar *DockTitleBar::tabBar() const
+{
+    Q_D(const DockTitleBar);
+    return d->m_tabBar;
+}
+
 QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
 {
     Q_D(const DockTitleBar);
