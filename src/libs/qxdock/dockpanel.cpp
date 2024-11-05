@@ -6,6 +6,8 @@
 #include "dockpanel.h"
 #include "dockcontainer.h"
 #include "dockwindow.h"
+#include "docktitlebar.h"
+
 #include <QBoxLayout>
 
 QX_DOCK_BEGIN_NAMESPACE
@@ -146,6 +148,7 @@ public:
     DockWindow *m_window = nullptr;
     QBoxLayout *m_layout = nullptr;
     DockAreaLayout *m_contentsLayout = nullptr;
+    DockTitleBar *m_titleBar = nullptr;
 };
 
 DockPanelPrivate::DockPanelPrivate()
@@ -165,6 +168,9 @@ void DockPanelPrivate::init()
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(0);
     q->setLayout(m_layout);
+
+    m_titleBar = new DockTitleBar(q);
+    m_layout->addWidget(m_titleBar);
 
     m_contentsLayout = new DockAreaLayout(m_layout);
 }
