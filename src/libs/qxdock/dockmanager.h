@@ -17,6 +17,8 @@ public:
     enum ConfigFlag {
         DockAreaHasCloseButton = 0x0002,
         OpaqueSplitterResize = 0x0008,
+        TabCloseButtonIsToolButton = 0x0040,
+        RetainTabSizeWhenCloseButtonHidden = 0x0100,
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
 

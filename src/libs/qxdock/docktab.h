@@ -21,6 +21,8 @@ public:
     explicit DockTab(DockWidget *w, QWidget *parent = nullptr);
     virtual ~DockTab();
 
+    void setActive(bool active);
+
     void setDockPanel(DockPanel *panel);
 
 private:

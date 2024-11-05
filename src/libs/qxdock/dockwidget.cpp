@@ -25,6 +25,7 @@ public:
     QPointer<DockPanel> m_panel = nullptr;
     QBoxLayout *m_layout = nullptr;
     DockTab *m_tab = nullptr;
+    DockWidget::DockWidgetFeatures m_features = DockWidget::DefaultDockWidgetFeatures;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -47,11 +48,13 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     : QWidget{parent}
 {
     QX_INIT_PRIVATE(DockWidget)
-    Q_D(DockWidget);
-    d->init();
 
+    // must before d->init(), create tab need title
     setWindowTitle(title);
     setObjectName(title);
+
+    Q_D(DockWidget);
+    d->init();
 }
 
 DockWidget::~DockWidget()
@@ -63,6 +66,12 @@ DockTab *DockWidget::tab() const
 {
     Q_D(const DockWidget);
     return d->m_tab;
+}
+
+DockWidget::DockWidgetFeatures DockWidget::features() const
+{
+    Q_D(const DockWidget);
+    return d->m_features;
 }
 
 void DockWidget::setDockWindow(DockWindow *window)

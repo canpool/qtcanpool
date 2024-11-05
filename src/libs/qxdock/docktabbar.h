@@ -25,6 +25,8 @@ public:
 
     int count() const;
 
+    DockTab *tab(int index) const;
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
 

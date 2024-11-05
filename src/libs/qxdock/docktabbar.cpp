@@ -18,6 +18,7 @@ public:
 public:
     DockTabBarPrivate();
     void init();
+    void updateTabs();
 public:
     DockPanel *m_panel = nullptr;
     QWidget *m_tabsContainerWidget;
@@ -45,6 +46,23 @@ void DockTabBarPrivate::init()
     q->setWidget(m_tabsContainerWidget);
 }
 
+void DockTabBarPrivate::updateTabs()
+{
+    Q_Q(DockTabBar);
+    for (int i = 0; i < q->count(); ++i) {
+        auto tab = q->tab(i);
+        if (!tab) {
+            continue;
+        }
+        if (i == m_currentIndex) {
+            tab->show();
+            tab->setActive(true);
+        } else {
+            tab->setActive(false);
+        }
+    }
+}
+
 DockTabBar::DockTabBar(DockPanel *parent)
     : QScrollArea(parent)
 {
@@ -58,6 +76,7 @@ DockTabBar::DockTabBar(DockPanel *parent)
     setWidgetResizable(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setFocusPolicy(Qt::NoFocus);
 }
 
@@ -85,6 +104,15 @@ int DockTabBar::count() const
     return d->m_tabsLayout->count() - 1;
 }
 
+DockTab *DockTabBar::tab(int index) const
+{
+    if (index < 0 || index >= count()) {
+        return nullptr;
+    }
+    Q_D(const DockTabBar);
+    return qobject_cast<DockTab *>(d->m_tabsLayout->itemAt(index)->widget());
+}
+
 void DockTabBar::setCurrentIndex(int index)
 {
     Q_D(DockTabBar);
@@ -95,6 +123,7 @@ void DockTabBar::setCurrentIndex(int index)
         return;
     }
     d->m_currentIndex = index;
+    d->updateTabs();
     updateGeometry();
 }
 
