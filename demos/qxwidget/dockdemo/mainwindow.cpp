@@ -28,6 +28,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
+    w = new DockWidget(tr("dock4"));
+    palette = w->palette();
+    palette.setColor(QPalette::Window, QColor(255, 255, 0));
+    w->setPalette(palette);
+    w->setAutoFillBackground(true);
+
+    dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);
+
     w = new DockWidget(tr("dock3"));
     palette = w->palette();
     palette.setColor(QPalette::Window, QColor(0, 0, 255));
