@@ -68,7 +68,9 @@ void DockTitleBarPrivate::init()
 void DockTitleBarPrivate::createTabBar()
 {
     m_tabBar = new DockTabBar(m_panel);
-    m_tabBar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+    // The horizontal direction uses Expanding instead of Maximum to maximize expansion
+    // I don't know why QSizePolicy::Maximum doesn't work good
+    m_tabBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_layout->addWidget(m_tabBar);
 }
 
