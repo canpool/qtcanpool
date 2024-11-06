@@ -15,19 +15,26 @@ class QX_DOCK_EXPORT DockManager
 {
 public:
     enum ConfigFlag {
+        ActiveTabHasCloseButton = 0x0001,
         DockAreaHasCloseButton = 0x0002,
         DockAreaCloseButtonClosesTab = 0x0004,
         OpaqueSplitterResize = 0x0008,
         TabCloseButtonIsToolButton = 0x0040,
+        AllTabsHaveCloseButton = 0x0080,
         RetainTabSizeWhenCloseButtonHidden = 0x0100,
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
+
+        FocusHighlighting = 0x200000,
+
+        ShowTabTextOnlyForActiveTab = 0x8000000,
 
         DefaultDockAreaButtons = DockAreaHasCloseButton
                                | DockAreaHasUndockButton
                                | DockAreaHasTabsMenuButton,
 
-        DefaultBaseConfig = DefaultDockAreaButtons,
+        DefaultBaseConfig = DefaultDockAreaButtons
+                          | ActiveTabHasCloseButton,
 
         DefaultOpaqueConfig = DefaultBaseConfig
                             | OpaqueSplitterResize,

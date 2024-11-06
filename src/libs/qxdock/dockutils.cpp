@@ -57,6 +57,27 @@ DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area)
     return DockInsertParam(Qt::Vertical, false);
 }
 
+void repolishStyle(QWidget *w, RepolishChildOptions options)
+{
+    if (!w) {
+        return;
+    }
+    w->style()->unpolish(w);
+    w->style()->polish(w);
+
+    if (RepolishIgnoreChildren == options) {
+        return;
+    }
+
+    QList<QWidget*> childrens = w->findChildren<QWidget *>(QString(),
+        (RepolishDirectChildren == options) ? Qt::FindDirectChildrenOnly : Qt::FindChildrenRecursively);
+
+    for (auto c : childrens) {
+        c->style()->unpolish(c);
+        c->style()->polish(c);
+    }
+}
+
 } // internal
 
 QX_DOCK_END_NAMESPACE

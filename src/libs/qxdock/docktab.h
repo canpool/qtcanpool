@@ -21,6 +21,7 @@ public:
     explicit DockTab(DockWidget *w, QWidget *parent = nullptr);
     virtual ~DockTab();
 
+    bool isActive() const;
     void setActive(bool active);
 
     void setDockPanel(DockPanel *panel);
@@ -30,6 +31,11 @@ public:
     const QIcon &icon() const;
 
     QString text() const;
+
+    void updateStyle();
+
+Q_SIGNALS:
+    void activeTabChanged();
 
 private:
     QX_DECLARE_PRIVATE(DockTab)

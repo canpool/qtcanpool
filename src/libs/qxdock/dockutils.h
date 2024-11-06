@@ -68,6 +68,14 @@ public:
 
 DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area);
 
+enum RepolishChildOptions {
+    RepolishIgnoreChildren,
+    RepolishDirectChildren,
+    RepolishChildrenRecursively
+};
+
+void repolishStyle(QWidget *w, RepolishChildOptions options = RepolishIgnoreChildren);
+
 } // internal
 
 QX_DOCK_END_NAMESPACE

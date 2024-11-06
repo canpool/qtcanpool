@@ -27,12 +27,14 @@ public:
     bool testConfigFlag(DockManager::ConfigFlag flag) const;
     QAbstractButton *createCloseButton() const;
     void updateCloseButtonSizePolicy();
+    void updateCloseButtonVisibility(bool active);
 public:
     DockWidget *m_dockWidget = nullptr;
     DockPanel *m_panel = nullptr;
     DockLabel *m_label = nullptr;
     QAbstractButton *m_closeButton = nullptr;
     QIcon m_icon;
+    bool m_isActive = false;
 };
 
 DockTabPrivate::DockTabPrivate()
@@ -100,6 +102,15 @@ void DockTabPrivate::updateCloseButtonSizePolicy()
     m_closeButton->setSizePolicy(sizePolicy);
 }
 
+void DockTabPrivate::updateCloseButtonVisibility(bool active)
+{
+    bool dockWidgetClosable = m_dockWidget->features().testFlag(DockWidget::DockWidgetClosable);
+    bool activeTabHasCloseButton = testConfigFlag(DockManager::ActiveTabHasCloseButton);
+    bool allTabsHaveCloseButton = testConfigFlag(DockManager::AllTabsHaveCloseButton);
+    bool tabHasCloseButton = (activeTabHasCloseButton && active) | allTabsHaveCloseButton;
+    m_closeButton->setVisible(dockWidgetClosable && tabHasCloseButton);
+}
+
 DockTab::DockTab(DockWidget *w, QWidget *parent)
     : QWidget(parent)
 {
@@ -118,9 +129,35 @@ DockTab::~DockTab()
     QX_FINI_PRIVATE()
 }
 
+bool DockTab::isActive() const
+{
+    Q_D(const DockTab);
+    return d->m_isActive;
+}
+
 void DockTab::setActive(bool active)
 {
+    Q_D(DockTab);
+    d->updateCloseButtonVisibility(active);
+    if (DockManager::testConfigFlag(DockManager::ShowTabTextOnlyForActiveTab) && !d->m_icon.isNull()) {
+        if (active) {
+            d->m_label->setVisible(true);
+        } else {
+            d->m_label->setVisible(false);
+        }
+    }
+    // Focus related stuff
+    if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+        // TODO
+    } else if (d->m_isActive == active) {
+        return;
+    }
 
+    d->m_isActive = active;
+    updateStyle();
+    update();
+    updateGeometry();
+    Q_EMIT activeTabChanged();
 }
 
 void DockTab::setDockPanel(DockPanel *panel)
@@ -145,6 +182,11 @@ QString DockTab::text() const
 {
     Q_D(const DockTab);
     return d->m_label->text();
+}
+
+void DockTab::updateStyle()
+{
+    internal::repolishStyle(this, internal::RepolishDirectChildren);
 }
 
 QX_DOCK_END_NAMESPACE
