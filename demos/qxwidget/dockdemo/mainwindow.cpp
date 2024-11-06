@@ -12,36 +12,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     DockWidget *w = nullptr;
 
-    w = new DockWidget(tr("dock1"));
-    QPalette palette = w->palette();
-    palette.setColor(QPalette::Window, QColor(255, 0, 0));
-    w->setPalette(palette);
-    w->setAutoFillBackground(true);
-
+    w = createColorDockWidget(tr("dock1"), QColor(255, 0, 0));
     DockPanel *panel = dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
 
-    w = new DockWidget(tr("dock2"));
-    palette = w->palette();
-    palette.setColor(QPalette::Window, QColor(0, 255, 0));
-    w->setPalette(palette);
-    w->setAutoFillBackground(true);
-
+    w = createColorDockWidget(tr("dock2"), QColor(0, 255, 0));
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
-    w = new DockWidget(tr("dock4"));
-    palette = w->palette();
-    palette.setColor(QPalette::Window, QColor(255, 255, 0));
-    w->setPalette(palette);
-    w->setAutoFillBackground(true);
+    w = createColorDockWidget(tr("dock4"), QColor(255, 255, 0));
+    dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);  // tabified with dock1
 
-    dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);
-
-    w = new DockWidget(tr("dock3"));
-    palette = w->palette();
-    palette.setColor(QPalette::Window, QColor(0, 0, 255));
-    w->setPalette(palette);
-    w->setAutoFillBackground(true);
-
+    w = createColorDockWidget(tr("dock3"), QColor(0, 0, 255));
     dockwindow->addDockWidget(Qx::BottomDockWidgetArea, w);
 
     setCentralWidget(dockwindow);
@@ -51,4 +31,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+}
+
+DockWidget *MainWindow::createColorDockWidget(const QString &title, const QColor &color)
+{
+    DockWidget *w = new DockWidget(title);
+    QPalette palette = w->palette();
+    palette.setColor(QPalette::Window, color);
+    w->setPalette(palette);
+    w->setAutoFillBackground(true);
+    return w;
 }
