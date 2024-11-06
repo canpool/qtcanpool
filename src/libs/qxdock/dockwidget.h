@@ -37,6 +37,8 @@ public:
 
     DockWidgetFeatures features() const;
 
+    virtual QList<QAction *> titleBarActions() const;
+
 protected:
     void setDockWindow(DockWindow *window);
     void setDockPanel(DockPanel *panel);

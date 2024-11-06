@@ -32,6 +32,7 @@ public:
     DockPanel *m_panel = nullptr;
     DockLabel *m_label = nullptr;
     QAbstractButton *m_closeButton = nullptr;
+    QIcon m_icon;
 };
 
 DockTabPrivate::DockTabPrivate()
@@ -126,6 +127,24 @@ void DockTab::setDockPanel(DockPanel *panel)
 {
     Q_D(DockTab);
     d->m_panel = panel;
+}
+
+DockWidget *DockTab::dockWidget() const
+{
+    Q_D(const DockTab);
+    return d->m_dockWidget;
+}
+
+const QIcon &DockTab::icon() const
+{
+    Q_D(const DockTab);
+    return d->m_icon;
+}
+
+QString DockTab::text() const
+{
+    Q_D(const DockTab);
+    return d->m_label->text();
 }
 
 QX_DOCK_END_NAMESPACE

@@ -103,6 +103,16 @@ int DockTabBar::count() const
     return d->m_tabsLayout->count() - 1;
 }
 
+DockTab *DockTabBar::currentTab() const
+{
+    Q_D(const DockTabBar);
+    if (d->m_currentIndex < 0 || d->m_currentIndex >= d->m_tabsLayout->count()) {
+        return nullptr;
+    } else {
+        return qobject_cast<DockTab*>(d->m_tabsLayout->itemAt(d->m_currentIndex)->widget());
+    }
+}
+
 DockTab *DockTabBar::tab(int index) const
 {
     if (index < 0 || index >= count()) {
@@ -110,6 +120,15 @@ DockTab *DockTabBar::tab(int index) const
     }
     Q_D(const DockTabBar);
     return qobject_cast<DockTab *>(d->m_tabsLayout->itemAt(index)->widget());
+}
+
+bool DockTabBar::isTabOpen(int index) const
+{
+    if (index < 0 || index >= count()) {
+        return false;
+    }
+
+    return !tab(index)->isHidden();
 }
 
 QSize DockTabBar::minimumSizeHint() const
@@ -137,9 +156,11 @@ void DockTabBar::setCurrentIndex(int index)
     if (index < -1 || index > (count() -1)) {
         return;
     }
+    Q_EMIT currentChanging(index);
     d->m_currentIndex = index;
     d->updateTabs();
     updateGeometry();
+    Q_EMIT currentChanged(index);
 }
 
 QX_DOCK_END_NAMESPACE

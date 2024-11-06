@@ -27,8 +27,17 @@ public:
 
     QAbstractButton *button(Qx::DockTitleBarButton which) const;
 
+    void updateDockWidgetActionsButtons();
+
+    int indexOf(QWidget *widget) const;
     QString titleBarButtonToolTip(Qx::DockTitleBarButton id) const;
 
+private Q_SLOTS:
+    void onTabsMenuAboutToShow();
+    void onTabsMenuActionTriggered(QAction *a);
+    void onCurrentTabChanged(int index);
+Q_SIGNALS:
+    void tabBarClicked(int index);
 private:
     QX_DECLARE_PRIVATE(DockTitleBar)
 };

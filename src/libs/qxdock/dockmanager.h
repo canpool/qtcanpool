@@ -16,6 +16,7 @@ class QX_DOCK_EXPORT DockManager
 public:
     enum ConfigFlag {
         DockAreaHasCloseButton = 0x0002,
+        DockAreaCloseButtonClosesTab = 0x0004,
         OpaqueSplitterResize = 0x0008,
         TabCloseButtonIsToolButton = 0x0040,
         RetainTabSizeWhenCloseButtonHidden = 0x0100,

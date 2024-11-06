@@ -26,6 +26,7 @@ public:
     QBoxLayout *m_layout = nullptr;
     DockTab *m_tab = nullptr;
     DockWidget::DockWidgetFeatures m_features = DockWidget::DefaultDockWidgetFeatures;
+    QList<QAction *> m_titleBarActions;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -72,6 +73,12 @@ DockWidget::DockWidgetFeatures DockWidget::features() const
 {
     Q_D(const DockWidget);
     return d->m_features;
+}
+
+QList<QAction *> DockWidget::titleBarActions() const
+{
+    Q_D(const DockWidget);
+    return d->m_titleBarActions;
 }
 
 void DockWidget::setDockWindow(DockWindow *window)

@@ -40,6 +40,9 @@ public:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
+Q_SIGNALS:
+    void currentChanging(int index);
+    void currentChanged(int index);
 protected:
     void addDockWidget(DockWidget *w);
     void insertDockWidget(int index, DockWidget *w, bool activate = true);

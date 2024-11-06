@@ -7,10 +7,12 @@
 #include "docktitlebar_p.h"
 #include "dockpanel.h"
 #include "docktabbar.h"
+#include "docktab.h"
 #include "dockutils.h"
 #include "dockmanager.h"
 
 #include <QBoxLayout>
+#include <QMenu>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -45,6 +47,8 @@ public:
     QPointer<TitleBarButton> m_undockButton;
     QPointer<TitleBarButton> m_closeButton;
     QPointer<TitleBarButton> m_minimizeButton;
+
+    QList<TitleBarButton *> m_dockWidgetActionsButtons;
 };
 
 DockTitleBarPrivate::DockTitleBarPrivate()
@@ -67,11 +71,13 @@ void DockTitleBarPrivate::init()
 
 void DockTitleBarPrivate::createTabBar()
 {
+    Q_Q(DockTitleBar);
     m_tabBar = new DockTabBar(m_panel);
     // The horizontal direction uses Expanding instead of Maximum to maximize expansion
     // I don't know why QSizePolicy::Maximum doesn't work good
     m_tabBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_layout->addWidget(m_tabBar);
+    q->connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
 }
 
 void DockTitleBarPrivate::createButtons()
@@ -87,6 +93,13 @@ void DockTitleBarPrivate::createButtons()
     m_tabsMenuButton->setAutoRaise(true);
     m_tabsMenuButton->setPopupMode(QToolButton::InstantPopup);
     internal::setButtonIcon(m_tabsMenuButton, QStyle::SP_TitleBarUnshadeButton, Qx::DockPanelMenuIcon);
+    QMenu *tabsMenu = new QMenu(m_tabsMenuButton);
+#ifndef QT_NO_TOOLTIP
+    tabsMenu->setToolTipsVisible(true);
+#endif
+    q->connect(tabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
+    q->connect(tabsMenu, SIGNAL(triggered(QAction*)), SLOT(onTabsMenuActionTriggered(QAction*)));
+    m_tabsMenuButton->setMenu(tabsMenu);
     internal::setToolTip(m_tabsMenuButton, QObject::tr("List All Tabs"));
     m_tabsMenuButton->setSizePolicy(sp);
     m_layout->addWidget(m_tabsMenuButton, 0);
@@ -167,9 +180,84 @@ QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
     }
 }
 
+void DockTitleBar::updateDockWidgetActionsButtons()
+{
+    Q_D(DockTitleBar);
+    auto tab = d->m_tabBar->currentTab();
+    if (!tab) {
+        return;
+    }
+    DockWidget *w = tab->dockWidget();
+    // clear old buttons
+    if (!d->m_dockWidgetActionsButtons.isEmpty()) {
+        for (auto b : d->m_dockWidgetActionsButtons) {
+            d->m_layout->removeWidget(b);
+            delete b;
+        }
+        d->m_dockWidgetActionsButtons.clear();
+    }
+    auto actions = w->titleBarActions();
+    if (actions.isEmpty()) {
+        return;
+    }
+    int insertIndex = indexOf(d->m_tabsMenuButton);
+    for (auto a: actions) {
+        auto btn = new TitleBarButton(true, false, Qx::TitleBarButtonTabsMenu, this);
+        btn->setDefaultAction(a);
+        btn->setAutoRaise(true);
+        btn->setPopupMode(QToolButton::InstantPopup);
+        btn->setObjectName(a->objectName());
+        d->m_layout->insertWidget(insertIndex++, btn, 0);
+        d->m_dockWidgetActionsButtons.append(btn);
+    }
+}
+
+int DockTitleBar::indexOf(QWidget *widget) const
+{
+    Q_D(const DockTitleBar);
+    return d->m_layout->indexOf(widget);
+}
+
 QString DockTitleBar::titleBarButtonToolTip(Qx::DockTitleBarButton id) const
 {
     return QString();
+}
+
+void DockTitleBar::onTabsMenuAboutToShow()
+{
+    Q_D(DockTitleBar);
+    QMenu *menu = d->m_tabsMenuButton->menu();
+    menu->clear();
+    for (int i = 0; i < d->m_tabBar->count(); ++i) {
+        if (!d->m_tabBar->isTabOpen(i)) {
+            continue;
+        }
+        auto tab = d->m_tabBar->tab(i);
+        QAction *action = menu->addAction(tab->icon(), tab->text());
+        internal::setToolTip(action, tab->toolTip());
+        action->setData(i);
+    }
+}
+
+void DockTitleBar::onTabsMenuActionTriggered(QAction *a)
+{
+    Q_D(DockTitleBar);
+    int index = a->data().toInt();
+    d->m_tabBar->setCurrentIndex(index);
+    Q_EMIT tabBarClicked(index);
+}
+
+void DockTitleBar::onCurrentTabChanged(int index)
+{
+    if (index < 0) {
+        return;
+    }
+    Q_D(DockTitleBar);
+    if (d->testConfigFlag(DockManager::DockAreaCloseButtonClosesTab)) {
+        DockWidget *w = d->m_tabBar->tab(index)->dockWidget();
+        d->m_closeButton->setEnabled(w->features().testFlag(DockWidget::DockWidgetClosable));
+    }
+    updateDockWidgetActionsButtons();
 }
 
 

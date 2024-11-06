@@ -177,6 +177,7 @@ void DockPanelPrivate::init()
     q->setLayout(m_layout);
 
     m_titleBar = new DockTitleBar(q);
+    QObject::connect(m_titleBar, &DockTitleBar::tabBarClicked, q, &DockPanel::setCurrentIndex);
     m_layout->addWidget(m_titleBar);
 
     m_contentsLayout = new DockAreaLayout(m_layout);
@@ -272,9 +273,11 @@ void DockPanel::setCurrentIndex(int index)
         return;
     }
 
+    Q_EMIT currentChanging(index);
     tabBar->setCurrentIndex(index);
     d->m_contentsLayout->setCurrentIndex(index);
     d->m_contentsLayout->currentWidget()->show();
+    Q_EMIT currentChanged(index);
 }
 
 void DockPanel::addDockWidget(DockWidget *w)

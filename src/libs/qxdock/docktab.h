@@ -25,6 +25,12 @@ public:
 
     void setDockPanel(DockPanel *panel);
 
+    DockWidget *dockWidget() const;
+
+    const QIcon &icon() const;
+
+    QString text() const;
+
 private:
     QX_DECLARE_PRIVATE(DockTab)
 };

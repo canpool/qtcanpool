@@ -25,14 +25,19 @@ public:
 
     int count() const;
 
+    DockTab *currentTab() const;
     DockTab *tab(int index) const;
+
+    bool isTabOpen(int index) const;
 
     virtual QSize minimumSizeHint() const override;
     virtual QSize sizeHint() const override;
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
-
+Q_SIGNALS:
+    void currentChanging(int index);
+    void currentChanged(int index);
 private:
     QX_DECLARE_PRIVATE(DockTabBar)
 };
