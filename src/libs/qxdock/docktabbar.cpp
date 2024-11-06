@@ -76,7 +76,6 @@ DockTabBar::DockTabBar(DockPanel *parent)
     setWidgetResizable(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setFocusPolicy(Qt::NoFocus);
 }
 
@@ -111,6 +110,22 @@ DockTab *DockTabBar::tab(int index) const
     }
     Q_D(const DockTabBar);
     return qobject_cast<DockTab *>(d->m_tabsLayout->itemAt(index)->widget());
+}
+
+QSize DockTabBar::minimumSizeHint() const
+{
+    QSize Size = sizeHint();
+    Size.setWidth(10);
+    return Size;
+}
+
+QSize DockTabBar::sizeHint() const
+{
+    Q_D(const DockTabBar);
+    // Limit the size of the entire QScrollArea based on the size of the widgets in the container,
+    // otherwise the size of the QScrollArea will be large.
+    // Notes: setting SizePolicy alone will not make the size smaller.
+    return d->m_tabsContainerWidget->sizeHint();
 }
 
 void DockTabBar::setCurrentIndex(int index)

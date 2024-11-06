@@ -27,6 +27,9 @@ public:
 
     DockTab *tab(int index) const;
 
+    virtual QSize minimumSizeHint() const override;
+    virtual QSize sizeHint() const override;
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
 
