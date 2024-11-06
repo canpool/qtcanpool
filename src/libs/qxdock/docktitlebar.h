@@ -36,8 +36,10 @@ private Q_SLOTS:
     void onTabsMenuAboutToShow();
     void onTabsMenuActionTriggered(QAction *a);
     void onCurrentTabChanged(int index);
+
 Q_SIGNALS:
     void tabBarClicked(int index);
+
 private:
     QX_DECLARE_PRIVATE(DockTitleBar)
 };

@@ -78,6 +78,7 @@ void DockTitleBarPrivate::createTabBar()
     m_tabBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_layout->addWidget(m_tabBar);
     q->connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
+    q->connect(m_tabBar, SIGNAL(tabBarClicked(int)), SIGNAL(tabBarClicked(int)));
 }
 
 void DockTitleBarPrivate::createButtons()

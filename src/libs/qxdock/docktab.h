@@ -18,6 +18,8 @@ class QX_DOCK_EXPORT DockTab : public QWidget
 {
     Q_OBJECT
 public:
+    using Super = QWidget;
+public:
     explicit DockTab(DockWidget *w, QWidget *parent = nullptr);
     virtual ~DockTab();
 
@@ -36,6 +38,11 @@ public:
 
 Q_SIGNALS:
     void activeTabChanged();
+    void clicked();
+
+protected:
+    virtual void mousePressEvent(QMouseEvent *e) override;
+    virtual void mouseReleaseEvent(QMouseEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTab)

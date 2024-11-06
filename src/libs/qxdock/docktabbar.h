@@ -35,9 +35,15 @@ public:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
+
+private Q_SLOTS:
+    void onTabClicked();
+
 Q_SIGNALS:
     void currentChanging(int index);
     void currentChanged(int index);
+    void tabBarClicked(int index);
+
 private:
     QX_DECLARE_PRIVATE(DockTabBar)
 };

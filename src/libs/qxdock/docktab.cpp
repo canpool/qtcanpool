@@ -13,6 +13,7 @@
 #include <QBoxLayout>
 #include <QToolButton>
 #include <QPushButton>
+#include <QMouseEvent>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -187,6 +188,21 @@ QString DockTab::text() const
 void DockTab::updateStyle()
 {
     internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+void DockTab::mousePressEvent(QMouseEvent *e)
+{
+    if (e->button() == Qt::LeftButton) {
+        e->accept();
+        Q_EMIT clicked();
+        return;
+    }
+    Super::mousePressEvent(e);
+}
+
+void DockTab::mouseReleaseEvent(QMouseEvent *e)
+{
+    Super::mouseReleaseEvent(e);
 }
 
 QX_DOCK_END_NAMESPACE
