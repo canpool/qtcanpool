@@ -35,6 +35,7 @@ public:
 
     DockSplitter *newSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
     void updateSplitterHandles(QSplitter *s);
+    void adjustSplitterSizesOnInsertion(QSplitter *s, qreal lastRatio = 1.0);
 
     bool widgetResizesWithContainer(QWidget *w);
 
@@ -98,6 +99,19 @@ void DockContainerPrivate::updateSplitterHandles(QSplitter *s)
     }
 }
 
+void DockContainerPrivate::adjustSplitterSizesOnInsertion(QSplitter *s, qreal lastRatio)
+{
+    int areaSize = (s->orientation() == Qt::Horizontal) ? s->width() : s->height();
+    auto splitterSizes = s->sizes();
+
+    qreal totRatio = splitterSizes.size() - 1.0 + lastRatio;
+    for (int i = 0; i < splitterSizes.size() -1; i++) {
+        splitterSizes[i] = areaSize / totRatio;
+    }
+    splitterSizes.back() = areaSize * lastRatio / totRatio;
+    s->setSizes(splitterSizes);
+}
+
 bool DockContainerPrivate::widgetResizesWithContainer(QWidget *w)
 {
     if (!m_window->centralWidget()) {
@@ -139,9 +153,14 @@ DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, D
 
     auto param = internal::dockAreaInsertParameters(area);
     auto targetSplitter = targetPanel->parentSplitter();
+    // use target index instead of parameter index
+    index = targetSplitter ->indexOf(targetPanel);
     if (targetSplitter->orientation() == param.orientation()) {
         targetSplitter->insertWidget(index + param.insertOffset(), np);
         updateSplitterHandles(targetSplitter);
+        if (DockManager::testConfigFlag(DockManager::EqualSplitOnInsertion)) {
+            adjustSplitterSizesOnInsertion(targetSplitter);
+        }
     } else {
         auto sizes = targetSplitter->sizes();
         auto ns = newSplitter(param.orientation());
@@ -150,6 +169,10 @@ DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, D
         updateSplitterHandles(ns);
         targetSplitter->insertWidget(index, ns);
         updateSplitterHandles(targetSplitter);
+        if (DockManager::testConfigFlag(DockManager::EqualSplitOnInsertion)) {
+            targetSplitter->setSizes(sizes);
+            adjustSplitterSizesOnInsertion(ns);
+        }
     }
     addDockPanelsToList({np});
     return np;
@@ -221,6 +244,10 @@ DockContainer::DockContainer(DockWindow *window, QWidget *parent)
 
 DockContainer::~DockContainer()
 {
+    Q_D(DockContainer);
+    if (d->m_window) {
+        d->m_window->removeDockContainer(this);
+    }
     QX_FINI_PRIVATE()
 }
 

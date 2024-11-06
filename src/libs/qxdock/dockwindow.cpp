@@ -29,6 +29,7 @@ DockWindow::DockWindow(QWidget *parent)
 {
     QX_INIT_PRIVATE(DockWindow)
     createRootSplitter();
+    registerDockContainer(this);
 }
 
 DockWindow::~DockWindow()
@@ -72,6 +73,14 @@ void DockWindow::registerDockContainer(DockContainer *container)
 {
     Q_D(DockWindow);
     d->m_containers.append(container);
+}
+
+void DockWindow::removeDockContainer(DockContainer *container)
+{
+    Q_D(DockWindow);
+    if (this != container) {
+        d->m_containers.removeAll(container);
+    }
 }
 
 QX_DOCK_END_NAMESPACE

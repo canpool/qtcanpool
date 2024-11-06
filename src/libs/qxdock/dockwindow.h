@@ -30,6 +30,7 @@ Q_SIGNALS:
 
 protected:
     void registerDockContainer(DockContainer *container);
+    void removeDockContainer(DockContainer *container);
 
 private:
     QX_DECLARE_PRIVATE(DockWindow)

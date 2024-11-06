@@ -26,6 +26,7 @@ public:
         DockAreaHasTabsMenuButton = 0x8000,
 
         FocusHighlighting = 0x200000,
+        EqualSplitOnInsertion = 0x400000,
 
         ShowTabTextOnlyForActiveTab = 0x8000000,
 
