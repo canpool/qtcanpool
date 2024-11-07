@@ -352,7 +352,9 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
     }
     // If this dock area is hidden, then we need to make it visible again
     // by calling DockWidget->toggleViewInternal(true);
-    if (!this->isVisible() && d->m_contentsLayout->count() > 1) {
+    if (!this->isVisible() && d->m_contentsLayout->count() > 0) {
+        // Notes: If d->m_contentsLayout->count() > 1 is required, it will appear
+        // that the toggleViewAction is not checked when there is only one dock widget
         w->toggleViewInternal(true);
     }
 }
