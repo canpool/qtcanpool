@@ -64,6 +64,7 @@ public:
 public Q_SLOTS:
     void toggleView(bool open = true);
     void deleteDockWidget();
+    void requestCloseDockWidget();
 
 Q_SIGNALS:
     void viewToggled(bool open);

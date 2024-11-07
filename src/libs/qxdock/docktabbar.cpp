@@ -89,6 +89,7 @@ void DockTabBar::insertTab(int index, DockTab *tab)
     Q_D(DockTabBar);
     d->m_tabsLayout->insertWidget(index, tab);
     connect(tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+    connect(tab, SIGNAL(closeRequested()), this, SLOT(onTabCloseRequested()));
     if (index <= d->m_currentIndex) {
         setCurrentIndex(d->m_currentIndex + 1);
     } else if (d->m_currentIndex == -1) {
@@ -201,6 +202,14 @@ void DockTabBar::onTabClicked()
     }
     setCurrentIndex(index);
     Q_EMIT tabBarClicked(index);
+}
+
+void DockTabBar::onTabCloseRequested()
+{
+    Q_D(DockTabBar);
+    DockTab *tab = qobject_cast<DockTab*>(sender());
+    int index = d->m_tabsLayout->indexOf(tab);
+    closeTab(index);
 }
 
 QX_DOCK_END_NAMESPACE

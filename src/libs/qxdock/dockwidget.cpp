@@ -227,6 +227,16 @@ void DockWidget::deleteDockWidget()
     }
 }
 
+void DockWidget::requestCloseDockWidget()
+{
+    if (features().testFlag(DockWidget::DockWidgetDeleteOnClose)
+        || features().testFlag(DockWidget::CustomCloseHandling)) {
+        closeDockWidgetInternal(false);
+    } else {
+        toggleView(false);
+    }
+}
+
 void DockWidget::setDockWindow(DockWindow *window)
 {
     Q_D(DockWidget);

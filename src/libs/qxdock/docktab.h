@@ -39,6 +39,7 @@ public:
 Q_SIGNALS:
     void activeTabChanged();
     void clicked();
+    void closeRequested();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;

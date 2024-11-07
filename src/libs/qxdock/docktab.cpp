@@ -59,6 +59,14 @@ void DockTabPrivate::init()
     m_closeButton->setFocusPolicy(Qt::NoFocus);
     updateCloseButtonSizePolicy();
     internal::setToolTip(m_closeButton, QObject::tr("Close Tab"));
+    // DockTab and DockWidget are partners. When a DockWidget is created, a DockTab is created.
+    // The associated DockTab can be obtained through the tab() interface of the DockWidget.
+    //  closeButton -> clicked()
+    //  DockTab -> closeRequested()
+    //  DockTabBar -> onTabCloseRequested() -> tabCloseRequested(index)
+    //  DockPanel -> onTabCloseRequested(index)
+    //  DockWidget -> requestCloseDockWidget()
+    q->connect(m_closeButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
 
     QFontMetrics fm(m_label->font());
     int spacing = qRound(fm.height() / 4.0);

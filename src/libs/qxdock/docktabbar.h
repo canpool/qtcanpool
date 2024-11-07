@@ -42,6 +42,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onTabClicked();
+    void onTabCloseRequested();
 
 Q_SIGNALS:
     void currentChanging(int index);

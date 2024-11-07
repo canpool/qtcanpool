@@ -53,6 +53,9 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void toggleView(bool open);
 
+private Q_SLOTS:
+    void onTabCloseRequested(int index);
+
 Q_SIGNALS:
     void currentChanging(int index);
     void currentChanged(int index);

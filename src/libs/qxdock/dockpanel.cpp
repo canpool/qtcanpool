@@ -178,6 +178,7 @@ void DockPanelPrivate::init()
 
     m_titleBar = new DockTitleBar(q);
     QObject::connect(m_titleBar, &DockTitleBar::tabBarClicked, q, &DockPanel::setCurrentIndex);
+    QObject::connect(tabBar(), &DockTabBar::tabCloseRequested, q, &DockPanel::onTabCloseRequested);
     m_layout->addWidget(m_titleBar);
 
     m_contentsLayout = new DockAreaLayout(m_layout);
@@ -342,6 +343,11 @@ void DockPanel::toggleView(bool open)
 {
     setVisible(open);
     Q_EMIT viewToggled(open);
+}
+
+void DockPanel::onTabCloseRequested(int index)
+{
+    dockWidget(index)->requestCloseDockWidget();
 }
 
 void DockPanel::addDockWidget(DockWidget *w)
