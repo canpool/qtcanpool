@@ -97,11 +97,22 @@ void DockTabBar::insertTab(int index, DockTab *tab)
     updateGeometry();
 }
 
+void DockTabBar::removeTab(DockTab *tab)
+{
+
+}
+
 int DockTabBar::count() const
 {
     Q_D(const DockTabBar);
     // The tab bar contains a stretch item as last item
     return d->m_tabsLayout->count() - 1;
+}
+
+int DockTabBar::currentIndex() const
+{
+    Q_D(const DockTabBar);
+    return d->m_currentIndex;
 }
 
 DockTab *DockTabBar::currentTab() const
@@ -162,6 +173,19 @@ void DockTabBar::setCurrentIndex(int index)
     d->updateTabs();
     updateGeometry();
     Q_EMIT currentChanged(index);
+}
+
+void DockTabBar::closeTab(int index)
+{
+    if (index < 0 || index >= count()) {
+        return;
+    }
+
+    auto tab = this->tab(index);
+    if (tab->isHidden()) {
+        return;
+    }
+    Q_EMIT tabCloseRequested(index);
 }
 
 void DockTabBar::onTabClicked()

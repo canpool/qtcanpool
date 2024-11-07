@@ -133,6 +133,12 @@ DockWidget::DockWidgetFeatures DockWidget::features() const
     return d->m_features;
 }
 
+DockWindow *DockWidget::dockWindow() const
+{
+    Q_D(const DockWidget);
+    return d->m_window;
+}
+
 DockContainer *DockWidget::dockContainer() const
 {
     Q_D(const DockWidget);
@@ -141,6 +147,12 @@ DockContainer *DockWidget::dockContainer() const
     } else {
         return nullptr;
     }
+}
+
+DockPanel *DockWidget::dockPanel() const
+{
+    Q_D(const DockWidget);
+    return d->m_panel;
 }
 
 bool DockWidget::isClosed() const
@@ -207,6 +219,14 @@ void DockWidget::toggleView(bool open)
     }
 }
 
+void DockWidget::deleteDockWidget()
+{
+    Q_D(DockWidget);
+    if (d->m_window) {
+        d->m_window->removeDockWidget(this);
+    }
+}
+
 void DockWidget::setDockWindow(DockWindow *window)
 {
     Q_D(DockWidget);
@@ -246,6 +266,25 @@ void DockWidget::toggleViewInternal(bool open)
         Q_EMIT closed();
     }
     Q_EMIT viewToggled(open);
+}
+
+bool DockWidget::closeDockWidgetInternal(bool forceClose)
+{
+    Q_D(DockWidget);
+
+    if (!forceClose) {
+        Q_EMIT closeRequested();
+    }
+    if (!forceClose && features().testFlag(DockWidget::CustomCloseHandling)) {
+        return false;
+    }
+    if (features().testFlag(DockWidget::DockWidgetDeleteOnClose)) {
+        deleteDockWidget();
+        Q_EMIT closed();
+    } else {
+        toggleView(false);
+    }
+    return true;
 }
 
 QX_DOCK_END_NAMESPACE

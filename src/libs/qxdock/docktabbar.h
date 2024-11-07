@@ -22,8 +22,11 @@ public:
     virtual ~DockTabBar();
 
     void insertTab(int index, DockTab *tab);
+    void removeTab(DockTab *tab);
 
     int count() const;
+
+    int currentIndex() const;
 
     DockTab *currentTab() const;
     DockTab *tab(int index) const;
@@ -35,6 +38,7 @@ public:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
+    void closeTab(int index);
 
 private Q_SLOTS:
     void onTabClicked();
@@ -43,6 +47,7 @@ Q_SIGNALS:
     void currentChanging(int index);
     void currentChanged(int index);
     void tabBarClicked(int index);
+    void tabCloseRequested(int index);
 
 private:
     QX_DECLARE_PRIVATE(DockTabBar)

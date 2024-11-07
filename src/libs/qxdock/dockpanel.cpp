@@ -318,6 +318,26 @@ void DockPanel::setCurrentIndex(int index)
     Q_EMIT currentChanged(index);
 }
 
+void DockPanel::closeArea()
+{
+    auto openWidgets = openedDockWidgets();
+    if (openWidgets.count() == 1 &&
+        (openWidgets[0]->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
+         openWidgets[0]->features().testFlag(DockWidget::CustomCloseHandling))) {
+        openWidgets[0]->closeDockWidgetInternal();
+    } else {
+        for (auto w : openWidgets) {
+            if ((w->features().testFlag(DockWidget::DockWidgetDeleteOnClose) &&
+                 w->features().testFlag(DockWidget::DockWidgetForceCloseWithArea)) ||
+                w->features().testFlag(DockWidget::CustomCloseHandling)) {
+                w->closeDockWidgetInternal();
+            } else {
+                w->toggleView(false);
+            }
+        }
+    }
+}
+
 void DockPanel::toggleView(bool open)
 {
     setVisible(open);
@@ -356,6 +376,33 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
         // Notes: If d->m_contentsLayout->count() > 1 is required, it will appear
         // that the toggleViewAction is not checked when there is only one dock widget
         w->toggleViewInternal(true);
+    }
+}
+
+void DockPanel::removeDockWidget(DockWidget *w)
+{
+    if (!w) {
+        return;
+    }
+    auto currentWidget = currentDockWidget();
+    auto nextOpenWidget = (w == currentWidget) ? nextOpenDockWidget(w) : nullptr;
+
+    Q_D(DockPanel);
+    d->m_contentsLayout->removeWidget(w);
+    auto tab = w->tab();
+    tab->hide();
+    d->tabBar()->removeTab(tab);
+    tab->setParent(w);
+    w->setDockPanel(nullptr);
+
+    DockContainer *container = dockContainer();
+    if (nextOpenWidget) {
+        setCurrentDockWidget(nextOpenWidget);
+    } else if (d->m_contentsLayout->isEmpty() && container->dockPanelCount() >= 1) {
+        container->removeDockPanel(this);
+        this->deleteLater();
+    } else if (w == currentWidget) {
+        hideAreaWithNoVisibleContent();
     }
 }
 

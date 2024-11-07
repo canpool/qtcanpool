@@ -36,6 +36,7 @@ private Q_SLOTS:
     void onTabsMenuAboutToShow();
     void onTabsMenuActionTriggered(QAction *a);
     void onCurrentTabChanged(int index);
+    void onCloseButtonClicked();
 
 Q_SIGNALS:
     void tabBarClicked(int index);

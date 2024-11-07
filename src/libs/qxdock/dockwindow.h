@@ -22,11 +22,14 @@ public:
     ~DockWindow();
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
+    void removeDockWidget(DockWidget *w);
 
     DockWidget *centralWidget() const;
 
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
+    void dockWidgetAboutToBeRemoved(DockWidget *w);
+    void dockWidgetRemoved(DockWidget *w);
 
 protected:
     void registerDockContainer(DockContainer *container);

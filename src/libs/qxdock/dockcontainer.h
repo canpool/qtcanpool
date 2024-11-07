@@ -23,12 +23,17 @@ public:
     virtual ~DockContainer();
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
+    void removeDockWidget(DockWidget *w);
+
+    int dockPanelCount() const;
 
 protected:
     void createRootSplitter();
+    void removeDockPanel(DockPanel *panel);
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)
+    friend class DockPanel;
 };
 
 QX_DOCK_END_NAMESPACE

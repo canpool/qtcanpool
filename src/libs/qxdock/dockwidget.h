@@ -24,8 +24,13 @@ public:
         DockWidgetClosable = 0x001,
         DockWidgetMovable = 0x002,
         DockWidgetFloatable = 0x004,
+        DockWidgetDeleteOnClose = 0x008,
+        CustomCloseHandling = 0x010,
+        DockWidgetForceCloseWithArea = 0x040,
         NoTab = 0x080,
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
+        AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
+        DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
         NoDockWidgetFeatures = 0x000
     };
     Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
@@ -43,7 +48,9 @@ public:
 
     DockWidgetFeatures features() const;
 
+    DockWindow *dockWindow() const;
     DockContainer *dockContainer() const;
+    DockPanel *dockPanel() const;
 
     bool isClosed() const;
 
@@ -56,9 +63,11 @@ public:
 
 public Q_SLOTS:
     void toggleView(bool open = true);
+    void deleteDockWidget();
 
 Q_SIGNALS:
     void viewToggled(bool open);
+    void closeRequested();
     void closed();
 
 protected:
@@ -66,11 +75,13 @@ protected:
     void setDockPanel(DockPanel *panel);
     void setClosedState(bool closed);
     void toggleViewInternal(bool open);
+    bool closeDockWidgetInternal(bool forceClose = false);
 
 private:
     QX_DECLARE_PRIVATE(DockWidget)
     friend class DockContainer;
     friend class DockPanel;
+    friend class DockWindow;
 };
 
 QX_DOCK_END_NAMESPACE

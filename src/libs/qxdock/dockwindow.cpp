@@ -63,6 +63,15 @@ DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, Doc
     return panel;
 }
 
+void DockWindow::removeDockWidget(DockWidget *w)
+{
+    Q_D(DockWindow);
+    Q_EMIT dockWidgetAboutToBeRemoved(w);
+    DockContainer::removeDockWidget(w);
+    w->setDockWindow(nullptr);
+    Q_EMIT dockWidgetRemoved(w);
+}
+
 DockWidget *DockWindow::centralWidget() const
 {
     Q_D(const DockWindow);

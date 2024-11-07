@@ -265,10 +265,29 @@ DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, 
     return panel;
 }
 
+void DockContainer::removeDockWidget(DockWidget *w)
+{
+    DockPanel *panel = w->dockPanel();
+    if (panel) {
+        panel->removeDockWidget(w);
+    }
+}
+
+int DockContainer::dockPanelCount() const
+{
+    Q_D(const DockContainer);
+    return d->m_panels.count();
+}
+
 void DockContainer::createRootSplitter()
 {
     Q_D(DockContainer);
     d->createRootSplitter();
+}
+
+void DockContainer::removeDockPanel(DockPanel *panel)
+{
+
 }
 
 QX_DOCK_END_NAMESPACE

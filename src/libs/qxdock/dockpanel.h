@@ -48,6 +48,7 @@ public:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
+    void closeArea();
 
 protected Q_SLOTS:
     void toggleView(bool open);
@@ -60,6 +61,7 @@ Q_SIGNALS:
 protected:
     void addDockWidget(DockWidget *w);
     void insertDockWidget(int index, DockWidget *w, bool activate = true);
+    void removeDockWidget(DockWidget *w);
     DockWidget *nextOpenDockWidget(DockWidget *w) const;
     void toggleDockWidgetView(DockWidget *w, bool open);
     int indexOf(DockWidget *w) const;
@@ -71,6 +73,7 @@ private:
     friend class DockContainerPrivate;
     friend class DockWidget;
     friend class DockWidgetPrivate;
+    friend class DockContainer;
 };
 
 QX_DOCK_END_NAMESPACE

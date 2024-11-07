@@ -135,6 +135,7 @@ void DockTitleBarPrivate::createButtons()
     m_closeButton->setSizePolicy(sp);
     m_closeButton->setIconSize(QSize(16, 16));
     m_layout->addWidget(m_closeButton, 0);
+    q->connect(m_closeButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
 
 bool DockTitleBarPrivate::testConfigFlag(DockManager::ConfigFlag flag)
@@ -259,6 +260,16 @@ void DockTitleBar::onCurrentTabChanged(int index)
         d->m_closeButton->setEnabled(w->features().testFlag(DockWidget::DockWidgetClosable));
     }
     updateDockWidgetActionsButtons();
+}
+
+void DockTitleBar::onCloseButtonClicked()
+{
+    Q_D(DockTitleBar);
+    if (d->testConfigFlag(DockManager::DockAreaCloseButtonClosesTab)) {
+        d->m_tabBar->closeTab(d->m_tabBar->currentIndex());
+    } else {
+        d->m_panel->closeArea();
+    }
 }
 
 
