@@ -32,23 +32,45 @@ public:
 
     int dockWidgetsCount() const;
     QList<DockWidget *> dockWidgets() const;
+    QList<DockWidget *> openedDockWidgets() const;
     DockWidget *dockWidget(int index) const;
 
+    int currentIndex() const;
+
+    DockWidget *currentDockWidget() const;
+    void setCurrentDockWidget(DockWidget *w);
+
     QAbstractButton *titleBarButton(Qx::DockTitleBarButton which) const;
+
+    virtual void setVisible(bool visible) override;
 
     bool isCentralWidgetArea() const;
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
+
+protected Q_SLOTS:
+    void toggleView(bool open);
+
 Q_SIGNALS:
     void currentChanging(int index);
     void currentChanged(int index);
+    void viewToggled(bool open);
+
 protected:
     void addDockWidget(DockWidget *w);
     void insertDockWidget(int index, DockWidget *w, bool activate = true);
+    DockWidget *nextOpenDockWidget(DockWidget *w) const;
+    void toggleDockWidgetView(DockWidget *w, bool open);
+    int indexOf(DockWidget *w) const;
+    void hideAreaWithNoVisibleContent();
+    void internalSetCurrentDockWidget(DockWidget *w);
+
 private:
     QX_DECLARE_PRIVATE(DockPanel)
     friend class DockContainerPrivate;
+    friend class DockWidget;
+    friend class DockWidgetPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

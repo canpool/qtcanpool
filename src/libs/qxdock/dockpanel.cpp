@@ -237,16 +237,54 @@ QList<DockWidget *> DockPanel::dockWidgets() const
     return dwList;
 }
 
+QList<DockWidget *> DockPanel::openedDockWidgets() const
+{
+    Q_D(const DockPanel);
+    QList<DockWidget *> dwList;
+    for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
+        DockWidget *w = dockWidget(i);
+        if (w && !w->isClosed()) {
+            dwList.append(dockWidget(i));
+        }
+    }
+    return dwList;
+}
+
 DockWidget *DockPanel::dockWidget(int index) const
 {
     Q_D(const DockPanel);
     return qobject_cast<DockWidget *>(d->m_contentsLayout->widget(index));
 }
 
+int DockPanel::currentIndex() const
+{
+    Q_D(const DockPanel);
+    return d->m_contentsLayout->currentIndex();
+}
+
+DockWidget *DockPanel::currentDockWidget() const
+{
+    int index = currentIndex();
+    if (index < 0) {
+        return nullptr;
+    }
+    return dockWidget(index);
+}
+
+void DockPanel::setCurrentDockWidget(DockWidget *w)
+{
+    internalSetCurrentDockWidget(w);
+}
+
 QAbstractButton *DockPanel::titleBarButton(Qx::DockTitleBarButton which) const
 {
     Q_D(const DockPanel);
     return d->m_titleBar->button(which);
+}
+
+void DockPanel::setVisible(bool visible)
+{
+    QWidget::setVisible(visible);
 }
 
 bool DockPanel::isCentralWidgetArea() const
@@ -280,6 +318,12 @@ void DockPanel::setCurrentIndex(int index)
     Q_EMIT currentChanged(index);
 }
 
+void DockPanel::toggleView(bool open)
+{
+    setVisible(open);
+    Q_EMIT viewToggled(open);
+}
+
 void DockPanel::addDockWidget(DockWidget *w)
 {
     Q_D(DockPanel);
@@ -299,9 +343,92 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
     d->tabBar()->blockSignals(true);
     d->tabBar()->insertTab(index, tab);
     d->tabBar()->blockSignals(false);
+    tab->setVisible(!w->isClosed());
     if (activate) {
         setCurrentIndex(index);
+        // Set current index can show the widget without changing the close state,
+        // added to keep the close state consistent
+        w->setClosedState(false);
     }
+    // If this dock area is hidden, then we need to make it visible again
+    // by calling DockWidget->toggleViewInternal(true);
+    if (!this->isVisible() && d->m_contentsLayout->count() > 1) {
+        w->toggleViewInternal(true);
+    }
+}
+
+DockWidget *DockPanel::nextOpenDockWidget(DockWidget *w) const
+{
+    auto openWidgets = openedDockWidgets();
+
+    if (openWidgets.count() > 1 || (openWidgets.count() == 1 && openWidgets[0] != w)) {
+        if (openWidgets.last() == w) {
+            DockWidget *nextDockWidget = openWidgets[openWidgets.count() - 2];
+            // search backwards for widget with tab
+            for (int i = openWidgets.count() - 2; i >= 0; --i) {
+                auto dw = openWidgets[i];
+                if (!dw->features().testFlag(DockWidget::NoTab)) {
+                    return dw;
+                }
+            }
+            // return widget without tab
+            return nextDockWidget;
+        } else {
+            int indexOfDockWidget = openWidgets.indexOf(w);
+            DockWidget *nextDockWidget = openWidgets[indexOfDockWidget + 1];
+            // search forwards for widget with tab
+            for (int i = indexOfDockWidget + 1; i < openWidgets.count(); ++i) {
+                auto dw = openWidgets[i];
+                if (!dw->features().testFlag(DockWidget::NoTab)) {
+                    return dw;
+                }
+            }
+
+            // search backwards for widget with tab
+            for (int i = indexOfDockWidget - 1; i >= 0; --i) {
+                auto dw = openWidgets[i];
+                if (!dw->features().testFlag(DockWidget::NoTab)) {
+                    return dw;
+                }
+            }
+
+            // return widget without tab
+            return nextDockWidget;
+        }
+    } else {
+        return nullptr;
+    }
+}
+
+void DockPanel::toggleDockWidgetView(DockWidget *w, bool open)
+{
+
+}
+
+int DockPanel::indexOf(DockWidget *w) const
+{
+    Q_D(const DockPanel);
+    return d->m_contentsLayout->indexOf(w);
+}
+
+void DockPanel::hideAreaWithNoVisibleContent()
+{
+    this->toggleView(false);
+
+    // Hide empty parent splitters
+    auto splitter = parentSplitter();
+    internal::hideEmptyParentSplitters(splitter);
+}
+
+void DockPanel::internalSetCurrentDockWidget(DockWidget *w)
+{
+    int index = indexOf(w);
+    if (index < 0) {
+        return;
+    }
+    setCurrentIndex(index);
+    // Set current index can show the widget without changing the close state, added to keep the close state consistent
+    w->setClosedState(false);
 }
 
 QX_DOCK_END_NAMESPACE

@@ -11,6 +11,8 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockSplitter;
+
 namespace internal {
 
 template <class T>
@@ -55,6 +57,8 @@ T findParent(const QWidget *w)
 QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity);
 
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId);
+
+void hideEmptyParentSplitters(DockSplitter *firstParentSplitter);
 
 
 class DockInsertParam : public QPair<Qt::Orientation, bool>

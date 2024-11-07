@@ -5,6 +5,7 @@
 
 #include "dockutils.h"
 #include "dockmanager.h"
+#include "docksplitter.h"
 
 #include <QPainter>
 
@@ -75,6 +76,16 @@ void repolishStyle(QWidget *w, RepolishChildOptions options)
     for (auto c : childrens) {
         c->style()->unpolish(c);
         c->style()->polish(c);
+    }
+}
+
+void hideEmptyParentSplitters(DockSplitter *splitter)
+{
+    while (splitter && splitter->isVisible()) {
+        if (!splitter->hasVisibleContent()) {
+            splitter->hide();
+        }
+        splitter = internal::findParent<DockSplitter *>(splitter);
     }
 }
 

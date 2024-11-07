@@ -38,6 +38,18 @@ DockSplitter::~DockSplitter()
     QX_FINI_PRIVATE()
 }
 
+bool DockSplitter::hasVisibleContent() const
+{
+    // TODO Cache or precalculate this to speed up
+    for (int i = 0; i < count(); ++i) {
+        if (!widget(i)->isHidden()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool DockSplitter::isResizingWithContainer() const
 {
     for (auto panel : findChildren<DockPanel *>()) {
