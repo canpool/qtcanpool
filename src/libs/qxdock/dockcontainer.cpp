@@ -36,6 +36,7 @@ public:
 
     void onVisibleDockAreaCountChanged();
     void emitDockAreasRemoved();
+    void emitDockAreasAdded();
 
     DockSplitter *newSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
     void updateSplitterHandles(QSplitter *s);
@@ -109,6 +110,13 @@ void DockContainerPrivate::emitDockAreasRemoved()
     Q_EMIT q->dockAreasRemoved();
 }
 
+void DockContainerPrivate::emitDockAreasAdded()
+{
+    Q_Q(DockContainer);
+    onVisibleDockAreaCountChanged();
+    Q_EMIT q->dockAreasAdded();
+}
+
 DockSplitter *DockContainerPrivate::newSplitter(Qt::Orientation orientation, QWidget *parent)
 {
     DockSplitter *s = new DockSplitter(orientation, parent);
@@ -164,8 +172,9 @@ DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea are
 {
     Q_Q(DockContainer);
     DockPanel *panel = new DockPanel(m_window, q);
-    addDockPanel(panel, area);
     panel->addDockWidget(w);
+    addDockPanel(panel, area);
+    panel->updateTitleBarVisibility();
     return panel;
 }
 
@@ -242,10 +251,19 @@ void DockContainerPrivate::addDockPanel(DockPanel *np, Qx::DockWidgetArea area)
 
 void DockContainerPrivate::addDockPanelsToList(const QList<DockPanel *> ps)
 {
+    int beforeCount = m_panels.count();
+    int newCount = ps.count();
     appendPanels(ps);
     for (auto p : ps) {
         p->titleBarButton(Qx::TitleBarButtonClose)->setVisible(true);
     }
+    if (beforeCount == 1) {
+        m_panels[0]->updateTitleBarVisibility();
+    }
+    if (newCount == 1) {
+        m_panels[0]->updateTitleBarVisibility();
+    }
+    emitDockAreasAdded();
 }
 
 void DockContainerPrivate::appendPanels(const QList<DockPanel *> ps)
@@ -283,6 +301,11 @@ DockContainer::~DockContainer()
 DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
 {
     Q_D(DockContainer);
+    auto topLevelWidget = topLevelDockWidget();
+    DockPanel *oldPanel = w->dockPanel();
+    if (oldPanel) {
+        oldPanel->removeDockWidget(w);
+    }
     w->setDockWindow(d->m_window);
 
     DockPanel *panel = nullptr;
@@ -290,6 +313,15 @@ DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, 
         panel = d->addDockWidgetToPanel(area, w, p, index);
     } else {
         panel = d->addDockWidgetToContainer(area, w);
+    }
+    if (topLevelWidget) {
+        auto newTopLevelWidget = topLevelDockWidget();
+        // If the container contained only one visible dock widget, the we need
+        // to emit a top level event for this widget because it is not the one and
+        // only visible docked widget anymore
+        if (!newTopLevelWidget) {
+            DockWidget::emitTopLevelEventForWidget(topLevelWidget, false);
+        }
     }
     return panel;
 }
