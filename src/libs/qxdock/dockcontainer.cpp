@@ -273,6 +273,36 @@ void DockContainer::removeDockWidget(DockWidget *w)
     }
 }
 
+DockPanel *DockContainer::dockPanel(int index) const
+{
+    Q_D(const DockContainer);
+    return (index < dockPanelCount()) ? d->m_panels[index] : nullptr;
+}
+
+QList<DockPanel *> DockContainer::openedDockPanels() const
+{
+    Q_D(const DockContainer);
+    QList<DockPanel *> result;
+    for (const auto p : d->m_panels) {
+        if (p && !p->isHidden()) {
+            result.append(p);
+        }
+    }
+    return result;
+}
+
+QList<DockWidget *> DockContainer::openedDockWidgets() const
+{
+    Q_D(const DockContainer);
+    QList<DockWidget *> result;
+    for (const auto p : d->m_panels) {
+        if (p && !p->isHidden()) {
+            result.append(p->openedDockWidgets());
+        }
+    }
+    return result;
+}
+
 int DockContainer::dockPanelCount() const
 {
     Q_D(const DockContainer);
@@ -287,12 +317,39 @@ void DockContainer::createRootSplitter()
 
 void DockContainer::addDockPanel(DockPanel *panel, Qx::DockWidgetArea area)
 {
-
+    Q_D(DockContainer);
+    DockContainer *container = panel->dockContainer();
+    if (container && container != this) {
+        container->removeDockPanel(panel);
+    }
+    d->addDockPanel(panel, area);
 }
 
 void DockContainer::removeDockPanel(DockPanel *panel)
 {
 
+}
+
+DockWidget *DockContainer::topLevelDockWidget() const
+{
+    auto panel = topLevelDockPanel();
+    if (!panel) {
+        return nullptr;
+    }
+    auto widgets = panel->openedDockWidgets();
+    if (widgets.count() != 1) {
+        return nullptr;
+    }
+    return widgets[0];
+}
+
+DockPanel *DockContainer::topLevelDockPanel() const
+{
+    auto panels = openedDockPanels();
+    if (panels.count() != 1) {
+        return nullptr;
+    }
+    return panels[0];
 }
 
 QX_DOCK_END_NAMESPACE

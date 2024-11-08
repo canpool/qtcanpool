@@ -14,6 +14,8 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindow;
 class DockPanel;
+class DockWidget;
+class DockContainer;
 
 class DockFloatingContainerPrivate;
 
@@ -28,6 +30,10 @@ public:
     explicit DockFloatingContainer(DockPanel *panel);
     virtual ~DockFloatingContainer();
 
+    DockContainer *dockContainer() const;
+
+    DockWidget *topLevelDockWidget() const;
+
 private Q_SLOTS:
     void onDockAreasAddedOrRemoved();
 
@@ -37,8 +43,15 @@ protected:
     virtual void finishDragging() override;
     void moveFloating() override;
 
+    void deleteContent();
+
+protected:
+    virtual void hideEvent(QHideEvent *event) override;
+    virtual void showEvent(QShowEvent *event) override;
+
 private:
     QX_DECLARE_PRIVATE(DockFloatingContainer)
+    friend class DockWindow;
 };
 
 QX_DOCK_END_NAMESPACE

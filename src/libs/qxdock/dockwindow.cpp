@@ -19,7 +19,7 @@ public:
 public:
     QList<DockContainer *> m_containers;
     DockWidget *m_centralWidget = nullptr;
-    QList<QPointer<DockFloatingContainer> > m_floatingWidgets;
+    QList<QPointer<DockFloatingContainer> > m_floatingContainers;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -36,6 +36,34 @@ DockWindow::DockWindow(QWidget *parent)
 
 DockWindow::~DockWindow()
 {
+    Q_D(DockWindow);
+    std::vector<QPointer<DockPanel> > panels;
+    for (int i = 0; i < dockPanelCount(); ++i) {
+        panels.push_back(dockPanel(i));
+    }
+    for (auto p : panels) {
+        if (!p || p->dockWindow() != this) {
+            continue;
+        }
+        std::vector<QPointer<QWidget> > deleteWidgets;
+        for (auto w : p->dockWidgets()) {
+            deleteWidgets.push_back(w);
+        }
+        for (auto w : deleteWidgets) {
+            delete w;
+        }
+    }
+
+    auto floatingContainers = d->m_floatingContainers;
+    for (auto c : floatingContainers) {
+        c->deleteContent();
+        delete c;
+    }
+
+    for (auto p : panels) {
+        delete p;
+    }
+
     QX_FINI_PRIVATE()
 }
 
@@ -97,8 +125,14 @@ void DockWindow::removeDockContainer(DockContainer *container)
 void DockWindow::registerFloatingWidget(DockFloatingContainer *floatingWidget)
 {
     Q_D(DockWindow);
-    d->m_floatingWidgets.append(floatingWidget);
+    d->m_floatingContainers.append(floatingWidget);
     Q_EMIT floatingWidgetCreated(floatingWidget);
+}
+
+void DockWindow::removeFloatingWidget(DockFloatingContainer *floatingWidget)
+{
+    Q_D(DockWindow);
+    d->m_floatingContainers.removeAll(floatingWidget);
 }
 
 void DockWindow::notifyDockAreaRelocation(QWidget *relocatedWidget)

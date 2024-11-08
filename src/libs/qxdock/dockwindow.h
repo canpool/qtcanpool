@@ -37,6 +37,7 @@ protected:
     void registerDockContainer(DockContainer *container);
     void removeDockContainer(DockContainer *container);
     void registerFloatingWidget(DockFloatingContainer *floatingWidget);
+    void removeFloatingWidget(DockFloatingContainer *floatingWidget);
     void notifyDockAreaRelocation(QWidget *relocatedWidget);
 
 private:

@@ -12,6 +12,7 @@
 QX_DOCK_BEGIN_NAMESPACE
 
 namespace internal {
+const int FloatingWidgetDragStartEvent = QEvent::registerEventType();
 
 QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity)
 {

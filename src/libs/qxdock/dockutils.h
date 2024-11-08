@@ -14,6 +14,7 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockSplitter;
 
 namespace internal {
+extern const int FloatingWidgetDragStartEvent;
 
 template <class T>
 void setFlag(T &flags, typename T::enum_type flag, bool on = true)

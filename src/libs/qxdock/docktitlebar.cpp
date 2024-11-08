@@ -163,7 +163,10 @@ DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, 
     }
     floatingWidget->startFloating(offset, sz, dragState, nullptr);
     if (floatingContainer) {
-
+        auto topLevelWidget = floatingContainer->topLevelDockWidget();
+        if (topLevelWidget) {
+            topLevelWidget->emitTopLevelChanged(true);
+        }
     }
     return floatingWidget;
 }

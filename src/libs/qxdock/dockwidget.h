@@ -70,11 +70,13 @@ Q_SIGNALS:
     void viewToggled(bool open);
     void closeRequested();
     void closed();
+    void topLevelChanged(bool topLevel);
 
 protected:
     void setDockWindow(DockWindow *window);
     void setDockPanel(DockPanel *panel);
     void setClosedState(bool closed);
+    void emitTopLevelChanged(bool floating);
     void toggleViewInternal(bool open);
     bool closeDockWidgetInternal(bool forceClose = false);
 
@@ -83,6 +85,7 @@ private:
     friend class DockContainer;
     friend class DockPanel;
     friend class DockWindow;
+    friend class DockTitleBarPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

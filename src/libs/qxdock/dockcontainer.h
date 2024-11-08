@@ -25,6 +25,10 @@ public:
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
     void removeDockWidget(DockWidget *w);
 
+    DockPanel *dockPanel(int index) const;
+
+    QList<DockPanel *> openedDockPanels() const;
+    QList<DockWidget *> openedDockWidgets() const;
     int dockPanelCount() const;
 
 Q_SIGNALS:
@@ -35,6 +39,8 @@ protected:
     void createRootSplitter();
     void addDockPanel(DockPanel *panel, Qx::DockWidgetArea area = Qx::CenterDockWidgetArea);
     void removeDockPanel(DockPanel *panel);
+    DockWidget *topLevelDockWidget() const;
+    DockPanel *topLevelDockPanel() const;
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)

@@ -36,6 +36,7 @@ public:
     QList<QAction *> m_titleBarActions;
     QAction *m_toggleViewAction = nullptr;
     bool m_closed = false;
+    bool m_isFloatingTopLevel = false;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -254,6 +255,15 @@ void DockWidget::setClosedState(bool closed)
 {
     Q_D(DockWidget);
     d->m_closed = closed;
+}
+
+void DockWidget::emitTopLevelChanged(bool floating)
+{
+    Q_D(DockWidget);
+    if (floating != d->m_isFloatingTopLevel) {
+        d->m_isFloatingTopLevel = floating;
+        Q_EMIT topLevelChanged(floating);
+    }
 }
 
 void DockWidget::toggleViewInternal(bool open)
