@@ -27,13 +27,19 @@ public:
 
     int dockPanelCount() const;
 
+Q_SIGNALS:
+    void dockAreasAdded();
+    void dockAreasRemoved();
+
 protected:
     void createRootSplitter();
+    void addDockPanel(DockPanel *panel, Qx::DockWidgetArea area = Qx::CenterDockWidgetArea);
     void removeDockPanel(DockPanel *panel);
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)
     friend class DockPanel;
+    friend class DockFloatingContainer;
 };
 
 QX_DOCK_END_NAMESPACE

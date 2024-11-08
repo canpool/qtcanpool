@@ -285,6 +285,11 @@ void DockContainer::createRootSplitter()
     d->createRootSplitter();
 }
 
+void DockContainer::addDockPanel(DockPanel *panel, Qx::DockWidgetArea area)
+{
+
+}
+
 void DockContainer::removeDockPanel(DockPanel *panel)
 {
 

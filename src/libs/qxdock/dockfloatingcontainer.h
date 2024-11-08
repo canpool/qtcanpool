@@ -12,6 +12,9 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockWindow;
+class DockPanel;
+
 class DockFloatingContainerPrivate;
 
 class QX_DOCK_EXPORT DockFloatingContainer : public DockFloatingContainerBase
@@ -19,8 +22,14 @@ class QX_DOCK_EXPORT DockFloatingContainer : public DockFloatingContainerBase
 {
     Q_OBJECT
 public:
-    explicit DockFloatingContainer(QWidget *parent = nullptr);
+    using Super = DockFloatingContainerBase;
+public:
+    explicit DockFloatingContainer(DockWindow *window);
+    explicit DockFloatingContainer(DockPanel *panel);
     virtual ~DockFloatingContainer();
+
+private Q_SLOTS:
+    void onDockAreasAddedOrRemoved();
 
 protected:
     virtual void startFloating(const QPoint &dragStartMousePos, const QSize &size,

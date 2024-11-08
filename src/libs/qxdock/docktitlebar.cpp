@@ -153,7 +153,7 @@ DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, 
     DockFloatingContainer *floatingContainer = nullptr;
     DockFloatingWidget *floatingWidget;
     if (needCreateFloatingContainer) {
-        floatingWidget = floatingContainer = new DockFloatingContainer();
+        floatingWidget = floatingContainer = new DockFloatingContainer(m_panel);
     } else {
         auto w = new DockFloatingPreview();
         QObject::connect(w, &DockFloatingPreview::draggingCanceled, [=]() {

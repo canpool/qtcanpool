@@ -11,6 +11,7 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
 class DockWidget;
+class DockFloatingContainer;
 
 class DockWindowPrivate;
 
@@ -30,14 +31,18 @@ Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
     void dockWidgetAboutToBeRemoved(DockWidget *w);
     void dockWidgetRemoved(DockWidget *w);
+    void floatingWidgetCreated(DockFloatingContainer *floatingWidget);
 
 protected:
     void registerDockContainer(DockContainer *container);
     void removeDockContainer(DockContainer *container);
+    void registerFloatingWidget(DockFloatingContainer *floatingWidget);
+    void notifyDockAreaRelocation(QWidget *relocatedWidget);
 
 private:
     QX_DECLARE_PRIVATE(DockWindow)
     friend class DockContainer;
+    friend class DockFloatingContainer;
 };
 
 QX_DOCK_END_NAMESPACE

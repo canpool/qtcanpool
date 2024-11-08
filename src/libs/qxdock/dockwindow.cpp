@@ -6,6 +6,7 @@
 #include "dockwindow.h"
 #include "dockpanel.h"
 #include "dockwidget.h"
+#include "dockfloatingcontainer.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -18,6 +19,7 @@ public:
 public:
     QList<DockContainer *> m_containers;
     DockWidget *m_centralWidget = nullptr;
+    QList<QPointer<DockFloatingContainer> > m_floatingWidgets;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -90,6 +92,18 @@ void DockWindow::removeDockContainer(DockContainer *container)
     if (this != container) {
         d->m_containers.removeAll(container);
     }
+}
+
+void DockWindow::registerFloatingWidget(DockFloatingContainer *floatingWidget)
+{
+    Q_D(DockWindow);
+    d->m_floatingWidgets.append(floatingWidget);
+    Q_EMIT floatingWidgetCreated(floatingWidget);
+}
+
+void DockWindow::notifyDockAreaRelocation(QWidget *relocatedWidget)
+{
+
 }
 
 QX_DOCK_END_NAMESPACE
