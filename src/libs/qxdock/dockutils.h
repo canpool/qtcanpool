@@ -9,6 +9,8 @@
 #include <QStyle>
 #include <QAbstractButton>
 
+class QSplitter;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockSplitter;
@@ -58,6 +60,8 @@ T findParent(const QWidget *w)
 QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity);
 
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId);
+
+void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to);
 
 void hideEmptyParentSplitters(DockSplitter *firstParentSplitter);
 

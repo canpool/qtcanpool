@@ -71,7 +71,9 @@ protected:
     void toggleDockWidgetView(DockWidget *w, bool open);
     int indexOf(DockWidget *w) const;
     void hideAreaWithNoVisibleContent();
+    void updateTitleBarVisibility();
     void internalSetCurrentDockWidget(DockWidget *w);
+    void updateTitleBarButtonVisibility(bool isTopLevel);
 
 private:
     QX_DECLARE_PRIVATE(DockPanel)

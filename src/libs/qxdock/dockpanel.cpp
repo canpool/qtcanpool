@@ -150,6 +150,7 @@ public:
     void init();
 
     DockTabBar *tabBar() const;
+    void updateTitleBarButtonVisibility(bool isTopLevel);
 
 public:
     DockWindow *m_window = nullptr;
@@ -187,6 +188,25 @@ void DockPanelPrivate::init()
 DockTabBar *DockPanelPrivate::tabBar() const
 {
     return m_titleBar->tabBar();
+}
+
+void DockPanelPrivate::updateTitleBarButtonVisibility(bool isTopLevel)
+{
+    Q_Q(DockPanel);
+    auto container = q->dockContainer();
+    if (!container) {
+        return;
+    }
+    if (isTopLevel) {
+        m_titleBar->button(Qx::TitleBarButtonClose)->setVisible(!container->isFloating());
+        // Undock and tabs should never show when auto hidden
+        m_titleBar->button(Qx::TitleBarButtonUndock)->setVisible(!container->isFloating());
+        m_titleBar->button(Qx::TitleBarButtonTabsMenu)->setVisible(true);
+    } else {
+        m_titleBar->button(Qx::TitleBarButtonClose)->setVisible(true);
+        m_titleBar->button(Qx::TitleBarButtonUndock)->setVisible(true);
+        m_titleBar->button(Qx::TitleBarButtonTabsMenu)->setVisible(true);
+    }
 }
 
 DockPanel::DockPanel(DockWindow *window, DockContainer *parent)
@@ -492,6 +512,11 @@ void DockPanel::hideAreaWithNoVisibleContent()
     internal::hideEmptyParentSplitters(splitter);
 }
 
+void DockPanel::updateTitleBarVisibility()
+{
+
+}
+
 void DockPanel::internalSetCurrentDockWidget(DockWidget *w)
 {
     int index = indexOf(w);
@@ -501,6 +526,12 @@ void DockPanel::internalSetCurrentDockWidget(DockWidget *w)
     setCurrentIndex(index);
     // Set current index can show the widget without changing the close state, added to keep the close state consistent
     w->setClosedState(false);
+}
+
+void DockPanel::updateTitleBarButtonVisibility(bool isTopLevel)
+{
+    Q_D(DockPanel);
+    d->updateTitleBarButtonVisibility(isTopLevel);
 }
 
 QX_DOCK_END_NAMESPACE

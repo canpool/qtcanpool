@@ -7,11 +7,14 @@
 #include "qxdock_global.h"
 #include <QWidget>
 
+class QSplitter;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindow;
 class DockPanel;
 class DockWidget;
+class DockFloatingContainer;
 
 class DockContainerPrivate;
 
@@ -31,6 +34,10 @@ public:
     QList<DockWidget *> openedDockWidgets() const;
     int dockPanelCount() const;
 
+    bool isFloating() const;
+
+    DockFloatingContainer *floatingWidget() const;
+
 Q_SIGNALS:
     void dockAreasAdded();
     void dockAreasRemoved();
@@ -41,6 +48,7 @@ protected:
     void removeDockPanel(DockPanel *panel);
     DockWidget *topLevelDockWidget() const;
     DockPanel *topLevelDockPanel() const;
+    void updateSplitterHandles(QSplitter *splitter);
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)

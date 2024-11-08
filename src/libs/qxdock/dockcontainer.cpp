@@ -9,6 +9,7 @@
 #include "dockpanel.h"
 #include "dockutils.h"
 #include "dockmanager.h"
+#include "dockfloatingcontainer.h"
 
 #include <QGridLayout>
 
@@ -33,6 +34,9 @@ public:
     void init();
     void createRootSplitter();
 
+    void onVisibleDockAreaCountChanged();
+    void emitDockAreasRemoved();
+
     DockSplitter *newSplitter(Qt::Orientation orientation, QWidget *parent = nullptr);
     void updateSplitterHandles(QSplitter *s);
     void adjustSplitterSizesOnInsertion(QSplitter *s, qreal lastRatio = 1.0);
@@ -51,6 +55,8 @@ public:
     QGridLayout *m_layout = nullptr;
     DockSplitter *m_rootSplitter = nullptr;
     QList<QPointer<DockPanel>> m_panels;
+    DockPanel *m_topLevelPanel = nullptr;
+    bool m_isFloating = false;
 };
 
 DockContainerPrivate::DockContainerPrivate()
@@ -61,6 +67,8 @@ DockContainerPrivate::DockContainerPrivate()
 void DockContainerPrivate::init()
 {
     Q_Q(DockContainer);
+
+    m_isFloating = q->floatingWidget() != nullptr;
 
     m_layout = new QGridLayout();
     m_layout->setContentsMargins(0, 0, 0, 0);
@@ -78,6 +86,27 @@ void DockContainerPrivate::createRootSplitter()
     m_rootSplitter = newSplitter(Qt::Horizontal);
     // Add it to the center - the 0 and 2 indexes are used for the SideTabBar widgets
     m_layout->addWidget(m_rootSplitter, 1, 1);
+}
+
+void DockContainerPrivate::onVisibleDockAreaCountChanged()
+{
+    Q_Q(DockContainer);
+    auto panel = q->topLevelDockPanel();
+
+    if (panel) {
+        this->m_topLevelPanel = panel;
+        panel->updateTitleBarButtonVisibility(true);
+    } else if (this->m_topLevelPanel) {
+        this->m_topLevelPanel->updateTitleBarButtonVisibility(false);
+        this->m_topLevelPanel = nullptr;
+    }
+}
+
+void DockContainerPrivate::emitDockAreasRemoved()
+{
+    Q_Q(DockContainer);
+    onVisibleDockAreaCountChanged();
+    Q_EMIT q->dockAreasRemoved();
 }
 
 DockSplitter *DockContainerPrivate::newSplitter(Qt::Orientation orientation, QWidget *parent)
@@ -309,6 +338,17 @@ int DockContainer::dockPanelCount() const
     return d->m_panels.count();
 }
 
+bool DockContainer::isFloating() const
+{
+    Q_D(const DockContainer);
+    return d->m_isFloating;
+}
+
+DockFloatingContainer *DockContainer::floatingWidget() const
+{
+    return internal::findParent<DockFloatingContainer *>(this);
+}
+
 void DockContainer::createRootSplitter()
 {
     Q_D(DockContainer);
@@ -327,7 +367,63 @@ void DockContainer::addDockPanel(DockPanel *panel, Qx::DockWidgetArea area)
 
 void DockContainer::removeDockPanel(DockPanel *panel)
 {
+    Q_D(DockContainer);
+    panel->disconnect(this);
+    d->m_panels.removeAll(panel);
+    auto splitter = panel->parentSplitter();
 
+    // Remove are from parent splitter and recursively hide tree of parent
+    // splitters if it has no visible content
+    panel->setParent(nullptr);
+    internal::hideEmptyParentSplitters(splitter);
+
+    // If splitter has more than 1 widgets, we are finished and can leave
+    if (splitter->count() >  1) {
+        goto emitAndExit;
+    }
+
+    // If this is the RootSplitter we need to remove empty splitters to
+    // avoid too many empty splitters
+    if (splitter == d->m_rootSplitter) {
+        // If splitter is empty, we are finished
+        if (!splitter->count()) {
+            splitter->hide();
+            goto emitAndExit;
+        }
+
+        QWidget *widget = splitter->widget(0);
+        auto childSplitter = qobject_cast<DockSplitter *>(widget);
+        // If the one and only content widget of the splitter is not a splitter
+        // then we are finished
+        if (!childSplitter) {
+            goto emitAndExit;
+        }
+
+        // We replace the superfluous RootSplitter with the childSplitter
+        childSplitter->setParent(nullptr);
+        QLayoutItem *li = d->m_layout->replaceWidget(splitter, childSplitter);
+        d->m_rootSplitter = childSplitter;
+        delete li;
+    } else if (splitter->count() == 1) {
+        QSplitter *parentSplitter = internal::findParent<QSplitter *>(splitter);
+        auto Sizes = parentSplitter->sizes();
+        QWidget *widget = splitter->widget(0);
+        widget->setParent(this);
+        internal::replaceSplitterWidget(parentSplitter, splitter, widget);
+        parentSplitter->setSizes(Sizes);
+    }
+
+    delete splitter;
+    splitter = nullptr;
+
+emitAndExit:
+    updateSplitterHandles(splitter);
+    DockWidget *topLevelWidget = topLevelDockWidget();
+
+    // Updated the title bar visibility of the dock widget if there is only
+    // one single visible dock widget
+    DockWidget::emitTopLevelEventForWidget(topLevelWidget, true);
+    d->emitDockAreasRemoved();
 }
 
 DockWidget *DockContainer::topLevelDockWidget() const
@@ -350,6 +446,12 @@ DockPanel *DockContainer::topLevelDockPanel() const
         return nullptr;
     }
     return panels[0];
+}
+
+void DockContainer::updateSplitterHandles(QSplitter *splitter)
+{
+   Q_D(DockContainer);
+   d->updateSplitterHandles(splitter);
 }
 
 QX_DOCK_END_NAMESPACE

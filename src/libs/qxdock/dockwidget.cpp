@@ -257,6 +257,14 @@ void DockWidget::setClosedState(bool closed)
     d->m_closed = closed;
 }
 
+void DockWidget::emitTopLevelEventForWidget(DockWidget *topLevelDockWidget, bool floating)
+{
+    if (topLevelDockWidget) {
+        topLevelDockWidget->dockPanel()->updateTitleBarVisibility();
+        topLevelDockWidget->emitTopLevelChanged(floating);
+    }
+}
+
 void DockWidget::emitTopLevelChanged(bool floating)
 {
     Q_D(DockWidget);

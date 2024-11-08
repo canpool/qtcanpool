@@ -76,6 +76,7 @@ protected:
     void setDockWindow(DockWindow *window);
     void setDockPanel(DockPanel *panel);
     void setClosedState(bool closed);
+    static void emitTopLevelEventForWidget(DockWidget *topLevelDockWidget, bool floating);
     void emitTopLevelChanged(bool floating);
     void toggleViewInternal(bool open);
     bool closeDockWidgetInternal(bool forceClose = false);

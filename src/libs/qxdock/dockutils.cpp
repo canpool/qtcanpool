@@ -8,6 +8,7 @@
 #include "docksplitter.h"
 
 #include <QPainter>
+#include <QSplitter>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -88,6 +89,13 @@ void hideEmptyParentSplitters(DockSplitter *splitter)
         }
         splitter = internal::findParent<DockSplitter *>(splitter);
     }
+}
+
+void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to)
+{
+    int index = splitter->indexOf(from);
+    from->setParent(nullptr);
+    splitter->insertWidget(index, to);
 }
 
 } // internal
