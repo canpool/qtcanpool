@@ -132,6 +132,13 @@ enum DockTitleBarButton {
     TitleBarButtonMinimize
 };
 
+enum DockDragState {
+    DockDraggingInactive,
+    DockDraggingMousePressed,
+    DockDraggingTab,
+    DockDraggingFloatingWidget
+};
+
 enum DockIcon {
     DockTabCloseIcon,
     DockPanelMenuIcon,
@@ -141,6 +148,11 @@ enum DockIcon {
 };
 enum DockIconSizes {
     NDockIconSizes = 5
+};
+
+enum DockBitwiseOperator {
+    DockBitwiseAnd,
+    DockBitwiseOr
 };
 
 }

@@ -277,6 +277,23 @@ void DockPanel::setCurrentDockWidget(DockWidget *w)
     internalSetCurrentDockWidget(w);
 }
 
+DockWidget::DockWidgetFeatures DockPanel::features(Qx::DockBitwiseOperator mode) const
+{
+    if (mode == Qx::DockBitwiseAnd) {
+        DockWidget::DockWidgetFeatures f(DockWidget::AllDockWidgetFeatures);
+        for (const auto w : dockWidgets()) {
+            f &= w->features();
+        }
+        return f;
+    } else {
+        DockWidget::DockWidgetFeatures f(DockWidget::NoDockWidgetFeatures);
+        for (const auto w : dockWidgets()) {
+            f |= w->features();
+        }
+        return f;
+    }
+}
+
 QAbstractButton *DockPanel::titleBarButton(Qx::DockTitleBarButton which) const
 {
     Q_D(const DockPanel);

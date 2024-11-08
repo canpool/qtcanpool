@@ -40,6 +40,8 @@ public:
     DockWidget *currentDockWidget() const;
     void setCurrentDockWidget(DockWidget *w);
 
+    DockWidget::DockWidgetFeatures features(Qx::DockBitwiseOperator mode = Qx::DockBitwiseAnd) const;
+
     QAbstractButton *titleBarButton(Qx::DockTitleBarButton which) const;
 
     virtual void setVisible(bool visible) override;

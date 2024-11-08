@@ -24,6 +24,7 @@ public:
     virtual ~DockTitleBar();
 
     DockTabBar *tabBar() const;
+    DockPanel *dockPanel() const;
 
     QAbstractButton *button(Qx::DockTitleBarButton which) const;
 
@@ -37,6 +38,7 @@ private Q_SLOTS:
     void onTabsMenuActionTriggered(QAction *a);
     void onCurrentTabChanged(int index);
     void onCloseButtonClicked();
+    void onUndockButtonClicked();
 
 Q_SIGNALS:
     void tabBarClicked(int index);

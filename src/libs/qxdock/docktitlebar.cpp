@@ -10,6 +10,8 @@
 #include "docktab.h"
 #include "dockutils.h"
 #include "dockmanager.h"
+#include "dockfloatingcontainer.h"
+#include "dockfloatingpreview.h"
 
 #include <QBoxLayout>
 #include <QMenu>
@@ -37,6 +39,8 @@ public:
     void createTabBar();
     void createButtons();
 
+    DockFloatingWidget *makeAreaFloating(const QPoint &offset, Qx::DockDragState dragState);
+
     static bool testConfigFlag(DockManager::ConfigFlag flag);
 public:
     DockPanel *m_panel = nullptr;
@@ -49,6 +53,8 @@ public:
     QPointer<TitleBarButton> m_minimizeButton;
 
     QList<TitleBarButton *> m_dockWidgetActionsButtons;
+
+    Qx::DockDragState m_dragState = Qx::DockDraggingInactive;
 };
 
 DockTitleBarPrivate::DockTitleBarPrivate()
@@ -114,6 +120,7 @@ void DockTitleBarPrivate::createButtons()
     internal::setButtonIcon(m_undockButton, QStyle::SP_TitleBarNormalButton, Qx::DockPanelUndockIcon);
     m_undockButton->setSizePolicy(sp);
     m_layout->addWidget(m_undockButton, 0);
+    q->connect(m_undockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
     // Minimize button
     m_minimizeButton = new TitleBarButton(true, false, Qx::TitleBarButtonMinimize);
@@ -136,6 +143,29 @@ void DockTitleBarPrivate::createButtons()
     m_closeButton->setIconSize(QSize(16, 16));
     m_layout->addWidget(m_closeButton, 0);
     q->connect(m_closeButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
+}
+
+DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, Qx::DockDragState dragState)
+{
+    QSize sz = m_panel->size();
+    m_dragState = dragState;
+    bool needCreateFloatingContainer = (dragState != Qx::DockDraggingFloatingWidget);
+    DockFloatingContainer *floatingContainer = nullptr;
+    DockFloatingWidget *floatingWidget;
+    if (needCreateFloatingContainer) {
+        floatingWidget = floatingContainer = new DockFloatingContainer();
+    } else {
+        auto w = new DockFloatingPreview();
+        QObject::connect(w, &DockFloatingPreview::draggingCanceled, [=]() {
+            this->m_dragState = Qx::DockDraggingInactive;
+        });
+        floatingWidget = w;
+    }
+    floatingWidget->startFloating(offset, sz, dragState, nullptr);
+    if (floatingContainer) {
+
+    }
+    return floatingWidget;
 }
 
 bool DockTitleBarPrivate::testConfigFlag(DockManager::ConfigFlag flag)
@@ -165,6 +195,12 @@ DockTabBar *DockTitleBar::tabBar() const
 {
     Q_D(const DockTitleBar);
     return d->m_tabBar;
+}
+
+DockPanel *DockTitleBar::dockPanel() const
+{
+    Q_D(const DockTitleBar);
+    return d->m_panel;
 }
 
 QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
@@ -269,6 +305,14 @@ void DockTitleBar::onCloseButtonClicked()
         d->m_tabBar->closeTab(d->m_tabBar->currentIndex());
     } else {
         d->m_panel->closeArea();
+    }
+}
+
+void DockTitleBar::onUndockButtonClicked()
+{
+    Q_D(DockTitleBar);
+    if (d->m_panel->features().testFlag(DockWidget::DockWidgetFloatable)) {
+        d->makeAreaFloating(mapFromGlobal(QCursor::pos()), Qx::DockDraggingInactive);
     }
 }
 
