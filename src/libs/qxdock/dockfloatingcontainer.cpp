@@ -59,6 +59,7 @@ DockFloatingContainer::DockFloatingContainer(DockWindow *window)
     connect(d->m_dockContainer, SIGNAL(dockAreasRemoved()), this,
         SLOT(onDockAreasAddedOrRemoved()));
 
+    setWindowFlags(Qt::Window | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
     QBoxLayout *l = new QBoxLayout(QBoxLayout::TopToBottom);
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
