@@ -32,6 +32,7 @@ public:
 
     QList<DockPanel *> openedDockPanels() const;
     QList<DockWidget *> openedDockWidgets() const;
+    bool hasTopLevelDockWidget() const;
     int dockPanelCount() const;
 
     bool isFloating() const;

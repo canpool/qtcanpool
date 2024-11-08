@@ -22,6 +22,7 @@ public:
         TabCloseButtonIsToolButton = 0x0040,
         AllTabsHaveCloseButton = 0x0080,
         RetainTabSizeWhenCloseButtonHidden = 0x0100,
+        AlwaysShowTabs = 0x2000,
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
 

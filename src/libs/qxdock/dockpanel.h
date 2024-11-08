@@ -22,6 +22,14 @@ class QX_DOCK_EXPORT DockPanel : public QWidget
 {
     Q_OBJECT
 public:
+    enum DockAreaFlag
+    {
+        HideSingleWidgetTitleBar = 0x0001,
+        DefaultFlags = 0x0000
+    };
+    Q_DECLARE_FLAGS(DockAreaFlags, DockAreaFlag)
+
+public:
     explicit DockPanel(DockWindow *window, DockContainer *parent);
     ~DockPanel();
 
@@ -32,6 +40,7 @@ public:
 
     int dockWidgetsCount() const;
     QList<DockWidget *> dockWidgets() const;
+    int openDockWidgetsCount() const;
     QList<DockWidget *> openedDockWidgets() const;
     DockWidget *dockWidget(int index) const;
 

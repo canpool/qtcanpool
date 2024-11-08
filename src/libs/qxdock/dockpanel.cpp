@@ -11,6 +11,7 @@
 #include "docksplitter.h"
 #include "docktabbar.h"
 #include "docktab.h"
+#include "dockmanager.h"
 
 #include <QBoxLayout>
 
@@ -150,6 +151,7 @@ public:
     void init();
 
     DockTabBar *tabBar() const;
+    void updateTitleBarButtonStates();
     void updateTitleBarButtonVisibility(bool isTopLevel);
 
 public:
@@ -157,6 +159,8 @@ public:
     QBoxLayout *m_layout = nullptr;
     DockAreaLayout *m_contentsLayout = nullptr;
     DockTitleBar *m_titleBar = nullptr;
+    DockPanel::DockAreaFlags m_flags{DockPanel::DefaultFlags};
+    bool m_updateTitleBarButtons = false;
 };
 
 DockPanelPrivate::DockPanelPrivate()
@@ -188,6 +192,22 @@ void DockPanelPrivate::init()
 DockTabBar *DockPanelPrivate::tabBar() const
 {
     return m_titleBar->tabBar();
+}
+
+void DockPanelPrivate::updateTitleBarButtonStates()
+{
+    Q_Q(DockPanel);
+    if (q->isHidden()) {
+        m_updateTitleBarButtons = true;
+        return;
+    }
+
+    m_titleBar->button(Qx::TitleBarButtonUndock)->setEnabled(
+        q->features().testFlag(DockWidget::DockWidgetFloatable));
+    m_titleBar->button(Qx::TitleBarButtonClose)->setEnabled(
+        q->features().testFlag(DockWidget::DockWidgetClosable));
+    m_titleBar->updateDockWidgetActionsButtons();
+    m_updateTitleBarButtons = false;
 }
 
 void DockPanelPrivate::updateTitleBarButtonVisibility(bool isTopLevel)
@@ -258,6 +278,18 @@ QList<DockWidget *> DockPanel::dockWidgets() const
     return dwList;
 }
 
+int DockPanel::openDockWidgetsCount() const
+{
+    Q_D(const DockPanel);
+    int cnt = 0;
+    for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
+        if (dockWidget(i) && !dockWidget(i)->isClosed()) {
+            ++cnt;
+        }
+    }
+    return cnt;
+}
+
 QList<DockWidget *> DockPanel::openedDockWidgets() const
 {
     Q_D(const DockPanel);
@@ -323,6 +355,10 @@ QAbstractButton *DockPanel::titleBarButton(Qx::DockTitleBarButton which) const
 void DockPanel::setVisible(bool visible)
 {
     QWidget::setVisible(visible);
+    Q_D(DockPanel);
+    if (d->m_updateTitleBarButtons) {
+        d->updateTitleBarButtonStates();
+    }
 }
 
 bool DockPanel::isCentralWidgetArea() const
@@ -420,6 +456,8 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
         // that the toggleViewAction is not checked when there is only one dock widget
         w->toggleViewInternal(true);
     }
+    d->updateTitleBarButtonStates();
+    updateTitleBarVisibility();
 }
 
 void DockPanel::removeDockWidget(DockWidget *w)
@@ -446,6 +484,12 @@ void DockPanel::removeDockWidget(DockWidget *w)
         this->deleteLater();
     } else if (w == currentWidget) {
         hideAreaWithNoVisibleContent();
+    }
+    d->updateTitleBarButtonStates();
+    updateTitleBarVisibility();
+    auto topLevelWidget = container->topLevelDockWidget();
+    if (topLevelWidget) {
+        topLevelWidget->emitTopLevelChanged(true);
     }
 }
 
@@ -494,7 +538,9 @@ DockWidget *DockPanel::nextOpenDockWidget(DockWidget *w) const
 
 void DockPanel::toggleDockWidgetView(DockWidget *w, bool open)
 {
-
+    Q_UNUSED(w);
+    Q_UNUSED(open);
+    updateTitleBarVisibility();
 }
 
 int DockPanel::indexOf(DockWidget *w) const
@@ -514,7 +560,19 @@ void DockPanel::hideAreaWithNoVisibleContent()
 
 void DockPanel::updateTitleBarVisibility()
 {
-
+    Q_D(DockPanel);
+    DockContainer *container = dockContainer();
+    if (!container) {
+        return;
+    }
+    if (!d->m_titleBar) {
+        return;
+    }
+    if (!DockManager::testConfigFlag(DockManager::AlwaysShowTabs)) {
+        bool hidden = container->hasTopLevelDockWidget() && container->isFloating();
+        hidden |= (d->m_flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
+        d->m_titleBar->setVisible(!hidden);
+    }
 }
 
 void DockPanel::internalSetCurrentDockWidget(DockWidget *w)

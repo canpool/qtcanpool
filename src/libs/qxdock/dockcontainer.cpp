@@ -332,6 +332,16 @@ QList<DockWidget *> DockContainer::openedDockWidgets() const
     return result;
 }
 
+bool DockContainer::hasTopLevelDockWidget() const
+{
+    auto panels = openedDockPanels();
+    if (panels.count() != 1) {
+        return false;
+    }
+
+    return panels[0]->openDockWidgetsCount() == 1;
+}
+
 int DockContainer::dockPanelCount() const
 {
     Q_D(const DockContainer);
