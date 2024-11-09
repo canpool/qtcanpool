@@ -15,6 +15,8 @@ class QX_DOCK_EXPORT DockOverlay : public QWidget
 {
     Q_OBJECT
 public:
+    using Super = QWidget;
+
     enum OverlayMode {
         PanelOverlayMode,
         ContainerOverlayMode
@@ -31,6 +33,11 @@ public:
     void hideOverlay();
 
     void enableDropPreview(bool enable);
+
+protected:
+    virtual void paintEvent(QPaintEvent *e) override;
+    virtual void showEvent(QShowEvent* e) override;
+    virtual void hideEvent(QHideEvent* e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockOverlay)
