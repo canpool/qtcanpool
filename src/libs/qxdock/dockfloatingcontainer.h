@@ -54,6 +54,17 @@ protected:
     virtual void hideEvent(QHideEvent *event) override;
     virtual void showEvent(QShowEvent *event) override;
 
+#ifdef Q_OS_WIN
+    /**
+     * Native event filter for handling WM_MOVING messages on Windows
+     */
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+#else
+    virtual bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
+#endif
+#endif
+
 private:
     QX_DECLARE_PRIVATE(DockFloatingContainer)
     friend class DockWindow;

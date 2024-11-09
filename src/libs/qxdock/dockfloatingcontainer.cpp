@@ -13,6 +13,13 @@
 #include <QEvent>
 #include <QCloseEvent>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#ifdef _MSC_VER
+#pragma comment(lib, "User32.lib")
+#endif
+#endif
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockFloatingContainerPrivate
@@ -22,17 +29,40 @@ public:
 public:
     DockFloatingContainerPrivate();
 
+    void titleMouseReleaseEvent();
+    void updateDropOverlays(const QPoint &globalPos);
+
+    bool isState(Qx::DockDragState stateId) const;
     void setState(Qx::DockDragState stateId);
+
+    void handleEscapeKey();
+
 public:
     QPointer<DockWindow> m_window;
     DockContainer *m_dockContainer;
     QPoint m_dragStartMousePosition;
     Qx::DockDragState m_draggingState = Qx::DockDraggingInactive;
+    QPoint m_dragStartPos;
 };
 
 DockFloatingContainerPrivate::DockFloatingContainerPrivate()
 {
 
+}
+
+void DockFloatingContainerPrivate::titleMouseReleaseEvent()
+{
+
+}
+
+void DockFloatingContainerPrivate::updateDropOverlays(const QPoint &globalPos)
+{
+
+}
+
+bool DockFloatingContainerPrivate::isState(Qx::DockDragState stateId) const
+{
+    return stateId == m_draggingState;
 }
 
 void DockFloatingContainerPrivate::setState(Qx::DockDragState stateId)
@@ -45,6 +75,11 @@ void DockFloatingContainerPrivate::setState(Qx::DockDragState stateId)
     if (Qx::DockDraggingFloatingWidget == m_draggingState) {
         qApp->postEvent(q, new QEvent((QEvent::Type)internal::FloatingWidgetDragStartEvent));
     }
+}
+
+void DockFloatingContainerPrivate::handleEscapeKey()
+{
+
 }
 
 DockFloatingContainer::DockFloatingContainer(DockWindow *window)
@@ -214,5 +249,57 @@ void DockFloatingContainer::showEvent(QShowEvent *event)
 {
     Super::showEvent(event);
 }
+
+
+#ifdef Q_OS_WIN
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *message, long *result)
+#else
+bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
+#endif
+{
+    QWidget::nativeEvent(eventType, message, result);
+
+    Q_D(DockFloatingContainer);
+    MSG *msg = static_cast<MSG *>(message);
+    switch (msg->message) {
+    case WM_MOVING: {
+        if (d->isState(Qx::DockDraggingFloatingWidget)) {
+            d->updateDropOverlays(QCursor::pos());
+        }
+    } break;
+
+    case WM_NCLBUTTONDOWN:
+        if (msg->wParam == HTCAPTION && d->isState(Qx::DockDraggingInactive)) {
+            d->m_dragStartPos = pos();
+            d->setState(Qx::DockDraggingMousePressed);
+        }
+        break;
+
+    case WM_NCLBUTTONDBLCLK:
+        d->setState(Qx::DockDraggingInactive);
+        break;
+
+    case WM_ENTERSIZEMOVE:
+        if (d->isState(Qx::DockDraggingMousePressed)) {
+            d->setState(Qx::DockDraggingFloatingWidget);
+            d->updateDropOverlays(QCursor::pos());
+        }
+        break;
+
+    case WM_EXITSIZEMOVE:
+        if (d->isState(Qx::DockDraggingFloatingWidget)) {
+            if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+                d->handleEscapeKey();
+            } else {
+                d->titleMouseReleaseEvent();
+            }
+        }
+        break;
+    }
+    return false;
+}
+#endif
+
 
 QX_DOCK_END_NAMESPACE
