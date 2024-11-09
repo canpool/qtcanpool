@@ -15,7 +15,12 @@ class QX_DOCK_EXPORT DockOverlay : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DockOverlay(QWidget *parent = nullptr);
+    enum OverlayMode {
+        PanelOverlayMode,
+        ContainerOverlayMode
+    };
+public:
+    explicit DockOverlay(QWidget *parent, OverlayMode mode = PanelOverlayMode);
     virtual ~DockOverlay();
 
 private:
