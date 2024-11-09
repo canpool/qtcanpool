@@ -163,6 +163,29 @@ DockPanel *DockWidget::dockPanel() const
     return d->m_panel;
 }
 
+bool DockWidget::isFloating() const
+{
+    if (!isInFloatingContainer()) {
+        return false;
+    }
+
+    return dockContainer()->topLevelDockWidget() == this;
+}
+
+bool DockWidget::isInFloatingContainer() const
+{
+    auto container = dockContainer();
+    if (!container) {
+        return false;
+    }
+
+    if (!container->isFloating()) {
+        return false;
+    }
+
+    return true;
+}
+
 bool DockWidget::isClosed() const
 {
     Q_D(const DockWidget);
@@ -332,6 +355,16 @@ bool DockWidget::closeDockWidgetInternal(bool forceClose)
         return false;
     }
     if (features().testFlag(DockWidget::DockWidgetDeleteOnClose)) {
+        // If the dock widget is floating, then we check if we also need to
+        // delete the floating widget
+        if (isFloating()) {
+            DockFloatingContainer *floatingWidget = internal::findParent<DockFloatingContainer*>(this);
+            if (floatingWidget->dockWidgets().count() == 1) {
+                floatingWidget->deleteLater();
+            } else {
+                floatingWidget->hide();
+            }
+        }
         deleteDockWidget();
         Q_EMIT closed();
     } else {

@@ -504,6 +504,20 @@ DockPanel *DockContainer::topLevelDockPanel() const
     return panels[0];
 }
 
+QList<DockWidget *> DockContainer::dockWidgets() const
+{
+    Q_D(const DockContainer);
+    QList<DockWidget *> result;
+    for (const auto &panel : d->m_panels) {
+        if (!panel) {
+            continue;
+        }
+        result.append(panel->dockWidgets());
+    }
+
+    return result;
+}
+
 void DockContainer::updateSplitterHandles(QSplitter *splitter)
 {
    Q_D(DockContainer);

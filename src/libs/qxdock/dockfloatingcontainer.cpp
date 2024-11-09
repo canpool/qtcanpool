@@ -105,6 +105,12 @@ DockWidget *DockFloatingContainer::topLevelDockWidget() const
     return d->m_dockContainer->topLevelDockWidget();
 }
 
+QList<DockWidget *> DockFloatingContainer::dockWidgets() const
+{
+    Q_D(const DockFloatingContainer);
+    return d->m_dockContainer->dockWidgets();
+}
+
 void DockFloatingContainer::onDockAreasAddedOrRemoved()
 {
 

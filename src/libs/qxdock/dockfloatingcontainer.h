@@ -35,6 +35,7 @@ public:
     DockContainer *dockContainer() const;
 
     DockWidget *topLevelDockWidget() const;
+    QList<DockWidget *> dockWidgets() const;
 
 private Q_SLOTS:
     void onDockAreasAddedOrRemoved();

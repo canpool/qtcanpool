@@ -52,6 +52,8 @@ public:
     DockContainer *dockContainer() const;
     DockPanel *dockPanel() const;
 
+    bool isFloating() const;
+    bool isInFloatingContainer() const;
     bool isClosed() const;
 
     QAction *toggleViewAction() const;

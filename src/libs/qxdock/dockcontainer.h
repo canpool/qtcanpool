@@ -51,6 +51,7 @@ protected:
     void removeDockPanel(DockPanel *panel);
     DockWidget *topLevelDockWidget() const;
     DockPanel *topLevelDockPanel() const;
+    QList<DockWidget *> dockWidgets() const;
     void updateSplitterHandles(QSplitter *splitter);
 
 private:
