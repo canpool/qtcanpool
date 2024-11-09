@@ -240,7 +240,21 @@ QList<DockWidget *> DockFloatingContainer::dockWidgets() const
 
 void DockFloatingContainer::finishDropOperation()
 {
-    // TODO
+    Q_D(DockFloatingContainer);
+
+    hide();
+    // The floating widget will be deleted now. Ensure, that the destructor
+    // of the floating widget does not delete any dock areas that have been
+    // moved to a new container - simply remove all dock areas before deleting
+    // the floating widget
+    d->m_dockContainer->removeAllDockPanels();
+
+    deleteLater();
+
+    if (d->m_window) {
+        d->m_window->removeFloatingWidget(this);
+        d->m_window->removeDockContainer(this->dockContainer());
+    }
 }
 
 void DockFloatingContainer::onDockAreasAddedOrRemoved()

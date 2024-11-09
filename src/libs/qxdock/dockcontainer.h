@@ -56,6 +56,7 @@ protected:
     void createRootSplitter();
     void addDockPanel(DockPanel *panel, Qx::DockWidgetArea area = Qx::CenterDockWidgetArea);
     void removeDockPanel(DockPanel *panel);
+    QList<QPointer<DockPanel> > removeAllDockPanels();
     DockWidget *topLevelDockWidget() const;
     DockPanel *topLevelDockPanel() const;
     QList<DockWidget *> dockWidgets() const;

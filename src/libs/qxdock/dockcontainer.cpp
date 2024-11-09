@@ -53,8 +53,9 @@ public:
     void appendPanels(const QList<DockPanel *> ps);
 
     void dropIntoContainer(DockFloatingContainer *floatingWidget, Qx::DockWidgetArea area);
-    void dropIntoSection(DockFloatingContainer *floatingWidget, DockPanel *targetPanel,
-                         Qx::DockWidgetArea area, int tabIndex = 0);
+    void dropIntoCenterOfPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel, int tabIndex = 0);
+    void dropIntoPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel,
+                       Qx::DockWidgetArea area, int tabIndex = 0);
 
 public:
     DockWindow *m_window = nullptr;
@@ -323,10 +324,105 @@ void DockContainerPrivate::dropIntoContainer(DockFloatingContainer *floatingWidg
     }
 }
 
-void DockContainerPrivate::dropIntoSection(DockFloatingContainer *floatingWidget, DockPanel *targetPanel,
-                                           Qx::DockWidgetArea area, int tabIndex)
+void DockContainerPrivate::dropIntoCenterOfPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel,
+                                                 int tabIndex)
 {
+    DockContainer *floatingContainer = floatingWidget->dockContainer();
+    auto newDockWidgets = floatingContainer->dockWidgets();
+    auto topLevelPanel = floatingContainer->topLevelDockPanel();
+    int newCurrentIndex = -1;
+    tabIndex = qMax(0, tabIndex);
 
+    // If the floating widget contains only one single dock are, then the
+    // current dock widget of the dock area will also be the future current
+    // dock widget in the drop area.
+    if (topLevelPanel) {
+        newCurrentIndex = topLevelPanel->currentIndex();
+    }
+
+    for (int i = 0; i < newDockWidgets.count(); ++i) {
+        DockWidget *dockWidget = newDockWidgets[i];
+        targetPanel->insertDockWidget(tabIndex + i, dockWidget, false);
+        // If the floating widget contains multiple visible dock areas, then we
+        // simply pick the first visible open dock widget and make it
+        // the current one.
+        if (newCurrentIndex < 0 && !dockWidget->isClosed()) {
+            newCurrentIndex = i;
+        }
+    }
+    targetPanel->setCurrentIndex(newCurrentIndex + tabIndex);
+    targetPanel->updateTitleBarVisibility();
+    return;
+}
+
+void DockContainerPrivate::dropIntoPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel,
+                                         Qx::DockWidgetArea area, int tabIndex)
+{
+    // Dropping into center means all dock widgets in the dropped floating
+    // widget will become tabs of the drop area
+    if (Qx::CenterDockWidgetArea == area) {
+        dropIntoCenterOfPanel(floatingWidget, targetPanel, tabIndex);
+        return;
+    }
+
+    DockContainer *floatingContainer = floatingWidget->dockContainer();
+    auto param = internal::dockAreaInsertParameters(area);
+    auto newDockpanels = floatingContainer->findChildren<DockPanel *>(QString(), Qt::FindChildrenRecursively);
+    auto targetSplitter = targetPanel->parentSplitter();
+    int areaIndex = targetSplitter->indexOf(targetPanel);
+    auto floatingSplitter = floatingContainer->rootSplitter();
+    if (targetSplitter->orientation() == param.orientation()) {
+        auto sizes = targetSplitter->sizes();
+        int targetAreaSize = (param.orientation() == Qt::Horizontal) ? targetPanel->width() : targetPanel->height();
+        bool adjustSplitterSizes = true;
+        if ((floatingSplitter->orientation() != param.orientation()) && floatingSplitter->count() > 1) {
+            targetSplitter->insertWidget(areaIndex + param.insertOffset(), floatingSplitter);
+            updateSplitterHandles(targetSplitter);
+        } else {
+            adjustSplitterSizes = (floatingSplitter->count() == 1);
+            int insertIndex = areaIndex + param.insertOffset();
+            while (floatingSplitter->count()) {
+                targetSplitter->insertWidget(insertIndex++, floatingSplitter->widget(0));
+                updateSplitterHandles(targetSplitter);
+            }
+        }
+
+        if (adjustSplitterSizes) {
+            int size = (targetAreaSize - targetSplitter->handleWidth()) / 2;
+            sizes[areaIndex] = size;
+            sizes.insert(areaIndex, size);
+            targetSplitter->setSizes(sizes);
+        }
+    } else {
+        QSplitter *newSplitter = this->newSplitter(param.orientation());
+        int targetAreaSize = (param.orientation() == Qt::Horizontal) ? targetPanel->width() : targetPanel->height();
+        bool adjustSplitterSizes = true;
+        if ((floatingSplitter->orientation() != param.orientation()) && floatingSplitter->count() > 1) {
+            newSplitter->addWidget(floatingSplitter);
+            updateSplitterHandles(newSplitter);
+        } else {
+            adjustSplitterSizes = (floatingSplitter->count() == 1);
+            while (floatingSplitter->count()) {
+                newSplitter->addWidget(floatingSplitter->widget(0));
+                updateSplitterHandles(newSplitter);
+            }
+        }
+
+        // Save the sizes before insertion and restore it later to prevent
+        // shrinking of existing area
+        auto sizes = targetSplitter->sizes();
+        insertWidgetIntoSplitter(newSplitter, targetPanel, !param.append());
+        updateSplitterHandles(newSplitter);
+        if (adjustSplitterSizes) {
+            int size = targetAreaSize / 2;
+            newSplitter->setSizes({size, size});
+        }
+        targetSplitter->insertWidget(areaIndex, newSplitter);
+        targetSplitter->setSizes(sizes);
+        updateSplitterHandles(targetSplitter);
+    }
+
+    addDockPanelsToList(newDockpanels);
 }
 
 DockContainer::DockContainer(DockWindow *window, QWidget *parent)
@@ -580,6 +676,14 @@ emitAndExit:
     d->emitDockAreasRemoved();
 }
 
+QList<QPointer<DockPanel> > DockContainer::removeAllDockPanels()
+{
+    Q_D(DockContainer);
+    auto result = d->m_panels;
+    d->m_panels.clear();
+    return result;
+}
+
 DockWidget *DockContainer::topLevelDockWidget() const
 {
     auto panel = topLevelDockPanel();
@@ -643,7 +747,7 @@ void DockContainer::dropFloatingWidget(DockFloatingContainer *floatingWidget, co
 
         if (dropArea != Qx::InvalidDockWidgetArea) {
             int tabIndex = d->m_window->panelOverlay()->tabIndexUnderCursor();
-            d->dropIntoSection(floatingWidget, panel, dropArea, tabIndex);
+            d->dropIntoPanel(floatingWidget, panel, dropArea, tabIndex);
             dropped = true;
         }
     }
