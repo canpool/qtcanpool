@@ -11,6 +11,7 @@
 
 #include <QBoxLayout>
 #include <QEvent>
+#include <QCloseEvent>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -86,6 +87,12 @@ DockFloatingContainer::~DockFloatingContainer()
     QX_FINI_PRIVATE()
 }
 
+bool DockFloatingContainer::isClosable() const
+{
+    Q_D(const DockFloatingContainer);
+    return d->m_dockContainer->features().testFlag(DockWidget::DockWidgetClosable);
+}
+
 DockContainer *DockFloatingContainer::dockContainer() const
 {
     Q_D(const DockFloatingContainer);
@@ -146,9 +153,55 @@ void DockFloatingContainer::deleteContent()
     }
 }
 
+void DockFloatingContainer::updateWindowTitle()
+{
+
+}
+
+void DockFloatingContainer::closeEvent(QCloseEvent *event)
+{
+    Q_D(DockFloatingContainer);
+    d->setState(Qx::DockDraggingInactive);
+    event->ignore();
+    if (!isClosable()) {
+        return;
+    }
+
+    bool hasOpenDockWidgets = false;
+    for (auto w : d->m_dockContainer->openedDockWidgets()) {
+        if (w->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
+            w->features().testFlag(DockWidget::CustomCloseHandling)) {
+            bool closed = w->closeDockWidgetInternal();
+            if (!closed) {
+                hasOpenDockWidgets = true;
+            }
+        } else {
+            w->toggleView(false);
+        }
+    }
+
+    if (hasOpenDockWidgets) {
+        return;
+    }
+
+    // In Qt version after 5.9.2 there seems to be a bug that causes the
+    // QWidget::event() function to not receive any NonClientArea mouse
+    // events anymore after a close/show cycle. The bug is reported here:
+    // https://bugreports.qt.io/browse/QTBUG-73295
+    // The following code is a workaround for Qt versions > 5.9.2 that seems
+    // to work
+    // Starting from Qt version 5.12.2 this seems to work again. But
+    // now the QEvent::NonClientAreaMouseButtonPress function returns always
+    // Qt::RightButton even if the left button was pressed
+    this->hide();
+}
+
 void DockFloatingContainer::hideEvent(QHideEvent *event)
 {
     Super::hideEvent(event);
+    if (event->spontaneous()) {
+        return;
+    }
 }
 
 void DockFloatingContainer::showEvent(QShowEvent *event)

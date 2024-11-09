@@ -30,6 +30,8 @@ public:
     explicit DockFloatingContainer(DockPanel *panel);
     virtual ~DockFloatingContainer();
 
+    bool isClosable() const;
+
     DockContainer *dockContainer() const;
 
     DockWidget *topLevelDockWidget() const;
@@ -44,14 +46,17 @@ protected:
     void moveFloating() override;
 
     void deleteContent();
+    void updateWindowTitle();
 
 protected:
+    virtual void closeEvent(QCloseEvent *event) override;
     virtual void hideEvent(QHideEvent *event) override;
     virtual void showEvent(QShowEvent *event) override;
 
 private:
     QX_DECLARE_PRIVATE(DockFloatingContainer)
     friend class DockWindow;
+    friend class DockWidget;
 };
 
 QX_DOCK_END_NAMESPACE

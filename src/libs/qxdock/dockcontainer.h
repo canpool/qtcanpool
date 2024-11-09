@@ -6,6 +6,7 @@
 
 #include "qxdock_global.h"
 #include <QWidget>
+#include "dockwidget.h"
 
 class QSplitter;
 
@@ -35,6 +36,7 @@ public:
     bool hasTopLevelDockWidget() const;
     int dockPanelCount() const;
 
+    DockWidget::DockWidgetFeatures features() const;
     bool isFloating() const;
 
     DockFloatingContainer *floatingWidget() const;
@@ -55,6 +57,7 @@ private:
     QX_DECLARE_PRIVATE(DockContainer)
     friend class DockPanel;
     friend class DockFloatingContainer;
+    friend class DockWidget;
 };
 
 QX_DOCK_END_NAMESPACE

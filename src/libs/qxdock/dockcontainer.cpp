@@ -380,6 +380,20 @@ int DockContainer::dockPanelCount() const
     return d->m_panels.count();
 }
 
+DockWidget::DockWidgetFeatures DockContainer::features() const
+{
+    Q_D(const DockContainer);
+    DockWidget::DockWidgetFeatures f(DockWidget::AllDockWidgetFeatures);
+    for (const auto &panel : d->m_panels) {
+        if (!panel) {
+            continue;
+        }
+        f &= panel->features();
+    }
+
+    return f;
+}
+
 bool DockContainer::isFloating() const
 {
     Q_D(const DockContainer);

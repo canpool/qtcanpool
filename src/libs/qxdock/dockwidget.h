@@ -87,6 +87,7 @@ private:
     friend class DockPanel;
     friend class DockWindow;
     friend class DockTitleBarPrivate;
+    friend class DockFloatingContainer;
 };
 
 QX_DOCK_END_NAMESPACE

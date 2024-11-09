@@ -10,6 +10,7 @@
 #include "dockmanager.h"
 #include "dockutils.h"
 #include "docksplitter.h"
+#include "dockfloatingcontainer.h"
 
 #include <QPointer>
 #include <QBoxLayout>
@@ -69,6 +70,12 @@ void DockWidgetPrivate::showDockWidget()
         while (splitter && !splitter->isVisible()) {
             splitter->show();
             splitter = internal::findParent<DockSplitter *>(splitter);
+        }
+
+        DockContainer *container = m_panel->dockContainer();
+        if (container->isFloating()) {
+            DockFloatingContainer *floatingWidget = internal::findParent<DockFloatingContainer *>(container);
+            floatingWidget->show();
         }
     }
 }
@@ -277,6 +284,8 @@ void DockWidget::emitTopLevelChanged(bool floating)
 void DockWidget::toggleViewInternal(bool open)
 {
     Q_D(DockWidget);
+    DockContainer *container = dockContainer();
+    DockWidget *topLevelDockWidgetBefore = container ? container->topLevelDockWidget() : nullptr;
 
     d->m_closed = !open;
     if (open) {
@@ -290,6 +299,22 @@ void DockWidget::toggleViewInternal(bool open)
     if (d->m_panel) {
         d->m_panel->toggleDockWidgetView(this, open);
     }
+
+    if (open && topLevelDockWidgetBefore) {
+        DockWidget::emitTopLevelEventForWidget(topLevelDockWidgetBefore, false);
+    }
+
+    // Here we need to call the dockContainer() function again, because if
+    // this dock widget was unassigned before the call to showDockWidget() then
+    // it has a dock container now
+    container = dockContainer();
+    DockWidget *topLevelDockWidgetAfter = container ? container->topLevelDockWidget() : nullptr;
+    DockWidget::emitTopLevelEventForWidget(topLevelDockWidgetAfter, true);
+    DockFloatingContainer *floatingContainer = container ? container->floatingWidget() : nullptr;
+    if (floatingContainer) {
+        floatingContainer->updateWindowTitle();
+    }
+
     if (!open) {
         Q_EMIT closed();
     }
