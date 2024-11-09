@@ -7,6 +7,7 @@
 #include "dockpanel.h"
 #include "dockwidget.h"
 #include "dockfloatingcontainer.h"
+#include "dockoverlay.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -16,14 +17,27 @@ public:
     QX_DECLARE_PUBLIC(DockWindow)
 public:
     DockWindowPrivate();
+
+    void init();
+
 public:
     QList<DockContainer *> m_containers;
     DockWidget *m_centralWidget = nullptr;
     QList<QPointer<DockFloatingContainer> > m_floatingContainers;
+    DockOverlay *m_containerOverlay;
+    DockOverlay *m_panelOverlay;
 };
 
 DockWindowPrivate::DockWindowPrivate()
 {
+}
+
+void DockWindowPrivate::init()
+{
+    Q_Q(DockWindow);
+
+    m_containerOverlay = new DockOverlay(q, DockOverlay::PanelOverlayMode);
+    m_panelOverlay = new DockOverlay(q, DockOverlay::ContainerOverlayMode);
 }
 
 DockWindow::DockWindow(QWidget *parent)
@@ -31,6 +45,8 @@ DockWindow::DockWindow(QWidget *parent)
 {
     QX_INIT_PRIVATE(DockWindow)
     createRootSplitter();
+    Q_D(DockWindow);
+    d->init();
     registerDockContainer(this);
 }
 
@@ -133,6 +149,18 @@ void DockWindow::removeFloatingWidget(DockFloatingContainer *floatingWidget)
 {
     Q_D(DockWindow);
     d->m_floatingContainers.removeAll(floatingWidget);
+}
+
+DockOverlay *DockWindow::containerOverlay() const
+{
+    Q_D(const DockWindow);
+    return d->m_containerOverlay;
+}
+
+DockOverlay *DockWindow::panelOverlay() const
+{
+    Q_D(const DockWindow);
+    return d->m_panelOverlay;
 }
 
 void DockWindow::notifyDockAreaRelocation(QWidget *relocatedWidget)

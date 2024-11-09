@@ -12,6 +12,7 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockPanel;
 class DockWidget;
 class DockFloatingContainer;
+class DockOverlay;
 
 class DockWindowPrivate;
 
@@ -38,6 +39,10 @@ protected:
     void removeDockContainer(DockContainer *container);
     void registerFloatingWidget(DockFloatingContainer *floatingWidget);
     void removeFloatingWidget(DockFloatingContainer *floatingWidget);
+
+    DockOverlay *containerOverlay() const;
+    DockOverlay *panelOverlay() const;
+
     void notifyDockAreaRelocation(QWidget *relocatedWidget);
 
 private:
