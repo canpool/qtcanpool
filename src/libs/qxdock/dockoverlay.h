@@ -23,6 +23,15 @@ public:
     explicit DockOverlay(QWidget *parent, OverlayMode mode = PanelOverlayMode);
     virtual ~DockOverlay();
 
+    void setAllowedAreas(Qx::DockWidgetAreas areas);
+    Qx::DockWidgetAreas allowedAreas() const;
+    Qx::DockWidgetArea dropAreaUnderCursor() const;
+    Qx::DockWidgetArea showOverlay(QWidget *target);
+
+    void hideOverlay();
+
+    void enableDropPreview(bool enable);
+
 private:
     QX_DECLARE_PRIVATE(DockOverlay)
 };

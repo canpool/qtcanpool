@@ -118,6 +118,12 @@ void DockWindow::removeDockWidget(DockWidget *w)
     Q_EMIT dockWidgetRemoved(w);
 }
 
+const QList<DockContainer *> DockWindow::dockContainers() const
+{
+    Q_D(const DockWindow);
+    return d->m_containers;
+}
+
 DockWidget *DockWindow::centralWidget() const
 {
     Q_D(const DockWindow);

@@ -8,6 +8,7 @@
 #include "dockpanel.h"
 #include "dockcontainer.h"
 #include "dockutils.h"
+#include "dockoverlay.h"
 
 #include <QBoxLayout>
 #include <QEvent>
@@ -40,6 +41,7 @@ public:
 public:
     QPointer<DockWindow> m_window;
     DockContainer *m_dockContainer;
+    DockContainer *m_dropContainer = nullptr;
     QPoint m_dragStartMousePosition;
     Qx::DockDragState m_draggingState = Qx::DockDraggingInactive;
     QPoint m_dragStartPos;
@@ -57,7 +59,68 @@ void DockFloatingContainerPrivate::titleMouseReleaseEvent()
 
 void DockFloatingContainerPrivate::updateDropOverlays(const QPoint &globalPos)
 {
+    Q_Q(DockFloatingContainer);
+    if (!q->isVisible() || !m_window) {
+        return;
+    }
+    auto containers = m_window->dockContainers();
+    DockContainer *topContainer = nullptr;
+    for (const auto c : containers) {
+        if (!c->isVisible()) {
+            continue;
+        }
+        if (m_dockContainer == c) {
+            continue;
+        }
+        QPoint mappedPos = c->mapFromGlobal(globalPos);
+        if (c->rect().contains(mappedPos)) {
+            if (!topContainer || c->isInFrontOf(topContainer)) {
+                topContainer = c;
+            }
+        }
+    }
+    m_dropContainer = topContainer;
 
+    auto containerOverlay = m_window->containerOverlay();
+    auto panelOverlay = m_window->panelOverlay();
+    if (!topContainer) {
+        containerOverlay->hideOverlay();
+        panelOverlay->hideOverlay();
+        return;
+    }
+
+    int visiblePanels = topContainer->visibleDockPanelCount();
+    Qx::DockWidgetAreas allowdContainerAreas = (visiblePanels > 1) ? Qx::OuterDockAreas : Qx::AllDockAreas;
+    auto panel = topContainer->dockPanelAt(globalPos);
+    // If the dock container contains only one single panel, then we need
+    // to respect the allowed areas - only the center area is relevant here because
+    // all other allowed areas are from the container
+    if (visiblePanels == 1 && panel) {
+        allowdContainerAreas.setFlag(Qx::CenterDockWidgetArea,
+                                     panel->allowedAreas().testFlag(Qx::CenterDockWidgetArea));
+    }
+    containerOverlay->setAllowedAreas(allowdContainerAreas);
+
+    Qx::DockWidgetArea containerArea = containerOverlay->showOverlay(topContainer);
+    containerOverlay->enableDropPreview(containerArea != Qx::InvalidDockWidgetArea);
+    if (panel && panel->isVisible() && visiblePanels > 0) {
+        panelOverlay->enableDropPreview(true);
+        panelOverlay->setAllowedAreas((visiblePanels == 1) ? Qx::NoDockWidgetArea : panel->allowedAreas());
+        Qx::DockWidgetArea area = panelOverlay->showOverlay(panel);
+
+        // A CenterDockWidgetArea for the dockAreaOverlay() indicates that
+        // the mouse is in the title bar. If the ContainerArea is valid
+        // then we ignore the dock area of the dockAreaOverlay() and disable
+        // the drop preview
+        if ((area == Qx::CenterDockWidgetArea) && (containerArea != Qx::InvalidDockWidgetArea)) {
+            panelOverlay->enableDropPreview(false);
+            containerOverlay->enableDropPreview(true);
+        } else {
+            containerOverlay->enableDropPreview(Qx::InvalidDockWidgetArea == area);
+        }
+    } else {
+        panelOverlay->hideOverlay();
+    }
 }
 
 bool DockFloatingContainerPrivate::isState(Qx::DockDragState stateId) const

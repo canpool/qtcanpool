@@ -13,6 +13,7 @@ class DockPanel;
 class DockWidget;
 class DockFloatingContainer;
 class DockOverlay;
+class DockContainer;
 
 class DockWindowPrivate;
 
@@ -25,6 +26,8 @@ public:
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
     void removeDockWidget(DockWidget *w);
+
+    const QList<DockContainer *> dockContainers() const;
 
     DockWidget *centralWidget() const;
 
@@ -49,6 +52,7 @@ private:
     QX_DECLARE_PRIVATE(DockWindow)
     friend class DockContainer;
     friend class DockFloatingContainer;
+    friend class DockFloatingContainerPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

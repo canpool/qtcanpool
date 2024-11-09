@@ -55,6 +55,9 @@ public:
 
     virtual void setVisible(bool visible) override;
 
+    Qx::DockWidgetAreas allowedAreas() const;
+    void setAllowedAreas(Qx::DockWidgetAreas areas);
+
     bool isCentralWidgetArea() const;
 
 public Q_SLOTS:

@@ -58,6 +58,7 @@ public:
     QList<QPointer<DockPanel>> m_panels;
     DockPanel *m_topLevelPanel = nullptr;
     bool m_isFloating = false;
+    unsigned int m_zOrderIndex = 0;
 };
 
 DockContainerPrivate::DockContainerPrivate()
@@ -334,6 +335,31 @@ void DockContainer::removeDockWidget(DockWidget *w)
     }
 }
 
+unsigned int DockContainer::zOrderIndex() const
+{
+    Q_D(const DockContainer);
+    return d->m_zOrderIndex;
+}
+
+bool DockContainer::isInFrontOf(DockContainer *other) const
+{
+    return this->zOrderIndex() > other->zOrderIndex();
+}
+
+DockPanel *DockContainer::dockPanelAt(const QPoint &globalPos) const
+{
+    Q_D(const DockContainer);
+
+    for (const auto &panel : d->m_panels) {
+        if (panel && panel->isVisible() &&
+            panel->rect().contains(panel->mapFromGlobal(globalPos))) {
+            return panel;
+        }
+    }
+
+    return nullptr;
+}
+
 DockPanel *DockContainer::dockPanel(int index) const
 {
     Q_D(const DockContainer);
@@ -378,6 +404,17 @@ int DockContainer::dockPanelCount() const
 {
     Q_D(const DockContainer);
     return d->m_panels.count();
+}
+
+int DockContainer::visibleDockPanelCount() const
+{
+    Q_D(const DockContainer);
+    int result = 0;
+    for (const auto &panel : d->m_panels) {
+        result += (!panel || panel->isHidden()) ? 0 : 1;
+    }
+
+    return result;
 }
 
 DockWidget::DockWidgetFeatures DockContainer::features() const

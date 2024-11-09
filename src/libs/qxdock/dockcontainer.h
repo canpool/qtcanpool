@@ -29,12 +29,17 @@ public:
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
     void removeDockWidget(DockWidget *w);
 
+    virtual unsigned int zOrderIndex() const;
+    bool isInFrontOf(DockContainer *other) const;
+
+    DockPanel *dockPanelAt(const QPoint &globalPos) const;
     DockPanel *dockPanel(int index) const;
 
     QList<DockPanel *> openedDockPanels() const;
     QList<DockWidget *> openedDockWidgets() const;
     bool hasTopLevelDockWidget() const;
     int dockPanelCount() const;
+    int visibleDockPanelCount() const;
 
     DockWidget::DockWidgetFeatures features() const;
     bool isFloating() const;

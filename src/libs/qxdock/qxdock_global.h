@@ -108,15 +108,18 @@
 namespace Qx {
 
 enum DockWidgetArea {
+    NoDockWidgetArea = 0x00,
     LeftDockWidgetArea = 0x1,
     RightDockWidgetArea = 0x2,
     TopDockWidgetArea = 0x4,
     BottomDockWidgetArea = 0x8,
     CenterDockWidgetArea = 0x10,
 
+    InvalidDockWidgetArea = NoDockWidgetArea,
     DockWidgetArea_Mask = 0x1f,
     AllDockWidgetAreas = DockWidgetArea_Mask,
-    NoDockWidgetArea = 0
+    OuterDockAreas = TopDockWidgetArea | LeftDockWidgetArea | RightDockWidgetArea | BottomDockWidgetArea,
+    AllDockAreas = OuterDockAreas | CenterDockWidgetArea
 };
 enum DockWidgetAreaSizes {
     NDockWidgetAreas = 5

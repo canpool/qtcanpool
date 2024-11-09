@@ -141,6 +141,8 @@ public:
     }
 };
 
+static const Qx::DockWidgetAreas s_defaultAllowedAreas = Qx::AllDockAreas;
+
 class DockPanelPrivate
 {
 public:
@@ -161,6 +163,7 @@ public:
     DockTitleBar *m_titleBar = nullptr;
     DockPanel::DockAreaFlags m_flags{DockPanel::DefaultFlags};
     bool m_updateTitleBarButtons = false;
+    Qx::DockWidgetAreas	m_allowedAreas	= s_defaultAllowedAreas;
 };
 
 DockPanelPrivate::DockPanelPrivate()
@@ -359,6 +362,18 @@ void DockPanel::setVisible(bool visible)
     if (d->m_updateTitleBarButtons) {
         d->updateTitleBarButtonStates();
     }
+}
+
+Qx::DockWidgetAreas DockPanel::allowedAreas() const
+{
+    Q_D(const DockPanel);
+    return d->m_allowedAreas;
+}
+
+void DockPanel::setAllowedAreas(Qx::DockWidgetAreas areas)
+{
+    Q_D(DockPanel);
+    d->m_allowedAreas = areas;
 }
 
 bool DockPanel::isCentralWidgetArea() const
