@@ -31,6 +31,9 @@ public:
     DockTab *currentTab() const;
     DockTab *tab(int index) const;
 
+    int tabAt(const QPoint &pos) const;
+    int tabInsertIndexAt(const QPoint &pos) const;
+
     bool isTabOpen(int index) const;
 
     virtual QSize minimumSizeHint() const override;

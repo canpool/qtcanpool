@@ -265,6 +265,12 @@ DockSplitter *DockPanel::parentSplitter() const
     return internal::findParent<DockSplitter *>(this);
 }
 
+QRect DockPanel::titleBarGeometry() const
+{
+    Q_D(const DockPanel);
+    return d->m_titleBar->geometry();
+}
+
 int DockPanel::dockWidgetsCount() const
 {
     Q_D(const DockPanel);
@@ -374,6 +380,12 @@ void DockPanel::setAllowedAreas(Qx::DockWidgetAreas areas)
 {
     Q_D(DockPanel);
     d->m_allowedAreas = areas;
+}
+
+DockTitleBar *DockPanel::titleBar() const
+{
+    Q_D(const DockPanel);
+    return d->m_titleBar;
 }
 
 bool DockPanel::isCentralWidgetArea() const

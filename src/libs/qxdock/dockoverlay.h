@@ -27,7 +27,7 @@ public:
 
     void setAllowedAreas(Qx::DockWidgetAreas areas);
     Qx::DockWidgetAreas allowedAreas() const;
-    Qx::DockWidgetArea dropAreaUnderCursor() const;
+    Qx::DockWidgetArea dropAreaUnderCursor();
     Qx::DockWidgetArea showOverlay(QWidget *target);
 
     void hideOverlay();

@@ -15,6 +15,7 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockWindow;
 class DockContainer;
 class DockSplitter;
+class DockTitleBar;
 
 class DockPanelPrivate;
 
@@ -38,6 +39,8 @@ public:
 
     DockSplitter *parentSplitter() const;
 
+    QRect titleBarGeometry() const;
+
     int dockWidgetsCount() const;
     QList<DockWidget *> dockWidgets() const;
     int openDockWidgetsCount() const;
@@ -57,6 +60,8 @@ public:
 
     Qx::DockWidgetAreas allowedAreas() const;
     void setAllowedAreas(Qx::DockWidgetAreas areas);
+
+    DockTitleBar *titleBar() const;
 
     bool isCentralWidgetArea() const;
 

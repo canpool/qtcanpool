@@ -135,6 +135,36 @@ DockTab *DockTabBar::tab(int index) const
     return qobject_cast<DockTab *>(d->m_tabsLayout->itemAt(index)->widget());
 }
 
+int DockTabBar::tabAt(const QPoint &pos) const
+{
+    if (!isVisible()) {
+        return Qx::DockTabInvalidIndex;
+    }
+
+    if (pos.x() < tab(0)->geometry().x()) {
+        return -1;
+    }
+
+    int cnt = count();
+    for (int i = 0; i < cnt; ++i) {
+        if (tab(i)->geometry().contains(pos)) {
+            return i;
+        }
+    }
+
+    return cnt;
+}
+
+int DockTabBar::tabInsertIndexAt(const QPoint &pos) const
+{
+    int index = tabAt(pos);
+    if (index == Qx::DockTabInvalidIndex) {
+        return Qx::DockTabDefaultInsertIndex;
+    } else {
+        return (index < 0) ? 0 : index;
+    }
+}
+
 bool DockTabBar::isTabOpen(int index) const
 {
     if (index < 0 || index >= count()) {

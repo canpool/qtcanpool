@@ -4,10 +4,15 @@
  **/
 
 #include "dockoverlay.h"
+#include "dockpanel.h"
+#include "docktitlebar.h"
+#include "docktabbar.h"
 
 #include <QPainter>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+static const int s_invalidTabIndex = -2;
 
 class DockOverlayPrivate
 {
@@ -23,6 +28,7 @@ public:
     QPointer<QWidget> m_targetWidget;
     bool m_dropPreviewEnabled = true;
     QRect m_dropAreaRect;
+    int m_tabIndex = s_invalidTabIndex;
 };
 
 DockOverlayPrivate::DockOverlayPrivate()
@@ -67,8 +73,28 @@ Qx::DockWidgetAreas DockOverlay::allowedAreas() const
     return d->m_allowedAreas;
 }
 
-Qx::DockWidgetArea DockOverlay::dropAreaUnderCursor() const
+Qx::DockWidgetArea DockOverlay::dropAreaUnderCursor()
 {
+    Q_D(DockOverlay);
+    d->m_tabIndex = s_invalidTabIndex;
+    if (!d->m_targetWidget) {
+        return Qx::InvalidDockWidgetArea;
+    }
+
+    auto cursorPos = QCursor::pos();
+    auto panel = qobject_cast<DockPanel *>(d->m_targetWidget.data());
+    if (!panel) {
+        return Qx::InvalidDockWidgetArea;
+    }
+
+    if (panel->allowedAreas().testFlag(Qx::CenterDockWidgetArea) && !panel->titleBar()->isHidden() &&
+        panel->titleBarGeometry().contains(panel->mapFromGlobal(cursorPos)))
+    {
+        auto tabBar = panel->titleBar()->tabBar();
+        d->m_tabIndex = tabBar->tabInsertIndexAt(tabBar->mapFromGlobal(cursorPos));
+        return Qx::CenterDockWidgetArea;
+    }
+
     return Qx::InvalidDockWidgetArea;
 }
 

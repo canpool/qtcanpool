@@ -128,6 +128,11 @@ enum DockWidgetAreaSizes {
 Q_DECLARE_FLAGS(DockWidgetAreas, DockWidgetArea)
 Q_DECLARE_OPERATORS_FOR_FLAGS(DockWidgetAreas)
 
+enum DockTabIndex {
+    DockTabDefaultInsertIndex = -1,
+    DockTabInvalidIndex = -2
+};
+
 enum DockTitleBarButton {
     TitleBarButtonTabsMenu,
     TitleBarButtonUndock,
