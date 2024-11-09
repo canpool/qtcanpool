@@ -16,6 +16,7 @@ class DockWindow;
 class DockPanel;
 class DockWidget;
 class DockFloatingContainer;
+class DockSplitter;
 
 class DockContainerPrivate;
 
@@ -51,6 +52,7 @@ Q_SIGNALS:
     void dockAreasRemoved();
 
 protected:
+    DockSplitter *rootSplitter() const;
     void createRootSplitter();
     void addDockPanel(DockPanel *panel, Qx::DockWidgetArea area = Qx::CenterDockWidgetArea);
     void removeDockPanel(DockPanel *panel);
@@ -58,11 +60,13 @@ protected:
     DockPanel *topLevelDockPanel() const;
     QList<DockWidget *> dockWidgets() const;
     void updateSplitterHandles(QSplitter *splitter);
+    void dropFloatingWidget(DockFloatingContainer *floatingWidget, const QPoint &targetPos);
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)
     friend class DockPanel;
     friend class DockFloatingContainer;
+    friend class DockFloatingContainerPrivate;
     friend class DockWidget;
 };
 

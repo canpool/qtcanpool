@@ -37,6 +37,8 @@ public:
     DockWidget *topLevelDockWidget() const;
     QList<DockWidget *> dockWidgets() const;
 
+    void finishDropOperation();
+
 private Q_SLOTS:
     void onDockAreasAddedOrRemoved();
 

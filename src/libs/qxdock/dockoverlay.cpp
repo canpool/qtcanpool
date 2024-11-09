@@ -98,6 +98,12 @@ Qx::DockWidgetArea DockOverlay::dropAreaUnderCursor()
     return Qx::InvalidDockWidgetArea;
 }
 
+int DockOverlay::tabIndexUnderCursor() const
+{
+    Q_D(const DockOverlay);
+    return d->m_tabIndex;
+}
+
 Qx::DockWidgetArea DockOverlay::showOverlay(QWidget *target)
 {
     Q_D(DockOverlay);
@@ -134,6 +140,12 @@ void DockOverlay::enableDropPreview(bool enable)
     Q_D(DockOverlay);
     d->m_dropPreviewEnabled = enable;
     update();
+}
+
+QRect DockOverlay::dropOverlayRect() const
+{
+    Q_D(const DockOverlay);
+    return d->m_dropAreaRect;
 }
 
 void DockOverlay::paintEvent(QPaintEvent *e)

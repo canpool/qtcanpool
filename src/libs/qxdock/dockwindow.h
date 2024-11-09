@@ -47,6 +47,7 @@ protected:
     DockOverlay *panelOverlay() const;
 
     void notifyDockAreaRelocation(QWidget *relocatedWidget);
+    void notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget);
 
 private:
     QX_DECLARE_PRIVATE(DockWindow)

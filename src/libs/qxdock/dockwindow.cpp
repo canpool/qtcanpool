@@ -171,7 +171,12 @@ DockOverlay *DockWindow::panelOverlay() const
 
 void DockWindow::notifyDockAreaRelocation(QWidget *relocatedWidget)
 {
+    // TODO
+}
 
+void DockWindow::notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget)
+{
+    // TODO
 }
 
 QX_DOCK_END_NAMESPACE

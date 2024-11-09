@@ -13,6 +13,7 @@
 #include <QBoxLayout>
 #include <QEvent>
 #include <QCloseEvent>
+#include <QApplication>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -54,7 +55,35 @@ DockFloatingContainerPrivate::DockFloatingContainerPrivate()
 
 void DockFloatingContainerPrivate::titleMouseReleaseEvent()
 {
+    Q_Q(DockFloatingContainer);
 
+    setState(Qx::DockDraggingInactive);
+
+    if (!m_dropContainer) {
+        return;
+    }
+
+    if (m_window->panelOverlay()->dropAreaUnderCursor() != Qx::InvalidDockWidgetArea ||
+        m_window->containerOverlay()->dropAreaUnderCursor() != Qx::InvalidDockWidgetArea) {
+        DockOverlay *overlay = m_window->containerOverlay();
+        if (!overlay->dropOverlayRect().isValid()) {
+            overlay = m_window->panelOverlay();
+        }
+
+        QRect rect = overlay->dropOverlayRect();
+        int frameWidth = (q->frameSize().width() - q->rect().width()) / 2;
+        int titleBarHeight = q->frameSize().height() - q->rect().height() - frameWidth;
+        if (rect.isValid()) {
+            QPoint topLeft = overlay->mapToGlobal(rect.topLeft());
+            topLeft.ry() += titleBarHeight;
+            q->setGeometry(QRect(topLeft, QSize(rect.width(), rect.height() - titleBarHeight)));
+            QApplication::processEvents();
+        }
+        m_dropContainer->dropFloatingWidget(q, QCursor::pos());
+    }
+
+    m_window->containerOverlay()->hideOverlay();
+    m_window->panelOverlay()->hideOverlay();
 }
 
 void DockFloatingContainerPrivate::updateDropOverlays(const QPoint &globalPos)
@@ -142,7 +171,7 @@ void DockFloatingContainerPrivate::setState(Qx::DockDragState stateId)
 
 void DockFloatingContainerPrivate::handleEscapeKey()
 {
-
+    // TODO
 }
 
 DockFloatingContainer::DockFloatingContainer(DockWindow *window)
@@ -209,9 +238,14 @@ QList<DockWidget *> DockFloatingContainer::dockWidgets() const
     return d->m_dockContainer->dockWidgets();
 }
 
+void DockFloatingContainer::finishDropOperation()
+{
+    // TODO
+}
+
 void DockFloatingContainer::onDockAreasAddedOrRemoved()
 {
-
+    // TODO
 }
 
 void QxDock::DockFloatingContainer::startFloating(const QPoint &dragStartMousePos, const QSize &size,
@@ -227,7 +261,8 @@ void QxDock::DockFloatingContainer::startFloating(const QPoint &dragStartMousePo
 
 void DockFloatingContainer::finishDragging()
 {
-
+    Q_D(DockFloatingContainer);
+    d->titleMouseReleaseEvent();
 }
 
 void DockFloatingContainer::moveFloating()
@@ -235,6 +270,20 @@ void DockFloatingContainer::moveFloating()
     Q_D(DockFloatingContainer);
     const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition;
     move(moveToPos);
+
+    switch (d->m_draggingState)
+    {
+    case Qx::DockDraggingMousePressed:
+        d->setState(Qx::DockDraggingFloatingWidget);
+        d->updateDropOverlays(QCursor::pos());
+        break;
+
+    case Qx::DockDraggingFloatingWidget:
+        d->updateDropOverlays(QCursor::pos());
+        break;
+    default:
+        break;
+    }
 }
 
 void DockFloatingContainer::deleteContent()
@@ -259,7 +308,7 @@ void DockFloatingContainer::deleteContent()
 
 void DockFloatingContainer::updateWindowTitle()
 {
-
+    // TODO
 }
 
 void DockFloatingContainer::closeEvent(QCloseEvent *event)
