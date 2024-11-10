@@ -12,9 +12,14 @@
 #include "dockmanager.h"
 #include "dockfloatingcontainer.h"
 #include "dockfloatingpreview.h"
+#include "dockcontainer.h"
+#include "dockwindow.h"
+#include "dockoverlay.h"
 
 #include <QBoxLayout>
 #include <QMenu>
+#include <QMouseEvent>
+#include <QApplication>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -39,6 +44,8 @@ public:
     void createTabBar();
     void createButtons();
 
+    bool isDraggingState(Qx::DockDragState dragState) const;
+    void startFloating(const QPoint &offset);
     DockFloatingWidget *makeAreaFloating(const QPoint &offset, Qx::DockDragState dragState);
 
     static bool testConfigFlag(DockManager::ConfigFlag flag);
@@ -55,6 +62,8 @@ public:
     QList<TitleBarButton *> m_dockWidgetActionsButtons;
 
     Qx::DockDragState m_dragState = Qx::DockDraggingInactive;
+    QPoint m_dragStartMousePos;
+    DockFloatingWidget *m_floatingWidget = nullptr;
 };
 
 DockTitleBarPrivate::DockTitleBarPrivate()
@@ -145,6 +154,17 @@ void DockTitleBarPrivate::createButtons()
     q->connect(m_closeButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
 
+bool DockTitleBarPrivate::isDraggingState(Qx::DockDragState dragState) const
+{
+    return m_dragState == dragState;
+}
+
+void DockTitleBarPrivate::startFloating(const QPoint &offset)
+{
+    m_floatingWidget = makeAreaFloating(offset, Qx::DockDraggingFloatingWidget);
+    qApp->postEvent(m_panel, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
+}
+
 DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, Qx::DockDragState dragState)
 {
     QSize sz = m_panel->size();
@@ -155,7 +175,7 @@ DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, 
     if (needCreateFloatingContainer) {
         floatingWidget = floatingContainer = new DockFloatingContainer(m_panel);
     } else {
-        auto w = new DockFloatingPreview();
+        auto w = new DockFloatingPreview(m_panel);
         QObject::connect(w, &DockFloatingPreview::draggingCanceled, [=]() {
             this->m_dragState = Qx::DockDraggingInactive;
         });
@@ -317,6 +337,77 @@ void DockTitleBar::onUndockButtonClicked()
     if (d->m_panel->features().testFlag(DockWidget::DockWidgetFloatable)) {
         d->makeAreaFloating(mapFromGlobal(QCursor::pos()), Qx::DockDraggingInactive);
     }
+}
+
+void DockTitleBar::mousePressEvent(QMouseEvent *e)
+{
+    Q_D(DockTitleBar);
+    if (e->button() == Qt::LeftButton) {
+        e->accept();
+        d->m_dragStartMousePos = e->pos();
+        d->m_dragState = Qx::DockDraggingMousePressed;
+        return;
+    }
+    Super::mousePressEvent(e);
+}
+
+void DockTitleBar::mouseReleaseEvent(QMouseEvent *e)
+{
+    Q_D(DockTitleBar);
+    if (e->button() == Qt::LeftButton) {
+        e->accept();
+        auto currentDragState = d->m_dragState;
+        d->m_dragStartMousePos = QPoint();
+        d->m_dragState = Qx::DockDraggingInactive;
+        if (Qx::DockDraggingFloatingWidget == currentDragState) {
+            d->m_floatingWidget->finishDragging();
+        }
+
+        return;
+    }
+    Super::mouseReleaseEvent(e);
+}
+
+void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
+{
+    Q_D(DockTitleBar);
+    Super::mouseMoveEvent(e);
+    if (!(e->buttons() & Qt::LeftButton) || d->isDraggingState(Qx::DockDraggingInactive)) {
+        d->m_dragState = Qx::DockDraggingInactive;
+        return;
+    }
+
+    // move floating window
+    if (d->isDraggingState(Qx::DockDraggingFloatingWidget)) {
+        d->m_floatingWidget->moveFloating();
+        return;
+    }
+
+    // If this is the last dock area in a floating dock container it does not make
+    // sense to move it to a new floating widget and leave this one
+    // empty
+    if (d->m_panel->dockContainer()->isFloating() &&
+        d->m_panel->dockContainer()->visibleDockPanelCount() == 1) {
+        return;
+    }
+
+    // If one single dock widget in this area is not floatable then the whole
+    // area is not floatable
+    // We can create the floating drag preview if the dock widget is movable
+    auto features = d->m_panel->features();
+    if (!features.testFlag(DockWidget::DockWidgetFloatable) &&
+        !(features.testFlag(DockWidget::DockWidgetMovable))) {
+        return;
+    }
+
+    int dragDistance = (d->m_dragStartMousePos - e->pos()).manhattanLength();
+    if (dragDistance >= DockManager::startDragDistance()) {
+        d->startFloating(d->m_dragStartMousePos);
+        auto overlay = d->m_panel->dockWindow()->containerOverlay();
+        overlay->setAllowedAreas(Qx::OuterDockAreas);
+    }
+
+    return;
 }
 
 

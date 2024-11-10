@@ -21,6 +21,9 @@ public:
 
     bool hasVisibleContent() const;
 
+    QWidget *firstWidget() const;
+    QWidget *lastWidget() const;
+
     bool isResizingWithContainer() const;
 private:
     QX_DECLARE_PRIVATE(DockSplitter)

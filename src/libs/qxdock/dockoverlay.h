@@ -30,6 +30,8 @@ public:
     Qx::DockWidgetArea dropAreaUnderCursor();
     int tabIndexUnderCursor() const;
 
+    Qx::DockWidgetArea visibleDropAreaUnderCursor();
+
     Qx::DockWidgetArea showOverlay(QWidget *target);
     void hideOverlay();
 

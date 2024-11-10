@@ -62,6 +62,7 @@ protected:
     QList<DockWidget *> dockWidgets() const;
     void updateSplitterHandles(QSplitter *splitter);
     void dropFloatingWidget(DockFloatingContainer *floatingWidget, const QPoint &targetPos);
+    void dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, DockPanel* targetPanel, int tabIndex = -1);
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)
@@ -69,6 +70,7 @@ private:
     friend class DockFloatingContainer;
     friend class DockFloatingContainerPrivate;
     friend class DockWidget;
+    friend class DockFloatingPreview;
 };
 
 QX_DOCK_END_NAMESPACE

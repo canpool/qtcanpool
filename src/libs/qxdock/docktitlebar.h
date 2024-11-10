@@ -20,6 +20,8 @@ class QX_DOCK_EXPORT DockTitleBar : public QWidget
 {
     Q_OBJECT
 public:
+    using Super = QWidget;
+public:
     explicit DockTitleBar(DockPanel *parent = nullptr);
     virtual ~DockTitleBar();
 
@@ -33,6 +35,9 @@ public:
     int indexOf(QWidget *widget) const;
     QString titleBarButtonToolTip(Qx::DockTitleBarButton id) const;
 
+Q_SIGNALS:
+    void tabBarClicked(int index);
+
 private Q_SLOTS:
     void onTabsMenuAboutToShow();
     void onTabsMenuActionTriggered(QAction *a);
@@ -40,8 +45,10 @@ private Q_SLOTS:
     void onCloseButtonClicked();
     void onUndockButtonClicked();
 
-Q_SIGNALS:
-    void tabBarClicked(int index);
+protected:
+    virtual void mousePressEvent(QMouseEvent *e) override;
+    virtual void mouseReleaseEvent(QMouseEvent *e) override;
+    virtual void mouseMoveEvent(QMouseEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTitleBar)

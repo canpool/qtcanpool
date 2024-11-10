@@ -50,6 +50,16 @@ bool DockSplitter::hasVisibleContent() const
     return false;
 }
 
+QWidget *DockSplitter::firstWidget() const
+{
+    return (count() > 0) ? widget(0) : nullptr;
+}
+
+QWidget *DockSplitter::lastWidget() const
+{
+    return (count() > 0) ? widget(count() - 1) : nullptr;
+}
+
 bool DockSplitter::isResizingWithContainer() const
 {
     for (auto panel : findChildren<DockPanel *>()) {

@@ -17,6 +17,7 @@ class DockSplitter;
 
 namespace internal {
 extern const int FloatingWidgetDragStartEvent;
+extern const int DockedWidgetDragStartEvent;
 
 template <class T>
 void setFlag(T &flags, typename T::enum_type flag, bool on = true)

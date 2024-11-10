@@ -54,6 +54,9 @@ private:
     friend class DockContainer;
     friend class DockFloatingContainer;
     friend class DockFloatingContainerPrivate;
+    friend class DockTitleBar;
+    friend class DockFloatingPreview;
+    friend class DockFloatingPreviewPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

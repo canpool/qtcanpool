@@ -22,6 +22,9 @@ public:
         TabCloseButtonIsToolButton = 0x0040,
         AllTabsHaveCloseButton = 0x0080,
         RetainTabSizeWhenCloseButtonHidden = 0x0100,
+        DragPreviewIsDynamic = 0x0400,
+        DragPreviewShowsContentPixmap = 0x0800,
+        DragPreviewHasWindowFrame = 0x1000,
         AlwaysShowTabs = 0x2000,
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
@@ -39,9 +42,13 @@ public:
                           | ActiveTabHasCloseButton,
 
         DefaultOpaqueConfig = DefaultBaseConfig
-                            | OpaqueSplitterResize,
+                            | OpaqueSplitterResize
+                            | DragPreviewShowsContentPixmap,
 
         DefaultNonOpaqueConfig = DefaultBaseConfig
+                               | DragPreviewShowsContentPixmap,
+        NonOpaqueWithWindowFrame = DefaultNonOpaqueConfig
+                                 | DragPreviewHasWindowFrame
     };
     Q_DECLARE_FLAGS(ConfigFlags, ConfigFlag)
 
@@ -55,6 +62,8 @@ public:
     static bool testConfigFlag(ConfigFlag flag);
 
     static DockIconProvider &iconProvider();
+
+    static int startDragDistance();
 
 private:
     QX_DECLARE_PRIVATE(DockManager)

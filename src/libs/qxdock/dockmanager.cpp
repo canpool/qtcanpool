@@ -6,6 +6,8 @@
 #include "dockmanager.h"
 #include "dockutils.h"
 
+#include <QApplication>
+
 QX_DOCK_BEGIN_NAMESPACE
 
 static DockManager::ConfigFlags s_configFlags = DockManager::DefaultNonOpaqueConfig;
@@ -57,6 +59,11 @@ DockIconProvider &DockManager::iconProvider()
 {
     static DockIconProvider instance;
     return instance;
+}
+
+int DockManager::startDragDistance()
+{
+    return QApplication::startDragDistance() * 1.5;
 }
 
 QX_DOCK_END_NAMESPACE

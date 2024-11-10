@@ -116,6 +116,16 @@ int DockOverlay::tabIndexUnderCursor() const
     return d->m_tabIndex;
 }
 
+Qx::DockWidgetArea DockOverlay::visibleDropAreaUnderCursor()
+{
+    Q_D(const DockOverlay);
+    if (isHidden() || !d->m_dropPreviewEnabled) {
+        return Qx::InvalidDockWidgetArea;
+    } else {
+        return dropAreaUnderCursor();
+    }
+}
+
 Qx::DockWidgetArea DockOverlay::showOverlay(QWidget *target)
 {
     Q_D(DockOverlay);

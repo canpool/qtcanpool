@@ -204,7 +204,7 @@ ReflowComments:  true
 # 短命名空间跨越的最大展开行数
 ShortNamespaceLines: 1
 # 允许排序#include
-SortIncludes:    CaseSensitive
+SortIncludes:    false
 # java静态导入放在非静态导入之前
 SortJavaStaticImport: Before
 # 对using声明排序

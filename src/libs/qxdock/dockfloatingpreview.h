@@ -10,6 +10,8 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockPanel;
+
 class DockFloatingPreviewPrivate;
 
 class QX_DOCK_EXPORT DockFloatingPreview : public QWidget
@@ -17,7 +19,7 @@ class QX_DOCK_EXPORT DockFloatingPreview : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DockFloatingPreview(QWidget *parent = nullptr);
+    explicit DockFloatingPreview(DockPanel *content);
     virtual ~DockFloatingPreview();
 
 public:
@@ -28,6 +30,15 @@ public:
 
 Q_SIGNALS:
     void draggingCanceled();
+
+private Q_SLOTS:
+    void onApplicationStateChanged(Qt::ApplicationState state);
+
+protected:
+    DockFloatingPreview(QWidget *content, QWidget *parent);
+
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+    virtual void paintEvent(QPaintEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockFloatingPreview)

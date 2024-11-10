@@ -54,9 +54,12 @@ public:
 
     void dropIntoContainer(DockFloatingContainer *floatingWidget, Qx::DockWidgetArea area);
     void dropIntoCenterOfPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel, int tabIndex = 0);
-    void dropIntoPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel,
-                       Qx::DockWidgetArea area, int tabIndex = 0);
+    void dropIntoPanel(DockFloatingContainer *floatingWidget, DockPanel *targetPanel, Qx::DockWidgetArea area,
+                       int tabIndex = 0);
 
+    void moveToContainer(QWidget *widget, Qx::DockWidgetArea area);
+    void moveIntoCenterOfSection(QWidget *widget, DockPanel *targetPanel, int tabIndex = 0);
+    void moveToNewSection(QWidget *widget, DockPanel *targetPanel, Qx::DockWidgetArea area, int tabIndex = 0);
 public:
     DockWindow *m_window = nullptr;
     QGridLayout *m_layout = nullptr;
@@ -69,7 +72,6 @@ public:
 
 DockContainerPrivate::DockContainerPrivate()
 {
-
 }
 
 void DockContainerPrivate::init()
@@ -149,7 +151,7 @@ void DockContainerPrivate::adjustSplitterSizesOnInsertion(QSplitter *s, qreal la
     auto splitterSizes = s->sizes();
 
     qreal totRatio = splitterSizes.size() - 1.0 + lastRatio;
-    for (int i = 0; i < splitterSizes.size() -1; i++) {
+    for (int i = 0; i < splitterSizes.size() - 1; i++) {
         splitterSizes[i] = areaSize / totRatio;
     }
     splitterSizes.back() = areaSize * lastRatio / totRatio;
@@ -185,8 +187,8 @@ DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea are
     return panel;
 }
 
-DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w,
-                                                      DockPanel *targetPanel, int index)
+DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w, DockPanel *targetPanel,
+                                                      int index)
 {
     Q_Q(DockContainer);
     if (area == Qx::CenterDockWidgetArea) {
@@ -199,7 +201,7 @@ DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, D
     auto param = internal::dockAreaInsertParameters(area);
     auto targetSplitter = targetPanel->parentSplitter();
     // use target index instead of parameter index
-    index = targetSplitter ->indexOf(targetPanel);
+    index = targetSplitter->indexOf(targetPanel);
     if (targetSplitter->orientation() == param.orientation()) {
         targetSplitter->insertWidget(index + param.insertOffset(), np);
         updateSplitterHandles(targetSplitter);
@@ -425,8 +427,130 @@ void DockContainerPrivate::dropIntoPanel(DockFloatingContainer *floatingWidget, 
     addDockPanelsToList(newDockpanels);
 }
 
-DockContainer::DockContainer(DockWindow *window, QWidget *parent)
-    : QWidget(parent)
+void DockContainerPrivate::moveToContainer(QWidget *widget, Qx::DockWidgetArea area)
+{
+    Q_Q(DockContainer);
+    DockWidget *droppedDockWidget = qobject_cast<DockWidget *>(widget);
+    DockPanel *droppedPanel = qobject_cast<DockPanel *>(widget);
+    DockPanel *newPanel;
+
+    if (droppedDockWidget) {
+        newPanel = new DockPanel(m_window, q);
+        DockPanel *oldPanel = droppedDockWidget->dockPanel();
+        if (oldPanel) {
+            oldPanel->removeDockWidget(droppedDockWidget);
+        }
+        newPanel->addDockWidget(droppedDockWidget);
+    } else {
+        // We check, if we insert the dropped widget into the same place that
+        // it already has and do nothing, if it is the same place. It would
+        // also work without this check, but it looks nicer with the check
+        // because there will be no layout updates
+        auto splitter = droppedPanel->parentSplitter();
+        auto insertParam = internal::dockAreaInsertParameters(area);
+        if (splitter == m_rootSplitter && insertParam.orientation() == splitter->orientation()) {
+            if (insertParam.append() && splitter->lastWidget() == droppedPanel) {
+                return;
+            } else if (!insertParam.append() && splitter->firstWidget() == droppedPanel) {
+                return;
+            }
+        }
+        droppedPanel->dockContainer()->removeDockPanel(droppedPanel);
+        newPanel = droppedPanel;
+    }
+
+    addDockPanel(newPanel, area);
+}
+
+void DockContainerPrivate::moveIntoCenterOfSection(QWidget *widget, DockPanel *targetPanel, int tabIndex)
+{
+    auto droppedDockWidget = qobject_cast<DockWidget *>(widget);
+    auto droppedPanel = qobject_cast<DockPanel *>(widget);
+
+    tabIndex = qMax(0, tabIndex);
+    if (droppedDockWidget) {
+        DockPanel *oldPanel = droppedDockWidget->dockPanel();
+        if (oldPanel == targetPanel) {
+            return;
+        }
+
+        if (oldPanel) {
+            oldPanel->removeDockWidget(droppedDockWidget);
+        }
+        targetPanel->insertDockWidget(tabIndex, droppedDockWidget, true);
+    } else {
+        QList<DockWidget *> newDockWidgets = droppedPanel->dockWidgets();
+        int newCurrentIndex = droppedPanel->currentIndex();
+        for (int i = 0; i < newDockWidgets.count(); ++i) {
+            DockWidget *w = newDockWidgets[i];
+            targetPanel->insertDockWidget(tabIndex + i, w, false);
+        }
+        targetPanel->setCurrentIndex(tabIndex + newCurrentIndex);
+        droppedPanel->dockContainer()->removeDockPanel(droppedPanel);
+        droppedPanel->deleteLater();
+    }
+
+    targetPanel->updateTitleBarVisibility();
+    return;
+}
+
+void DockContainerPrivate::moveToNewSection(QWidget *widget, DockPanel *targetPanel, Qx::DockWidgetArea area,
+                                            int tabIndex)
+{
+    Q_Q(DockContainer);
+    // Dropping into center means all dock widgets in the dropped floating
+    // widget will become tabs of the drop area
+    if (Qx::CenterDockWidgetArea == area) {
+        moveIntoCenterOfSection(widget, targetPanel, tabIndex);
+        return;
+    }
+
+    DockWidget *droppedDockWidget = qobject_cast<DockWidget *>(widget);
+    DockPanel *droppedPanel = qobject_cast<DockPanel *>(widget);
+    DockPanel *newPanel;
+    if (droppedDockWidget) {
+        newPanel = new DockPanel(m_window, q);
+        DockPanel *oldPanel = droppedDockWidget->dockPanel();
+        if (oldPanel) {
+            oldPanel->removeDockWidget(droppedDockWidget);
+        }
+        newPanel->addDockWidget(droppedDockWidget);
+    } else {
+        droppedPanel->dockContainer()->removeDockPanel(droppedPanel);
+        newPanel = droppedPanel;
+    }
+
+    auto insertParam = internal::dockAreaInsertParameters(area);
+    auto targetSplitter = targetPanel->parentSplitter();
+    int panelIndex = targetSplitter->indexOf(targetPanel);
+    auto sizes = targetSplitter->sizes();
+    if (targetSplitter->orientation() == insertParam.orientation()) {
+        int targetPanelSize =
+            (insertParam.orientation() == Qt::Horizontal) ? targetPanel->width() : targetPanel->height();
+        targetSplitter->insertWidget(panelIndex + insertParam.insertOffset(), newPanel);
+        updateSplitterHandles(targetSplitter);
+        int size = (targetPanelSize - targetSplitter->handleWidth()) / 2;
+        sizes[panelIndex] = size;
+        sizes.insert(panelIndex, size);
+    } else {
+        int targetPanelSize =
+            (insertParam.orientation() == Qt::Horizontal) ? targetPanel->width() : targetPanel->height();
+        QSplitter *newSplitter = this->newSplitter(insertParam.orientation());
+        newSplitter->addWidget(targetPanel);
+        insertWidgetIntoSplitter(newSplitter, newPanel, insertParam.append());
+        updateSplitterHandles(newSplitter);
+        int size = targetPanelSize / 2;
+        newSplitter->setSizes({size, size});
+        targetSplitter->insertWidget(panelIndex, newSplitter);
+        updateSplitterHandles(targetSplitter);
+    }
+    targetSplitter->setSizes(sizes);
+
+    addDockPanelsToList({newPanel});
+}
+
+/* DockContainer */
+DockContainer::DockContainer(DockWindow *window, QWidget *parent) : QWidget(parent)
 {
     Q_ASSERT(window);
     QX_INIT_PRIVATE(DockContainer)
@@ -502,8 +626,7 @@ DockPanel *DockContainer::dockPanelAt(const QPoint &globalPos) const
     Q_D(const DockContainer);
 
     for (const auto &panel : d->m_panels) {
-        if (panel && panel->isVisible() &&
-            panel->rect().contains(panel->mapFromGlobal(globalPos))) {
+        if (panel && panel->isVisible() && panel->rect().contains(panel->mapFromGlobal(globalPos))) {
             return panel;
         }
     }
@@ -628,7 +751,7 @@ void DockContainer::removeDockPanel(DockPanel *panel)
     internal::hideEmptyParentSplitters(splitter);
 
     // If splitter has more than 1 widgets, we are finished and can leave
-    if (splitter->count() >  1) {
+    if (splitter->count() > 1) {
         goto emitAndExit;
     }
 
@@ -676,7 +799,7 @@ emitAndExit:
     d->emitDockAreasRemoved();
 }
 
-QList<QPointer<DockPanel> > DockContainer::removeAllDockPanels()
+QList<QPointer<DockPanel>> DockContainer::removeAllDockPanels()
 {
     Q_D(DockContainer);
     auto result = d->m_panels;
@@ -775,6 +898,24 @@ void DockContainer::dropFloatingWidget(DockFloatingContainer *floatingWidget, co
         d->m_window->notifyDockAreaRelocation(singleDroppedDockWidget);
     }
     d->m_window->notifyFloatingWidgetDrop(floatingWidget);
+}
+
+void DockContainer::dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, DockPanel *targetPanel, int tabIndex)
+{
+    Q_D(DockContainer);
+    DockWidget *singleDockWidget = topLevelDockWidget();
+    if (targetPanel) {
+        d->moveToNewSection(widget, targetPanel, dropArea, tabIndex);
+    } else {
+        d->moveToContainer(widget, dropArea);
+    }
+
+    // If there was a top level widget before the drop, then it is not top
+    // level widget anymore
+    DockWidget::emitTopLevelEventForWidget(singleDockWidget, false);
+
+    window()->activateWindow();
+    d->m_window->notifyDockAreaRelocation(widget);
 }
 
 QX_DOCK_END_NAMESPACE
