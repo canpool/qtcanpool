@@ -28,6 +28,7 @@ public:
 public:
     explicit DockFloatingContainer(DockWindow *window);
     explicit DockFloatingContainer(DockPanel *panel);
+    explicit DockFloatingContainer(DockWidget *widget);
     virtual ~DockFloatingContainer();
 
     bool isClosable() const;

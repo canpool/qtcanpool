@@ -202,7 +202,24 @@ DockFloatingContainer::DockFloatingContainer(DockPanel *panel)
 {
     Q_D(DockFloatingContainer);
     d->m_dockContainer->addDockPanel(panel);
+    auto topLevelWidget = topLevelDockWidget();
+    if (topLevelWidget) {
+        topLevelWidget->emitTopLevelChanged(true);
+    }
     d->m_window->notifyDockAreaRelocation(panel);
+}
+
+DockFloatingContainer::DockFloatingContainer(DockWidget *widget)
+    : DockFloatingContainer(widget->dockWindow())
+{
+    Q_D(DockFloatingContainer);
+    d->m_dockContainer->addDockWidget(Qx::CenterDockWidgetArea, widget);
+    auto topLevelWidget = topLevelDockWidget();
+    if (topLevelWidget) {
+        topLevelWidget->emitTopLevelChanged(true);
+    }
+
+    d->m_window->notifyDockAreaRelocation(widget);
 }
 
 DockFloatingContainer::~DockFloatingContainer()

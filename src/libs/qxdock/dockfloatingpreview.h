@@ -11,6 +11,7 @@
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
+class DockWidget;
 
 class DockFloatingPreviewPrivate;
 
@@ -20,6 +21,7 @@ class QX_DOCK_EXPORT DockFloatingPreview : public QWidget
     Q_OBJECT
 public:
     explicit DockFloatingPreview(DockPanel *content);
+    explicit DockFloatingPreview(DockWidget *content);
     virtual ~DockFloatingPreview();
 
 public:

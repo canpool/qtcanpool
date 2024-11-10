@@ -1,5 +1,6 @@
 ---
 # 文档：https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# https://tqfx.org/clang-format/BasedOnStyle/
 # 语言: None, Cpp, Java, JavaScript, ObjC, Proto, TableGen, TextProto
 Language:        Cpp
 # BasedOnStyle:  LLVM
@@ -34,7 +35,7 @@ AllowShortCaseLabelsOnASingleLine: false
 # 允许短的枚举放在同一行
 AllowShortEnumsOnASingleLine: false
 # 允许短的函数放在同一行
-AllowShortFunctionsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
 # 允许短的if语句保持在同一行
 AllowShortIfStatementsOnASingleLine: Never
 # 允许短的匿名函数lamda表达式放在同一行
@@ -86,7 +87,7 @@ BreakBeforeBraces: Linux
 # 在三元运算符前换行
 BreakBeforeTernaryOperators: true
 # 构造函数初始值设定项换行样式
-BreakConstructorInitializers: BeforeColon
+BreakConstructorInitializers: BeforeComma
 # 继承列表样式
 BreakInheritanceList: AfterColon
 # 字符串换行样式

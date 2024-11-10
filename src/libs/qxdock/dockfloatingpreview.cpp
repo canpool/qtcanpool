@@ -160,12 +160,24 @@ DockWidget::DockWidgetFeatures DockFloatingPreviewPrivate::contentFeatures() con
     return DockWidget::DockWidgetFeatures();
 }
 
-DockFloatingPreview::DockFloatingPreview(DockPanel *content) : DockFloatingPreview(content, content->dockWindow())
+DockFloatingPreview::DockFloatingPreview(DockPanel *content)
+    : DockFloatingPreview(content, content->dockWindow())
 {
     Q_D(DockFloatingPreview);
     d->m_window = content->dockWindow();
     d->m_contentSourcePanel = content;
     setWindowTitle(content->currentDockWidget()->windowTitle());
+}
+
+DockFloatingPreview::DockFloatingPreview(DockWidget *content)
+    : DockFloatingPreview(content, content->dockWindow())
+{
+    Q_D(DockFloatingPreview);
+    d->m_window = content->dockWindow();
+    if (content->dockPanel()->openDockWidgetsCount() == 1) {
+        d->m_contentSourcePanel = content->dockPanel();
+    }
+    setWindowTitle(content->windowTitle());
 }
 
 DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent) : QWidget(parent)

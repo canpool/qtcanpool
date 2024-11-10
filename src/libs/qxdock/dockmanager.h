@@ -32,6 +32,7 @@ public:
         FocusHighlighting = 0x200000,
         EqualSplitOnInsertion = 0x400000,
 
+        MiddleMouseButtonClosesTab = 0x2000000,
         ShowTabTextOnlyForActiveTab = 0x8000000,
 
         DefaultDockAreaButtons = DockAreaHasCloseButton

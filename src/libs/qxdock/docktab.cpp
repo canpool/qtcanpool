@@ -9,11 +9,17 @@
 #include "docklabel.h"
 #include "dockmanager.h"
 #include "dockutils.h"
+#include "dockfloatingcontainer.h"
+#include "dockfloatingpreview.h"
+#include "dockcontainer.h"
+#include "dockwindow.h"
+#include "dockoverlay.h"
 
 #include <QBoxLayout>
 #include <QToolButton>
 #include <QPushButton>
 #include <QMouseEvent>
+#include <QApplication>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -29,6 +35,13 @@ public:
     QAbstractButton *createCloseButton() const;
     void updateCloseButtonSizePolicy();
     void updateCloseButtonVisibility(bool active);
+
+    void saveDragStartMousePosition(const QPoint &globalPos);
+    bool isDraggingState(Qx::DockDragState dragState) const;
+    void moveTab(QMouseEvent *e);
+    bool startFloating(Qx::DockDragState draggingState = Qx::DockDraggingFloatingWidget);
+
+    template <typename T> DockFloatingWidget *createFloatingWidget(T *widget, bool needCreateContainer);
 public:
     DockWidget *m_dockWidget = nullptr;
     DockPanel *m_panel = nullptr;
@@ -36,11 +49,16 @@ public:
     QAbstractButton *m_closeButton = nullptr;
     QIcon m_icon;
     bool m_isActive = false;
+
+    QPoint m_globalDragStartMousePosition;
+    QPoint m_dragStartMousePosition;
+    QPoint m_tabDragStartPosition;
+    Qx::DockDragState m_dragState = Qx::DockDraggingInactive;
+    DockFloatingWidget *m_floatingWidget = nullptr;
 };
 
 DockTabPrivate::DockTabPrivate()
 {
-
 }
 
 void DockTabPrivate::init()
@@ -120,6 +138,88 @@ void DockTabPrivate::updateCloseButtonVisibility(bool active)
     m_closeButton->setVisible(dockWidgetClosable && tabHasCloseButton);
 }
 
+void DockTabPrivate::saveDragStartMousePosition(const QPoint &globalPos)
+{
+    Q_Q(DockTab);
+    m_globalDragStartMousePosition = globalPos;
+    m_dragStartMousePosition = q->mapFromGlobal(globalPos);
+}
+
+bool DockTabPrivate::isDraggingState(Qx::DockDragState dragState) const
+{
+    return m_dragState == dragState;
+}
+
+void DockTabPrivate::moveTab(QMouseEvent *e)
+{
+    Q_Q(DockTab);
+    e->accept();
+    QPoint distance = internal::globalPositionOf(e) - m_globalDragStartMousePosition;
+    distance.setY(0);
+    auto targetPos = distance + m_tabDragStartPosition;
+    targetPos.rx() = qMax(targetPos.x(), 0);
+    targetPos.rx() = qMin(q->parentWidget()->rect().right() - q->width() + 1, targetPos.rx());
+    q->move(targetPos);
+    q->raise();
+}
+
+bool DockTabPrivate::startFloating(Qx::DockDragState draggingState)
+{
+    Q_Q(DockTab);
+    auto container = m_dockWidget->dockContainer();
+    // if this is the last dock widget inside of this floating widget,
+    // then it does not make any sense, to make it floating because
+    // it is already floating
+    if (container->isFloating() && (container->visibleDockPanelCount() == 1) &&
+        (m_dockWidget->dockPanel()->dockWidgetsCount() == 1)) {
+        return false;
+    }
+
+    m_dragState = draggingState;
+    DockFloatingWidget *floatingWidget = nullptr;
+    bool needCreateContainer = (Qx::DockDraggingFloatingWidget != draggingState);
+
+    // If section widget has multiple tabs, we take only one tab
+    // If it has only one single tab, we can move the complete
+    // dock area into floating widget
+    QSize size;
+    if (m_panel->dockWidgetsCount() > 1) {
+        floatingWidget = createFloatingWidget(m_dockWidget, needCreateContainer);
+        size = m_dockWidget->size();
+    } else {
+        floatingWidget = createFloatingWidget(m_panel, needCreateContainer);
+        size = m_panel->size();
+    }
+
+    if (Qx::DockDraggingFloatingWidget == draggingState) {
+        floatingWidget->startFloating(m_dragStartMousePosition, size, Qx::DockDraggingFloatingWidget, q);
+        auto window = m_dockWidget->dockWindow();
+        auto overlay = window->containerOverlay();
+        overlay->setAllowedAreas(Qx::OuterDockAreas);
+        this->m_floatingWidget = floatingWidget;
+        qApp->postEvent(m_dockWidget, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
+    } else {
+        floatingWidget->startFloating(m_dragStartMousePosition, size, Qx::DockDraggingInactive, nullptr);
+    }
+
+    return true;
+}
+
+template <typename T> DockFloatingWidget *DockTabPrivate::createFloatingWidget(T *widget, bool needCreateContainer)
+{
+    Q_Q(DockTab);
+    if (needCreateContainer) {
+        return new DockFloatingContainer(widget);
+    } else {
+        auto w = new DockFloatingPreview(widget);
+        q->connect(w, &DockFloatingPreview::draggingCanceled, [=]() {
+            m_dragState = Qx::DockDraggingInactive;
+        });
+        return w;
+    }
+}
+
+/* DockTab */
 DockTab::DockTab(DockWidget *w, QWidget *parent)
     : QWidget(parent)
 {
@@ -200,8 +300,11 @@ void DockTab::updateStyle()
 
 void DockTab::mousePressEvent(QMouseEvent *e)
 {
+    Q_D(DockTab);
     if (e->button() == Qt::LeftButton) {
         e->accept();
+        d->saveDragStartMousePosition(internal::globalPositionOf(e));
+        d->m_dragState = Qx::DockDraggingMousePressed;
         Q_EMIT clicked();
         return;
     }
@@ -210,7 +313,106 @@ void DockTab::mousePressEvent(QMouseEvent *e)
 
 void DockTab::mouseReleaseEvent(QMouseEvent *e)
 {
+    Q_D(DockTab);
+    if (e->button() == Qt::LeftButton) {
+        auto currentDragState = d->m_dragState;
+        d->m_globalDragStartMousePosition = QPoint();
+        d->m_dragStartMousePosition = QPoint();
+        d->m_dragState = Qx::DockDraggingInactive;
+
+        switch (currentDragState) {
+        case Qx::DockDraggingTab:
+            // End of tab moving, emit signal
+            if (d->m_panel) {
+                e->accept();
+                Q_EMIT moved(internal::globalPositionOf(e));
+            }
+            break;
+
+        case Qx::DockDraggingFloatingWidget:
+            e->accept();
+            d->m_floatingWidget->finishDragging();
+            break;
+
+        default:
+            break;
+        }
+    } else if (e->button() == Qt::MiddleButton) {
+        if (DockManager::testConfigFlag(DockManager::MiddleMouseButtonClosesTab) &&
+            d->m_dockWidget->features().testFlag(DockWidget::DockWidgetClosable)) {
+            // Only attempt to close if the mouse is still
+            // on top of the widget, to allow the user to cancel.
+            if (rect().contains(mapFromGlobal(QCursor::pos()))) {
+                e->accept();
+                Q_EMIT closeRequested();
+            }
+        }
+    }
     Super::mouseReleaseEvent(e);
+}
+
+void DockTab::mouseMoveEvent(QMouseEvent *e)
+{
+    Q_D(DockTab);
+    if (!(e->buttons() & Qt::LeftButton) || d->isDraggingState(Qx::DockDraggingInactive)) {
+        d->m_dragState = Qx::DockDraggingInactive;
+        Super::mouseMoveEvent(e);
+        return;
+    }
+
+    // move floating window
+    if (d->isDraggingState(Qx::DockDraggingFloatingWidget)) {
+        d->m_floatingWidget->moveFloating();
+        Super::mouseMoveEvent(e);
+        return;
+    }
+
+    // move tab
+    if (d->isDraggingState(Qx::DockDraggingTab)) {
+        // Moving the tab is always allowed because it does not mean moving the
+        // dock widget around
+        d->moveTab(e);
+    }
+
+    auto mappedPos = mapToParent(e->pos());
+    bool mouseOutsideBar = (mappedPos.x() < 0) || (mappedPos.x() > parentWidget()->rect().right());
+    // Maybe a fixed drag distance is better here ?
+    int dragDistanceY = qAbs(d->m_globalDragStartMousePosition.y() - internal::globalPositionOf(e).y());
+    if (dragDistanceY >= DockManager::startDragDistance() || mouseOutsideBar) {
+        // If this is the last dock area in a dock container with only
+        // one single dock widget it does not make  sense to move it to a new
+        // floating widget and leave this one empty
+        if (d->m_panel->dockContainer()->isFloating() && d->m_panel->openDockWidgetsCount() == 1 &&
+            d->m_panel->dockContainer()->visibleDockPanelCount() == 1) {
+            return;
+        }
+
+        // Floating is only allowed for widgets that are floatable
+        // We can create the drag preview if the widget is movable.
+        auto features = d->m_dockWidget->features();
+        if (features.testFlag(DockWidget::DockWidgetFloatable) || (features.testFlag(DockWidget::DockWidgetMovable))) {
+            // If we undock, we need to restore the initial position of this
+            // tab because it looks strange if it remains on its dragged position
+            if (d->isDraggingState(Qx::DockDraggingTab)) {
+                parentWidget()->layout()->update();
+            }
+            d->startFloating();
+        }
+        return;
+    } else if (d->m_panel->openDockWidgetsCount() > 1 &&
+               (internal::globalPositionOf(e) - d->m_globalDragStartMousePosition).manhattanLength() >=
+                   QApplication::startDragDistance())   // Wait a few pixels before start moving
+    {
+        // If we start dragging the tab, we save its initial position to
+        // restore it later
+        if (Qx::DockDraggingTab != d->m_dragState) {
+            d->m_tabDragStartPosition = this->pos();
+        }
+        d->m_dragState = Qx::DockDraggingTab;
+        return;
+    }
+
+    Super::mouseMoveEvent(e);
 }
 
 QX_DOCK_END_NAMESPACE

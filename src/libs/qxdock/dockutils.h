@@ -8,6 +8,7 @@
 
 #include <QStyle>
 #include <QAbstractButton>
+#include <QMouseEvent>
 
 class QSplitter;
 
@@ -56,6 +57,15 @@ T findParent(const QWidget *w)
         pw = pw->parentWidget();
     }
     return nullptr;
+}
+
+inline QPoint globalPositionOf(QMouseEvent *e)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    return e->globalPosition().toPoint();
+#else
+    return e->globalPos();
+#endif
 }
 
 QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity);

@@ -40,10 +40,12 @@ Q_SIGNALS:
     void activeTabChanged();
     void clicked();
     void closeRequested();
+    void moved(const QPoint &globalPos);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
+    virtual void mouseMoveEvent(QMouseEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTab)
