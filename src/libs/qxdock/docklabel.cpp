@@ -103,7 +103,7 @@ QSize DockLabel::minimumSizeHint() const
     if (hasPixmap || d->isModeElideNone()) {
         return QLabel::minimumSizeHint();
     }
-    const QFontMetrics  &fm = fontMetrics();
+    const QFontMetrics &fm = fontMetrics();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     QSize size(fm.horizontalAdvance(d->m_text.left(2) + ".."), fm.height());
 #else
@@ -123,7 +123,7 @@ QSize DockLabel::sizeHint() const
     if (hasPixmap || d->isModeElideNone()) {
         return QLabel::sizeHint();
     }
-    const QFontMetrics& fm = fontMetrics();
+    const QFontMetrics &fm = fontMetrics();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     QSize size(fm.horizontalAdvance(d->m_text), QLabel::sizeHint().height());
 #else

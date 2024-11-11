@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 
 #include "dockutils.h"
 #include "dockmanager.h"
@@ -12,7 +12,8 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
-namespace internal {
+namespace internal
+{
 const int FloatingWidgetDragStartEvent = QEvent::registerEventType();
 const int DockedWidgetDragStartEvent = QEvent::registerEventType();
 
@@ -50,13 +51,18 @@ void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIc
 DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area)
 {
     switch (area) {
-    case Qx::TopDockWidgetArea: return DockInsertParam(Qt::Vertical, false);
-    case Qx::RightDockWidgetArea: return DockInsertParam(Qt::Horizontal, true);
+    case Qx::TopDockWidgetArea:
+        return DockInsertParam(Qt::Vertical, false);
+    case Qx::RightDockWidgetArea:
+        return DockInsertParam(Qt::Horizontal, true);
     case Qx::CenterDockWidgetArea:
-    case Qx::BottomDockWidgetArea: return DockInsertParam(Qt::Vertical, true);
-    case Qx::LeftDockWidgetArea: return DockInsertParam(Qt::Horizontal, false);
-    default: DockInsertParam(Qt::Vertical, false);
-    } // switch (area)
+    case Qx::BottomDockWidgetArea:
+        return DockInsertParam(Qt::Vertical, true);
+    case Qx::LeftDockWidgetArea:
+        return DockInsertParam(Qt::Horizontal, false);
+    default:
+        DockInsertParam(Qt::Vertical, false);
+    }   // switch (area)
 
     return DockInsertParam(Qt::Vertical, false);
 }
@@ -73,8 +79,8 @@ void repolishStyle(QWidget *w, RepolishChildOptions options)
         return;
     }
 
-    QList<QWidget*> childrens = w->findChildren<QWidget *>(QString(),
-        (RepolishDirectChildren == options) ? Qt::FindDirectChildrenOnly : Qt::FindChildrenRecursively);
+    QList<QWidget *> childrens = w->findChildren<QWidget *>(
+        QString(), (RepolishDirectChildren == options) ? Qt::FindDirectChildrenOnly : Qt::FindChildrenRecursively);
 
     for (auto c : childrens) {
         c->style()->unpolish(c);
@@ -99,6 +105,6 @@ void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to)
     splitter->insertWidget(index, to);
 }
 
-} // internal
+}   // internal
 
 QX_DOCK_END_NAMESPACE

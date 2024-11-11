@@ -23,7 +23,6 @@ public:
     QX_DECLARE_PUBLIC(DockOverlay)
 public:
     DockOverlayPrivate();
-
 public:
     DockOverlay::OverlayMode m_mode = DockOverlay::PanelOverlayMode;
     Qx::DockWidgetAreas m_allowedAreas = Qx::InvalidDockWidgetArea;
@@ -37,7 +36,6 @@ public:
 
 DockOverlayPrivate::DockOverlayPrivate()
 {
-
 }
 
 DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
@@ -100,8 +98,7 @@ Qx::DockWidgetArea DockOverlay::dropAreaUnderCursor()
     }
 
     if (panel->allowedAreas().testFlag(Qx::CenterDockWidgetArea) && !panel->titleBar()->isHidden() &&
-        panel->titleBarGeometry().contains(panel->mapFromGlobal(cursorPos)))
-    {
+        panel->titleBarGeometry().contains(panel->mapFromGlobal(cursorPos))) {
         auto tabBar = panel->titleBar()->tabBar();
         d->m_tabIndex = tabBar->tabInsertIndexAt(tabBar->mapFromGlobal(cursorPos));
         return Qx::CenterDockWidgetArea;
@@ -201,14 +198,24 @@ void DockOverlay::paintEvent(QPaintEvent *e)
     const Qx::DockWidgetArea da = dropAreaUnderCursor();
     double factor = (DockOverlay::ContainerOverlayMode == d->m_mode) ? 3 : 2;
 
-    switch (da)
-    {
-    case Qx::TopDockWidgetArea: r.setHeight(r.height() / factor); break;
-    case Qx::RightDockWidgetArea: r.setX(r.width() * (1 - 1 / factor)); break;
-    case Qx::BottomDockWidgetArea: r.setY(r.height() * (1 - 1 / factor)); break;
-    case Qx::LeftDockWidgetArea: r.setWidth(r.width() / factor); break;
-    case Qx::CenterDockWidgetArea: r = rect();break;
-    default: return;
+    switch (da) {
+    case Qx::TopDockWidgetArea:
+        r.setHeight(r.height() / factor);
+        break;
+    case Qx::RightDockWidgetArea:
+        r.setX(r.width() * (1 - 1 / factor));
+        break;
+    case Qx::BottomDockWidgetArea:
+        r.setY(r.height() * (1 - 1 / factor));
+        break;
+    case Qx::LeftDockWidgetArea:
+        r.setWidth(r.width() / factor);
+        break;
+    case Qx::CenterDockWidgetArea:
+        r = rect();
+        break;
+    default:
+        return;
     }
 
     QPainter painter(this);
@@ -258,13 +265,10 @@ public:
 
     qreal dropIndicatiorWidth(QLabel *l) const;
 
-    QWidget *createDropIndicatorWidget(Qx::DockWidgetArea dockWidgetArea,
-                                       DockOverlay::OverlayMode mode);
-    void updateDropIndicatorIcon(QWidget* DropIndicatorWidget);
+    QWidget *createDropIndicatorWidget(Qx::DockWidgetArea dockWidgetArea, DockOverlay::OverlayMode mode);
+    void updateDropIndicatorIcon(QWidget *DropIndicatorWidget);
     QPixmap createHighDpiDropIndicatorPixmap(const QSizeF &size, Qx::DockWidgetArea dockWidgetArea,
                                              DockOverlay::OverlayMode mode);
-
-
 public:
     DockOverlay *m_dockOverlay = nullptr;
     QGridLayout *m_gridLayout;
@@ -275,10 +279,8 @@ public:
     double m_lastDevicePixelRatio = 0.1;
 };
 
-
 DockOverlayCrossPrivate::DockOverlayCrossPrivate()
 {
-
 }
 
 void DockOverlayCrossPrivate::init()
@@ -292,14 +294,19 @@ void DockOverlayCrossPrivate::init()
 
 static int areaAlignment(const Qx::DockWidgetArea area)
 {
-    switch (area)
-    {
-    case Qx::TopDockWidgetArea: return (int) Qt::AlignHCenter | Qt::AlignBottom;
-    case Qx::RightDockWidgetArea: return (int) Qt::AlignLeft | Qt::AlignVCenter;
-    case Qx::BottomDockWidgetArea: return (int) Qt::AlignHCenter | Qt::AlignTop;
-    case Qx::LeftDockWidgetArea: return (int) Qt::AlignRight | Qt::AlignVCenter;
-    case Qx::CenterDockWidgetArea:  return (int) Qt::AlignCenter;
-    default: return Qt::AlignCenter;
+    switch (area) {
+    case Qx::TopDockWidgetArea:
+        return (int)Qt::AlignHCenter | Qt::AlignBottom;
+    case Qx::RightDockWidgetArea:
+        return (int)Qt::AlignLeft | Qt::AlignVCenter;
+    case Qx::BottomDockWidgetArea:
+        return (int)Qt::AlignHCenter | Qt::AlignTop;
+    case Qx::LeftDockWidgetArea:
+        return (int)Qt::AlignRight | Qt::AlignVCenter;
+    case Qx::CenterDockWidgetArea:
+        return (int)Qt::AlignCenter;
+    default:
+        return Qt::AlignCenter;
     }
 }
 
@@ -307,21 +314,33 @@ QPoint DockOverlayCrossPrivate::areaGridPosition(const Qx::DockWidgetArea area)
 {
     if (DockOverlay::PanelOverlayMode == m_mode) {
         switch (area) {
-        case Qx::TopDockWidgetArea: return QPoint(1, 2);
-        case Qx::RightDockWidgetArea: return QPoint(2, 3);
-        case Qx::BottomDockWidgetArea: return QPoint(3, 2);
-        case Qx::LeftDockWidgetArea: return QPoint(2, 1);
-        case Qx::CenterDockWidgetArea: return QPoint(2, 2);
-        default: return QPoint();
+        case Qx::TopDockWidgetArea:
+            return QPoint(1, 2);
+        case Qx::RightDockWidgetArea:
+            return QPoint(2, 3);
+        case Qx::BottomDockWidgetArea:
+            return QPoint(3, 2);
+        case Qx::LeftDockWidgetArea:
+            return QPoint(2, 1);
+        case Qx::CenterDockWidgetArea:
+            return QPoint(2, 2);
+        default:
+            return QPoint();
         }
     } else {
         switch (area) {
-        case Qx::TopDockWidgetArea: return QPoint(0, 2);
-        case Qx::RightDockWidgetArea: return QPoint(2, 4);
-        case Qx::BottomDockWidgetArea: return QPoint(4, 2);
-        case Qx::LeftDockWidgetArea: return QPoint(2, 0);
-        case Qx::CenterDockWidgetArea: return QPoint(2, 2);
-        default: return QPoint();
+        case Qx::TopDockWidgetArea:
+            return QPoint(0, 2);
+        case Qx::RightDockWidgetArea:
+            return QPoint(2, 4);
+        case Qx::BottomDockWidgetArea:
+            return QPoint(4, 2);
+        case Qx::LeftDockWidgetArea:
+            return QPoint(2, 0);
+        case Qx::CenterDockWidgetArea:
+            return QPoint(2, 2);
+        default:
+            return QPoint();
         }
     }
 }
@@ -331,17 +350,20 @@ QColor DockOverlayCrossPrivate::defaultIconColor(DockOverlayCross::IconColor col
     Q_Q(DockOverlayCross);
     QPalette pal = q->palette();
     switch (colorIndex) {
-    case DockOverlayCross::FrameColor: return pal.color(QPalette::Active, QPalette::Highlight);
-    case DockOverlayCross::WindowBackgroundColor: return pal.color(QPalette::Active, QPalette::Base);
+    case DockOverlayCross::FrameColor:
+        return pal.color(QPalette::Active, QPalette::Highlight);
+    case DockOverlayCross::WindowBackgroundColor:
+        return pal.color(QPalette::Active, QPalette::Base);
     case DockOverlayCross::OverlayColor: {
         QColor Color = pal.color(QPalette::Active, QPalette::Highlight);
         Color.setAlpha(64);
         return Color;
-    }
-    break;
+    } break;
 
-    case DockOverlayCross::ArrowColor: return pal.color(QPalette::Active, QPalette::Base);
-    case DockOverlayCross::ShadowColor: return QColor(0, 0, 0, 64);
+    case DockOverlayCross::ArrowColor:
+        return pal.color(QPalette::Active, QPalette::Base);
+    case DockOverlayCross::ShadowColor:
+        return QColor(0, 0, 0, 64);
     default:
         return QColor();
     }
@@ -372,7 +394,7 @@ qreal DockOverlayCrossPrivate::dropIndicatiorWidth(QLabel *l) const
 QWidget *DockOverlayCrossPrivate::createDropIndicatorWidget(Qx::DockWidgetArea dockWidgetArea,
                                                             DockOverlay::OverlayMode mode)
 {
-    QLabel* l = new QLabel();
+    QLabel *l = new QLabel();
     l->setObjectName("DockWidgetAreaLabel");
 
     qreal metric = dropIndicatiorWidth(l);
@@ -387,7 +409,7 @@ QWidget *DockOverlayCrossPrivate::createDropIndicatorWidget(Qx::DockWidgetArea d
 
 void DockOverlayCrossPrivate::updateDropIndicatorIcon(QWidget *dropIndicatorWidget)
 {
-    QLabel* l = qobject_cast<QLabel*>(dropIndicatorWidget);
+    QLabel *l = qobject_cast<QLabel *>(dropIndicatorWidget);
     const qreal metric = dropIndicatiorWidth(l);
     const QSizeF size(metric, metric);
 
@@ -395,8 +417,7 @@ void DockOverlayCrossPrivate::updateDropIndicatorIcon(QWidget *dropIndicatorWidg
     l->setPixmap(createHighDpiDropIndicatorPixmap(size, (Qx::DockWidgetArea)area, m_mode));
 }
 
-QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &size,
-                                                                  Qx::DockWidgetArea dockWidgetArea,
+QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &size, Qx::DockWidgetArea dockWidgetArea,
                                                                   DockOverlay::OverlayMode mode)
 {
     Q_Q(DockOverlayCross);
@@ -435,8 +456,7 @@ QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &
     QRectF areaRect;
     QLineF areaLine;
     QRectF nonAreaRect;
-    switch (dockWidgetArea)
-    {
+    switch (dockWidgetArea) {
     case Qx::TopDockWidgetArea:
         areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
         nonAreaRect = QRectF(baseRect.x(), shadowRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
@@ -462,8 +482,8 @@ QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &
     }
 
     QSizeF baseSize = baseRect.size();
-    bool isOuterContainerArea = (DockOverlay::ContainerOverlayMode == mode)
-                                && (dockWidgetArea != Qx::CenterDockWidgetArea);
+    bool isOuterContainerArea =
+        (DockOverlay::ContainerOverlayMode == mode) && (dockWidgetArea != Qx::CenterDockWidgetArea);
 
     if (isOuterContainerArea) {
         baseRect = areaRect;
@@ -487,7 +507,6 @@ QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &
     }
     p.restore();
 
-
     p.save();
     // Draw outer border
     pen = p.pen();
@@ -503,26 +522,21 @@ QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &
     p.drawRect(frameRect);
     p.restore();
 
-
     // Draw arrow for outer container drop indicators
-    if (isOuterContainerArea)
-    {
+    if (isOuterContainerArea) {
         QRectF arrowRect;
         arrowRect.setSize(baseSize);
         arrowRect.setWidth(arrowRect.width() / 4.6);
         arrowRect.setHeight(arrowRect.height() / 2);
         arrowRect.moveCenter(QPointF(0, 0));
         QPolygonF arrow;
-        arrow << arrowRect.topLeft()
-              << QPointF( arrowRect.right(),  arrowRect.center().y())
-              << arrowRect.bottomLeft();
+        arrow << arrowRect.topLeft() << QPointF(arrowRect.right(), arrowRect.center().y()) << arrowRect.bottomLeft();
         p.setPen(Qt::NoPen);
         p.setBrush(iconColor(DockOverlayCross::ArrowColor));
         p.setRenderHint(QPainter::Antialiasing, true);
         p.translate(nonAreaRect.center().x(), nonAreaRect.center().y());
 
-        switch (dockWidgetArea)
-        {
+        switch (dockWidgetArea) {
         case Qx::TopDockWidgetArea:
             p.rotate(-90);
             break;
@@ -583,9 +597,7 @@ Qx::DockWidgetArea DockOverlayCross::cursorLocation() const
     QHashIterator<Qx::DockWidgetArea, QWidget *> i(d->m_dropIndicatorWidgets);
     while (i.hasNext()) {
         i.next();
-        if (d->m_dockOverlay->allowedAreas().testFlag(i.key()) &&
-            i.value() &&
-            i.value()->isVisible() &&
+        if (d->m_dockOverlay->allowedAreas().testFlag(i.key()) && i.value() && i.value()->isVisible() &&
             i.value()->geometry().contains(pos)) {
             return i.key();
         }
@@ -598,7 +610,7 @@ void DockOverlayCross::setupOverlayCross(DockOverlay::OverlayMode mode)
     Q_D(DockOverlayCross);
     d->m_mode = mode;
 
-    QHash<Qx::DockWidgetArea, QWidget*> areaWidgets;
+    QHash<Qx::DockWidgetArea, QWidget *> areaWidgets;
     areaWidgets.insert(Qx::TopDockWidgetArea, d->createDropIndicatorWidget(Qx::TopDockWidgetArea, mode));
     areaWidgets.insert(Qx::RightDockWidgetArea, d->createDropIndicatorWidget(Qx::RightDockWidgetArea, mode));
     areaWidgets.insert(Qx::BottomDockWidgetArea, d->createDropIndicatorWidget(Qx::BottomDockWidgetArea, mode));
@@ -635,8 +647,8 @@ void DockOverlayCross::reset()
 {
     Q_D(DockOverlayCross);
     QList<Qx::DockWidgetArea> allAreas;
-    allAreas << Qx::TopDockWidgetArea << Qx::RightDockWidgetArea
-             << Qx::BottomDockWidgetArea << Qx::LeftDockWidgetArea << Qx::CenterDockWidgetArea;
+    allAreas << Qx::TopDockWidgetArea << Qx::RightDockWidgetArea << Qx::BottomDockWidgetArea << Qx::LeftDockWidgetArea
+             << Qx::CenterDockWidgetArea;
     const Qx::DockWidgetAreas allowedAreas = d->m_dockOverlay->allowedAreas();
 
     // Update visibility of area widgets based on allowedAreas.
@@ -655,8 +667,7 @@ void DockOverlayCross::updatePosition()
     Q_D(DockOverlayCross);
     resize(d->m_dockOverlay->size());
     QPoint topLeft = d->m_dockOverlay->pos();
-    QPoint offest((this->width() - d->m_dockOverlay->width()) / 2,
-                  (this->height() - d->m_dockOverlay->height()) / 2);
+    QPoint offest((this->width() - d->m_dockOverlay->width()) / 2, (this->height() - d->m_dockOverlay->height()) / 2);
     QPoint crossTopLeft = topLeft - offest;
     move(crossTopLeft);
 }
@@ -664,13 +675,11 @@ void DockOverlayCross::updatePosition()
 void DockOverlayCross::setIconColors(const QString &colors)
 {
     Q_D(DockOverlayCross);
-    static const QMap<QString, int> ColorCompenentStringMap {
-        {"Frame", DockOverlayCross::FrameColor},
-        {"Background", DockOverlayCross::WindowBackgroundColor},
-        {"Overlay", DockOverlayCross::OverlayColor},
-        {"Arrow", DockOverlayCross::ArrowColor},
-        {"Shadow", DockOverlayCross::ShadowColor}
-    };
+    static const QMap<QString, int> ColorCompenentStringMap{{"Frame", DockOverlayCross::FrameColor},
+                                                            {"Background", DockOverlayCross::WindowBackgroundColor},
+                                                            {"Overlay", DockOverlayCross::OverlayColor},
+                                                            {"Arrow", DockOverlayCross::ArrowColor},
+                                                            {"Shadow", DockOverlayCross::ShadowColor}};
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
     auto skipEmptyParts = QString::SkipEmptyParts;
@@ -699,10 +708,10 @@ void DockOverlayCross::setAreaWidgets(const QHash<Qx::DockWidgetArea, QWidget *>
 {
     Q_D(DockOverlayCross);
     // Delete old widgets.
-    QMutableHashIterator<Qx::DockWidgetArea, QWidget*> i(d->m_dropIndicatorWidgets);
+    QMutableHashIterator<Qx::DockWidgetArea, QWidget *> i(d->m_dropIndicatorWidgets);
     while (i.hasNext()) {
         i.next();
-        QWidget* widget = i.value();
+        QWidget *widget = i.value();
         d->m_gridLayout->removeWidget(widget);
         delete widget;
         i.remove();
@@ -710,13 +719,13 @@ void DockOverlayCross::setAreaWidgets(const QHash<Qx::DockWidgetArea, QWidget *>
 
     // Insert new widgets into grid.
     d->m_dropIndicatorWidgets = widgets;
-    QHashIterator<Qx::DockWidgetArea, QWidget*> i2(d->m_dropIndicatorWidgets);
+    QHashIterator<Qx::DockWidgetArea, QWidget *> i2(d->m_dropIndicatorWidgets);
     while (i2.hasNext()) {
         i2.next();
         const Qx::DockWidgetArea area = i2.key();
-        QWidget* widget = i2.value();
+        QWidget *widget = i2.value();
         QPoint p = d->areaGridPosition(area);
-        d->m_gridLayout->addWidget(widget, p.x(), p.y(), (Qt::Alignment) areaAlignment(area));
+        d->m_gridLayout->addWidget(widget, p.x(), p.y(), (Qt::Alignment)areaAlignment(area));
     }
 
     if (DockOverlay::PanelOverlayMode == d->m_mode) {

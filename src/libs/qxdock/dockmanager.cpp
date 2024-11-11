@@ -22,7 +22,6 @@ public:
 
 DockManagerPrivate::DockManagerPrivate()
 {
-
 }
 
 DockManager::DockManager()

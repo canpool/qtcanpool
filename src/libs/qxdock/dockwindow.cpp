@@ -19,7 +19,6 @@ public:
     DockWindowPrivate();
 
     void init();
-
 public:
     QList<DockContainer *> m_containers;
     DockWidget *m_centralWidget = nullptr;

@@ -38,7 +38,6 @@ public:
     void setState(Qx::DockDragState stateId);
 
     void handleEscapeKey();
-
 public:
     QPointer<DockWindow> m_window;
     DockContainer *m_dockContainer;
@@ -50,7 +49,6 @@ public:
 
 DockFloatingContainerPrivate::DockFloatingContainerPrivate()
 {
-
 }
 
 void DockFloatingContainerPrivate::titleMouseReleaseEvent()
@@ -182,10 +180,8 @@ DockFloatingContainer::DockFloatingContainer(DockWindow *window)
     Q_D(DockFloatingContainer);
     d->m_window = window;
     d->m_dockContainer = new DockContainer(window, this);
-    connect(d->m_dockContainer, SIGNAL(dockAreasAdded()), this,
-            SLOT(onDockAreasAddedOrRemoved()));
-    connect(d->m_dockContainer, SIGNAL(dockAreasRemoved()), this,
-        SLOT(onDockAreasAddedOrRemoved()));
+    connect(d->m_dockContainer, SIGNAL(dockAreasAdded()), this, SLOT(onDockAreasAddedOrRemoved()));
+    connect(d->m_dockContainer, SIGNAL(dockAreasRemoved()), this, SLOT(onDockAreasAddedOrRemoved()));
 
     setWindowFlags(Qt::Window | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
     QBoxLayout *l = new QBoxLayout(QBoxLayout::TopToBottom);
@@ -302,8 +298,7 @@ void DockFloatingContainer::moveFloating()
     const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition;
     move(moveToPos);
 
-    switch (d->m_draggingState)
-    {
+    switch (d->m_draggingState) {
     case Qx::DockDraggingMousePressed:
         d->setState(Qx::DockDraggingFloatingWidget);
         d->updateDropOverlays(QCursor::pos());
@@ -393,7 +388,6 @@ void DockFloatingContainer::showEvent(QShowEvent *event)
     Super::showEvent(event);
 }
 
-
 #ifdef Q_OS_WIN
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -443,6 +437,5 @@ bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *messa
     return false;
 }
 #endif
-
 
 QX_DOCK_END_NAMESPACE

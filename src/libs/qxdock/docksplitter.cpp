@@ -18,7 +18,6 @@ public:
 
 DockSplitterPrivate::DockSplitterPrivate()
 {
-
 }
 
 DockSplitter::DockSplitter(QWidget *parent)

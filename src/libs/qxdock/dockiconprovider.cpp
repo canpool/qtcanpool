@@ -21,7 +21,6 @@ public:
 
 DockIconProviderPrivate::DockIconProviderPrivate()
 {
-
 }
 
 DockIconProvider::DockIconProvider()

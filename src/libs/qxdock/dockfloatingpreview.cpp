@@ -180,7 +180,8 @@ DockFloatingPreview::DockFloatingPreview(DockWidget *content)
     setWindowTitle(content->windowTitle());
 }
 
-DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent) : QWidget(parent)
+DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent)
+    : QWidget(parent)
 {
     QX_INIT_PRIVATE(DockFloatingPreview);
 

@@ -28,11 +28,16 @@ static void insertWidgetIntoSplitter(QSplitter *s, QWidget *w, bool append)
 static int areaIdToIndex(Qx::DockWidgetArea area)
 {
     switch (area) {
-    case Qx::LeftDockWidgetArea: return 0;
-    case Qx::RightDockWidgetArea: return 1;
-    case Qx::TopDockWidgetArea: return 2;
-    case Qx::BottomDockWidgetArea: return 3;
-    case Qx::CenterDockWidgetArea: return 4;
+    case Qx::LeftDockWidgetArea:
+        return 0;
+    case Qx::RightDockWidgetArea:
+        return 1;
+    case Qx::TopDockWidgetArea:
+        return 2;
+    case Qx::BottomDockWidgetArea:
+        return 3;
+    case Qx::CenterDockWidgetArea:
+        return 4;
     default:
         return 4;
     }
@@ -86,7 +91,7 @@ public:
 
 DockContainerPrivate::DockContainerPrivate()
 {
-    std::fill(std::begin(m_lastAddedPanelCache),std::end(m_lastAddedPanelCache), nullptr);
+    std::fill(std::begin(m_lastAddedPanelCache), std::end(m_lastAddedPanelCache), nullptr);
 }
 
 void DockContainerPrivate::init()
@@ -567,7 +572,8 @@ void DockContainerPrivate::moveToNewSection(QWidget *widget, DockPanel *targetPa
 }
 
 /* DockContainer */
-DockContainer::DockContainer(DockWindow *window, QWidget *parent) : QWidget(parent)
+DockContainer::DockContainer(DockWindow *window, QWidget *parent)
+    : QWidget(parent)
 {
     Q_ASSERT(window);
     QX_INIT_PRIVATE(DockContainer);
