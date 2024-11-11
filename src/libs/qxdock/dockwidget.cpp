@@ -61,7 +61,6 @@ void DockWidgetPrivate::showDockWidget()
     Q_Q(DockWidget);
 
     if (!m_panel) {
-
     } else {
         m_panel->setCurrentDockWidget(q);
         m_panel->toggleView(true);
@@ -124,10 +123,7 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     }
 }
 
-DockWidget::~DockWidget()
-{
-    QX_FINI_PRIVATE()
-}
+DockWidget::~DockWidget(){QX_FINI_PRIVATE()}
 
 DockTab *DockWidget::tab() const
 {
@@ -238,6 +234,22 @@ QList<QAction *> DockWidget::titleBarActions() const
     return d->m_titleBarActions;
 }
 
+QIcon DockWidget::icon() const
+{
+    Q_D(const DockWidget);
+    return d->m_tab->icon();
+}
+
+void DockWidget::setIcon(const QIcon &icon)
+{
+    Q_D(DockWidget);
+    d->m_tab->setIcon(icon);
+
+    if (!d->m_toggleViewAction->isCheckable()) {
+        d->m_toggleViewAction->setIcon(icon);
+    }
+}
+
 void DockWidget::toggleView(bool open)
 {
     Q_D(DockWidget);
@@ -260,8 +272,8 @@ void DockWidget::deleteDockWidget()
 
 void DockWidget::requestCloseDockWidget()
 {
-    if (features().testFlag(DockWidget::DockWidgetDeleteOnClose)
-        || features().testFlag(DockWidget::CustomCloseHandling)) {
+    if (features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
+        features().testFlag(DockWidget::CustomCloseHandling)) {
         closeDockWidgetInternal(false);
     } else {
         toggleView(false);
@@ -358,7 +370,7 @@ bool DockWidget::closeDockWidgetInternal(bool forceClose)
         // If the dock widget is floating, then we check if we also need to
         // delete the floating widget
         if (isFloating()) {
-            DockFloatingContainer *floatingWidget = internal::findParent<DockFloatingContainer*>(this);
+            DockFloatingContainer *floatingWidget = internal::findParent<DockFloatingContainer *>(this);
             if (floatingWidget->dockWidgets().count() == 1) {
                 floatingWidget->deleteLater();
             } else {

@@ -20,6 +20,7 @@
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QLabel>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -42,12 +43,16 @@ public:
     bool startFloating(Qx::DockDragState draggingState = Qx::DockDraggingFloatingWidget);
 
     template <typename T> DockFloatingWidget *createFloatingWidget(T *widget, bool needCreateContainer);
+
+    void updateIcon();
 public:
     DockWidget *m_dockWidget = nullptr;
     DockPanel *m_panel = nullptr;
     DockLabel *m_label = nullptr;
+    QLabel *m_iconLabel = nullptr;
     QAbstractButton *m_closeButton = nullptr;
     QIcon m_icon;
+    QSize m_iconSize;
     bool m_isActive = false;
 
     QPoint m_globalDragStartMousePosition;
@@ -205,6 +210,21 @@ bool DockTabPrivate::startFloating(Qx::DockDragState draggingState)
     return true;
 }
 
+void DockTabPrivate::updateIcon()
+{
+    Q_Q(DockTab);
+    if (!m_iconLabel || m_icon.isNull()) {
+        return;
+    }
+
+    if (m_iconSize.isValid()) {
+        m_iconLabel->setPixmap(m_icon.pixmap(m_iconSize));
+    } else {
+        m_iconLabel->setPixmap(m_icon.pixmap(q->style()->pixelMetric(QStyle::PM_SmallIconSize, nullptr, q)));
+    }
+    m_iconLabel->setVisible(true);
+}
+
 template <typename T> DockFloatingWidget *DockTabPrivate::createFloatingWidget(T *widget, bool needCreateContainer)
 {
     Q_Q(DockTab);
@@ -285,6 +305,46 @@ const QIcon &DockTab::icon() const
 {
     Q_D(const DockTab);
     return d->m_icon;
+}
+
+void DockTab::setIcon(const QIcon &icon)
+{
+    Q_D(DockTab);
+    QBoxLayout *lay = qobject_cast<QBoxLayout *>(layout());
+    if (!d->m_iconLabel && icon.isNull()) {
+        return;
+    }
+
+    if (!d->m_iconLabel) {
+        d->m_iconLabel = new QLabel();
+        d->m_iconLabel->setAlignment(Qt::AlignVCenter);
+        d->m_iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        internal::setToolTip(d->m_iconLabel, d->m_label->toolTip());
+        lay->insertWidget(0, d->m_iconLabel, Qt::AlignVCenter);
+        lay->insertSpacing(1, qRound(1.5 * lay->contentsMargins().left() / 2.0));
+    } else if (icon.isNull()) {
+        // Remove icon label and spacer item
+        lay->removeWidget(d->m_iconLabel);
+        lay->removeItem(lay->itemAt(0));
+        delete d->m_iconLabel;
+        d->m_iconLabel = nullptr;
+    }
+
+    d->m_icon = icon;
+    d->updateIcon();
+}
+
+QSize DockTab::iconSize() const
+{
+    Q_D(const DockTab);
+    return d->m_iconSize;
+}
+
+void DockTab::setIconSize(const QSize &size)
+{
+    Q_D(DockTab);
+    d->m_iconSize = size;
+    d->updateIcon();
 }
 
 QString DockTab::text() const

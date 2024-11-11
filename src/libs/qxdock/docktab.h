@@ -31,6 +31,10 @@ public:
     DockWidget *dockWidget() const;
 
     const QIcon &icon() const;
+    void setIcon(const QIcon &icon);
+
+    QSize iconSize() const;
+    void setIconSize(const QSize &size);
 
     QString text() const;
 

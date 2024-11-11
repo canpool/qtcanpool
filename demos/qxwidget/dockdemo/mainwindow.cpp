@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     DockWidget *w = nullptr;
 
     w = createColorDockWidget(tr("dock1"), QColor(255, 0, 0));
+    w->setIcon(QIcon(":/res/tab.svg"));
     viewMenu->addAction(w->toggleViewAction());
     DockPanel *panel = dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
 

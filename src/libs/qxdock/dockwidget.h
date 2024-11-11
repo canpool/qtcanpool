@@ -63,6 +63,9 @@ public:
 
     virtual QList<QAction *> titleBarActions() const;
 
+    QIcon icon() const;
+    void setIcon(const QIcon &icon);
+
 public Q_SLOTS:
     void toggleView(bool open = true);
     void deleteDockWidget();
