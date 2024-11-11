@@ -74,6 +74,7 @@ protected Q_SLOTS:
 
 private Q_SLOTS:
     void onTabCloseRequested(int index);
+    void reorderDockWidget(int fromIndex, int toIndex);
 
 Q_SIGNALS:
     void currentChanging(int index);

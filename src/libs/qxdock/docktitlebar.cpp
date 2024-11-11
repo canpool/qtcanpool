@@ -91,6 +91,7 @@ void DockTitleBarPrivate::createTabBar()
     // I don't know why QSizePolicy::Maximum doesn't work good
     m_tabBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_layout->addWidget(m_tabBar);
+    q->connect(m_tabBar, SIGNAL(tabMoved(int, int)), SLOT(markTabsMenuOutdated()));
     q->connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
     q->connect(m_tabBar, SIGNAL(tabBarClicked(int)), SIGNAL(tabBarClicked(int)));
     q->connect(m_tabBar, SIGNAL(elidedChanged(bool)), SLOT(markTabsMenuOutdated()));

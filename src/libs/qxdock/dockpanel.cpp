@@ -32,7 +32,8 @@ private:
     int m_currentIndex = -1;
     QWidget *m_currentWidget = nullptr;
 public:
-    DockAreaLayout(QBoxLayout *parentLayout) : m_parentLayout(parentLayout)
+    DockAreaLayout(QBoxLayout *parentLayout)
+        : m_parentLayout(parentLayout)
     {
     }
 
@@ -155,7 +156,6 @@ public:
     DockTabBar *tabBar() const;
     void updateTitleBarButtonStates();
     void updateTitleBarButtonVisibility(bool isTopLevel);
-
 public:
     DockWindow *m_window = nullptr;
     QBoxLayout *m_layout = nullptr;
@@ -163,7 +163,7 @@ public:
     DockTitleBar *m_titleBar = nullptr;
     DockPanel::DockAreaFlags m_flags{DockPanel::DefaultFlags};
     bool m_updateTitleBarButtons = false;
-    Qx::DockWidgetAreas	m_allowedAreas	= s_defaultAllowedAreas;
+    Qx::DockWidgetAreas m_allowedAreas = s_defaultAllowedAreas;
 };
 
 DockPanelPrivate::DockPanelPrivate()
@@ -187,6 +187,7 @@ void DockPanelPrivate::init()
     m_titleBar = new DockTitleBar(q);
     QObject::connect(m_titleBar, &DockTitleBar::tabBarClicked, q, &DockPanel::setCurrentIndex);
     QObject::connect(tabBar(), &DockTabBar::tabCloseRequested, q, &DockPanel::onTabCloseRequested);
+    QObject::connect(tabBar(), &DockTabBar::tabMoved, q, &DockPanel::reorderDockWidget);
     m_layout->addWidget(m_titleBar);
 
     m_contentsLayout = new DockAreaLayout(m_layout);
@@ -205,10 +206,8 @@ void DockPanelPrivate::updateTitleBarButtonStates()
         return;
     }
 
-    m_titleBar->button(Qx::TitleBarButtonUndock)->setEnabled(
-        q->features().testFlag(DockWidget::DockWidgetFloatable));
-    m_titleBar->button(Qx::TitleBarButtonClose)->setEnabled(
-        q->features().testFlag(DockWidget::DockWidgetClosable));
+    m_titleBar->button(Qx::TitleBarButtonUndock)->setEnabled(q->features().testFlag(DockWidget::DockWidgetFloatable));
+    m_titleBar->button(Qx::TitleBarButtonClose)->setEnabled(q->features().testFlag(DockWidget::DockWidgetClosable));
     m_titleBar->updateDockWidgetActionsButtons();
     m_updateTitleBarButtons = false;
 }
@@ -422,9 +421,8 @@ void DockPanel::setCurrentIndex(int index)
 void DockPanel::closeArea()
 {
     auto openWidgets = openedDockWidgets();
-    if (openWidgets.count() == 1 &&
-        (openWidgets[0]->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
-         openWidgets[0]->features().testFlag(DockWidget::CustomCloseHandling))) {
+    if (openWidgets.count() == 1 && (openWidgets[0]->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
+                                     openWidgets[0]->features().testFlag(DockWidget::CustomCloseHandling))) {
         openWidgets[0]->closeDockWidgetInternal();
     } else {
         for (auto w : openWidgets) {
@@ -448,6 +446,20 @@ void DockPanel::toggleView(bool open)
 void DockPanel::onTabCloseRequested(int index)
 {
     dockWidget(index)->requestCloseDockWidget();
+}
+
+void DockPanel::reorderDockWidget(int fromIndex, int toIndex)
+{
+    Q_D(DockPanel);
+    if (fromIndex >= d->m_contentsLayout->count() || fromIndex < 0 || toIndex >= d->m_contentsLayout->count() ||
+        toIndex < 0 || fromIndex == toIndex) {
+        return;
+    }
+
+    auto widget = d->m_contentsLayout->widget(fromIndex);
+    d->m_contentsLayout->removeWidget(widget);
+    d->m_contentsLayout->insertWidget(toIndex, widget);
+    setCurrentIndex(toIndex);
 }
 
 void DockPanel::addDockWidget(DockWidget *w)

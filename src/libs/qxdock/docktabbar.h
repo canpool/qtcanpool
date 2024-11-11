@@ -48,12 +48,14 @@ public Q_SLOTS:
 private Q_SLOTS:
     void onTabClicked();
     void onTabCloseRequested();
+    void onTabWidgetMoved(const QPoint &globalPos);
 
 Q_SIGNALS:
     void currentChanging(int index);
     void currentChanged(int index);
     void tabBarClicked(int index);
     void tabCloseRequested(int index);
+    void tabMoved(int from, int to);
     void elidedChanged(bool elided);
 
 private:

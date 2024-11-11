@@ -89,6 +89,7 @@ void DockTabBar::insertTab(int index, DockTab *tab)
     d->m_tabsLayout->insertWidget(index, tab);
     connect(tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
     connect(tab, SIGNAL(closeRequested()), this, SLOT(onTabCloseRequested()));
+    connect(tab, SIGNAL(moved(QPoint)), this, SLOT(onTabWidgetMoved(QPoint)));
     connect(tab, SIGNAL(elidedChanged(bool)), this, SIGNAL(elidedChanged(bool)));
     if (index <= d->m_currentIndex) {
         setCurrentIndex(d->m_currentIndex + 1);
@@ -245,6 +246,47 @@ void DockTabBar::onTabCloseRequested()
     DockTab *tab = qobject_cast<DockTab *>(sender());
     int index = d->m_tabsLayout->indexOf(tab);
     closeTab(index);
+}
+
+void DockTabBar::onTabWidgetMoved(const QPoint &globalPos)
+{
+    Q_D(DockTabBar);
+    DockTab *movingTab = qobject_cast<DockTab *>(sender());
+    if (!movingTab) {
+        return;
+    }
+
+    int fromIndex = d->m_tabsLayout->indexOf(movingTab);
+    auto mousePos = mapFromGlobal(globalPos);
+    mousePos.rx() = qMax(0, mousePos.x());
+    mousePos.rx() = qMin(width(), mousePos.x());
+    int toIndex = -1;
+    // Find tab under mouse
+    for (int i = 0; i < count(); ++i) {
+        DockTab *dropTab = this->tab(i);
+        auto tabGeometry = dropTab->geometry();
+        tabGeometry.setTopLeft(d->m_tabsContainerWidget->mapToParent(tabGeometry.topLeft()));
+        tabGeometry.setBottomRight(d->m_tabsContainerWidget->mapToParent(tabGeometry.bottomRight()));
+        if (dropTab == movingTab || !dropTab->isVisibleTo(this) || !tabGeometry.contains(mousePos)) {
+            continue;
+        }
+
+        toIndex = d->m_tabsLayout->indexOf(dropTab);
+        if (toIndex == fromIndex) {
+            toIndex = -1;
+        }
+        break;
+    }
+
+    if (toIndex > -1) {
+        d->m_tabsLayout->removeWidget(movingTab);
+        d->m_tabsLayout->insertWidget(toIndex, movingTab);
+        Q_EMIT tabMoved(fromIndex, toIndex);
+        setCurrentIndex(toIndex);
+    } else {
+        // Ensure that the moved tab is reset to its start position
+        d->m_tabsLayout->update();
+    }
 }
 
 QX_DOCK_END_NAMESPACE
