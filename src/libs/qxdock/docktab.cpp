@@ -475,4 +475,24 @@ void DockTab::mouseMoveEvent(QMouseEvent *e)
     Super::mouseMoveEvent(e);
 }
 
+/**
+ * Double clicking the tab widget makes the assigned dock widget floating
+ */
+void DockTab::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    Q_D(DockTab);
+    if (e->button() == Qt::LeftButton) {
+        // If this is the last dock panel in a dock container it does not make
+        // sense to move it to a new floating widget and leave this one empty
+        if ((!d->m_panel->dockContainer()->isFloating() || d->m_panel->dockWidgetsCount() > 1) &&
+            d->m_dockWidget->features().testFlag(DockWidget::DockWidgetFloatable)) {
+            e->accept();
+            d->saveDragStartMousePosition(internal::globalPositionOf(e));
+            d->startFloating(Qx::DockDraggingInactive);
+        }
+    }
+
+    Super::mouseDoubleClickEvent(e);
+}
+
 QX_DOCK_END_NAMESPACE
