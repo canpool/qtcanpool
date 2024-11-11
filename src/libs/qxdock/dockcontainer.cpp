@@ -25,6 +25,19 @@ static void insertWidgetIntoSplitter(QSplitter *s, QWidget *w, bool append)
     }
 }
 
+static int areaIdToIndex(Qx::DockWidgetArea area)
+{
+    switch (area) {
+    case Qx::LeftDockWidgetArea: return 0;
+    case Qx::RightDockWidgetArea: return 1;
+    case Qx::TopDockWidgetArea: return 2;
+    case Qx::BottomDockWidgetArea: return 3;
+    case Qx::CenterDockWidgetArea: return 4;
+    default:
+        return 4;
+    }
+}
+
 class DockContainerPrivate
 {
 public:
@@ -65,6 +78,7 @@ public:
     QGridLayout *m_layout = nullptr;
     DockSplitter *m_rootSplitter = nullptr;
     QList<QPointer<DockPanel>> m_panels;
+    DockPanel *m_lastAddedPanelCache[5];
     DockPanel *m_topLevelPanel = nullptr;
     bool m_isFloating = false;
     unsigned int m_zOrderIndex = 0;
@@ -72,6 +86,7 @@ public:
 
 DockContainerPrivate::DockContainerPrivate()
 {
+    std::fill(std::begin(m_lastAddedPanelCache),std::end(m_lastAddedPanelCache), nullptr);
 }
 
 void DockContainerPrivate::init()
@@ -184,6 +199,7 @@ DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea are
     panel->addDockWidget(w);
     addDockPanel(panel, area);
     panel->updateTitleBarVisibility();
+    m_lastAddedPanelCache[areaIdToIndex(area)] = panel;
     return panel;
 }
 
@@ -460,6 +476,7 @@ void DockContainerPrivate::moveToContainer(QWidget *widget, Qx::DockWidgetArea a
     }
 
     addDockPanel(newPanel, area);
+    m_lastAddedPanelCache[areaIdToIndex(area)] = newPanel;
 }
 
 void DockContainerPrivate::moveIntoCenterOfSection(QWidget *widget, DockPanel *targetPanel, int tabIndex)
@@ -750,6 +767,12 @@ void DockContainer::removeDockPanel(DockPanel *panel)
     panel->setParent(nullptr);
     internal::hideEmptyParentSplitters(splitter);
 
+    // Remove this panel from cached panels
+    auto p = std::find(std::begin(d->m_lastAddedPanelCache), std::end(d->m_lastAddedPanelCache), panel);
+    if (p != std::end(d->m_lastAddedPanelCache)) {
+        *p = nullptr;
+    }
+
     // If splitter has more than 1 widgets, we are finished and can leave
     if (splitter->count() > 1) {
         goto emitAndExit;
@@ -827,6 +850,12 @@ DockPanel *DockContainer::topLevelDockPanel() const
         return nullptr;
     }
     return panels[0];
+}
+
+DockPanel *DockContainer::lastAddedDockPanel(Qx::DockWidgetArea area) const
+{
+    Q_D(const DockContainer);
+    return d->m_lastAddedPanelCache[areaIdToIndex(area)];
 }
 
 QList<DockWidget *> DockContainer::dockWidgets() const

@@ -109,6 +109,30 @@ DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, Doc
     return panel;
 }
 
+/**
+ * This function will add the given DockWidget to the given dock area as a new tab.
+ * If no DockPanel exists for the given area identifier, a new DockPanel is created.
+ */
+DockPanel *DockWindow::addDockWidgetTab(Qx::DockWidgetArea area, DockWidget *w)
+{
+    DockPanel *panel = lastAddedDockPanel(area);
+    if (panel) {
+        return addDockWidget(Qx::CenterDockWidgetArea, w, panel);
+    } else {
+        return addDockWidget(area, w, nullptr);
+    }
+}
+
+/**
+ * This function will add the given DockWidget to the given DockPanel as a new tab.
+ * If index is out of range, the tab is simply appended. Otherwise it is
+ * inserted at the specified position.
+ */
+DockPanel *DockWindow::addDockWidgetTab(DockWidget *w, DockPanel *p, int index)
+{
+    return addDockWidget(Qx::CenterDockWidgetArea, w, p, index);
+}
+
 void DockWindow::removeDockWidget(DockWidget *w)
 {
     Q_D(DockWindow);

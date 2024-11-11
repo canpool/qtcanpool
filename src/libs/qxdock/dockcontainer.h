@@ -59,6 +59,7 @@ protected:
     QList<QPointer<DockPanel> > removeAllDockPanels();
     DockWidget *topLevelDockWidget() const;
     DockPanel *topLevelDockPanel() const;
+    DockPanel *lastAddedDockPanel(Qx::DockWidgetArea area) const;
     QList<DockWidget *> dockWidgets() const;
     void updateSplitterHandles(QSplitter *splitter);
     void dropFloatingWidget(DockFloatingContainer *floatingWidget, const QPoint &targetPos);

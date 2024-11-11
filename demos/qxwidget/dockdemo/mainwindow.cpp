@@ -31,9 +31,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);  // tabified with dock1
 
+    w = createColorDockWidget(tr("dock5"), QColor(0, 255, 255));
+    viewMenu->addAction(w->toggleViewAction());
+    // tabified with dock1, because of dock1 panel is Left area panel
+    dockwindow->addDockWidgetTab(Qx::LeftDockWidgetArea, w);
+
     w = createColorDockWidget(tr("dock3"), QColor(0, 0, 255));
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidget(Qx::BottomDockWidgetArea, w);
+    panel = dockwindow->addDockWidget(Qx::BottomDockWidgetArea, w);
+
+    w = createColorDockWidget(tr("dock6"), QColor(0, 0, 255));
+    viewMenu->addAction(w->toggleViewAction());
+    dockwindow->addDockWidgetTab(w, panel); // tabified with dock3
 
     setCentralWidget(dockwindow);
 

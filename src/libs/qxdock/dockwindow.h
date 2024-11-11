@@ -25,6 +25,8 @@ public:
     ~DockWindow();
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
+    DockPanel *addDockWidgetTab(Qx::DockWidgetArea area, DockWidget *w);
+    DockPanel *addDockWidgetTab(DockWidget *w, DockPanel *p, int index = 1);
     void removeDockWidget(DockWidget *w);
 
     const QList<DockContainer *> dockContainers() const;
