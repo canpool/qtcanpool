@@ -570,7 +570,7 @@ void DockContainerPrivate::moveToNewSection(QWidget *widget, DockPanel *targetPa
 DockContainer::DockContainer(DockWindow *window, QWidget *parent) : QWidget(parent)
 {
     Q_ASSERT(window);
-    QX_INIT_PRIVATE(DockContainer)
+    QX_INIT_PRIVATE(DockContainer);
 
     Q_D(DockContainer);
     d->m_window = window;
@@ -588,7 +588,7 @@ DockContainer::~DockContainer()
     if (d->m_window) {
         d->m_window->removeDockContainer(this);
     }
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)

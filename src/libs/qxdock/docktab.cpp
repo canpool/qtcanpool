@@ -261,7 +261,7 @@ DockTab::DockTab(DockWidget *w, QWidget *parent)
 
 DockTab::~DockTab()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 bool DockTab::isActive() const

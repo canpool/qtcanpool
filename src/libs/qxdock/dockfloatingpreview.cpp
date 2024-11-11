@@ -182,7 +182,7 @@ DockFloatingPreview::DockFloatingPreview(DockWidget *content)
 
 DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent) : QWidget(parent)
 {
-    QX_INIT_PRIVATE(DockFloatingPreview)
+    QX_INIT_PRIVATE(DockFloatingPreview);
 
     Q_D(DockFloatingPreview);
     d->m_content = content;
@@ -215,7 +215,7 @@ DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent) : QW
 
 DockFloatingPreview::~DockFloatingPreview()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 void DockFloatingPreview::startFloating(const QPoint &dragStartMousePos, const QSize &size, Qx::DockDragState dragState,

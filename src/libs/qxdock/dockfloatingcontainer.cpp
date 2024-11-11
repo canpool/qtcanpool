@@ -177,7 +177,7 @@ void DockFloatingContainerPrivate::handleEscapeKey()
 DockFloatingContainer::DockFloatingContainer(DockWindow *window)
     : DockFloatingContainerBase(window)
 {
-    QX_INIT_PRIVATE(DockFloatingContainer)
+    QX_INIT_PRIVATE(DockFloatingContainer);
 
     Q_D(DockFloatingContainer);
     d->m_window = window;
@@ -228,7 +228,7 @@ DockFloatingContainer::~DockFloatingContainer()
     if (d->m_window) {
         d->m_window->removeFloatingWidget(this);
     }
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 bool DockFloatingContainer::isClosable() const

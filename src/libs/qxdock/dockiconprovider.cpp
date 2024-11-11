@@ -31,7 +31,7 @@ DockIconProvider::DockIconProvider()
 
 DockIconProvider::~DockIconProvider()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 QIcon DockIconProvider::customIcon(Qx::DockIcon id) const

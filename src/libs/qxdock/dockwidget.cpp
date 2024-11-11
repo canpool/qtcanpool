@@ -105,7 +105,7 @@ void DockWidgetPrivate::updateParentDockPanel()
 DockWidget::DockWidget(const QString &title, QWidget *parent)
     : QWidget{parent}
 {
-    QX_INIT_PRIVATE(DockWidget)
+    QX_INIT_PRIVATE(DockWidget);
 
     // must before d->init(), create tab need title
     setWindowTitle(title);
@@ -123,7 +123,10 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     }
 }
 
-DockWidget::~DockWidget(){QX_FINI_PRIVATE()}
+DockWidget::~DockWidget()
+{
+    QX_FINI_PRIVATE();
+}
 
 DockTab *DockWidget::tab() const
 {

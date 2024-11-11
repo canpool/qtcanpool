@@ -61,7 +61,7 @@ DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
 
 DockOverlay::~DockOverlay()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 void DockOverlay::setAllowedAreas(Qx::DockWidgetAreas areas)
@@ -548,7 +548,7 @@ QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &
 DockOverlayCross::DockOverlayCross(DockOverlay *overlay)
     : QWidget(overlay->parentWidget())
 {
-    QX_INIT_PRIVATE(DockOverlayCross)
+    QX_INIT_PRIVATE(DockOverlayCross);
     Q_D(DockOverlayCross);
     d->m_dockOverlay = overlay;
     d->init();
@@ -560,7 +560,7 @@ DockOverlayCross::DockOverlayCross(DockOverlay *overlay)
 
 DockOverlayCross::~DockOverlayCross()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 QColor DockOverlayCross::iconColor(IconColor colorIndex) const

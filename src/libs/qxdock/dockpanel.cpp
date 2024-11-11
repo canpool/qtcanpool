@@ -235,7 +235,7 @@ void DockPanelPrivate::updateTitleBarButtonVisibility(bool isTopLevel)
 DockPanel::DockPanel(DockWindow *window, DockContainer *parent)
     : QWidget{parent}
 {
-    QX_INIT_PRIVATE(DockPanel)
+    QX_INIT_PRIVATE(DockPanel);
 
     Q_D(DockPanel);
     d->m_window = window;
@@ -244,7 +244,7 @@ DockPanel::DockPanel(DockWindow *window, DockContainer *parent)
 
 DockPanel::~DockPanel()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 DockWindow *DockPanel::dockWindow() const

@@ -28,7 +28,6 @@ public:
 
 DockTabBarPrivate::DockTabBarPrivate()
 {
-
 }
 
 void DockTabBarPrivate::init()
@@ -66,7 +65,7 @@ void DockTabBarPrivate::updateTabs()
 DockTabBar::DockTabBar(DockPanel *parent)
     : QScrollArea(parent)
 {
-    QX_INIT_PRIVATE(DockTabBar)
+    QX_INIT_PRIVATE(DockTabBar);
     Q_D(DockTabBar);
     d->m_panel = parent;
     d->init();
@@ -81,7 +80,7 @@ DockTabBar::DockTabBar(DockPanel *parent)
 
 DockTabBar::~DockTabBar()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 void DockTabBar::insertTab(int index, DockTab *tab)
@@ -101,7 +100,6 @@ void DockTabBar::insertTab(int index, DockTab *tab)
 
 void DockTabBar::removeTab(DockTab *tab)
 {
-
 }
 
 int DockTabBar::count() const
@@ -123,7 +121,7 @@ DockTab *DockTabBar::currentTab() const
     if (d->m_currentIndex < 0 || d->m_currentIndex >= d->m_tabsLayout->count()) {
         return nullptr;
     } else {
-        return qobject_cast<DockTab*>(d->m_tabsLayout->itemAt(d->m_currentIndex)->widget());
+        return qobject_cast<DockTab *>(d->m_tabsLayout->itemAt(d->m_currentIndex)->widget());
     }
 }
 
@@ -203,7 +201,7 @@ void DockTabBar::setCurrentIndex(int index)
     if (index == d->m_currentIndex) {
         return;
     }
-    if (index < -1 || index > (count() -1)) {
+    if (index < -1 || index > (count() - 1)) {
         return;
     }
     Q_EMIT currentChanging(index);
@@ -244,7 +242,7 @@ void DockTabBar::onTabClicked()
 void DockTabBar::onTabCloseRequested()
 {
     Q_D(DockTabBar);
-    DockTab *tab = qobject_cast<DockTab*>(sender());
+    DockTab *tab = qobject_cast<DockTab *>(sender());
     int index = d->m_tabsLayout->indexOf(tab);
     closeTab(index);
 }

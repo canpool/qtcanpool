@@ -43,7 +43,7 @@ void DockWindowPrivate::init()
 DockWindow::DockWindow(QWidget *parent)
     : DockContainer{this, parent}
 {
-    QX_INIT_PRIVATE(DockWindow)
+    QX_INIT_PRIVATE(DockWindow);
     createRootSplitter();
     Q_D(DockWindow);
     d->init();
@@ -80,7 +80,7 @@ DockWindow::~DockWindow()
         delete p;
     }
 
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 /**

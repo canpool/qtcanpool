@@ -24,18 +24,18 @@ DockSplitterPrivate::DockSplitterPrivate()
 DockSplitter::DockSplitter(QWidget *parent)
     : QSplitter(parent)
 {
-    QX_INIT_PRIVATE(DockSplitter)
+    QX_INIT_PRIVATE(DockSplitter);
 }
 
 DockSplitter::DockSplitter(Qt::Orientation orientation, QWidget *parent)
     : QSplitter(orientation, parent)
 {
-    QX_INIT_PRIVATE(DockSplitter)
+    QX_INIT_PRIVATE(DockSplitter);
 }
 
 DockSplitter::~DockSplitter()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 bool DockSplitter::hasVisibleContent() const

@@ -70,7 +70,7 @@ QxDock::DockLabel::DockLabel(const QString &text, QWidget *parent, Qt::WindowFla
 
 DockLabel::~DockLabel()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 Qt::TextElideMode DockLabel::elideMode() const

@@ -32,7 +32,7 @@ DockManager::DockManager()
 
 DockManager::~DockManager()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 DockManager::ConfigFlags DockManager::configFlags()
