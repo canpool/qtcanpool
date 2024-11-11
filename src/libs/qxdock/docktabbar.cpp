@@ -90,6 +90,7 @@ void DockTabBar::insertTab(int index, DockTab *tab)
     d->m_tabsLayout->insertWidget(index, tab);
     connect(tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
     connect(tab, SIGNAL(closeRequested()), this, SLOT(onTabCloseRequested()));
+    connect(tab, SIGNAL(elidedChanged(bool)), this, SIGNAL(elidedChanged(bool)));
     if (index <= d->m_currentIndex) {
         setCurrentIndex(d->m_currentIndex + 1);
     } else if (d->m_currentIndex == -1) {
@@ -188,6 +189,12 @@ QSize DockTabBar::sizeHint() const
     // otherwise the size of the QScrollArea will be large.
     // Notes: setting SizePolicy alone will not make the size smaller.
     return d->m_tabsContainerWidget->sizeHint();
+}
+
+bool DockTabBar::areTabsOverflowing() const
+{
+    Q_D(const DockTabBar);
+    return d->m_tabsContainerWidget->width() > width();
 }
 
 void DockTabBar::setCurrentIndex(int index)

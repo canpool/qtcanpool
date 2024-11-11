@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
+    w = createColorDockWidget(tr("looooooooooooooooongdock"), QColor(128, 128, 128));
+    viewMenu->addAction(w->toggleViewAction());
+    dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
+
     w = createColorDockWidget(tr("dock4"), QColor(255, 255, 0));
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);  // tabified with dock1

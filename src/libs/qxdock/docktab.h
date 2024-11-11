@@ -38,6 +38,8 @@ public:
 
     QString text() const;
 
+    bool isTitleElided() const;
+
     void updateStyle();
 
 Q_SIGNALS:
@@ -45,6 +47,7 @@ Q_SIGNALS:
     void clicked();
     void closeRequested();
     void moved(const QPoint &globalPos);
+    void elidedChanged(bool elided);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;

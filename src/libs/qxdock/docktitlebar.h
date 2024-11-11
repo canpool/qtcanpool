@@ -38,6 +38,9 @@ public:
 Q_SIGNALS:
     void tabBarClicked(int index);
 
+public Q_SLOTS:
+    void markTabsMenuOutdated();
+
 private Q_SLOTS:
     void onTabsMenuAboutToShow();
     void onTabsMenuActionTriggered(QAction *a);

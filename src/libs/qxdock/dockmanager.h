@@ -28,11 +28,13 @@ public:
         AlwaysShowTabs = 0x2000,
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
+        DockAreaDynamicTabsMenuButtonVisibility = 0x20000,
 
         FocusHighlighting = 0x200000,
         EqualSplitOnInsertion = 0x400000,
 
         MiddleMouseButtonClosesTab = 0x2000000,
+        DisableTabTextEliding =      0x4000000,
         ShowTabTextOnlyForActiveTab = 0x8000000,
 
         DefaultDockAreaButtons = DockAreaHasCloseButton

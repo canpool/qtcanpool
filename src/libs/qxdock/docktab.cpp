@@ -71,9 +71,15 @@ void DockTabPrivate::init()
     Q_Q(DockTab);
 
     m_label = new DockLabel();
+    if (DockManager::testConfigFlag(DockManager::DisableTabTextEliding)) {
+        m_label->setElideMode(Qt::ElideNone);
+    } else {
+        m_label->setElideMode(Qt::ElideRight);
+    }
     m_label->setText(m_dockWidget->windowTitle());
     m_label->setObjectName("dockTabLabel");
     m_label->setAlignment(Qt::AlignCenter);
+    q->connect(m_label, SIGNAL(elidedChanged(bool)), SIGNAL(elidedChanged(bool)));
 
     m_closeButton = createCloseButton();
     m_closeButton->setObjectName("dockTabCloseButton");
@@ -351,6 +357,12 @@ QString DockTab::text() const
 {
     Q_D(const DockTab);
     return d->m_label->text();
+}
+
+bool DockTab::isTitleElided() const
+{
+    Q_D(const DockTab);
+    return d->m_label->isElided();
 }
 
 void DockTab::updateStyle()

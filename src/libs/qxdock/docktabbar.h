@@ -39,6 +39,8 @@ public:
     virtual QSize minimumSizeHint() const override;
     virtual QSize sizeHint() const override;
 
+    bool areTabsOverflowing() const;
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void closeTab(int index);
@@ -52,6 +54,7 @@ Q_SIGNALS:
     void currentChanged(int index);
     void tabBarClicked(int index);
     void tabCloseRequested(int index);
+    void elidedChanged(bool elided);
 
 private:
     QX_DECLARE_PRIVATE(DockTabBar)

@@ -23,7 +23,6 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
-
 TitleBarButton::TitleBarButton(bool showInTitleBar, bool hideWhenDisabled, Qx::DockTitleBarButton id, QWidget *parent)
     : QToolButton(parent)
     , m_id(id)
@@ -60,6 +59,7 @@ public:
     QPointer<TitleBarButton> m_minimizeButton;
 
     QList<TitleBarButton *> m_dockWidgetActionsButtons;
+    bool m_menuOutdated = true;
 
     Qx::DockDragState m_dragState = Qx::DockDraggingInactive;
     QPoint m_dragStartMousePos;
@@ -68,7 +68,6 @@ public:
 
 DockTitleBarPrivate::DockTitleBarPrivate()
 {
-
 }
 
 void DockTitleBarPrivate::init()
@@ -94,6 +93,7 @@ void DockTitleBarPrivate::createTabBar()
     m_layout->addWidget(m_tabBar);
     q->connect(m_tabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
     q->connect(m_tabBar, SIGNAL(tabBarClicked(int)), SIGNAL(tabBarClicked(int)));
+    q->connect(m_tabBar, SIGNAL(elidedChanged(bool)), SLOT(markTabsMenuOutdated()));
 }
 
 void DockTitleBarPrivate::createButtons()
@@ -103,8 +103,8 @@ void DockTitleBarPrivate::createButtons()
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     // Tabs menu button
-    m_tabsMenuButton = new TitleBarButton(testConfigFlag(DockManager::DockAreaHasTabsMenuButton),
-                                          false, Qx::TitleBarButtonTabsMenu);
+    m_tabsMenuButton =
+        new TitleBarButton(testConfigFlag(DockManager::DockAreaHasTabsMenuButton), false, Qx::TitleBarButtonTabsMenu);
     m_tabsMenuButton->setObjectName("tabsMenuButton");
     m_tabsMenuButton->setAutoRaise(true);
     m_tabsMenuButton->setPopupMode(QToolButton::InstantPopup);
@@ -114,15 +114,15 @@ void DockTitleBarPrivate::createButtons()
     tabsMenu->setToolTipsVisible(true);
 #endif
     q->connect(tabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
-    q->connect(tabsMenu, SIGNAL(triggered(QAction*)), SLOT(onTabsMenuActionTriggered(QAction*)));
+    q->connect(tabsMenu, SIGNAL(triggered(QAction *)), SLOT(onTabsMenuActionTriggered(QAction *)));
     m_tabsMenuButton->setMenu(tabsMenu);
     internal::setToolTip(m_tabsMenuButton, QObject::tr("List All Tabs"));
     m_tabsMenuButton->setSizePolicy(sp);
     m_layout->addWidget(m_tabsMenuButton, 0);
 
     // Undock button
-    m_undockButton = new TitleBarButton(testConfigFlag(DockManager::DockAreaHasUndockButton),
-                                        true, Qx::TitleBarButtonUndock);
+    m_undockButton =
+        new TitleBarButton(testConfigFlag(DockManager::DockAreaHasUndockButton), true, Qx::TitleBarButtonUndock);
     m_undockButton->setObjectName("detachGroupButton");
     m_undockButton->setAutoRaise(true);
     internal::setToolTip(m_undockButton, QObject::tr("Detach Group"));
@@ -142,8 +142,8 @@ void DockTitleBarPrivate::createButtons()
     m_layout->addWidget(m_minimizeButton, 0);
 
     // Close button
-    m_closeButton = new TitleBarButton(testConfigFlag(DockManager::DockAreaHasCloseButton),
-                                       true, Qx::TitleBarButtonClose);
+    m_closeButton =
+        new TitleBarButton(testConfigFlag(DockManager::DockAreaHasCloseButton), true, Qx::TitleBarButtonClose);
     m_closeButton->setObjectName("dockPanelCloseButton");
     m_closeButton->setAutoRaise(true);
     internal::setButtonIcon(m_closeButton, QStyle::SP_TitleBarCloseButton, Qx::DockPanelCloseIcon);
@@ -211,7 +211,7 @@ DockTitleBar::DockTitleBar(DockPanel *parent)
 
 DockTitleBar::~DockTitleBar()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 DockTabBar *DockTitleBar::tabBar() const
@@ -230,12 +230,15 @@ QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
 {
     Q_D(const DockTitleBar);
 
-    switch (which)
-    {
-    case Qx::TitleBarButtonTabsMenu: return d->m_tabsMenuButton;
-    case Qx::TitleBarButtonUndock: return d->m_undockButton;
-    case Qx::TitleBarButtonClose: return d->m_closeButton;
-    case Qx::TitleBarButtonMinimize: return d->m_minimizeButton;
+    switch (which) {
+    case Qx::TitleBarButtonTabsMenu:
+        return d->m_tabsMenuButton;
+    case Qx::TitleBarButtonUndock:
+        return d->m_undockButton;
+    case Qx::TitleBarButtonClose:
+        return d->m_closeButton;
+    case Qx::TitleBarButtonMinimize:
+        return d->m_minimizeButton;
     default:
         return nullptr;
     }
@@ -262,7 +265,7 @@ void DockTitleBar::updateDockWidgetActionsButtons()
         return;
     }
     int insertIndex = indexOf(d->m_tabsMenuButton);
-    for (auto a: actions) {
+    for (auto a : actions) {
         auto btn = new TitleBarButton(true, false, Qx::TitleBarButtonTabsMenu, this);
         btn->setDefaultAction(a);
         btn->setAutoRaise(true);
@@ -284,9 +287,39 @@ QString DockTitleBar::titleBarButtonToolTip(Qx::DockTitleBarButton id) const
     return QString();
 }
 
+void DockTitleBar::markTabsMenuOutdated()
+{
+    Q_D(DockTitleBar);
+    if (DockManager::testConfigFlag(DockManager::DockAreaDynamicTabsMenuButtonVisibility)) {
+        bool tabsMenuButtonVisible = false;
+        if (DockManager::testConfigFlag(DockManager::DisableTabTextEliding)) {
+            tabsMenuButtonVisible = d->m_tabBar->areTabsOverflowing();
+        } else {
+            bool hasElidedTabTitle = false;
+            for (int i = 0; i < d->m_tabBar->count(); ++i) {
+                if (!d->m_tabBar->isTabOpen(i)) {
+                    continue;
+                }
+                DockTab *tab = d->m_tabBar->tab(i);
+                if (tab->isTitleElided()) {
+                    hasElidedTabTitle = true;
+                    break;
+                }
+            }
+            tabsMenuButtonVisible = (hasElidedTabTitle && (d->m_tabBar->count() > 1));
+        }
+        QMetaObject::invokeMethod(d->m_tabsMenuButton, "setVisible", Qt::QueuedConnection,
+                                  Q_ARG(bool, tabsMenuButtonVisible));
+    }
+    d->m_menuOutdated = true;
+}
+
 void DockTitleBar::onTabsMenuAboutToShow()
 {
     Q_D(DockTitleBar);
+    if (!d->m_menuOutdated) {
+        return;
+    }
     QMenu *menu = d->m_tabsMenuButton->menu();
     menu->clear();
     for (int i = 0; i < d->m_tabBar->count(); ++i) {
@@ -298,6 +331,7 @@ void DockTitleBar::onTabsMenuAboutToShow()
         internal::setToolTip(action, tab->toolTip());
         action->setData(i);
     }
+    d->m_menuOutdated = false;
 }
 
 void DockTitleBar::onTabsMenuActionTriggered(QAction *a)
@@ -384,10 +418,8 @@ void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
     }
 
     // If this is the last dock area in a floating dock container it does not make
-    // sense to move it to a new floating widget and leave this one
-    // empty
-    if (d->m_panel->dockContainer()->isFloating() &&
-        d->m_panel->dockContainer()->visibleDockPanelCount() == 1) {
+    // sense to move it to a new floating widget and leave this one empty
+    if (d->m_panel->dockContainer()->isFloating() && d->m_panel->dockContainer()->visibleDockPanelCount() == 1) {
         return;
     }
 
@@ -395,8 +427,7 @@ void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
     // area is not floatable
     // We can create the floating drag preview if the dock widget is movable
     auto features = d->m_panel->features();
-    if (!features.testFlag(DockWidget::DockWidgetFloatable) &&
-        !(features.testFlag(DockWidget::DockWidgetMovable))) {
+    if (!features.testFlag(DockWidget::DockWidgetFloatable) && !(features.testFlag(DockWidget::DockWidgetMovable))) {
         return;
     }
 
@@ -409,6 +440,5 @@ void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
 
     return;
 }
-
 
 QX_DOCK_END_NAMESPACE
