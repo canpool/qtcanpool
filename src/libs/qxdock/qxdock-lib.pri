@@ -10,6 +10,7 @@ DEFINES -= QT_NO_JAVA_STYLE_ITERATORS QT_RESTRICTED_CAST_FROM_ASCII
 PUBLIC_HEADERS = \
     $$PWD/qxdock_global.h \
     $$PWD/dockcontainer.h \
+    $$PWD/dockfocuscontroller.h \
     $$PWD/dockpanel.h \
     $$PWD/dockwidget.h \
     $$PWD/dockwindow.h \
@@ -35,6 +36,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/dockcontainer.cpp \
+    $$PWD/dockfocuscontroller.cpp \
     $$PWD/dockiconprovider.cpp \
     $$PWD/dockmanager.cpp \
     $$PWD/dockpanel.cpp \
