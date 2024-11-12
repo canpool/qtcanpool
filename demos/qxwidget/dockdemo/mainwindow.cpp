@@ -6,6 +6,7 @@
 
 #include <QMenuBar>
 #include <QMenu>
+#include <QTextEdit>
 
 QX_DOCK_USE_NAMESPACE
 
@@ -16,10 +17,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     DockWindow *dockwindow = new DockWindow();
 
+    QTextEdit *te = nullptr;
+    QWidget *cw = nullptr;
+
     DockWidget *w = nullptr;
 
+    te = new QTextEdit(tr("AutoScrollArea"));
     w = createColorDockWidget(tr("dock1"), QColor(255, 0, 0));
     w->setIcon(QIcon(":/res/tab.svg"));
+    w->setWidget(te);
     viewMenu->addAction(w->toggleViewAction());
     DockPanel *panel = dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
 
@@ -27,7 +33,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
+    cw = createColorWidget(Qt::lightGray);
     w = createColorDockWidget(tr("looooooooooooooooongdock"), QColor(128, 128, 128));
+    w->setWidget(cw, DockWidget::ForceScrollArea);
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
@@ -44,7 +52,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     viewMenu->addAction(w->toggleViewAction());
     panel = dockwindow->addDockWidget(Qx::BottomDockWidgetArea, w);
 
+    cw = createColorWidget(Qt::darkCyan);
     w = createColorDockWidget(tr("dock6"), QColor(255, 0, 255));
+    w->setWidget(cw, DockWidget::ForceNoScrollArea);
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidgetTab(w, panel); // tabified with dock3
 
@@ -60,6 +70,16 @@ MainWindow::~MainWindow()
 DockWidget *MainWindow::createColorDockWidget(const QString &title, const QColor &color)
 {
     DockWidget *w = new DockWidget(title);
+    QPalette palette = w->palette();
+    palette.setColor(QPalette::Window, color);
+    w->setPalette(palette);
+    w->setAutoFillBackground(true);
+    return w;
+}
+
+QWidget *MainWindow::createColorWidget(const QColor &color)
+{
+    QWidget *w = new QWidget();
     QPalette palette = w->palette();
     palette.setColor(QPalette::Window, color);
     w->setPalette(palette);

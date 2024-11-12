@@ -15,6 +15,8 @@
 #include <QPointer>
 #include <QBoxLayout>
 #include <QAction>
+#include <QAbstractScrollArea>
+#include <QScrollArea>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -28,6 +30,8 @@ public:
     void showDockWidget();
     void hideDockWidget();
     void updateParentDockPanel();
+
+    void setupScrollArea();
 public:
     DockWindow *m_window = nullptr;
     QPointer<DockPanel> m_panel = nullptr;
@@ -40,6 +44,7 @@ public:
     bool m_isFloatingTopLevel = false;
     DockWidget::MinimumSizeHintMode m_minimumSizeHintMode = DockWidget::MinimumSizeHintFromDockWidget;
     QWidget *m_widget = nullptr;
+    QScrollArea *m_scrollArea = nullptr;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -85,6 +90,16 @@ void DockWidgetPrivate::hideDockWidget()
 {
     m_tab->hide();
     updateParentDockPanel();
+
+    if (m_features.testFlag(DockWidget::DeleteContentOnClose)) {
+        if (m_scrollArea) {
+            m_scrollArea->takeWidget();
+            delete m_scrollArea;
+            m_scrollArea = nullptr;
+        }
+        m_widget->deleteLater();
+        m_widget = nullptr;
+    }
 }
 
 void DockWidgetPrivate::updateParentDockPanel()
@@ -102,6 +117,15 @@ void DockWidgetPrivate::updateParentDockPanel()
     } else {
         m_panel->hideAreaWithNoVisibleContent();
     }
+}
+
+void DockWidgetPrivate::setupScrollArea()
+{
+    Q_Q(DockWidget);
+    m_scrollArea = new QScrollArea(q);
+    m_scrollArea->setObjectName("dockWidgetScrollArea");
+    m_scrollArea->setWidgetResizable(true);
+    m_layout->addWidget(m_scrollArea);
 }
 
 DockWidget::DockWidget(const QString &title, QWidget *parent)
@@ -128,6 +152,56 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
 DockWidget::~DockWidget()
 {
     QX_FINI_PRIVATE();
+}
+
+void DockWidget::setWidget(QWidget *w, WidgetInsertMode insertMode)
+{
+    Q_D(DockWidget);
+    if (d->m_widget) {
+        takeWidget();
+    }
+
+    auto scrollAreaWidget = qobject_cast<QAbstractScrollArea *>(w);
+    if (scrollAreaWidget || ForceNoScrollArea == insertMode) {
+        d->m_layout->addWidget(w);
+        if (scrollAreaWidget && scrollAreaWidget->viewport()) {
+            scrollAreaWidget->viewport()->setProperty("dockWidgetContent", true);
+        }
+    } else {
+        d->setupScrollArea();
+        d->m_scrollArea->setWidget(w);
+    }
+
+    d->m_widget = w;
+    d->m_widget->setProperty("dockWidgetContent", true);
+}
+
+QWidget *DockWidget::widget() const
+{
+    Q_D(const DockWidget);
+    return d->m_widget;
+}
+
+QWidget *DockWidget::takeWidget()
+{
+    Q_D(DockWidget);
+    QWidget *w = nullptr;
+    if (d->m_scrollArea) {
+        d->m_layout->removeWidget(d->m_scrollArea);
+        w = d->m_scrollArea->takeWidget();
+        delete d->m_scrollArea;
+        d->m_scrollArea = nullptr;
+        d->m_widget = nullptr;
+    } else if (d->m_widget) {
+        d->m_layout->removeWidget(d->m_widget);
+        w = d->m_widget;
+        d->m_widget = nullptr;
+    }
+
+    if (w) {
+        w->setParent(nullptr);
+    }
+    return w;
 }
 
 DockTab *DockWidget::tab() const

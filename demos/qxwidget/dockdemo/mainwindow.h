@@ -18,5 +18,6 @@ public:
     ~MainWindow();
 
     DockWidget *createColorDockWidget(const QString &title, const QColor &color);
+    QWidget *createColorWidget(const QColor &color);
 };
 #endif   // MAINWINDOW_H

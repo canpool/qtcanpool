@@ -28,6 +28,7 @@ public:
         CustomCloseHandling = 0x010,
         DockWidgetForceCloseWithArea = 0x040,
         NoTab = 0x080,
+        DeleteContentOnClose = 0x100,
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
@@ -47,9 +48,19 @@ public:
         MinimumSizeHintFromContentMinimumSize,
     };
 
+    enum WidgetInsertMode {
+        AutoScrollArea,
+        ForceScrollArea,
+        ForceNoScrollArea
+    };
+
 public:
     explicit DockWidget(const QString &title, QWidget *parent = nullptr);
     ~DockWidget();
+
+    void setWidget(QWidget *w, WidgetInsertMode insertMode = AutoScrollArea);
+    QWidget *widget() const;
+    QWidget *takeWidget();
 
     DockTab *tab() const;
 
