@@ -186,6 +186,18 @@ void DockFocusController::setDockWidgetTabPressed(bool Value)
     d->m_tabPressed = Value;
 }
 
+void DockFocusController::clearDockWidgetFocus(DockWidget *w)
+{
+    w->clearFocus();
+    updateDockWidgetFocusStyle(w, false);
+}
+
+void DockFocusController::setDockWidgetFocused(DockWidget *focusedNow)
+{
+    Q_D(DockFocusController);
+    d->updateDockWidgetFocus(focusedNow);
+}
+
 void DockFocusController::onApplicationFocusChanged(QWidget *focusedOld, QWidget *focusedNow)
 {
     Q_UNUSED(focusedOld);

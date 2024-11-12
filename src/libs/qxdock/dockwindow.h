@@ -15,6 +15,7 @@ class DockFloatingContainer;
 class DockOverlay;
 class DockContainer;
 class DockFocusController;
+class DockAutoHideContainer;
 
 class DockWindowPrivate;
 
@@ -30,6 +31,10 @@ public:
     DockPanel *addDockWidgetTab(DockWidget *w, DockPanel *p, int index = 1);
     void removeDockWidget(DockWidget *w);
 
+    DockAutoHideContainer *addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w);
+    DockAutoHideContainer *addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area,
+                                                            DockWidget *w, DockContainer *container);
+
     const QList<DockContainer *> dockContainers() const;
 
     DockWidget *centralWidget() const;
@@ -40,6 +45,9 @@ Q_SIGNALS:
     void dockWidgetRemoved(DockWidget *w);
     void floatingWidgetCreated(DockFloatingContainer *floatingWidget);
     void focusedDockWidgetChanged(DockWidget *old, DockWidget *now);
+
+public Q_SLOTS:
+    void setDockWidgetFocused(DockWidget *w);
 
 protected:
     void registerDockContainer(DockContainer *container);
@@ -64,6 +72,7 @@ private:
     friend class DockFloatingPreview;
     friend class DockFloatingPreviewPrivate;
     friend class DockTabPrivate;
+    friend class DockSideBar;
 };
 
 QX_DOCK_END_NAMESPACE

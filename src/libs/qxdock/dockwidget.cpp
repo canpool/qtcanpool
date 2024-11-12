@@ -11,6 +11,7 @@
 #include "dockutils.h"
 #include "docksplitter.h"
 #include "dockfloatingcontainer.h"
+#include "docksidetab.h"
 
 #include <QPointer>
 #include <QBoxLayout>
@@ -45,6 +46,7 @@ public:
     DockWidget::MinimumSizeHintMode m_minimumSizeHintMode = DockWidget::MinimumSizeHintFromDockWidget;
     QWidget *m_widget = nullptr;
     QScrollArea *m_scrollArea = nullptr;
+    QPointer<DockSideTab> m_sideTab;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -360,6 +362,24 @@ void DockWidget::setIcon(const QIcon &icon)
     if (!d->m_toggleViewAction->isCheckable()) {
         d->m_toggleViewAction->setIcon(icon);
     }
+}
+
+DockSideTab *DockWidget::sideTab() const
+{
+    Q_D(const DockWidget);
+    return d->m_sideTab;
+}
+
+void DockWidget::setSideTab(DockSideTab *sideTab)
+{
+    Q_D(DockWidget);
+    d->m_sideTab = sideTab;
+}
+
+bool DockWidget::isAutoHide() const
+{
+    Q_D(const DockWidget);
+    return !d->m_sideTab.isNull();
 }
 
 void DockWidget::toggleView(bool open)

@@ -10,6 +10,7 @@
 #include "dockoverlay.h"
 #include "dockfocuscontroller.h"
 #include "dockmanager.h"
+#include "dockautohidecontainer.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -51,6 +52,7 @@ DockWindow::DockWindow(QWidget *parent)
 {
     QX_INIT_PRIVATE(DockWindow);
     createRootSplitter();
+    createSideTabBarWidgets();
     Q_D(DockWindow);
     d->init();
     registerDockContainer(this);
@@ -148,6 +150,21 @@ void DockWindow::removeDockWidget(DockWidget *w)
     Q_EMIT dockWidgetRemoved(w);
 }
 
+DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w)
+{
+    return addAutoHideDockWidgetToContainer(area, w, this);
+}
+
+DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area,
+                                                                    DockWidget *w, DockContainer *container)
+{
+    auto c = container->createAndSetupAutoHideContainer(area, w);
+    c->collapseView(true);
+
+    Q_EMIT dockWidgetAdded(w);
+    return c;
+}
+
 const QList<DockContainer *> DockWindow::dockContainers() const
 {
     Q_D(const DockWindow);
@@ -158,6 +175,14 @@ DockWidget *DockWindow::centralWidget() const
 {
     Q_D(const DockWindow);
     return d->m_centralWidget;
+}
+
+void DockWindow::setDockWidgetFocused(DockWidget *w)
+{
+    Q_D(DockWindow);
+    if (d->m_focusController) {
+        d->m_focusController->setDockWidgetFocused(w);
+    }
 }
 
 void DockWindow::registerDockContainer(DockContainer *container)

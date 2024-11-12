@@ -16,6 +16,7 @@ class DockWindow;
 class DockContainer;
 class DockSplitter;
 class DockTitleBar;
+class DockAutoHideContainer;
 
 class DockPanelPrivate;
 
@@ -67,6 +68,8 @@ public:
 
     bool isTopLevelArea() const;
 
+    void setAutoHideContainer(DockAutoHideContainer *container);
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void closeArea();
@@ -101,6 +104,7 @@ private:
     friend class DockWidget;
     friend class DockWidgetPrivate;
     friend class DockContainer;
+    friend class DockAutoHideContainer;
 };
 
 QX_DOCK_END_NAMESPACE

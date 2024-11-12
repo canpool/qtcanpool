@@ -1,0 +1,162 @@
+/**
+ * Copyleft (C) 2024 maminjie <canpool@163.com>
+ * SPDX-License-Identifier: MulanPSL-2.0
+ **/
+#include "docksidebar.h"
+#include "dockcontainer.h"
+#include "dockautohidecontainer.h"
+#include "dockwindow.h"
+#include "dockfocuscontroller.h"
+#include "docksidetab.h"
+
+#include <QBoxLayout>
+
+QX_DOCK_BEGIN_NAMESPACE
+
+class SideTabsWidget;
+
+class DockSideBarPrivate
+{
+public:
+    QX_DECLARE_PUBLIC(DockSideBar)
+public:
+    DockSideBarPrivate();
+    void init();
+    inline bool isHorizontal() const;
+    void handleViewportEvent(QEvent *e);
+public:
+    DockContainer *m_container;
+    QBoxLayout *m_tabsLayout;
+    Qx::DockSideBarArea m_sideTabArea = Qx::DockSideBarLeft;
+    Qt::Orientation m_orientation;
+    SideTabsWidget *m_tabsContainerWidget;
+};
+
+class SideTabsWidget : public QWidget
+{
+public:
+    using QWidget::QWidget;
+    using Super = QWidget;
+    DockSideBarPrivate *eventHandler;
+
+    virtual QSize minimumSizeHint() const override
+    {
+        return Super::sizeHint();
+    }
+
+    virtual bool event(QEvent *e) override
+    {
+        eventHandler->handleViewportEvent(e);
+        return Super::event(e);
+    }
+};
+
+DockSideBarPrivate::DockSideBarPrivate()
+{
+}
+
+void DockSideBarPrivate::init()
+{
+    Q_Q(DockSideBar);
+
+    m_tabsContainerWidget = new SideTabsWidget();
+    m_tabsContainerWidget->eventHandler = this;
+    m_tabsContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    m_tabsContainerWidget->setObjectName("sideTabsContainerWidget");
+
+    m_tabsLayout = new QBoxLayout(m_orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+    m_tabsLayout->setContentsMargins(0, 0, 0, 0);
+    m_tabsLayout->setSpacing(12);
+    m_tabsLayout->addStretch(1);
+    m_tabsContainerWidget->setLayout(m_tabsLayout);
+    q->setWidget(m_tabsContainerWidget);
+}
+
+bool DockSideBarPrivate::isHorizontal() const
+{
+    return Qt::Horizontal == m_orientation;
+}
+
+void DockSideBarPrivate::handleViewportEvent(QEvent *e)
+{
+    Q_Q(DockSideBar);
+    switch (e->type()) {
+    case QEvent::ChildRemoved:
+        if (m_tabsLayout->isEmpty()) {
+            q->hide();
+        }
+        break;
+
+    default:
+        break;
+    }
+}
+
+DockSideBar::DockSideBar(DockContainer *parent, Qx::DockSideBarArea area)
+    : QScrollArea(parent)
+{
+    QX_INIT_PRIVATE(DockSideBar);
+    Q_D(DockSideBar);
+    d->m_container = parent;
+    d->m_sideTabArea = area;
+    d->m_orientation = (area == Qx::DockSideBarBottom || area == Qx::DockSideBarTop) ? Qt::Horizontal : Qt::Vertical;
+
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    setFrameStyle(QFrame::NoFrame);
+    setWidgetResizable(true);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    d->init();
+
+    setFocusPolicy(Qt::NoFocus);
+    if (d->isHorizontal()) {
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    } else {
+        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    }
+
+    hide();
+}
+
+DockSideBar::~DockSideBar()
+{
+    auto tabs = findChildren<DockSideTab *>(QString(), Qt::FindDirectChildrenOnly);
+    for (auto tab : tabs) {
+        tab->setParent(nullptr);
+    }
+    QX_FINI_PRIVATE();
+}
+
+DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
+{
+    Q_D(DockSideBar);
+    auto autoHideContainer = new DockAutoHideContainer(w, d->m_sideTabArea, d->m_container);
+    w->dockWindow()->dockFocusController()->clearDockWidgetFocus(w);
+    auto tab = autoHideContainer->autoHideTab();
+    w->setSideTab(tab);
+    insertTab(index, tab);
+    return autoHideContainer;
+}
+
+Qx::DockSideBarArea DockSideBar::sideBarArea() const
+{
+    Q_D(const DockSideBar);
+    return d->m_sideTabArea;
+}
+
+void DockSideBar::insertTab(int index, DockSideTab *sideTab)
+{
+    Q_D(DockSideBar);
+    sideTab->setSideBar(this);
+    sideTab->installEventFilter(this);
+    // Default insertion is append
+    if (index < 0) {
+        d->m_tabsLayout->insertWidget(d->m_tabsLayout->count() - 1, sideTab);
+    } else {
+        d->m_tabsLayout->insertWidget(index, sideTab);
+    }
+    show();
+}
+
+QX_DOCK_END_NAMESPACE

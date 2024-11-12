@@ -88,6 +88,8 @@ public:
 
 DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area);
 
+bool isHorizontalSideBarArea(Qx::DockSideBarArea area);
+
 enum RepolishChildOptions {
     RepolishIgnoreChildren,
     RepolishDirectChildren,

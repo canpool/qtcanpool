@@ -55,6 +55,16 @@ public:
     };
     Q_DECLARE_FLAGS(ConfigFlags, ConfigFlag)
 
+    enum AutoHideFlag {
+        AutoHideFeatureEnabled = 0x01,
+        AutoHideSideBarsIconOnly = 0x10,
+        AutoHideShowOnMouseOver = 0x20,
+
+        DefaultAutoHideConfig = AutoHideFeatureEnabled
+
+    };
+    Q_DECLARE_FLAGS(AutoHideFlags, AutoHideFlag)
+
 public:
     DockManager();
     ~DockManager();
@@ -63,6 +73,11 @@ public:
     static void setConfigFlags(const ConfigFlags flags);
     static void setConfigFlag(ConfigFlag flag, bool on = true);
     static bool testConfigFlag(ConfigFlag flag);
+
+    static AutoHideFlags autoHideConfigFlags();
+    static void setAutoHideConfigFlags(const AutoHideFlags flags);
+    static void setAutoHideConfigFlag(AutoHideFlag flag, bool on = true);
+    static bool testAutoHideConfigFlag(AutoHideFlag flag);
 
     static DockIconProvider &iconProvider();
 

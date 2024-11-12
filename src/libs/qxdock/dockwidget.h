@@ -13,6 +13,7 @@ class DockWindow;
 class DockContainer;
 class DockPanel;
 class DockTab;
+class DockSideTab;
 
 class DockWidgetPrivate;
 
@@ -88,6 +89,10 @@ public:
 
     QIcon icon() const;
     void setIcon(const QIcon &icon);
+
+    DockSideTab *sideTab() const;
+    void setSideTab(DockSideTab *sideTab);
+    bool isAutoHide() const;
 
 public Q_SLOTS:
     void toggleView(bool open = true);

@@ -163,4 +163,12 @@ enum DockBitwiseOperator {
     DockBitwiseOr
 };
 
+enum DockSideBarArea {
+    DockSideBarTop,
+    DockSideBarLeft,
+    DockSideBarRight,
+    DockSideBarBottom,
+    DockSideBarNone
+};
+
 }

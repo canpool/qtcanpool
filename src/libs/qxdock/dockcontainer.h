@@ -17,6 +17,8 @@ class DockPanel;
 class DockWidget;
 class DockFloatingContainer;
 class DockSplitter;
+class DockAutoHideContainer;
+class DockSideBar;
 
 class DockContainerPrivate;
 
@@ -47,9 +49,13 @@ public:
 
     DockFloatingContainer *floatingWidget() const;
 
+    DockSideBar *autoHideSideBar(Qx::DockSideBarArea area) const;
+    QRect contentRect() const;
+
 Q_SIGNALS:
     void dockAreasAdded();
     void dockAreasRemoved();
+    void autoHideWidgetCreated(DockAutoHideContainer *autoHideWidget);
 
 protected:
     DockSplitter *rootSplitter() const;
@@ -65,6 +71,12 @@ protected:
     void dropFloatingWidget(DockFloatingContainer *floatingWidget, const QPoint &targetPos);
     void dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, DockPanel* targetPanel, int tabIndex = -1);
 
+    void createSideTabBarWidgets();
+    DockAutoHideContainer *createAndSetupAutoHideContainer(Qx::DockSideBarArea area, DockWidget *w, int tabIndex = -1);
+    void registerAutoHideWidget(DockAutoHideContainer *autoHideWidget);
+    void removeAutoHideWidget(DockAutoHideContainer *autoHideWidget);
+    void handleAutoHideWidgetEvent(QEvent *e, QWidget *w);
+
 private:
     QX_DECLARE_PRIVATE(DockContainer)
     friend class DockPanel;
@@ -72,6 +84,9 @@ private:
     friend class DockFloatingContainerPrivate;
     friend class DockWidget;
     friend class DockFloatingPreview;
+    friend class DockAutoHideContainer;
+    friend class DockWindow;
+    friend class DockAutoHideContainerPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

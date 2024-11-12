@@ -3,6 +3,7 @@
 #include "qxdock/dockwindow.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockpanel.h"
+#include "qxdock/dockmanager.h"
 
 #include <QMenuBar>
 #include <QMenu>
@@ -14,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QMenuBar *mb = menuBar();
     QMenu *viewMenu = mb->addMenu(tr("View"));
+
+    // set auto hide config before new DockWindow
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
 
     DockWindow *dockwindow = new DockWindow();
 
@@ -57,6 +61,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     w->setWidget(cw, DockWidget::ForceNoScrollArea);
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidgetTab(w, panel); // tabified with dock3
+
+    w = createColorDockWidget(tr("auto1"), QColor(255, 100, 100));
+    viewMenu->addAction(w->toggleViewAction());
+    dockwindow->addAutoHideDockWidget(Qx::DockSideBarLeft, w);
 
     setCentralWidget(dockwindow);
 

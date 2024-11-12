@@ -641,4 +641,9 @@ void DockPanel::updateTitleBarButtonVisibility(bool isTopLevel)
     d->updateTitleBarButtonVisibility(isTopLevel);
 }
 
+void QxDock::DockPanel::setAutoHideContainer(QxDock::DockAutoHideContainer *container)
+{
+
+}
+
 QX_DOCK_END_NAMESPACE

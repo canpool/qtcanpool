@@ -105,6 +105,22 @@ void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to)
     splitter->insertWidget(index, to);
 }
 
+bool isHorizontalSideBarArea(Qx::DockSideBarArea area)
+{
+    switch (area) {
+    case Qx::DockSideBarTop:
+    case Qx::DockSideBarBottom:
+        return true;
+    case Qx::DockSideBarLeft:
+    case Qx::DockSideBarRight:
+        return false;
+    default:
+        return false;
+    }
+
+    return false;
+}
+
 }   // internal
 
 QX_DOCK_END_NAMESPACE

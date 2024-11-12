@@ -11,8 +11,12 @@
 #include "dockmanager.h"
 #include "dockfloatingcontainer.h"
 #include "dockoverlay.h"
+#include "dockautohidecontainer.h"
+#include "docksidebar.h"
+#include "docksidetab.h"
 
 #include <QGridLayout>
+#include <QTimer>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -87,11 +91,23 @@ public:
     DockPanel *m_topLevelPanel = nullptr;
     bool m_isFloating = false;
     unsigned int m_zOrderIndex = 0;
+    QMap<Qx::DockSideBarArea, DockSideBar *> m_sideTabBarWidgets;
+    QList<DockAutoHideContainer *> m_autoHideWidgets;
+    DockSideTab *m_delayedAutoHideTab;
+    QTimer m_delayedAutoHideTimer;
+    bool m_delayedAutoHideShow = false;
 };
 
 DockContainerPrivate::DockContainerPrivate()
 {
     std::fill(std::begin(m_lastAddedPanelCache), std::end(m_lastAddedPanelCache), nullptr);
+    m_delayedAutoHideTimer.setSingleShot(true);
+    m_delayedAutoHideTimer.setInterval(500);
+    QObject::connect(&m_delayedAutoHideTimer, &QTimer::timeout, [this]() {
+        auto GlobalPos = m_delayedAutoHideTab->mapToGlobal(QPoint(0, 0));
+        qApp->sendEvent(m_delayedAutoHideTab, new QMouseEvent(QEvent::MouseButtonPress, QPoint(0, 0), GlobalPos,
+                                                              Qt::LeftButton, {Qt::LeftButton}, Qt::NoModifier));
+    });
 }
 
 void DockContainerPrivate::init()
@@ -585,6 +601,7 @@ DockContainer::DockContainer(DockWindow *window, QWidget *parent)
     if (window != this) {
         d->m_window->registerDockContainer(this);
         createRootSplitter();
+        createSideTabBarWidgets();
     }
 }
 
@@ -737,6 +754,32 @@ bool DockContainer::isFloating() const
 DockFloatingContainer *DockContainer::floatingWidget() const
 {
     return internal::findParent<DockFloatingContainer *>(this);
+}
+
+DockSideBar *DockContainer::autoHideSideBar(Qx::DockSideBarArea area) const
+{
+    Q_D(const DockContainer);
+    return d->m_sideTabBarWidgets[area];
+}
+
+QRect DockContainer::contentRect() const
+{
+    Q_D(const DockContainer);
+    if (!d->m_rootSplitter) {
+        return QRect();
+    }
+
+    if (d->m_rootSplitter->hasVisibleContent()) {
+        return d->m_rootSplitter->geometry();
+    } else {
+        auto contentRect = this->rect();
+        contentRect.adjust(autoHideSideBar(Qx::DockSideBarLeft)->sizeHint().width(),
+                           autoHideSideBar(Qx::DockSideBarTop)->sizeHint().height(),
+                           -autoHideSideBar(Qx::DockSideBarRight)->sizeHint().width(),
+                           -autoHideSideBar(Qx::DockSideBarBottom)->sizeHint().height());
+
+        return contentRect;
+    }
 }
 
 DockSplitter *DockContainer::rootSplitter() const
@@ -951,6 +994,129 @@ void DockContainer::dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, Doc
 
     window()->activateWindow();
     d->m_window->notifyDockAreaRelocation(widget);
+}
+
+void DockContainer::createSideTabBarWidgets()
+{
+    Q_D(DockContainer);
+    if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
+        return;
+    }
+
+    {
+        auto area = Qx::DockSideBarLeft;
+        d->m_sideTabBarWidgets[area] = new DockSideBar(this, area);
+        d->m_layout->addWidget(d->m_sideTabBarWidgets[area], 1, 0);
+    }
+
+    {
+        auto area = Qx::DockSideBarRight;
+        d->m_sideTabBarWidgets[area] = new DockSideBar(this, area);
+        d->m_layout->addWidget(d->m_sideTabBarWidgets[area], 1, 2);
+    }
+
+    {
+        auto area = Qx::DockSideBarBottom;
+        d->m_sideTabBarWidgets[area] = new DockSideBar(this, area);
+        d->m_layout->addWidget(d->m_sideTabBarWidgets[area], 2, 1);
+    }
+
+    {
+        auto area = Qx::DockSideBarTop;
+        d->m_sideTabBarWidgets[area] = new DockSideBar(this, area);
+        d->m_layout->addWidget(d->m_sideTabBarWidgets[area], 0, 1);
+    }
+}
+
+DockAutoHideContainer *DockContainer::createAndSetupAutoHideContainer(Qx::DockSideBarArea area, DockWidget *w,
+                                                                      int tabIndex)
+{
+    Q_D(DockContainer);
+    if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
+        Q_ASSERT_X(false, "DockContainer::createAndSetupAutoHideContainer", "Requested area does not exist in config");
+        return nullptr;
+    }
+    if (d->m_window != w->dockWindow()) {
+        w->setDockWindow(d->m_window);   // Auto hide Dock Container needs a valid dock window
+    }
+
+    return autoHideSideBar(area)->insertDockWidget(tabIndex, w);
+}
+
+void DockContainer::registerAutoHideWidget(DockAutoHideContainer *autoHideWidget)
+{
+    Q_D(DockContainer);
+    d->m_autoHideWidgets.append(autoHideWidget);
+    Q_EMIT autoHideWidgetCreated(autoHideWidget);
+}
+
+void DockContainer::removeAutoHideWidget(DockAutoHideContainer *autoHideWidget)
+{
+    Q_D(DockContainer);
+    d->m_autoHideWidgets.removeAll(autoHideWidget);
+}
+
+void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
+{
+    Q_D(DockContainer);
+    if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideShowOnMouseOver)) {
+        return;
+    }
+
+    auto autoHideTab = qobject_cast<DockSideTab *>(w);
+    if (autoHideTab) {
+        switch (e->type()) {
+        case QEvent::Enter:
+            if (!autoHideTab->dockWidget()->isVisible()) {
+                d->m_delayedAutoHideTab = autoHideTab;
+                d->m_delayedAutoHideShow = true;
+                d->m_delayedAutoHideTimer.start();
+            } else {
+                d->m_delayedAutoHideTimer.stop();
+            }
+            break;
+
+        case QEvent::MouseButtonPress:
+            d->m_delayedAutoHideTimer.stop();
+            break;
+
+        case QEvent::Leave:
+            if (autoHideTab->dockWidget()->isVisible()) {
+                d->m_delayedAutoHideTab = autoHideTab;
+                d->m_delayedAutoHideShow = false;
+                d->m_delayedAutoHideTimer.start();
+            } else {
+                d->m_delayedAutoHideTimer.stop();
+            }
+            break;
+
+        default:
+            break;
+        }
+        return;
+    }
+
+    auto autoHideContainer = qobject_cast<DockAutoHideContainer *>(w);
+    if (autoHideContainer) {
+        switch (e->type()) {
+        case QEvent::Enter:
+        case QEvent::Hide:
+            d->m_delayedAutoHideTimer.stop();
+            break;
+
+        case QEvent::Leave:
+            if (autoHideContainer->isVisible()) {
+                d->m_delayedAutoHideTab = autoHideContainer->autoHideTab();
+                d->m_delayedAutoHideShow = false;
+                d->m_delayedAutoHideTimer.start();
+            }
+            break;
+
+        default:
+            break;
+        }
+        return;
+    }
 }
 
 QX_DOCK_END_NAMESPACE

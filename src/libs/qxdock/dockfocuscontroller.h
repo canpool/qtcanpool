@@ -13,6 +13,7 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockWindow;
 class DockFloatingContainer;
 class DockTab;
+class DockWidget;
 
 class DockFocusControllerPrivate;
 
@@ -28,6 +29,11 @@ public:
 
     void setDockWidgetTabFocused(DockTab *tab);
     void setDockWidgetTabPressed(bool Value);
+
+    void clearDockWidgetFocus(DockWidget *w);
+
+public Q_SLOTS:
+    void setDockWidgetFocused(DockWidget *focusedNow);
 
 private Q_SLOTS:
     void onApplicationFocusChanged(QWidget *focusedOld, QWidget *focusedNow);
