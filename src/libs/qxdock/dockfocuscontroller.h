@@ -6,8 +6,13 @@
 
 #include "qxdock_global.h"
 #include <QObject>
+#include <QWindow>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+class DockWindow;
+class DockFloatingContainer;
+class DockTab;
 
 class DockFocusControllerPrivate;
 
@@ -15,8 +20,18 @@ class QX_DOCK_EXPORT DockFocusController : public QObject
 {
     Q_OBJECT
 public:
-    explicit DockFocusController(QObject *parent = nullptr);
+    explicit DockFocusController(DockWindow *window);
     virtual ~DockFocusController();
+
+    void notifyDockAreaRelocation(QWidget *droppedWidget);
+    void notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget);
+
+    void setDockWidgetTabFocused(DockTab *tab);
+    void setDockWidgetTabPressed(bool Value);
+
+private Q_SLOTS:
+    void onApplicationFocusChanged(QWidget *focusedOld, QWidget *focusedNow);
+    void onFocusWindowChanged(QWindow *focusWindow);
 
 private:
     QX_DECLARE_PRIVATE(DockFocusController)

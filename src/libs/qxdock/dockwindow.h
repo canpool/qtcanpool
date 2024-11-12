@@ -14,6 +14,7 @@ class DockWidget;
 class DockFloatingContainer;
 class DockOverlay;
 class DockContainer;
+class DockFocusController;
 
 class DockWindowPrivate;
 
@@ -38,6 +39,7 @@ Q_SIGNALS:
     void dockWidgetAboutToBeRemoved(DockWidget *w);
     void dockWidgetRemoved(DockWidget *w);
     void floatingWidgetCreated(DockFloatingContainer *floatingWidget);
+    void focusedDockWidgetChanged(DockWidget *old, DockWidget *now);
 
 protected:
     void registerDockContainer(DockContainer *container);
@@ -48,8 +50,10 @@ protected:
     DockOverlay *containerOverlay() const;
     DockOverlay *panelOverlay() const;
 
-    void notifyDockAreaRelocation(QWidget *relocatedWidget);
+    void notifyDockAreaRelocation(QWidget *droppedWidget);
     void notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget);
+
+    DockFocusController *dockFocusController() const;
 
 private:
     QX_DECLARE_PRIVATE(DockWindow)

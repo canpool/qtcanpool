@@ -26,10 +26,11 @@ public:
         DockWidgetFloatable = 0x004,
         DockWidgetDeleteOnClose = 0x008,
         CustomCloseHandling = 0x010,
+        DockWidgetFocusable = 0x020,
         DockWidgetForceCloseWithArea = 0x040,
         NoTab = 0x080,
         DeleteContentOnClose = 0x100,
-        DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
+        DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
         NoDockWidgetFeatures = 0x000

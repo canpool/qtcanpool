@@ -14,6 +14,7 @@
 #include "dockcontainer.h"
 #include "dockwindow.h"
 #include "dockoverlay.h"
+#include "dockfocuscontroller.h"
 
 #include <QBoxLayout>
 #include <QToolButton>
@@ -45,6 +46,7 @@ public:
     bool startFloating(Qx::DockDragState draggingState = Qx::DockDraggingFloatingWidget);
 
     template <typename T> DockFloatingWidget *createFloatingWidget(T *widget, bool needCreateContainer);
+    DockFocusController *focusController() const;
 
     void updateIcon();
 public:
@@ -218,6 +220,11 @@ bool DockTabPrivate::startFloating(Qx::DockDragState draggingState)
     return true;
 }
 
+DockFocusController *DockTabPrivate::focusController() const
+{
+    return m_dockWidget->dockWindow()->dockFocusController();
+}
+
 void DockTabPrivate::updateIcon()
 {
     Q_Q(DockTab);
@@ -285,7 +292,19 @@ void DockTab::setActive(bool active)
     }
     // Focus related stuff
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
-        // TODO
+        bool updateFocusStyle = false;
+        if (active && !hasFocus()) {
+            // setFocus(Qt::OtherFocusReason);
+            d->focusController()->setDockWidgetTabFocused(this);
+            updateFocusStyle = true;
+        }
+
+        if (d->m_isActive == active) {
+            if (updateFocusStyle) {
+                updateStyle();
+            }
+            return;
+        }
     } else if (d->m_isActive == active) {
         return;
     }
@@ -396,6 +415,10 @@ void DockTab::mousePressEvent(QMouseEvent *e)
         e->accept();
         d->saveDragStartMousePosition(internal::globalPositionOf(e));
         d->m_dragState = Qx::DockDraggingMousePressed;
+        if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+            d->focusController()->setDockWidgetTabPressed(true);
+            d->focusController()->setDockWidgetTabFocused(this);
+        }
         Q_EMIT clicked();
         return;
     }
@@ -427,6 +450,9 @@ void DockTab::mouseReleaseEvent(QMouseEvent *e)
 
         default:
             break;
+        }
+        if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+            d->focusController()->setDockWidgetTabPressed(false);
         }
     } else if (e->button() == Qt::MiddleButton) {
         if (DockManager::testConfigFlag(DockManager::MiddleMouseButtonClosesTab) &&

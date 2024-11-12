@@ -8,6 +8,8 @@
 #include "dockwidget.h"
 #include "dockfloatingcontainer.h"
 #include "dockoverlay.h"
+#include "dockfocuscontroller.h"
+#include "dockmanager.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -25,6 +27,7 @@ public:
     QList<QPointer<DockFloatingContainer> > m_floatingContainers;
     DockOverlay *m_containerOverlay;
     DockOverlay *m_panelOverlay;
+    DockFocusController *m_focusController = nullptr;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -37,6 +40,10 @@ void DockWindowPrivate::init()
 
     m_containerOverlay = new DockOverlay(q, DockOverlay::PanelOverlayMode);
     m_panelOverlay = new DockOverlay(q, DockOverlay::ContainerOverlayMode);
+
+    if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+        m_focusController = new DockFocusController(q);
+    }
 }
 
 DockWindow::DockWindow(QWidget *parent)
@@ -192,14 +199,26 @@ DockOverlay *DockWindow::panelOverlay() const
     return d->m_panelOverlay;
 }
 
-void DockWindow::notifyDockAreaRelocation(QWidget *relocatedWidget)
+void DockWindow::notifyDockAreaRelocation(QWidget *droppedWidget)
 {
-    // TODO
+    Q_D(DockWindow);
+    if (d->m_focusController) {
+        d->m_focusController->notifyDockAreaRelocation(droppedWidget);
+    }
 }
 
 void DockWindow::notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget)
 {
-    // TODO
+    Q_D(DockWindow);
+    if (d->m_focusController) {
+        d->m_focusController->notifyFloatingWidgetDrop(floatingWidget);
+    }
+}
+
+DockFocusController *DockWindow::dockFocusController() const
+{
+    Q_D(const DockWindow);
+    return d->m_focusController;
 }
 
 QX_DOCK_END_NAMESPACE

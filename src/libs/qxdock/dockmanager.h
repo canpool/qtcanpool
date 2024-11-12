@@ -68,6 +68,14 @@ public:
 
     static int startDragDistance();
 
+    template <class QWidgetPtr>
+    static void setWidgetFocus(QWidgetPtr widget) {
+        if (!DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+            return;
+        }
+        widget->setFocus(Qt::OtherFocusReason);
+    }
+
 private:
     QX_DECLARE_PRIVATE(DockManager)
 };

@@ -15,6 +15,7 @@
 #include "dockcontainer.h"
 #include "dockwindow.h"
 #include "dockoverlay.h"
+#include "dockfocuscontroller.h"
 
 #include <QBoxLayout>
 #include <QMenu>
@@ -42,6 +43,7 @@ public:
     void init();
     void createTabBar();
     void createButtons();
+    DockWindow *dockWindow() const;
 
     bool isDraggingState(Qx::DockDragState dragState) const;
     void startFloating(const QPoint &offset);
@@ -153,6 +155,11 @@ void DockTitleBarPrivate::createButtons()
     m_closeButton->setIconSize(QSize(16, 16));
     m_layout->addWidget(m_closeButton, 0);
     q->connect(m_closeButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
+}
+
+DockWindow *DockTitleBarPrivate::dockWindow() const
+{
+    return m_panel->dockWindow();
 }
 
 bool DockTitleBarPrivate::isDraggingState(Qx::DockDragState dragState) const
@@ -381,6 +388,9 @@ void DockTitleBar::mousePressEvent(QMouseEvent *e)
         e->accept();
         d->m_dragStartMousePos = e->pos();
         d->m_dragState = Qx::DockDraggingMousePressed;
+        if (DockManager::testConfigFlag(DockManager::FocusHighlighting)){
+            d->dockWindow()->dockFocusController()->setDockWidgetTabFocused(d->m_tabBar->currentTab());
+        }
         return;
     }
     Super::mousePressEvent(e);
