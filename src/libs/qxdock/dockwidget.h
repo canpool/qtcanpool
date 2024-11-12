@@ -40,6 +40,13 @@ public:
         ActionModeShow
     };
 
+    enum MinimumSizeHintMode {
+        MinimumSizeHintFromDockWidget,
+        MinimumSizeHintFromContent,
+        MinimumSizeHintFromDockWidgetMinimumSize,
+        MinimumSizeHintFromContentMinimumSize,
+    };
+
 public:
     explicit DockWidget(const QString &title, QWidget *parent = nullptr);
     ~DockWidget();
@@ -62,6 +69,10 @@ public:
     void setToggleViewActionChecked(bool checked);
 
     virtual QList<QAction *> titleBarActions() const;
+
+    MinimumSizeHintMode minimumSizeHintMode() const;
+    void setMinimumSizeHintMode(MinimumSizeHintMode mode);
+    virtual QSize minimumSizeHint() const override;
 
     QIcon icon() const;
     void setIcon(const QIcon &icon);

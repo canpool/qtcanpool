@@ -38,6 +38,8 @@ public:
     QAction *m_toggleViewAction = nullptr;
     bool m_closed = false;
     bool m_isFloatingTopLevel = false;
+    DockWidget::MinimumSizeHintMode m_minimumSizeHintMode = DockWidget::MinimumSizeHintFromDockWidget;
+    QWidget *m_widget = nullptr;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -235,6 +237,39 @@ QList<QAction *> DockWidget::titleBarActions() const
 {
     Q_D(const DockWidget);
     return d->m_titleBarActions;
+}
+
+DockWidget::MinimumSizeHintMode DockWidget::minimumSizeHintMode() const
+{
+    Q_D(const DockWidget);
+    return d->m_minimumSizeHintMode;
+}
+
+void DockWidget::setMinimumSizeHintMode(DockWidget::MinimumSizeHintMode mode)
+{
+    Q_D(DockWidget);
+    d->m_minimumSizeHintMode = mode;
+}
+
+QSize DockWidget::minimumSizeHint() const
+{
+    Q_D(const DockWidget);
+    if (!d->m_widget) {
+        return QSize(60, 40);
+    }
+
+    switch (d->m_minimumSizeHintMode) {
+    case MinimumSizeHintFromDockWidget:
+        return QSize(60, 40);
+    case MinimumSizeHintFromContent:
+        return d->m_widget->minimumSizeHint();
+    case MinimumSizeHintFromDockWidgetMinimumSize:
+        return minimumSize();
+    case MinimumSizeHintFromContentMinimumSize:
+        return d->m_widget->minimumSize();
+    }
+
+    return d->m_widget->minimumSizeHint();
 }
 
 QIcon DockWidget::icon() const
