@@ -25,15 +25,24 @@ public:
     virtual ~DockAutoHideContainer();
 
     DockSideTab *autoHideTab() const;
+    int tabIndex() const;
 
     void addDockWidget(DockWidget *w);
 
     DockContainer *dockContainer() const;
 
     Qx::DockSideBarArea sideBarArea() const;
+    void setSideBarArea(Qx::DockSideBarArea area);
+
+    void cleanupAndDelete();
+    void moveContentsToParent();
+    void moveToNewSideBarArea(Qx::DockSideBarArea area, int tabIndex = -1);
 
     void collapseView(bool enable);
     void toggleCollapseState();
+
+    void setSize(int size);
+    void resetToInitialDockWidgetSize();
 
     Qt::Orientation orientation() const;
 

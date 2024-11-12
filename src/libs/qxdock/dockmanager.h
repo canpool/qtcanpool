@@ -57,11 +57,14 @@ public:
 
     enum AutoHideFlag {
         AutoHideFeatureEnabled = 0x01,
+        DockAreaHasAutoHideButton = 0x02,
+        AutoHideButtonTogglesArea = 0x04,
+        AutoHideButtonCheckable = 0x08,
         AutoHideSideBarsIconOnly = 0x10,
         AutoHideShowOnMouseOver = 0x20,
 
         DefaultAutoHideConfig = AutoHideFeatureEnabled
-
+                              | DockAreaHasAutoHideButton
     };
     Q_DECLARE_FLAGS(AutoHideFlags, AutoHideFlag)
 

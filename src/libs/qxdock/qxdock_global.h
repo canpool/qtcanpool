@@ -137,6 +137,7 @@ enum DockTitleBarButton {
     TitleBarButtonTabsMenu,
     TitleBarButtonUndock,
     TitleBarButtonClose,
+    TitleBarButtonAutoHide,
     TitleBarButtonMinimize
 };
 
@@ -149,13 +150,14 @@ enum DockDragState {
 
 enum DockIcon {
     DockTabCloseIcon,
+    DockAutoHideIcon,
     DockPanelMenuIcon,
     DockPanelUndockIcon,
     DockPanelCloseIcon,
     DockPanelMinimizeIcon
 };
 enum DockIconSizes {
-    NDockIconSizes = 5
+    NDockIconSizes = 6
 };
 
 enum DockBitwiseOperator {

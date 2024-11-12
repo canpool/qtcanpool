@@ -14,6 +14,7 @@ class DockContainer;
 class DockPanel;
 class DockTab;
 class DockSideTab;
+class DockAutoHideContainer;
 
 class DockWidgetPrivate;
 
@@ -31,7 +32,9 @@ public:
         DockWidgetForceCloseWithArea = 0x040,
         NoTab = 0x080,
         DeleteContentOnClose = 0x100,
-        DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable,
+        DockWidgetPinnable = 0x200,
+        DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable
+                                  | DockWidgetFocusable | DockWidgetPinnable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
         NoDockWidgetFeatures = 0x000
@@ -93,11 +96,15 @@ public:
     DockSideTab *sideTab() const;
     void setSideTab(DockSideTab *sideTab);
     bool isAutoHide() const;
+    DockAutoHideContainer *autoHideContainer() const;
+    Qx::DockSideBarArea autoHideArea() const;
 
 public Q_SLOTS:
     void toggleView(bool open = true);
     void deleteDockWidget();
     void requestCloseDockWidget();
+    void setAutoHide(bool enable, Qx::DockSideBarArea area = Qx::DockSideBarNone, int tabIndex = -1);
+    void toggleAutoHide(Qx::DockSideBarArea area = Qx::DockSideBarNone);
 
 Q_SIGNALS:
     void viewToggled(bool open);
@@ -121,6 +128,7 @@ private:
     friend class DockWindow;
     friend class DockTitleBarPrivate;
     friend class DockFloatingContainer;
+    friend class DockAutoHideContainer;
 };
 
 QX_DOCK_END_NAMESPACE

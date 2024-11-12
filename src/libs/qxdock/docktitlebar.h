@@ -47,6 +47,7 @@ private Q_SLOTS:
     void onCurrentTabChanged(int index);
     void onCloseButtonClicked();
     void onUndockButtonClicked();
+    void onAutoHideButtonClicked();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;

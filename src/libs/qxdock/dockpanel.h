@@ -68,11 +68,15 @@ public:
 
     bool isTopLevelArea() const;
 
+    DockAutoHideContainer *autoHideContainer() const;
     void setAutoHideContainer(DockAutoHideContainer *container);
+    bool isAutoHide() const;
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void closeArea();
+    void setAutoHide(bool enable, Qx::DockSideBarArea area = Qx::DockSideBarNone, int tabIndex = -1);
+    void toggleAutoHide(Qx::DockSideBarArea area = Qx::DockSideBarNone);
 
 protected Q_SLOTS:
     void toggleView(bool open);
@@ -80,6 +84,9 @@ protected Q_SLOTS:
 private Q_SLOTS:
     void onTabCloseRequested(int index);
     void reorderDockWidget(int fromIndex, int toIndex);
+    void updateAutoHideButtonCheckState();
+    void updateTitleBarButtonsToolTips();
+    Qx::DockSideBarArea calculateSideBarArea() const;
 
 Q_SIGNALS:
     void currentChanging(int index);

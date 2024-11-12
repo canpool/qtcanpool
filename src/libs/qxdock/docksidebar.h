@@ -23,7 +23,18 @@ public:
     explicit DockSideBar(DockContainer *parent, Qx::DockSideBarArea area);
     virtual ~DockSideBar();
 
+    void removeTab(DockSideTab *sideTab);
+
     DockAutoHideContainer *insertDockWidget(int index, DockWidget *w);
+
+    void addAutoHideWidget(DockAutoHideContainer *autoHideWidget, int index = Qx::DockTabDefaultInsertIndex);
+    void removeAutoHideWidget(DockAutoHideContainer *autoHideWidget);
+
+    Qt::Orientation orientation() const;
+
+    DockSideTab *tab(int index) const;
+    int indexOfTab(const DockSideTab &tab) const;
+    int count() const;
 
     Qx::DockSideBarArea sideBarArea() const;
 

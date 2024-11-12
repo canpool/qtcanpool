@@ -98,6 +98,22 @@ void DockSideTab::updateStyle()
     update();
 }
 
+DockSideBar *DockSideTab::sideBar() const
+{
+    Q_D(const DockSideTab);
+    return d->m_sideBar;
+}
+
+int DockSideTab::tabIndex() const
+{
+    Q_D(const DockSideTab);
+    if (!d->m_sideBar) {
+        return -1;
+    }
+
+    return d->m_sideBar->indexOfTab(*this);
+}
+
 void DockSideTab::setSideBar(DockSideBar *sideBar)
 {
     Q_D(DockSideTab);
@@ -105,6 +121,16 @@ void DockSideTab::setSideBar(DockSideBar *sideBar)
     if (d->m_sideBar) {
         d->updateOrientation();
     }
+}
+
+void DockSideTab::removeFromSideBar()
+{
+    Q_D(DockSideTab);
+    if (d->m_sideBar == nullptr) {
+        return;
+    }
+    d->m_sideBar->removeTab(this);
+    setSideBar(nullptr);
 }
 
 QX_DOCK_END_NAMESPACE

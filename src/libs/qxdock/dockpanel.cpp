@@ -12,10 +12,17 @@
 #include "docktabbar.h"
 #include "docktab.h"
 #include "dockmanager.h"
+#include "dockautohidecontainer.h"
+#include "docktitlebar_p.h"
 
 #include <QBoxLayout>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+static bool isAutoHideFeatureEnabled()
+{
+    return DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled);
+}
 
 /**
  * Internal dock area layout mimics stack layout but only inserts the current
@@ -164,6 +171,7 @@ public:
     DockPanel::DockAreaFlags m_flags{DockPanel::DefaultFlags};
     bool m_updateTitleBarButtons = false;
     Qx::DockWidgetAreas m_allowedAreas = s_defaultAllowedAreas;
+    DockAutoHideContainer *m_autoHideContainer = nullptr;
 };
 
 DockPanelPrivate::DockPanelPrivate()
@@ -447,6 +455,49 @@ void DockPanel::closeArea()
     }
 }
 
+void DockPanel::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
+{
+    Q_D(DockPanel);
+    if (!isAutoHideFeatureEnabled()) {
+        return;
+    }
+
+    if (!enable) {
+        if (isAutoHide()) {
+            d->m_autoHideContainer->moveContentsToParent();
+        }
+        return;
+    }
+
+    // If this is already an auto hide container, then move it to new location
+    if (isAutoHide()) {
+        d->m_autoHideContainer->moveToNewSideBarArea(area, tabIndex);
+        return;
+    }
+
+    auto location = (Qx::DockSideBarNone == area) ? calculateSideBarArea() : area;
+    for (const auto w : openedDockWidgets()) {
+        if (enable == isAutoHide()) {
+            continue;
+        }
+
+        if (!w->features().testFlag(DockWidget::DockWidgetPinnable)) {
+            continue;
+        }
+
+        dockContainer()->createAndSetupAutoHideContainer(location, w, tabIndex++);
+    }
+}
+
+void DockPanel::toggleAutoHide(Qx::DockSideBarArea area)
+{
+    if (!isAutoHideFeatureEnabled()) {
+        return;
+    }
+
+    setAutoHide(!isAutoHide(), area);
+}
+
 void DockPanel::toggleView(bool open)
 {
     setVisible(open);
@@ -470,6 +521,143 @@ void DockPanel::reorderDockWidget(int fromIndex, int toIndex)
     d->m_contentsLayout->removeWidget(widget);
     d->m_contentsLayout->insertWidget(toIndex, widget);
     setCurrentIndex(toIndex);
+}
+
+void DockPanel::updateAutoHideButtonCheckState()
+{
+    auto autoHideButton = titleBarButton(Qx::TitleBarButtonAutoHide);
+    autoHideButton->blockSignals(true);
+    autoHideButton->setChecked(isAutoHide());
+    autoHideButton->blockSignals(false);
+}
+
+void DockPanel::updateTitleBarButtonsToolTips()
+{
+    internal::setToolTip(titleBarButton(Qx::TitleBarButtonClose),
+                         titleBar()->titleBarButtonToolTip(Qx::TitleBarButtonClose));
+    internal::setToolTip(titleBarButton(Qx::TitleBarButtonAutoHide),
+                         titleBar()->titleBarButtonToolTip(Qx::TitleBarButtonAutoHide));
+}
+
+enum BorderLocation {
+    BorderNone = 0,
+    BorderLeft = 0x01,
+    BorderRight = 0x02,
+    BorderTop = 0x04,
+    BorderBottom = 0x08,
+    BorderVertical = BorderLeft | BorderRight,
+    BorderHorizontal = BorderTop | BorderBottom,
+    BorderTopLeft = BorderTop | BorderLeft,
+    BorderTopRight = BorderTop | BorderRight,
+    BorderBottomLeft = BorderBottom | BorderLeft,
+    BorderBottomRight = BorderBottom | BorderRight,
+    BorderVerticalBottom = BorderVertical | BorderBottom,
+    BorderVerticalTop = BorderVertical | BorderTop,
+    BorderHorizontalLeft = BorderHorizontal | BorderLeft,
+    BorderHorizontalRight = BorderHorizontal | BorderRight,
+    BorderAll = BorderVertical | BorderHorizontal
+};
+
+Qx::DockSideBarArea DockPanel::calculateSideBarArea() const
+{
+    auto container = dockContainer();
+    auto contentRect = container->contentRect();
+
+    int borders = BorderNone;   // contains all borders that are touched by the dock ware
+    auto dockAreaTopLeft = mapTo(container, rect().topLeft());
+    auto dockAreaRect = rect();
+    dockAreaRect.moveTo(dockAreaTopLeft);
+    const qreal aspectRatio = dockAreaRect.width() / (qMax(1, dockAreaRect.height()) * 1.0);
+    const qreal sizeRatio = (qreal)contentRect.width() / dockAreaRect.width();
+    static const int minBorderDistance = 16;
+    bool horizontalOrientation = (aspectRatio > 1.0) && (sizeRatio < 3.0);
+
+    // measure border distances - a distance less than 16 px means we touch the border
+    int borderDistance[4];
+
+    int distance = qAbs(contentRect.topLeft().y() - dockAreaRect.topLeft().y());
+    borderDistance[Qx::DockSideBarTop] = (distance < minBorderDistance) ? 0 : distance;
+    if (!borderDistance[Qx::DockSideBarTop]) {
+        borders |= BorderTop;
+    }
+
+    distance = qAbs(contentRect.bottomRight().y() - dockAreaRect.bottomRight().y());
+    borderDistance[Qx::DockSideBarBottom] = (distance < minBorderDistance) ? 0 : distance;
+    if (!borderDistance[Qx::DockSideBarBottom]) {
+        borders |= BorderBottom;
+    }
+
+    distance = qAbs(contentRect.topLeft().x() - dockAreaRect.topLeft().x());
+    borderDistance[Qx::DockSideBarLeft] = (distance < minBorderDistance) ? 0 : distance;
+    if (!borderDistance[Qx::DockSideBarLeft]) {
+        borders |= BorderLeft;
+    }
+
+    distance = qAbs(contentRect.bottomRight().x() - dockAreaRect.bottomRight().x());
+    borderDistance[Qx::DockSideBarRight] = (distance < minBorderDistance) ? 0 : distance;
+    if (!borderDistance[Qx::DockSideBarRight]) {
+        borders |= BorderRight;
+    }
+
+    auto sideBarArea = Qx::DockSideBarRight;
+    switch (borders) {
+    // 1. It's touching all borders
+    case BorderAll:
+        sideBarArea = horizontalOrientation ? Qx::DockSideBarBottom : Qx::DockSideBarRight;
+        break;
+
+    // 2. It's touching 3 borders
+    case BorderVerticalBottom:
+        sideBarArea = Qx::DockSideBarBottom;
+        break;
+    case BorderVerticalTop:
+        sideBarArea = Qx::DockSideBarTop;
+        break;
+    case BorderHorizontalLeft:
+        sideBarArea = Qx::DockSideBarLeft;
+        break;
+    case BorderHorizontalRight:
+        sideBarArea = Qx::DockSideBarRight;
+        break;
+
+    // 3. It's touching horizontal or vertical borders
+    case BorderVertical:
+        sideBarArea = Qx::DockSideBarBottom;
+        break;
+    case BorderHorizontal:
+        sideBarArea = Qx::DockSideBarRight;
+        break;
+
+    // 4. It's in a corner
+    case BorderTopLeft:
+        sideBarArea = horizontalOrientation ? Qx::DockSideBarTop : Qx::DockSideBarLeft;
+        break;
+    case BorderTopRight:
+        sideBarArea = horizontalOrientation ? Qx::DockSideBarTop : Qx::DockSideBarRight;
+        break;
+    case BorderBottomLeft:
+        sideBarArea = horizontalOrientation ? Qx::DockSideBarBottom : Qx::DockSideBarLeft;
+        break;
+    case BorderBottomRight:
+        sideBarArea = horizontalOrientation ? Qx::DockSideBarBottom : Qx::DockSideBarRight;
+        break;
+
+    // 5. It's touching only one border
+    case BorderLeft:
+        sideBarArea = Qx::DockSideBarLeft;
+        break;
+    case BorderRight:
+        sideBarArea = Qx::DockSideBarRight;
+        break;
+    case BorderTop:
+        sideBarArea = Qx::DockSideBarTop;
+        break;
+    case BorderBottom:
+        sideBarArea = Qx::DockSideBarBottom;
+        break;
+    }
+
+    return sideBarArea;
 }
 
 void DockPanel::addDockWidget(DockWidget *w)
@@ -641,9 +829,28 @@ void DockPanel::updateTitleBarButtonVisibility(bool isTopLevel)
     d->updateTitleBarButtonVisibility(isTopLevel);
 }
 
-void QxDock::DockPanel::setAutoHideContainer(QxDock::DockAutoHideContainer *container)
+DockAutoHideContainer *DockPanel::autoHideContainer() const
 {
+    Q_D(const DockPanel);
+    return d->m_autoHideContainer;
+}
 
+void DockPanel::setAutoHideContainer(DockAutoHideContainer *container)
+{
+    Q_D(DockPanel);
+    d->m_autoHideContainer = container;
+    updateAutoHideButtonCheckState();
+    updateTitleBarButtonsToolTips();
+
+    auto button = d->m_titleBar->button(Qx::TitleBarButtonAutoHide);
+    TitleBarButton *autoHideButton = qobject_cast<TitleBarButton *>(button);
+    autoHideButton->setShowInTitleBar(true);
+}
+
+bool DockPanel::isAutoHide() const
+{
+    Q_D(const DockPanel);
+    return d->m_autoHideContainer != nullptr;
 }
 
 QX_DOCK_END_NAMESPACE

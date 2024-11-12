@@ -33,6 +33,14 @@ TitleBarButton::TitleBarButton(bool showInTitleBar, bool hideWhenDisabled, Qx::D
     setFocusPolicy(Qt::NoFocus);
 }
 
+void TitleBarButton::setShowInTitleBar(bool show)
+{
+    this->m_showInTitleBar = show;
+    if (!show) {
+        setVisible(false);
+    }
+}
+
 class DockTitleBarPrivate
 {
 public:
@@ -50,6 +58,7 @@ public:
     DockFloatingWidget *makeAreaFloating(const QPoint &offset, Qx::DockDragState dragState);
 
     static bool testConfigFlag(DockManager::ConfigFlag flag);
+    static bool testAutoHideConfigFlag(DockManager::AutoHideFlag flag);
 public:
     DockPanel *m_panel = nullptr;
     QBoxLayout *m_layout = nullptr;
@@ -58,6 +67,7 @@ public:
     QPointer<TitleBarButton> m_tabsMenuButton;
     QPointer<TitleBarButton> m_undockButton;
     QPointer<TitleBarButton> m_closeButton;
+    QPointer<TitleBarButton> m_autoHideButton;
     QPointer<TitleBarButton> m_minimizeButton;
 
     QList<TitleBarButton *> m_dockWidgetActionsButtons;
@@ -134,6 +144,21 @@ void DockTitleBarPrivate::createButtons()
     m_layout->addWidget(m_undockButton, 0);
     q->connect(m_undockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
+    // AutoHide Button
+    const auto autoHideEnabled = testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled);
+    m_autoHideButton =
+        new TitleBarButton(testAutoHideConfigFlag(DockManager::DockAreaHasAutoHideButton) && autoHideEnabled, true,
+                           Qx::TitleBarButtonAutoHide);
+    m_autoHideButton->setObjectName("dockPanelAutoHideButton");
+    m_autoHideButton->setAutoRaise(true);
+    internal::setToolTip(m_autoHideButton, q->titleBarButtonToolTip(Qx::TitleBarButtonAutoHide));
+    internal::setButtonIcon(m_autoHideButton, QStyle::SP_DialogOkButton, Qx::DockAutoHideIcon);
+    m_autoHideButton->setSizePolicy(sp);
+    m_autoHideButton->setCheckable(testAutoHideConfigFlag(DockManager::AutoHideButtonCheckable));
+    m_autoHideButton->setChecked(false);
+    m_layout->addWidget(m_autoHideButton, 0);
+    q->connect(m_autoHideButton, SIGNAL(clicked()), SLOT(onAutoHideButtonClicked()));
+
     // Minimize button
     m_minimizeButton = new TitleBarButton(true, false, Qx::TitleBarButtonMinimize);
     m_minimizeButton->setObjectName("dockPanelMinimizeButton");
@@ -204,6 +229,11 @@ bool DockTitleBarPrivate::testConfigFlag(DockManager::ConfigFlag flag)
     return DockManager::testConfigFlag(flag);
 }
 
+bool DockTitleBarPrivate::testAutoHideConfigFlag(DockManager::AutoHideFlag flag)
+{
+    return DockManager::testAutoHideConfigFlag(flag);
+}
+
 DockTitleBar::DockTitleBar(DockPanel *parent)
     : QWidget(parent)
 {
@@ -245,6 +275,8 @@ QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
         return d->m_undockButton;
     case Qx::TitleBarButtonClose:
         return d->m_closeButton;
+    case Qx::TitleBarButtonAutoHide:
+        return d->m_autoHideButton;
     case Qx::TitleBarButtonMinimize:
         return d->m_minimizeButton;
     default:
@@ -381,6 +413,17 @@ void DockTitleBar::onUndockButtonClicked()
     }
 }
 
+void DockTitleBar::onAutoHideButtonClicked()
+{
+    Q_D(DockTitleBar);
+    if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideButtonTogglesArea) ||
+        qApp->keyboardModifiers().testFlag(Qt::ControlModifier)) {
+        d->m_panel->toggleAutoHide();
+    } else {
+        d->m_panel->currentDockWidget()->toggleAutoHide();
+    }
+}
+
 void DockTitleBar::mousePressEvent(QMouseEvent *e)
 {
     Q_D(DockTitleBar);
@@ -388,7 +431,7 @@ void DockTitleBar::mousePressEvent(QMouseEvent *e)
         e->accept();
         d->m_dragStartMousePos = e->pos();
         d->m_dragState = Qx::DockDraggingMousePressed;
-        if (DockManager::testConfigFlag(DockManager::FocusHighlighting)){
+        if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
             d->dockWindow()->dockFocusController()->setDockWidgetTabFocused(d->m_tabBar->currentTab());
         }
         return;

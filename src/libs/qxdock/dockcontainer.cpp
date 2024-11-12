@@ -230,6 +230,7 @@ DockPanel *DockContainerPrivate::addDockWidgetToPanel(Qx::DockWidgetArea area, D
     Q_Q(DockContainer);
     if (area == Qx::CenterDockWidgetArea) {
         targetPanel->insertDockWidget(index, w);
+        targetPanel->updateTitleBarVisibility();
         return targetPanel;
     }
     DockPanel *np = new DockPanel(m_window, q);
@@ -302,6 +303,7 @@ void DockContainerPrivate::addDockPanelsToList(const QList<DockPanel *> ps)
     appendPanels(ps);
     for (auto p : ps) {
         p->titleBarButton(Qx::TitleBarButtonClose)->setVisible(true);
+        p->titleBarButton(Qx::TitleBarButtonAutoHide)->setVisible(true);
     }
     if (beforeCount == 1) {
         m_panels[0]->updateTitleBarVisibility();

@@ -29,12 +29,17 @@ public:
 
     void updateStyle();
 
+    DockSideBar *sideBar() const;
+    int tabIndex() const;
+
 protected:
     void setSideBar(DockSideBar *sideBar);
+    void removeFromSideBar();
 
 private:
     QX_DECLARE_PRIVATE(DockSideTab)
     friend class DockSideBar;
+    friend class DockAutoHideContainer;
 };
 
 QX_DOCK_END_NAMESPACE

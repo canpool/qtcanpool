@@ -16,6 +16,8 @@ public:
     TitleBarButton(bool showInTitleBar, bool hideWhenDisabled, Qx::DockTitleBarButton id,
                    QWidget *parent = nullptr);
 
+    void setShowInTitleBar(bool show);
+
 public:
     Qx::DockTitleBarButton m_id;
     bool m_showInTitleBar = true;

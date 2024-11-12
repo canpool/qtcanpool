@@ -12,6 +12,7 @@
 #include "docksplitter.h"
 #include "dockfloatingcontainer.h"
 #include "docksidetab.h"
+#include "dockautohidecontainer.h"
 
 #include <QPointer>
 #include <QBoxLayout>
@@ -382,6 +383,22 @@ bool DockWidget::isAutoHide() const
     return !d->m_sideTab.isNull();
 }
 
+DockAutoHideContainer *DockWidget::autoHideContainer() const
+{
+    Q_D(const DockWidget);
+
+    if (!d->m_panel) {
+        return nullptr;
+    }
+
+    return d->m_panel->autoHideContainer();
+}
+
+Qx::DockSideBarArea DockWidget::autoHideArea() const
+{
+    return isAutoHide() ? autoHideContainer()->sideBarArea() : Qx::DockSideBarNone;
+}
+
 void DockWidget::toggleView(bool open)
 {
     Q_D(DockWidget);
@@ -410,6 +427,38 @@ void DockWidget::requestCloseDockWidget()
     } else {
         toggleView(false);
     }
+}
+
+void DockWidget::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
+{
+    if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
+        return;
+    }
+
+    // Do nothing if nothing changes
+    if (enable == isAutoHide() && area == autoHideArea()) {
+        return;
+    }
+
+    auto panel = dockPanel();
+
+    if (!enable) {
+        panel->setAutoHide(false);
+    } else if (isAutoHide()) {
+        autoHideContainer()->moveToNewSideBarArea(area);
+    } else {
+        auto location = (Qx::DockSideBarNone == area) ? panel->calculateSideBarArea() : area;
+        dockContainer()->createAndSetupAutoHideContainer(location, this, tabIndex);
+    }
+}
+
+void DockWidget::toggleAutoHide(Qx::DockSideBarArea area)
+{
+    if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
+        return;
+    }
+
+    setAutoHide(!isAutoHide(), area);
 }
 
 void DockWidget::setDockWindow(DockWindow *window)

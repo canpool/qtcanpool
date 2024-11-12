@@ -12,6 +12,7 @@
 #include "dockmanager.h"
 #include "dockutils.h"
 #include "dockfloatingcontainer.h"
+#include "docksidebar.h"
 
 #include <QBoxLayout>
 #include <QApplication>
@@ -109,6 +110,10 @@ public:
 public:
     DockAutoHideContainerPrivate();
 
+    bool isHorizontal() const;
+
+    Qx::DockWidgetArea getDockWidgetArea(Qx::DockSideBarArea area);
+
     void updateResizeHandleSizeLimitMax();
     void forwardEventToDockContainer(QEvent *event);
 public:
@@ -124,6 +129,29 @@ public:
 
 DockAutoHideContainerPrivate::DockAutoHideContainerPrivate()
 {
+}
+
+bool DockAutoHideContainerPrivate::isHorizontal() const
+{
+    return isHorizontalArea(m_sideTabBarArea);
+}
+
+Qx::DockWidgetArea DockAutoHideContainerPrivate::getDockWidgetArea(Qx::DockSideBarArea area)
+{
+    switch (area) {
+    case Qx::DockSideBarLeft:
+        return Qx::LeftDockWidgetArea;
+    case Qx::DockSideBarRight:
+        return Qx::RightDockWidgetArea;
+    case Qx::DockSideBarBottom:
+        return Qx::BottomDockWidgetArea;
+    case Qx::DockSideBarTop:
+        return Qx::TopDockWidgetArea;
+    default:
+        return Qx::LeftDockWidgetArea;
+    }
+
+    return Qx::LeftDockWidgetArea;
 }
 
 void DockAutoHideContainerPrivate::updateResizeHandleSizeLimitMax()
@@ -187,13 +215,11 @@ DockAutoHideContainer::~DockAutoHideContainer()
     Q_D(DockAutoHideContainer);
     // Remove event filter in case there are any queued messages
     qApp->removeEventFilter(this);
-    if (dockContainer())
-    {
+    if (dockContainer()) {
         dockContainer()->removeAutoHideWidget(this);
     }
 
-    if (d->m_sideTab)
-    {
+    if (d->m_sideTab) {
         delete d->m_sideTab;
     }
     QX_FINI_PRIVATE();
@@ -203,6 +229,12 @@ DockSideTab *DockAutoHideContainer::autoHideTab() const
 {
     Q_D(const DockAutoHideContainer);
     return d->m_sideTab;
+}
+
+int DockAutoHideContainer::tabIndex() const
+{
+    Q_D(const DockAutoHideContainer);
+    return d->m_sideTab->tabIndex();
 }
 
 void DockAutoHideContainer::addDockWidget(DockWidget *w)
@@ -242,6 +274,65 @@ Qx::DockSideBarArea DockAutoHideContainer::sideBarArea() const
     return d->m_sideTabBarArea;
 }
 
+void DockAutoHideContainer::setSideBarArea(Qx::DockSideBarArea area)
+{
+    Q_D(DockAutoHideContainer);
+    if (d->m_sideTabBarArea == area) {
+        return;
+    }
+
+    d->m_sideTabBarArea = area;
+    d->m_layout->removeWidget(d->m_resizeHandle);
+    d->m_layout->setDirection(isHorizontalArea(area) ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+    d->m_layout->insertWidget(resizeHandleLayoutPosition(area), d->m_resizeHandle);
+    d->m_resizeHandle->setHandlePosition(edgeFromSideBarArea(area));
+    internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+void DockAutoHideContainer::cleanupAndDelete()
+{
+    Q_D(DockAutoHideContainer);
+    const auto dockWidget = d->m_dockWidget;
+    if (dockWidget) {
+        auto sideTab = d->m_sideTab;
+        sideTab->removeFromSideBar();
+        sideTab->setParent(nullptr);
+        sideTab->hide();
+    }
+
+    hide();
+    deleteLater();
+}
+
+void DockAutoHideContainer::moveContentsToParent()
+{
+    Q_D(DockAutoHideContainer);
+    cleanupAndDelete();
+    // If we unpin the auto hide dock widget, then we insert it into the same
+    // location like it had as a auto hide widget.  This brings the least surprise
+    // to the user and he does not have to search where the widget was inserted.
+    d->m_dockWidget->setDockPanel(nullptr);
+    auto container = this->dockContainer();
+    container->addDockWidget(d->getDockWidgetArea(d->m_sideTabBarArea), d->m_dockWidget);
+}
+
+void DockAutoHideContainer::moveToNewSideBarArea(Qx::DockSideBarArea area, int tabIndex)
+{
+    if (area == sideBarArea() && tabIndex == this->tabIndex()) {
+        return;
+    }
+
+    auto oldOrientation = orientation();
+    auto sideBar = dockContainer()->autoHideSideBar(area);
+    sideBar->addAutoHideWidget(this, tabIndex);
+    // If we move a horizontal auto hide container to a vertical position
+    // then we resize it to the original dock widget size, to avoid
+    // an extremely stretched dock widget after insertion
+    if (sideBar->orientation() != oldOrientation) {
+        resetToInitialDockWidgetSize();
+    }
+}
+
 void DockAutoHideContainer::collapseView(bool enable)
 {
     Q_D(DockAutoHideContainer);
@@ -265,11 +356,32 @@ void DockAutoHideContainer::toggleCollapseState()
     collapseView(isVisible());
 }
 
+void DockAutoHideContainer::setSize(int size)
+{
+    Q_D(DockAutoHideContainer);
+    if (d->isHorizontal()) {
+        d->m_size.setHeight(size);
+    } else {
+        d->m_size.setWidth(size);
+    }
+
+    updateSize();
+}
+
+void DockAutoHideContainer::resetToInitialDockWidgetSize()
+{
+    Q_D(DockAutoHideContainer);
+    if (orientation() == Qt::Horizontal) {
+        setSize(d->m_sizeCache.height());
+    } else {
+        setSize(d->m_sizeCache.width());
+    }
+}
+
 Qt::Orientation DockAutoHideContainer::orientation() const
 {
     Q_D(const DockAutoHideContainer);
-    return internal::isHorizontalSideBarArea(d->m_sideTabBarArea)
-        ? Qt::Horizontal : Qt::Vertical;
+    return internal::isHorizontalSideBarArea(d->m_sideTabBarArea) ? Qt::Horizontal : Qt::Vertical;
 }
 
 bool DockAutoHideContainer::eventFilter(QObject *watched, QEvent *event)

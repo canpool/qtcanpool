@@ -87,6 +87,7 @@ private:
     friend class DockAutoHideContainer;
     friend class DockWindow;
     friend class DockAutoHideContainerPrivate;
+    friend class DockSideBar;
 };
 
 QX_DOCK_END_NAMESPACE

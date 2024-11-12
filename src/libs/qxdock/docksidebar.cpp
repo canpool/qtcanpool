@@ -128,6 +128,16 @@ DockSideBar::~DockSideBar()
     QX_FINI_PRIVATE();
 }
 
+void DockSideBar::removeTab(DockSideTab *sideTab)
+{
+    Q_D(DockSideBar);
+    sideTab->removeEventFilter(this);
+    d->m_tabsLayout->removeWidget(sideTab);
+    if (d->m_tabsLayout->isEmpty()) {
+        hide();
+    }
+}
+
 DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
 {
     Q_D(DockSideBar);
@@ -137,6 +147,72 @@ DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
     w->setSideTab(tab);
     insertTab(index, tab);
     return autoHideContainer;
+}
+
+void DockSideBar::addAutoHideWidget(DockAutoHideContainer *autoHideWidget, int index)
+{
+    Q_D(DockSideBar);
+    auto sideBar = autoHideWidget->autoHideTab()->sideBar();
+    if (sideBar == this) {
+        // If we move to the same tab index or if we insert before the next
+        // tab index, then we will end at the same tab position and can leave
+        if (autoHideWidget->tabIndex() == index || (autoHideWidget->tabIndex() + 1) == index) {
+            return;
+        }
+
+        // We remove this auto hide widget from the sidebar in the code below
+        // and therefore need to correct the TabIndex here
+        if (autoHideWidget->tabIndex() < index) {
+            --index;
+        }
+    }
+
+    if (sideBar) {
+        sideBar->removeAutoHideWidget(autoHideWidget);
+    }
+    autoHideWidget->setParent(d->m_container);
+    autoHideWidget->setSideBarArea(d->m_sideTabArea);
+    d->m_container->registerAutoHideWidget(autoHideWidget);
+    insertTab(index, autoHideWidget->autoHideTab());
+}
+
+void DockSideBar::removeAutoHideWidget(DockAutoHideContainer *autoHideWidget)
+{
+    autoHideWidget->autoHideTab()->removeFromSideBar();
+    auto dockContainer = autoHideWidget->dockContainer();
+    if (dockContainer) {
+        dockContainer->removeAutoHideWidget(autoHideWidget);
+    }
+    autoHideWidget->setParent(nullptr);
+}
+
+Qt::Orientation DockSideBar::orientation() const
+{
+    Q_D(const DockSideBar);
+    return d->m_orientation;
+}
+
+DockSideTab *DockSideBar::tab(int index) const
+{
+    Q_D(const DockSideBar);
+    return qobject_cast<DockSideTab *>(d->m_tabsLayout->itemAt(index)->widget());
+}
+
+int DockSideBar::indexOfTab(const DockSideTab &tab) const
+{
+    for (auto i = 0; i < count(); i++) {
+        if (this->tab(i) == &tab) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int DockSideBar::count() const
+{
+    Q_D(const DockSideBar);
+    return d->m_tabsLayout->count() - 1;
 }
 
 Qx::DockSideBarArea DockSideBar::sideBarArea() const
