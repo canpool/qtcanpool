@@ -396,6 +396,16 @@ bool DockPanel::isCentralWidgetArea() const
     return dockWindow()->centralWidget() == dockWidgets().constFirst();
 }
 
+bool DockPanel::isTopLevelArea() const
+{
+    auto container = dockContainer();
+    if (!container) {
+        return false;
+    }
+
+    return (container->topLevelDockPanel() == this);
+}
+
 void DockPanel::setCurrentIndex(int index)
 {
     Q_D(DockPanel);

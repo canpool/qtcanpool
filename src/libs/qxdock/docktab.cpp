@@ -21,6 +21,8 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QLabel>
+#include <QMenu>
+#include <QAction>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -365,9 +367,26 @@ bool DockTab::isTitleElided() const
     return d->m_label->isElided();
 }
 
+bool DockTab::isClosable() const
+{
+    Q_D(const DockTab);
+    return d->m_dockWidget && d->m_dockWidget->features().testFlag(DockWidget::DockWidgetClosable);
+}
+
 void DockTab::updateStyle()
 {
     internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+void DockTab::detachDockWidget()
+{
+    Q_D(DockTab);
+    if (!d->m_dockWidget->features().testFlag(DockWidget::DockWidgetFloatable)) {
+        return;
+    }
+
+    d->saveDragStartMousePosition(QCursor::pos());
+    d->startFloating(Qx::DockDraggingInactive);
 }
 
 void DockTab::mousePressEvent(QMouseEvent *e)
@@ -505,6 +524,37 @@ void DockTab::mouseDoubleClickEvent(QMouseEvent *e)
     }
 
     Super::mouseDoubleClickEvent(e);
+}
+
+void DockTab::contextMenuEvent(QContextMenuEvent *e)
+{
+    Q_D(DockTab);
+    e->accept();
+    if (d->isDraggingState(Qx::DockDraggingFloatingWidget)) {
+        return;
+    }
+
+    d->saveDragStartMousePosition(e->globalPos());
+
+    const bool isFloatable = d->m_dockWidget->features().testFlag(DockWidget::DockWidgetFloatable);
+    const bool isNotOnlyTabInContainer = !d->m_panel->dockContainer()->hasTopLevelDockWidget();
+    const bool isTopLevelArea = d->m_panel->isTopLevelArea();
+    const bool isDetachable = isFloatable && isNotOnlyTabInContainer;
+    QAction *action;
+    QMenu menu(this);
+
+    if (!isTopLevelArea) {
+        action = menu.addAction(tr("Detach"), this, SLOT(detachDockWidget()));
+        action->setEnabled(isDetachable);
+    }
+
+    menu.addSeparator();
+    action = menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
+    action->setEnabled(isClosable());
+    if (d->m_panel->openDockWidgetsCount() > 1) {
+        action = menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
+    }
+    menu.exec(e->globalPos());
 }
 
 QX_DOCK_END_NAMESPACE

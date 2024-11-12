@@ -89,6 +89,7 @@ void DockTabBar::insertTab(int index, DockTab *tab)
     d->m_tabsLayout->insertWidget(index, tab);
     connect(tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
     connect(tab, SIGNAL(closeRequested()), this, SLOT(onTabCloseRequested()));
+    connect(tab, SIGNAL(closeOtherTabsRequested()), this, SLOT(onCloseOtherTabsRequested()));
     connect(tab, SIGNAL(moved(QPoint)), this, SLOT(onTabWidgetMoved(QPoint)));
     connect(tab, SIGNAL(elidedChanged(bool)), this, SIGNAL(elidedChanged(bool)));
     if (index <= d->m_currentIndex) {
@@ -246,6 +247,28 @@ void DockTabBar::onTabCloseRequested()
     DockTab *tab = qobject_cast<DockTab *>(sender());
     int index = d->m_tabsLayout->indexOf(tab);
     closeTab(index);
+}
+
+void DockTabBar::onCloseOtherTabsRequested()
+{
+    auto senderTab = qobject_cast<DockTab *>(sender());
+    for (int i = 0; i < count(); ++i) {
+        auto otherTab = this->tab(i);
+        if (otherTab->isClosable() && !otherTab->isHidden() && otherTab != senderTab) {
+            // If the dock widget is deleted with the closeTab() call, its tab
+            // it will no longer be in the layout, and thus the index needs to
+            // be updated to not skip any tabs
+            int offset = otherTab->dockWidget()->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ? 1 : 0;
+            closeTab(i);
+
+            // If the the dock widget blocks closing, i.e. if the flag
+            // CustomCloseHandling is set, and the dock widget is still open,
+            // then we do not need to correct the index
+            if (otherTab->dockWidget()->isClosed()) {
+                i -= offset;
+            }
+        }
+    }
 }
 
 void DockTabBar::onTabWidgetMoved(const QPoint &globalPos)

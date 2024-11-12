@@ -39,6 +39,7 @@ public:
     QString text() const;
 
     bool isTitleElided() const;
+    bool isClosable() const;
 
     void updateStyle();
 
@@ -46,14 +47,19 @@ Q_SIGNALS:
     void activeTabChanged();
     void clicked();
     void closeRequested();
+    void closeOtherTabsRequested();
     void moved(const QPoint &globalPos);
     void elidedChanged(bool elided);
+
+private Q_SLOTS:
+    void detachDockWidget();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void mouseMoveEvent(QMouseEvent *e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
+    virtual void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTab)

@@ -65,6 +65,8 @@ public:
 
     bool isCentralWidgetArea() const;
 
+    bool isTopLevelArea() const;
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void closeArea();

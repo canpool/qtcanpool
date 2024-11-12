@@ -48,6 +48,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void onTabClicked();
     void onTabCloseRequested();
+    void onCloseOtherTabsRequested();
     void onTabWidgetMoved(const QPoint &globalPos);
 
 Q_SIGNALS:
