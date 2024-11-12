@@ -145,6 +145,24 @@ Qx::DockSideBarArea DockSideBar::sideBarArea() const
     return d->m_sideTabArea;
 }
 
+QSize DockSideBar::minimumSizeHint() const
+{
+    Q_D(const DockSideBar);
+    QSize size = sizeHint();
+    if (d->isHorizontal()) {
+        size.setWidth(0);
+    } else {
+        size.setHeight(0);
+    }
+    return size;
+}
+
+QSize DockSideBar::sizeHint() const
+{
+    Q_D(const DockSideBar);
+    return d->m_tabsContainerWidget->sizeHint();
+}
+
 void DockSideBar::insertTab(int index, DockSideTab *sideTab)
 {
     Q_D(DockSideBar);

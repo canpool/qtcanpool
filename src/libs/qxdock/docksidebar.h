@@ -27,6 +27,9 @@ public:
 
     Qx::DockSideBarArea sideBarArea() const;
 
+    virtual QSize minimumSizeHint() const override;
+    virtual QSize sizeHint() const override;
+
 protected:
     void insertTab(int index, DockSideTab *sideTab);
 
