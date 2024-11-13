@@ -29,6 +29,7 @@ public:
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
         DockAreaDynamicTabsMenuButtonVisibility = 0x20000,
+        HideSingleCentralWidgetTitleBar = 0x100000,
 
         FocusHighlighting = 0x200000,
         EqualSplitOnInsertion = 0x400000,

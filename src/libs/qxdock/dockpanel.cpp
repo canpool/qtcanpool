@@ -812,6 +812,27 @@ void DockPanel::hideAreaWithNoVisibleContent()
     // Hide empty parent splitters
     auto splitter = parentSplitter();
     internal::hideEmptyParentSplitters(splitter);
+
+    // Hide empty floating widget
+    DockContainer *container = this->dockContainer();
+    if (!container->isFloating() && !DockManager::testConfigFlag(DockManager::HideSingleCentralWidgetTitleBar)) {
+        return;
+    }
+
+    updateTitleBarVisibility();
+    auto topLevelWidget = container->topLevelDockWidget();
+    auto floatingWidget = container->floatingWidget();
+    if (topLevelWidget) {
+        if (floatingWidget) {
+            floatingWidget->updateWindowTitle();
+        }
+        DockWidget::emitTopLevelEventForWidget(topLevelWidget, true);
+    } else if (container->openedDockPanels().isEmpty() && floatingWidget) {
+        floatingWidget->hide();
+    }
+    if (isAutoHide()) {
+        autoHideContainer()->hide();
+    }
 }
 
 void DockPanel::updateTitleBarVisibility()
