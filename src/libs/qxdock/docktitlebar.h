@@ -52,6 +52,7 @@ private Q_SLOTS:
     void onCloseButtonClicked();
     void onUndockButtonClicked();
     void onAutoHideButtonClicked();
+    void minimizeAutoHideContainer();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;

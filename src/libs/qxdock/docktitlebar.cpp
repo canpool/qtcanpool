@@ -17,6 +17,7 @@
 #include "dockoverlay.h"
 #include "dockfocuscontroller.h"
 #include "docklabel.h"
+#include "dockautohidecontainer.h"
 
 #include <QBoxLayout>
 #include <QMenu>
@@ -179,6 +180,7 @@ void DockTitleBarPrivate::createButtons()
     internal::setToolTip(m_minimizeButton, QObject::tr("Minimize"));
     m_minimizeButton->setSizePolicy(sp);
     m_layout->addWidget(m_minimizeButton, 0);
+    q->connect(m_minimizeButton, SIGNAL(clicked()), SLOT(minimizeAutoHideContainer()));
 
     // Close button
     m_closeButton =
@@ -457,6 +459,15 @@ void DockTitleBar::onAutoHideButtonClicked()
         d->m_panel->toggleAutoHide();
     } else {
         d->m_panel->currentDockWidget()->toggleAutoHide();
+    }
+}
+
+void DockTitleBar::minimizeAutoHideContainer()
+{
+    Q_D(DockTitleBar);
+    auto autoHideContainer = d->m_panel->autoHideContainer();
+    if (autoHideContainer) {
+        autoHideContainer->collapseView(true);
     }
 }
 
