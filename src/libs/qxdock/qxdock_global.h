@@ -114,11 +114,16 @@ enum DockWidgetArea {
     TopDockWidgetArea = 0x4,
     BottomDockWidgetArea = 0x8,
     CenterDockWidgetArea = 0x10,
+    LeftAutoHideArea = 0x20,
+    RightAutoHideArea = 0x40,
+    TopAutoHideArea = 0x80,
+    BottomAutoHideArea = 0x100,
 
     InvalidDockWidgetArea = NoDockWidgetArea,
     DockWidgetArea_Mask = 0x1f,
     AllDockWidgetAreas = DockWidgetArea_Mask,
     OuterDockAreas = TopDockWidgetArea | LeftDockWidgetArea | RightDockWidgetArea | BottomDockWidgetArea,
+    AutoHideDockAreas = LeftAutoHideArea | RightAutoHideArea | TopAutoHideArea | BottomAutoHideArea,
     AllDockAreas = OuterDockAreas | CenterDockWidgetArea
 };
 enum DockWidgetAreaSizes {

@@ -82,6 +82,8 @@ public:
     void moveToContainer(QWidget *widget, Qx::DockWidgetArea area);
     void moveIntoCenterOfSection(QWidget *widget, DockPanel *targetPanel, int tabIndex = 0);
     void moveToNewSection(QWidget *widget, DockPanel *targetPanel, Qx::DockWidgetArea area, int tabIndex = 0);
+
+    void dropIntoAutoHideSideBar(DockFloatingContainer *floatingWidget, Qx::DockWidgetArea area);
 public:
     DockWindow *m_window = nullptr;
     QGridLayout *m_layout = nullptr;
@@ -589,6 +591,20 @@ void DockContainerPrivate::moveToNewSection(QWidget *widget, DockPanel *targetPa
     addDockPanelsToList({newPanel});
 }
 
+void DockContainerPrivate::dropIntoAutoHideSideBar(DockFloatingContainer *floatingWidget, Qx::DockWidgetArea area)
+{
+    Q_Q(DockContainer);
+    auto sideBarArea = internal::toSideBarArea(area);
+    auto newPanels = floatingWidget->findChildren<DockPanel *>(QString(), Qt::FindChildrenRecursively);
+    int tabIndex = m_window->containerOverlay()->tabIndexUnderCursor();
+    for (auto panel : newPanels) {
+        auto widgets = panel->dockWidgets();
+        for (auto w : widgets) {
+            q->createAndSetupAutoHideContainer(sideBarArea, w, tabIndex++);
+        }
+    }
+}
+
 /* DockContainer */
 DockContainer::DockContainer(DockWindow *window, QWidget *parent)
     : QWidget(parent)
@@ -764,6 +780,12 @@ DockSideBar *DockContainer::autoHideSideBar(Qx::DockSideBarArea area) const
     return d->m_sideTabBarWidgets[area];
 }
 
+QList<DockAutoHideContainer *> DockContainer::autoHideWidgets() const
+{
+    Q_D(const DockContainer);
+    return d->m_autoHideWidgets;
+}
+
 QRect DockContainer::contentRect() const
 {
     Q_D(const DockContainer);
@@ -809,6 +831,12 @@ void DockContainer::addDockPanel(DockPanel *panel, Qx::DockWidgetArea area)
 void DockContainer::removeDockPanel(DockPanel *panel)
 {
     Q_D(DockContainer);
+    // If it is an auto hide area, then there is nothing much to do
+    if (panel->isAutoHide()) {
+        panel->setAutoHideContainer(nullptr);
+        return;
+    }
+
     panel->disconnect(this);
     d->m_panels.removeAll(panel);
     auto splitter = panel->parentSplitter();
@@ -957,8 +985,18 @@ void DockContainer::dropFloatingWidget(DockFloatingContainer *floatingWidget, co
 
     // mouse is over container or auto hide side bar
     if (Qx::InvalidDockWidgetArea == dropArea && Qx::InvalidDockWidgetArea != containerDropArea) {
-        d->dropIntoContainer(floatingWidget, containerDropArea);
+        if (internal::isSideBarArea(containerDropArea)) {
+            d->dropIntoAutoHideSideBar(floatingWidget, containerDropArea);
+        } else {
+            d->dropIntoContainer(floatingWidget, containerDropArea);
+        }
         dropped = true;
+    }
+    // Remove the auto hide widgets from the floatingWidget and insert
+    // them into this widget
+    for (auto autoHideWidget : floatingWidget->dockContainer()->autoHideWidgets()) {
+        auto sideBar = autoHideSideBar(autoHideWidget->sideBarArea());
+        sideBar->addAutoHideWidget(autoHideWidget);
     }
 
     if (dropped) {

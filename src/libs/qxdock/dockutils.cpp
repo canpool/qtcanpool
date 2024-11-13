@@ -121,6 +121,29 @@ bool isHorizontalSideBarArea(Qx::DockSideBarArea area)
     return false;
 }
 
+bool isSideBarArea(Qx::DockWidgetArea area)
+{
+    return toSideBarArea(area) != Qx::DockSideBarNone;
+}
+
+Qx::DockSideBarArea toSideBarArea(Qx::DockWidgetArea area)
+{
+    switch (area) {
+    case Qx::LeftAutoHideArea:
+        return Qx::DockSideBarLeft;
+    case Qx::RightAutoHideArea:
+        return Qx::DockSideBarRight;
+    case Qx::TopAutoHideArea:
+        return Qx::DockSideBarTop;
+    case Qx::BottomAutoHideArea:
+        return Qx::DockSideBarBottom;
+    default:
+        return Qx::DockSideBarNone;
+    }
+
+    return Qx::DockSideBarNone;
+}
+
 }   // internal
 
 QX_DOCK_END_NAMESPACE

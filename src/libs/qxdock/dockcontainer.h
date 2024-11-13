@@ -50,6 +50,7 @@ public:
     DockFloatingContainer *floatingWidget() const;
 
     DockSideBar *autoHideSideBar(Qx::DockSideBarArea area) const;
+    QList<DockAutoHideContainer *> autoHideWidgets() const;
     QRect contentRect() const;
 
 Q_SIGNALS:

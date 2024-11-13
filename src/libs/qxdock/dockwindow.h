@@ -66,6 +66,7 @@ protected:
 private:
     QX_DECLARE_PRIVATE(DockWindow)
     friend class DockContainer;
+    friend class DockContainerPrivate;
     friend class DockFloatingContainer;
     friend class DockFloatingContainerPrivate;
     friend class DockTitleBar;
