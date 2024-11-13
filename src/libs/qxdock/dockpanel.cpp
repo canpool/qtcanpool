@@ -15,6 +15,7 @@
 #include "dockautohidecontainer.h"
 #include "docktitlebar_p.h"
 #include "docklabel.h"
+#include "dockfloatingcontainer.h"
 
 #include <QBoxLayout>
 
@@ -707,6 +708,13 @@ void DockPanel::removeDockWidget(DockWidget *w)
     if (!w) {
         return;
     }
+    // If this dock panel is in a auto hide container, then we can delete
+    // the auto hide container now
+    if (isAutoHide()) {
+        autoHideContainer()->cleanupAndDelete();
+        return;
+    }
+
     auto currentWidget = currentDockWidget();
     auto nextOpenWidget = (w == currentWidget) ? nextOpenDockWidget(w) : nullptr;
 
@@ -724,6 +732,12 @@ void DockPanel::removeDockWidget(DockWidget *w)
     } else if (d->m_contentsLayout->isEmpty() && container->dockPanelCount() >= 1) {
         container->removeDockPanel(this);
         this->deleteLater();
+        if (container->dockPanelCount() == 0) {
+            if (DockFloatingContainer *floatingContainer = container->floatingWidget()) {
+                floatingContainer->hide();
+                floatingContainer->deleteLater();
+            }
+        }
     } else if (w == currentWidget) {
         hideAreaWithNoVisibleContent();
     }
