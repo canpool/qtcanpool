@@ -63,6 +63,7 @@ public:
         AutoHideButtonCheckable = 0x08,
         AutoHideSideBarsIconOnly = 0x10,
         AutoHideShowOnMouseOver = 0x20,
+        AutoHideHasCloseButton = 0x80,
 
         DefaultAutoHideConfig = AutoHideFeatureEnabled
                               | DockAreaHasAutoHideButton

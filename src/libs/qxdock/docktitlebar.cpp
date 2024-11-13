@@ -312,6 +312,14 @@ DockLabel *DockTitleBar::autoHideTitleLabel() const
     return d->m_autoHideTitleLabel;
 }
 
+void DockTitleBar::showAutoHideControls(bool show)
+{
+    Q_D(DockTitleBar);
+    d->m_tabBar->setVisible(!show);   // Auto hide toolbar never has tabs
+    d->m_minimizeButton->setVisible(show);
+    d->m_autoHideTitleLabel->setVisible(show);
+}
+
 void DockTitleBar::updateDockWidgetActionsButtons()
 {
     Q_D(DockTitleBar);

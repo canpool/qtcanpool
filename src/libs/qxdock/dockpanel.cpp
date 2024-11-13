@@ -217,9 +217,18 @@ void DockPanelPrivate::updateTitleBarButtonStates()
         m_updateTitleBarButtons = true;
         return;
     }
+    if (q->isAutoHide()) {
+        if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideHasCloseButton)) {
+            m_titleBar->button(Qx::TitleBarButtonClose)
+                ->setEnabled(q->features().testFlag(DockWidget::DockWidgetClosable));
+        }
+    } else {
+        m_titleBar->button(Qx::TitleBarButtonUndock)
+            ->setEnabled(q->features().testFlag(DockWidget::DockWidgetFloatable));
+        m_titleBar->button(Qx::TitleBarButtonClose)->setEnabled(q->features().testFlag(DockWidget::DockWidgetClosable));
+    }
 
-    m_titleBar->button(Qx::TitleBarButtonUndock)->setEnabled(q->features().testFlag(DockWidget::DockWidgetFloatable));
-    m_titleBar->button(Qx::TitleBarButtonClose)->setEnabled(q->features().testFlag(DockWidget::DockWidgetClosable));
+    m_titleBar->button(Qx::TitleBarButtonAutoHide)->setEnabled(q->features().testFlag(DockWidget::DockWidgetPinnable));
     m_titleBar->updateDockWidgetActionsButtons();
     m_updateTitleBarButtons = false;
 }
@@ -231,13 +240,23 @@ void DockPanelPrivate::updateTitleBarButtonVisibility(bool isTopLevel)
     if (!container) {
         return;
     }
-    if (isTopLevel) {
+    bool isAutoHide = q->isAutoHide();
+    if (isAutoHide) {
+        bool showCloseButton = DockManager::testAutoHideConfigFlag(DockManager::AutoHideHasCloseButton);
+        m_titleBar->button(Qx::TitleBarButtonClose)->setVisible(showCloseButton);
+        m_titleBar->button(Qx::TitleBarButtonAutoHide)->setVisible(true);
+        m_titleBar->button(Qx::TitleBarButtonUndock)->setVisible(false);
+        m_titleBar->button(Qx::TitleBarButtonTabsMenu)->setVisible(false);
+    } else if (isTopLevel) {
         m_titleBar->button(Qx::TitleBarButtonClose)->setVisible(!container->isFloating());
+        m_titleBar->button(Qx::TitleBarButtonAutoHide)->setVisible(!container->isFloating());
         // Undock and tabs should never show when auto hidden
         m_titleBar->button(Qx::TitleBarButtonUndock)->setVisible(!container->isFloating());
         m_titleBar->button(Qx::TitleBarButtonTabsMenu)->setVisible(true);
     } else {
         m_titleBar->button(Qx::TitleBarButtonClose)->setVisible(true);
+        bool showAutoHideButton = DockManager::testAutoHideConfigFlag(DockManager::DockAreaHasAutoHideButton);
+        m_titleBar->button(Qx::TitleBarButtonAutoHide)->setVisible(showAutoHideButton);
         m_titleBar->button(Qx::TitleBarButtonUndock)->setVisible(true);
         m_titleBar->button(Qx::TitleBarButtonTabsMenu)->setVisible(true);
     }
@@ -443,14 +462,18 @@ void DockPanel::setCurrentIndex(int index)
 void DockPanel::closeArea()
 {
     auto openWidgets = openedDockWidgets();
-    if (openWidgets.count() == 1 && (openWidgets[0]->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
-                                     openWidgets[0]->features().testFlag(DockWidget::CustomCloseHandling))) {
+    if (openWidgets.count() == 1 &&
+        (openWidgets[0]->features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
+         openWidgets[0]->features().testFlag(DockWidget::CustomCloseHandling)) &&
+        !isAutoHide()) {
         openWidgets[0]->closeDockWidgetInternal();
     } else {
         for (auto w : openWidgets) {
             if ((w->features().testFlag(DockWidget::DockWidgetDeleteOnClose) &&
                  w->features().testFlag(DockWidget::DockWidgetForceCloseWithArea)) ||
                 w->features().testFlag(DockWidget::CustomCloseHandling)) {
+                w->closeDockWidgetInternal();
+            } else if (w->features().testFlag(DockWidget::DockWidgetDeleteOnClose) && isAutoHide()) {
                 w->closeDockWidgetInternal();
             } else {
                 w->toggleView(false);
@@ -845,10 +868,16 @@ void DockPanel::updateTitleBarVisibility()
     if (!d->m_titleBar) {
         return;
     }
+    bool isAutoHide = this->isAutoHide();
     if (!DockManager::testConfigFlag(DockManager::AlwaysShowTabs)) {
         bool hidden = container->hasTopLevelDockWidget() && container->isFloating();
         hidden |= (d->m_flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
+        hidden &= !isAutoHide;   // Titlebar must always be visible when auto hidden so it can be dragged
         d->m_titleBar->setVisible(!hidden);
+    }
+    if (isAutoHideFeatureEnabled()) {
+        d->m_titleBar->showAutoHideControls(isAutoHide);
+        updateTitleBarButtonVisibility(container->topLevelDockPanel() == this);
     }
 }
 

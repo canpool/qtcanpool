@@ -32,6 +32,7 @@ public:
     QAbstractButton *button(Qx::DockTitleBarButton which) const;
 
     DockLabel *autoHideTitleLabel() const;
+    void showAutoHideControls(bool show);
 
     void updateDockWidgetActionsButtons();
 
