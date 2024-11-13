@@ -13,6 +13,7 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
 class DockTabBar;
+class DockLabel;
 
 class DockTitleBarPrivate;
 
@@ -29,6 +30,8 @@ public:
     DockPanel *dockPanel() const;
 
     QAbstractButton *button(Qx::DockTitleBarButton which) const;
+
+    DockLabel *autoHideTitleLabel() const;
 
     void updateDockWidgetActionsButtons();
 

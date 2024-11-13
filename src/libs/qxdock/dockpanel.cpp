@@ -14,10 +14,13 @@
 #include "dockmanager.h"
 #include "dockautohidecontainer.h"
 #include "docktitlebar_p.h"
+#include "docklabel.h"
 
 #include <QBoxLayout>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+static const char *const INDEX_PROPERTY = "index";
 
 static bool isAutoHideFeatureEnabled()
 {
@@ -680,6 +683,8 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
     d->tabBar()->insertTab(index, tab);
     d->tabBar()->blockSignals(false);
     tab->setVisible(!w->isClosed());
+    d->m_titleBar->autoHideTitleLabel()->setText(w->windowTitle());
+    w->setProperty(INDEX_PROPERTY, index);
     if (activate) {
         setCurrentIndex(index);
         // Set current index can show the widget without changing the close state,

@@ -16,6 +16,7 @@
 #include "dockwindow.h"
 #include "dockoverlay.h"
 #include "dockfocuscontroller.h"
+#include "docklabel.h"
 
 #include <QBoxLayout>
 #include <QMenu>
@@ -41,6 +42,12 @@ void TitleBarButton::setShowInTitleBar(bool show)
     }
 }
 
+SpacerWidget::SpacerWidget(QWidget *parent)
+{
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setStyleSheet("border: none; background: none;");
+}
+
 class DockTitleBarPrivate
 {
 public:
@@ -51,6 +58,8 @@ public:
     void init();
     void createTabBar();
     void createButtons();
+    void createAutoHideTitleLabel();
+
     DockWindow *dockWindow() const;
 
     bool isDraggingState(Qx::DockDragState dragState) const;
@@ -76,6 +85,7 @@ public:
     Qx::DockDragState m_dragState = Qx::DockDraggingInactive;
     QPoint m_dragStartMousePos;
     DockFloatingWidget *m_floatingWidget = nullptr;
+    DockLabel *m_autoHideTitleLabel = nullptr;
 };
 
 DockTitleBarPrivate::DockTitleBarPrivate()
@@ -93,6 +103,7 @@ void DockTitleBarPrivate::init()
 
     createTabBar();
     createButtons();
+    createAutoHideTitleLabel();
 }
 
 void DockTitleBarPrivate::createTabBar()
@@ -180,6 +191,17 @@ void DockTitleBarPrivate::createButtons()
     m_closeButton->setIconSize(QSize(16, 16));
     m_layout->addWidget(m_closeButton, 0);
     q->connect(m_closeButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
+}
+
+void DockTitleBarPrivate::createAutoHideTitleLabel()
+{
+    Q_Q(DockTitleBar);
+    m_autoHideTitleLabel = new DockLabel("");
+    m_autoHideTitleLabel->setObjectName("autoHideTitleLabel");
+    // At position 0 is the tab bar - insert behind tab bar
+    m_layout->insertWidget(1, m_autoHideTitleLabel);
+    m_autoHideTitleLabel->setVisible(false);   // Default hidden
+    m_layout->insertWidget(2, new SpacerWidget(q));
 }
 
 DockWindow *DockTitleBarPrivate::dockWindow() const
@@ -282,6 +304,12 @@ QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
     default:
         return nullptr;
     }
+}
+
+DockLabel *DockTitleBar::autoHideTitleLabel() const
+{
+    Q_D(const DockTitleBar);
+    return d->m_autoHideTitleLabel;
 }
 
 void DockTitleBar::updateDockWidgetActionsButtons()
