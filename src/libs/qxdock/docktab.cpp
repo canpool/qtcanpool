@@ -49,6 +49,7 @@ public:
     DockFocusController *focusController() const;
 
     void updateIcon();
+    QAction *createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu);
 public:
     DockWidget *m_dockWidget = nullptr;
     DockPanel *m_panel = nullptr;
@@ -240,6 +241,15 @@ void DockTabPrivate::updateIcon()
     m_iconLabel->setVisible(true);
 }
 
+QAction *DockTabPrivate::createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu)
+{
+    Q_Q(DockTab);
+    auto action = menu->addAction(title);
+    action->setProperty(internal::LocationProperty, area);
+    QObject::connect(action, &QAction::triggered, q, &DockTab::onAutoHideToActionClicked);
+    return action;
+}
+
 template <typename T> DockFloatingWidget *DockTabPrivate::createFloatingWidget(T *widget, bool needCreateContainer)
 {
     Q_Q(DockTab);
@@ -408,6 +418,19 @@ void DockTab::detachDockWidget()
     d->startFloating(Qx::DockDraggingInactive);
 }
 
+void DockTab::autoHideDockWidget()
+{
+    Q_D(DockTab);
+    d->m_dockWidget->setAutoHide(true);
+}
+
+void DockTab::onAutoHideToActionClicked()
+{
+    Q_D(DockTab);
+    int location = sender()->property(internal::LocationProperty).toInt();
+    d->m_dockWidget->toggleAutoHide((Qx::DockSideBarArea)location);
+}
+
 void DockTab::mousePressEvent(QMouseEvent *e)
 {
     Q_D(DockTab);
@@ -572,6 +595,18 @@ void DockTab::contextMenuEvent(QContextMenuEvent *e)
     if (!isTopLevelArea) {
         action = menu.addAction(tr("Detach"), this, SLOT(detachDockWidget()));
         action->setEnabled(isDetachable);
+        if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
+            action = menu.addAction(tr("Pin"), this, SLOT(autoHideDockWidget()));
+            auto isPinnable = d->m_dockWidget->features().testFlag(DockWidget::DockWidgetPinnable);
+            action->setEnabled(isPinnable);
+
+            auto pinMenu = menu.addMenu(tr("Pin To..."));
+            pinMenu->setEnabled(isPinnable);
+            d->createAutoHideToAction(tr("Top"), Qx::DockSideBarTop, pinMenu);
+            d->createAutoHideToAction(tr("Left"), Qx::DockSideBarLeft, pinMenu);
+            d->createAutoHideToAction(tr("Right"), Qx::DockSideBarRight, pinMenu);
+            d->createAutoHideToAction(tr("Bottom"), Qx::DockSideBarBottom, pinMenu);
+        }
     }
 
     menu.addSeparator();

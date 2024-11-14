@@ -53,6 +53,8 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void detachDockWidget();
+    void autoHideDockWidget();
+    void onAutoHideToActionClicked();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
