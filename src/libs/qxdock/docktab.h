@@ -37,6 +37,7 @@ public:
     void setIconSize(const QSize &size);
 
     QString text() const;
+    void setText(const QString &title);
 
     bool isTitleElided() const;
     bool isClosable() const;

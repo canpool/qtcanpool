@@ -105,6 +105,7 @@ protected:
     void updateTitleBarVisibility();
     void internalSetCurrentDockWidget(DockWidget *w);
     void updateTitleBarButtonVisibility(bool isTopLevel);
+    void markTitleBarMenuOutdated();
 
 private:
     QX_DECLARE_PRIVATE(DockPanel)

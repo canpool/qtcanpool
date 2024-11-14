@@ -903,6 +903,14 @@ void DockPanel::updateTitleBarButtonVisibility(bool isTopLevel)
     d->updateTitleBarButtonVisibility(isTopLevel);
 }
 
+void DockPanel::markTitleBarMenuOutdated()
+{
+    Q_D(DockPanel);
+    if (d->m_titleBar) {
+        d->m_titleBar->markTabsMenuOutdated();
+    }
+}
+
 DockAutoHideContainer *DockPanel::autoHideContainer() const
 {
     Q_D(const DockPanel);

@@ -274,6 +274,12 @@ DockContainer *DockWidget::dockContainer() const
     }
 }
 
+DockFloatingContainer *DockWidget::dockFloatingContainer() const
+{
+    auto container = dockContainer();
+    return container ? container->floatingWidget() : nullptr;
+}
+
 DockPanel *DockWidget::dockPanel() const
 {
     Q_D(const DockWidget);
@@ -621,6 +627,47 @@ bool DockWidget::closeDockWidgetInternal(bool forceClose)
         toggleView(false);
     }
     return true;
+}
+
+bool DockWidget::event(QEvent *e)
+{
+    Q_D(DockWidget);
+    switch (e->type()) {
+    case QEvent::Hide:
+        Q_EMIT visibilityChanged(false);
+        break;
+
+    case QEvent::Show:
+        Q_EMIT visibilityChanged(geometry().right() >= 0 && geometry().bottom() >= 0);
+        break;
+
+    case QEvent::WindowTitleChange: {
+        const auto title = windowTitle();
+        if (d->m_tab) {
+            d->m_tab->setText(title);
+        }
+        if (d->m_sideTab) {
+            d->m_sideTab->setText(title);
+        }
+        if (d->m_toggleViewAction) {
+            d->m_toggleViewAction->setText(title);
+        }
+        if (d->m_panel) {
+            d->m_panel->markTitleBarMenuOutdated();   // update tabs menu
+        }
+
+        auto floatingWidget = dockFloatingContainer();
+        if (floatingWidget) {
+            floatingWidget->updateWindowTitle();
+        }
+        Q_EMIT titleChanged(title);
+    } break;
+
+    default:
+        break;
+    }
+
+    return QWidget::event(e);
 }
 
 QX_DOCK_END_NAMESPACE

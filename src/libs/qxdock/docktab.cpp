@@ -390,6 +390,12 @@ QString DockTab::text() const
     return d->m_label->text();
 }
 
+void DockTab::setText(const QString &title)
+{
+    Q_D(DockTab);
+    d->m_label->setText(title);
+}
+
 bool DockTab::isTitleElided() const
 {
     Q_D(const DockTab);

@@ -15,6 +15,7 @@ class DockPanel;
 class DockTab;
 class DockSideTab;
 class DockAutoHideContainer;
+class DockFloatingContainer;
 
 class DockWidgetPrivate;
 
@@ -73,6 +74,7 @@ public:
 
     DockWindow *dockWindow() const;
     DockContainer *dockContainer() const;
+    DockFloatingContainer *dockFloatingContainer() const;
     DockPanel *dockPanel() const;
 
     bool isFloating() const;
@@ -111,6 +113,8 @@ Q_SIGNALS:
     void closeRequested();
     void closed();
     void topLevelChanged(bool topLevel);
+    void titleChanged(const QString &title);
+    void visibilityChanged(bool visible);
 
 protected:
     void setDockWindow(DockWindow *window);
@@ -120,6 +124,9 @@ protected:
     void emitTopLevelChanged(bool floating);
     void toggleViewInternal(bool open);
     bool closeDockWidgetInternal(bool forceClose = false);
+
+protected:
+    virtual bool event(QEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockWidget)
