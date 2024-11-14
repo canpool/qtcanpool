@@ -33,6 +33,8 @@ public:
     Qt::Orientation orientation() const;
 
     DockSideTab *tab(int index) const;
+    int tabAt(const QPoint &pos) const;
+    int tabInsertIndexAt(const QPoint &pos) const;
     int indexOfTab(const DockSideTab &tab) const;
     int count() const;
 

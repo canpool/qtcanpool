@@ -198,6 +198,41 @@ DockSideTab *DockSideBar::tab(int index) const
     return qobject_cast<DockSideTab *>(d->m_tabsLayout->itemAt(index)->widget());
 }
 
+int DockSideBar::tabAt(const QPoint &pos) const
+{
+    if (!isVisible()) {
+        return Qx::DockTabInvalidIndex;
+    }
+
+    if (orientation() == Qt::Horizontal) {
+        if (pos.x() < tab(0)->geometry().x()) {
+            return -1;
+        }
+    } else {
+        if (pos.y() < tab(0)->geometry().y()) {
+            return -1;
+        }
+    }
+
+    for (int i = 0; i < count(); ++i) {
+        if (tab(i)->geometry().contains(pos)) {
+            return i;
+        }
+    }
+
+    return count();
+}
+
+int DockSideBar::tabInsertIndexAt(const QPoint &pos) const
+{
+    int index = tabAt(pos);
+    if (index == Qx::DockTabInvalidIndex) {
+        return Qx::DockTabDefaultInsertIndex;
+    } else {
+        return (index < 0) ? 0 : index;
+    }
+}
+
 int DockSideBar::indexOfTab(const DockSideTab &tab) const
 {
     for (auto i = 0; i < count(); i++) {

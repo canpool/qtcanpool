@@ -10,6 +10,9 @@
 #include "dockmanager.h"
 #include "dockoverlay.h"
 #include "dockcontainer.h"
+#include "dockfloatingcontainer.h"
+#include "dockautohidecontainer.h"
+#include "dockutils.h"
 
 #include <QApplication>
 #include <QKeyEvent>
@@ -29,6 +32,8 @@ public:
 
     void cancelDragging();
     void createFloatingWidget();
+    bool isContentFloatable() const;
+    bool isContentPinnable() const;
 
     DockWidget::DockWidgetFeatures contentFeatures() const;
 public:
@@ -87,6 +92,12 @@ void DockFloatingPreviewPrivate::updateDropOverlays(const QPoint &globalPos)
 
     int visibleDockpanels = topContainer->visibleDockPanelCount();
 
+    // Include the overlay widget we're dragging as a visible widget
+    auto panel = qobject_cast<DockPanel *>(m_content);
+    if (panel && panel->isAutoHide()) {
+        visibleDockpanels++;
+    }
+
     Qx::DockWidgetAreas allowedContainerAreas = (visibleDockpanels > 1) ? Qx::OuterDockAreas : Qx::AllDockAreas;
     auto topPanel = topContainer->dockPanelAt(globalPos);
     // If the dock container contains only one single panel, then we need
@@ -95,6 +106,10 @@ void DockFloatingPreviewPrivate::updateDropOverlays(const QPoint &globalPos)
     if (visibleDockpanels == 1 && topPanel) {
         allowedContainerAreas.setFlag(Qx::CenterDockWidgetArea,
                                       topPanel->allowedAreas().testFlag(Qx::CenterDockWidgetArea));
+    }
+
+    if (isContentPinnable()) {
+        allowedContainerAreas |= Qx::AutoHideDockAreas;
     }
 
     containerOverlay->setAllowedAreas(allowedContainerAreas);
@@ -117,6 +132,13 @@ void DockFloatingPreviewPrivate::updateDropOverlays(const QPoint &globalPos)
         containerOverlay->showOverlay(topContainer);
     } else {
         panelOverlay->hideOverlay();
+        // If there is only one single visible dock area in a container, then
+        // it does not make sense to show a dock overlay because the dock area
+        // would be removed and inserted at the same position. Only auto hide
+        // area is allowed
+        if (visibleDockpanels == 1) {
+            containerOverlay->setAllowedAreas(Qx::AutoHideDockAreas);
+        }
         containerOverlay->showOverlay(topContainer);
 
         if (topPanel == m_contentSourcePanel && Qx::InvalidDockWidgetArea == containerDropArea) {
@@ -148,6 +170,39 @@ void DockFloatingPreviewPrivate::cancelDragging()
 
 void DockFloatingPreviewPrivate::createFloatingWidget()
 {
+    Q_Q(DockFloatingPreview);
+    DockWidget *widget = qobject_cast<DockWidget *>(m_content);
+    DockPanel *panel = qobject_cast<DockPanel *>(m_content);
+
+    DockFloatingContainer *floatingWidget = nullptr;
+
+    if (widget && widget->features().testFlag(DockWidget::DockWidgetFloatable)) {
+        floatingWidget = new DockFloatingContainer(widget);
+    } else if (panel && panel->features().testFlag(DockWidget::DockWidgetFloatable)) {
+        floatingWidget = new DockFloatingContainer(panel);
+    }
+
+    if (floatingWidget) {
+        floatingWidget->setGeometry(q->geometry());
+        floatingWidget->show();
+        if (!DockManager::testConfigFlag(DockManager::DragPreviewHasWindowFrame)) {
+            QApplication::processEvents();
+            int FrameHeight = floatingWidget->frameGeometry().height() - floatingWidget->geometry().height();
+            QRect FixedGeometry = q->geometry();
+            FixedGeometry.adjust(0, FrameHeight, 0, 0);
+            floatingWidget->setGeometry(FixedGeometry);
+        }
+    }
+}
+
+bool DockFloatingPreviewPrivate::isContentFloatable() const
+{
+    return m_contentFeatures.testFlag(DockWidget::DockWidgetFloatable);
+}
+
+bool DockFloatingPreviewPrivate::isContentPinnable() const
+{
+    return m_contentFeatures.testFlag(DockWidget::DockWidgetPinnable);
 }
 
 DockWidget::DockWidgetFeatures DockFloatingPreviewPrivate::contentFeatures() const
@@ -237,6 +292,15 @@ void DockFloatingPreview::finishDragging()
     auto panelDropArea = d->m_window->panelOverlay()->visibleDropAreaUnderCursor();
     auto containerDropArea = d->m_window->containerOverlay()->visibleDropAreaUnderCursor();
 
+    bool validDropArea =
+        (panelDropArea != Qx::InvalidDockWidgetArea) || (containerDropArea != Qx::InvalidDockWidgetArea);
+
+    // Non floatable auto hide widgets should stay in its current auto hide
+    // state if they are dragged into a floating window
+    if (validDropArea || d->isContentFloatable()) {
+        cleanupAutoHideContainerWidget(containerDropArea);
+    }
+
     if (!d->m_dropContainer) {
         d->createFloatingWidget();
     } else if (panelDropArea != Qx::InvalidDockWidgetArea) {
@@ -267,6 +331,28 @@ void DockFloatingPreview::moveFloating()
     const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition;
     move(moveToPos);
     d->updateDropOverlays(QCursor::pos());
+}
+
+void DockFloatingPreview::cleanupAutoHideContainerWidget(Qx::DockWidgetArea containerDropArea)
+{
+    Q_D(DockFloatingPreview);
+    auto droppedDockWidget = qobject_cast<DockWidget *>(d->m_content);
+    auto droppedPanel = qobject_cast<DockPanel *>(d->m_content);
+    auto autoHideContainer =
+        droppedDockWidget ? droppedDockWidget->autoHideContainer() : droppedPanel->autoHideContainer();
+
+    if (!autoHideContainer) {
+        return;
+    }
+
+    // If the dropped widget is already an auto hide widget and if it is moved
+    // to a new side bar location in the same container, then we do not need
+    // to cleanup
+    if (internal::isSideBarArea(containerDropArea) && (d->m_dropContainer == autoHideContainer->dockContainer())) {
+        return;
+    }
+
+    autoHideContainer->cleanupAndDelete();
 }
 
 void DockFloatingPreview::onApplicationStateChanged(Qt::ApplicationState state)

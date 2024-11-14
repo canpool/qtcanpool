@@ -7,6 +7,10 @@
 #include "dockpanel.h"
 #include "docktitlebar.h"
 #include "docktabbar.h"
+#include "dockcontainer.h"
+#include "docksidebar.h"
+#include "dockmanager.h"
+#include "dockutils.h"
 
 #include <QPainter>
 #include <QGridLayout>
@@ -16,6 +20,8 @@
 QX_DOCK_BEGIN_NAMESPACE
 
 static const int s_invalidTabIndex = -2;
+static const int s_autoHideAreaWidth = 32;
+static const int s_autoHideAreaMouseZone = 8;
 
 class DockOverlayPrivate
 {
@@ -23,6 +29,9 @@ public:
     QX_DECLARE_PUBLIC(DockOverlay)
 public:
     DockOverlayPrivate();
+
+    int sideBarOverlaySize(Qx::DockSideBarArea area);
+    int sideBarMouseZone(Qx::DockSideBarArea area);
 public:
     DockOverlay::OverlayMode m_mode = DockOverlay::PanelOverlayMode;
     Qx::DockWidgetAreas m_allowedAreas = Qx::InvalidDockWidgetArea;
@@ -36,6 +45,28 @@ public:
 
 DockOverlayPrivate::DockOverlayPrivate()
 {
+}
+
+int DockOverlayPrivate::sideBarOverlaySize(Qx::DockSideBarArea area)
+{
+    auto container = qobject_cast<DockContainer *>(m_targetWidget.data());
+    auto sideBar = container->autoHideSideBar(area);
+    if (!sideBar || !sideBar->isVisibleTo(container)) {
+        return s_autoHideAreaWidth;
+    } else {
+        return (sideBar->orientation() == Qt::Horizontal) ? sideBar->height() : sideBar->width();
+    }
+}
+
+int DockOverlayPrivate::sideBarMouseZone(Qx::DockSideBarArea area)
+{
+    auto container = qobject_cast<DockContainer *>(m_targetWidget.data());
+    auto sideBar = container->autoHideSideBar(area);
+    if (!sideBar || !sideBar->isVisibleTo(container)) {
+        return s_autoHideAreaMouseZone;
+    } else {
+        return (sideBar->orientation() == Qt::Horizontal) ? sideBar->height() : sideBar->width();
+    }
 }
 
 DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
@@ -93,7 +124,32 @@ Qx::DockWidgetArea DockOverlay::dropAreaUnderCursor()
 
     auto cursorPos = QCursor::pos();
     auto panel = qobject_cast<DockPanel *>(d->m_targetWidget.data());
-    if (!panel) {
+    if (!panel && DockManager::autoHideConfigFlags().testFlag(DockManager::AutoHideFeatureEnabled)) {
+        auto Rect = rect();
+        const QPoint pos = mapFromGlobal(QCursor::pos());
+        if ((pos.x() < d->sideBarMouseZone(Qx::DockSideBarLeft)) && d->m_allowedAreas.testFlag(Qx::LeftAutoHideArea)) {
+            result = Qx::LeftAutoHideArea;
+        } else if (pos.x() > (Rect.width() - d->sideBarMouseZone(Qx::DockSideBarRight)) &&
+                   d->m_allowedAreas.testFlag(Qx::RightAutoHideArea)) {
+            result = Qx::RightAutoHideArea;
+        } else if (pos.y() < d->sideBarMouseZone(Qx::DockSideBarTop) &&
+                   d->m_allowedAreas.testFlag(Qx::TopAutoHideArea)) {
+            result = Qx::TopAutoHideArea;
+        } else if (pos.y() > (Rect.height() - d->sideBarMouseZone(Qx::DockSideBarBottom)) &&
+                   d->m_allowedAreas.testFlag(Qx::BottomAutoHideArea)) {
+            result = Qx::BottomAutoHideArea;
+        }
+
+        auto sideBarArea = internal::toSideBarArea(result);
+        if (sideBarArea != Qx::DockSideBarNone) {
+            auto container = qobject_cast<DockContainer *>(d->m_targetWidget.data());
+            auto sideBar = container->autoHideSideBar(sideBarArea);
+            if (sideBar->isVisible()) {
+                d->m_tabIndex = sideBar->tabInsertIndexAt(sideBar->mapFromGlobal(cursorPos));
+            }
+        }
+        return result;
+    } else if (!panel) {
         return result;
     }
 
@@ -213,6 +269,18 @@ void DockOverlay::paintEvent(QPaintEvent *e)
         break;
     case Qx::CenterDockWidgetArea:
         r = rect();
+        break;
+    case Qx::LeftAutoHideArea:
+        r.setWidth(d->sideBarOverlaySize(Qx::DockSideBarLeft));
+        break;
+    case Qx::RightAutoHideArea:
+        r.setX(r.width() - d->sideBarOverlaySize(Qx::DockSideBarRight));
+        break;
+    case Qx::TopAutoHideArea:
+        r.setHeight(d->sideBarOverlaySize(Qx::DockSideBarTop));
+        break;
+    case Qx::BottomAutoHideArea:
+        r.setY(r.height() - d->sideBarOverlaySize(Qx::DockSideBarBottom));
         break;
     default:
         return;

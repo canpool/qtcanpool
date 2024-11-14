@@ -67,15 +67,19 @@ void DockFloatingContainerPrivate::titleMouseReleaseEvent()
         if (!overlay->dropOverlayRect().isValid()) {
             overlay = m_window->panelOverlay();
         }
-
-        QRect rect = overlay->dropOverlayRect();
-        int frameWidth = (q->frameSize().width() - q->rect().width()) / 2;
-        int titleBarHeight = q->frameSize().height() - q->rect().height() - frameWidth;
-        if (rect.isValid()) {
-            QPoint topLeft = overlay->mapToGlobal(rect.topLeft());
-            topLeft.ry() += titleBarHeight;
-            q->setGeometry(QRect(topLeft, QSize(rect.width(), rect.height() - titleBarHeight)));
-            QApplication::processEvents();
+        // Do not resize if we drop into an autohide sidebar area to preserve
+        // the dock area size for the initial size of the auto hide area
+        if (!internal::isSideBarArea(overlay->dropAreaUnderCursor())) {
+            // Resize the floating widget to the size of the highlighted drop area rectangle
+            QRect rect = overlay->dropOverlayRect();
+            int frameWidth = (q->frameSize().width() - q->rect().width()) / 2;
+            int titleBarHeight = q->frameSize().height() - q->rect().height() - frameWidth;
+            if (rect.isValid()) {
+                QPoint topLeft = overlay->mapToGlobal(rect.topLeft());
+                topLeft.ry() += titleBarHeight;
+                q->setGeometry(QRect(topLeft, QSize(rect.width(), rect.height() - titleBarHeight)));
+                QApplication::processEvents();
+            }
         }
         m_dropContainer->dropFloatingWidget(q, QCursor::pos());
     }
@@ -278,6 +282,7 @@ void DockFloatingContainer::onDockAreasAddedOrRemoved()
 void QxDock::DockFloatingContainer::startFloating(const QPoint &dragStartMousePos, const QSize &size,
                                                   Qx::DockDragState dragState, QWidget *mouseEventHandler)
 {
+    Q_UNUSED(mouseEventHandler)
     Q_D(DockFloatingContainer);
     resize(size);
     d->m_dragStartMousePosition = dragStartMousePos;

@@ -18,6 +18,8 @@ class QX_DOCK_EXPORT DockSideTab : public DockButton
 {
     Q_OBJECT
 public:
+    using Super = DockButton;
+public:
     explicit DockSideTab(QWidget *parent = nullptr);
     virtual ~DockSideTab();
 
@@ -35,6 +37,10 @@ public:
 protected:
     void setSideBar(DockSideBar *sideBar);
     void removeFromSideBar();
+    virtual bool event(QEvent *e) override;
+    virtual void mousePressEvent(QMouseEvent *e) override;
+    virtual void mouseReleaseEvent(QMouseEvent *e) override;
+    virtual void mouseMoveEvent(QMouseEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockSideTab)

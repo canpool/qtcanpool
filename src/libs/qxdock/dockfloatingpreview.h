@@ -30,6 +30,8 @@ public:
     virtual void finishDragging() override;
     void moveFloating() override;
 
+    void cleanupAutoHideContainerWidget(Qx::DockWidgetArea containerDropArea);
+
 Q_SIGNALS:
     void draggingCanceled();
 
