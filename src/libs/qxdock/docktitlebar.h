@@ -63,6 +63,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
     virtual void contextMenuEvent(QContextMenuEvent *e) override;
+    virtual void resizeEvent(QResizeEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTitleBar)

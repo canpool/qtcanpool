@@ -640,4 +640,13 @@ void DockTitleBar::contextMenuEvent(QContextMenuEvent *e)
     menu.exec(e->globalPos());
 }
 
+void DockTitleBar::resizeEvent(QResizeEvent *e)
+{
+    Super::resizeEvent(e);
+    if (DockManager::testConfigFlag(DockManager::DockAreaDynamicTabsMenuButtonVisibility) &&
+        DockManager::testConfigFlag(DockManager::DisableTabTextEliding)) {
+        markTabsMenuOutdated();
+    }
+}
+
 QX_DOCK_END_NAMESPACE
