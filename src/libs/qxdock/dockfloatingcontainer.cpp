@@ -9,6 +9,7 @@
 #include "dockcontainer.h"
 #include "dockutils.h"
 #include "dockoverlay.h"
+#include "dockmanager.h"
 
 #include <QBoxLayout>
 #include <QEvent>
@@ -34,8 +35,15 @@ public:
     void titleMouseReleaseEvent();
     void updateDropOverlays(const QPoint &globalPos);
 
+    static bool testConfigFlag(DockManager::ConfigFlag flag);
+
     bool isState(Qx::DockDragState stateId) const;
     void setState(Qx::DockDragState stateId);
+
+    void setWindowTitle(const QString &text);
+    void reflectCurrentWidget(DockWidget *currentWidget);
+
+    static QString floatingContainersTitle();
 
     void handleEscapeKey();
 public:
@@ -159,6 +167,11 @@ void DockFloatingContainerPrivate::updateDropOverlays(const QPoint &globalPos)
     }
 }
 
+bool DockFloatingContainerPrivate::testConfigFlag(DockManager::ConfigFlag flag)
+{
+    return DockManager::testConfigFlag(flag);
+}
+
 bool DockFloatingContainerPrivate::isState(Qx::DockDragState stateId) const
 {
     return stateId == m_draggingState;
@@ -174,6 +187,36 @@ void DockFloatingContainerPrivate::setState(Qx::DockDragState stateId)
     if (Qx::DockDraggingFloatingWidget == m_draggingState) {
         qApp->postEvent(q, new QEvent((QEvent::Type)internal::FloatingWidgetDragStartEvent));
     }
+}
+
+void DockFloatingContainerPrivate::setWindowTitle(const QString &text)
+{
+    Q_Q(DockFloatingContainer);
+    q->setWindowTitle(text);
+}
+
+void DockFloatingContainerPrivate::reflectCurrentWidget(DockWidget *currentWidget)
+{
+    Q_Q(DockFloatingContainer);
+    // reflect currentWidget's title if configured to do so, otherwise display application name as window title
+    if (testConfigFlag(DockManager::FloatingContainerHasWidgetTitle)) {
+        setWindowTitle(currentWidget->windowTitle());
+    } else {
+        setWindowTitle(floatingContainersTitle());
+    }
+
+    // reflect currentWidget's icon if configured to do so, otherwise display application icon as window icon
+    QIcon CurrentWidgetIcon = currentWidget->icon();
+    if (testConfigFlag(DockManager::FloatingContainerHasWidgetIcon) && !CurrentWidgetIcon.isNull()) {
+        q->setWindowIcon(currentWidget->icon());
+    } else {
+        q->setWindowIcon(QApplication::windowIcon());
+    }
+}
+
+QString DockFloatingContainerPrivate::floatingContainersTitle()
+{
+    return DockManager::floatingContainersTitle();
 }
 
 void DockFloatingContainerPrivate::handleEscapeKey()
@@ -353,7 +396,16 @@ void DockFloatingContainer::updateWindowTitle()
     if (d->m_hiding) {
         return;
     }
-    // TODO
+    auto topLevelPanel = d->m_dockContainer->topLevelDockPanel();
+    if (topLevelPanel) {
+        DockWidget *currentWidget = topLevelPanel->currentDockWidget();
+        if (currentWidget) {
+            d->reflectCurrentWidget(currentWidget);
+        }
+    } else {
+        d->setWindowTitle(d->floatingContainersTitle());
+        setWindowIcon(QApplication::windowIcon());
+    }
 }
 
 void DockFloatingContainer::closeEvent(QCloseEvent *event)

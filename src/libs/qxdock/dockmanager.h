@@ -29,6 +29,8 @@ public:
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
         DockAreaDynamicTabsMenuButtonVisibility = 0x20000,
+        FloatingContainerHasWidgetTitle = 0x40000,
+        FloatingContainerHasWidgetIcon = 0x80000,
         HideSingleCentralWidgetTitleBar = 0x100000,
 
         FocusHighlighting = 0x200000,
@@ -43,7 +45,8 @@ public:
                                | DockAreaHasTabsMenuButton,
 
         DefaultBaseConfig = DefaultDockAreaButtons
-                          | ActiveTabHasCloseButton,
+                          | ActiveTabHasCloseButton
+                          | FloatingContainerHasWidgetTitle,
 
         DefaultOpaqueConfig = DefaultBaseConfig
                             | OpaqueSplitterResize
@@ -98,6 +101,9 @@ public:
         }
         widget->setFocus(Qt::OtherFocusReason);
     }
+
+    static QString floatingContainersTitle();
+    static void setFloatingContainersTitle(const QString &title);
 
 private:
     QX_DECLARE_PRIVATE(DockManager)

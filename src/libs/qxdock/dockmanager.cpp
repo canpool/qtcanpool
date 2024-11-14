@@ -11,7 +11,9 @@
 QX_DOCK_BEGIN_NAMESPACE
 
 static DockManager::ConfigFlags s_configFlags = DockManager::DefaultNonOpaqueConfig;
-static DockManager::AutoHideFlags s_autoHideConfigFlags; // auto hide feature is disabled by default
+static DockManager::AutoHideFlags s_autoHideConfigFlags;   // auto hide feature is disabled by default
+
+static QString s_floatingContainersTitle;
 
 class DockManagerPrivate
 {
@@ -86,5 +88,17 @@ int DockManager::startDragDistance()
     return QApplication::startDragDistance() * 1.5;
 }
 
+QString DockManager::floatingContainersTitle()
+{
+    if (s_floatingContainersTitle.isEmpty())
+        return qApp->applicationDisplayName();
+
+    return s_floatingContainersTitle;
+}
+
+void DockManager::setFloatingContainersTitle(const QString &title)
+{
+    s_floatingContainersTitle = title;
+}
 
 QX_DOCK_END_NAMESPACE
