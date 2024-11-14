@@ -237,6 +237,12 @@ int DockAutoHideContainer::tabIndex() const
     return d->m_sideTab->tabIndex();
 }
 
+DockWidget *DockAutoHideContainer::dockWidget() const
+{
+    Q_D(const DockAutoHideContainer);
+    return d->m_dockWidget;
+}
+
 void DockAutoHideContainer::addDockWidget(DockWidget *w)
 {
     Q_D(DockAutoHideContainer);
@@ -330,6 +336,22 @@ void DockAutoHideContainer::moveToNewSideBarArea(Qx::DockSideBarArea area, int t
     // an extremely stretched dock widget after insertion
     if (sideBar->orientation() != oldOrientation) {
         resetToInitialDockWidgetSize();
+    }
+}
+
+void DockAutoHideContainer::toggleView(bool enable)
+{
+    Q_D(DockAutoHideContainer);
+    if (enable) {
+        if (d->m_sideTab) {
+            d->m_sideTab->show();
+        }
+    } else {
+        if (d->m_sideTab) {
+            d->m_sideTab->hide();
+        }
+        hide();
+        qApp->removeEventFilter(this);
     }
 }
 

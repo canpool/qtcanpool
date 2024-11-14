@@ -45,6 +45,8 @@ public:
     QPoint m_dragStartMousePosition;
     Qx::DockDragState m_draggingState = Qx::DockDraggingInactive;
     QPoint m_dragStartPos;
+    bool m_hiding = false;
+    bool m_autoHideChildren = true;
 };
 
 DockFloatingContainerPrivate::DockFloatingContainerPrivate()
@@ -129,6 +131,9 @@ void DockFloatingContainerPrivate::updateDropOverlays(const QPoint &globalPos)
     if (visiblePanels == 1 && panel) {
         allowdContainerAreas.setFlag(Qx::CenterDockWidgetArea,
                                      panel->allowedAreas().testFlag(Qx::CenterDockWidgetArea));
+    }
+    if (m_dockContainer->features().testFlag(DockWidget::DockWidgetPinnable)) {
+        allowdContainerAreas |= Qx::AutoHideDockAreas;
     }
     containerOverlay->setAllowedAreas(allowdContainerAreas);
 
@@ -258,7 +263,10 @@ QList<DockWidget *> DockFloatingContainer::dockWidgets() const
 void DockFloatingContainer::finishDropOperation()
 {
     Q_D(DockFloatingContainer);
-
+    // Widget has been redocked, so it must be hidden right way.
+    // but AutoHideChildren must be set to false because "this" still contains
+    // dock widgets that shall not be toggled hidden.
+    d->m_autoHideChildren = false;
     hide();
     // The floating widget will be deleted now. Ensure, that the destructor
     // of the floating widget does not delete any dock areas that have been
@@ -339,6 +347,12 @@ void DockFloatingContainer::deleteContent()
 
 void DockFloatingContainer::updateWindowTitle()
 {
+    Q_D(DockFloatingContainer);
+    // If this floating container will be hidden, then updating the window
+    // tile is not required anymore
+    if (d->m_hiding) {
+        return;
+    }
     // TODO
 }
 
@@ -383,8 +397,18 @@ void DockFloatingContainer::closeEvent(QCloseEvent *event)
 void DockFloatingContainer::hideEvent(QHideEvent *event)
 {
     Super::hideEvent(event);
+    Q_D(DockFloatingContainer);
     if (event->spontaneous()) {
         return;
+    }
+    if (d->m_autoHideChildren) {
+        d->m_hiding = true;
+        for (auto panel : d->m_dockContainer->openedDockPanels()) {
+            for (auto w : panel->openedDockWidgets()) {
+                w->toggleView(false);
+            }
+        }
+        d->m_hiding = false;
     }
 }
 

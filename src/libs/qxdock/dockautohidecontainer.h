@@ -27,6 +27,7 @@ public:
     DockSideTab *autoHideTab() const;
     int tabIndex() const;
 
+    DockWidget *dockWidget() const;
     void addDockWidget(DockWidget *w);
 
     DockContainer *dockContainer() const;
@@ -38,6 +39,7 @@ public:
     void moveContentsToParent();
     void moveToNewSideBarArea(Qx::DockSideBarArea area, int tabIndex = -1);
 
+    void toggleView(bool enable);
     void collapseView(bool enable);
     void toggleCollapseState();
 

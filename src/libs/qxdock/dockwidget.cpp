@@ -33,6 +33,8 @@ public:
     void hideDockWidget();
     void updateParentDockPanel();
 
+    void closeAutoHideDockWidgetsIfNeeded();
+
     void setupScrollArea();
 public:
     DockWindow *m_window = nullptr;
@@ -76,7 +78,7 @@ void DockWidgetPrivate::showDockWidget()
         m_panel->toggleView(true);
         m_tab->show();
         auto splitter = m_panel->parentSplitter();
-        while (splitter && !splitter->isVisible()) {
+        while (splitter && !splitter->isVisible() && !m_panel->isAutoHide()) {
             splitter->show();
             splitter = internal::findParent<DockSplitter *>(splitter);
         }
@@ -86,6 +88,12 @@ void DockWidgetPrivate::showDockWidget()
             DockFloatingContainer *floatingWidget = internal::findParent<DockFloatingContainer *>(container);
             floatingWidget->show();
         }
+
+        // If this widget is pinned and there are no opened dock widgets, unpin the auto hide widget by moving it's
+        // contents to parent container While restoring state, opened dock widgets are not valid
+        if (container->openedDockWidgets().count() == 0 && m_panel->isAutoHide()) {
+            m_panel->autoHideContainer()->moveContentsToParent();
+        }
     }
 }
 
@@ -93,6 +101,8 @@ void DockWidgetPrivate::hideDockWidget()
 {
     m_tab->hide();
     updateParentDockPanel();
+
+    closeAutoHideDockWidgetsIfNeeded();
 
     if (m_features.testFlag(DockWidget::DeleteContentOnClose)) {
         if (m_scrollArea) {
@@ -119,6 +129,30 @@ void DockWidgetPrivate::updateParentDockPanel()
         m_panel->setCurrentDockWidget(nextDockWidget);
     } else {
         m_panel->hideAreaWithNoVisibleContent();
+    }
+}
+
+void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
+{
+    Q_Q(DockWidget);
+    auto container = q->dockContainer();
+    if (!container) {
+        return;
+    }
+
+    // If the dock container is the dock manager, or if it is not empty, then we
+    // don't need to do anything
+    if ((container == q->dockWindow()) || !container->openedDockWidgets().isEmpty()) {
+        return;
+    }
+
+    for (auto autoHideWidget : container->autoHideWidgets()) {
+        auto dockWidget = autoHideWidget->dockWidget();
+        if (dockWidget == q) {
+            continue;
+        }
+
+        dockWidget->toggleView(false);
     }
 }
 
@@ -406,8 +440,18 @@ void DockWidget::toggleView(bool open)
     if (a == d->m_toggleViewAction && !d->m_toggleViewAction->isCheckable()) {
         open = true;
     }
+    // If the dock widget state is different, then we really need to toggle
+    // the state. If we are in the right state, then we simply make this
+    // dock widget the current dock widget
+    auto container = this->autoHideContainer();
     if (d->m_closed != !open) {
         toggleViewInternal(open);
+    } else if (open && d->m_panel && !container) {
+        raise();
+    }
+
+    if (open && container) {
+        container->collapseView(false);
     }
 }
 
@@ -514,6 +558,10 @@ void DockWidget::toggleViewInternal(bool open)
     d->m_toggleViewAction->blockSignals(false);
     if (d->m_panel) {
         d->m_panel->toggleDockWidgetView(this, open);
+        if (d->m_panel->isAutoHide()) {
+            // FIXME: toggleView(true) will show sidTab before mainwindow
+            // d->m_panel->autoHideContainer()->toggleView(open);
+        }
     }
 
     if (open && topLevelDockWidgetBefore) {
@@ -557,6 +605,10 @@ bool DockWidget::closeDockWidgetInternal(bool forceClose)
             } else {
                 floatingWidget->hide();
             }
+        }
+
+        if (d->m_panel && d->m_panel->isAutoHide()) {
+            d->m_panel->autoHideContainer()->cleanupAndDelete();
         }
         deleteDockWidget();
         Q_EMIT closed();

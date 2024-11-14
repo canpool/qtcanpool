@@ -63,10 +63,13 @@ public:
         AutoHideButtonCheckable = 0x08,
         AutoHideSideBarsIconOnly = 0x10,
         AutoHideShowOnMouseOver = 0x20,
+        AutoHideCloseButtonCollapsesDock = 0x40,
         AutoHideHasCloseButton = 0x80,
+        AutoHideHasMinimizeButton = 0x100,
 
         DefaultAutoHideConfig = AutoHideFeatureEnabled
                               | DockAreaHasAutoHideButton
+                              | AutoHideHasMinimizeButton
     };
     Q_DECLARE_FLAGS(AutoHideFlags, AutoHideFlag)
 

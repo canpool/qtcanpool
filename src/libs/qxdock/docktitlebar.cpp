@@ -173,7 +173,8 @@ void DockTitleBarPrivate::createButtons()
     q->connect(m_autoHideButton, SIGNAL(clicked()), SLOT(onAutoHideButtonClicked()));
 
     // Minimize button
-    m_minimizeButton = new TitleBarButton(true, false, Qx::TitleBarButtonMinimize);
+    m_minimizeButton = new TitleBarButton(testAutoHideConfigFlag(DockManager::AutoHideHasMinimizeButton), false,
+                                          Qx::TitleBarButtonMinimize);
     m_minimizeButton->setObjectName("dockPanelMinimizeButton");
     m_minimizeButton->setAutoRaise(true);
     m_minimizeButton->setVisible(false);
@@ -437,7 +438,10 @@ void DockTitleBar::onCurrentTabChanged(int index)
 void DockTitleBar::onCloseButtonClicked()
 {
     Q_D(DockTitleBar);
-    if (d->testConfigFlag(DockManager::DockAreaCloseButtonClosesTab)) {
+    if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideCloseButtonCollapsesDock) &&
+        d->m_panel->autoHideContainer()) {
+        d->m_panel->autoHideContainer()->collapseView(true);
+    } else if (d->testConfigFlag(DockManager::DockAreaCloseButtonClosesTab)) {
         d->m_tabBar->closeTab(d->m_tabBar->currentIndex());
     } else {
         d->m_panel->closeArea();
@@ -521,7 +525,8 @@ void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
 
     // If this is the last dock area in a floating dock container it does not make
     // sense to move it to a new floating widget and leave this one empty
-    if (d->m_panel->dockContainer()->isFloating() && d->m_panel->dockContainer()->visibleDockPanelCount() == 1) {
+    if (d->m_panel->dockContainer()->isFloating() && d->m_panel->dockContainer()->visibleDockPanelCount() == 1 &&
+        !d->m_panel->isAutoHide()) {
         return;
     }
 
