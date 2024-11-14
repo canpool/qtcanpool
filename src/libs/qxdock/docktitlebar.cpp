@@ -44,6 +44,7 @@ void TitleBarButton::setShowInTitleBar(bool show)
 }
 
 SpacerWidget::SpacerWidget(QWidget *parent)
+    : QWidget(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setStyleSheet("border: none; background: none;");
