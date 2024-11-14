@@ -482,6 +482,11 @@ void DockPanel::closeArea()
     }
 }
 
+void DockPanel::closeOtherAreas()
+{
+    dockContainer()->closeOtherAreas(this);
+}
+
 void DockPanel::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
 {
     Q_D(DockPanel);

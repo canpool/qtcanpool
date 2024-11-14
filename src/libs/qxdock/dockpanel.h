@@ -75,6 +75,7 @@ public:
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void closeArea();
+    void closeOtherAreas();
     void setAutoHide(bool enable, Qx::DockSideBarArea area = Qx::DockSideBarNone, int tabIndex = -1);
     void toggleAutoHide(Qx::DockSideBarArea area = Qx::DockSideBarNone);
 

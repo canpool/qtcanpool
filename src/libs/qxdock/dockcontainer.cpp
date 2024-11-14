@@ -802,6 +802,27 @@ DockFloatingContainer *DockContainer::floatingWidget() const
     return internal::findParent<DockFloatingContainer *>(this);
 }
 
+void DockContainer::closeOtherAreas(DockPanel *keepOpenPanel)
+{
+    Q_D(DockContainer);
+    for (const auto &panel : d->m_panels) {
+        if (!panel || panel == keepOpenPanel) {
+            continue;
+        }
+
+        if (!panel->features(Qx::DockBitwiseAnd).testFlag(DockWidget::DockWidgetClosable)) {
+            continue;
+        }
+
+        // We do not close areas with widgets with custom close handling
+        if (panel->features(Qx::DockBitwiseOr).testFlag(DockWidget::CustomCloseHandling)) {
+            continue;
+        }
+
+        panel->closeArea();
+    }
+}
+
 DockSideBar *DockContainer::autoHideSideBar(Qx::DockSideBarArea area) const
 {
     Q_D(const DockContainer);

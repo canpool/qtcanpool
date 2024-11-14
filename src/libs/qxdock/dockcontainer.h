@@ -49,6 +49,8 @@ public:
 
     DockFloatingContainer *floatingWidget() const;
 
+    void closeOtherAreas(DockPanel *keepOpenPanel);
+
     DockSideBar *autoHideSideBar(Qx::DockSideBarArea area) const;
     QList<DockAutoHideContainer *> autoHideWidgets() const;
     QRect contentRect() const;

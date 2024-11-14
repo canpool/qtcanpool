@@ -70,6 +70,7 @@ public:
 
     static bool testConfigFlag(DockManager::ConfigFlag flag);
     static bool testAutoHideConfigFlag(DockManager::AutoHideFlag flag);
+    QAction *createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu);
 public:
     DockPanel *m_panel = nullptr;
     QBoxLayout *m_layout = nullptr;
@@ -258,6 +259,15 @@ bool DockTitleBarPrivate::testConfigFlag(DockManager::ConfigFlag flag)
 bool DockTitleBarPrivate::testAutoHideConfigFlag(DockManager::AutoHideFlag flag)
 {
     return DockManager::testAutoHideConfigFlag(flag);
+}
+
+QAction *DockTitleBarPrivate::createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu)
+{
+    Q_Q(DockTitleBar);
+    auto action = menu->addAction(title);
+    action->setProperty(internal::LocationProperty, area);
+    QObject::connect(action, &QAction::triggered, q, &DockTitleBar::onAutoHideToActionClicked);
+    return action;
 }
 
 DockTitleBar::DockTitleBar(DockPanel *parent)
@@ -476,6 +486,25 @@ void DockTitleBar::minimizeAutoHideContainer()
     }
 }
 
+void DockTitleBar::onAutoHideDockAreaActionClicked()
+{
+    Q_D(DockTitleBar);
+    d->m_panel->toggleAutoHide();
+}
+
+void DockTitleBar::onAutoHideToActionClicked()
+{
+    Q_D(DockTitleBar);
+    int location = sender()->property(internal::LocationProperty).toInt();
+    d->m_panel->toggleAutoHide((Qx::DockSideBarArea)location);
+}
+
+void DockTitleBar::onAutoHideCloseActionTriggered()
+{
+    Q_D(DockTitleBar);
+    d->m_panel->closeArea();
+}
+
 void DockTitleBar::mousePressEvent(QMouseEvent *e)
 {
     Q_D(DockTitleBar);
@@ -562,6 +591,53 @@ void DockTitleBar::mouseDoubleClickEvent(QMouseEvent *e)
     }
 
     d->makeAreaFloating(e->pos(), Qx::DockDraggingInactive);
+}
+
+void DockTitleBar::contextMenuEvent(QContextMenuEvent *e)
+{
+    Q_D(DockTitleBar);
+    e->accept();
+    if (d->isDraggingState(Qx::DockDraggingFloatingWidget)) {
+        return;
+    }
+
+    const bool isAutoHide = d->m_panel->isAutoHide();
+    const bool isTopLevelArea = d->m_panel->isTopLevelArea();
+    QAction *action;
+    QMenu menu(this);
+    if (!isTopLevelArea) {
+        action = menu.addAction(isAutoHide ? tr("Detach") : tr("Detach Group"), this, SLOT(onUndockButtonClicked()));
+        action->setEnabled(d->m_panel->features().testFlag(DockWidget::DockWidgetFloatable));
+        if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
+            action = menu.addAction(isAutoHide ? tr("Unpin (Dock)") : tr("Pin Group"), this,
+                                    SLOT(onAutoHideDockAreaActionClicked()));
+            auto areaIsPinnable = d->m_panel->features().testFlag(DockWidget::DockWidgetPinnable);
+            action->setEnabled(areaIsPinnable);
+
+            if (!isAutoHide) {
+                auto pinMenu = menu.addMenu(tr("Pin Group To..."));
+                pinMenu->setEnabled(areaIsPinnable);
+                d->createAutoHideToAction(tr("Top"), Qx::DockSideBarTop, pinMenu);
+                d->createAutoHideToAction(tr("Left"), Qx::DockSideBarLeft, pinMenu);
+                d->createAutoHideToAction(tr("Right"), Qx::DockSideBarRight, pinMenu);
+                d->createAutoHideToAction(tr("Bottom"), Qx::DockSideBarBottom, pinMenu);
+            }
+        }
+        menu.addSeparator();
+    }
+
+    if (isAutoHide) {
+        action = menu.addAction(tr("Minimize"), this, SLOT(minimizeAutoHideContainer()));
+        action = menu.addAction(tr("Close"), this, SLOT(onAutoHideCloseActionTriggered()));
+    } else {
+        action = menu.addAction(isAutoHide ? tr("Close") : tr("Close Group"), this, SLOT(onCloseButtonClicked()));
+    }
+
+    action->setEnabled(d->m_panel->features().testFlag(DockWidget::DockWidgetClosable));
+    if (!isAutoHide && !isTopLevelArea) {
+        action = menu.addAction(tr("Close Other Groups"), d->m_panel, SLOT(closeOtherAreas()));
+    }
+    menu.exec(e->globalPos());
 }
 
 QX_DOCK_END_NAMESPACE
