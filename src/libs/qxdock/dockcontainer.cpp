@@ -84,6 +84,7 @@ public:
     void moveToNewSection(QWidget *widget, DockPanel *targetPanel, Qx::DockWidgetArea area, int tabIndex = 0);
 
     void dropIntoAutoHideSideBar(DockFloatingContainer *floatingWidget, Qx::DockWidgetArea area);
+    void moveToAutoHideSideBar(QWidget *widget, Qx::DockWidgetArea area, int tabIndex = Qx::DockTabDefaultInsertIndex);
 public:
     DockWindow *m_window = nullptr;
     QGridLayout *m_layout = nullptr;
@@ -605,6 +606,33 @@ void DockContainerPrivate::dropIntoAutoHideSideBar(DockFloatingContainer *floati
     }
 }
 
+void DockContainerPrivate::moveToAutoHideSideBar(QWidget *widget, Qx::DockWidgetArea area, int tabIndex)
+{
+    Q_Q(DockContainer);
+    DockWidget *droppedWidget = qobject_cast<DockWidget *>(widget);
+    DockPanel *droppedPanel = qobject_cast<DockPanel *>(widget);
+    auto sideBarArea = internal::toSideBarArea(area);
+
+    if (droppedWidget) {
+        if (q == droppedWidget->dockContainer()) {
+            droppedWidget->setAutoHide(true, sideBarArea, tabIndex);
+        } else {
+            q->createAndSetupAutoHideContainer(sideBarArea, droppedWidget, tabIndex);
+        }
+    } else {
+        if (q == droppedPanel->dockContainer()) {
+            droppedPanel->setAutoHide(true, sideBarArea, tabIndex);
+        } else {
+            for (const auto dockWidget : droppedPanel->openedDockWidgets()) {
+                if (!dockWidget->features().testFlag(DockWidget::DockWidgetPinnable)) {
+                    continue;
+                }
+                q->createAndSetupAutoHideContainer(sideBarArea, dockWidget, tabIndex++);
+            }
+        }
+    }
+}
+
 /* DockContainer */
 DockContainer::DockContainer(DockWindow *window, QWidget *parent)
     : QWidget(parent)
@@ -1024,6 +1052,8 @@ void DockContainer::dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, Doc
     DockWidget *singleDockWidget = topLevelDockWidget();
     if (targetPanel) {
         d->moveToNewSection(widget, targetPanel, dropArea, tabIndex);
+    } else if (internal::isSideBarArea(dropArea)) {
+        d->moveToAutoHideSideBar(widget, dropArea, tabIndex);
     } else {
         d->moveToContainer(widget, dropArea);
     }
