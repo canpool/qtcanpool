@@ -73,6 +73,11 @@ void DockWidgetPrivate::showDockWidget()
     Q_Q(DockWidget);
 
     if (!m_panel) {
+        DockFloatingContainer *floatingWidget = new DockFloatingContainer(q);
+        // We use the size hint of the content widget to provide a good initial size
+        floatingWidget->resize(m_widget ? m_widget->sizeHint() : q->sizeHint());
+        m_tab->show();
+        floatingWidget->show();
     } else {
         m_panel->setCurrentDockWidget(q);
         m_panel->toggleView(true);
