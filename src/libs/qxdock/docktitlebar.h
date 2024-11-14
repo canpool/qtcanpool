@@ -58,6 +58,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void mouseMoveEvent(QMouseEvent *e) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTitleBar)

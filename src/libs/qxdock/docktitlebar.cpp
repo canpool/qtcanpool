@@ -548,4 +548,20 @@ void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
     return;
 }
 
+void DockTitleBar::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    Q_D(DockTitleBar);
+    // If this is the last dock area in a dock container it does not make
+    // sense to move it to a new floating widget and leave this one empty
+    if (d->m_panel->dockContainer()->isFloating() && d->m_panel->dockContainer()->dockPanelCount() == 1) {
+        return;
+    }
+
+    if (!d->m_panel->features().testFlag(DockWidget::DockWidgetFloatable)) {
+        return;
+    }
+
+    d->makeAreaFloating(e->pos(), Qx::DockDraggingInactive);
+}
+
 QX_DOCK_END_NAMESPACE
