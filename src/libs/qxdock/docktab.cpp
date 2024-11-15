@@ -274,7 +274,6 @@ DockTab::DockTab(DockWidget *w, QWidget *parent)
     d->m_dockWidget = w;
     d->init();
 
-    setAttribute(Qt::WA_StyledBackground, true);
     setAttribute(Qt::WA_NoMousePropagation, true);
     setFocusPolicy(Qt::NoFocus);
 }

@@ -18,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
-    DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
 
     DockWindow *dockwindow = new DockWindow();
 

@@ -208,8 +208,6 @@ DockAutoHideContainer::DockAutoHideContainer(DockWidget *w, Qx::DockSideBarArea 
     // setGeometry: Unable to set geometry XxY+Width+Height on QWidgetWindow/'WidgetClassWindow
     d->m_layout->addWidget(d->m_panel);
     d->m_layout->insertWidget(resizeHandleLayoutPosition(area), d->m_resizeHandle);
-
-    setAttribute(Qt::WA_StyledBackground, true);
 }
 
 DockAutoHideContainer::~DockAutoHideContainer()

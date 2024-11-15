@@ -83,7 +83,6 @@ DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
     setWindowTitle("DockOverlay");
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_TranslucentBackground);
-    setAttribute(Qt::WA_StyledBackground, true);
 
     d->m_cross->setVisible(false);
     setVisible(false);

@@ -335,7 +335,6 @@ DockTitleBar::DockTitleBar(DockPanel *parent)
     setObjectName("dockTitleBar");
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setFocusPolicy(Qt::NoFocus);
-    setAttribute(Qt::WA_StyledBackground, true);
 }
 
 DockTitleBar::~DockTitleBar()
