@@ -36,6 +36,7 @@ public:
 
     void closeAutoHideDockWidgetsIfNeeded();
 
+    void setupToolBar();
     void setupScrollArea();
     void setToolBarStyleFromDockWindow();
 public:
@@ -167,6 +168,18 @@ void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 
         dockWidget->toggleView(false);
     }
+}
+
+void DockWidgetPrivate::setupToolBar()
+{
+    Q_Q(DockWidget);
+    m_toolBar = new QToolBar(q);
+    m_toolBar->setObjectName("dockWidgetToolBar");
+    m_layout->insertWidget(0, m_toolBar);
+    m_toolBar->setIconSize(QSize(16, 16));
+    m_toolBar->toggleViewAction()->setEnabled(false);
+    m_toolBar->toggleViewAction()->setVisible(false);
+    q->connect(q, SIGNAL(topLevelChanged(bool)), SLOT(setToolbarFloatingStyle(bool)));
 }
 
 void DockWidgetPrivate::setupScrollArea()
@@ -430,6 +443,27 @@ void DockWidget::setIcon(const QIcon &icon)
     if (!d->m_toggleViewAction->isCheckable()) {
         d->m_toggleViewAction->setIcon(icon);
     }
+}
+
+QToolBar *DockWidget::toolBar() const
+{
+    if (!d_ptr->m_toolBar) {
+        d_ptr->setupToolBar();
+    }
+    return d_ptr->m_toolBar;
+}
+
+void DockWidget::setToolBar(QToolBar *toolBar)
+{
+    Q_D(DockWidget);
+    if (d->m_toolBar) {
+        delete d->m_toolBar;
+    }
+
+    d->m_toolBar = toolBar;
+    d->m_layout->insertWidget(0, d->m_toolBar);
+    this->connect(this, SIGNAL(topLevelChanged(bool)), SLOT(setToolBarFloatingStyle(bool)));
+    setToolBarFloatingStyle(isFloating());
 }
 
 DockWidget::ToolBarStyleSource DockWidget::toolBarStyleSource() const

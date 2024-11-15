@@ -7,6 +7,8 @@
 #include "qxdock_global.h"
 #include <QWidget>
 
+class QToolBar;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindow;
@@ -106,6 +108,9 @@ public:
 
     QIcon icon() const;
     void setIcon(const QIcon &icon);
+
+    QToolBar *toolBar() const;
+    void setToolBar(QToolBar *toolBar);
 
     ToolBarStyleSource toolBarStyleSource() const;
     void setToolBarStyleSource(ToolBarStyleSource source);
