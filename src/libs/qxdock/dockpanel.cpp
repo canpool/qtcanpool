@@ -1005,8 +1005,72 @@ void DockPanel::saveState(QXmlStreamWriter &s) const
 bool DockPanel::restoreState(DockStateReader &s, DockPanel *&createdWidget, bool testing,
                              DockContainer *parentContainer)
 {
-    // TODO
-    return false;
+    bool ok;
+
+    QString currentDockWidget = s.attributes().value("Current").toString();
+
+    auto dockWindow = parentContainer->dockWindow();
+    DockPanel *panel = nullptr;
+    if (!testing) {
+        panel = new DockPanel(dockWindow, parentContainer);
+        const auto allowedAreasAttribute = s.attributes().value("AllowedAreas");
+        if (!allowedAreasAttribute.isEmpty()) {
+            panel->setAllowedAreas((Qx::DockWidgetArea)allowedAreasAttribute.toInt(nullptr, 16));
+        }
+
+        const auto flagsAttribute = s.attributes().value("Flags");
+        if (!flagsAttribute.isEmpty()) {
+            panel->setDockAreaFlags((DockPanel::DockAreaFlags)flagsAttribute.toInt(nullptr, 16));
+        }
+    }
+
+    while (s.readNextStartElement()) {
+        if (s.name() != QLatin1String("Widget")) {
+            continue;
+        }
+
+        auto objectName = s.attributes().value("Name");
+        if (objectName.isEmpty()) {
+            return false;
+        }
+
+        bool closed = s.attributes().value("Closed").toInt(&ok);
+        if (!ok) {
+            return false;
+        }
+
+        s.skipCurrentElement();
+        DockWidget *dockWidget = dockWindow->findDockWidget(objectName.toString());
+        if (!dockWidget || testing) {
+            continue;
+        }
+        if (dockWidget->autoHideContainer()) {
+            dockWidget->autoHideContainer()->cleanupAndDelete();
+        }
+
+        // We hide the panel here to prevent the short display (the flashing)
+        // of the dock areas during application startup
+        panel->hide();
+        panel->addDockWidget(dockWidget);
+        dockWidget->setToggleViewActionChecked(!closed);
+        dockWidget->setClosedState(closed);
+        dockWidget->setProperty(internal::ClosedProperty, closed);
+        dockWidget->setProperty(internal::DirtyProperty, false);
+    }
+
+    if (testing) {
+        return true;
+    }
+
+    if (!panel->dockWidgetsCount()) {
+        delete panel;
+        panel = nullptr;
+    } else {
+        panel->setProperty("currentDockWidget", currentDockWidget);
+    }
+
+    createdWidget = panel;
+    return true;
 }
 
 QX_DOCK_END_NAMESPACE

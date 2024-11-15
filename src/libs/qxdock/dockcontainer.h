@@ -39,6 +39,7 @@ public:
     virtual unsigned int zOrderIndex() const;
     bool isInFrontOf(DockContainer *other) const;
 
+    DockWindow *dockWindow() const;
     DockPanel *dockPanelAt(const QPoint &globalPos) const;
     DockPanel *dockPanel(int index) const;
 

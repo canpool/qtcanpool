@@ -932,6 +932,12 @@ bool DockContainer::isInFrontOf(DockContainer *other) const
     return this->zOrderIndex() > other->zOrderIndex();
 }
 
+DockWindow *DockContainer::dockWindow() const
+{
+    Q_D(const DockContainer);
+    return d->m_window;
+}
+
 DockPanel *DockContainer::dockPanelAt(const QPoint &globalPos) const
 {
     Q_D(const DockContainer);
