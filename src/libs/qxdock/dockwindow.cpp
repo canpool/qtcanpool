@@ -47,7 +47,7 @@ public:
     void markDockWidgetsDirty();
 public:
     QList<DockContainer *> m_containers;
-    QList<DockWidget *> m_dockWidgets;
+    QMap<QString, DockWidget *> m_dockWidgetsMap;
     QList<QPointer<DockFloatingContainer>> m_floatingContainers;
     QVector<DockFloatingContainer *> m_uninitializedFloatingWidgets;
     DockWidget *m_centralWidget = nullptr;
@@ -226,7 +226,7 @@ void DockWindowPrivate::restoreDockWidgetsOpenState()
     // function are invisible to the user now and have no assigned dock area
     // They do not belong to any dock container, until the user toggles the
     // toggle view action the next time
-    for (auto dockWidget : m_dockWidgets) {
+    for (auto dockWidget : m_dockWidgetsMap) {
         if (dockWidget->property(internal::DirtyProperty).toBool()) {
             // If the DockWidget is an auto hide widget that is not assigned yet,
             // then we need to delete the auto hide container now
@@ -243,6 +243,7 @@ void DockWindowPrivate::restoreDockWidgetsOpenState()
 
 void DockWindowPrivate::restoreDockAreasIndices()
 {
+    Q_Q(DockWindow);
     // Now all dock areas are properly restored and we setup the index of
     // The dock areas because the previous toggleView() action has changed
     // the dock area index
@@ -252,7 +253,7 @@ void DockWindowPrivate::restoreDockAreasIndices()
             QString dockWidgetName = panel->property("currentDockWidget").toString();
             DockWidget *dockWidget = nullptr;
             if (!dockWidgetName.isEmpty()) {
-                // dockWidget = q->findDockWidget(dockWidgetName);
+                dockWidget = q->findDockWidget(dockWidgetName);
             }
 
             if (!dockWidget || dockWidget->isClosed()) {
@@ -299,7 +300,7 @@ void DockWindowPrivate::hideFloatingWidgets()
 
 void DockWindowPrivate::markDockWidgetsDirty()
 {
-    for (auto dockWidget : m_dockWidgets) {
+    for (auto dockWidget : m_dockWidgetsMap) {
         dockWidget->setProperty(internal::DirtyProperty, true);
     }
 }
@@ -364,7 +365,7 @@ DockWindow::~DockWindow()
 DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
 {
     Q_D(DockWindow);
-    d->m_dockWidgets.append(w);
+    d->m_dockWidgetsMap.insert(w->objectName(), w);
     DockContainer *container = p ? p->dockContainer() : this;
     if (container == nullptr) {
         container = this;
@@ -404,7 +405,7 @@ void DockWindow::removeDockWidget(DockWidget *w)
 {
     Q_D(DockWindow);
     Q_EMIT dockWidgetAboutToBeRemoved(w);
-    d->m_dockWidgets.removeAll(w);
+    d->m_dockWidgetsMap.remove(w->objectName());
     DockContainer::removeDockWidget(w);
     w->setDockWindow(nullptr);
     Q_EMIT dockWidgetRemoved(w);
@@ -412,7 +413,8 @@ void DockWindow::removeDockWidget(DockWidget *w)
 
 DockWidget *DockWindow::findDockWidget(const QString &objectName) const
 {
-    return nullptr;
+    Q_D(const DockWindow);
+    return d->m_dockWidgetsMap.value(objectName, nullptr);
 }
 
 DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w)
@@ -424,7 +426,7 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSide
                                                                     DockContainer *container)
 {
     Q_D(DockWindow);
-    d->m_dockWidgets.append(w);
+    d->m_dockWidgetsMap.insert(w->objectName(), w);
     auto c = container->createAndSetupAutoHideContainer(area, w);
     c->collapseView(true);
 
@@ -435,7 +437,7 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSide
 DockFloatingContainer *DockWindow::addDockWidgetFloating(DockWidget *w)
 {
     Q_D(DockWindow);
-    d->m_dockWidgets.append(w);
+    d->m_dockWidgetsMap.insert(w->objectName(), w);
     DockPanel *oldPanel = w->dockPanel();
     if (oldPanel) {
         oldPanel->removeDockWidget(w);
@@ -482,7 +484,7 @@ DockPanel *DockWindow::setCentralWidget(DockWidget *widget)
 
     // Setting a central widget is now allowed if there are already other
     // dock widgets.
-    if (!d->m_dockWidgets.isEmpty()) {
+    if (!d->m_dockWidgetsMap.isEmpty()) {
         qWarning("Setting a central widget not possible - the central widget need to be the first "
                  "dock widget that is added to the dock window.");
         return nullptr;
@@ -562,7 +564,7 @@ void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures f
     d->m_lockedDockWidgetFeatures = features;
     // Call the notifyFeaturesChanged() function for all dock widgets to update
     // the state of the close and detach buttons
-    for (auto w : d->m_dockWidgets) {
+    for (auto w : d->m_dockWidgetsMap) {
         w->notifyFeaturesChanged();
     }
 }
