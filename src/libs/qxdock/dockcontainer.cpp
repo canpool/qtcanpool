@@ -14,6 +14,7 @@
 #include "dockautohidecontainer.h"
 #include "docksidebar.h"
 #include "docksidetab.h"
+#include "dockstatereader.h"
 
 #include <QGridLayout>
 #include <QTimer>
@@ -1208,6 +1209,17 @@ void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
         }
         return;
     }
+}
+
+void DockContainer::saveState(QXmlStreamWriter &stream) const
+{
+    // TODO
+}
+
+bool DockContainer::restoreState(DockStateReader &stream, bool testing)
+{
+    // TODO
+    return false;
 }
 
 QX_DOCK_END_NAMESPACE

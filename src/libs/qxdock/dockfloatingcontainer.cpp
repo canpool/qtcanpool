@@ -10,6 +10,7 @@
 #include "dockutils.h"
 #include "dockoverlay.h"
 #include "dockmanager.h"
+#include "dockstatereader.h"
 
 #include <QBoxLayout>
 #include <QEvent>
@@ -435,6 +436,12 @@ void DockFloatingContainer::updateWindowTitle()
         d->setWindowTitle(d->floatingContainersTitle());
         setWindowIcon(QApplication::windowIcon());
     }
+}
+
+bool DockFloatingContainer::restoreState(DockStateReader &stream, bool testing)
+{
+    // TODO
+    return false;
 }
 
 void DockFloatingContainer::closeEvent(QCloseEvent *event)

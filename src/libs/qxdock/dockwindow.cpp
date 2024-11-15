@@ -11,10 +11,19 @@
 #include "dockfocuscontroller.h"
 #include "dockmanager.h"
 #include "dockautohidecontainer.h"
+#include "dockutils.h"
+#include "dockstatereader.h"
 
 #include <QWindowStateChangeEvent>
+#include <QXmlStreamWriter>
 
 QX_DOCK_BEGIN_NAMESPACE
+
+enum StateFileVersion {
+    InitialVersion = 0,         //!< InitialVersion
+    Version1 = 1,               //!< Version1
+    CurrentVersion = Version1   //!< CurrentVersion
+};
 
 class DockWindowPrivate
 {
@@ -25,6 +34,17 @@ public:
 
     void init();
     void loadStylesheet();
+
+    bool checkFormat(const QByteArray &state, int version);
+    bool restoreStateFromXml(const QByteArray &state, int version, bool testing = internal::Restore);
+    bool restoreContainer(int index, DockStateReader &stream, bool testing);
+    bool restoreState(const QByteArray &state, int version);
+
+    void restoreDockWidgetsOpenState();
+    void restoreDockAreasIndices();
+    void emitTopLevelEvents();
+    void hideFloatingWidgets();
+    void markDockWidgetsDirty();
 public:
     QList<DockContainer *> m_containers;
     QList<DockWidget *> m_dockWidgets;
@@ -40,6 +60,7 @@ public:
     QSize m_toolBarIconSizeDocked = QSize(16, 16);
     QSize m_toolBarIconSizeFloating = QSize(24, 24);
     DockWidget::DockWidgetFeatures m_lockedDockWidgetFeatures;
+    bool m_restoringState = false;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -73,6 +94,214 @@ void DockWindowPrivate::loadStylesheet()
     result = styleSheetStream.readAll();
     styleSheetFile.close();
     q->setStyleSheet(result);
+}
+
+bool DockWindowPrivate::checkFormat(const QByteArray &state, int version)
+{
+    return restoreStateFromXml(state, version, internal::RestoreTesting);
+}
+
+bool DockWindowPrivate::restoreStateFromXml(const QByteArray &state, int version, bool testing)
+{
+    Q_UNUSED(version);
+    Q_Q(DockWindow);
+
+    if (state.isEmpty()) {
+        return false;
+    }
+    DockStateReader s(state);
+    s.readNextStartElement();
+    if (s.name() != QLatin1String("QxDock")) {
+        return false;
+    }
+    bool ok;
+    int v = s.attributes().value("Version").toInt(&ok);
+    if (!ok || v > CurrentVersion) {
+        return false;
+    }
+    s.setFileVersion(v);
+
+    // Older files do not support UserVersion but we still want to load them so
+    // we first test if the attribute exists
+    if (!s.attributes().value("UserVersion").isEmpty()) {
+        v = s.attributes().value("UserVersion").toInt(&ok);
+        if (!ok || v != version) {
+            return false;
+        }
+    }
+
+    bool result = true;
+
+    if (m_centralWidget) {
+        const auto centralWidgetAttribute = s.attributes().value("CentralWidget");
+        // If we have a central widget but a state without central widget, then
+        // something is wrong.
+        if (centralWidgetAttribute.isEmpty()) {
+            qWarning() << "Dock manager has central widget but saved state does not have central widget.";
+            return false;
+        }
+
+        // If the object name of the central widget does not match the name of the
+        // saved central widget, the something is wrong
+        if (m_centralWidget->objectName() != centralWidgetAttribute.toString()) {
+            qWarning() << "Object name of central widget does not match name of central widget in saved state.";
+            return false;
+        }
+    }
+
+    int dockContainerCount = 0;
+    while (s.readNextStartElement()) {
+        if (s.name() == QLatin1String("Container")) {
+            result = restoreContainer(dockContainerCount, s, testing);
+            if (!result) {
+                break;
+            }
+            dockContainerCount++;
+        }
+    }
+
+    if (!testing) {
+        // Delete remaining empty floating widgets
+        int floatingWidgetIndex = dockContainerCount - 1;
+        for (int i = floatingWidgetIndex; i < m_floatingContainers.count(); ++i) {
+            DockFloatingContainer *floatingWidget = m_floatingContainers[i];
+            if (!floatingWidget)
+                continue;
+            q->removeDockContainer(floatingWidget->dockContainer());
+            floatingWidget->deleteLater();
+        }
+    }
+
+    return result;
+}
+
+bool DockWindowPrivate::restoreContainer(int index, DockStateReader &stream, bool testing)
+{
+    Q_Q(DockWindow);
+    if (testing) {
+        index = 0;
+    }
+
+    bool result = false;
+    if (index >= m_containers.count()) {
+        DockFloatingContainer *floatingWidget = new DockFloatingContainer(q);
+        result = floatingWidget->restoreState(stream, testing);
+    } else {
+        auto container = m_containers[index];
+        if (container->isFloating()) {
+            result = container->floatingWidget()->restoreState(stream, testing);
+        } else {
+            result = container->restoreState(stream, testing);
+        }
+    }
+
+    return result;
+}
+
+bool DockWindowPrivate::restoreState(const QByteArray &state, int version)
+{
+    QByteArray s = state.startsWith("<?xml") ? state : qUncompress(state);
+    if (!checkFormat(s, version)) {
+        return false;
+    }
+
+    // Hide updates of floating widgets from use
+    hideFloatingWidgets();
+    markDockWidgetsDirty();
+
+    if (!restoreStateFromXml(s, version)) {
+        return false;
+    }
+
+    restoreDockWidgetsOpenState();
+    restoreDockAreasIndices();
+    emitTopLevelEvents();
+
+    return true;
+}
+
+void DockWindowPrivate::restoreDockWidgetsOpenState()
+{
+    // All dock widgets, that have not been processed in the restore state
+    // function are invisible to the user now and have no assigned dock area
+    // They do not belong to any dock container, until the user toggles the
+    // toggle view action the next time
+    for (auto dockWidget : m_dockWidgets) {
+        if (dockWidget->property(internal::DirtyProperty).toBool()) {
+            // If the DockWidget is an auto hide widget that is not assigned yet,
+            // then we need to delete the auto hide container now
+            if (dockWidget->isAutoHide()) {
+                dockWidget->autoHideContainer()->cleanupAndDelete();
+            }
+            dockWidget->flagAsUnassigned();
+            Q_EMIT dockWidget->viewToggled(false);
+        } else {
+            dockWidget->toggleViewInternal(!dockWidget->property(internal::ClosedProperty).toBool());
+        }
+    }
+}
+
+void DockWindowPrivate::restoreDockAreasIndices()
+{
+    // Now all dock areas are properly restored and we setup the index of
+    // The dock areas because the previous toggleView() action has changed
+    // the dock area index
+    for (auto dockContainer : m_containers) {
+        for (int i = 0; i < dockContainer->dockPanelCount(); ++i) {
+            DockPanel *panel = dockContainer->dockPanel(i);
+            QString dockWidgetName = panel->property("currentDockWidget").toString();
+            DockWidget *dockWidget = nullptr;
+            if (!dockWidgetName.isEmpty()) {
+                // dockWidget = q->findDockWidget(dockWidgetName);
+            }
+
+            if (!dockWidget || dockWidget->isClosed()) {
+                int index = panel->indexOfFirstOpenDockWidget();
+                if (index < 0) {
+                    continue;
+                }
+                panel->setCurrentIndex(index);
+            } else {
+                panel->internalSetCurrentDockWidget(dockWidget);
+            }
+        }
+    }
+}
+
+void DockWindowPrivate::emitTopLevelEvents()
+{
+    // Finally we need to send the topLevelChanged() signals for all dock
+    // widgets if top level changed
+    for (auto dockContainer : m_containers) {
+        DockWidget *topLevelWidget = dockContainer->topLevelDockWidget();
+        if (topLevelWidget) {
+            topLevelWidget->emitTopLevelChanged(true);
+        } else {
+            for (int i = 0; i < dockContainer->dockPanelCount(); ++i) {
+                auto panel = dockContainer->dockPanel(i);
+                for (auto dockWidget : panel->dockWidgets()) {
+                    dockWidget->emitTopLevelChanged(false);
+                }
+            }
+        }
+    }
+}
+
+void DockWindowPrivate::hideFloatingWidgets()
+{
+    // Hide updates of floating widgets from user
+    for (auto floatingWidget : m_floatingContainers) {
+        if (floatingWidget) {
+            floatingWidget->hide();
+        }
+    }
+}
+
+void DockWindowPrivate::markDockWidgetsDirty()
+{
+    for (auto dockWidget : m_dockWidgets) {
+        dockWidget->setProperty(internal::DirtyProperty, true);
+    }
 }
 
 DockWindow::DockWindow(QWidget *parent)
@@ -331,6 +560,71 @@ void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures f
     for (auto w : d->m_dockWidgets) {
         w->notifyFeaturesChanged();
     }
+}
+
+QByteArray DockWindow::saveState(int version) const
+{
+    Q_D(const DockWindow);
+    QByteArray xmldata;
+    QXmlStreamWriter s(&xmldata);
+    auto configFlags = DockManager::configFlags();
+    s.setAutoFormatting(configFlags.testFlag(DockManager::XmlAutoFormattingEnabled));
+
+    s.writeStartDocument();
+    s.writeStartElement("QxDock");
+
+    s.writeAttribute("Version", QString::number(CurrentVersion));
+    s.writeAttribute("UserVersion", QString::number(version));
+    s.writeAttribute("Containers", QString::number(d->m_containers.count()));
+    if (d->m_centralWidget) {
+        s.writeAttribute("CentralWidget", d->m_centralWidget->objectName());
+    }
+    for (auto container : d->m_containers) {
+        container->saveState(s);
+    }
+
+    s.writeEndElement();
+    s.writeEndDocument();
+
+    return configFlags.testFlag(DockManager::XmlCompressionEnabled) ? qCompress(xmldata, 9) : xmldata;
+}
+
+bool DockWindow::restoreState(const QByteArray &state, int version)
+{
+    Q_D(DockWindow);
+    // Prevent multiple calls as long as state is not restore. This may
+    // happen, if QApplication::processEvents() is called somewhere
+    if (d->m_restoringState) {
+        return false;
+    }
+
+    // We hide the complete dock manager here. Restoring the state means
+    // that DockWidgets are removed from the DockArea internal stack layout
+    // which in turn  means, that each time a widget is removed the stack
+    // will show and raise the next available widget which in turn
+    // triggers show events for the dock widgets. To avoid this we hide the
+    // dock manager. Because there will be no processing of application
+    // events until this function is finished, the user will not see this
+    // hiding
+    bool isHidden = this->isHidden();
+    if (!isHidden) {
+        hide();
+    }
+    d->m_restoringState = true;
+    Q_EMIT restoringState();
+    bool result = d->restoreState(state, version);
+    d->m_restoringState = false;
+    if (!isHidden) {
+        show();
+    }
+    Q_EMIT stateRestored();
+    return result;
+}
+
+bool DockWindow::isRestoringState() const
+{
+    Q_D(const DockWindow);
+    return d->m_restoringState;
 }
 
 void DockWindow::setDockWidgetFocused(DockWidget *w)

@@ -167,6 +167,7 @@ protected:
     void emitTopLevelChanged(bool floating);
     void toggleViewInternal(bool open);
     bool closeDockWidgetInternal(bool forceClose = false);
+    void flagAsUnassigned();
 
 protected:
     virtual bool event(QEvent *e) override;
@@ -176,6 +177,7 @@ private:
     friend class DockContainer;
     friend class DockPanel;
     friend class DockWindow;
+    friend class DockWindowPrivate;
     friend class DockTitleBarPrivate;
     friend class DockFloatingContainer;
     friend class DockAutoHideContainer;

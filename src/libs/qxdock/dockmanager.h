@@ -19,6 +19,8 @@ public:
         DockAreaHasCloseButton = 0x0002,
         DockAreaCloseButtonClosesTab = 0x0004,
         OpaqueSplitterResize = 0x0008,
+        XmlAutoFormattingEnabled = 0x0010,
+        XmlCompressionEnabled = 0x0020,
         TabCloseButtonIsToolButton = 0x0040,
         AllTabsHaveCloseButton = 0x0080,
         RetainTabSizeWhenCloseButtonHidden = 0x0100,

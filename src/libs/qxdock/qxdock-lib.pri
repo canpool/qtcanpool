@@ -33,7 +33,8 @@ PUBLIC_HEADERS = \
     $$PWD/dockresizehandle.h
 
 PRIVATE_HEADERS = \
-    $$PWD/docktitlebar_p.h
+    $$PWD/docktitlebar_p.h \
+    $$PWD/dockstatereader.h
 
 HEADERS += \
     $$PUBLIC_HEADERS \
@@ -61,7 +62,8 @@ SOURCES += \
     $$PWD/docksidebar.cpp \
     $$PWD/docksidetab.cpp \
     $$PWD/dockautohidecontainer.cpp \
-    $$PWD/dockresizehandle.cpp
+    $$PWD/dockresizehandle.cpp \
+    $$PWD/dockstatereader.cpp
 
 RESOURCES += \
     $$PWD/res.qrc

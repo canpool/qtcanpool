@@ -77,6 +77,8 @@ public:
     void setAutoHideContainer(DockAutoHideContainer *container);
     bool isAutoHide() const;
 
+    int indexOfFirstOpenDockWidget() const;
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void closeArea();
@@ -121,6 +123,7 @@ private:
     friend class DockContainer;
     friend class DockAutoHideContainer;
     friend class DockWindow;
+    friend class DockWindowPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

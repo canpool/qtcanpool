@@ -966,4 +966,16 @@ bool DockPanel::isAutoHide() const
     return d->m_autoHideContainer != nullptr;
 }
 
+int DockPanel::indexOfFirstOpenDockWidget() const
+{
+    Q_D(const DockPanel);
+    for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
+        if (dockWidget(i) && !dockWidget(i)->isClosed()) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 QX_DOCK_END_NAMESPACE

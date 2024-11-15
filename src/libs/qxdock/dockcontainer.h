@@ -9,6 +9,7 @@
 #include "dockwidget.h"
 
 class QSplitter;
+class QXmlStreamWriter;
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -19,6 +20,7 @@ class DockFloatingContainer;
 class DockSplitter;
 class DockAutoHideContainer;
 class DockSideBar;
+class DockStateReader;
 
 class DockContainerPrivate;
 
@@ -82,6 +84,9 @@ protected:
     void removeAutoHideWidget(DockAutoHideContainer *autoHideWidget);
     void handleAutoHideWidgetEvent(QEvent *e, QWidget *w);
 
+    void saveState(QXmlStreamWriter &stream) const;
+    bool restoreState(DockStateReader &stream, bool testing);
+
 private:
     QX_DECLARE_PRIVATE(DockContainer)
     friend class DockPanel;
@@ -94,6 +99,7 @@ private:
     friend class DockAutoHideContainerPrivate;
     friend class DockSideBar;
     friend class DockSideTabPrivate;
+    friend class DockWindowPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

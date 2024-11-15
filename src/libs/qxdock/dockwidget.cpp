@@ -874,6 +874,16 @@ bool DockWidget::closeDockWidgetInternal(bool forceClose)
     return true;
 }
 
+void DockWidget::flagAsUnassigned()
+{
+    Q_D(DockWidget);
+    d->m_closed = true;
+    setParent(d->m_window);
+    setVisible(false);
+    setDockPanel(nullptr);
+    tab()->setParent(this);
+}
+
 bool DockWidget::event(QEvent *e)
 {
     Q_D(DockWidget);

@@ -55,12 +55,18 @@ public:
     DockWidget::DockWidgetFeatures globallyLockedDockWidgetFeatures() const;
     void lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures features = DockWidget::GloballyLockableFeatures);
 
+    QByteArray saveState(int version = 0) const;
+    bool restoreState(const QByteArray &state, int version = 0);
+    bool isRestoringState() const;
+
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
     void dockWidgetAboutToBeRemoved(DockWidget *w);
     void dockWidgetRemoved(DockWidget *w);
     void floatingWidgetCreated(DockFloatingContainer *floatingWidget);
     void focusedDockWidgetChanged(DockWidget *old, DockWidget *now);
+    void restoringState();
+    void stateRestored();
 
 public Q_SLOTS:
     void setDockWidgetFocused(DockWidget *w);

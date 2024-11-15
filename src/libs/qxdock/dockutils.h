@@ -20,6 +20,10 @@ namespace internal {
 extern const int FloatingWidgetDragStartEvent;
 extern const int DockedWidgetDragStartEvent;
 static const char *const LocationProperty = "Location";
+static const char *const DirtyProperty = "dirty";
+static const char *const ClosedProperty = "close";
+static const bool RestoreTesting = true;
+static const bool Restore = false;
 
 template <class T>
 void setFlag(T &flags, typename T::enum_type flag, bool on = true)

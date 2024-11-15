@@ -16,6 +16,7 @@ class DockWindow;
 class DockPanel;
 class DockWidget;
 class DockContainer;
+class DockStateReader;
 
 class DockFloatingContainerPrivate;
 
@@ -53,6 +54,8 @@ protected:
     void deleteContent();
     void updateWindowTitle();
 
+    bool restoreState(DockStateReader &stream, bool testing);
+
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
     virtual void hideEvent(QHideEvent *event) override;
@@ -75,6 +78,7 @@ private:
     friend class DockWindow;
     friend class DockWidget;
     friend class DockPanel;
+    friend class DockWindowPrivate;
 };
 
 QX_DOCK_END_NAMESPACE
