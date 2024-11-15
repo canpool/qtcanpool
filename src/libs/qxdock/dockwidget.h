@@ -25,6 +25,8 @@ class QX_DOCK_EXPORT DockWidget : public QWidget
 {
     Q_OBJECT
 public:
+    using Super = QWidget;
+
     enum DockWidgetFeature {
         DockWidgetClosable = 0x001,
         DockWidgetMovable = 0x002,
@@ -98,6 +100,10 @@ public:
     bool isFloating() const;
     bool isInFloatingContainer() const;
     bool isClosed() const;
+    bool isFullScreen() const;
+    bool isTabbed() const;
+    bool isCurrentTab() const;
+    bool isCentralWidget() const;
 
     QAction *toggleViewAction() const;
     void setToggleViewAction(QAction *action);
@@ -132,9 +138,14 @@ public:
 public Q_SLOTS:
     void toggleView(bool open = true);
     void deleteDockWidget();
+    void closeDockWidget();
     void requestCloseDockWidget();
     void setAutoHide(bool enable, Qx::DockSideBarArea area = Qx::DockSideBarNone, int tabIndex = -1);
     void toggleAutoHide(Qx::DockSideBarArea area = Qx::DockSideBarNone);
+    void setAsCurrentTab();
+    void raise();
+    void showFullScreen();
+    void showNormal();
 
 private Q_SLOTS:
     void setToolBarFloatingStyle(bool floating);

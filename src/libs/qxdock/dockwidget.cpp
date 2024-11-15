@@ -381,6 +381,32 @@ bool DockWidget::isClosed() const
     return d->m_closed;
 }
 
+bool DockWidget::isFullScreen() const
+{
+    if (isFloating()) {
+        return dockContainer()->floatingWidget()->isFullScreen();
+    } else {
+        return Super::isFullScreen();
+    }
+}
+
+bool DockWidget::isTabbed() const
+{
+    Q_D(const DockWidget);
+    return d->m_panel && (d->m_panel->openDockWidgetsCount() > 1);
+}
+
+bool DockWidget::isCurrentTab() const
+{
+    Q_D(const DockWidget);
+    return d->m_panel && (d->m_panel->currentDockWidget() == this);
+}
+
+bool DockWidget::isCentralWidget() const
+{
+    return dockWindow()->centralWidget() == this;
+}
+
 QAction *DockWidget::toggleViewAction() const
 {
     Q_D(const DockWidget);
@@ -618,6 +644,13 @@ void DockWidget::deleteDockWidget()
     if (d->m_window) {
         d->m_window->removeDockWidget(this);
     }
+    deleteLater();
+    d->m_closed = true;
+}
+
+void DockWidget::closeDockWidget()
+{
+    closeDockWidgetInternal(true);
 }
 
 void DockWidget::requestCloseDockWidget()
@@ -662,6 +695,46 @@ void DockWidget::toggleAutoHide(Qx::DockSideBarArea area)
     setAutoHide(!isAutoHide(), area);
 }
 
+void DockWidget::setAsCurrentTab()
+{
+    Q_D(DockWidget);
+    if (d->m_panel && !isClosed()) {
+        d->m_panel->setCurrentDockWidget(this);
+    }
+}
+
+void DockWidget::raise()
+{
+    if (isClosed()) {
+        return;
+    }
+
+    setAsCurrentTab();
+    if (isInFloatingContainer()) {
+        auto floatingWindow = window();
+        floatingWindow->raise();
+        floatingWindow->activateWindow();
+    }
+}
+
+void DockWidget::showFullScreen()
+{
+    if (isFloating()) {
+        dockContainer()->floatingWidget()->showFullScreen();
+    } else {
+        Super::showFullScreen();
+    }
+}
+
+void DockWidget::showNormal()
+{
+    if (isFloating()) {
+        dockContainer()->floatingWidget()->showNormal();
+    } else {
+        Super::showNormal();
+    }
+}
+
 void DockWidget::setToolBarFloatingStyle(bool floating)
 {
     Q_D(DockWidget);
@@ -697,6 +770,7 @@ void DockWidget::setDockPanel(DockPanel *panel)
 {
     Q_D(DockWidget);
     d->m_panel = panel;
+    d->m_toggleViewAction->setChecked(panel != nullptr && !this->isClosed());
     setParent(panel);
 }
 
