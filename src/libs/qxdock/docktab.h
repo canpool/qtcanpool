@@ -56,6 +56,7 @@ private Q_SLOTS:
     void detachDockWidget();
     void autoHideDockWidget();
     void onAutoHideToActionClicked();
+    void onDockWidgetFeaturesChanged();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
@@ -66,6 +67,7 @@ protected:
 
 private:
     QX_DECLARE_PRIVATE(DockTab)
+    friend class DockWidget;
 };
 
 QX_DOCK_END_NAMESPACE

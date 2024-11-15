@@ -49,6 +49,9 @@ public:
     QSize dockWidgetToolBarIconSize(DockWidget::State state) const;
     void setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget::State state);
 
+    DockWidget::DockWidgetFeatures globallyLockedDockWidgetFeatures() const;
+    void lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures features = DockWidget::GloballyLockableFeatures);
+
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
     void dockWidgetAboutToBeRemoved(DockWidget *w);

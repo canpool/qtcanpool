@@ -88,6 +88,7 @@ private Q_SLOTS:
     void updateAutoHideButtonCheckState();
     void updateTitleBarButtonsToolTips();
     Qx::DockSideBarArea calculateSideBarArea() const;
+    void onDockWidgetFeaturesChanged();
 
 Q_SIGNALS:
     void currentChanging(int index);

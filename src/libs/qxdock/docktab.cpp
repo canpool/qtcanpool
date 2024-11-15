@@ -443,6 +443,13 @@ void DockTab::onAutoHideToActionClicked()
     d->m_dockWidget->toggleAutoHide((Qx::DockSideBarArea)location);
 }
 
+void DockTab::onDockWidgetFeaturesChanged()
+{
+    Q_D(DockTab);
+    d->updateCloseButtonSizePolicy();
+    d->updateCloseButtonVisibility(isActive());
+}
+
 void DockTab::mousePressEvent(QMouseEvent *e)
 {
     Q_D(DockTab);

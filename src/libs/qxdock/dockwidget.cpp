@@ -290,7 +290,38 @@ DockTab *DockWidget::tab() const
 DockWidget::DockWidgetFeatures DockWidget::features() const
 {
     Q_D(const DockWidget);
-    return d->m_features;
+    if (d->m_window) {
+        return d->m_features & ~d->m_window->globallyLockedDockWidgetFeatures();
+    } else {
+        return d->m_features;
+    }
+}
+
+void DockWidget::setFeatures(DockWidgetFeatures features)
+{
+    Q_D(DockWidget);
+    if (d->m_features == features) {
+        return;
+    }
+    d->m_features = features;
+    notifyFeaturesChanged();
+}
+
+void DockWidget::setFeature(DockWidget::DockWidgetFeature flag, bool on)
+{
+    auto fs = features();
+    internal::setFlag(fs, flag, on);
+    setFeatures(fs);
+}
+
+void DockWidget::notifyFeaturesChanged()
+{
+    Q_D(DockWidget);
+    Q_EMIT featuresChanged(d->m_features);
+    d->m_tab->onDockWidgetFeaturesChanged();
+    if (DockPanel *panel = dockPanel()) {
+        panel->onDockWidgetFeaturesChanged();
+    }
 }
 
 DockWindow *DockWidget::dockWindow() const

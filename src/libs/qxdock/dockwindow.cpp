@@ -36,6 +36,7 @@ public:
     Qt::ToolButtonStyle m_toolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
     QSize m_toolBarIconSizeDocked = QSize(16, 16);
     QSize m_toolBarIconSizeFloating = QSize(24, 24);
+    DockWidget::DockWidgetFeatures m_lockedDockWidgetFeatures = DockWidget::DefaultDockWidgetFeatures;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -228,6 +229,24 @@ void DockWindow::setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget:
     } else {
         d->m_toolBarIconSizeDocked = iconSize;
     }
+}
+
+DockWidget::DockWidgetFeatures DockWindow::globallyLockedDockWidgetFeatures() const
+{
+    Q_D(const DockWindow);
+    return d->m_lockedDockWidgetFeatures;
+}
+
+void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures features)
+{
+    Q_D(DockWindow);
+    // Limit the features to DockWidget::GloballyLockableFeatures
+    features &= DockWidget::GloballyLockableFeatures;
+    if (d->m_lockedDockWidgetFeatures == features) {
+        return;
+    }
+
+    d->m_lockedDockWidgetFeatures = features;
 }
 
 void DockWindow::setDockWidgetFocused(DockWidget *w)

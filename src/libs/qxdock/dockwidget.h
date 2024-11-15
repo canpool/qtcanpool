@@ -40,6 +40,7 @@ public:
                                   | DockWidgetFocusable | DockWidgetPinnable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
+        GloballyLockableFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetPinnable,
         NoDockWidgetFeatures = 0x000
     };
     Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
@@ -85,6 +86,9 @@ public:
     DockTab *tab() const;
 
     DockWidgetFeatures features() const;
+    void setFeatures(DockWidgetFeatures features);
+    void setFeature(DockWidgetFeature flag, bool on);
+    void notifyFeaturesChanged();
 
     DockWindow *dockWindow() const;
     DockContainer *dockContainer() const;
@@ -142,6 +146,7 @@ Q_SIGNALS:
     void topLevelChanged(bool topLevel);
     void titleChanged(const QString &title);
     void visibilityChanged(bool visible);
+    void featuresChanged(DockWidget::DockWidgetFeatures features);
 
 protected:
     void setDockWindow(DockWindow *window);

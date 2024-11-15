@@ -692,6 +692,14 @@ Qx::DockSideBarArea DockPanel::calculateSideBarArea() const
     return sideBarArea;
 }
 
+void DockPanel::onDockWidgetFeaturesChanged()
+{
+    Q_D(DockPanel);
+    if (d->m_titleBar) {
+        d->updateTitleBarButtonStates();
+    }
+}
+
 void DockPanel::addDockWidget(DockWidget *w)
 {
     Q_D(DockPanel);
