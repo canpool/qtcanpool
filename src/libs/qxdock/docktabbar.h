@@ -57,6 +57,7 @@ Q_SIGNALS:
     void tabBarClicked(int index);
     void tabCloseRequested(int index);
     void tabMoved(int from, int to);
+    void removingTab(int index);
     void elidedChanged(bool elided);
 
 private:

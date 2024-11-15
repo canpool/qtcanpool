@@ -102,6 +102,50 @@ void DockTabBar::insertTab(int index, DockTab *tab)
 
 void DockTabBar::removeTab(DockTab *tab)
 {
+    if (!count()) {
+        return;
+    }
+    Q_D(DockTabBar);
+    int newCurrentIndex = currentIndex();
+    int removeIndex = d->m_tabsLayout->indexOf(tab);
+    if (count() == 1) {
+        newCurrentIndex = -1;
+    }
+    if (newCurrentIndex > removeIndex) {
+        newCurrentIndex--;
+    } else if (newCurrentIndex == removeIndex) {
+        newCurrentIndex = -1;
+        // First we walk to the right to search for the next visible tab
+        for (int i = (removeIndex + 1); i < count(); ++i) {
+            if (this->tab(i)->isVisibleTo(this)) {
+                newCurrentIndex = i - 1;
+                break;
+            }
+        }
+
+        // If there is no visible tab right to this tab then we walk to
+        // the left to find a visible tab
+        if (newCurrentIndex < 0) {
+            for (int i = (removeIndex - 1); i >= 0; --i) {
+                if (this->tab(i)->isVisibleTo(this)) {
+                    newCurrentIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    Q_EMIT removingTab(removeIndex);
+    d->m_tabsLayout->removeWidget(tab);
+    tab->disconnect(this);
+    tab->removeEventFilter(this);
+    if (newCurrentIndex != d->m_currentIndex) {
+        setCurrentIndex(newCurrentIndex);
+    } else {
+        d->updateTabs();
+    }
+
+    updateGeometry();
 }
 
 int DockTabBar::count() const
