@@ -18,6 +18,7 @@ class DockContainer;
 class DockSplitter;
 class DockTitleBar;
 class DockAutoHideContainer;
+class DockStateReader;
 
 class DockPanelPrivate;
 
@@ -81,6 +82,8 @@ public:
     int indexOfFirstOpenDockWidget() const;
 
     void saveState(QXmlStreamWriter &s) const;
+    static bool restoreState(DockStateReader &s, DockPanel *&createdWidget,
+                             bool testing, DockContainer *parentContainer);
 
 public Q_SLOTS:
     void setCurrentIndex(int index);

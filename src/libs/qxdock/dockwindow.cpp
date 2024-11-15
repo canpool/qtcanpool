@@ -410,6 +410,11 @@ void DockWindow::removeDockWidget(DockWidget *w)
     Q_EMIT dockWidgetRemoved(w);
 }
 
+DockWidget *DockWindow::findDockWidget(const QString &objectName) const
+{
+    return nullptr;
+}
+
 DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w)
 {
     return addAutoHideDockWidgetToContainer(area, w, this);

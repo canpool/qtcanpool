@@ -225,6 +225,17 @@ DockAutoHideContainer::~DockAutoHideContainer()
     QX_FINI_PRIVATE();
 }
 
+DockSideBar *DockAutoHideContainer::autoHideSideBar() const
+{
+    Q_D(const DockAutoHideContainer);
+    if (d->m_sideTab) {
+        return d->m_sideTab->sideBar();
+    } else {
+        auto container = this->dockContainer();
+        return container ? container->autoHideSideBar(d->m_sideTabBarArea) : nullptr;
+    }
+}
+
 DockSideTab *DockAutoHideContainer::autoHideTab() const
 {
     Q_D(const DockAutoHideContainer);

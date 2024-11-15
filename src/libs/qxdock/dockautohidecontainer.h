@@ -12,6 +12,7 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockWidget;
 class DockContainer;
 class DockSideTab;
+class DockSideBar;
 
 class DockAutoHideContainerPrivate;
 
@@ -25,6 +26,7 @@ public:
     DockAutoHideContainer(DockWidget *w, Qx::DockSideBarArea area, DockContainer *parent);
     virtual ~DockAutoHideContainer();
 
+    DockSideBar *autoHideSideBar() const;
     DockSideTab *autoHideTab() const;
     int tabIndex() const;
 

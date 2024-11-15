@@ -33,6 +33,7 @@ public:
     DockPanel *addDockWidgetTab(Qx::DockWidgetArea area, DockWidget *w);
     DockPanel *addDockWidgetTab(DockWidget *w, DockPanel *p, int index = 1);
     void removeDockWidget(DockWidget *w);
+    DockWidget *findDockWidget(const QString &objectName) const;
 
     DockAutoHideContainer *addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w);
     DockAutoHideContainer *addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area,

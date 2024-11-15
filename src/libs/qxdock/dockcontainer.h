@@ -85,7 +85,7 @@ protected:
     void handleAutoHideWidgetEvent(QEvent *e, QWidget *w);
 
     void saveState(QXmlStreamWriter &s) const;
-    bool restoreState(DockStateReader &stream, bool testing);
+    bool restoreState(DockStateReader &s, bool testing);
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)

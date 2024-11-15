@@ -16,6 +16,7 @@
 #include "docktitlebar_p.h"
 #include "docklabel.h"
 #include "dockfloatingcontainer.h"
+#include "dockstatereader.h"
 
 #include <QBoxLayout>
 
@@ -981,6 +982,13 @@ int DockPanel::indexOfFirstOpenDockWidget() const
 void DockPanel::saveState(QXmlStreamWriter &s) const
 {
     // TODO
+}
+
+bool DockPanel::restoreState(DockStateReader &s, DockPanel *&createdWidget, bool testing,
+                             DockContainer *parentContainer)
+{
+    // TODO
+    return false;
 }
 
 QX_DOCK_END_NAMESPACE
