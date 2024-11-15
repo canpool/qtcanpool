@@ -5,7 +5,7 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 #include "dockwidget.h"
 
 class QSplitter;
@@ -22,9 +22,11 @@ class DockSideBar;
 
 class DockContainerPrivate;
 
-class QX_DOCK_EXPORT DockContainer : public QWidget
+class QX_DOCK_EXPORT DockContainer : public QFrame
 {
     Q_OBJECT
+public:
+    using Super = QFrame;
 public:
     explicit DockContainer(DockWindow *window, QWidget *parent = nullptr);
     virtual ~DockContainer();

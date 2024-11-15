@@ -5,7 +5,7 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -14,13 +14,13 @@ class DockPanel;
 
 class DockTabPrivate;
 
-class QX_DOCK_EXPORT DockTab : public QWidget
+class QX_DOCK_EXPORT DockTab : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY(bool activeTab READ isActive WRITE setActive NOTIFY activeTabChanged)
     Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 public:
     explicit DockTab(DockWidget *w, QWidget *parent = nullptr);
     virtual ~DockTab();

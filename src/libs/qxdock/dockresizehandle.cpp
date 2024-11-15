@@ -119,7 +119,7 @@ void DockResizeHandlePrivate::doResizing(QMouseEvent *e, bool forceResize)
 }
 
 DockResizeHandle::DockResizeHandle(Qt::Edge handlePosition, QWidget *parent)
-    : QWidget(parent)
+    : Super(parent)
 {
     QX_INIT_PRIVATE(DockResizeHandle);
     Q_D(DockResizeHandle);

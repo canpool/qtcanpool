@@ -266,7 +266,7 @@ template <typename T> DockFloatingWidget *DockTabPrivate::createFloatingWidget(T
 
 /* DockTab */
 DockTab::DockTab(DockWidget *w, QWidget *parent)
-    : QWidget(parent)
+    : Super(parent)
 {
     QX_INIT_PRIVATE(DockTab);
 

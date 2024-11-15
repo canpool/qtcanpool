@@ -5,7 +5,7 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -15,12 +15,12 @@ class DockSideTab;
 
 class DockAutoHideContainerPrivate;
 
-class QX_DOCK_EXPORT DockAutoHideContainer : public QWidget
+class QX_DOCK_EXPORT DockAutoHideContainer : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY(int sideBarArea READ sideBarArea)
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 public:
     DockAutoHideContainer(DockWidget *w, Qx::DockSideBarArea area, DockContainer *parent);
     virtual ~DockAutoHideContainer();

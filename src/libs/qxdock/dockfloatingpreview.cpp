@@ -328,7 +328,8 @@ void DockFloatingPreview::finishDragging()
 void DockFloatingPreview::moveFloating()
 {
     Q_D(DockFloatingPreview);
-    const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition;
+    int borderSize = (frameSize().width() - size().width()) / 2;
+    const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition - QPoint(borderSize, 0);
     move(moveToPos);
     d->updateDropOverlays(QCursor::pos());
 }

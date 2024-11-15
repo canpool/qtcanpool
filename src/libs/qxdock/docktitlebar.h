@@ -5,7 +5,7 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 class QAbstractButton;
 
@@ -17,11 +17,11 @@ class DockLabel;
 
 class DockTitleBarPrivate;
 
-class QX_DOCK_EXPORT DockTitleBar : public QWidget
+class QX_DOCK_EXPORT DockTitleBar : public QFrame
 {
     Q_OBJECT
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 public:
     explicit DockTitleBar(DockPanel *parent = nullptr);
     virtual ~DockTitleBar();

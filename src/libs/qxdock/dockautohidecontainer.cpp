@@ -172,7 +172,7 @@ void DockAutoHideContainerPrivate::forwardEventToDockContainer(QEvent *event)
 }
 
 DockAutoHideContainer::DockAutoHideContainer(DockWidget *w, Qx::DockSideBarArea area, DockContainer *parent)
-    : QWidget(parent)
+    : Super(parent)
 {
     QX_INIT_PRIVATE(DockAutoHideContainer);
     Q_D(DockAutoHideContainer);

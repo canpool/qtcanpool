@@ -379,7 +379,8 @@ void DockFloatingContainer::finishDragging()
 void DockFloatingContainer::moveFloating()
 {
     Q_D(DockFloatingContainer);
-    const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition;
+    int borderSize = (frameSize().width() - size().width()) / 2;
+    const QPoint moveToPos = QCursor::pos() - d->m_dragStartMousePosition - QPoint(borderSize, 0);
     move(moveToPos);
 
     switch (d->m_draggingState) {
@@ -535,7 +536,7 @@ bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *messa
 bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
 #endif
 {
-    QWidget::nativeEvent(eventType, message, result);
+    Super::nativeEvent(eventType, message, result);
 
     Q_D(DockFloatingContainer);
     MSG *msg = static_cast<MSG *>(message);

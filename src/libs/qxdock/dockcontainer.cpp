@@ -635,7 +635,7 @@ void DockContainerPrivate::moveToAutoHideSideBar(QWidget *widget, Qx::DockWidget
 
 /* DockContainer */
 DockContainer::DockContainer(DockWindow *window, QWidget *parent)
-    : QWidget(parent)
+    : Super(parent)
 {
     Q_ASSERT(window);
     QX_INIT_PRIVATE(DockContainer);

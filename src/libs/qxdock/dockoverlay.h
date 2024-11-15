@@ -5,17 +5,17 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockOverlayPrivate;
 
-class QX_DOCK_EXPORT DockOverlay : public QWidget
+class QX_DOCK_EXPORT DockOverlay : public QFrame
 {
     Q_OBJECT
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 
     enum OverlayMode {
         PanelOverlayMode,

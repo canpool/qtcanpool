@@ -5,18 +5,18 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockResizeHandlePrivate;
 
-class QX_DOCK_EXPORT DockResizeHandle : public QWidget
+class QX_DOCK_EXPORT DockResizeHandle : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY(bool opaqueResize READ opaqueResize WRITE setOpaqueResize)
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 public:
     explicit DockResizeHandle(Qt::Edge handlePosition, QWidget *parent);
     virtual ~DockResizeHandle();

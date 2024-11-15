@@ -6,7 +6,7 @@
 
 #include "qxdock/dockwidget.h"
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 class QAbstractButton;
 
@@ -20,10 +20,12 @@ class DockAutoHideContainer;
 
 class DockPanelPrivate;
 
-class QX_DOCK_EXPORT DockPanel : public QWidget
+class QX_DOCK_EXPORT DockPanel : public QFrame
 {
     Q_OBJECT
 public:
+    using Super = QFrame;
+
     enum DockAreaFlag
     {
         HideSingleWidgetTitleBar = 0x0001,

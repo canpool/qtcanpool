@@ -70,7 +70,7 @@ int DockOverlayPrivate::sideBarMouseZone(Qx::DockSideBarArea area)
 }
 
 DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
-    : QWidget(parent)
+    : Super(parent)
 {
     QX_INIT_PRIVATE(DockOverlay);
     Q_D(DockOverlay);

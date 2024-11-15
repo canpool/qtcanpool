@@ -325,7 +325,7 @@ QAction *DockTitleBarPrivate::createAutoHideToAction(const QString &title, Qx::D
 }
 
 DockTitleBar::DockTitleBar(DockPanel *parent)
-    : QWidget(parent)
+    : Super(parent)
 {
     QX_INIT_PRIVATE(DockTitleBar);
     Q_D(DockTitleBar);

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "qxdock_global.h"
-#include <QWidget>
+#include <QFrame>
 
 class QToolBar;
 
@@ -21,11 +21,11 @@ class DockFloatingContainer;
 
 class DockWidgetPrivate;
 
-class QX_DOCK_EXPORT DockWidget : public QWidget
+class QX_DOCK_EXPORT DockWidget : public QFrame
 {
     Q_OBJECT
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 
     enum DockWidgetFeature {
         DockWidgetClosable = 0x001,

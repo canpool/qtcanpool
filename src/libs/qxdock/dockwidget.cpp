@@ -206,7 +206,7 @@ void DockWidgetPrivate::setToolBarStyleFromDockWindow()
 }
 
 DockWidget::DockWidget(const QString &title, QWidget *parent)
-    : QWidget{parent}
+    : Super{parent}
 {
     QX_INIT_PRIVATE(DockWidget);
 
@@ -912,7 +912,7 @@ bool DockWidget::event(QEvent *e)
         break;
     }
 
-    return QWidget::event(e);
+    return Super::event(e);
 }
 
 QX_DOCK_END_NAMESPACE
