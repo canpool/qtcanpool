@@ -224,6 +224,8 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
         setFocusPolicy(Qt::ClickFocus);
     }
+
+    setAttribute(Qt::WA_StyledBackground, true);
 }
 
 DockWidget::~DockWidget()

@@ -126,6 +126,7 @@ DockResizeHandle::DockResizeHandle(Qt::Edge handlePosition, QWidget *parent)
     d->m_target = parent;
     setMinResizeSize(48);
     setHandlePosition(handlePosition);
+    setAttribute(Qt::WA_StyledBackground, true);
 }
 
 DockResizeHandle::~DockResizeHandle()

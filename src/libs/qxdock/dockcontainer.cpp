@@ -649,6 +649,7 @@ DockContainer::DockContainer(DockWindow *window, QWidget *parent)
         createRootSplitter();
         createSideTabBarWidgets();
     }
+    setAttribute(Qt::WA_StyledBackground, true);
 }
 
 DockContainer::~DockContainer()
