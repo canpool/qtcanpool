@@ -38,6 +38,8 @@ public Q_SLOTS:
 private Q_SLOTS:
     void onApplicationFocusChanged(QWidget *focusedOld, QWidget *focusedNow);
     void onFocusWindowChanged(QWindow *focusWindow);
+    void onFocusedDockAreaViewToggled(bool open);
+    void onDockWidgetVisibilityChanged(bool visible);
 
 private:
     QX_DECLARE_PRIVATE(DockFocusController)

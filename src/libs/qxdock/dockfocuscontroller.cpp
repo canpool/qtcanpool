@@ -243,4 +243,32 @@ void DockFocusController::onFocusWindowChanged(QWindow *focusWindow)
     d->updateDockWidgetFocus(dockWidget);
 }
 
+void DockFocusController::onFocusedDockAreaViewToggled(bool open)
+{
+    Q_D(DockFocusController);
+
+    DockPanel *panel = qobject_cast<DockPanel *>(sender());
+    if (!panel || open) {
+        return;
+    }
+    auto container = panel->dockContainer();
+    auto openedDockPanels = container->openedDockPanels();
+    if (openedDockPanels.isEmpty()) {
+        return;
+    }
+
+    d->updateDockWidgetFocus(openedDockPanels[0]->currentDockWidget());
+}
+
+void DockFocusController::onDockWidgetVisibilityChanged(bool visible)
+{
+    Q_D(DockFocusController);
+    auto sender = this->sender();
+    auto dockWidget = qobject_cast<DockWidget *>(sender);
+    disconnect(sender, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisibilityChanged(bool)));
+    if (dockWidget && visible) {
+        Q_EMIT d->m_window->focusedDockWidgetChanged(d->m_oldFocusedDockWidget, dockWidget);
+    }
+}
+
 QX_DOCK_END_NAMESPACE
