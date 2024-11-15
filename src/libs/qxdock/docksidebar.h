@@ -19,6 +19,9 @@ class DockSideBarPrivate;
 class QX_DOCK_EXPORT DockSideBar : public QScrollArea
 {
     Q_OBJECT
+    Q_PROPERTY(int sideBarArea READ sideBarArea)
+    Q_PROPERTY(Qt::Orientation orientation READ orientation)
+    Q_PROPERTY(int spacing READ spacing WRITE setSpacing)
 public:
     explicit DockSideBar(DockContainer *parent, Qx::DockSideBarArea area);
     virtual ~DockSideBar();
@@ -42,6 +45,9 @@ public:
 
     virtual QSize minimumSizeHint() const override;
     virtual QSize sizeHint() const override;
+
+    int spacing() const;
+    void setSpacing(int spacing);
 
 protected:
     void insertTab(int index, DockSideTab *sideTab);

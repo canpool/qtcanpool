@@ -274,6 +274,18 @@ QSize DockSideBar::sizeHint() const
     return d->m_tabsContainerWidget->sizeHint();
 }
 
+int DockSideBar::spacing() const
+{
+    Q_D(const DockSideBar);
+    return d->m_tabsLayout->spacing();
+}
+
+void DockSideBar::setSpacing(int spacing)
+{
+    Q_D(DockSideBar);
+    d->m_tabsLayout->setSpacing(spacing);
+}
+
 void DockSideBar::insertTab(int index, DockSideTab *sideTab)
 {
     Q_D(DockSideBar);

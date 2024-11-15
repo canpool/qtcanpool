@@ -14,6 +14,7 @@ class DockResizeHandlePrivate;
 class QX_DOCK_EXPORT DockResizeHandle : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool opaqueResize READ opaqueResize WRITE setOpaqueResize)
 public:
     using Super = QWidget;
 public:

@@ -17,6 +17,10 @@ class DockSideTabPrivate;
 class QX_DOCK_EXPORT DockSideTab : public DockButton
 {
     Q_OBJECT
+    Q_PROPERTY(int sideBarArea READ sideBarArea)
+    Q_PROPERTY(Qt::Orientation orientation READ orientation)
+    Q_PROPERTY(bool activeTab READ isActiveTab)
+    Q_PROPERTY(bool iconOnly READ iconOnly)
 public:
     using Super = DockButton;
 public:
@@ -30,6 +34,10 @@ public:
     void setOrientation(Qt::Orientation orientation);
 
     void updateStyle();
+
+    Qx::DockSideBarArea sideBarArea() const;
+    bool isActiveTab() const;
+    bool iconOnly() const;
 
     DockSideBar *sideBar() const;
     int tabIndex() const;

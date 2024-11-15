@@ -18,6 +18,7 @@ class DockAutoHideContainerPrivate;
 class QX_DOCK_EXPORT DockAutoHideContainer : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(int sideBarArea READ sideBarArea)
 public:
     using Super = QWidget;
 public:

@@ -64,3 +64,4 @@ SOURCES += \
     $$PWD/dockresizehandle.cpp
 
 RESOURCES += \
+    $$PWD/res.qrc

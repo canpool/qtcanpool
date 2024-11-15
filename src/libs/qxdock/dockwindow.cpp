@@ -24,6 +24,7 @@ public:
     DockWindowPrivate();
 
     void init();
+    void loadStylesheet();
 public:
     QList<DockContainer *> m_containers;
     QList<DockWidget *> m_dockWidgets;
@@ -55,6 +56,23 @@ void DockWindowPrivate::init()
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
         m_focusController = new DockFocusController(q);
     }
+
+    loadStylesheet();
+}
+
+void DockWindowPrivate::loadStylesheet()
+{
+    Q_Q(DockWindow);
+    QString result;
+    QString fileName = ":/qxdock/res/stylesheets/";
+    fileName += DockManager::testConfigFlag(DockManager::FocusHighlighting) ? "focus_highlighting" : "default";
+    fileName += ".css";
+    QFile styleSheetFile(fileName);
+    styleSheetFile.open(QIODevice::ReadOnly);
+    QTextStream styleSheetStream(&styleSheetFile);
+    result = styleSheetStream.readAll();
+    styleSheetFile.close();
+    q->setStyleSheet(result);
 }
 
 DockWindow::DockWindow(QWidget *parent)

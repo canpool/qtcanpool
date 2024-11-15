@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/qxdock">
+        <file>res/images/close-button.svg</file>
+        <file>res/images/close-button-disabled.svg</file>
+        <file>res/images/close-button-focused.svg</file>
+        <file>res/images/detach-button.svg</file>
+        <file>res/images/detach-button-disabled.svg</file>
+        <file>res/images/maximize-button.svg</file>
+        <file>res/images/maximize-button-focused.svg</file>
+        <file>res/images/minimize-button.svg</file>
+        <file>res/images/minimize-button-focused.svg</file>
+        <file>res/images/pin-button.svg</file>
+        <file>res/images/pin-button-big.svg</file>
+        <file>res/images/restore-button.svg</file>
+        <file>res/images/restore-button-focused.svg</file>
+        <file>res/images/tabs-menu-button.svg</file>
+        <file>res/images/vs-pin-button.svg</file>
+        <file>res/images/vs-pin-button_45.svg</file>
+        <file>res/images/vs-pin-button-disabled.svg</file>
+        <file>res/images/vs-pin-button-pinned.svg</file>
+        <file>res/images/vs-pin-button-pinned-focused.svg</file>
+        <file>res/stylesheets/default.css</file>
+        <file>res/stylesheets/focus_highlighting.css</file>
+    </qresource>
+</RCC>

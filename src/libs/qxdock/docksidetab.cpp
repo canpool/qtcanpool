@@ -195,6 +195,31 @@ void DockSideTab::updateStyle()
     update();
 }
 
+Qx::DockSideBarArea DockSideTab::sideBarArea() const
+{
+    Q_D(const DockSideTab);
+    if (d->m_sideBar) {
+        return d->m_sideBar->sideBarArea();
+    }
+
+    return Qx::DockSideBarLeft;
+}
+
+bool DockSideTab::isActiveTab() const
+{
+    Q_D(const DockSideTab);
+    if (d->m_dockWidget && d->m_dockWidget->autoHideContainer()) {
+        return d->m_dockWidget->autoHideContainer()->isVisible();
+    }
+
+    return false;
+}
+
+bool DockSideTab::iconOnly() const
+{
+    return DockManager::testAutoHideConfigFlag(DockManager::AutoHideSideBarsIconOnly) && !icon().isNull();
+}
+
 DockSideBar *DockSideTab::sideBar() const
 {
     Q_D(const DockSideTab);

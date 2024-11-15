@@ -62,7 +62,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addDockWidgetTab(w, panel); // tabified with dock3
 
+    cw = createColorWidget(Qt::darkRed);
     w = createColorDockWidget(tr("auto1"), QColor(255, 100, 100));
+    w->setWidget(cw);
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addAutoHideDockWidget(Qx::DockSideBarLeft, w);
 

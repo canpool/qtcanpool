@@ -17,6 +17,8 @@ class DockTabPrivate;
 class QX_DOCK_EXPORT DockTab : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool activeTab READ isActive WRITE setActive NOTIFY activeTabChanged)
+    Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
 public:
     using Super = QWidget;
 public:

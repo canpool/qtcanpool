@@ -55,6 +55,12 @@ class DockOverlayCrossPrivate;
 class QX_DOCK_EXPORT DockOverlayCross : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(QString iconColors READ iconColors WRITE setIconColors)
+    Q_PROPERTY(QColor iconFrameColor READ iconColor WRITE setIconFrameColor)
+    Q_PROPERTY(QColor iconBackgroundColor READ iconColor WRITE setIconBackgroundColor)
+    Q_PROPERTY(QColor iconOverlayColor READ iconColor WRITE setIconOverlayColor)
+    Q_PROPERTY(QColor iconArrowColor READ iconColor WRITE setIconArrowColor)
+    Q_PROPERTY(QColor iconShadowColor READ iconColor WRITE setIconShadowColor)
 public:
     enum IconColor {
         FrameColor,

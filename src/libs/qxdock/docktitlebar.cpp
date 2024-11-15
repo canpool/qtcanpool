@@ -133,7 +133,7 @@ void DockTitleBarPrivate::createButtons()
     // Tabs menu button
     m_tabsMenuButton =
         new TitleBarButton(testConfigFlag(DockManager::DockAreaHasTabsMenuButton), false, Qx::TitleBarButtonTabsMenu);
-    m_tabsMenuButton->setObjectName("tabsMenuButton");
+    m_tabsMenuButton->setObjectName("dockTabsMenuButton");
     m_tabsMenuButton->setAutoRaise(true);
     m_tabsMenuButton->setPopupMode(QToolButton::InstantPopup);
     internal::setButtonIcon(m_tabsMenuButton, QStyle::SP_TitleBarUnshadeButton, Qx::DockPanelMenuIcon);
@@ -151,7 +151,7 @@ void DockTitleBarPrivate::createButtons()
     // Undock button
     m_undockButton =
         new TitleBarButton(testConfigFlag(DockManager::DockAreaHasUndockButton), true, Qx::TitleBarButtonUndock);
-    m_undockButton->setObjectName("detachGroupButton");
+    m_undockButton->setObjectName("dockDetachGroupButton");
     m_undockButton->setAutoRaise(true);
     internal::setToolTip(m_undockButton, QObject::tr("Detach Group"));
     internal::setButtonIcon(m_undockButton, QStyle::SP_TitleBarNormalButton, Qx::DockPanelUndockIcon);
@@ -203,7 +203,7 @@ void DockTitleBarPrivate::createAutoHideTitleLabel()
 {
     Q_Q(DockTitleBar);
     m_autoHideTitleLabel = new DockLabel("");
-    m_autoHideTitleLabel->setObjectName("autoHideTitleLabel");
+    m_autoHideTitleLabel->setObjectName("dockAutoHideTitleLabel");
     // At position 0 is the tab bar - insert behind tab bar
     m_layout->insertWidget(1, m_autoHideTitleLabel);
     m_autoHideTitleLabel->setVisible(false);   // Default hidden
