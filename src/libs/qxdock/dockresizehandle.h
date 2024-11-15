@@ -28,6 +28,8 @@ public:
 
     void setMinResizeSize(int minSize);
     void setMaxResizeSize(int maxSize);
+
+    Qt::Edge handlePostion() const;
     void setHandlePosition(Qt::Edge handlePosition);
 
     bool opaqueResize() const;

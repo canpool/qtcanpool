@@ -186,6 +186,12 @@ void DockResizeHandle::setMaxResizeSize(int maxSize)
     d->m_maxSize = maxSize;
 }
 
+Qt::Edge DockResizeHandle::handlePostion() const
+{
+    Q_D(const DockResizeHandle);
+    return d->m_handlePosition;
+}
+
 void DockResizeHandle::setHandlePosition(Qt::Edge handlePosition)
 {
     Q_D(DockResizeHandle);
