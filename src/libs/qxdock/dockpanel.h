@@ -115,6 +115,7 @@ private:
     friend class DockWidgetPrivate;
     friend class DockContainer;
     friend class DockAutoHideContainer;
+    friend class DockWindow;
 };
 
 QX_DOCK_END_NAMESPACE

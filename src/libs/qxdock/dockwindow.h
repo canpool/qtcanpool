@@ -38,6 +38,8 @@ public:
     DockAutoHideContainer *addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area,
                                                             DockWidget *w, DockContainer *container);
 
+    DockFloatingContainer *addDockWidgetFloating(DockWidget *w);
+
     const QList<DockContainer *> dockContainers() const;
 
     DockWidget *centralWidget() const;

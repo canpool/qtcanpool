@@ -27,8 +27,9 @@ public:
 public:
     QList<DockContainer *> m_containers;
     QList<DockWidget *> m_dockWidgets;
+    QList<QPointer<DockFloatingContainer>> m_floatingContainers;
+    QVector<DockFloatingContainer *> m_uninitializedFloatingWidgets;
     DockWidget *m_centralWidget = nullptr;
-    QList<QPointer<DockFloatingContainer> > m_floatingContainers;
     DockOverlay *m_containerOverlay;
     DockOverlay *m_panelOverlay;
     DockFocusController *m_focusController = nullptr;
@@ -70,7 +71,7 @@ DockWindow::DockWindow(QWidget *parent)
 DockWindow::~DockWindow()
 {
     Q_D(DockWindow);
-    std::vector<QPointer<DockPanel> > panels;
+    std::vector<QPointer<DockPanel>> panels;
     for (int i = 0; i < dockPanelCount(); ++i) {
         panels.push_back(dockPanel(i));
     }
@@ -78,7 +79,7 @@ DockWindow::~DockWindow()
         if (!p || p->dockWindow() != this) {
             continue;
         }
-        std::vector<QPointer<QWidget> > deleteWidgets;
+        std::vector<QPointer<QWidget>> deleteWidgets;
         for (auto w : p->dockWidgets()) {
             deleteWidgets.push_back(w);
         }
@@ -177,6 +178,27 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSide
 
     Q_EMIT dockWidgetAdded(w);
     return c;
+}
+
+DockFloatingContainer *DockWindow::addDockWidgetFloating(DockWidget *w)
+{
+    Q_D(DockWindow);
+    d->m_dockWidgets.append(w);
+    DockPanel *oldPanel = w->dockPanel();
+    if (oldPanel) {
+        oldPanel->removeDockWidget(w);
+    }
+
+    w->setDockWindow(this);
+    DockFloatingContainer *floatingWidget = new DockFloatingContainer(w);
+    floatingWidget->resize(w->size());
+    if (isVisible()) {
+        floatingWidget->show();
+    } else {
+        d->m_uninitializedFloatingWidgets.append(floatingWidget);
+    }
+    Q_EMIT dockWidgetAdded(w);
+    return floatingWidget;
 }
 
 const QList<DockContainer *> DockWindow::dockContainers() const
