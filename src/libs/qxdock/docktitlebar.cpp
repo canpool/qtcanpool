@@ -43,6 +43,59 @@ void TitleBarButton::setShowInTitleBar(bool show)
     }
 }
 
+DockTitleBar *TitleBarButton::titleBar() const
+{
+    return qobject_cast<DockTitleBar *>(parentWidget());
+}
+
+bool TitleBarButton::isInAutoHideArea() const
+{
+    auto titleBar = this->titleBar();
+    return titleBar && titleBar->isAutoHide();
+}
+
+void TitleBarButton::setVisible(bool visible)
+{
+    // 'visible' can stay 'true' if and only if this button is configured to generally visible:
+    visible = visible && this->m_showInTitleBar;
+
+    // 'visible' can stay 'true' unless: this button is configured to be invisible when it is disabled and it is
+    // currently disabled:
+    if (visible && m_hideWhenDisabled) {
+        visible = isEnabled();
+    }
+
+    Super::setVisible(visible);
+}
+
+bool TitleBarButton::event(QEvent *e)
+{
+    if (QEvent::EnabledChange != e->type() || !m_hideWhenDisabled || !m_showInTitleBar) {
+        return Super::event(e);
+    }
+
+    bool show = true;
+    if (isInAutoHideArea()) {
+        switch (m_id) {
+        case Qx::TitleBarButtonClose:
+            show = DockManager::testAutoHideConfigFlag(DockManager::AutoHideHasCloseButton);
+            break;
+        case Qx::TitleBarButtonUndock:
+            show = false;
+            break;
+        default:
+            break;
+        }
+    }
+
+    // force setVisible() call - Calling setVisible() directly here doesn't
+    // work well when button is expected to be shown first time
+    QMetaObject::invokeMethod(this, "setVisible", Qt::QueuedConnection,
+                              Q_ARG(bool, isEnabledTo(this->parentWidget()) & show));
+
+    return Super::event(e);
+}
+
 SpacerWidget::SpacerWidget(QWidget *parent)
     : QWidget(parent)
 {
@@ -406,6 +459,12 @@ QString DockTitleBar::titleBarButtonToolTip(Qx::DockTitleBarButton id) const
         break;
     }
     return QString();
+}
+
+bool DockTitleBar::isAutoHide() const
+{
+    Q_D(const DockTitleBar);
+    return d->m_panel && d->m_panel->isAutoHide();
 }
 
 void DockTitleBar::markTabsMenuOutdated()

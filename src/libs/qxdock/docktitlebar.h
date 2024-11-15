@@ -39,6 +39,8 @@ public:
     int indexOf(QWidget *widget) const;
     QString titleBarButtonToolTip(Qx::DockTitleBarButton id) const;
 
+    bool isAutoHide() const;
+
 Q_SIGNALS:
     void tabBarClicked(int index);
 

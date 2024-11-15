@@ -9,19 +9,31 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+class DockTitleBar;
+
 class TitleBarButton : public QToolButton
 {
     Q_OBJECT
+public:
+    using Super = QToolButton;
 public:
     TitleBarButton(bool showInTitleBar, bool hideWhenDisabled, Qx::DockTitleBarButton id,
                    QWidget *parent = nullptr);
 
     void setShowInTitleBar(bool show);
 
+    DockTitleBar *titleBar() const;
+    bool isInAutoHideArea() const;
+
+    virtual void setVisible(bool visible) override;
+
 public:
     Qx::DockTitleBarButton m_id;
     bool m_showInTitleBar = true;
     bool m_hideWhenDisabled = false;
+
+protected:
+    bool event(QEvent *e) override;
 };
 
 /**
