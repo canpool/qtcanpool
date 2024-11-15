@@ -10,6 +10,7 @@
 #include "docksidetab.h"
 
 #include <QBoxLayout>
+#include <QXmlStreamWriter>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -302,7 +303,23 @@ void DockSideBar::insertTab(int index, DockSideTab *sideTab)
 
 void DockSideBar::saveState(QXmlStreamWriter &s) const
 {
-    // TODO
+    if (!count()) {
+        return;
+    }
+
+    s.writeStartElement("SideBar");
+    s.writeAttribute("Area", QString::number(sideBarArea()));
+    s.writeAttribute("Tabs", QString::number(count()));
+
+    for (auto i = 0; i < count(); ++i) {
+        auto t = tab(i);
+        if (!t) {
+            continue;
+        }
+        t->dockWidget()->autoHideContainer()->saveState(s);
+    }
+
+    s.writeEndElement();
 }
 
 QX_DOCK_END_NAMESPACE

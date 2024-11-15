@@ -7,6 +7,8 @@
 #include "qxdock_global.h"
 #include <QFrame>
 
+class QXmlStreamWriter;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockWidget;
@@ -58,9 +60,11 @@ protected:
     virtual bool event(QEvent *event) override;
 
     void updateSize();
+    void saveState(QXmlStreamWriter &s) const;
 
 private:
     QX_DECLARE_PRIVATE(DockAutoHideContainer)
+    friend class DockSideBar;
 };
 
 QX_DOCK_END_NAMESPACE

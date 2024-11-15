@@ -16,6 +16,7 @@
 
 #include <QBoxLayout>
 #include <QApplication>
+#include <QXmlStreamWriter>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -556,6 +557,11 @@ void DockAutoHideContainer::updateSize()
     } else {
         d->m_sizeCache.setWidth(this->width());
     }
+}
+
+void DockAutoHideContainer::saveState(QXmlStreamWriter &s) const
+{
+    // TODO
 }
 
 QX_DOCK_END_NAMESPACE
