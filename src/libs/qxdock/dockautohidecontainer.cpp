@@ -561,7 +561,12 @@ void DockAutoHideContainer::updateSize()
 
 void DockAutoHideContainer::saveState(QXmlStreamWriter &s) const
 {
-    // TODO
+    Q_D(const DockAutoHideContainer);
+    s.writeStartElement("Widget");
+    s.writeAttribute("Name", d->m_dockWidget->objectName());
+    s.writeAttribute("Closed", QString::number(d->m_dockWidget->isClosed() ? 1 : 0));
+    s.writeAttribute("Size", QString::number(d->isHorizontal() ? d->m_size.height() : d->m_size.width()));
+    s.writeEndElement();
 }
 
 QX_DOCK_END_NAMESPACE
