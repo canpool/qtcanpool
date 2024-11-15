@@ -25,6 +25,8 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+static unsigned int s_zOrderCounterFloating = 0;
+
 class DockFloatingContainerPrivate
 {
 public:
@@ -55,6 +57,7 @@ public:
     QPoint m_dragStartPos;
     bool m_hiding = false;
     bool m_autoHideChildren = true;
+    unsigned int m_zOrderIndex = ++s_zOrderCounterFloating;
 };
 
 DockFloatingContainerPrivate::DockFloatingContainerPrivate()
@@ -467,6 +470,37 @@ void DockFloatingContainer::hideEvent(QHideEvent *event)
 void DockFloatingContainer::showEvent(QShowEvent *event)
 {
     Super::showEvent(event);
+}
+
+void DockFloatingContainer::changeEvent(QEvent *event)
+{
+    Super::changeEvent(event);
+    Q_D(DockFloatingContainer);
+    switch (event->type()) {
+    case QEvent::ActivationChange:
+        if (isActiveWindow()) {
+            d->m_zOrderIndex = ++s_zOrderCounterFloating;
+        }
+        break;
+
+    case QEvent::WindowStateChange:
+        // If the DockWindow is restored from minimized on Windows
+        // then the FloatingWidgets are not properly restored to maximized but
+        // to normal state.
+        // We simply check here, if the FloatingWidget was maximized before
+        // and if the DockWindow is just leaving the minimized state. In this
+        // case, we restore the maximized state of this floating widget
+        if (d->m_window->isLeavingMinimizedState()) {
+            QWindowStateChangeEvent *ev = static_cast<QWindowStateChangeEvent *>(event);
+            if (ev->oldState().testFlag(Qt::WindowMaximized)) {
+                this->showMaximized();
+            }
+        }
+        break;
+
+    default:
+        break;   // do nothing
+    }
 }
 
 #ifdef Q_OS_WIN

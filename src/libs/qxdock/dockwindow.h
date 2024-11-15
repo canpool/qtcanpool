@@ -23,6 +23,8 @@ class QX_DOCK_EXPORT DockWindow : public DockContainer
 {
     Q_OBJECT
 public:
+    using Super = DockContainer;
+public:
     explicit DockWindow(QWidget *parent = nullptr);
     ~DockWindow();
 
@@ -39,6 +41,8 @@ public:
 
     DockWidget *centralWidget() const;
 
+    bool isLeavingMinimizedState() const;
+
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
     void dockWidgetAboutToBeRemoved(DockWidget *w);
@@ -48,6 +52,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void setDockWidgetFocused(DockWidget *w);
+    void endLeavingMinimizedState();
 
 protected:
     void registerDockContainer(DockContainer *container);
@@ -62,6 +67,9 @@ protected:
     void notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget);
 
     DockFocusController *dockFocusController() const;
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockWindow)

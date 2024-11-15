@@ -12,6 +12,8 @@
 #include "dockmanager.h"
 #include "dockautohidecontainer.h"
 
+#include <QWindowStateChangeEvent>
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockWindowPrivate
@@ -29,6 +31,7 @@ public:
     DockOverlay *m_containerOverlay;
     DockOverlay *m_panelOverlay;
     DockFocusController *m_focusController = nullptr;
+    bool m_isLeavingMinimized = false;
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -155,8 +158,8 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea are
     return addAutoHideDockWidgetToContainer(area, w, this);
 }
 
-DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area,
-                                                                    DockWidget *w, DockContainer *container)
+DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area, DockWidget *w,
+                                                                    DockContainer *container)
 {
     auto c = container->createAndSetupAutoHideContainer(area, w);
     c->collapseView(true);
@@ -177,12 +180,25 @@ DockWidget *DockWindow::centralWidget() const
     return d->m_centralWidget;
 }
 
+bool DockWindow::isLeavingMinimizedState() const
+{
+    Q_D(const DockWindow);
+    return d->m_isLeavingMinimized;
+}
+
 void DockWindow::setDockWidgetFocused(DockWidget *w)
 {
     Q_D(DockWindow);
     if (d->m_focusController) {
         d->m_focusController->setDockWidgetFocused(w);
     }
+}
+
+void DockWindow::endLeavingMinimizedState()
+{
+    Q_D(DockWindow);
+    d->m_isLeavingMinimized = false;
+    this->activateWindow();
 }
 
 void DockWindow::registerDockContainer(DockContainer *container)
@@ -244,6 +260,19 @@ DockFocusController *DockWindow::dockFocusController() const
 {
     Q_D(const DockWindow);
     return d->m_focusController;
+}
+
+bool DockWindow::eventFilter(QObject *obj, QEvent *e)
+{
+    Q_D(DockWindow);
+    if (e->type() == QEvent::WindowStateChange) {
+        QWindowStateChangeEvent *ev = static_cast<QWindowStateChangeEvent *>(e);
+        if (ev->oldState().testFlag(Qt::WindowMinimized)) {
+            d->m_isLeavingMinimized = true;
+            QMetaObject::invokeMethod(this, "endLeavingMinimizedState", Qt::QueuedConnection);
+        }
+    }
+    return Super::eventFilter(obj, e);
 }
 
 QX_DOCK_END_NAMESPACE
