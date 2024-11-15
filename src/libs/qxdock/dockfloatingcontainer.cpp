@@ -440,8 +440,12 @@ void DockFloatingContainer::updateWindowTitle()
 
 bool DockFloatingContainer::restoreState(DockStateReader &stream, bool testing)
 {
-    // TODO
-    return false;
+    Q_D(DockFloatingContainer);
+    if (!d->m_dockContainer->restoreState(stream, testing)) {
+        return false;
+    }
+    onDockAreasAddedOrRemoved();
+    return true;
 }
 
 void DockFloatingContainer::closeEvent(QCloseEvent *event)
