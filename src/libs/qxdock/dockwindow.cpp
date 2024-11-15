@@ -35,6 +35,8 @@ public:
     void init();
     void loadStylesheet();
 
+    void mapDockWidget(DockWidget *w);
+
     bool checkFormat(const QByteArray &state, int version);
     bool restoreStateFromXml(const QByteArray &state, int version, bool testing = internal::Restore);
     bool restoreContainer(int index, DockStateReader &stream, bool testing);
@@ -94,6 +96,16 @@ void DockWindowPrivate::loadStylesheet()
     result = styleSheetStream.readAll();
     styleSheetFile.close();
     q->setStyleSheet(result);
+}
+
+void DockWindowPrivate::mapDockWidget(DockWidget *w)
+{
+    const QString &objname = w->objectName();
+    DockWidget *oldWidget = m_dockWidgetsMap.value(objname, nullptr);
+    if (oldWidget) {
+        qWarning() << QString("Object name (%1) of DockWidget already exists.").arg(objname);
+    }
+    m_dockWidgetsMap.insert(objname, w);
 }
 
 bool DockWindowPrivate::checkFormat(const QByteArray &state, int version)
@@ -365,7 +377,7 @@ DockWindow::~DockWindow()
 DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
 {
     Q_D(DockWindow);
-    d->m_dockWidgetsMap.insert(w->objectName(), w);
+    d->mapDockWidget(w);
     DockContainer *container = p ? p->dockContainer() : this;
     if (container == nullptr) {
         container = this;
@@ -426,7 +438,7 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSide
                                                                     DockContainer *container)
 {
     Q_D(DockWindow);
-    d->m_dockWidgetsMap.insert(w->objectName(), w);
+    d->mapDockWidget(w);
     auto c = container->createAndSetupAutoHideContainer(area, w);
     c->collapseView(true);
 
@@ -437,7 +449,7 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSide
 DockFloatingContainer *DockWindow::addDockWidgetFloating(DockWidget *w)
 {
     Q_D(DockWindow);
-    d->m_dockWidgetsMap.insert(w->objectName(), w);
+    d->mapDockWidget(w);
     DockPanel *oldPanel = w->dockPanel();
     if (oldPanel) {
         oldPanel->removeDockWidget(w);
