@@ -42,6 +42,7 @@ public:
 
 private Q_SLOTS:
     void onDockAreasAddedOrRemoved();
+    void onDockAreaCurrentChanged(int index);
 
 protected:
     virtual void startFloating(const QPoint &dragStartMousePos, const QSize &size,

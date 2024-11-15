@@ -52,6 +52,7 @@ public:
     QPointer<DockWindow> m_window;
     DockContainer *m_dockContainer;
     DockContainer *m_dropContainer = nullptr;
+    DockPanel *m_singlePanel = nullptr;
     QPoint m_dragStartMousePosition;
     Qx::DockDragState m_draggingState = Qx::DockDraggingInactive;
     QPoint m_dragStartPos;
@@ -332,7 +333,29 @@ void DockFloatingContainer::finishDropOperation()
 
 void DockFloatingContainer::onDockAreasAddedOrRemoved()
 {
-    // TODO
+    Q_D(DockFloatingContainer);
+    auto topLevelPanel = d->m_dockContainer->topLevelDockPanel();
+    if (topLevelPanel) {
+        d->m_singlePanel = topLevelPanel;
+        DockWidget *currentWidget = d->m_singlePanel->currentDockWidget();
+        d->reflectCurrentWidget(currentWidget);
+        connect(d->m_singlePanel, SIGNAL(currentChanged(int)), this, SLOT(onDockAreaCurrentChanged(int)));
+    } else {
+        if (d->m_singlePanel) {
+            disconnect(d->m_singlePanel, SIGNAL(currentChanged(int)), this, SLOT(onDockAreaCurrentChanged(int)));
+            d->m_singlePanel = nullptr;
+        }
+        d->setWindowTitle(d->floatingContainersTitle());
+        setWindowIcon(QApplication::windowIcon());
+    }
+}
+
+void DockFloatingContainer::onDockAreaCurrentChanged(int index)
+{
+    Q_UNUSED(index);
+    Q_D(DockFloatingContainer);
+    DockWidget *currentWidget = d->m_singlePanel->currentDockWidget();
+    d->reflectCurrentWidget(currentWidget);
 }
 
 void QxDock::DockFloatingContainer::startFloating(const QPoint &dragStartMousePos, const QSize &size,
