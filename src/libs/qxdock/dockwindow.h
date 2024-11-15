@@ -6,6 +6,7 @@
 
 #include "qxdock_global.h"
 #include "dockcontainer.h"
+#include "dockwidget.h"
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -42,6 +43,11 @@ public:
     DockWidget *centralWidget() const;
 
     bool isLeavingMinimizedState() const;
+
+    Qt::ToolButtonStyle dockWidgetToolBarStyle(DockWidget::State state) const;
+    void setDockWidgetToolBarStyle(Qt::ToolButtonStyle style, DockWidget::State state);
+    QSize dockWidgetToolBarIconSize(DockWidget::State state) const;
+    void setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget::State state);
 
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);

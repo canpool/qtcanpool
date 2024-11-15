@@ -32,6 +32,10 @@ public:
     DockOverlay *m_panelOverlay;
     DockFocusController *m_focusController = nullptr;
     bool m_isLeavingMinimized = false;
+    Qt::ToolButtonStyle m_toolBarStyleDocked = Qt::ToolButtonIconOnly;
+    Qt::ToolButtonStyle m_toolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
+    QSize m_toolBarIconSizeDocked = QSize(16, 16);
+    QSize m_toolBarIconSizeFloating = QSize(24, 24);
 };
 
 DockWindowPrivate::DockWindowPrivate()
@@ -184,6 +188,46 @@ bool DockWindow::isLeavingMinimizedState() const
 {
     Q_D(const DockWindow);
     return d->m_isLeavingMinimized;
+}
+
+Qt::ToolButtonStyle DockWindow::dockWidgetToolBarStyle(DockWidget::State state) const
+{
+    Q_D(const DockWindow);
+    if (DockWidget::StateFloating == state) {
+        return d->m_toolBarStyleFloating;
+    } else {
+        return d->m_toolBarStyleDocked;
+    }
+}
+
+void DockWindow::setDockWidgetToolBarStyle(Qt::ToolButtonStyle style, DockWidget::State state)
+{
+    Q_D(DockWindow);
+    if (DockWidget::StateFloating == state) {
+        d->m_toolBarStyleFloating = style;
+    } else {
+        d->m_toolBarStyleDocked = style;
+    }
+}
+
+QSize DockWindow::dockWidgetToolBarIconSize(DockWidget::State state) const
+{
+    Q_D(const DockWindow);
+    if (DockWidget::StateFloating == state) {
+        return d->m_toolBarIconSizeFloating;
+    } else {
+        return d->m_toolBarIconSizeDocked;
+    }
+}
+
+void DockWindow::setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget::State state)
+{
+    Q_D(DockWindow);
+    if (DockWidget::StateFloating == state) {
+        d->m_toolBarIconSizeFloating = iconSize;
+    } else {
+        d->m_toolBarIconSizeDocked = iconSize;
+    }
 }
 
 void DockWindow::setDockWidgetFocused(DockWidget *w)

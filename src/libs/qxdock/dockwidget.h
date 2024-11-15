@@ -60,6 +60,18 @@ public:
         ForceNoScrollArea
     };
 
+    enum State {
+        StateHidden,
+        StateDocked,
+        StateFloating
+    };
+
+    enum ToolBarStyleSource
+    {
+        ToolBarStyleFromDockWindow,
+        ToolBarStyleFromDockWidget
+    };
+
 public:
     explicit DockWidget(const QString &title, QWidget *parent = nullptr);
     ~DockWidget();
@@ -95,6 +107,13 @@ public:
     QIcon icon() const;
     void setIcon(const QIcon &icon);
 
+    ToolBarStyleSource toolBarStyleSource() const;
+    void setToolBarStyleSource(ToolBarStyleSource source);
+    Qt::ToolButtonStyle toolBarStyle(State state) const;
+    void setToolBarStyle(Qt::ToolButtonStyle style, State state);
+    QSize toolBarIconSize(State state) const;
+    void setToolBarIconSize(const QSize &iconSize, State state);
+
     DockSideTab *sideTab() const;
     void setSideTab(DockSideTab *sideTab);
     bool isAutoHide() const;
@@ -107,6 +126,9 @@ public Q_SLOTS:
     void requestCloseDockWidget();
     void setAutoHide(bool enable, Qx::DockSideBarArea area = Qx::DockSideBarNone, int tabIndex = -1);
     void toggleAutoHide(Qx::DockSideBarArea area = Qx::DockSideBarNone);
+
+private Q_SLOTS:
+    void setToolBarFloatingStyle(bool floating);
 
 Q_SIGNALS:
     void viewToggled(bool open);

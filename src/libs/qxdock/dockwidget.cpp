@@ -19,6 +19,7 @@
 #include <QAction>
 #include <QAbstractScrollArea>
 #include <QScrollArea>
+#include <QToolBar>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -36,6 +37,7 @@ public:
     void closeAutoHideDockWidgetsIfNeeded();
 
     void setupScrollArea();
+    void setToolBarStyleFromDockWindow();
 public:
     DockWindow *m_window = nullptr;
     QPointer<DockPanel> m_panel = nullptr;
@@ -50,6 +52,12 @@ public:
     QWidget *m_widget = nullptr;
     QScrollArea *m_scrollArea = nullptr;
     QPointer<DockSideTab> m_sideTab;
+    DockWidget::ToolBarStyleSource m_toolBarStyleSource = DockWidget::ToolBarStyleFromDockWindow;
+    Qt::ToolButtonStyle m_toolBarStyleDocked = Qt::ToolButtonIconOnly;
+    Qt::ToolButtonStyle m_toolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
+    QSize m_toolBarIconSizeDocked = QSize(16, 16);
+    QSize m_toolBarIconSizeFloating = QSize(24, 24);
+    QToolBar *m_toolBar = nullptr;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -168,6 +176,20 @@ void DockWidgetPrivate::setupScrollArea()
     m_scrollArea->setObjectName("dockWidgetScrollArea");
     m_scrollArea->setWidgetResizable(true);
     m_layout->addWidget(m_scrollArea);
+}
+
+void DockWidgetPrivate::setToolBarStyleFromDockWindow()
+{
+    Q_Q(DockWidget);
+    if (!m_window) {
+        return;
+    }
+    auto state = DockWidget::StateDocked;
+    q->setToolBarIconSize(m_window->dockWidgetToolBarIconSize(state), state);
+    q->setToolBarStyle(m_window->dockWidgetToolBarStyle(state), state);
+    state = DockWidget::StateFloating;
+    q->setToolBarIconSize(m_window->dockWidgetToolBarIconSize(state), state);
+    q->setToolBarStyle(m_window->dockWidgetToolBarStyle(state), state);
 }
 
 DockWidget::DockWidget(const QString &title, QWidget *parent)
@@ -410,6 +432,65 @@ void DockWidget::setIcon(const QIcon &icon)
     }
 }
 
+DockWidget::ToolBarStyleSource DockWidget::toolBarStyleSource() const
+{
+    Q_D(const DockWidget);
+    return d->m_toolBarStyleSource;
+}
+
+void DockWidget::setToolBarStyleSource(DockWidget::ToolBarStyleSource source)
+{
+    Q_D(DockWidget);
+    d->m_toolBarStyleSource = source;
+    if (ToolBarStyleFromDockWindow == d->m_toolBarStyleSource) {
+        d->setToolBarStyleFromDockWindow();
+    }
+}
+
+Qt::ToolButtonStyle DockWidget::toolBarStyle(DockWidget::State state) const
+{
+    Q_D(const DockWidget);
+    if (StateFloating == state) {
+        return d->m_toolBarStyleFloating;
+    } else {
+        return d->m_toolBarStyleDocked;
+    }
+}
+
+void DockWidget::setToolBarStyle(Qt::ToolButtonStyle style, DockWidget::State state)
+{
+    Q_D(DockWidget);
+    if (StateFloating == state) {
+        d->m_toolBarStyleFloating = style;
+    } else {
+        d->m_toolBarStyleDocked = style;
+    }
+
+    setToolBarFloatingStyle(isFloating());
+}
+
+QSize DockWidget::toolBarIconSize(DockWidget::State state) const
+{
+    Q_D(const DockWidget);
+    if (StateFloating == state) {
+        return d->m_toolBarIconSizeFloating;
+    } else {
+        return d->m_toolBarIconSizeDocked;
+    }
+}
+
+void DockWidget::setToolBarIconSize(const QSize &iconSize, DockWidget::State state)
+{
+    Q_D(DockWidget);
+    if (StateFloating == state) {
+        d->m_toolBarIconSizeFloating = iconSize;
+    } else {
+        d->m_toolBarIconSizeDocked = iconSize;
+    }
+
+    setToolBarFloatingStyle(isFloating());
+}
+
 DockSideTab *DockWidget::sideTab() const
 {
     Q_D(const DockWidget);
@@ -516,10 +597,35 @@ void DockWidget::toggleAutoHide(Qx::DockSideBarArea area)
     setAutoHide(!isAutoHide(), area);
 }
 
+void DockWidget::setToolBarFloatingStyle(bool floating)
+{
+    Q_D(DockWidget);
+    if (!d->m_toolBar) {
+        return;
+    }
+
+    auto iconSize = floating ? d->m_toolBarIconSizeFloating : d->m_toolBarIconSizeDocked;
+    if (iconSize != d->m_toolBar->iconSize()) {
+        d->m_toolBar->setIconSize(iconSize);
+    }
+
+    auto buttonStyle = floating ? d->m_toolBarStyleFloating : d->m_toolBarStyleDocked;
+    if (buttonStyle != d->m_toolBar->toolButtonStyle()) {
+        d->m_toolBar->setToolButtonStyle(buttonStyle);
+    }
+}
+
 void DockWidget::setDockWindow(DockWindow *window)
 {
     Q_D(DockWidget);
     d->m_window = window;
+    if (!window) {
+        return;
+    }
+
+    if (d->m_toolBarStyleSource == DockWidget::ToolBarStyleFromDockWindow) {
+        d->setToolBarStyleFromDockWindow();
+    }
 }
 
 void DockWidget::setDockPanel(DockPanel *panel)
