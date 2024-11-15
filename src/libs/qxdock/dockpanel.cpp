@@ -19,6 +19,7 @@
 #include "dockstatereader.h"
 
 #include <QBoxLayout>
+#include <QXmlStreamWriter>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -981,7 +982,24 @@ int DockPanel::indexOfFirstOpenDockWidget() const
 
 void DockPanel::saveState(QXmlStreamWriter &s) const
 {
-    // TODO
+    Q_D(const DockPanel);
+    s.writeStartElement("Area");
+    s.writeAttribute("Tabs", QString::number(d->m_contentsLayout->count()));
+    auto currentDockWidget = this->currentDockWidget();
+    QString name = currentDockWidget ? currentDockWidget->objectName() : "";
+    s.writeAttribute("Current", name);
+
+    if (d->m_allowedAreas != s_defaultAllowedAreas) {
+        s.writeAttribute("AllowedAreas", QString::number(d->m_allowedAreas, 16));
+    }
+
+    if (d->m_flags != DefaultFlags) {
+        s.writeAttribute("Flags", QString::number(d->m_flags, 16));
+    }
+    for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
+        dockWidget(i)->saveState(s);
+    }
+    s.writeEndElement();
 }
 
 bool DockPanel::restoreState(DockStateReader &s, DockPanel *&createdWidget, bool testing,

@@ -20,6 +20,7 @@
 #include <QAbstractScrollArea>
 #include <QScrollArea>
 #include <QToolBar>
+#include <QXmlStreamWriter>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -882,6 +883,11 @@ void DockWidget::flagAsUnassigned()
     setVisible(false);
     setDockPanel(nullptr);
     tab()->setParent(this);
+}
+
+void DockWidget::saveState(QXmlStreamWriter &s) const
+{
+    // TODO
 }
 
 bool DockWidget::event(QEvent *e)

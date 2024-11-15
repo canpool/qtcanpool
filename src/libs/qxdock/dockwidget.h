@@ -8,6 +8,7 @@
 #include <QFrame>
 
 class QToolBar;
+class QXmlStreamWriter;
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -168,6 +169,7 @@ protected:
     void toggleViewInternal(bool open);
     bool closeDockWidgetInternal(bool forceClose = false);
     void flagAsUnassigned();
+    void saveState(QXmlStreamWriter &s) const;
 
 protected:
     virtual bool event(QEvent *e) override;
