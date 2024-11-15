@@ -375,6 +375,36 @@ int DockTitleBar::indexOf(QWidget *widget) const
 
 QString DockTitleBar::titleBarButtonToolTip(Qx::DockTitleBarButton id) const
 {
+    Q_D(const DockTitleBar);
+    switch (id) {
+    case Qx::TitleBarButtonAutoHide:
+        if (d->m_panel->isAutoHide()) {
+            return tr("Unpin (Dock)");
+        }
+
+        if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideButtonTogglesArea)) {
+            return tr("Pin Group");
+        } else {
+            return tr("Pin Active Tab (Press Ctrl to Pin Group)");
+        }
+        break;
+
+    case Qx::TitleBarButtonClose:
+        if (d->m_panel->isAutoHide()) {
+            bool minimize = DockManager::testAutoHideConfigFlag(DockManager::AutoHideCloseButtonCollapsesDock);
+            return minimize ? tr("Minimize") : tr("Close");
+        }
+
+        if (DockManager::testConfigFlag(DockManager::DockAreaCloseButtonClosesTab)) {
+            return tr("Close Active Tab");
+        } else {
+            return tr("Close Group");
+        }
+        break;
+
+    default:
+        break;
+    }
     return QString();
 }
 
