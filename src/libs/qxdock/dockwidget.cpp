@@ -887,7 +887,11 @@ void DockWidget::flagAsUnassigned()
 
 void DockWidget::saveState(QXmlStreamWriter &s) const
 {
-    // TODO
+    Q_D(const DockWidget);
+    s.writeStartElement("Widget");
+    s.writeAttribute("Name", objectName());
+    s.writeAttribute("Closed", QString::number(d->m_closed ? 1 : 0));
+    s.writeEndElement();
 }
 
 bool DockWidget::event(QEvent *e)
