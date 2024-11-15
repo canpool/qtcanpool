@@ -224,7 +224,9 @@ QString DockFloatingContainerPrivate::floatingContainersTitle()
 
 void DockFloatingContainerPrivate::handleEscapeKey()
 {
-    // TODO
+    setState(Qx::DockDraggingInactive);
+    m_window->containerOverlay()->hideOverlay();
+    m_window->panelOverlay()->hideOverlay();
 }
 
 DockFloatingContainer::DockFloatingContainer(DockWindow *window)
