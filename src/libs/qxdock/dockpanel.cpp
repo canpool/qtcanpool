@@ -418,6 +418,29 @@ DockTitleBar *DockPanel::titleBar() const
     return d->m_titleBar;
 }
 
+DockPanel::DockAreaFlags DockPanel::dockAreaFlags() const
+{
+    Q_D(const DockPanel);
+    return d->m_flags;
+}
+
+void DockPanel::setDockAreaFlags(DockAreaFlags flags)
+{
+    Q_D(DockPanel);
+    auto changedFlags = d->m_flags ^ flags;
+    d->m_flags = flags;
+    if (changedFlags.testFlag(HideSingleWidgetTitleBar)) {
+        updateTitleBarVisibility();
+    }
+}
+
+void DockPanel::setDockAreaFlag(DockPanel::DockAreaFlag flag, bool on)
+{
+    auto flags = dockAreaFlags();
+    internal::setFlag(flags, flag, on);
+    setDockAreaFlags(flags);
+}
+
 bool DockPanel::isCentralWidgetArea() const
 {
     if (dockWidgetsCount() != 1) {

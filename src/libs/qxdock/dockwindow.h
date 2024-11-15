@@ -43,6 +43,7 @@ public:
     const QList<DockContainer *> dockContainers() const;
 
     DockWidget *centralWidget() const;
+    DockPanel *setCentralWidget(DockWidget *widget);
 
     bool isLeavingMinimizedState() const;
 

@@ -213,6 +213,39 @@ DockWidget *DockWindow::centralWidget() const
     return d->m_centralWidget;
 }
 
+DockPanel *DockWindow::setCentralWidget(DockWidget *widget)
+{
+    Q_D(DockWindow);
+    if (!widget) {
+        d->m_centralWidget = nullptr;
+        return nullptr;
+    }
+
+    // Setting a new central widget is now allowed if there is already a central
+    // widget or if there are already other dock widgets
+    if (d->m_centralWidget) {
+        qWarning("Setting a central widget not possible because there is already a central widget.");
+        return nullptr;
+    }
+
+    // Setting a central widget is now allowed if there are already other
+    // dock widgets.
+    if (!d->m_dockWidgets.isEmpty()) {
+        qWarning("Setting a central widget not possible - the central widget need to be the first "
+                 "dock widget that is added to the dock window.");
+        return nullptr;
+    }
+
+    widget->setFeature(DockWidget::DockWidgetClosable, false);
+    widget->setFeature(DockWidget::DockWidgetMovable, false);
+    widget->setFeature(DockWidget::DockWidgetFloatable, false);
+    widget->setFeature(DockWidget::DockWidgetPinnable, false);
+    d->m_centralWidget = widget;
+    DockPanel *centralPanel = addDockWidget(Qx::CenterDockWidgetArea, widget);
+    centralPanel->setDockAreaFlag(DockPanel::HideSingleWidgetTitleBar, true);
+    return centralPanel;
+}
+
 bool DockWindow::isLeavingMinimizedState() const
 {
     Q_D(const DockWindow);

@@ -64,6 +64,9 @@ public:
 
     DockTitleBar *titleBar() const;
 
+    DockAreaFlags dockAreaFlags() const;
+    void setDockAreaFlags(DockAreaFlags flags);
+    void setDockAreaFlag(DockAreaFlag flag, bool on);
     bool isCentralWidgetArea() const;
 
     bool isTopLevelArea() const;
