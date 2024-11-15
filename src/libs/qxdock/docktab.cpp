@@ -332,6 +332,12 @@ void DockTab::setDockPanel(DockPanel *panel)
     d->m_panel = panel;
 }
 
+DockPanel *DockTab::dockPanel() const
+{
+    Q_D(const DockTab);
+    return d->m_panel;
+}
+
 DockWidget *DockTab::dockWidget() const
 {
     Q_D(const DockTab);

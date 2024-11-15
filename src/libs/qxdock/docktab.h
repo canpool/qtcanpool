@@ -27,7 +27,7 @@ public:
     void setActive(bool active);
 
     void setDockPanel(DockPanel *panel);
-
+    DockPanel *dockPanel() const;
     DockWidget *dockWidget() const;
 
     const QIcon &icon() const;
