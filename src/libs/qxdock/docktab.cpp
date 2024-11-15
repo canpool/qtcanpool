@@ -301,7 +301,8 @@ void DockTab::setActive(bool active)
         }
     }
     // Focus related stuff
-    if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+    if (DockManager::testConfigFlag(DockManager::FocusHighlighting) &&
+        !d->m_dockWidget->dockWindow()->isRestoringState()) {
         bool updateFocusStyle = false;
         if (active && !hasFocus()) {
             // setFocus(Qt::OtherFocusReason);

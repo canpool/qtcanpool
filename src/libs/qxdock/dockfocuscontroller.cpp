@@ -137,6 +137,10 @@ void DockFocusController::notifyDockAreaRelocation(QWidget *droppedWidget)
 {
     Q_D(DockFocusController);
 
+    if (d->m_window->isRestoringState()) {
+        return;
+    }
+
     DockWidget *dockWidget = qobject_cast<DockWidget *>(droppedWidget);
     if (!dockWidget) {
         DockPanel *panel = qobject_cast<DockPanel *>(droppedWidget);
@@ -155,7 +159,8 @@ void DockFocusController::notifyDockAreaRelocation(QWidget *droppedWidget)
 
 void DockFocusController::notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget)
 {
-    if (!floatingWidget) {
+    Q_D(DockFocusController);
+    if (!floatingWidget || d->m_window->isRestoringState()) {
         return;
     }
 
@@ -203,7 +208,7 @@ void DockFocusController::onApplicationFocusChanged(QWidget *focusedOld, QWidget
     Q_UNUSED(focusedOld);
     Q_D(DockFocusController);
 
-    if (d->m_tabPressed) {
+    if (d->m_window->isRestoringState() || d->m_tabPressed) {
         return;
     }
 
@@ -246,6 +251,10 @@ void DockFocusController::onFocusWindowChanged(QWindow *focusWindow)
 void DockFocusController::onFocusedDockAreaViewToggled(bool open)
 {
     Q_D(DockFocusController);
+
+    if (d->m_window->isRestoringState()) {
+        return;
+    }
 
     DockPanel *panel = qobject_cast<DockPanel *>(sender());
     if (!panel || open) {

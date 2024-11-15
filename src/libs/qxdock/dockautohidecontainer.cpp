@@ -266,7 +266,8 @@ void DockAutoHideContainer::addDockWidget(DockWidget *w)
     d->m_dockWidget = w;
     d->m_sideTab->setDockWidget(w);
     DockPanel *oldPanel = w->dockPanel();
-    if (oldPanel) {
+    auto isRestoringState = w->dockWindow()->isRestoringState();
+    if (oldPanel && !isRestoringState) {
         // The initial size should be a little bit bigger than the original dock
         // area size to prevent that the resize handle of this auto hid dock area
         // is near of the splitter of the old dock area.

@@ -1385,6 +1385,10 @@ void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
         return;
     }
 
+    if (dockWindow()->isRestoringState()) {
+        return;
+    }
+
     auto autoHideTab = qobject_cast<DockSideTab *>(w);
     if (autoHideTab) {
         switch (e->type()) {

@@ -493,6 +493,10 @@ void DockFloatingContainer::hideEvent(QHideEvent *event)
     if (event->spontaneous()) {
         return;
     }
+    // Prevent toogleView() events during restore state
+    if (d->m_window->isRestoringState()) {
+        return;
+    }
     if (d->m_autoHideChildren) {
         d->m_hiding = true;
         for (auto panel : d->m_dockContainer->openedDockPanels()) {

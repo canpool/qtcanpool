@@ -106,7 +106,7 @@ void DockWidgetPrivate::showDockWidget()
 
         // If this widget is pinned and there are no opened dock widgets, unpin the auto hide widget by moving it's
         // contents to parent container While restoring state, opened dock widgets are not valid
-        if (container->openedDockWidgets().count() == 0 && m_panel->isAutoHide()) {
+        if (container->openedDockWidgets().count() == 0 && m_panel->isAutoHide() && !m_window->isRestoringState()) {
             m_panel->autoHideContainer()->moveContentsToParent();
         }
     }
@@ -152,6 +152,10 @@ void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
     Q_Q(DockWidget);
     auto container = q->dockContainer();
     if (!container) {
+        return;
+    }
+
+    if (q->dockWindow()->isRestoringState()) {
         return;
     }
 
