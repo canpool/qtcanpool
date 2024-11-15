@@ -6,6 +6,7 @@
 
 #include "qxdock/dockwidget.h"
 #include "qxdock_global.h"
+#include "qxmlstream.h"
 #include <QFrame>
 
 class QAbstractButton;
@@ -78,6 +79,8 @@ public:
     bool isAutoHide() const;
 
     int indexOfFirstOpenDockWidget() const;
+
+    void saveState(QXmlStreamWriter &s) const;
 
 public Q_SLOTS:
     void setCurrentIndex(int index);

@@ -18,6 +18,7 @@
 
 #include <QGridLayout>
 #include <QTimer>
+#include <QXmlStreamWriter>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -86,6 +87,9 @@ public:
 
     void dropIntoAutoHideSideBar(DockFloatingContainer *floatingWidget, Qx::DockWidgetArea area);
     void moveToAutoHideSideBar(QWidget *widget, Qx::DockWidgetArea area, int tabIndex = Qx::DockTabDefaultInsertIndex);
+
+    void saveChildNodesState(QXmlStreamWriter &s, QWidget *w) const;
+    void saveAutoHideWidgetsState(QXmlStreamWriter &s) const;
 public:
     DockWindow *m_window = nullptr;
     QGridLayout *m_layout = nullptr;
@@ -631,6 +635,42 @@ void DockContainerPrivate::moveToAutoHideSideBar(QWidget *widget, Qx::DockWidget
                 q->createAndSetupAutoHideContainer(sideBarArea, dockWidget, tabIndex++);
             }
         }
+    }
+}
+
+void DockContainerPrivate::saveChildNodesState(QXmlStreamWriter &s, QWidget *w) const
+{
+    QSplitter *splitter = qobject_cast<QSplitter *>(w);
+    if (splitter) {
+        s.writeStartElement("Splitter");
+        s.writeAttribute("Orientation", (splitter->orientation() == Qt::Horizontal) ? "|" : "-");
+        s.writeAttribute("Count", QString::number(splitter->count()));
+        for (int i = 0; i < splitter->count(); ++i) {
+            saveChildNodesState(s, splitter->widget(i));
+        }
+
+        s.writeStartElement("Sizes");
+        for (auto Size : splitter->sizes()) {
+            s.writeCharacters(QString::number(Size) + " ");
+        }
+        s.writeEndElement();
+        s.writeEndElement();
+    } else {
+        DockPanel *panel = qobject_cast<DockPanel *>(w);
+        if (panel) {
+            panel->saveState(s);
+        }
+    }
+}
+
+void DockContainerPrivate::saveAutoHideWidgetsState(QXmlStreamWriter &s) const
+{
+    for (const auto sideTabBar : m_sideTabBarWidgets.values()) {
+        if (!sideTabBar->count()) {
+            continue;
+        }
+
+        sideTabBar->saveState(s);
     }
 }
 
@@ -1211,9 +1251,23 @@ void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
     }
 }
 
-void DockContainer::saveState(QXmlStreamWriter &stream) const
+void DockContainer::saveState(QXmlStreamWriter &s) const
 {
-    // TODO
+    Q_D(const DockContainer);
+    s.writeStartElement("Container");
+    s.writeAttribute("Floating", QString::number(isFloating() ? 1 : 0));
+    if (isFloating()) {
+        DockFloatingContainer *floatingWidget = this->floatingWidget();
+        QByteArray geometry = floatingWidget->saveGeometry();
+#if QT_VERSION < 0x050900
+        s.writeTextElement("Geometry", qByteArrayToHex(geometry, ' '));
+#else
+        s.writeTextElement("Geometry", geometry.toHex(' '));
+#endif
+    }
+    d->saveChildNodesState(s, d->m_rootSplitter);
+    d->saveAutoHideWidgetsState(s);
+    s.writeEndElement();
 }
 
 bool DockContainer::restoreState(DockStateReader &stream, bool testing)

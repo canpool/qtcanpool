@@ -7,6 +7,8 @@
 #include "qxdock_global.h"
 #include <QScrollArea>
 
+class QXmlStreamWriter;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockContainer;
@@ -51,9 +53,11 @@ public:
 
 protected:
     void insertTab(int index, DockSideTab *sideTab);
+    void saveState(QXmlStreamWriter &s) const;
 
 private:
     QX_DECLARE_PRIVATE(DockSideBar)
+    friend class DockContainerPrivate;
 };
 
 QX_DOCK_END_NAMESPACE

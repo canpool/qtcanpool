@@ -978,4 +978,9 @@ int DockPanel::indexOfFirstOpenDockWidget() const
     return -1;
 }
 
+void DockPanel::saveState(QXmlStreamWriter &s) const
+{
+    // TODO
+}
+
 QX_DOCK_END_NAMESPACE

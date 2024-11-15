@@ -300,4 +300,9 @@ void DockSideBar::insertTab(int index, DockSideTab *sideTab)
     show();
 }
 
+void DockSideBar::saveState(QXmlStreamWriter &s) const
+{
+    // TODO
+}
+
 QX_DOCK_END_NAMESPACE
