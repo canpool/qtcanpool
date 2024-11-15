@@ -26,6 +26,7 @@ public:
     void init();
 public:
     QList<DockContainer *> m_containers;
+    QList<DockWidget *> m_dockWidgets;
     DockWidget *m_centralWidget = nullptr;
     QList<QPointer<DockFloatingContainer> > m_floatingContainers;
     DockOverlay *m_containerOverlay;
@@ -114,6 +115,8 @@ DockWindow::~DockWindow()
  */
 DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
 {
+    Q_D(DockWindow);
+    d->m_dockWidgets.append(w);
     DockContainer *container = p ? p->dockContainer() : this;
     if (container == nullptr) {
         container = this;
@@ -153,6 +156,7 @@ void DockWindow::removeDockWidget(DockWidget *w)
 {
     Q_D(DockWindow);
     Q_EMIT dockWidgetAboutToBeRemoved(w);
+    d->m_dockWidgets.removeAll(w);
     DockContainer::removeDockWidget(w);
     w->setDockWindow(nullptr);
     Q_EMIT dockWidgetRemoved(w);
@@ -166,6 +170,8 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea are
 DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area, DockWidget *w,
                                                                     DockContainer *container)
 {
+    Q_D(DockWindow);
+    d->m_dockWidgets.append(w);
     auto c = container->createAndSetupAutoHideContainer(area, w);
     c->collapseView(true);
 
@@ -247,6 +253,11 @@ void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures f
     }
 
     d->m_lockedDockWidgetFeatures = features;
+    // Call the notifyFeaturesChanged() function for all dock widgets to update
+    // the state of the close and detach buttons
+    for (auto w : d->m_dockWidgets) {
+        w->notifyFeaturesChanged();
+    }
 }
 
 void DockWindow::setDockWidgetFocused(DockWidget *w)
