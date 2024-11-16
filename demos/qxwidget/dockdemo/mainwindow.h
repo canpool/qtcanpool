@@ -6,6 +6,7 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 class DockWidget;
+class DockWindow;
 QX_DOCK_END_NAMESPACE
 
 QX_DOCK_USE_NAMESPACE
@@ -19,5 +20,14 @@ public:
 
     DockWidget *createColorDockWidget(const QString &title, const QColor &color);
     QWidget *createColorWidget(const QColor &color);
+
+    void saveState();
+    void restoreState();
+
+protected:
+    virtual void closeEvent(QCloseEvent *event) override;
+
+private:
+    DockWindow *m_dockWindow = nullptr;
 };
 #endif   // MAINWINDOW_H

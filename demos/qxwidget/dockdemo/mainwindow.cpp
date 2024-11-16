@@ -8,10 +8,12 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QTextEdit>
+#include <QSettings>
 
 QX_DOCK_USE_NAMESPACE
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
 {
     QMenuBar *mb = menuBar();
     QMenu *viewMenu = mb->addMenu(tr("View"));
@@ -19,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
 
-    DockWindow *dockwindow = new DockWindow();
+    m_dockWindow = new DockWindow();
+    DockWindow *dockwindow = m_dockWindow;
 
     QTextEdit *te = nullptr;
     QWidget *cw = nullptr;
@@ -45,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     w = createColorDockWidget(tr("dock4"), QColor(255, 255, 0));
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);  // tabified with dock1
+    dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);   // tabified with dock1
 
     w = createColorDockWidget(tr("dock5"), QColor(0, 255, 255));
     viewMenu->addAction(w->toggleViewAction());
@@ -60,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     w = createColorDockWidget(tr("dock6"), QColor(255, 0, 255));
     w->setWidget(cw, DockWidget::ForceNoScrollArea);
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidgetTab(w, panel); // tabified with dock3
+    dockwindow->addDockWidgetTab(w, panel);   // tabified with dock3
 
     cw = createColorWidget(Qt::darkRed);
     w = createColorDockWidget(tr("auto1"), QColor(255, 100, 100));
@@ -68,9 +71,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     viewMenu->addAction(w->toggleViewAction());
     dockwindow->addAutoHideDockWidget(Qx::DockSideBarLeft, w);
 
+    // edit menu
+    QMenu *editMenu = mb->addMenu(tr("Edit"));
+    editMenu->addAction(tr("saveState"), [=]() {
+        this->saveState();
+    });
+    editMenu->addAction(tr("restoreState"), [=]() {
+        this->restoreState();
+    });
+
     setCentralWidget(dockwindow);
 
     resize(800, 600);
+
+    restoreState();
 }
 
 MainWindow::~MainWindow()
@@ -95,4 +109,26 @@ QWidget *MainWindow::createColorWidget(const QColor &color)
     w->setPalette(palette);
     w->setAutoFillBackground(true);
     return w;
+}
+
+void MainWindow::saveState()
+{
+    QSettings settings("Settings.ini", QSettings::IniFormat);
+    settings.setValue("mainWindow/Geometry", this->saveGeometry());
+    settings.setValue("mainWindow/State", QMainWindow::saveState());
+    settings.setValue("mainWindow/DockingState", m_dockWindow->saveState());
+}
+
+void MainWindow::restoreState()
+{
+    QSettings settings("Settings.ini", QSettings::IniFormat);
+    this->restoreGeometry(settings.value("mainWindow/Geometry").toByteArray());
+    QMainWindow::restoreState(settings.value("mainWindow/State").toByteArray());
+    m_dockWindow->restoreState(settings.value("mainWindow/DockingState").toByteArray());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    saveState();
+    QMainWindow::closeEvent(event);
 }
