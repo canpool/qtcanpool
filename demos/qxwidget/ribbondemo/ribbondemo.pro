@@ -3,8 +3,8 @@ QTC_LIB_DEPENDS += qxribbon qcanpool
 win32 {
     QTC_LIB_DEPENDS += qxwindow
     DEFINES += QXRIBBON_USE_APPWINDOW
-    SOURCES += ribbonappwindow.cpp
-    HEADERS += ribbonappwindow.h
+    SOURCES += $$PWD/ribbonappwindow.cpp
+    HEADERS += $$PWD/ribbonappwindow.h
 }
 
 include(../../../qtproject.pri)
@@ -26,15 +26,15 @@ DESTDIR = $$IDE_APP_PATH
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
 SOURCES += \
-    aboutdialog.cpp \
-    editablecontainer.cpp \
-    main.cpp \
-    mainwindow.cpp
+    $$PWD/aboutdialog.cpp \
+    $$PWD/editablecontainer.cpp \
+    $$PWD/main.cpp \
+    $$PWD/mainwindow.cpp
 
 HEADERS += \
-    aboutdialog.h \
-    editablecontainer.h \
-    mainwindow.h
+    $$PWD/aboutdialog.h \
+    $$PWD/editablecontainer.h \
+    $$PWD/mainwindow.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -42,6 +42,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    ribbondemo.qrc
+    $$PWD/ribbondemo.qrc
 
-RC_FILE = ribbondemo.rc
+RC_FILE = $$PWD/ribbondemo.rc
