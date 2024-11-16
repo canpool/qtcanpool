@@ -4,26 +4,26 @@
         <file>res/arrow_down.png</file>
         <file>res/arrow_more.png</file>
         <file>res/arrow_up.png</file>
-        <file>res/titlebar_close.png</file>
-        <file>res/titlebar_close_hover.png</file>
-        <file>res/titlebar_max.png</file>
-        <file>res/titlebar_min.png</file>
-        <file>res/titlebar_normal.png</file>
-        <file>res/titlebar_shade.png</file>
-        <file>res/titlebar_unshade.png</file>
         <file>res/qaccess_button.png</file>
         <file>res/lighter/group_option.png</file>
         <file>res/lighter/arrow_down.png</file>
         <file>res/lighter/arrow_more.png</file>
         <file>res/lighter/arrow_up.png</file>
-        <file>res/lighter/titlebar_close.png</file>
-        <file>res/lighter/titlebar_close_hover.png</file>
-        <file>res/lighter/titlebar_max.png</file>
-        <file>res/lighter/titlebar_min.png</file>
-        <file>res/lighter/titlebar_normal.png</file>
-        <file>res/lighter/titlebar_shade.png</file>
-        <file>res/lighter/titlebar_unshade.png</file>
         <file>res/lighter/qaccess_button.png</file>
+        <file>res/titlebar_close.svg</file>
+        <file>res/titlebar_close_hover.svg</file>
+        <file>res/titlebar_min.svg</file>
+        <file>res/titlebar_max.svg</file>
+        <file>res/titlebar_normal.svg</file>
+        <file>res/titlebar_shade.svg</file>
+        <file>res/titlebar_unshade.svg</file>
+        <file>res/lighter/titlebar_close.svg</file>
+        <file>res/lighter/titlebar_close_hover.svg</file>
+        <file>res/lighter/titlebar_max.svg</file>
+        <file>res/lighter/titlebar_min.svg</file>
+        <file>res/lighter/titlebar_normal.svg</file>
+        <file>res/lighter/titlebar_shade.svg</file>
+        <file>res/lighter/titlebar_unshade.svg</file>
     </qresource>
     <qresource prefix="/theme">
         <file>res/default.css</file>

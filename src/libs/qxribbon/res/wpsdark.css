@@ -849,8 +849,8 @@ QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
-  titlebar-shade-icon: url(:/image/res/lighter/titlebar_shade.png);
-  titlebar-unshade-icon: url(:/image/res/lighter/titlebar_unshade.png);
+  titlebar-shade-icon: url(:/image/res/lighter/titlebar_shade.svg);
+  titlebar-unshade-icon: url(:/image/res/lighter/titlebar_unshade.svg);
 }
 
 /*RibbonMenu*/
@@ -964,16 +964,16 @@ QxRibbon--WindowButton:focus {
 }
 
 QxRibbon--WindowButton#qx_MinimizeWindowButton {
-  image: url(:/image/res/lighter/titlebar_min.png);
+  image: url(:/image/res/lighter/titlebar_min.svg);
 }
 
 QxRibbon--WindowButton#qx_MaximizeWindowButton {
-  image: url(:/image/res/lighter/titlebar_max.png);
+  image: url(:/image/res/lighter/titlebar_max.svg);
 }
 
 QxRibbon--WindowButton#qx_MaximizeWindowButton:checked {
   background-color: transparent;
-  image: url(:/image/res/lighter/titlebar_normal.png);
+  image: url(:/image/res/lighter/titlebar_normal.svg);
 }
 
 QxRibbon--WindowButton#qx_MinimizeWindowButton:hover,QxRibbon--WindowButton#qx_MaximizeWindowButton:hover {
@@ -985,15 +985,15 @@ QxRibbon--WindowButton#qx_MinimizeWindowButton:pressed,QxRibbon--WindowButton#qx
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton {
-  image: url(:/image/res/lighter/titlebar_close.png);
+  image: url(:/image/res/lighter/titlebar_close.svg);
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:hover {
   background-color: #e81123;
-  image: url(:/image/res/lighter/titlebar_close_hover.png);
+  image: url(:/image/res/lighter/titlebar_close_hover.svg);
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
   background-color: #f1707a;
-  image: url(:/image/res/lighter/titlebar_close_hover.png);
+  image: url(:/image/res/lighter/titlebar_close_hover.svg);
 }
