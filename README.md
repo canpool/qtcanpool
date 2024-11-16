@@ -132,4 +132,4 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ![sponsor](./doc/sponsor/sponsor.png)
 
-赞助名单：[名单](./sponsor.md)
+赞助名单：[名单](./doc/sponsor/sponsor.md)
