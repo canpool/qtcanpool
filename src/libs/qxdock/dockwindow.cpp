@@ -16,6 +16,7 @@
 
 #include <QWindowStateChangeEvent>
 #include <QXmlStreamWriter>
+#include <QFile>
 
 QX_DOCK_BEGIN_NAMESPACE
 
