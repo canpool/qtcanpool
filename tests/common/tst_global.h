@@ -8,33 +8,29 @@
     TestObject TestObject##_var;                                                                                       \
     QTest::qExec(&TestObject##_var, argc, argv);
 
+class TestInfo;
+
 /* UnitTest */
 class UnitTest
 {
 public:
-    static void add(QObject *obj)
-    {
-        s_testObjects.append(obj);
-    }
-
-    static void run(int argc, char *argv[])
-    {
-        for (QObject *obj : s_testObjects) {
-            QTest::qExec(obj, argc, argv);
-        }
-    }
+    static void add(TestInfo *info);
+    static void run(int argc, char *argv[]);
 private:
-    static QVector<QObject *> s_testObjects;
+    static QVector<TestInfo *> s_testInfos;
 };
 
 /* TestInfo */
 class TestInfo
 {
 public:
-    TestInfo(QObject *obj)
-    {
-        UnitTest::add(obj);
-    };
+    TestInfo(QObject *obj);
+    ;
+    ~TestInfo();
+
+    QObject *testObject() const;
+private:
+    QObject *m_object = nullptr;
 };
 
 #define TEST_ADD(TestObject)                                                                                           \
