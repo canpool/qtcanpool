@@ -7,7 +7,7 @@ SUBDIRS = \
     examples \
 
 
-TEST_BUILD_ENABLE = 0
+TEST_BUILD_ENABLE = 1
 equals(TEST_BUILD_ENABLE, 1) {
     SUBDIRS += tests
 }
