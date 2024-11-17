@@ -1,19 +1,12 @@
-#include <QtTest/QtTest>
 #include <QApplication>
 
-#include "tst_ribbonquickaccessbar.h"
-
-
-#define TEST_RUN(TestObject) \
-    TestObject TestObject##_var; \
-    QTest::qExec(&TestObject##_var, argc, argv);
-
+#include "tst_global.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    TEST_RUN(tst_RibbonQuickAccessBar)
+    TEST_RUN_ALL();
 
     return 0;
 }

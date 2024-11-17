@@ -9,9 +9,8 @@ DESTDIR = $$IDE_APP_PATH
 
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
+include($$QTCANPOOL_DIR/tests/common/common.pri)
+
 SOURCES += \
     main.cpp \
     tst_ribbonquickaccessbar.cpp
-
-HEADERS += \
-    tst_ribbonquickaccessbar.h
