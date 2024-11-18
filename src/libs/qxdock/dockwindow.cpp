@@ -17,6 +17,7 @@
 #include <QWindowStateChangeEvent>
 #include <QXmlStreamWriter>
 #include <QFile>
+#include <QSettings>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -53,6 +54,7 @@ public:
     QMap<QString, DockWidget *> m_dockWidgetsMap;
     QList<QPointer<DockFloatingContainer>> m_floatingContainers;
     QVector<DockFloatingContainer *> m_uninitializedFloatingWidgets;
+    QMap<QString, QByteArray> m_perspectives;
     DockWidget *m_centralWidget = nullptr;
     DockOverlay *m_containerOverlay;
     DockOverlay *m_panelOverlay;
@@ -647,6 +649,77 @@ bool DockWindow::isRestoringState() const
     return d->m_restoringState;
 }
 
+void DockWindow::addPerspective(const QString &uniquePrespectiveName)
+{
+    Q_D(DockWindow);
+    d->m_perspectives.insert(uniquePrespectiveName, saveState());
+    Q_EMIT perspectiveListChanged();
+}
+
+void DockWindow::removePerspective(const QString &name)
+{
+    removePerspectives({name});
+}
+
+void DockWindow::removePerspectives(const QStringList &names)
+{
+    Q_D(DockWindow);
+    int count = 0;
+    for (const auto &name : names) {
+        count += d->m_perspectives.remove(name);
+    }
+
+    if (count) {
+        Q_EMIT perspectivesRemoved();
+        Q_EMIT perspectiveListChanged();
+    }
+}
+
+QStringList DockWindow::perspectiveNames() const
+{
+    Q_D(const DockWindow);
+    return d->m_perspectives.keys();
+}
+
+void DockWindow::savePerspectives(QSettings &settings) const
+{
+    settings.beginWriteArray("Perspectives", d_ptr->m_perspectives.size());
+    int i = 0;
+    for (auto it = d_ptr->m_perspectives.constBegin(); it != d_ptr->m_perspectives.constEnd(); ++it) {
+        settings.setArrayIndex(i);
+        settings.setValue("Name", it.key());
+        settings.setValue("State", it.value());
+        ++i;
+    }
+    settings.endArray();
+}
+
+void DockWindow::loadPerspectives(QSettings &settings)
+{
+    Q_D(DockWindow);
+    d->m_perspectives.clear();
+    int size = settings.beginReadArray("Perspectives");
+    if (!size) {
+        settings.endArray();
+        return;
+    }
+
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        QString name = settings.value("Name").toString();
+        QByteArray data = settings.value("State").toByteArray();
+        if (name.isEmpty() || data.isEmpty()) {
+            continue;
+        }
+
+        d->m_perspectives.insert(name, data);
+    }
+
+    settings.endArray();
+    Q_EMIT perspectiveListChanged();
+    Q_EMIT perspectiveListLoaded();
+}
+
 void DockWindow::setDockWidgetFocused(DockWidget *w)
 {
     Q_D(DockWindow);
@@ -660,6 +733,19 @@ void DockWindow::endLeavingMinimizedState()
     Q_D(DockWindow);
     d->m_isLeavingMinimized = false;
     this->activateWindow();
+}
+
+void DockWindow::openPerspective(const QString &perspectiveName)
+{
+    Q_D(DockWindow);
+    const auto iterator = d->m_perspectives.find(perspectiveName);
+    if (d->m_perspectives.end() == iterator) {
+        return;
+    }
+
+    Q_EMIT openingPerspective(perspectiveName);
+    restoreState(iterator.value());
+    Q_EMIT perspectiveOpened(perspectiveName);
 }
 
 void DockWindow::registerDockContainer(DockContainer *container)

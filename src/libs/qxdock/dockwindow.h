@@ -8,6 +8,8 @@
 #include "dockcontainer.h"
 #include "dockwidget.h"
 
+class QSettings;
+
 QX_DOCK_BEGIN_NAMESPACE
 
 class DockPanel;
@@ -60,6 +62,13 @@ public:
     bool restoreState(const QByteArray &state, int version = 0);
     bool isRestoringState() const;
 
+    void addPerspective(const QString &uniquePrespectiveName);
+    void removePerspective(const QString &name);
+    void removePerspectives(const QStringList &names);
+    QStringList perspectiveNames() const;
+    void savePerspectives(QSettings &settings) const;
+    void loadPerspectives(QSettings &settings);
+
 Q_SIGNALS:
     void dockWidgetAdded(DockWidget *w);
     void dockWidgetAboutToBeRemoved(DockWidget *w);
@@ -68,10 +77,16 @@ Q_SIGNALS:
     void focusedDockWidgetChanged(DockWidget *old, DockWidget *now);
     void restoringState();
     void stateRestored();
+    void perspectiveListChanged();
+    void perspectiveListLoaded();
+    void perspectivesRemoved();
+    void openingPerspective(const QString &perspectiveName);
+    void perspectiveOpened(const QString &perspectiveName);
 
 public Q_SLOTS:
     void setDockWidgetFocused(DockWidget *w);
     void endLeavingMinimizedState();
+    void openPerspective(const QString &perspectiveName);
 
 protected:
     void registerDockContainer(DockContainer *container);
