@@ -18,6 +18,9 @@
 #include <QXmlStreamWriter>
 #include <QFile>
 #include <QSettings>
+#include <QTextStream>
+#include <QPointer>
+#include <QDebug>
 
 QX_DOCK_BEGIN_NAMESPACE
 

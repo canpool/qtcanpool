@@ -20,6 +20,8 @@
 
 #include <QBoxLayout>
 #include <QXmlStreamWriter>
+#include <QPointer>
+#include <QDebug>
 
 QX_DOCK_BEGIN_NAMESPACE
 

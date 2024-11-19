@@ -13,6 +13,7 @@
 #include "dockmanager.h"
 
 #include <QApplication>
+#include <QPointer>
 
 QX_DOCK_BEGIN_NAMESPACE
 

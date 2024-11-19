@@ -19,6 +19,9 @@
 #include <QGridLayout>
 #include <QTimer>
 #include <QXmlStreamWriter>
+#include <QApplication>
+#include <QPointer>
+#include <QTextStream>
 
 QX_DOCK_BEGIN_NAMESPACE
 

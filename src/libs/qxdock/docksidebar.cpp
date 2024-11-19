@@ -11,6 +11,7 @@
 
 #include <QBoxLayout>
 #include <QXmlStreamWriter>
+#include <QApplication>
 
 QX_DOCK_BEGIN_NAMESPACE
 

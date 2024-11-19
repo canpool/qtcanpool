@@ -6,6 +6,7 @@
 
 #include <QMouseEvent>
 #include <QRubberBand>
+#include <QPointer>
 
 QX_DOCK_BEGIN_NAMESPACE
 

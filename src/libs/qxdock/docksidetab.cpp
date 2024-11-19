@@ -16,6 +16,7 @@
 #include "dockwindow.h"
 
 #include <QElapsedTimer>
+#include <QApplication>
 
 QX_DOCK_BEGIN_NAMESPACE
 

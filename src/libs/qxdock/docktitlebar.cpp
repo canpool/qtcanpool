@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QPointer>
 
 QX_DOCK_BEGIN_NAMESPACE
 

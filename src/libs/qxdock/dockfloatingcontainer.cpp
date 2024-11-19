@@ -16,6 +16,7 @@
 #include <QEvent>
 #include <QCloseEvent>
 #include <QApplication>
+#include <QPointer>
 
 #ifdef Q_OS_WIN
 #include <windows.h>

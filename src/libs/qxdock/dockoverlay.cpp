@@ -16,6 +16,7 @@
 #include <QGridLayout>
 #include <QWindow>
 #include <QLabel>
+#include <QPointer>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -828,6 +829,7 @@ void DockOverlayCross::setAreaWidgets(const QHash<Qx::DockWidgetArea, QWidget *>
 
 void DockOverlayCross::showEvent(QShowEvent *e)
 {
+    Q_UNUSED(e);
     Q_D(DockOverlayCross);
     if (d->m_updateRequired) {
         setupOverlayCross(d->m_mode);
