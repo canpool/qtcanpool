@@ -12,6 +12,10 @@
 #include "docktitlebar.h"
 #include "dockmanager.h"
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#include "linux/dockfloatingtitlebar.h"
+#endif
+
 #include <QApplication>
 #include <QPointer>
 
@@ -34,6 +38,21 @@ static void updateDockPanelFocusStyle(DockPanel *panel, bool focused)
     internal::repolishStyle(panel->titleBar());
 }
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+static void updateFloatingWidgetFocusStyle(DockFloatingContainer *floatingWidget, bool focused)
+{
+    if (floatingWidget->hasNativeTitleBar()) {
+        return;
+    }
+    auto titleBar = qobject_cast<DockFloatingTitleBar *>(floatingWidget->titleBarWidget());
+    if (!titleBar) {
+        return;
+    }
+    titleBar->setProperty("focused", focused);
+    titleBar->updateStyle();
+}
+#endif
+
 class DockFocusControllerPrivate
 {
 public:
@@ -46,6 +65,9 @@ public:
     QPointer<DockWidget> m_focusedDockWidget = nullptr;
     QPointer<DockWidget> m_oldFocusedDockWidget = nullptr;
     QPointer<DockPanel> m_focusedPanel = nullptr;
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    QPointer<DockFloatingContainer> m_floatingWidget = nullptr;
+#endif
     bool m_tabPressed = false;
     bool m_forceFocusChangedSignal = false;
 };
@@ -102,6 +124,21 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(DockWidget *dockWidget)
         newFloatingWidget->setProperty(s_focusedDockWidgetProperty,
                                        QVariant::fromValue(QPointer<DockWidget>(dockWidget)));
     }
+
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    // This code is required for styling the floating widget titlebar for linux
+    // depending on the current focus state
+    if (m_floatingWidget != newFloatingWidget) {
+        if (m_floatingWidget) {
+            updateFloatingWidgetFocusStyle(m_floatingWidget, false);
+        }
+        m_floatingWidget = newFloatingWidget;
+
+        if (m_floatingWidget) {
+            updateFloatingWidgetFocusStyle(m_floatingWidget, true);
+        }
+    }
+#endif
 
     if (old == dockWidget && !m_forceFocusChangedSignal) {
         return;
@@ -221,10 +258,15 @@ void DockFocusController::onApplicationFocusChanged(QWidget *focusedOld, QWidget
     if (!dockWidget) {
         dockWidget = internal::findParent<DockWidget *>(focusedNow);
     }
-
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    if (!dockWidget) {
+        return;
+    }
+#else
     if (!dockWidget || dockWidget->tab()->isHidden()) {
         return;
     }
+#endif
 
     d->updateDockWidgetFocus(dockWidget);
 }

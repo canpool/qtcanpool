@@ -14,6 +14,10 @@
 #include "dockutils.h"
 #include "dockstatereader.h"
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#include "linux/dockfloatingtitlebar.h"
+#endif
+
 #include <QWindowStateChangeEvent>
 #include <QXmlStreamWriter>
 #include <QFile>
@@ -21,6 +25,7 @@
 #include <QTextStream>
 #include <QPointer>
 #include <QDebug>
+#include <QApplication>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -95,6 +100,9 @@ void DockWindowPrivate::loadStylesheet()
     QString result;
     QString fileName = ":/qxdock/res/stylesheets/";
     fileName += DockManager::testConfigFlag(DockManager::FocusHighlighting) ? "focus_highlighting" : "default";
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    fileName += "_linux";
+#endif
     fileName += ".css";
     QFile styleSheetFile(fileName);
     styleSheetFile.open(QIODevice::ReadOnly);
@@ -332,6 +340,18 @@ DockWindow::DockWindow(QWidget *parent)
     Q_D(DockWindow);
     d->init();
     registerDockContainer(this);
+
+    window()->installEventFilter(this);
+
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    connect(qApp, &QApplication::focusWindowChanged, [](QWindow *focusWindow) {
+        // bring modal dialogs to foreground to ensure that they are in front of any
+        // floating dock widget
+        if (focusWindow && focusWindow->isModal()) {
+            focusWindow->raise();
+        }
+    });
+#endif
 }
 
 DockWindow::~DockWindow()
@@ -812,6 +832,65 @@ DockFocusController *DockWindow::dockFocusController() const
     return d->m_focusController;
 }
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+bool DockWindow::eventFilter(QObject *obj, QEvent *e)
+{
+    Q_D(DockWindow);
+    // Emulate Qt:Tool behaviour.
+    // Required because on some WMs Tool windows can't be maximized.
+
+    // Window always on top of the MainWindow.
+    if (e->type() == QEvent::WindowActivate) {
+        for (auto _window : d->m_floatingContainers) {
+            if (!_window->isVisible() || window()->isMinimized()) {
+                continue;
+            }
+            // setWindowFlags(Qt::WindowStaysOnTopHint) will hide the window and thus requires a show call.
+            // This then leads to flickering and a nasty endless loop (also buggy behaviour on Ubuntu).
+            // So we just do it ourself.
+            if (QGuiApplication::platformName() == QLatin1String("xcb")) {
+                internal::xcb_update_prop(true, _window->window()->winId(), "_NET_WM_STATE", "_NET_WM_STATE_ABOVE",
+                                          "_NET_WM_STATE_STAYS_ON_TOP");
+            } else {
+                _window->setWindowFlag(Qt::WindowStaysOnTopHint, true);
+            }
+        }
+    } else if (e->type() == QEvent::WindowDeactivate) {
+        for (auto _window : d->m_floatingContainers) {
+            if (!_window->isVisible() || window()->isMinimized()) {
+                continue;
+            }
+
+            if (QGuiApplication::platformName() == QLatin1String("xcb")) {
+                internal::xcb_update_prop(false, _window->window()->winId(), "_NET_WM_STATE", "_NET_WM_STATE_ABOVE",
+                                          "_NET_WM_STATE_STAYS_ON_TOP");
+            } else {
+                _window->setWindowFlag(Qt::WindowStaysOnTopHint, false);
+            }
+            _window->raise();
+        }
+    }
+
+    // Sync minimize with MainWindow
+    if (e->type() == QEvent::WindowStateChange) {
+        for (auto _window : d->m_floatingContainers) {
+            if (!_window->isVisible()) {
+                continue;
+            }
+
+            if (window()->isMinimized()) {
+                _window->showMinimized();
+            } else {
+                _window->setWindowState(_window->windowState() & (~Qt::WindowMinimized));
+            }
+        }
+        if (!window()->isMinimized()) {
+            QApplication::setActiveWindow(window());
+        }
+    }
+    return Super::eventFilter(obj, e);
+}
+#else
 bool DockWindow::eventFilter(QObject *obj, QEvent *e)
 {
     Q_D(DockWindow);
@@ -824,5 +903,6 @@ bool DockWindow::eventFilter(QObject *obj, QEvent *e)
     }
     return Super::eventFilter(obj, e);
 }
+#endif
 
 QX_DOCK_END_NAMESPACE

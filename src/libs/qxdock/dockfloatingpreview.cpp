@@ -253,6 +253,12 @@ DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent)
         setAttribute(Qt::WA_TranslucentBackground);
     }
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    auto flags = windowFlags();
+    flags |= Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint;
+    setWindowFlags(flags);
+#endif
+
     // Create a static image of the widget that should get undocked
     // This is like some kind preview image like it is uses in drag and drop
     // operations

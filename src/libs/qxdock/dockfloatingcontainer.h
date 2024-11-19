@@ -7,8 +7,13 @@
 #include "qxdock_global.h"
 #include "dockfloatingwidget.h"
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#include <QDockWidget>
+#define DockFloatingContainerBase QDockWidget
+#else
 #include <QWidget>
 #define DockFloatingContainerBase QWidget
+#endif
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -41,6 +46,15 @@ public:
 
     void finishDropOperation();
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    void onMaximizeRequest();
+    void showNormal(bool fixGeometry=false);
+    void showMaximized();
+    bool isMaximized() const;
+    void show();
+    bool hasNativeTitleBar();
+#endif
+
 private Q_SLOTS:
     void onDockAreasAddedOrRemoved();
     void onDockAreaCurrentChanged(int index);
@@ -62,6 +76,15 @@ protected:
     virtual void showEvent(QShowEvent *event) override;
     virtual void changeEvent(QEvent *event) override;
 
+#ifdef Q_OS_MACOS
+    virtual bool event(QEvent *e) override;
+    virtual void moveEvent(QMoveEvent *e) override;
+#elif defined(Q_OS_UNIX)
+    virtual void moveEvent(QMoveEvent *e) override;
+    virtual void resizeEvent(QResizeEvent *e) override;
+    virtual bool event(QEvent *e) override;
+#endif
+
 #ifdef Q_OS_WIN
     /**
      * Native event filter for handling WM_MOVING messages on Windows
@@ -79,6 +102,7 @@ private:
     friend class DockWidget;
     friend class DockPanel;
     friend class DockWindowPrivate;
+    friend class DockFloatingTitleBar;
 };
 
 QX_DOCK_END_NAMESPACE

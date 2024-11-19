@@ -38,6 +38,9 @@ public:
         FocusHighlighting = 0x200000,
         EqualSplitOnInsertion = 0x400000,
 
+        FloatingContainerForceNativeTitleBar = 0x800000,
+        FloatingContainerForceQWidgetTitleBar = 0x1000000,
+
         MiddleMouseButtonClosesTab = 0x2000000,
         DisableTabTextEliding =      0x4000000,
         ShowTabTextOnlyForActiveTab = 0x8000000,

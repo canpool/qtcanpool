@@ -79,7 +79,11 @@ DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
     d->m_mode = mode;
     d->m_cross = new DockOverlayCross(this);
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+#else
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+#endif
     setWindowOpacity(1);
     setWindowTitle("DockOverlay");
     setAttribute(Qt::WA_NoSystemBackground);
@@ -635,8 +639,11 @@ DockOverlayCross::DockOverlayCross(DockOverlay *overlay)
     Q_D(DockOverlayCross);
     d->m_dockOverlay = overlay;
     d->init();
-
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+    setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+#else
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+#endif
     setWindowTitle("DockOverlayCross");
     setAttribute(Qt::WA_TranslucentBackground);
 }

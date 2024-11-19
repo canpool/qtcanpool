@@ -7,6 +7,8 @@ DEFINES += QX_DOCK_LIBRARY
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES -= QT_NO_JAVA_STYLE_ITERATORS QT_RESTRICTED_CAST_FROM_ASCII
 
+INCLUDEPATH += $$PWD
+
 PUBLIC_HEADERS = \
     $$PWD/qxdock_global.h \
     $$PWD/dockcontainer.h \
@@ -67,3 +69,10 @@ SOURCES += \
 
 RESOURCES += \
     $$PWD/res.qrc
+
+unix:!macx {
+    HEADERS += $$PWD/linux/dockfloatingtitlebar.h
+    SOURCES += $$PWD/linux/dockfloatingtitlebar.cpp
+    LIBS += -lxcb
+    QT += gui-private
+}
