@@ -43,6 +43,7 @@ public:
 
     DockWidget *topLevelDockWidget() const;
     QList<DockWidget *> dockWidgets() const;
+    bool hasTopLevelDockWidget() const;
 
     void finishDropOperation();
 

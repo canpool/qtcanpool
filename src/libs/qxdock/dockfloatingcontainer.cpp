@@ -379,6 +379,12 @@ QList<DockWidget *> DockFloatingContainer::dockWidgets() const
     return d->m_dockContainer->dockWidgets();
 }
 
+bool DockFloatingContainer::hasTopLevelDockWidget() const
+{
+    Q_D(const DockFloatingContainer);
+    return d->m_dockContainer->hasTopLevelDockWidget();
+}
+
 void DockFloatingContainer::finishDropOperation()
 {
     Q_D(DockFloatingContainer);
@@ -544,6 +550,13 @@ void DockFloatingContainer::moveFloating()
 
     case Qx::DockDraggingFloatingWidget:
         d->updateDropOverlays(QCursor::pos());
+#ifdef Q_OS_MACOS
+        // In OSX when hiding the PanelOverlay the application would set
+        // the main window as the active window for some reason. This fixes
+        // that by resetting the active window to the floating widget after
+        // updating the overlays.
+        activateWindow();
+#endif
         break;
     default:
         break;
