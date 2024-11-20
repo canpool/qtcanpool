@@ -13,6 +13,7 @@
 #include "dockautohidecontainer.h"
 #include "dockutils.h"
 #include "dockstatereader.h"
+#include "docksplitter.h"
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
 #include "linux/dockfloatingtitlebar.h"
@@ -26,6 +27,7 @@
 #include <QPointer>
 #include <QDebug>
 #include <QApplication>
+#include <QAction>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -61,6 +63,7 @@ public:
     QList<DockContainer *> m_containers;
     QMap<QString, DockWidget *> m_dockWidgetsMap;
     QList<QPointer<DockFloatingContainer>> m_floatingContainers;
+    QList<QPointer<DockFloatingContainer>> m_hiddenFloatingContainers;
     QVector<DockFloatingContainer *> m_uninitializedFloatingWidgets;
     QMap<QString, QByteArray> m_perspectives;
     DockWidget *m_centralWidget = nullptr;
@@ -439,6 +442,15 @@ DockPanel *DockWindow::addDockWidgetTab(DockWidget *w, DockPanel *p, int index)
     return addDockWidget(Qx::CenterDockWidgetArea, w, p, index);
 }
 
+DockPanel *DockWindow::addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w, DockContainer *container)
+{
+    Q_D(DockWindow);
+    d->mapDockWidget(w);
+    auto panel = container->addDockWidget(area, w);
+    Q_EMIT dockWidgetAdded(w);
+    return panel;
+}
+
 void DockWindow::removeDockWidget(DockWidget *w)
 {
     Q_D(DockWindow);
@@ -497,6 +509,12 @@ const QList<DockContainer *> DockWindow::dockContainers() const
 {
     Q_D(const DockWindow);
     return d->m_containers;
+}
+
+QMap<QString, DockWidget *> DockWindow::dockWidgetsMap() const
+{
+    Q_D(const DockWindow);
+    return d->m_dockWidgetsMap;
 }
 
 DockWidget *DockWindow::centralWidget() const
@@ -604,6 +622,29 @@ void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures f
     // the state of the close and detach buttons
     for (auto w : d->m_dockWidgetsMap) {
         w->notifyFeaturesChanged();
+    }
+}
+
+QList<int> DockWindow::splitterSizes(DockPanel *panel) const
+{
+    if (panel) {
+        auto splitter = panel->parentSplitter();
+        if (splitter) {
+            return splitter->sizes();
+        }
+    }
+    return QList<int>();
+}
+
+void DockWindow::setSplitterSizes(DockPanel *panel, const QList<int> &sizes)
+{
+    if (!panel) {
+        return;
+    }
+
+    auto splitter = panel->parentSplitter();
+    if (splitter && splitter->count() == sizes.count()) {
+        splitter->setSizes(sizes);
     }
 }
 
@@ -771,6 +812,35 @@ void DockWindow::openPerspective(const QString &perspectiveName)
     Q_EMIT perspectiveOpened(perspectiveName);
 }
 
+void DockWindow::hideWindowAndFloatingWidgets()
+{
+    Q_D(DockWindow);
+    hide();
+
+    d->m_hiddenFloatingContainers.clear();
+    // Hide updates of floating widgets from user
+    for (auto floatingWidget : d->m_floatingContainers) {
+        if (floatingWidget->isVisible()) {
+            QList<DockWidget *> visibleWidgets;
+            for (auto dockWidget : floatingWidget->dockWidgets()) {
+                if (dockWidget->toggleViewAction()->isChecked())
+                    visibleWidgets.push_back(dockWidget);
+            }
+
+            // save as floating widget to be shown when CDockManager will be shown back
+            d->m_hiddenFloatingContainers.push_back(floatingWidget);
+            floatingWidget->hide();
+
+            // hiding floating widget automatically marked contained CDockWidgets as hidden
+            // but they must remain marked as visible as we want them to be restored visible
+            // when CDockManager will be shown back
+            for (auto dockWidget : visibleWidgets) {
+                dockWidget->toggleViewAction()->setChecked(true);
+            }
+        }
+    }
+}
+
 void DockWindow::registerDockContainer(DockContainer *container)
 {
     Q_D(DockWindow);
@@ -830,6 +900,36 @@ DockFocusController *DockWindow::dockFocusController() const
 {
     Q_D(const DockWindow);
     return d->m_focusController;
+}
+
+void DockWindow::restoreHiddenFloatingWidgets()
+{
+    Q_D(DockWindow);
+    if (d->m_hiddenFloatingContainers.isEmpty()) {
+        return;
+    }
+
+    // Restore floating widgets that were hidden upon hideWindowAndFloatingWidgets
+    for (auto floatingWidget : d->m_hiddenFloatingContainers) {
+        bool hasDockWidgetVisible = false;
+
+        // Needed to prevent DockFloatingContainer being shown empty
+        // Could make sense to move this to DockFloatingContainer::showEvent(QShowEvent *event)
+        // if experiencing DockFloatingContainer being shown empty in other situations, but let's keep
+        // it here for now to make sure changes to fix Issue #380 does not impact existing behaviours
+        for (auto dockWidget : floatingWidget->dockWidgets()) {
+            if (dockWidget->toggleViewAction()->isChecked()) {
+                dockWidget->toggleView(true);
+                hasDockWidgetVisible = true;
+            }
+        }
+
+        if (hasDockWidgetVisible) {
+            floatingWidget->show();
+        }
+    }
+
+    d->m_hiddenFloatingContainers.clear();
 }
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
@@ -904,5 +1004,26 @@ bool DockWindow::eventFilter(QObject *obj, QEvent *e)
     return Super::eventFilter(obj, e);
 }
 #endif
+
+void DockWindow::showEvent(QShowEvent *e)
+{
+    Q_D(DockWindow);
+    Super::showEvent(e);
+
+    // Fix Issue #380
+    restoreHiddenFloatingWidgets();
+    if (d->m_uninitializedFloatingWidgets.empty()) {
+        return;
+    }
+
+    for (auto floatingWidget : d->m_uninitializedFloatingWidgets) {
+        // Check, if someone closed a floating dock widget before the dock
+        // manager is shown
+        if (floatingWidget->dockContainer()->hasOpenDockPanels()) {
+            floatingWidget->show();
+        }
+    }
+    d->m_uninitializedFloatingWidgets.clear();
+}
 
 QX_DOCK_END_NAMESPACE

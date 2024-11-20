@@ -34,6 +34,7 @@ public:
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
     DockPanel *addDockWidgetTab(Qx::DockWidgetArea area, DockWidget *w);
     DockPanel *addDockWidgetTab(DockWidget *w, DockPanel *p, int index = 1);
+    DockPanel *addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w, DockContainer *container);
     void removeDockWidget(DockWidget *w);
     DockWidget *findDockWidget(const QString &objectName) const;
 
@@ -44,6 +45,7 @@ public:
     DockFloatingContainer *addDockWidgetFloating(DockWidget *w);
 
     const QList<DockContainer *> dockContainers() const;
+    QMap<QString, DockWidget *> dockWidgetsMap() const;
 
     DockWidget *centralWidget() const;
     DockPanel *setCentralWidget(DockWidget *widget);
@@ -57,6 +59,9 @@ public:
 
     DockWidget::DockWidgetFeatures globallyLockedDockWidgetFeatures() const;
     void lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures features = DockWidget::GloballyLockableFeatures);
+
+    QList<int> splitterSizes(DockPanel *panel) const;
+    void setSplitterSizes(DockPanel *panel, const QList<int> &sizes);
 
     QByteArray saveState(int version = 0) const;
     bool restoreState(const QByteArray &state, int version = 0);
@@ -87,6 +92,7 @@ public Q_SLOTS:
     void setDockWidgetFocused(DockWidget *w);
     void endLeavingMinimizedState();
     void openPerspective(const QString &perspectiveName);
+    void hideWindowAndFloatingWidgets();
 
 protected:
     void registerDockContainer(DockContainer *container);
@@ -102,8 +108,11 @@ protected:
 
     DockFocusController *dockFocusController() const;
 
+    void restoreHiddenFloatingWidgets();
+
 protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
+    virtual void showEvent(QShowEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockWindow)
