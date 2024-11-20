@@ -112,6 +112,7 @@ public:
     void setToggleViewActionChecked(bool checked);
 
     virtual QList<QAction *> titleBarActions() const;
+    void setTitleBarActions(QList<QAction *> actions);
 
     MinimumSizeHintMode minimumSizeHintMode() const;
     void setMinimumSizeHintMode(MinimumSizeHintMode mode);
@@ -135,6 +136,13 @@ public:
     bool isAutoHide() const;
     DockAutoHideContainer *autoHideContainer() const;
     Qx::DockSideBarArea autoHideArea() const;
+
+    using FactoryFunc = std::function<QWidget *(QWidget *)>;
+    void setWidgetFactory(FactoryFunc createWidget, WidgetInsertMode insertMode = AutoScrollArea);
+
+#ifndef QT_NO_TOOLTIP
+    void setTabToolTip(const QString &text);
+#endif
 
 public Q_SLOTS:
     void toggleView(bool open = true);

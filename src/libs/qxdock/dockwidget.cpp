@@ -27,6 +27,11 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockWidgetPrivate
 {
 public:
+    struct WidgetFactory {
+        DockWidget::FactoryFunc createWidget;
+        DockWidget::WidgetInsertMode insertMode;
+    };
+
     QX_DECLARE_PUBLIC(DockWidget)
 public:
     DockWidgetPrivate();
@@ -39,6 +44,7 @@ public:
 
     void setupToolBar();
     void setupScrollArea();
+    bool createWidgetFromFactory();
     void setToolBarStyleFromDockWindow();
 public:
     DockWindow *m_window = nullptr;
@@ -60,6 +66,7 @@ public:
     QSize m_toolBarIconSizeDocked = QSize(16, 16);
     QSize m_toolBarIconSizeFloating = QSize(24, 24);
     QToolBar *m_toolBar = nullptr;
+    WidgetFactory *m_factory = nullptr;
 };
 
 DockWidgetPrivate::DockWidgetPrivate()
@@ -81,6 +88,15 @@ void DockWidgetPrivate::init()
 void DockWidgetPrivate::showDockWidget()
 {
     Q_Q(DockWidget);
+
+    if (!m_widget) {
+        if (!createWidgetFromFactory()) {
+            Q_ASSERT(!m_features.testFlag(DockWidget::DeleteContentOnClose) &&
+                     "DeleteContentOnClose flag was set, but the widget "
+                     "factory is missing or it doesn't return a valid QWidget.");
+            return;
+        }
+    }
 
     if (!m_panel) {
         DockFloatingContainer *floatingWidget = new DockFloatingContainer(q);
@@ -196,6 +212,26 @@ void DockWidgetPrivate::setupScrollArea()
     m_layout->addWidget(m_scrollArea);
 }
 
+bool DockWidgetPrivate::createWidgetFromFactory()
+{
+    Q_Q(DockWidget);
+    if (!m_features.testFlag(DockWidget::DeleteContentOnClose)) {
+        return false;
+    }
+
+    if (!m_factory) {
+        return false;
+    }
+
+    QWidget *w = m_factory->createWidget(q);
+    if (!w) {
+        return false;
+    }
+
+    q->setWidget(w, m_factory->insertMode);
+    return true;
+}
+
 void DockWidgetPrivate::setToolBarStyleFromDockWindow()
 {
     Q_Q(DockWidget);
@@ -225,6 +261,7 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     d->m_toggleViewAction = new QAction(title, this);
     d->m_toggleViewAction->setCheckable(true);
     connect(d->m_toggleViewAction, SIGNAL(triggered(bool)), this, SLOT(toggleView(bool)));
+    setToolBarFloatingStyle(false);
 
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
         setFocusPolicy(Qt::ClickFocus);
@@ -458,6 +495,12 @@ QList<QAction *> DockWidget::titleBarActions() const
     return d->m_titleBarActions;
 }
 
+void DockWidget::setTitleBarActions(QList<QAction *> actions)
+{
+    Q_D(DockWidget);
+    d->m_titleBarActions = actions;
+}
+
 DockWidget::MinimumSizeHintMode DockWidget::minimumSizeHintMode() const
 {
     Q_D(const DockWidget);
@@ -501,6 +544,10 @@ void DockWidget::setIcon(const QIcon &icon)
 {
     Q_D(DockWidget);
     d->m_tab->setIcon(icon);
+
+    if (d->m_sideTab) {
+        d->m_sideTab->setIcon(icon);
+    }
 
     if (!d->m_toggleViewAction->isCheckable()) {
         d->m_toggleViewAction->setIcon(icon);
@@ -620,6 +667,32 @@ Qx::DockSideBarArea DockWidget::autoHideArea() const
 {
     return isAutoHide() ? autoHideContainer()->sideBarArea() : Qx::DockSideBarNone;
 }
+
+void DockWidget::setWidgetFactory(DockWidget::FactoryFunc createWidget, DockWidget::WidgetInsertMode insertMode)
+{
+    Q_D(DockWidget);
+    if (d->m_factory) {
+        delete d->m_factory;
+    }
+
+    d->m_factory = new DockWidgetPrivate::WidgetFactory{createWidget, insertMode};
+}
+
+#ifndef QT_NO_TOOLTIP
+void DockWidget::setTabToolTip(const QString &text)
+{
+    Q_D(DockWidget);
+    if (d->m_tab) {
+        d->m_tab->setToolTip(text);
+    }
+    if (d->m_toggleViewAction) {
+        d->m_toggleViewAction->setToolTip(text);
+    }
+    if (d->m_panel) {
+        d->m_panel->markTitleBarMenuOutdated();   // update tabs menu
+    }
+}
+#endif
 
 void DockWidget::toggleView(bool open)
 {
