@@ -42,6 +42,14 @@ public:
     DockSideBar *sideBar() const;
     int tabIndex() const;
 
+public Q_SLOTS:
+    void setDockWidgetFloating();
+    void unpinDockWidget();
+    void requestCloseDockWidget();
+
+private Q_SLOTS:
+    void onAutoHideToActionClicked();
+
 protected:
     void setSideBar(DockSideBar *sideBar);
     void removeFromSideBar();
@@ -49,6 +57,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void mouseMoveEvent(QMouseEvent *e) override;
+    virtual void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockSideTab)

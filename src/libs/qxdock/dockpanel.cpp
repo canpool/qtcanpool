@@ -560,6 +560,12 @@ void DockPanel::toggleAutoHide(Qx::DockSideBarArea area)
     setAutoHide(!isAutoHide(), area);
 }
 
+void DockPanel::setFloating()
+{
+    Q_D(DockPanel);
+    d->m_titleBar->setAreaFloating();
+}
+
 void DockPanel::toggleView(bool open)
 {
     setVisible(open);

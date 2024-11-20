@@ -17,6 +17,7 @@
 
 #include <QElapsedTimer>
 #include <QApplication>
+#include <QMenu>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -30,11 +31,9 @@ public:
 
     DockContainer *dockContainer() const;
     void forwardEventToDockContainer(QEvent *event);
+    QAction *createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu);
     void saveDragStartMousePosition(const QPoint &globalPos);
-    bool isDraggingState(Qx::DockDragState dragState) const
-    {
-        return this->m_dragState == dragState;
-    }
+    bool isDraggingState(Qx::DockDragState dragState) const;
     bool startFloating(Qx::DockDragState draggingState = Qx::DockDraggingFloatingWidget);
 
     template <typename T> DockFloatingWidget *createFloatingWidget(T *widget)
@@ -91,11 +90,26 @@ void DockSideTabPrivate::forwardEventToDockContainer(QEvent *event)
     }
 }
 
+QAction *DockSideTabPrivate::createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu)
+{
+    Q_Q(DockSideTab);
+    auto action = menu->addAction(title);
+    action->setProperty(internal::LocationProperty, area);
+    QObject::connect(action, &QAction::triggered, q, &DockSideTab::onAutoHideToActionClicked);
+    action->setEnabled(area != q->sideBarArea());
+    return action;
+}
+
 void DockSideTabPrivate::saveDragStartMousePosition(const QPoint &globalPos)
 {
     Q_Q(DockSideTab);
     m_globalDragStartMousePosition = globalPos;
     m_dragStartMousePosition = q->mapFromGlobal(globalPos);
+}
+
+bool DockSideTabPrivate::isDraggingState(Qx::DockDragState dragState) const
+{
+    return this->m_dragState == dragState;
 }
 
 bool DockSideTabPrivate::startFloating(Qx::DockDragState draggingState)
@@ -237,6 +251,31 @@ int DockSideTab::tabIndex() const
     return d->m_sideBar->indexOfTab(*this);
 }
 
+void DockSideTab::setDockWidgetFloating()
+{
+    Q_D(DockSideTab);
+    d->m_dockWidget->setFloating();
+}
+
+void DockSideTab::unpinDockWidget()
+{
+    Q_D(DockSideTab);
+    d->m_dockWidget->setAutoHide(false);
+}
+
+void DockSideTab::requestCloseDockWidget()
+{
+    Q_D(DockSideTab);
+    d->m_dockWidget->requestCloseDockWidget();
+}
+
+void DockSideTab::onAutoHideToActionClicked()
+{
+    Q_D(DockSideTab);
+    int location = sender()->property(internal::LocationProperty).toInt();
+    d->m_dockWidget->setAutoHide(true, (Qx::DockSideBarArea)location);
+}
+
 void DockSideTab::setSideBar(DockSideBar *sideBar)
 {
     Q_D(DockSideTab);
@@ -366,6 +405,36 @@ void DockSideTab::mouseMoveEvent(QMouseEvent *e)
     }
 
     Super::mouseMoveEvent(e);
+}
+
+void DockSideTab::contextMenuEvent(QContextMenuEvent *e)
+{
+    Q_D(DockSideTab);
+    e->accept();
+    d->saveDragStartMousePosition(e->globalPos());
+
+    const bool isFloatable = d->m_dockWidget->features().testFlag(DockWidget::DockWidgetFloatable);
+    QAction *action;
+    QMenu menu(this);
+
+    action = menu.addAction(tr("Detach"), this, SLOT(setDockWidgetFloating()));
+    action->setEnabled(isFloatable);
+    auto IsPinnable = d->m_dockWidget->features().testFlag(DockWidget::DockWidgetPinnable);
+    action->setEnabled(IsPinnable);
+
+    auto pinMenu = menu.addMenu(tr("Pin To..."));
+    pinMenu->setEnabled(IsPinnable);
+    d->createAutoHideToAction(tr("Top"), Qx::DockSideBarTop, pinMenu);
+    d->createAutoHideToAction(tr("Left"), Qx::DockSideBarLeft, pinMenu);
+    d->createAutoHideToAction(tr("Right"), Qx::DockSideBarRight, pinMenu);
+    d->createAutoHideToAction(tr("Bottom"), Qx::DockSideBarBottom, pinMenu);
+
+    action = menu.addAction(tr("Unpin (Dock)"), this, SLOT(unpinDockWidget()));
+    menu.addSeparator();
+    action = menu.addAction(tr("Close"), this, SLOT(requestCloseDockWidget()));
+    action->setEnabled(d->m_dockWidget->features().testFlag(DockWidget::DockWidgetClosable));
+
+    menu.exec(e->globalPos());
 }
 
 QX_DOCK_END_NAMESPACE

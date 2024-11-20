@@ -288,6 +288,10 @@ DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, 
     DockFloatingContainer *floatingContainer = nullptr;
     DockFloatingWidget *floatingWidget;
     if (needCreateFloatingContainer) {
+        if (m_panel->autoHideContainer()) {
+            // detach sidetab should clean the auto hide container
+            m_panel->autoHideContainer()->cleanupAndDelete();
+        }
         floatingWidget = floatingContainer = new DockFloatingContainer(m_panel);
     } else {
         auto w = new DockFloatingPreview(m_panel);
@@ -466,6 +470,24 @@ bool DockTitleBar::isAutoHide() const
 {
     Q_D(const DockTitleBar);
     return d->m_panel && d->m_panel->isAutoHide();
+}
+
+void DockTitleBar::setAreaFloating()
+{
+    Q_D(DockTitleBar);
+    // If this is the last dock panel in a dock container it does not make
+    // sense to move it to a new floating widget and leave this one
+    // empty.
+    auto container = d->m_panel->dockContainer();
+    if (container->isFloating() && container->dockPanelCount() == 1 && !d->m_panel->isAutoHide()) {
+        return;
+    }
+
+    if (!d->m_panel->features().testFlag(DockWidget::DockWidgetFloatable)) {
+        return;
+    }
+
+    d->makeAreaFloating(mapFromGlobal(QCursor::pos()), Qx::DockDraggingInactive);
 }
 
 void DockTitleBar::markTabsMenuOutdated()

@@ -41,6 +41,8 @@ public:
 
     bool isAutoHide() const;
 
+    void setAreaFloating();
+
 Q_SIGNALS:
     void tabBarClicked(int index);
 

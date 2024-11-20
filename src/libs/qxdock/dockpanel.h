@@ -91,6 +91,7 @@ public Q_SLOTS:
     void closeOtherAreas();
     void setAutoHide(bool enable, Qx::DockSideBarArea area = Qx::DockSideBarNone, int tabIndex = -1);
     void toggleAutoHide(Qx::DockSideBarArea area = Qx::DockSideBarNone);
+    void setFloating();
 
 protected Q_SLOTS:
     void toggleView(bool open);

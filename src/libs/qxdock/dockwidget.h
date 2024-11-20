@@ -147,6 +147,7 @@ public Q_SLOTS:
     void raise();
     void showFullScreen();
     void showNormal();
+    void setFloating();
 
 private Q_SLOTS:
     void setToolBarFloatingStyle(bool floating);

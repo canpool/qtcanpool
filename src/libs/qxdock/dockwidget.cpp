@@ -740,6 +740,20 @@ void DockWidget::showNormal()
     }
 }
 
+void DockWidget::setFloating()
+{
+    Q_D(DockWidget);
+    if (isClosed()) {
+        return;
+    }
+
+    if (this->isAutoHide()) {
+        dockPanel()->setFloating();
+    } else {
+        d->m_tab->detachDockWidget();
+    }
+}
+
 void DockWidget::setToolBarFloatingStyle(bool floating)
 {
     Q_D(DockWidget);
