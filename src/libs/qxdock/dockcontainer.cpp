@@ -23,7 +23,36 @@
 #include <QPointer>
 #include <QTextStream>
 
+#if QT_VERSION < 0x050900
+
+inline char toHexLower(uint value)
+{
+    return "0123456789abcdef"[value & 0xF];
+}
+
+QByteArray qByteArrayToHex(const QByteArray &src, char separator)
+{
+    if (src.size() == 0)
+        return QByteArray();
+
+    const int length = separator ? (src.size() * 3 - 1) : (src.size() * 2);
+    QByteArray hex(length, Qt::Uninitialized);
+    char *hexData = hex.data();
+    const uchar *data = reinterpret_cast<const uchar *>(src.data());
+    for (int i = 0, o = 0; i < src.size(); ++i) {
+        hexData[o++] = toHexLower(data[i] >> 4);
+        hexData[o++] = toHexLower(data[i] & 0xf);
+
+        if ((separator) && (o < length))
+            hexData[o++] = separator;
+    }
+    return hex;
+}
+#endif
+
 QX_DOCK_BEGIN_NAMESPACE
+
+static unsigned int s_zOrderCounter = 0;
 
 static void insertWidgetIntoSplitter(QSplitter *s, QWidget *w, bool append)
 {
@@ -71,6 +100,7 @@ public:
     void adjustSplitterSizesOnInsertion(QSplitter *s, qreal lastRatio = 1.0);
 
     bool widgetResizesWithContainer(QWidget *w);
+    void onDockAreaViewToggled(bool visible);
 
     DockPanel *addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w);
     DockPanel *addDockWidgetToPanel(Qx::DockWidgetArea area, DockWidget *w, DockPanel *targetPanel, int index = -1);
@@ -230,6 +260,15 @@ bool DockContainerPrivate::widgetResizesWithContainer(QWidget *w)
     return false;
 }
 
+void DockContainerPrivate::onDockAreaViewToggled(bool visible)
+{
+    Q_Q(DockContainer);
+    DockPanel *panel = qobject_cast<DockPanel *>(q->sender());
+    m_visibleDockPanelCount += visible ? 1 : -1;
+    onVisibleDockAreaCountChanged();
+    Q_EMIT q->dockAreaViewToggled(panel, visible);
+}
+
 DockPanel *DockContainerPrivate::addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w)
 {
     Q_Q(DockContainer);
@@ -331,10 +370,16 @@ void DockContainerPrivate::addDockPanelsToList(const QList<DockPanel *> ps)
     emitDockAreasAdded();
 }
 
-void DockContainerPrivate::appendPanels(const QList<DockPanel *> ps)
+void DockContainerPrivate::appendPanels(const QList<DockPanel *> panels)
 {
-    for (auto *p : ps) {
-        m_panels.append(p);
+    for (auto *panel : panels) {
+        m_panels.append(panel);
+    }
+    Q_Q(DockContainer);
+    for (auto *panel : panels) {
+        QObject::connect(panel, &DockPanel::viewToggled, q,
+                         std::bind(&DockContainerPrivate::onDockAreaViewToggled, this, std::placeholders::_1));
+        ;
     }
 }
 
@@ -657,12 +702,12 @@ void DockContainerPrivate::saveChildNodesState(QXmlStreamWriter &s, QWidget *w) 
         for (int i = 0; i < splitter->count(); ++i) {
             saveChildNodesState(s, splitter->widget(i));
         }
+        s.writeEndElement();
 
         s.writeStartElement("Sizes");
         for (auto Size : splitter->sizes()) {
             s.writeCharacters(QString::number(Size) + " ");
         }
-        s.writeEndElement();
         s.writeEndElement();
     } else {
         DockPanel *panel = qobject_cast<DockPanel *>(w);
@@ -982,6 +1027,18 @@ QList<DockWidget *> DockContainer::openedDockWidgets() const
         }
     }
     return result;
+}
+
+bool DockContainer::hasOpenDockPanels() const
+{
+    Q_D(const DockContainer);
+    for (auto panel : d->m_panels) {
+        if (panel && !panel->isHidden()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool DockContainer::hasTopLevelDockWidget() const
@@ -1519,6 +1576,19 @@ bool DockContainer::restoreState(DockStateReader &s, bool testing)
     delete li;
 
     return true;
+}
+
+bool DockContainer::event(QEvent *e)
+{
+    Q_D(DockContainer);
+    bool result = QWidget::event(e);
+    if (e->type() == QEvent::WindowActivate) {
+        d->m_zOrderIndex = ++s_zOrderCounter;
+    } else if (e->type() == QEvent::Show && !d->m_zOrderIndex) {
+        d->m_zOrderIndex = ++s_zOrderCounter;
+    }
+
+    return result;
 }
 
 QX_DOCK_END_NAMESPACE

@@ -45,6 +45,7 @@ public:
 
     QList<DockPanel *> openedDockPanels() const;
     QList<DockWidget *> openedDockWidgets() const;
+    bool hasOpenDockPanels() const;
     bool hasTopLevelDockWidget() const;
     int dockPanelCount() const;
     int visibleDockPanelCount() const;
@@ -64,6 +65,7 @@ Q_SIGNALS:
     void dockAreasAdded();
     void dockAreasRemoved();
     void autoHideWidgetCreated(DockAutoHideContainer *autoHideWidget);
+    void dockAreaViewToggled(DockPanel *panel, bool open);
 
 protected:
     DockSplitter *rootSplitter() const;
@@ -87,6 +89,9 @@ protected:
 
     void saveState(QXmlStreamWriter &s) const;
     bool restoreState(DockStateReader &s, bool testing);
+
+protected:
+    virtual bool event(QEvent *e) override;
 
 private:
     QX_DECLARE_PRIVATE(DockContainer)
