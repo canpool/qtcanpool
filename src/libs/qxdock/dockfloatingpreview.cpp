@@ -207,6 +207,10 @@ bool DockFloatingPreviewPrivate::isContentPinnable() const
 
 DockWidget::DockWidgetFeatures DockFloatingPreviewPrivate::contentFeatures() const
 {
+    DockWidget *widget = qobject_cast<DockWidget *>(m_content);
+    if (widget) {
+        return widget->features();
+    }
     DockPanel *panel = qobject_cast<DockPanel *>(m_content);
     if (panel) {
         return panel->features();
