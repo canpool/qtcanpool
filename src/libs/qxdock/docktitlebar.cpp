@@ -276,6 +276,9 @@ bool DockTitleBarPrivate::isDraggingState(Qx::DockDragState dragState) const
 
 void DockTitleBarPrivate::startFloating(const QPoint &offset)
 {
+    if (m_panel->autoHideContainer()) {
+        m_panel->autoHideContainer()->hide();
+    }
     m_floatingWidget = makeAreaFloating(offset, Qx::DockDraggingFloatingWidget);
     qApp->postEvent(m_panel, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
 }
@@ -423,6 +426,18 @@ void DockTitleBar::updateDockWidgetActionsButtons()
         d->m_layout->insertWidget(insertIndex++, btn, 0);
         d->m_dockWidgetActionsButtons.append(btn);
     }
+}
+
+void DockTitleBar::setVisible(bool visible)
+{
+    Super::setVisible(visible);
+    markTabsMenuOutdated();
+}
+
+void DockTitleBar::insertWidget(int index, QWidget *widget)
+{
+    Q_D(DockTitleBar);
+    d->m_layout->insertWidget(index, widget);
 }
 
 int DockTitleBar::indexOf(QWidget *widget) const

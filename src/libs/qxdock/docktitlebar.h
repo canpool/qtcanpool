@@ -36,6 +36,9 @@ public:
 
     void updateDockWidgetActionsButtons();
 
+    virtual void setVisible(bool visible) override;
+    void insertWidget(int index, QWidget *widget);
+
     int indexOf(QWidget *widget) const;
     QString titleBarButtonToolTip(Qx::DockTitleBarButton id) const;
 
