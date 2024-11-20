@@ -24,6 +24,7 @@ DockSplitter::DockSplitter(QWidget *parent)
     : QSplitter(parent)
 {
     QX_INIT_PRIVATE(DockSplitter);
+    setChildrenCollapsible(false);
 }
 
 DockSplitter::DockSplitter(Qt::Orientation orientation, QWidget *parent)
