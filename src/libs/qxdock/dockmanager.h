@@ -51,6 +51,7 @@ public:
 
         DefaultBaseConfig = DefaultDockAreaButtons
                           | ActiveTabHasCloseButton
+                          | XmlCompressionEnabled
                           | FloatingContainerHasWidgetTitle,
 
         DefaultOpaqueConfig = DefaultBaseConfig
