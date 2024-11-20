@@ -45,6 +45,7 @@ public:
     DockSplitter *parentSplitter() const;
 
     QRect titleBarGeometry() const;
+    QRect contentAreaGeometry() const;
 
     int dockWidgetsCount() const;
     QList<DockWidget *> dockWidgets() const;
@@ -72,6 +73,7 @@ public:
     void setDockAreaFlags(DockAreaFlags flags);
     void setDockAreaFlag(DockAreaFlag flag, bool on);
     bool isCentralWidgetArea() const;
+    bool containsCentralWidget() const;
 
     bool isTopLevelArea() const;
 
@@ -84,6 +86,8 @@ public:
     void saveState(QXmlStreamWriter &s) const;
     static bool restoreState(DockStateReader &s, DockPanel *&createdWidget,
                              bool testing, DockContainer *parentContainer);
+
+    virtual QSize minimumSizeHint() const override;
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
@@ -108,6 +112,7 @@ Q_SIGNALS:
     void currentChanging(int index);
     void currentChanged(int index);
     void viewToggled(bool open);
+    void tabBarClicked(int index);
 
 protected:
     void addDockWidget(DockWidget *w);
@@ -121,6 +126,11 @@ protected:
     void internalSetCurrentDockWidget(DockWidget *w);
     void updateTitleBarButtonVisibility(bool isTopLevel);
     void markTitleBarMenuOutdated();
+
+protected:
+#ifdef Q_OS_WIN
+    virtual bool event(QEvent *e) override;
+#endif
 
 private:
     QX_DECLARE_PRIVATE(DockPanel)

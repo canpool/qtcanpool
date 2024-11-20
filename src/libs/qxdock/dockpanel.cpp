@@ -171,6 +171,7 @@ public:
     DockTabBar *tabBar() const;
     void updateTitleBarButtonStates();
     void updateTitleBarButtonVisibility(bool isTopLevel);
+    void updateMinimumSizeHint();
 public:
     DockWindow *m_window = nullptr;
     QBoxLayout *m_layout = nullptr;
@@ -180,6 +181,7 @@ public:
     bool m_updateTitleBarButtons = false;
     Qx::DockWidgetAreas m_allowedAreas = s_defaultAllowedAreas;
     DockAutoHideContainer *m_autoHideContainer = nullptr;
+    QSize m_minSizeHint;
 };
 
 DockPanelPrivate::DockPanelPrivate()
@@ -266,6 +268,16 @@ void DockPanelPrivate::updateTitleBarButtonVisibility(bool isTopLevel)
     }
 }
 
+void DockPanelPrivate::updateMinimumSizeHint()
+{
+    m_minSizeHint = QSize();
+    for (int i = 0; i < m_contentsLayout->count(); ++i) {
+        auto widget = m_contentsLayout->widget(i);
+        m_minSizeHint.setHeight(qMax(m_minSizeHint.height(), widget->minimumSizeHint().height()));
+        m_minSizeHint.setWidth(qMax(m_minSizeHint.width(), widget->minimumSizeHint().width()));
+    }
+}
+
 DockPanel::DockPanel(DockWindow *window, DockContainer *parent)
     : Super{parent}
 {
@@ -303,6 +315,12 @@ QRect DockPanel::titleBarGeometry() const
 {
     Q_D(const DockPanel);
     return d->m_titleBar->geometry();
+}
+
+QRect DockPanel::contentAreaGeometry() const
+{
+    Q_D(const DockPanel);
+    return d->m_contentsLayout->geometry();
 }
 
 int DockPanel::dockWidgetsCount() const
@@ -455,6 +473,18 @@ bool DockPanel::isCentralWidgetArea() const
     }
 
     return dockWindow()->centralWidget() == dockWidgets().constFirst();
+}
+
+bool DockPanel::containsCentralWidget() const
+{
+    auto centralWidget = dockWindow()->centralWidget();
+    for (const auto &dockWidget : dockWidgets()) {
+        if (dockWidget == centralWidget) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool DockPanel::isTopLevelArea() const
@@ -758,6 +788,8 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
     tab->setVisible(!w->isClosed());
     d->m_titleBar->autoHideTitleLabel()->setText(w->windowTitle());
     w->setProperty(INDEX_PROPERTY, index);
+    d->m_minSizeHint.setHeight(qMax(d->m_minSizeHint.height(), w->minimumSizeHint().height()));
+    d->m_minSizeHint.setWidth(qMax(d->m_minSizeHint.width(), w->minimumSizeHint().width()));
     if (activate) {
         setCurrentIndex(index);
         // Set current index can show the widget without changing the close state,
@@ -815,6 +847,7 @@ void DockPanel::removeDockWidget(DockWidget *w)
     }
     d->updateTitleBarButtonStates();
     updateTitleBarVisibility();
+    d->updateMinimumSizeHint();
     auto topLevelWidget = container->topLevelDockWidget();
     if (topLevelWidget) {
         topLevelWidget->emitTopLevelChanged(true);
@@ -955,6 +988,26 @@ void DockPanel::markTitleBarMenuOutdated()
     }
 }
 
+#ifdef Q_OS_WIN
+/**
+ * Reimplements QWidget::event to handle QEvent::PlatformSurface
+ * This is here to fix issue #294 Tab refresh problem with a QGLWidget
+ * that exists since Qt version 5.12.7. So this function is here to
+ * work around a Qt issue.
+ */
+bool DockPanel::event(QEvent *e)
+{
+    switch (e->type()) {
+    case QEvent::PlatformSurface:
+        return true;
+    default:
+        break;
+    }
+
+    return Super::event(e);
+}
+#endif
+
 DockAutoHideContainer *DockPanel::autoHideContainer() const
 {
     Q_D(const DockPanel);
@@ -1082,6 +1135,20 @@ bool DockPanel::restoreState(DockStateReader &s, DockPanel *&createdWidget, bool
 
     createdWidget = panel;
     return true;
+}
+
+QSize DockPanel::minimumSizeHint() const
+{
+    Q_D(const DockPanel);
+    if (!d->m_minSizeHint.isValid()) {
+        return Super::minimumSizeHint();
+    }
+
+    if (d->m_titleBar->isVisible()) {
+        return d->m_minSizeHint + QSize(0, d->m_titleBar->minimumSizeHint().height());
+    } else {
+        return d->m_minSizeHint;
+    }
 }
 
 QX_DOCK_END_NAMESPACE
