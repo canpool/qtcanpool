@@ -43,6 +43,9 @@ public:
     int indexOfTab(const DockSideTab &tab) const;
     int count() const;
 
+    int visibleTabCount() const;
+    bool hasVisibleTabs() const;
+
     Qx::DockSideBarArea sideBarArea() const;
 
     virtual QSize minimumSizeHint() const override;
@@ -54,6 +57,9 @@ public:
 protected:
     void insertTab(int index, DockSideTab *sideTab);
     void saveState(QXmlStreamWriter &s) const;
+
+protected:
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
     QX_DECLARE_PRIVATE(DockSideBar)

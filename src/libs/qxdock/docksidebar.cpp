@@ -252,6 +252,31 @@ int DockSideBar::count() const
     return d->m_tabsLayout->count() - 1;
 }
 
+int DockSideBar::visibleTabCount() const
+{
+    int visibleTabCount = 0;
+    auto parentWidget = this->parentWidget();
+    for (auto i = 0; i < count(); i++) {
+        if (tab(i)->isVisibleTo(parentWidget)) {
+            visibleTabCount++;
+        }
+    }
+
+    return visibleTabCount;
+}
+
+bool DockSideBar::hasVisibleTabs() const
+{
+    auto parentWidget = this->parentWidget();
+    for (auto i = 0; i < count(); i++) {
+        if (tab(i)->isVisibleTo(parentWidget)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 Qx::DockSideBarArea DockSideBar::sideBarArea() const
 {
     Q_D(const DockSideBar);
@@ -321,6 +346,31 @@ void DockSideBar::saveState(QXmlStreamWriter &s) const
     }
 
     s.writeEndElement();
+}
+
+bool DockSideBar::eventFilter(QObject *watched, QEvent *event)
+{
+    auto tab = qobject_cast<DockSideTab *>(watched);
+    if (!tab) {
+        return false;
+    }
+
+    switch (event->type()) {
+    case QEvent::ShowToParent:
+        show();
+        break;
+
+    case QEvent::HideToParent:
+        if (!hasVisibleTabs()) {
+            hide();
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return false;
 }
 
 QX_DOCK_END_NAMESPACE
