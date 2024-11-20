@@ -46,6 +46,9 @@ public:
 
     void updateStyle();
 
+    void setElideMode(Qt::TextElideMode mode);
+    Qx::DockDragState dragState() const;
+
 Q_SIGNALS:
     void activeTabChanged();
     void clicked();
@@ -54,6 +57,9 @@ Q_SIGNALS:
     void moved(const QPoint &globalPos);
     void elidedChanged(bool elided);
 
+public Q_SLOTS:
+    virtual void setVisible(bool visible) override;
+
 private Q_SLOTS:
     void detachDockWidget();
     void autoHideDockWidget();
@@ -61,6 +67,7 @@ private Q_SLOTS:
     void onDockWidgetFeaturesChanged();
 
 protected:
+    virtual bool event(QEvent *e) override;
     virtual void mousePressEvent(QMouseEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void mouseMoveEvent(QMouseEvent *e) override;

@@ -420,6 +420,25 @@ void DockTab::updateStyle()
     internal::repolishStyle(this, internal::RepolishDirectChildren);
 }
 
+void DockTab::setElideMode(Qt::TextElideMode mode)
+{
+    Q_D(DockTab);
+    d->m_label->setElideMode(mode);
+}
+
+Qx::DockDragState DockTab::dragState() const
+{
+    Q_D(const DockTab);
+    return d->m_dragState;
+}
+
+void DockTab::setVisible(bool visible)
+{
+    Q_D(DockTab);
+    visible &= !d->m_dockWidget->features().testFlag(DockWidget::NoTab);
+    Super::setVisible(visible);
+}
+
 void DockTab::detachDockWidget()
 {
     Q_D(DockTab);
@@ -449,6 +468,24 @@ void DockTab::onDockWidgetFeaturesChanged()
     Q_D(DockTab);
     d->updateCloseButtonSizePolicy();
     d->updateCloseButtonVisibility(isActive());
+}
+
+bool DockTab::event(QEvent *e)
+{
+    Q_D(DockTab);
+#ifndef QT_NO_TOOLTIP
+    if (e->type() == QEvent::ToolTipChange) {
+        const auto text = toolTip();
+        d->m_label->setToolTip(text);
+        if (d->m_iconLabel) {
+            d->m_iconLabel->setToolTip(text);
+        }
+    }
+#endif
+    if (e->type() == QEvent::StyleChange) {
+        d->updateIcon();
+    }
+    return Super::event(e);
 }
 
 void DockTab::mousePressEvent(QMouseEvent *e)
