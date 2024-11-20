@@ -18,6 +18,8 @@ class QX_DOCK_EXPORT DockTabBar : public QScrollArea
 {
     Q_OBJECT
 public:
+    using Super = QScrollArea;
+public:
     explicit DockTabBar(DockPanel *parent = nullptr);
     virtual ~DockTabBar();
 
@@ -56,9 +58,16 @@ Q_SIGNALS:
     void currentChanged(int index);
     void tabBarClicked(int index);
     void tabCloseRequested(int index);
+    void tabClosed(int index);
+    void tabOpened(int index);
     void tabMoved(int from, int to);
     void removingTab(int index);
+    void tabInserted(int index);
     void elidedChanged(bool elided);
+
+protected:
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+    virtual void wheelEvent(QWheelEvent *event) override;
 
 private:
     QX_DECLARE_PRIVATE(DockTabBar)

@@ -8,6 +8,9 @@
 #include "docktab.h"
 
 #include <QBoxLayout>
+#include <QWheelEvent>
+#include <QScrollBar>
+#include <QTimer>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -56,6 +59,15 @@ void DockTabBarPrivate::updateTabs()
         if (i == m_currentIndex) {
             tab->show();
             tab->setActive(true);
+            // Sometimes the synchronous calculation of the rectangular area fails
+            // Therefore we use QTimer::singleShot here to execute the call
+            // within the event loop - see #520
+            // FIXME: Execute the following code to finish the program unexpectedly
+            /*
+            QTimer::singleShot(0, q, [&, tab] {
+                q->ensureWidgetVisible(tab);
+            });
+            */
         } else {
             tab->setActive(false);
         }
@@ -92,6 +104,8 @@ void DockTabBar::insertTab(int index, DockTab *tab)
     connect(tab, SIGNAL(closeOtherTabsRequested()), this, SLOT(onCloseOtherTabsRequested()));
     connect(tab, SIGNAL(moved(QPoint)), this, SLOT(onTabWidgetMoved(QPoint)));
     connect(tab, SIGNAL(elidedChanged(bool)), this, SIGNAL(elidedChanged(bool)));
+    tab->installEventFilter(this);
+    Q_EMIT tabInserted(index);
     if (index <= d->m_currentIndex) {
         setCurrentIndex(d->m_currentIndex + 1);
     } else if (d->m_currentIndex == -1) {
@@ -353,6 +367,57 @@ void DockTabBar::onTabWidgetMoved(const QPoint &globalPos)
     } else {
         // Ensure that the moved tab is reset to its start position
         d->m_tabsLayout->update();
+    }
+}
+
+bool DockTabBar::eventFilter(QObject *watched, QEvent *event)
+{
+    Q_D(DockTabBar);
+    bool result = Super::eventFilter(watched, event);
+    DockTab *tab = qobject_cast<DockTab *>(watched);
+    if (!tab) {
+        return result;
+    }
+
+    switch (event->type()) {
+    case QEvent::Hide:
+        Q_EMIT tabClosed(d->m_tabsLayout->indexOf(tab));
+        updateGeometry();
+        break;
+
+    case QEvent::Show:
+        Q_EMIT tabOpened(d->m_tabsLayout->indexOf(tab));
+        updateGeometry();
+        break;
+
+    // Setting the text of a tab will cause a LayoutRequest event
+    case QEvent::LayoutRequest:
+        updateGeometry();
+        break;
+
+    // Manage wheel event
+    case QEvent::Wheel:
+        // Ignore wheel events if tab is currently dragged
+        if (tab->dragState() == Qx::DockDraggingInactive) {
+            wheelEvent((QWheelEvent *)event);
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return result;
+}
+
+void DockTabBar::wheelEvent(QWheelEvent *event)
+{
+    event->accept();
+    const int direction = event->angleDelta().y();
+    if (direction < 0) {
+        horizontalScrollBar()->setValue(horizontalScrollBar()->value() + 20);
+    } else {
+        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - 20);
     }
 }
 
