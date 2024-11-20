@@ -108,6 +108,16 @@ void DockOverlay::setAllowedAreas(Qx::DockWidgetAreas areas)
     d->m_cross->reset();
 }
 
+void DockOverlay::setAllowedArea(Qx::DockWidgetArea area, bool enable)
+{
+    Q_D(DockOverlay);
+    auto areasOld = d->m_allowedAreas;
+    d->m_allowedAreas.setFlag(area, enable);
+    if (areasOld != d->m_allowedAreas) {
+        d->m_cross->reset();
+    }
+}
+
 Qx::DockWidgetAreas DockOverlay::allowedAreas() const
 {
     Q_D(const DockOverlay);
@@ -472,6 +482,14 @@ QWidget *DockOverlayCrossPrivate::createDropIndicatorWidget(Qx::DockWidgetArea d
 
     qreal metric = dropIndicatiorWidth(l);
     QSizeF size(metric, metric);
+    if (internal::isSideBarArea(dockWidgetArea)) {
+        auto area = internal::toSideBarArea(dockWidgetArea);
+        if (internal::isHorizontalSideBarArea(area)) {
+            size.setHeight(size.height() / 2);
+        } else {
+            size.setWidth(size.width() / 2);
+        }
+    }
 
     l->setPixmap(createHighDpiDropIndicatorPixmap(size, dockWidgetArea, mode));
     l->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);

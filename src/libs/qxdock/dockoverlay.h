@@ -26,6 +26,7 @@ public:
     virtual ~DockOverlay();
 
     void setAllowedAreas(Qx::DockWidgetAreas areas);
+    void setAllowedArea(Qx::DockWidgetArea area, bool enable);
     Qx::DockWidgetAreas allowedAreas() const;
     Qx::DockWidgetArea dropAreaUnderCursor();
     int tabIndexUnderCursor() const;
@@ -51,7 +52,30 @@ private:
 
 
 class DockOverlayCrossPrivate;
-
+/*!
+ * DockOverlayCross shows a cross with 5 different drop area possibilities.
+ * I could have handled everything inside DockOverlay, but because of some
+ * styling issues it's better to have a separate class for the cross.
+ * You can style the cross icon using the property system.
+ * \code
+ * QxDock--DockOverlayCross
+  {
+        qproperty-iconFrameColor: palette(highlight);
+        qproperty-iconBackgroundColor: palette(base);
+        qproperty-iconOverlayColor: palette(highlight);
+        qproperty-iconArrowColor: rgb(227, 227, 227);
+        qproperty-iconShadowColor: rgb(0, 0, 0);
+    }
+ * \endcode
+ * Or you can use the iconColors property to pass in AARRGGBB values as
+ * hex string like shown in the example below.
+ * \code
+ * QxDock--DockOverlayCross
+ * {
+ *     qproperty-iconColors: "Frame=#ff3d3d3d Background=#ff929292 Overlay=#1f3d3d3d Arrow=#ffb4b4b4 Shadow=#40474747";
+ * }
+ * \endcode
+ */
 class QX_DOCK_EXPORT DockOverlayCross : public QWidget
 {
     Q_OBJECT
