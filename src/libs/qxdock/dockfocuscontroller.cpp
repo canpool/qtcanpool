@@ -164,6 +164,7 @@ DockFocusController::DockFocusController(DockWindow *window)
             SLOT(onApplicationFocusChanged(QWidget *, QWidget *)));
     connect(QApplication::instance(), SIGNAL(focusWindowChanged(QWindow *)), this,
             SLOT(onFocusWindowChanged(QWindow *)));
+    connect(d->m_window, SIGNAL(stateRestored()), SLOT(onStateRestored()));
 }
 
 DockFocusController::~DockFocusController()
@@ -233,6 +234,12 @@ void DockFocusController::clearDockWidgetFocus(DockWidget *w)
 {
     w->clearFocus();
     updateDockWidgetFocusStyle(w, false);
+}
+
+DockWidget *DockFocusController::focusedDockWidget() const
+{
+    Q_D(const DockFocusController);
+    return d->m_focusedDockWidget.data();
 }
 
 void DockFocusController::setDockWidgetFocused(DockWidget *focusedNow)
@@ -320,6 +327,14 @@ void DockFocusController::onDockWidgetVisibilityChanged(bool visible)
     disconnect(sender, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisibilityChanged(bool)));
     if (dockWidget && visible) {
         Q_EMIT d->m_window->focusedDockWidgetChanged(d->m_oldFocusedDockWidget, dockWidget);
+    }
+}
+
+void DockFocusController::onStateRestored()
+{
+    Q_D(DockFocusController);
+    if (d->m_focusedDockWidget) {
+        updateDockWidgetFocusStyle(d->m_focusedDockWidget, false);
     }
 }
 

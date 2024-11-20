@@ -32,6 +32,8 @@ public:
 
     void clearDockWidgetFocus(DockWidget *w);
 
+    DockWidget *focusedDockWidget() const;
+
 public Q_SLOTS:
     void setDockWidgetFocused(DockWidget *focusedNow);
 
@@ -40,6 +42,7 @@ private Q_SLOTS:
     void onFocusWindowChanged(QWindow *focusWindow);
     void onFocusedDockAreaViewToggled(bool open);
     void onDockWidgetVisibilityChanged(bool visible);
+    void onStateRestored();
 
 private:
     QX_DECLARE_PRIVATE(DockFocusController)
