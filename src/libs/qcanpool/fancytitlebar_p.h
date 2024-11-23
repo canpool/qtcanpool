@@ -100,6 +100,7 @@ public:
     bool windowIconChange(QObject *obj);
     bool windowSizeChange(QObject *obj);
     bool windowStateChange(QObject *obj);
+    bool windowPaint(QObject *obj);
 
     void restoreWidget(QWidget *pWidget);
     void maximizeWidget(QWidget *pWidget);

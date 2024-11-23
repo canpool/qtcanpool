@@ -17,6 +17,7 @@
 #include <QWidget>
 #include <QStyle>
 #include <QLayout>
+#include <QPainter>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
 #include <QApplication>
@@ -840,14 +841,16 @@ void FancyTitleBarPrivate::init()
     // the button state will not be initialized at first
     windowStateChange(m_mainWidget);
 
-    m_mainWidget->installEventFilter(q);
+    FancyTitleBarPrivate::setDisabled(m_isDisabled);
 }
 
 void FancyTitleBarPrivate::setDisabled(bool disable)
 {
     if (disable) {
+        m_mainWidget->setContentsMargins(0, 0, 0, 0);
         m_mainWidget->removeEventFilter(q);
     } else {
+        m_mainWidget->setContentsMargins(1, 1, 1, 1);
         m_mainWidget->installEventFilter(q);
     }
 }
@@ -965,6 +968,22 @@ bool FancyTitleBarPrivate::windowStateChange(QObject *obj)
     }
     m_maximizeButton->style()->polish(m_maximizeButton);
     return true;
+}
+
+bool FancyTitleBarPrivate::windowPaint(QObject *obj)
+{
+    QWidget *w = qobject_cast<QWidget *>(obj);
+    if (w) {
+        if (m_isDisabled) {
+            return false;
+        }
+        QPainter painter(w);
+        QPalette palette = w->palette();
+        painter.setPen(QPen(palette.color(QPalette::Shadow), 1));
+        painter.drawRect(0, 0, w->width(), w->height());
+        return true;
+    }
+    return false;
 }
 
 void FancyTitleBarPrivate::restoreWidget(QWidget *pWidget)
@@ -1172,6 +1191,8 @@ bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)
             return d->windowIconChange(object);
         case QEvent::WindowStateChange:
             return d->windowStateChange(object);
+        case QEvent::Paint:
+            return d->windowPaint(object);
         default:
             break;
     }
