@@ -35,7 +35,7 @@ void DockLabelPrivate::elideText(int width)
     Q_Q(DockLabel);
     QFontMetrics fm = q->fontMetrics();
     QString str = fm.elidedText(m_text, m_elideMode, width - q->margin() * 2 - q->indent());
-    if (str == "..") {
+    if (str == u'\x2026') {
         str = m_text.at(0);
     }
     bool wasElided = m_isElided;
@@ -105,9 +105,9 @@ QSize DockLabel::minimumSizeHint() const
     }
     const QFontMetrics &fm = fontMetrics();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
-    QSize size(fm.horizontalAdvance(d->m_text.left(2) + ".."), fm.height());
+    QSize size(fm.horizontalAdvance(d->m_text.left(2) + u'\x2026'), fm.height());
 #else
-    QSize size(fm.width(d->m_text.left(2) + "…"), fm.height());
+    QSize size(fm.width(d->m_text.left(2) + u'\x2026'), fm.height());
 #endif
     return size;
 }
