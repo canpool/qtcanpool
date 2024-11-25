@@ -14,10 +14,15 @@ class TestInfo;
 class UnitTest
 {
 public:
-    static void add(TestInfo *info);
-    static void run(int argc, char *argv[]);
+    UnitTest();
+    ~UnitTest();
+public:
+    static UnitTest &instance();
+
+    void add(QObject *obj);
+    void run(int argc, char *argv[]);
 private:
-    static QVector<TestInfo *> s_testInfos;
+    QVector<QObject *> s_testObjects;
 };
 
 /* TestInfo */
@@ -25,20 +30,14 @@ class TestInfo
 {
 public:
     TestInfo(QObject *obj);
-    ;
-    ~TestInfo();
-
-    QObject *testObject() const;
-private:
-    QObject *m_object = nullptr;
 };
 
 #define TEST_ADD(TestObject)                                                                                           \
     class TestObject##_TestClass                                                                                       \
     {                                                                                                                  \
     public:                                                                                                            \
-        static TestInfo *const _info;                                                                                  \
+        static TestInfo _info;                                                                                         \
     };                                                                                                                 \
-    TestInfo *const TestObject##_TestClass::_info = new TestInfo(new TestObject);
+    TestInfo TestObject##_TestClass::_info = TestInfo(new TestObject);
 
-#define TEST_RUN_ALL() UnitTest::run(argc, argv);
+#define TEST_RUN_ALL() UnitTest::instance().run(argc, argv);
