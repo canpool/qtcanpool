@@ -847,10 +847,8 @@ void FancyTitleBarPrivate::init()
 void FancyTitleBarPrivate::setDisabled(bool disable)
 {
     if (disable) {
-        m_mainWidget->setContentsMargins(0, 0, 0, 0);
         m_mainWidget->removeEventFilter(q);
     } else {
-        m_mainWidget->setContentsMargins(1, 1, 1, 1);
         m_mainWidget->installEventFilter(q);
     }
 }
@@ -974,8 +972,11 @@ bool FancyTitleBarPrivate::windowPaint(QObject *obj)
 {
     QWidget *w = qobject_cast<QWidget *>(obj);
     if (w) {
-        if (m_isDisabled) {
+        if (m_isDisabled || w->isFullScreen() || w->isMaximized() || m_isMaximized) {
+            w->setContentsMargins(0, 0, 0, 0);
             return false;
+        } else {
+            w->setContentsMargins(1, 1, 1, 1);
         }
         QPainter painter(w);
         QPalette palette = w->palette();
