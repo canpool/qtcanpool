@@ -12,5 +12,4 @@ include($$QTCANPOOL_DIR/src/rpath.pri)
 include($$QTCANPOOL_DIR/tests/common/common.pri)
 
 SOURCES += \
-    $$PWD/main.cpp \
-    $$PWD/tst_docklabel.cpp
+    $$files($$PWD/*.cpp)
