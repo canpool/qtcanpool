@@ -5,4 +5,5 @@ SUBDIRS = \
     configflags \
     emptydockarea \
     hideshow \
+    deleteonclose \
     centralwidget
