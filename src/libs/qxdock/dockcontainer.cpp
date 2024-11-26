@@ -951,7 +951,7 @@ DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, 
     }
     if (topLevelWidget) {
         auto newTopLevelWidget = topLevelDockWidget();
-        // If the container contained only one visible dock widget, the we need
+        // If the container contained only one visible dock widget, then we need
         // to emit a top level event for this widget because it is not the one and
         // only visible docked widget anymore
         if (!newTopLevelWidget) {
