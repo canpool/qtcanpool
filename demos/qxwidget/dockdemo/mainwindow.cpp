@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     QMenuBar *mb = menuBar();
     QMenu *viewMenu = mb->addMenu(tr("View"));
 
+    DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
 

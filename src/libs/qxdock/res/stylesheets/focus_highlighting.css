@@ -70,9 +70,9 @@ QxDock--TitleBarButton {
 
 
 /*****************************************************************************
- * TitleBarButton
+ * DockTab
  *****************************************************************************/
-QxDock--TitleBarButton {
+QxDock--DockTab {
     background: palette(window);
     border-color: palette(light);
     border-style: solid;
@@ -82,16 +82,16 @@ QxDock--TitleBarButton {
     /* this is optional in case you would like to change icon size*/
 }
 
-QxDock--TitleBarButton[activeTab="true"] {
+QxDock--DockTab[activeTab="true"] {
     background: qlineargradient(spread : pad, x1 : 0, y1 : 0, x2 : 0, y2 : 0.5, stop : 0 palette(window), stop:1 palette(light));
     /*background: palette(highlight);*/
 }
 
-QxDock--TitleBarButton QLabel {
+QxDock--DockTab QLabel {
     color: palette(dark);
 }
 
-QxDock--TitleBarButton[activeTab="true"] QLabel {
+QxDock--DockTab[activeTab="true"] QLabel {
     color: palette(foreground);
 }
 
@@ -116,24 +116,24 @@ QxDock--TitleBarButton[activeTab="true"] QLabel {
 }
 
 /* Focus related styling */
-QxDock--TitleBarButton[focused="true"] {
+QxDock--DockTab[focused="true"] {
     background: palette(highlight);
     border-color: palette(highlight);
 }
 
-QxDock--TitleBarButton[focused="true"]>#dockTabCloseButton {
+QxDock--DockTab[focused="true"]>#dockTabCloseButton {
     qproperty-icon: url(:/qxdock/res/images/close-button-focused.svg)
 }
 
-QxDock--TitleBarButton[focused="true"]>#dockTabCloseButton:hover {
+QxDock--DockTab[focused="true"]>#dockTabCloseButton:hover {
     background: rgba(255, 255, 255, 48);
 }
 
-QxDock--TitleBarButton[focused="true"]>#dockTabCloseButton:pressed {
+QxDock--DockTab[focused="true"]>#dockTabCloseButton:pressed {
     background: rgba(255, 255, 255, 92);
 }
 
-QxDock--TitleBarButton[focused="true"] QLabel {
+QxDock--DockTab[focused="true"] QLabel {
     color: palette(light);
 }
 
