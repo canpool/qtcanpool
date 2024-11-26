@@ -922,6 +922,7 @@ DockContainer::DockContainer(DockWindow *window, QWidget *parent)
         createRootSplitter();
         createSideTabBarWidgets();
     }
+    QXDOCK_SET_BGCOLOR(this);
 }
 
 DockContainer::~DockContainer()

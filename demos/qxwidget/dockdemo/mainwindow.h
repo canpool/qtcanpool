@@ -18,9 +18,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    DockWidget *createColorDockWidget(const QString &title, const QColor &color);
-    QWidget *createColorWidget(const QColor &color);
-
     void saveState();
     void restoreState();
 

@@ -14,6 +14,8 @@
 #include <xcb/xcb.h>
 #endif
 
+//#define QX_DOCK_DEBUG
+
 // Define QXDOCK_DEBUG_PRINT to enable a lot of debug output
 #ifdef QXDOCK_DEBUG_PRINT
 #define QXDOCK_PRINT(s) qDebug() << s
@@ -142,6 +144,13 @@ bool xcb_dump_props(WId window, const char *type);
  */
 QString windowManager();
 #endif
+
+#ifdef QX_DOCK_DEBUG
+void setBackgroudColor(QWidget *w);
+#define QXDOCK_SET_BGCOLOR(w)    internal::setBackgroudColor(w)
+#else
+#define QXDOCK_SET_BGCOLOR(w)
+#endif // QX_DOCK_DEBUG
 
 } // internal
 

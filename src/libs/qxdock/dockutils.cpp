@@ -11,6 +11,14 @@
 #include <QSplitter>
 #include <QDebug>
 
+#ifdef QX_DOCK_DEBUG
+#include <QBoxLayout>
+#include "dockcontainer.h"
+#include "dockpanel.h"
+#include "dockwidget.h"
+#include "dockfloatingcontainer.h"
+#endif
+
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
 #include <QSettings>
 #include <QFile>
@@ -151,6 +159,25 @@ Qx::DockSideBarArea toSideBarArea(Qx::DockWidgetArea area)
 
     return Qx::DockSideBarNone;
 }
+
+#ifdef QX_DOCK_DEBUG
+void setBackgroudColor(QWidget *w)
+{
+    QPalette pe = w->palette();
+    if (qobject_cast<DockContainer *>(w)) {
+        pe.setColor(QPalette::Window, Qt::red);
+    } else if (qobject_cast<DockPanel *>(w)) {
+        pe.setColor(QPalette::Window, Qt::green);
+    } else if (qobject_cast<DockWidget *>(w)) {
+        pe.setColor(QPalette::Window, Qt::blue);
+    } else {
+        pe.setColor(QPalette::Window, Qt::yellow);
+    }
+    w->setPalette(pe);
+    w->setAutoFillBackground(true);
+    w->layout()->setContentsMargins(2, 2, 2, 2);
+}
+#endif
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
 static QString _window_manager;

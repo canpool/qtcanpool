@@ -266,6 +266,7 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
         setFocusPolicy(Qt::ClickFocus);
     }
+    QXDOCK_SET_BGCOLOR(this);
 }
 
 DockWidget::~DockWidget()

@@ -286,6 +286,7 @@ DockPanel::DockPanel(DockWindow *window, DockContainer *parent)
     Q_D(DockPanel);
     d->m_window = window;
     d->init();
+    QXDOCK_SET_BGCOLOR(this);
 }
 
 DockPanel::~DockPanel()

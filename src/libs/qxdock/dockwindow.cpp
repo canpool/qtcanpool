@@ -94,7 +94,9 @@ void DockWindowPrivate::init()
         m_focusController = new DockFocusController(q);
     }
 
+#ifndef QX_DOCK_DEBUG
     loadStylesheet();
+#endif
 }
 
 void DockWindowPrivate::loadStylesheet()

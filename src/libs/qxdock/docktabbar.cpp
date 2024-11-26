@@ -6,6 +6,7 @@
 #include "docktabbar.h"
 #include "dockpanel.h"
 #include "docktab.h"
+#include "dockutils.h"
 
 #include <QBoxLayout>
 #include <QWheelEvent>

@@ -319,6 +319,7 @@ DockFloatingContainer::DockFloatingContainer(DockWindow *window)
 #endif
 
     window->registerFloatingWidget(this);
+    QXDOCK_SET_BGCOLOR(this);
 }
 
 DockFloatingContainer::DockFloatingContainer(DockPanel *panel)
