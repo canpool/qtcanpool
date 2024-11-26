@@ -271,8 +271,8 @@ DockFloatingContainer::DockFloatingContainer(DockWindow *window)
 
     bool native_window = true;
 
-    // FloatingContainerForce*TitleBar is overwritten by the "ADS_UseNativeTitle" environment variable if set.
-    auto env = qgetenv("ADS_UseNativeTitle").toUpper();
+    // FloatingContainerForce*TitleBar is overwritten by the "QXDOCK_UseNativeTitle" environment variable if set.
+    auto env = qgetenv("QXDOCK_UseNativeTitle").toUpper();
     if (env == "1") {
         native_window = true;
     } else if (env == "0") {
@@ -747,7 +747,7 @@ bool DockFloatingContainer::event(QEvent *e)
             QGuiApplication::mouseButtons().testFlag(Qt::LeftButton))
 #endif
         {
-            ADS_PRINT("FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type());
+            QXDOCK_PRINT("FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type());
             d->m_dragStartPos = pos();
             d->setState(Qx::DockDraggingMousePressed);
         }
@@ -756,7 +756,7 @@ bool DockFloatingContainer::event(QEvent *e)
     case Qx::DockDraggingMousePressed:
         switch (e->type()) {
         case QEvent::NonClientAreaMouseButtonDblClick:
-            ADS_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick");
+            QXDOCK_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick");
             d->setState(Qx::DockDraggingInactive);
             break;
 
@@ -781,7 +781,7 @@ bool DockFloatingContainer::event(QEvent *e)
 
     case Qx::DockDraggingFloatingWidget:
         if (e->type() == QEvent::NonClientAreaMouseButtonRelease) {
-            ADS_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease");
+            QXDOCK_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease");
             d->titleMouseReleaseEvent();
         }
         break;
@@ -790,7 +790,7 @@ bool DockFloatingContainer::event(QEvent *e)
         break;
     }
 
-#if (ADS_DEBUG_LEVEL > 0)
+#if (QXDOCK_DEBUG_LEVEL > 0)
     qDebug() << QTime::currentTime() << "DockFloatingContainer::event " << e->type();
 #endif
     return QWidget::event(e);

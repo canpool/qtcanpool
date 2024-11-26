@@ -14,11 +14,11 @@
 #include <xcb/xcb.h>
 #endif
 
-// Define ADS_DEBUG_PRINT to enable a lot of debug output
-#ifdef ADS_DEBUG_PRINT
-#define ADS_PRINT(s) qDebug() << s
+// Define QXDOCK_DEBUG_PRINT to enable a lot of debug output
+#ifdef QXDOCK_DEBUG_PRINT
+#define QXDOCK_PRINT(s) qDebug() << s
 #else
-#define ADS_PRINT(s)
+#define QXDOCK_PRINT(s)
 #endif
 
 class QSplitter;
