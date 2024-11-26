@@ -48,16 +48,21 @@ void tst_DockWindow::addDockWidget()
     QCOMPARE(centerPanel_2, w->dockPanel());
     QCOMPARE(centerPanel_2->currentDockWidget(), w);
 
+    // WARNING: centerPanel called deleteLater but not deleted.
+    // The centerPanel can no longer be used and may become a wild pointer
+
     DockWidget *w2 = new DockWidget("empty");
     DockPanel *centerPanel_3 = window.addDockWidget(Qx::CenterDockWidgetArea, w2, centerPanel);
-    QCOMPARE(centerPanel_3, centerPanel);
+    QVERIFY(centerPanel_3 != centerPanel);
     QCOMPARE(centerPanel->dockContainer(), nullptr);
     QCOMPARE(window.dockWidgetsMap().count(), 2);
     QCOMPARE(window.dockWidgetsMap().value("Label 1"), w);
 
-    // DockPanel *topPanel = window.addDockWidget(Qx::TopDockWidgetArea, w2, centerPanel);
-    // QCOMPARE(centerPanel_3->dockWidgetsCount(), 0); // w2 was removed from centerPanel
-    // QVERIFY(topPanel != centerPanel);
+    DockPanel *topPanel = window.addDockWidget(Qx::TopDockWidgetArea, w2, centerPanel);
+    QCOMPARE(centerPanel_3->dockWidgetsCount(), 0); // w2 was removed from centerPanel_3
+    QVERIFY(topPanel != centerPanel);
+    QVERIFY(topPanel != centerPanel_3);
+    QCOMPARE(topPanel->currentDockWidget(), w2);
 }
 
 TEST_ADD(tst_DockWindow)
