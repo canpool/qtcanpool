@@ -6,4 +6,5 @@ SUBDIRS = \
     emptydockarea \
     hideshow \
     deleteonclose \
+    sidebar \
     centralwidget
