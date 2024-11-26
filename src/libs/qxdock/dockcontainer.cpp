@@ -702,13 +702,14 @@ void DockContainerPrivate::saveChildNodesState(QXmlStreamWriter &s, QWidget *w) 
         for (int i = 0; i < splitter->count(); ++i) {
             saveChildNodesState(s, splitter->widget(i));
         }
-        s.writeEndElement();
 
         s.writeStartElement("Sizes");
         for (auto Size : splitter->sizes()) {
             s.writeCharacters(QString::number(Size) + " ");
         }
-        s.writeEndElement();
+        s.writeEndElement();   // Sizes
+
+        s.writeEndElement();   // Splitter
     } else {
         DockPanel *panel = qobject_cast<DockPanel *>(w);
         if (panel) {

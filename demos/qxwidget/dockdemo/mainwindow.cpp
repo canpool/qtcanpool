@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     resize(800, 600);
 
-    // restoreState();
+    restoreState();
 }
 
 MainWindow::~MainWindow()
