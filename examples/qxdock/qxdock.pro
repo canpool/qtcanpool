@@ -7,4 +7,5 @@ SUBDIRS = \
     hideshow \
     deleteonclose \
     sidebar \
+    autohide \
     centralwidget
