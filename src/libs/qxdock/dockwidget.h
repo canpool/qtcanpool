@@ -36,7 +36,7 @@ public:
         CustomCloseHandling = 0x010,
         DockWidgetFocusable = 0x020,
         DockWidgetForceCloseWithArea = 0x040,
-        NoTab = 0x080,
+        NoTab = 0x080, ///< dock widget tab will never be shown if this flag is set
         DeleteContentOnClose = 0x100,
         DockWidgetPinnable = 0x200,
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable
