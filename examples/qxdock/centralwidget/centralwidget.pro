@@ -6,7 +6,7 @@ TARGET = Example_Dock_CentralWidget
 INCLUDEPATH += $$PWD
 
 HEADERS += \
-    mainwindow.h
+    $$PWD/mainwindow.h
 
 SOURCES += \
-    mainwindow.cpp
+    $$PWD/mainwindow.cpp

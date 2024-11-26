@@ -4,4 +4,4 @@ include(../../shared/shared.pri)
 TARGET = Example_Dock_EmptyDockArea
 
 SOURCES += \
-    mainwindow.cpp
+    $$PWD/mainwindow.cpp

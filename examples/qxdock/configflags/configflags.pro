@@ -4,5 +4,4 @@ include(../../shared/shared.pri)
 TARGET = Example_Dock_ConfigFlags
 
 SOURCES += \
-    mainwindow.cpp
-
+    $$PWD/mainwindow.cpp
