@@ -12,6 +12,7 @@
 #include <QIcon>
 #include <QMessageBox>
 #include <QMenu>
+#include <QInputDialog>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -26,6 +27,7 @@ public:
     DockGroupManager *m_mgr;
     DockSubWindow *m_subWindow;
     bool m_canCreateNewGroups;
+    QString m_newPerspectiveDefaultName;
 };
 
 DockGroupPrivate::DockGroupPrivate()
@@ -221,6 +223,12 @@ void DockGroup::setupMenu(QMenu *menu, const std::vector<DockSubWindow *> &moveT
     d->m_subWindow->fillMoveMenu(moveMenu, moveTo);
 }
 
+void DockGroup::setNewPerspectiveDefaultName(const QString &defaultName)
+{
+    Q_D(DockGroup);
+    d->m_newPerspectiveDefaultName = defaultName;
+}
+
 void DockGroup::autoFillAttachedViewMenu()
 {
     QMenu *menu = dynamic_cast<QMenu *>(QObject::sender());
@@ -230,6 +238,43 @@ void DockGroup::autoFillAttachedViewMenu()
         setupViewMenu(menu);
     } else {
         assert(false);
+    }
+}
+
+void DockGroup::createPerspective()
+{
+    Q_D(DockGroup);
+    if (!d->m_mgr)
+        return;
+
+    QString name = d->m_newPerspectiveDefaultName;
+    if (!d->m_newPerspectiveDefaultName.isEmpty()) {
+        int index = 2;
+        while (d->m_mgr->perspectiveNames().contains(name)) {
+            name = d->m_newPerspectiveDefaultName + " (" + QString::number(index) + ")";
+            ++index;
+        }
+    }
+
+    while (true) {
+        bool ok = false;
+        name = QInputDialog::getText(nullptr, "Create perspective", "Enter perspective name", QLineEdit::Normal, name,
+                                     &ok);
+        if (ok) {
+            if (name.isEmpty()) {
+                QMessageBox::critical(nullptr, "Error", "Perspective name cannot be empty");
+                continue;
+            } else if (d->m_mgr->perspectiveNames().contains(name)) {
+                if (QMessageBox::critical(nullptr, "Error", "Perspective '" + name + "' already exists, overwrite it?",
+                                          QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
+                    continue;
+            }
+
+            d->m_mgr->addPerspective(name, this);
+            break;
+        } else {
+            break;
+        }
     }
 }
 

@@ -48,8 +48,11 @@ public:
     /** Attach a view menu that will be automatically fill */
     void attachViewMenu(QMenu *menu);
     void setupMenu(QMenu *menu, const std::vector<DockSubWindow *> &moveTo);
+
+    void setNewPerspectiveDefaultName(const QString &defaultName);
 private slots:
     void autoFillAttachedViewMenu();
+    void createPerspective();
 private:
     DockGroup(QWidget *parent, DockGroup *topLevelGroup, DockGroupManager *manager);
     void fillPerspectivesMenu(QMenu *menu);
