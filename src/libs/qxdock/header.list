@@ -21,3 +21,6 @@ docksidebar.h
 docksidetab.h
 dockautohidecontainer.h
 dockresizehandle.h
+dockgroup.h
+dockgroupmanager.h
+docksubwindow.h

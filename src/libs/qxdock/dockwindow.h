@@ -29,7 +29,7 @@ public:
     using Super = DockContainer;
 public:
     explicit DockWindow(QWidget *parent = nullptr);
-    ~DockWindow();
+    virtual ~DockWindow();
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
     DockPanel *addDockWidgetTab(Qx::DockWidgetArea area, DockWidget *w);

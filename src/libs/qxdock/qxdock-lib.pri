@@ -32,10 +32,14 @@ PUBLIC_HEADERS = \
     $$PWD/docksidebar.h \
     $$PWD/docksidetab.h \
     $$PWD/dockautohidecontainer.h \
-    $$PWD/dockresizehandle.h
+    $$PWD/dockresizehandle.h \
+    $$PWD/dockgroup.h \
+    $$PWD/dockgroupmanager.h \
+    $$PWD/docksubwindow.h
 
 PRIVATE_HEADERS = \
-    $$PWD/docktitlebar_p.h \
+    $$PWD/docktitlebar_p.h \ \
+    $$PWD/dockgroupmanager_p.h
     $$PWD/dockstatereader.h
 
 HEADERS += \
@@ -65,7 +69,10 @@ SOURCES += \
     $$PWD/docksidetab.cpp \
     $$PWD/dockautohidecontainer.cpp \
     $$PWD/dockresizehandle.cpp \
-    $$PWD/dockstatereader.cpp
+    $$PWD/dockstatereader.cpp \
+    $$PWD/dockgroup.cpp \
+    $$PWD/dockgroupmanager.cpp \
+    $$PWD/docksubwindow.cpp
 
 RESOURCES += \
     $$PWD/res.qrc

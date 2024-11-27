@@ -8,4 +8,5 @@ SUBDIRS = \
     deleteonclose \
     sidebar \
     autohide \
+    dockindock \
     centralwidget
