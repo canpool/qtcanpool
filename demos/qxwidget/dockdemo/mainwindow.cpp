@@ -7,6 +7,8 @@
 
 #include <QMenuBar>
 #include <QMenu>
+#include <QToolBar>
+#include <QAction>
 #include <QTextEdit>
 #include <QSettings>
 
@@ -82,6 +84,19 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     setCentralWidget(dockwindow);
+
+    QToolBar *tb = addToolBar(tr("tb1"));
+    tb->setObjectName("tb1");
+    QAction *a = tb->addAction("Lock Workspace");
+    a->setCheckable(true);
+    a->setChecked(false);
+    connect(a, &QAction::triggered, this, [=](bool checked) {
+        if (checked) {
+            this->m_dockWindow->lockDockWidgetFeaturesGlobally();
+        } else {
+            this->m_dockWindow->lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures);
+        }
+    });
 
     resize(800, 600);
 
