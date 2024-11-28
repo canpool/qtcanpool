@@ -35,9 +35,9 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 环境
 
-- Qt 6.5.3 MinGW/MSVC2019 64bit
+- Qt 6.5.3  MinGW/MSVC2019 64bit
 - Qt 5.15.2 MinGW/MSVC2019 64bit
-- Qt 5.14.2 MinGW 64bit
+- Qt 5.14.2 MinGW/MSVC2017 64bit
 - 其它环境未测试，推荐使用 [QT LTS](https://download.qt.io/official_releases/qt/) 版本
 
 ### 版本
@@ -91,19 +91,13 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ![qcanpool](./doc/pics/fancydemo.png)
 
-- <font size=4>fancytitlebar</font>
-
-![fancytitlebar](./doc/pics/fancytitlebar.png)
-
-支持 windows 原生特性（毛玻璃预览，半屏和 ¼ 屏等显示效果）
-
 - <font size=4>fancyribbon</font>
 
 ![fancyribbon](./doc/pics/fancyribbon.png)
 
-- <font size=4>fancytoolbutton</font>
+- <font size=4>dockdemo</font>
 
-![fancyribbon](./doc/pics/fancytoolbutton.png)
+![dockdemo](./doc/pics/dockdemo.png#pic_center)
 
 - <font size=4>ribbondemo</font>
 
@@ -126,7 +120,7 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ### 后语
 
-如果您觉得本项目对您有很大帮助，甚至从中获取了一定的商业回报，您可以赞助该项目，助其更好的发展。
+如果您觉得本项目对您有很大帮助，您可以赞助本项目，助其更好的发展。
 
 赞助方式：
 
