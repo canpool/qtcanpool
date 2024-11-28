@@ -6,13 +6,6 @@ SUBDIRS =   \
     qxdock \
     qxwindow
 
-lessThan(QT_MAJOR_VERSION, 6) {
-    exists($$PWD/qtitan/qtitan.pro) {
-        SUBDIRS += \
-            qtitan
-    }
-}
-
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
     include($$l/$${l}_dependencies.pri)
