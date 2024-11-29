@@ -12,3 +12,6 @@ INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/main.cpp
+
+RESOURCES += \
+    $$PWD/../../shared/res.qrc
