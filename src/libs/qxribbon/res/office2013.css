@@ -19,43 +19,12 @@ QxRibbon--RibbonTabBar {
   background-color: transparent;
 }
 
-/*
-高清屏幕不能使用px
 QxRibbon--RibbonTabBar::tab {
   color: #5779af;
   border: none;
   background: transparent;
-  margin-top: 0px;
-  margin-right: 0px;
-  margin-left: 1em;
-  margin-bottom: 0px;
-  min-width: 60px;
-  max-width: 200px;
-  min-height: 25px;
-  max-height: 25px;
-  padding-left: 1px;
-  padding-right: 1px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-*/
-
-QxRibbon--RibbonTabBar::tab {
-  color: #5779af;
-  border: none;
-  background: transparent;
-  margin-top: 0em;
-  margin-right: 0pt;
-  margin-left: 0.2em;
-  margin-bottom: 0em;
-  min-width: 2em;
-  /*max-width: 10em;*/
-  min-height: 1.2em;
-  max-height: 1.2em;
-  padding-left: 0.2em;
-  padding-right: 0.2em;
-  padding-top: 0.1em;
-  padding-bottom: 0.1em;
+  margin-left: 2px;
+  padding: 4px;
 }
 
 QxRibbon--RibbonTabBar::tab:selected,
@@ -85,7 +54,7 @@ QxRibbon--RibbonTabBar::tab:!selected {
 
 QxRibbon--RibbonStackedWidget {
   background-color: white;
-  border: 1pt solid #c5d2e0;
+  border: 1px solid #c5d2e0;
   border-top-width: 0px;
 }
 
