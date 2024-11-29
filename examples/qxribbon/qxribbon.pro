@@ -3,4 +3,5 @@ CONFIG += ordered
 
 SUBDIRS = \
     simple \
+    groupautolayout \
     ribbonquickaccessbar
