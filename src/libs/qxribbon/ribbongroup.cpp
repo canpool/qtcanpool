@@ -4,8 +4,6 @@
 **/
 #include "ribbongroup.h"
 #include "ribbongroup_p.h"
-#include "ribbonpage.h"
-#include "ribbonmanager.h"
 #include "ribbongallery.h"
 #include "ribbongrouplayout.h"
 #include "ribboncontrols.h"

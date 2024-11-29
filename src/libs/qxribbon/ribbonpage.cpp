@@ -4,7 +4,6 @@
 **/
 #include "ribbonpage.h"
 #include "ribbonpage_p.h"
-#include "ribbonmanager.h"
 #include "ribboncontrols.h"
 
 #include <QApplication>

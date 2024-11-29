@@ -3,15 +3,11 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbongrouplayout.h"
-#include "ribbonpage.h"
-#include "ribbonmanager.h"
-#include "ribbongallery.h"
 #include "ribbongroup.h"
 #include "ribboncontrols.h"
 
 #include <QQueue>
 #include <QWidgetAction>
-#include <set>
 
 QX_RIBBON_BEGIN_NAMESPACE
 

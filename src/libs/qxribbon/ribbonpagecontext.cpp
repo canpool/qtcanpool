@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbonpagecontext.h"
-#include "ribbonmanager.h"
 
 #include <QDebug>
 #include <QList>
