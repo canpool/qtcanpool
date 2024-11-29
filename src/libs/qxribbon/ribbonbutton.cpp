@@ -307,7 +307,13 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
                 p.setFont(opt.font);
 
                 QRect pr = m_iconRect;                                    // 图标区域
-                QRect tr = opt.rect.adjusted(pr.width() + 2, 0, -1, 0);   // 文本区域
+                QRect tr = opt.rect.adjusted(pr.width() + 2 * m_iconAndTextSpace, 0, -1, 0);   // 文本区域
+
+#ifdef QX_RIBBON_DEBUG_HELP_DRAW
+                HELP_DRAW_RECT(p, pr);
+                HELP_DRAW_RECT(p, tr);
+#endif
+
                 int alignment = Qt::TextShowMnemonic;
                 // 快捷键的下划线
                 if (!style()->styleHint(QStyle::SH_UnderlineShortcut, &opt, w)) {
@@ -541,7 +547,7 @@ QPixmap RibbonButtonPrivate::createIconPixmap(const QStyleOptionToolButton &opt,
             mode = QIcon::Normal;
         }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        // return (opt.icon.pixmap(q->window()->windowHandle(), opt.rect.size().boundedTo(realConSize), mode, state));
+        // return (opt.icon.pixmap(q->window()->windowHandle(), opt.rect.size().boundedTo(iconsize), mode, state));
         return opt.icon.pixmap(q->window()->windowHandle(), iconsize, mode, state);
 #else
         return opt.icon.pixmap(iconsize, q->window()->devicePixelRatio(), mode, state);
