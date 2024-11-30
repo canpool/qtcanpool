@@ -37,7 +37,6 @@ PRIVATE_HEADERS = \
     $$PWD/ribbonbar_p.h \
     $$PWD/ribbonbutton_p.h \
     $$PWD/ribboncolorbutton_p.h \
-    $$PWD/ribboncontrols.h \
     $$PWD/ribboncustomizedata.h \
     $$PWD/ribboncustomizewidget.h \
     $$PWD/ribbongallerygroup_p.h \
