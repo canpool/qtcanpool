@@ -12,45 +12,6 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-/* RibbonButtonGroupItem */
-class RibbonButtonGroupItem
-{
-public:
-    RibbonButtonGroupItem();
-    RibbonButtonGroupItem(QAction *a, QWidget *w, bool cw);
-
-    bool operator==(QAction *action);
-    bool operator==(const RibbonButtonGroupItem &w);
-public:
-    QAction *action;
-    QWidget *widget;
-    bool customWidget;
-};
-
-RibbonButtonGroupItem::RibbonButtonGroupItem()
-    : action(Q_NULLPTR)
-    , widget(Q_NULLPTR)
-    , customWidget(false)
-{
-}
-
-RibbonButtonGroupItem::RibbonButtonGroupItem(QAction *a, QWidget *w, bool cw)
-    : action(a)
-    , widget(w)
-    , customWidget(cw)
-{
-}
-
-bool RibbonButtonGroupItem::operator==(QAction *action)
-{
-    return (this->action == action);
-}
-
-bool RibbonButtonGroupItem::operator==(const RibbonButtonGroupItem &w)
-{
-    return (this->action == w.action);
-}
-
 /* RibbonButtonGroupPrivate */
 class RibbonButtonGroupPrivate
 {
@@ -60,7 +21,7 @@ public:
 
     void init();
 public:
-    QList<RibbonButtonGroupItem> m_items;
+    QMap<QAction *, QWidget *> m_items;
 };
 
 RibbonButtonGroupPrivate::RibbonButtonGroupPrivate()
@@ -87,14 +48,6 @@ RibbonButtonGroup::RibbonButtonGroup(QWidget *parent)
 
 RibbonButtonGroup::~RibbonButtonGroup()
 {
-    Q_D(RibbonButtonGroup);
-    for (RibbonButtonGroupItem &item : d->m_items) {
-        if (QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(item.action)) {
-            if (item.customWidget) {
-                widgetAction->releaseWidget(item.widget);
-            }
-        }
-    }
     QX_FINI_PRIVATE()
 }
 
@@ -111,7 +64,7 @@ QAction *RibbonButtonGroup::addAction(const QString &text, const QIcon &icon,
     QAction *a = new QAction(icon, text, this);
 
     addAction(a);
-    RibbonButton *btn = qobject_cast<RibbonButton *>(d->m_items.last().widget);
+    RibbonButton *btn = qobject_cast<RibbonButton *>(d->m_items.value(a));
     if (btn) {
         btn->setPopupMode(popMode);
     }
@@ -124,7 +77,7 @@ QAction *RibbonButtonGroup::addMenu(QMenu *menu, QToolButton::ToolButtonPopupMod
     QAction *a = menu->menuAction();
 
     addAction(a);
-    RibbonButton *btn = qobject_cast<RibbonButton *>(d->m_items.last().widget);
+    RibbonButton *btn = qobject_cast<RibbonButton *>(d->m_items.value(a));
     if (btn) {
         btn->setPopupMode(popMode);
     }
@@ -163,63 +116,52 @@ QSize RibbonButtonGroup::minimumSizeHint() const
 void RibbonButtonGroup::actionEvent(QActionEvent *e)
 {
     Q_D(RibbonButtonGroup);
-    RibbonButtonGroupItem item;
-    item.action = e->action();
+    QAction *action = e->action();
+    QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(action);
+    QWidget *widget = nullptr;
 
     switch (e->type()) {
     case QEvent::ActionAdded: {
-        if (QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(item.action)) {
+        if (widgetAction) {
             widgetAction->setParent(this);
-            item.widget = widgetAction->requestWidget(this);
-            if (item.widget != Q_NULLPTR) {
-                item.widget->setAttribute(Qt::WA_LayoutUsesWidgetRect);
-                item.widget->show();
-                item.customWidget = true;
+            widget = widgetAction->requestWidget(this);
+            if (widget != Q_NULLPTR) {
+                widget->setAttribute(Qt::WA_LayoutUsesWidgetRect);
+                widget->show();
             }
-        } else if (item.action->isSeparator()) {
+        } else if (action->isSeparator()) {
             RibbonSeparator *sp = new RibbonSeparator(this);
             sp->setTopBottomMargins(3, 3);
-            item.widget = sp;
+            widget = sp;
         }
-        if (!item.widget) {
+        if (!widget) {
             RibbonButton *button = new RibbonButton(this);
             button->setAutoRaise(true);
             button->setFocusPolicy(Qt::NoFocus);
             button->setButtonType(RibbonButton::SmallButton);
             button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-            button->setDefaultAction(item.action);
+            button->setDefaultAction(action);
             QObject::connect(button, &RibbonButton::triggered, this, &RibbonButtonGroup::actionTriggered);
-            item.widget = button;
+            widget = button;
         }
-        layout()->addWidget(item.widget);
-        d->m_items.append(item);
+        layout()->addWidget(widget);
+        d->m_items.insert(action, widget);
     } break;
     case QEvent::ActionChanged: {
         layout()->invalidate();
     } break;
     case QEvent::ActionRemoved: {
-        // FIXME: QWidget sends the QActionEvent event after handling
-        // addAction/removeAction, so whether to release the action?
-        item.action->disconnect(this);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        for (auto i = d->m_items.begin(); i != d->m_items.end(); ++i) {
-#else
-        for (auto i = d->m_items.constBegin(); i != d->m_items.constEnd(); ++i) {
-#endif
-            if (i->action != item.action) {
-                continue;
-            }
-            layout()->removeWidget(i->widget);
-            QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(i->action);
-            if (widgetAction && i->customWidget) {
-                widgetAction->releaseWidget(i->widget);
-            } else {
-                // destroy the RibbonButton/RibbonSeparator
-                i->widget->hide();
-                i->widget->deleteLater();
-            }
-            d->m_items.erase(i);
-            break;
+        action->disconnect(this);
+        widget = d->m_items.value(action);
+        layout()->removeWidget(widget);
+        d->m_items.remove(action);
+        if (!widgetAction) {
+            // destroy the RibbonButton/RibbonSeparator
+            delete widget;
+        }
+        if (action->parentWidget() == this) {
+            action->setParent(nullptr);
+            delete action;
         }
         layout()->invalidate();
     } break;
