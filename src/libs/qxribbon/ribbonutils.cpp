@@ -12,12 +12,13 @@ QIcon colorIcon(const QColor &color, const QSize &size)
     QPixmap res(size);
     res.fill(Qt::transparent);
     QPainter painter(&res);
+    QRect pr(1, 1, res.height() - 2, res.width() - 2);
     if (color.isValid()) {
-        painter.fillRect(QRect(1, 1, res.height() - 2, res.width() - 2), color);
+        painter.fillRect(pr, color);
     } else {
         QPen pen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap);
         painter.setPen(pen);
-        painter.drawRect(QRect(1, 1, res.height() - 2, res.width() - 2));
+        painter.drawRect(pr);
         pen.setColor(Qt::red);
         painter.setPen(pen);
         painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
