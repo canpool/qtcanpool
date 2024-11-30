@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonstyleoption.h"
 #include "ribbongrouplayout.h"
 #include <QApplication>
@@ -14,11 +14,12 @@ class RibbonStyleOptionPrivate
     QX_DECLARE_PUBLIC(RibbonStyleOption)
 public:
     RibbonStyleOptionPrivate();
-    void calc();
-    void calcBaseHeight();
-    int calcRibbonBarHeight(RibbonBar::RibbonStyle s) const;
+
+    int baseHeight();
+    int groupTitleHeight();
+    void calc(int baseHeight);
 public:
-    int m_lineSpacing;
+    int m_baseHeight = 17;
     int m_tabBarHeight;
     int m_titleBarHeight;
     int m_ribbonBarHeightOfficeStyleThreeRow;
@@ -28,59 +29,50 @@ public:
 };
 
 RibbonStyleOptionPrivate::RibbonStyleOptionPrivate()
-    : m_lineSpacing(17)
 {
-    calc();
+    calc(baseHeight());
 }
 
-void RibbonStyleOptionPrivate::calc()
-{
-    calcBaseHeight();
-    m_ribbonBarHeightOfficeStyleThreeRow = calcRibbonBarHeight(RibbonBar::OfficeStyle);
-    m_ribbonBarHeightWpsLiteStyleThreeRow = calcRibbonBarHeight(RibbonBar::WpsLiteStyle);
-    m_ribbonBarHeightOfficeStyleTwoRow = calcRibbonBarHeight(RibbonBar::OfficeStyleTwoRow);
-    m_ribbonBarHeightWpsLiteStyleTwoRow = calcRibbonBarHeight(RibbonBar::WpsLiteStyleTwoRow);
-}
-
-void RibbonStyleOptionPrivate::calcBaseHeight()
+int RibbonStyleOptionPrivate::baseHeight()
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    int m_lineSpacing = QApplication::fontMetrics().lineSpacing();
+    int s = QApplication::fontMetrics().lineSpacing();
 #else
-    int m_lineSpacing = QFontMetricsF(QApplication::font()).lineSpacing();
+    int s = QFontMetricsF(QApplication::font()).lineSpacing();
 #endif
-
-    m_titleBarHeight = m_lineSpacing * 1.65;
-    m_tabBarHeight = m_lineSpacing * 1.5;
+    return s;
 }
 
-int RibbonStyleOptionPrivate::calcRibbonBarHeight(RibbonBar::RibbonStyle s) const
+int RibbonStyleOptionPrivate::groupTitleHeight()
 {
-    switch (s) {
-    case RibbonBar::OfficeStyle:
-        return m_titleBarHeight + m_tabBarHeight + (m_lineSpacing * 1.5) * 3 +
-               RibbonGroupLayout::groupContentsMargins().top() + RibbonGroupLayout::groupContentsMargins().bottom() +
-               (RibbonGroup::titleVisible() ? RibbonGroup::groupTitleHeight() : 0);
-    case RibbonBar::WpsLiteStyle:
-        return m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
-    case RibbonBar::WpsLiteStyleTwoRow:
-        return m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight - m_lineSpacing * 1.5;
-    case RibbonBar::OfficeStyleTwoRow:
-        return m_ribbonBarHeightOfficeStyleThreeRow - m_lineSpacing * 1.5;
-    default:
-        break;
+    if (RibbonGroup::titleVisible()) {
+        return RibbonGroupLayout::groupContentsMargins().top() + RibbonGroupLayout::groupContentsMargins().bottom() +
+               RibbonGroup::groupTitleHeight();
     }
-    return m_ribbonBarHeightOfficeStyleThreeRow;
+    return 0;
+}
+
+void RibbonStyleOptionPrivate::calc(int baseHeight)
+{
+    m_baseHeight = baseHeight;
+
+    m_titleBarHeight = m_baseHeight * 1.65;
+    m_tabBarHeight = m_baseHeight * 1.5;
+
+    m_ribbonBarHeightOfficeStyleThreeRow = m_titleBarHeight + m_tabBarHeight + m_tabBarHeight * 3 + groupTitleHeight();
+    m_ribbonBarHeightWpsLiteStyleThreeRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
+    m_ribbonBarHeightOfficeStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
+    m_ribbonBarHeightWpsLiteStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight - m_tabBarHeight;
 }
 
 RibbonStyleOption::RibbonStyleOption()
 {
-    QX_INIT_PRIVATE(RibbonStyleOption)
+    QX_INIT_PRIVATE(RibbonStyleOption);
 }
 
 RibbonStyleOption::~RibbonStyleOption()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 int RibbonStyleOption::ribbonBarHeight(RibbonBar::RibbonStyle s) const
@@ -116,17 +108,7 @@ int RibbonStyleOption::tabBarHeight() const
 void RibbonStyleOption::recalc()
 {
     Q_D(RibbonStyleOption);
-    d->calcBaseHeight();
-    d->m_ribbonBarHeightOfficeStyleThreeRow = calcRibbonBarHeight(RibbonBar::OfficeStyle);
-    d->m_ribbonBarHeightWpsLiteStyleThreeRow = calcRibbonBarHeight(RibbonBar::WpsLiteStyle);
-    d->m_ribbonBarHeightOfficeStyleTwoRow = calcRibbonBarHeight(RibbonBar::OfficeStyleTwoRow);
-    d->m_ribbonBarHeightWpsLiteStyleTwoRow = calcRibbonBarHeight(RibbonBar::WpsLiteStyleTwoRow);
-}
-
-int RibbonStyleOption::calcRibbonBarHeight(RibbonBar::RibbonStyle s) const
-{
-    Q_D(const RibbonStyleOption);
-    return d->calcRibbonBarHeight(s);
+    d->calc(d->baseHeight());
 }
 
 QDebug operator<<(QDebug debug, const RibbonStyleOption &c)

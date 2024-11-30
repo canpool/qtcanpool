@@ -8,6 +8,7 @@
 #include "ribbongrouplayout.h"
 #include "ribboncontrols.h"
 #include "ribbonbutton.h"
+#include "ribbonmanager.h"
 
 #include <QAction>
 #include <QApplication>
@@ -674,7 +675,10 @@ bool RibbonGroup::titleVisible()
 
 void RibbonGroup::setTitleVisible(bool visible)
 {
-    RibbonGroupPrivate::s_titleVisible = visible;
+    if (RibbonGroupPrivate::s_titleVisible != visible) {
+        RibbonGroupPrivate::s_titleVisible = visible;
+        RibbonElementStyleOpt.recalc();
+    }
 }
 
 /**
@@ -696,7 +700,10 @@ int RibbonGroup::groupTitleHeight()
  */
 void RibbonGroup::setGroupTitleHeight(int h)
 {
-    RibbonGroupPrivate::s_groupTitleHeight = h;
+    if (RibbonGroupPrivate::s_groupTitleHeight != h) {
+        RibbonGroupPrivate::s_groupTitleHeight = h;
+        RibbonElementStyleOpt.recalc();
+    }
 }
 
 void RibbonGroup::paintEvent(QPaintEvent *event)

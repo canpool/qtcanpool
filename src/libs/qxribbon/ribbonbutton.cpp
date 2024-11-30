@@ -873,10 +873,6 @@ bool RibbonButton::isToolButtonTextShift()
 /**
  * @brief 设置在lite模式下是否允许文字换行，如果允许，则图标相对比较小，默认不允许
  * @param on
- * @note 此函数的调用最好在 ribbonbar 布局之前设置，且调用之后需要调用 @sa RibbonStyleOption::recalc 刷新
- * @code
- * RibbonElementStyleOpt.recalc();
- * @endcode
  */
 void RibbonButton::setLiteStyleEnableWordWrap(bool on)
 {

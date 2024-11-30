@@ -35,8 +35,6 @@ public:
     virtual int titleBarHeight() const;
     virtual int tabBarHeight() const;
     virtual void recalc();
-protected:
-    virtual int calcRibbonBarHeight(RibbonBar::RibbonStyle s) const;
 private:
     QX_DECLARE_PRIVATE(RibbonStyleOption)
 };

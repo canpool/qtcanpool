@@ -177,6 +177,8 @@ void RibbonBarPrivate::init()
     m_quickAccessBar = new RibbonQuickAccessBarContainer(q);
     m_quickAccessBar->setObjectName(QStringLiteral("qx_RibbonQuickAccessBar"));
     m_quickAccessBar->setIcon(q->windowIcon());
+
+    connect(qApp, &QApplication::fontChanged, this, &RibbonBarPrivate::onFontChanged);
 }
 
 void RibbonBarPrivate::setApplicationButton(QAbstractButton *btn)
@@ -1009,6 +1011,12 @@ void RibbonBarPrivate::onTabMoved(int from, int to)
 void RibbonBarPrivate::onStackWidgetHided()
 {
     // m_tabBar->repaint();
+}
+
+void RibbonBarPrivate::onFontChanged(const QFont &font)
+{
+    Q_UNUSED(font);
+    RibbonElementStyleOpt.recalc();
 }
 
 /* RibbonBar */

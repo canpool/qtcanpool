@@ -5,6 +5,7 @@
 #include "ribbongrouplayout.h"
 #include "ribbongroup.h"
 #include "ribboncontrols.h"
+#include "ribbonmanager.h"
 
 #include <QQueue>
 #include <QWidgetAction>
@@ -768,7 +769,10 @@ const QMargins &RibbonGroupLayout::groupContentsMargins()
  */
 void RibbonGroupLayout::setGroupContentsMargins(const QMargins &m)
 {
-    RibbonGroupLayoutPrivate::s_contentsMargins = m;
+    if (RibbonGroupLayoutPrivate::s_contentsMargins != m) {
+        RibbonGroupLayoutPrivate::s_contentsMargins = m;
+        RibbonElementStyleOpt.recalc();
+    }
 }
 
 const QList<RibbonGroupItem *> &RibbonGroupLayout::ribbonGroupItems() const

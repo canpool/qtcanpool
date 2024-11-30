@@ -290,8 +290,6 @@ void MainWindow::createPageHome()
     groupStyle->addSmallWidget(cb);
     connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
         RibbonGroup::setTitleVisible(checked);
-        // 组标题的显示/隐藏直接影响ribbon的整体大小，所以需要调用RibbonElementStyleOpt.recalc()
-        RibbonElementStyleOpt.recalc();
         this->ribbonBar()->updateRibbonGeometry();
     });
 
@@ -1253,7 +1251,6 @@ void MainWindow::onActionFontSmallerTriggered()
 void MainWindow::onActionwordWrapIn2rowTriggered(bool b)
 {
     // 设置是否允许2行模式下文字换行，换行的话图标会较小
-    // 不影响ribbon的整体大小，所以不需要调用RibbonElementStyleOpt.recalc()
     RibbonButton::setLiteStyleEnableWordWrap(b);
     // 更新ribbon尺寸，目的是更新内部元素，让RibbonButton可以重新绘制
     ribbonBar()->updateRibbonGeometry();
