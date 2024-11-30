@@ -4,7 +4,7 @@ include(../../shared/shared.pri)
 TARGET = Example_FancyTitleBar
 
 SOURCES += \
-    mainwindow.cpp
+    $$PWD/mainwindow.cpp
 
 win32 {
     DEFINES += USE_NATIVE

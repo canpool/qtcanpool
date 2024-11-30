@@ -4,5 +4,5 @@ include(../../shared/shared.pri)
 TARGET = Example_RibbonQuickAccessBar
 
 SOURCES += \
-    mainwindow.cpp
+    $$PWD/mainwindow.cpp
 

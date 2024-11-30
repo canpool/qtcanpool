@@ -4,4 +4,4 @@ include(../../shared/shared.pri)
 TARGET = Example_TinyTabBar
 
 SOURCES += \
-    mainwindow.cpp
+    $$PWD/mainwindow.cpp

@@ -4,4 +4,4 @@ include(../../shared/shared.pri)
 TARGET = Example_MiniTabWidget
 
 SOURCES += \
-    mainwindow.cpp
+    $$PWD/mainwindow.cpp
