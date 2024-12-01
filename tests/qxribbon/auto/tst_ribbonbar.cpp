@@ -97,7 +97,20 @@ void tst_RibbonBar::page()
     QCOMPARE(page6, rb.pageByObjectName(page5->objectName()));   // page5 objectname is empty
 
     // move
-    rb.movePage(4, 5);   // swap page5 and page6
+    rb.movePage(4, 5);   // swap page6 and page5
+    QCOMPARE(4, rb.pageIndex(page5));
+    QCOMPARE(5, rb.pageIndex(page6));
+
+    rb.movePage(5, 4);   // swap page6 and page5
+    QCOMPARE(4, rb.pageIndex(page6));
+    QCOMPARE(5, rb.pageIndex(page5));
+
+    titles = "";
+    for (RibbonPage *page : rb.pages()) {
+        titles += page->pageName() + ",";
+    }
+    QCOMPARE("page2,page1,page3,page4,page6,page5,", titles);
+    rb.movePage(4, 5);   // swap page6 and page5
     QCOMPARE(4, rb.pageIndex(page5));
     QCOMPARE(5, rb.pageIndex(page6));
 
