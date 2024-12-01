@@ -26,7 +26,6 @@ PUBLIC_HEADERS = \
     $$PWD/ribbonpagecontext.h \
     $$PWD/ribbonquickaccessbar.h \
     $$PWD/ribbonstyleoption.h \
-    $$PWD/ribbontabbar.h \
     $$PWD/ribbontheme.h \
     $$PWD/ribbonutils.h \
     $$PWD/ribbonwindow.h \
@@ -34,6 +33,7 @@ PUBLIC_HEADERS = \
 
 PRIVATE_HEADERS = \
     $$PWD/framelesshelper.h \
+    $$PWD/ribbontabbar.h \
     $$PWD/ribbonbar_p.h \
     $$PWD/ribbonbutton_p.h \
     $$PWD/ribboncolorbutton_p.h \

@@ -18,7 +18,6 @@ QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonFactory;
 class RibbonBarPrivate;
-class RibbonTabBar;
 class RibbonButtonGroup;
 class RibbonQuickAccessBar;
 
@@ -126,8 +125,6 @@ public:
 
     QAbstractButton *applicationButton();
     void setApplicationButton(QAbstractButton *btn);
-
-    RibbonTabBar *ribbonTabBar();
 
     RibbonPage *addPage(const QString &title);
     void addPage(RibbonPage *page);

@@ -10,7 +10,7 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-class QX_RIBBON_EXPORT RibbonTabBar : public QTabBar
+class RibbonTabBar : public QTabBar
 {
     Q_OBJECT
 public:

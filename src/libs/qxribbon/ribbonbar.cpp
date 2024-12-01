@@ -1064,12 +1064,6 @@ void RibbonBar::setApplicationButton(QAbstractButton *btn)
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
-RibbonTabBar *RibbonBar::ribbonTabBar()
-{
-    Q_D(RibbonBar);
-    return d->m_tabBar;
-}
-
 RibbonPage *RibbonBar::addPage(const QString &title)
 {
     return insertPage(-1, title);

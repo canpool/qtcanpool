@@ -12,6 +12,7 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
+class RibbonTabBar;
 class RibbonQuickAccessBar;
 class RibbonControlButton;
 
