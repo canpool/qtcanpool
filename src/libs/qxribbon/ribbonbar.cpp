@@ -902,10 +902,6 @@ void RibbonBarPrivate::onPageContextAdded(RibbonPage *page)
     m_stack->addWidget(page);   // 这里stackedWidget用append，其他地方都应该使用insert
 }
 
-/**
- * @brief 标签切换触发槽函数
- * @param index
- */
 void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
 {
     Q_Q(RibbonBar);
@@ -993,11 +989,6 @@ void RibbonBarPrivate::onCurrentRibbonTabDoubleClicked(int index)
     q->setMinimized(!m_minimized);
 }
 
-/**
- * @brief 标签移动的信号
- * @param from
- * @param to
- */
 void RibbonBarPrivate::onTabMoved(int from, int to)
 {
     // 调整stacked widget的顺序，调整顺序是为了调用pages函数返回的QList<RibbonPage *>顺序和tabbar一致
@@ -1293,11 +1284,6 @@ void RibbonBar::removePage(RibbonPage *page)
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
-/**
- * @brief 移动一个Page从from index到to index
- * @param from
- * @param to
- */
 void RibbonBar::movePage(int from, int to)
 {
     Q_D(RibbonBar);
@@ -1307,11 +1293,6 @@ void RibbonBar::movePage(int from, int to)
     // 这里会触发tabMoved信号，在tabMoved信号中调整stacked里窗口的位置
 }
 
-/**
- * @brief 获取page的索引
- * @param c
- * @return 如果找不到，返回-1
- */
 int RibbonBar::pageIndex(RibbonPage *page) const
 {
     Q_D(const RibbonBar);
@@ -1346,10 +1327,6 @@ RibbonPageContext *RibbonBar::addPageContext(const QString &title, const QColor 
     return context;
 }
 
-/**
- * @brief 添加上下文标签
- * @param context
- */
 void RibbonBar::addPageContext(RibbonPageContext *context)
 {
     Q_D(RibbonBar);
@@ -1364,10 +1341,6 @@ void RibbonBar::addPageContext(RibbonPageContext *context)
     d->m_pageContextList.append(context);
 }
 
-/**
- * @brief 显示上下文标签
- * @param context 上下文标签指针
- */
 void RibbonBar::showPageContext(RibbonPageContext *context)
 {
     Q_D(RibbonBar);
@@ -1403,10 +1376,6 @@ void RibbonBar::showPageContext(RibbonPageContext *context)
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
-/**
- * @brief 隐藏上下文标签
- * @param context 上下文标签指针
- */
 void RibbonBar::hidePageContext(RibbonPageContext *context)
 {
     Q_D(RibbonBar);
@@ -1474,10 +1443,6 @@ void RibbonBar::setPageContextCoverTab(bool cover)
     d->m_pageContextCoverTab = cover;
 }
 
-/**
- * @brief 获取所有的上下文标签
- * @return 返回上下文标签列表
- */
 QList<RibbonPageContext *> RibbonBar::pageContextList() const
 {
     Q_D(const RibbonBar);
@@ -1651,10 +1616,6 @@ RibbonBar::QuickAccessBarPosition RibbonBar::quickAccessBarPosition() const
     return d->m_quickAccessBarPosition;
 }
 
-/**
- * @brief 返回当前ribbon的风格
- * @return 返回当前ribbon的风格
- */
 RibbonBar::RibbonStyle RibbonBar::currentRibbonStyle() const
 {
     Q_D(const RibbonBar);
@@ -1693,25 +1654,16 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     emit ribbonStyleChanged(d->m_ribbonStyle);
 }
 
-/**
- * @brief 返回当前的tab索引
- * @return 当前的索引
- */
 int RibbonBar::currentIndex()
 {
     Q_D(RibbonBar);
     return d->m_tabBar->currentIndex();
 }
 
-///
-/// \brief 切换到对应标签
-/// \param index 标签索引
-///
 void RibbonBar::setCurrentIndex(int index)
 {
     Q_D(RibbonBar);
     d->m_tabBar->setCurrentIndex(index);
-    // onCurrentRibbonTabChanged(index);
 }
 
 bool RibbonBar::isOfficeStyle() const
