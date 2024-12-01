@@ -5,6 +5,7 @@ SUBDIRS = \
     simple \
     groupautolayout \
     coloricon \
+    pagecontext \
     ribbonbar \
     ribbonbuttongroup \
     ribbonquickaccessbar
