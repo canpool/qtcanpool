@@ -25,6 +25,7 @@
 #include <QEventLoop>
 #include <QMouseEvent>
 #include <QEvent>
+#include <QLayout>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -108,6 +109,9 @@ RibbonQuickAccessBarContainer::RibbonQuickAccessBarContainer(QWidget *parent)
     : RibbonCtrlContainer(parent)
 {
     m_quickAccessBar = new RibbonQuickAccessBar(this);
+    // use QLayout::SetDefaultConstraint instread of QLayout::SetFixedSize.
+    // Otherwise, the size cannot be set using setGeometry
+    m_quickAccessBar->layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
     m_quickAccessBar->setObjectName(QStringLiteral("qx_QuickAccessBar"));
     setWidget(m_quickAccessBar);
     setTitleVisible(false);
@@ -602,9 +606,6 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     }
     // quick access bar定位
     if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
-        if (m_quickAccessBar->height() != validTitleBarHeight) {
-            m_quickAccessBar->setFixedHeight(validTitleBarHeight);
-        }
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         m_quickAccessBar->setGeometry(x, y, quickAccessBarSize.width(), validTitleBarHeight);
         x += quickAccessBarSize.width() + 5;
@@ -742,8 +743,6 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     }
     // 如果tabH较小，则下移，让tab底部和title的底部对齐
     y += validTitleBarHeight - tabH;
-    // 调整quickAccessBar的Y坐标，否则在qt6或Linux GNOME环境中，quickAccessBar可能会盖住tabBarBaseLine
-    int qabY = y - (validTitleBarHeight - tabH) / 2;
 
     // applicationButton 定位，与TabBar同高
     if (m_applicationButton && m_applicationButton->isVisible()) {
@@ -752,7 +751,7 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     }
     if (m_quickAccessBarPosition == RibbonBar::QABLeftPosition && m_quickAccessBar && m_quickAccessBar->isVisible()) {
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
-        m_quickAccessBar->setGeometry(x, qabY, quickAccessBarSize.width(), tabH);
+        m_quickAccessBar->setGeometry(x, border.top(), quickAccessBarSize.width(), validTitleBarHeight);
         x = m_quickAccessBar->geometry().right() + 2;
     }
     if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
