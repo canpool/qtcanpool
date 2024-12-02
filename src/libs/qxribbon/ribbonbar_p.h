@@ -83,7 +83,7 @@ public:
     void init();
 
     void setApplicationButton(QAbstractButton *btn);
-    bool isContainPageContextInList(RibbonPageContext *pageContext);
+    bool isPageContextVisible(RibbonPageContext *pageContext);
 
     void setMinimizedFlag(bool flag);
     void updateMinimumButtonIcon();
@@ -112,7 +112,7 @@ public:
     int calcMinTabBarWidth() const;
     int mainBarHeight() const;
 
-    int tabIndex(RibbonPage *obj) const;
+    int tabIndex(RibbonPage *page) const;
 
     RibbonButtonGroup *createButtonGroup();
 

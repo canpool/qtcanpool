@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonbar.h"
 #include "ribbonbar_p.h"
 #include "ribbonapplicationbutton.h"
@@ -47,12 +47,10 @@ RibbonStackedWidget::RibbonStackedWidget(QWidget *parent)
     : QStackedWidget(parent)
     , m_isPopup(false)
 {
-
 }
 
 RibbonStackedWidget::~RibbonStackedWidget()
 {
-
 }
 
 bool RibbonStackedWidget::isPopup() const
@@ -141,7 +139,7 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_ribbonStyle(RibbonBar::OfficeStyle)
     , m_lastShowStyle(RibbonBar::OfficeStyle)
     , m_pageContextColorListIndex(-1)
-    , m_tabBarBaseLineColor(186, 201, 219)
+    , m_tabBarBaseLineColor(QColor(186, 201, 219))
     , m_titleAligment(Qt::AlignCenter)
     , m_minimized(true)
     , m_titleVisible(true)
@@ -155,7 +153,7 @@ RibbonBarPrivate::RibbonBarPrivate()
                            << QColor(14, 81, 167)    // 蓝
                            << QColor(228, 0, 69)     // 红
                            << QColor(67, 148, 0)     // 绿
-                             ;
+        ;
 }
 
 void RibbonBarPrivate::init()
@@ -206,10 +204,10 @@ void RibbonBarPrivate::setApplicationButton(QAbstractButton *btn)
     m_applicationButton = btn;
 }
 
-bool RibbonBarPrivate::isContainPageContextInList(RibbonPageContext *pageContext)
+bool RibbonBarPrivate::isPageContextVisible(RibbonPageContext *pageContext)
 {
     for (int i = 0; i < m_currentShowingPageContextList.size(); ++i) {
-        if (m_currentShowingPageContextList[i] == pageContext) {
+        if (m_currentShowingPageContextList[i] == pageContext) {   // operator is overridden
             return true;
         }
     }
@@ -260,8 +258,7 @@ QColor RibbonBarPrivate::getPageContextColor()
         return QColor();
     }
     ++m_pageContextColorListIndex;
-    if ((m_pageContextColorListIndex >= m_pageContextColorList.size()) ||
-            (m_pageContextColorListIndex < 0)) {
+    if ((m_pageContextColorListIndex >= m_pageContextColorList.size()) || (m_pageContextColorListIndex < 0)) {
         m_pageContextColorListIndex = 0;
     }
     return m_pageContextColorList.at(m_pageContextColorListIndex);
@@ -327,7 +324,7 @@ void RibbonBarPrivate::updateRibbonBarHeight()
 {
     Q_Q(RibbonBar);
     // 根据样式调整bar的高度
-    if (m_minimized){
+    if (m_minimized) {
         // 处于最小模式下时，bar 的高度为 tabbar 的 bottom
         // 最小模式时，bar 的高度在 setMinimizedFlag 中已调整
         // q->setFixedHeight(m_tabBar->geometry().bottom());
@@ -340,11 +337,12 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
 {
     Q_Q(RibbonBar);
     paintBackground(p);
+
     //! 显示上下文标签
     p.save();
     QList<PageContextManagerData> pageContextDataList = m_currentShowingPageContextList;
 
-    QPoint pageContextPos(q->width(), -1);
+    QPoint pageContextPos(q->width(), -1);   // x表示左边界，y表示右边界
     QMargins border = q->contentsMargins();
     for (int i = 0; i < pageContextDataList.size(); ++i) {
         QRect contextTitleRect;
@@ -354,12 +352,13 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
             contextTitleRect = m_tabBar->tabRect(indexs.first());
             QRect endRect = m_tabBar->tabRect(indexs.last());
             contextTitleRect.setRight(endRect.right());
+            // contextTitleRect是相对于m_tabBar返回的矩形框，不是RibbonBar中的真实位置，所以需要移动到m_tabBar的起点坐标处
             contextTitleRect.translate(m_tabBar->x(), m_tabBar->y());
             contextTitleRect.setHeight(m_tabBar->height() - 1);   // 减1像素，避免tabbar基线覆盖
             contextTitleRect -= m_tabBar->tabMargin() / 2;
-            contextTitleRect.setTop(border.top()); // 把区域顶部扩展到窗口顶部
+            contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
             paintPageContextTab(p, pageContextDataList[i].pageContext->contextTitle(), contextTitleRect, clr);
-            // 更新上下文标签的范围，用于控制标题栏的显示
+            // 更新上下文标签的范围，用于控制标题栏的显示。如果pageContextPos.y()小于0，说明没有显示上下文标签
             if (contextTitleRect.left() < pageContextPos.x()) {
                 pageContextPos.setX(contextTitleRect.left());
             }
@@ -380,17 +379,20 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
 #endif
     }
     p.restore();
+
     //! 显示标题等
     QWidget *parWindow = q->parentWidget();
     if (parWindow && m_titleVisible) {
         QRect titleRegion;
         int x = border.right();
+        // |border|m_quickAccessBar|m_topLeftButtonGroup|~~~
         if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
-            x = m_quickAccessBar->geometry().right() + 1;
+            x = m_topLeftButtonGroup->geometry().right() + 1;
         } else if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
             x = m_quickAccessBar->geometry().right() + 1;
         }
         if (pageContextPos.y() < 0) {
+            // ~~~~|m_topRightButtonGroup|m_windowButtonGroup|m_iconRightBorderPosition|border|
             int w = q->width() - m_iconRightBorderPosition - border.right() - x;
             if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
                 w -= m_windowButtonGroup->width();
@@ -400,6 +402,7 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
             }
             titleRegion.setRect(x, border.top(), w, q->titleBarHeight());
         } else {
+            // ~~~|~~~~~   ~~~~~~|PageContext|~~~~~    ~~~~|
             int leftwidth = pageContextPos.x() - m_iconRightBorderPosition - x;
             int rightwidth = q->width() - pageContextPos.y();
             if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
@@ -408,14 +411,10 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
             if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
                 rightwidth -= m_topRightButtonGroup->width();
             }
-            // if (width() - pageContextPos.y() > pageContextPos.x()-x) {
             if (rightwidth > leftwidth) {
-                // 说明右边的区域大一点，标题显示在右，显示在右边需要减去windowbutton宽度
                 titleRegion.setRect(pageContextPos.y(), border.top(), rightwidth, q->titleBarHeight());
             } else {
-                // 说明左边的大一点
-                titleRegion.setRect(m_iconRightBorderPosition + x,
-                                    border.top(), leftwidth, q->titleBarHeight());
+                titleRegion.setRect(m_iconRightBorderPosition + x, border.top(), leftwidth, q->titleBarHeight());
             }
         }
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
@@ -432,6 +431,7 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
 {
     Q_Q(RibbonBar);
     paintBackground(p);
+
     //! 显示上下文标签
     p.save();
     QList<PageContextManagerData> pageContextDataList = m_currentShowingPageContextList;
@@ -448,7 +448,7 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
             contextTitleRect.translate(m_tabBar->x(), m_tabBar->y());
             contextTitleRect.setHeight(m_tabBar->height() - 1);
             contextTitleRect -= m_tabBar->tabMargin() / 2;
-            contextTitleRect.setTop(border.top()); // 把区域顶部扩展到窗口顶部
+            contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
             paintPageContextTab(p, QString(), contextTitleRect, clr);
         }
 #ifdef QX_DRAW_CONTEXT_PAGE_BORDER
@@ -464,16 +464,19 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
 #endif
     }
     p.restore();
+
     //! 显示标题等
     QWidget *parWindow = q->parentWidget();
     if (parWindow && m_titleVisible) {
+        // |m_tabBar|~~~        ~~~|m_windowButtonGroup|
         int start = m_tabBar->x() + m_tabBar->width();
         int width = q->width() - start;
         if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
             width -= m_windowButtonGroup->width();
         }
-        if (m_quickAccessBarPosition == RibbonBar::QABRightPosition &&
-            m_quickAccessBar && m_quickAccessBar->isVisible()) {
+        // ~~~|m_quickAccessBar|bottomLeftBG|topRightBG|bottomRightBG|m_windowButtonGroup|
+        if (m_quickAccessBarPosition == RibbonBar::QABRightPosition && m_quickAccessBar &&
+            m_quickAccessBar->isVisible()) {
             width = m_quickAccessBar->x() - start;
         } else if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
             width = m_bottomLeftButtonGroup->x() - start;
@@ -498,26 +501,18 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
 void RibbonBarPrivate::paintBackground(QPainter &painter)
 {
     Q_Q(RibbonBar);
-    painter.save();
     // 在tabbar下绘制一条线
-    const int lineY = m_tabBar->geometry().bottom();
+    painter.save();
     QPen pen(m_tabBarBaseLineColor);
-    QMargins border = q->contentsMargins();
-
     pen.setWidth(tabBarBaseLineHeight);
     pen.setStyle(Qt::SolidLine);
     painter.setPen(pen);
+    QMargins border = q->contentsMargins();
+    const int lineY = m_tabBar->geometry().bottom();
     painter.drawLine(QPoint(border.left(), lineY), QPoint(q->width() - border.right() - 1, lineY));
     painter.restore();
 }
 
-///
-/// \brief 绘制标题栏
-/// \param painter
-/// \param title 标题
-/// \param pageContextPos 当前显示的上下文标签的范围，上下文标签是可以遮挡标题栏的，因此需要知道上下文标签的范围
-/// x表示左边界，y表示右边界
-///
 void RibbonBarPrivate::paintWindowTitle(QPainter &painter, const QString &title, const QRect &titleRegion)
 {
     Q_Q(RibbonBar);
@@ -527,18 +522,10 @@ void RibbonBarPrivate::paintWindowTitle(QPainter &painter, const QString &title,
     painter.restore();
 }
 
-/**
- * @brief 绘制上下文标签的背景
- * @param painter 绘图QPainter
- * @param title 上下文标签的title
- * @param contextRect 上下文标签的绘制区域
- * @param color 上下文标签赋予的颜色
- */
 void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &title, QRect contextRect,
                                            const QColor &color)
 {
     Q_Q(RibbonBar);
-    // 绘制上下文标签
     // 首先有5像素的实体粗线位于顶部
     QMargins border = q->contentsMargins();
     painter.save();
@@ -583,28 +570,29 @@ void RibbonBarPrivate::resizeInOfficeStyle()
 {
     Q_Q(RibbonBar);
     updateRibbonElementGeometry();
+
     QMargins border = q->contentsMargins();
     int x = border.left();
     int y = border.top();
 
-    // cornerWidget - TopLeftCorner
     const int validTitleBarHeight = q->titleBarHeight();
     const int tabH = q->tabBarHeight();
     const int otherH = tabH - tabBarBaseLineHeight;
 
+    // row-1
     x += m_iconRightBorderPosition + 1;
-    QWidget *connerL = q->cornerWidget(Qt::TopLeftCorner);
-    if (connerL && connerL->isVisible()) {
-        QSize connerSize = connerL->sizeHint();
-        if (connerSize.height() < validTitleBarHeight) {
-            int detal = (validTitleBarHeight - connerSize.height()) / 2;
-            connerL->setGeometry(x, y + detal, connerSize.width(), connerSize.height());
+    // |cornerL|m_quickAccessBar|m_topLeftButtonGroup|~~~~~
+    QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
+    if (cornerL && cornerL->isVisible()) {
+        QSize cornerSize = cornerL->sizeHint();
+        if (cornerSize.height() < validTitleBarHeight) {
+            int detal = (validTitleBarHeight - cornerSize.height()) / 2;
+            cornerL->setGeometry(x, y + detal, cornerSize.width(), cornerSize.height());
         } else {
-            connerL->setGeometry(x, y, connerSize.width(), validTitleBarHeight);
+            cornerL->setGeometry(x, y, cornerSize.width(), validTitleBarHeight);
         }
-        x = connerL->geometry().right() + 5;
+        x = cornerL->geometry().right() + 5;
     }
-    // quick access bar定位
     if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         m_quickAccessBar->setGeometry(x, y, quickAccessBarSize.width(), validTitleBarHeight);
@@ -614,6 +602,7 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         QSize wSize = m_topLeftButtonGroup->sizeHint();
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), validTitleBarHeight);
     }
+    // ~~~~~~~~|m_topRightButtonGroup|m_windowButtonGroup|
     int endX = q->width() - border.right();
     if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
         QSize wSize = m_windowButtonGroup->sizeHint();
@@ -625,34 +614,27 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         endX -= wSize.width();
         m_topRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
-    // 第二行，开始布局applicationButton，tabbar，tabBarRightSizeButtonGroupWidget，TopRightCorner
+
+    // row-2
     x = border.left();
     y += validTitleBarHeight;
-    // applicationButton 定位
+    // |m_applicationButton|~~~~~ m_tabBar ~~~~~|m_bottomLeftButtonGroup|m_bottomRightButtonGroup|cornerW|
     if (m_applicationButton && m_applicationButton->isVisible()) {
         m_applicationButton->setGeometry(x, y, m_applicationButton->size().width(), otherH);
         x = m_applicationButton->geometry().right();
     }
-    // top right是一定要配置的，对于多文档窗口，子窗口的缩放等按钮就是通过这个窗口实现，
-    // 由于这个窗口一定要在最右，因此先对这个窗口进行布局
-    // cornerWidget - TopRightCorner
-    // 获取最右边的位置
     endX = q->width() - border.right();
-    QWidget *connerW = q->cornerWidget(Qt::TopRightCorner);
-    if (connerW && connerW->isVisible()) {
-        QSize connerSize = connerW->sizeHint();
-        endX -= connerSize.width();
-        if (connerSize.height() < tabH) {
-            int detal = (tabH - connerSize.height()) / 2;
-            connerW->setGeometry(endX, y + detal, connerSize.width(), connerSize.height());
+    QWidget *cornerW = q->cornerWidget(Qt::TopRightCorner);
+    if (cornerW && cornerW->isVisible()) {
+        QSize cornerSize = cornerW->sizeHint();
+        endX -= cornerSize.width();
+        if (cornerSize.height() < tabH) {
+            int detal = (tabH - cornerSize.height()) / 2;
+            cornerW->setGeometry(endX, y + detal, cornerSize.width(), cornerSize.height());
         } else {
-            connerW->setGeometry(endX, y, connerSize.width(), otherH);
+            cornerW->setGeometry(endX, y, cornerSize.width(), otherH);
         }
     }
-    // applicationButton和TopRightCorner完成定位，才可以定位tab bar
-    // tab bar 定位
-
-    // tabBar 右边的附加按钮组，这里一般会附加一些类似登录等按钮组
     if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
@@ -663,7 +645,6 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         endX -= wSize.width();
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
-    // 最后确定tabbar宽度
     int tabBarWidth = endX - x;
     m_tabBar->setGeometry(x, y, tabBarWidth, tabH);
 
@@ -674,33 +655,31 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
 {
     Q_Q(RibbonBar);
     updateRibbonElementGeometry();
+
     QMargins border = q->contentsMargins();
     int x = border.left();
     int y = border.top();
 
     const int validTitleBarHeight = q->titleBarHeight();
 
-    // 先布局右边内容
-    //  cornerWidget - TopRightCorner
+    // ~~~~|m_bottomLeftButtonGroup|m_topRightButtonGroup|m_bottomRightButtonGroup|cornerR|m_windowButtonGroup|
     int endX = q->width() - border.right();
     if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
         QSize wSize = m_windowButtonGroup->sizeHint();
         endX -= wSize.width();
         m_windowButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
-    QWidget *connerR = q->cornerWidget(Qt::TopRightCorner);
-    if (connerR && connerR->isVisible()) {
-        QSize connerSize = connerR->sizeHint();
-        endX -= connerSize.width();
-        if (connerSize.height() < validTitleBarHeight) {
-            int detal = (validTitleBarHeight - connerSize.height()) / 2;
-            connerR->setGeometry(endX, y + detal, connerSize.width(), connerSize.height());
+    QWidget *cornerR = q->cornerWidget(Qt::TopRightCorner);
+    if (cornerR && cornerR->isVisible()) {
+        QSize cornerSize = cornerR->sizeHint();
+        endX -= cornerSize.width();
+        if (cornerSize.height() < validTitleBarHeight) {
+            int detal = (validTitleBarHeight - cornerSize.height()) / 2;
+            cornerR->setGeometry(endX, y + detal, cornerSize.width(), cornerSize.height());
         } else {
-            connerR->setGeometry(endX, y, connerSize.width(), validTitleBarHeight);
+            cornerR->setGeometry(endX, y, cornerSize.width(), validTitleBarHeight);
         }
     }
-
-    // tabBar 右边的附加按钮组
     if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
@@ -716,22 +695,22 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         endX -= wSize.width();
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
-    // quick access bar定位
+    // ~~~~|m_quickAccessBar|m_bottomLeftButtonGroup|~~~~~
     if (m_quickAccessBarPosition == RibbonBar::QABRightPosition && m_quickAccessBar && m_quickAccessBar->isVisible()) {
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         endX -= quickAccessBarSize.width();
         m_quickAccessBar->setGeometry(endX, y, quickAccessBarSize.width(), validTitleBarHeight);
     }
-    // cornerWidget - TopLeftCorner
-    QWidget *connerL = q->cornerWidget(Qt::TopLeftCorner);
-    if (connerL && connerL->isVisible()) {
-        QSize connerSize = connerL->sizeHint();
-        endX -= connerSize.width();
-        if (connerSize.height() < validTitleBarHeight) {
-            int detal = (validTitleBarHeight - connerSize.height()) / 2;
-            connerL->setGeometry(endX, y + detal, connerSize.width(), connerSize.height());
+    // ~~~~|cornerL|<m_quickAccessBar>|m_bottomLeftButtonGroup|~~~~~
+    QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
+    if (cornerL && cornerL->isVisible()) {
+        QSize cornerSize = cornerL->sizeHint();
+        endX -= cornerSize.width();
+        if (cornerSize.height() < validTitleBarHeight) {
+            int detal = (validTitleBarHeight - cornerSize.height()) / 2;
+            cornerL->setGeometry(endX, y + detal, cornerSize.width(), cornerSize.height());
         } else {
-            connerL->setGeometry(endX, y, connerSize.width(), validTitleBarHeight);
+            cornerL->setGeometry(endX, y, cornerSize.width(), validTitleBarHeight);
         }
     }
 
@@ -744,7 +723,7 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     // 如果tabH较小，则下移，让tab底部和title的底部对齐
     y += validTitleBarHeight - tabH;
 
-    // applicationButton 定位，与TabBar同高
+    // |m_applicationButton|<m_quickAccessBar>|m_topLeftButtonGroup|m_tabBar|~~~~~~
     if (m_applicationButton && m_applicationButton->isVisible()) {
         m_applicationButton->setGeometry(x, y, m_applicationButton->size().width(), tabH);
         x = m_applicationButton->geometry().right() + 2;
@@ -759,20 +738,17 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), tabH);
         x = m_topLeftButtonGroup->geometry().right() + 2;
     }
-    // tab bar 定位 wps模式下applicationButton的右边就是tab bar
     int tabBarWidth = endX - x;
     // 20200831
     // tabBarWidth的宽度原来为endX - x;，现需要根据实际进行调整
     // 为了把tabbar没有tab的部分不占用，这里的宽度需要根据tab的size来进行设置，让tabbar的长度刚刚好，这样能让出
     // mainwindow的空间，接受鼠标事件，从而实现拖动等操作，否则tabbar占用整个顶栏，鼠标无法点击到mainwindow
-    // 计算tab所占用的宽度
     int mintabBarWidth = calcMinTabBarWidth();
     if (mintabBarWidth < tabBarWidth) {
         tabBarWidth = mintabBarWidth;
     }
     m_tabBar->setGeometry(x, y, tabBarWidth, tabH);
 
-    // 调整整个stackedContainer
     resizeStackedWidget();
 }
 
@@ -782,13 +758,12 @@ void RibbonBarPrivate::resizeStackedWidget()
     QMargins border = q->contentsMargins();
     if (m_stack->isPopup()) {
         QPoint absPosition = q->mapToGlobal(QPoint(border.left(), m_tabBar->geometry().bottom() + 1));
-        m_stack->setGeometry(
-            absPosition.x(), absPosition.y(), q->width() - border.left() - border.right(),
-            mainBarHeight() - m_tabBar->geometry().bottom() - border.bottom() - 1);
+        m_stack->setGeometry(absPosition.x(), absPosition.y(), q->width() - border.left() - border.right(),
+                             mainBarHeight() - m_tabBar->geometry().bottom() - border.bottom() - 1);
     } else {
-        m_stack->setGeometry(
-            border.left(), m_tabBar->geometry().bottom() + 1, q->width() - border.left() - border.right(),
-            mainBarHeight() - m_tabBar->geometry().bottom() - border.bottom() - 1);
+        m_stack->setGeometry(border.left(), m_tabBar->geometry().bottom() + 1,
+                             q->width() - border.left() - border.right(),
+                             mainBarHeight() - m_tabBar->geometry().bottom() - border.bottom() - 1);
     }
 }
 
@@ -830,7 +805,7 @@ int RibbonBarPrivate::mainBarHeight() const
 /**
  * @brief 根据RibbonPage*指针查找tabbar的index
  *
- * @param c RibbonPage对应的QObject指针
+ * @param page RibbonPage对应的QObject指针
  * @return 如果没有找到，返回-1
  * @note 此函数不会调用RibbonPage*的任何方法，因此可以在RibbonPage的destroyed槽中调用
  */
@@ -850,7 +825,6 @@ int RibbonBarPrivate::tabIndex(RibbonPage *page) const
             }
         }
     }
-    // 如果找不到就从stackedwidget中找
     return -1;
 }
 
@@ -925,8 +899,7 @@ void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
                                 m_tabBar->mapToGlobal(QCursor::pos()));
 #else
                 QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToParent(QCursor::pos()),
-                                m_tabBar->mapToGlobal(QCursor::pos()),
-                                m_tabBar->mapToGlobal(QCursor::pos()));
+                                m_tabBar->mapToGlobal(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()));
 #endif
                 QApplication::sendEvent(m_tabBar, &ehl);
                 resizeStackedWidget();
@@ -962,8 +935,7 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
                             m_tabBar->mapToGlobal(QCursor::pos()));
 #else
             QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToParent(QCursor::pos()),
-                            m_tabBar->mapToGlobal(QCursor::pos()),
-                            m_tabBar->mapToGlobal(QCursor::pos()));
+                            m_tabBar->mapToGlobal(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()));
 #endif
             QApplication::sendEvent(m_tabBar, &ehl);
             // 弹出前都调整一下位置，避免移动后位置异常
@@ -974,12 +946,6 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
     }
 }
 
-/**
- * @brief ribbon tab bar双击
- *
- * 默认情况下双击会切换最小和正常模式
- * @param index
- */
 void RibbonBarPrivate::onCurrentRibbonTabDoubleClicked(int index)
 {
     Q_Q(RibbonBar);
@@ -991,13 +957,9 @@ void RibbonBarPrivate::onCurrentRibbonTabDoubleClicked(int index)
 
 void RibbonBarPrivate::onTabMoved(int from, int to)
 {
-    // 调整stacked widget的顺序，调整顺序是为了调用pages函数返回的QList<RibbonPage *>顺序和tabbar一致
     m_stack->moveWidget(from, to);
 }
 
-///
-/// \brief ribbon的显示界面隐藏
-///
 void RibbonBarPrivate::onStackWidgetHided()
 {
     // m_tabBar->repaint();
@@ -1025,13 +987,9 @@ RibbonBar::RibbonBar(QWidget *parent)
 
 RibbonBar::~RibbonBar()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
-/**
- * @brief 返回applicationButton
- * @return 默认的applicationButton是@ref RibbonApplicationButton 生成，通过@ref setApplicationButton 可设置为其他button
- */
 QAbstractButton *RibbonBar::applicationButton()
 {
     Q_D(RibbonBar);
@@ -1204,12 +1162,12 @@ void RibbonBar::showPage(RibbonPage *page)
 {
     Q_D(RibbonBar);
     for (auto i = d->m_hidedPage.begin(); i != d->m_hidedPage.end(); ++i) {
-        if (i->page == page) { // 说明要显示
+        if (i->page == page) {   // 说明要显示
             int index = d->m_tabBar->insertTab(i->index, i->page->windowTitle());
             i->index = index;
             d->m_tabBar->setTabData(index, QVariant::fromValue(*i));
             d->m_hidedPage.erase(i);   // 移除
-            d->updateTabData(); // 更新index信息
+            d->updateTabData();        // 更新index信息
             break;
         }
     }
@@ -1387,10 +1345,9 @@ void RibbonBar::hidePageContext(RibbonPageContext *context)
             for (int j = indexs.size() - 1; j >= 0; --j) {
                 d->m_tabBar->removeTab(indexs[j]);
             }
-            // 注意，再删除ContextPage后，tab的序号就会改变，这时，这个tab后面的都要调整它的序号
+            // 注意，删除ContextPage后，tab的序号就会改变，这时，这个tab后面的都要调整它的序号
             needResize = true;
             d->m_currentShowingPageContextList.removeAt(i);
-            // 移除了ContextPage后需要break
             break;
         }
     }
@@ -1400,25 +1357,12 @@ void RibbonBar::hidePageContext(RibbonPageContext *context)
     }
 }
 
-/**
- * @brief 判断上下文是否在显示状态
- * @param context
- * @return 在显示状态返回true
- * @sa setPageContextVisible
- */
 bool RibbonBar::isPageContextVisible(RibbonPageContext *context)
 {
     Q_D(RibbonBar);
-    return d->isContainPageContextInList(context);
+    return d->isPageContextVisible(context);
 }
 
-/**
- * @brief 设置上下文标签的显示状态
- *
- * 上下文标签的当前显示状态可通过 @ref isPageContextVisible 进行判断
- * @param context 上下文标签
- * @param visible 显示状态，true为显示
- */
 void RibbonBar::setPageContextVisible(RibbonPageContext *context, bool visible)
 {
     if (Q_NULLPTR == context) {
@@ -1465,9 +1409,8 @@ void RibbonBar::destroyPageContext(RibbonPageContext *context)
     }
     //! 2、删除上下文标签的相关内容
     d->m_pageContextList.removeAll(context);
-    //!
-    QList<RibbonPage *> res = context->pageList();
 
+    QList<RibbonPage *> res = context->pageList();
     for (RibbonPage *page : qAsConst(res)) {
         page->hide();
         page->deleteLater();
@@ -1507,7 +1450,7 @@ void RibbonBar::showMinimumButton(bool isShow)
 {
     Q_D(RibbonBar);
     if (isShow) {
-        cornerButtonGroup(Qt::BottomRightCorner);
+        cornerButtonGroup(Qt::BottomRightCorner);   // create m_bottomRightButtonGroup
         if (Q_NULLPTR == d->m_minimumPageButton) {
             d->m_minimumPageButton = RibbonElementFactory->createHideGroupButton(this);
             d->m_minimumPageButton->ensurePolished();   // 载入样式图标
@@ -1708,7 +1651,8 @@ void RibbonBar::updateRibbonTheme()
 void RibbonBar::resizeRibbon()
 {
     // FIXME: 此处使用resizeEvent中的d->resizeRibbon()和update()来代替postEvent会出现如下问题：
-    // WPS模式下，无边框和有边框之间切换后, m_applicationButton.isVisible()突然返回false，导致d->resizeRibbon()中计算尺寸异常
+    // WPS模式下，无边框和有边框之间切换后,
+    // m_applicationButton.isVisible()突然返回false，导致d->resizeRibbon()中计算尺寸异常
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
@@ -1791,8 +1735,9 @@ bool RibbonBar::eventFilter(QObject *obj, QEvent *e)
                     QWidget *clickedWidget = QApplication::widgetAt(globalPos);
                     if (clickedWidget == d->m_tabBar) {
                         const QPoint targetPoint = clickedWidget->mapFromGlobal(globalPos);
-                        QMouseEvent *evPress = new QMouseEvent(mouseEvent->type(), targetPoint, globalPos,
-                            mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
+                        QMouseEvent *evPress =
+                            new QMouseEvent(mouseEvent->type(), targetPoint, globalPos, mouseEvent->button(),
+                                            mouseEvent->buttons(), mouseEvent->modifiers());
                         QApplication::postEvent(clickedWidget, evPress);
                         return true;
                     }
