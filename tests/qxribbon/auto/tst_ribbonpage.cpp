@@ -62,8 +62,8 @@ void tst_RibbonPage::group()
     QCOMPARE(g4, page->groupByName(tr("")));   // g4 name is empty and is first
 
     QCOMPARE(g1, page->groupByObjectName(tr("group1")));
-    QCOMPARE(nullptr, page->groupByName(tr("xxx")));
-    QCOMPARE(g4, page->groupByName(tr("")));   // g4 name is empty and is first
+    QCOMPARE(nullptr, page->groupByObjectName(tr("xxx")));
+    QCOMPARE(g3, page->groupByObjectName(tr("")));   // g3 and g4 object name are empty, but g3 is first
 
     QCOMPARE(5, page->groupCount());
     QCOMPARE(page->groupCount(), page->groupList().count());
