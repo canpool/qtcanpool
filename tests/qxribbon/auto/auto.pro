@@ -12,7 +12,4 @@ include($$QTCANPOOL_DIR/src/rpath.pri)
 include($$QTCANPOOL_DIR/tests/common/common.pri)
 
 SOURCES += \
-    $$PWD/main.cpp \
-    $$PWD/tst_ribbonquickaccessbar.cpp \
-    $$PWD/tst_ribbonbar.cpp \
-    $$PWD/tst_ribbonbutton.cpp
+    $$files($$PWD/*.cpp)
