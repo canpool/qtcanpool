@@ -172,6 +172,7 @@ bool RibbonPageContext::takePage(RibbonPage *page)
     for (int i = 0; i < d->pageDataList.size(); ++i) {
         if (d->pageDataList[i].page == page) {
             d->pageDataList.takeAt(i);
+            emit pageRemoved(page);
             return true;
         }
     }
