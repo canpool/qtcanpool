@@ -1,7 +1,7 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonpage.h"
 #include "ribbonpage_p.h"
 #include "ribboncontrols.h"
@@ -83,18 +83,14 @@ void RibbonPagePrivate::insertGroup(int index, RibbonGroup *group)
         group->setParent(q);
     }
     group->setGroupLayoutMode(m_groupLayoutMode);
-    group->installEventFilter(q);
     if (index < 0 || index > m_itemList.size()) {
         index = m_itemList.size();
     }
     RibbonPageItem item;
 
     item.m_group = group;
-    // 分割线
     item.m_separator = new RibbonSeparator(q);
-    // 插入list中
     m_itemList.insert(index, item);
-    // 标记需要重新计算尺寸
     updateItemGeometry();
     group->setVisible(true);
 }
@@ -114,7 +110,6 @@ bool RibbonPagePrivate::takeGroup(RibbonGroup *group)
     }
     if (item.m_separator) {
         item.m_separator->hide();
-        // 对应的分割线删除，但group不删除
         item.m_separator->deleteLater();
     }
     return true;
@@ -166,22 +161,17 @@ void RibbonPagePrivate::setGroupLayoutMode(RibbonGroup::GroupLayoutMode m)
     updateItemGeometry();
 }
 
-/**
- * @brief 计算所有元素的SizeHint宽度总和
- * @return
- */
 int RibbonPagePrivate::totalSizeHintWidth() const
 {
     int total = 0;
-    QMargins mag = m_contentsMargins;
+    QMargins m = m_contentsMargins;
 
-    if (!mag.isNull()) {
-        total += (mag.left() + mag.right());
+    if (!m.isNull()) {
+        total += (m.left() + m.right());
     }
-    // 先计算总长
+
     for (RibbonPageItem item : qAsConst(m_itemList)) {
         if (item.isEmpty()) {
-            // 如果是hide就直接跳过
             continue;
         }
         total += item.m_group->sizeHint().width();
@@ -196,11 +186,11 @@ QSize RibbonPagePrivate::pageContentSize() const
 {
     Q_Q(const RibbonPage);
     QSize s = q->size();
-    QMargins mag = m_contentsMargins;
+    QMargins m = m_contentsMargins;
 
-    if (!mag.isNull()) {
-        s.rheight() -= (mag.top() + mag.bottom());
-        s.rwidth() -= (mag.right() + mag.left());
+    if (!m.isNull()) {
+        s.rheight() -= (m.top() + m.bottom());
+        s.rwidth() -= (m.right() + m.left());
     }
     return s;
 }
@@ -209,7 +199,9 @@ void RibbonPagePrivate::updateItemGeometry()
 {
     Q_Q(RibbonPage);
     RibbonPage *page = q;
-    QSize contentSize = pageContentSize();
+    QSize pageSize = pageContentSize();
+    int pageWidth = pageSize.width();
+
     int y = 0;
     int x = 0;
 
@@ -217,22 +209,21 @@ void RibbonPagePrivate::updateItemGeometry()
         y = m_contentsMargins.top();
         x = m_contentsMargins.left();
     }
-    // total 是总宽，不是x坐标系，x才是坐标系
-    int total = totalSizeHintWidth();
+
+    int totalWidth = totalSizeHintWidth();
     // 记录可以扩展的数量
     int canExpandingCount = 0;
     // 扩展的宽度
     int expandWidth = 0;
 
-    // 如果 total < pageWidth, m_XBase 可以设置为 0
-    // 判断是否超过总长度
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
     qDebug() << "\r\n\r\n============================================="
              << "\r\nRibbonPagePrivate::updateItemGeometry"
-             << "\r\ngroup name:" << page->windowTitle()
-             << "\r\n first total:" << total << "\r\n y:" << y << "\r\n expandWidth:" << expandWidth;
+             << "\r\npage name:" << page->windowTitle() << "\r\n first totalWidth:" << totalWidth << "\r\n y:" << y
+             << "\r\nexpandWidth:" << expandWidth;
 #endif
-    if (total <= contentSize.width()) {
+    // 如果 totalWidth < pageWidth, m_XBase 可以设置为 0
+    if (totalWidth <= pageWidth) {
         // 这个是避免一开始 totalWidth > pageWidth，通过滚动按钮调整了 m_XBase，随之调整了窗体尺寸，
         // 调整后 totalWidth < pageWidth 导致 page 在原来位置无法显示，必须这里把 m_XBase 设置为 0
         m_XBase = 0;
@@ -246,12 +237,12 @@ void RibbonPagePrivate::updateItemGeometry()
         }
         // 计算可扩展的宽度
         if (canExpandingCount > 0) {
-            expandWidth = (contentSize.width() - total) / canExpandingCount;
+            expandWidth = (pageWidth - totalWidth) / canExpandingCount;
         } else {
             expandWidth = 0;
         }
     }
-    total = 0;   // total重新计算
+    totalWidth = 0;   // total重新计算
     x += m_XBase;
 
     // 先按照sizeHint设置所有的尺寸
@@ -281,21 +272,23 @@ void RibbonPagePrivate::updateItemGeometry()
             groupSize.setWidth(groupSize.width() + expandWidth);
         }
         int w = groupSize.width();
-        item.m_groupWillGeometry = QRect(x, y, w, contentSize.height());
-        x += w; total += w;
+        item.m_groupWillGeometry = QRect(x, y, w, pageSize.height());
+        x += w;
+        totalWidth += w;
         w = separatorSize.width();
-        item.m_separatorWillGeometry = QRect(x, y, w, contentSize.height());
-        x += w; total += w;
+        item.m_separatorWillGeometry = QRect(x, y, w, pageSize.height());
+        x += w;
+        totalWidth += w;
     }
-    m_totalWidth = total;
+    m_totalWidth = totalWidth;
     // 判断滚动按钮是否显示
-    if (total > contentSize.width()) {
+    if (totalWidth > pageWidth) {
         // 超过总长度，需要显示滚动按钮
-        if (0 == m_XBase) {
+        if (m_XBase == 0) {
             // 已经移动到最左，需要可以向右移动
             m_isRightScrollBtnShow = true;
             m_isLeftScrollBtnShow = false;
-        } else if (m_XBase <= (contentSize.width() - total)) {
+        } else if (m_XBase <= (pageWidth - totalWidth)) {
             // 已经移动到最右，需要可以向左移动
             m_isRightScrollBtnShow = false;
             m_isLeftScrollBtnShow = true;
@@ -305,13 +298,13 @@ void RibbonPagePrivate::updateItemGeometry()
             m_isLeftScrollBtnShow = true;
         }
     } else {
-        // 说明total 小于 pageWidth
+        // 说明 totalWidth 小于 pageWidth
         m_isRightScrollBtnShow = false;
         m_isLeftScrollBtnShow = false;
     }
     QWidget *par = page->parentWidget();
-    int parentHeight = (Q_NULLPTR == par) ? contentSize.height() : par->height();
-    int parentWidth = (Q_NULLPTR == par) ? total : par->width();
+    int parentHeight = (Q_NULLPTR == par) ? pageSize.height() : par->height();
+    int parentWidth = (Q_NULLPTR == par) ? totalWidth : par->width();
     m_sizeHint = QSize(parentWidth, parentHeight);
     doItemLayout();
 }
@@ -345,7 +338,7 @@ void RibbonPagePrivate::doItemLayout()
                 showWidgets << item.m_separator;
             }
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
-            qDebug() << "RibbonPageLayout::doLayout() =";
+            qDebug() << "RibbonPagePrivate::doItemLayout() =";
             qDebug() << "\r\n     group:" << item.m_group->windowTitle()
                      << "\r\n     group geo:" << item.m_groupWillGeometry
                      << "\r\n     sep geo:" << item.m_separatorWillGeometry;
@@ -372,11 +365,10 @@ void RibbonPagePrivate::doItemLayout()
 
 void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
 {
-    int width = pageContentSize().width();
-    // 求总宽
+    int pageWidth = pageContentSize().width();
     int totalWidth = m_totalWidth;
 
-    if (totalWidth > width) {
+    if (totalWidth > pageWidth) {
         // 这个时候滚动有效
         QPoint numPixels = event->pixelDelta();
         QPoint numDegrees = event->angleDelta() / 8;
@@ -393,11 +385,11 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
         }
         if (scrollpix > 0) {   // 当滚轮向上滑，RibbonPage向左走
             int tmp = m_XBase - scrollpix;
-            if (tmp < (width - totalWidth)) {
-                tmp = width - totalWidth;
+            if (tmp < (pageWidth - totalWidth)) {
+                tmp = pageWidth - totalWidth;
             }
             m_XBase = tmp;
-        } else {                            // 当滚轮向下滑，RibbonPage向右走
+        } else {                             // 当滚轮向下滑，RibbonPage向右走
             int tmp = m_XBase - scrollpix;   // 此时numDegrees为负数
             if (tmp > 0) {
                 tmp = 0;
@@ -414,13 +406,17 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
 
 void RibbonPagePrivate::onLeftScrollButtonClicked()
 {
-    int width = pageContentSize().width();
-    // 求总宽
+    int pageWidth = pageContentSize().width();
     int totalWidth = m_totalWidth;
 
-    if (totalWidth > width) {
+    if (totalWidth > pageWidth) {
         // 点击左侧，相当于向右滚动一页
-        int tmp = m_XBase + width;
+        //
+        //    |---- pageWidth ----|
+        //    |-------- totalWidth --------|
+        //    `-> m_xBase (max pos is 0)
+        //
+        int tmp = m_XBase + pageWidth;
         if (tmp > 0) {
             tmp = 0;
         }
@@ -433,15 +429,19 @@ void RibbonPagePrivate::onLeftScrollButtonClicked()
 
 void RibbonPagePrivate::onRightScrollButtonClicked()
 {
-    int width = pageContentSize().width();
-    // 求总宽
+    int pageWidth = pageContentSize().width();
     int totalWidth = m_totalWidth;
 
-    if (totalWidth > width) {
+    if (totalWidth > pageWidth) {
         // 点击右侧，相当于向左滚动一页
-        int tmp = m_XBase - width;
-        if (tmp < (width - totalWidth)) {
-            tmp = width - totalWidth; // m_XBase 最小值
+        //
+        //             |---- pageWidth ----|
+        //    |-------- totalWidth --------|
+        //    `-> m_xBase (min pos is pageWidth - totalWidth)
+        //
+        int tmp = m_XBase - pageWidth;
+        if (tmp < (pageWidth - totalWidth)) {
+            tmp = pageWidth - totalWidth;   // m_XBase 最小值
         }
         m_XBase = tmp;
     } else {
@@ -453,7 +453,7 @@ void RibbonPagePrivate::onRightScrollButtonClicked()
 RibbonPage::RibbonPage(QWidget *parent)
     : QWidget(parent)
 {
-    QX_INIT_PRIVATE(RibbonPage)
+    QX_INIT_PRIVATE(RibbonPage);
     Q_D(RibbonPage);
     d->init();
     setAutoFillBackground(true);
@@ -468,22 +468,14 @@ RibbonPage::RibbonPage(const QString &name, QWidget *parent)
 
 RibbonPage::~RibbonPage()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
-/**
- * @brief page的名字,等同windowTitle函数
- * @return
- */
 QString RibbonPage::pageName() const
 {
     return windowTitle();
 }
 
-/**
- * @brief 设置 page 名字，等同 setWindowTitle
- * @param title
- */
 void RibbonPage::setPageName(const QString &title)
 {
     setWindowTitle(title);
@@ -495,13 +487,6 @@ RibbonGroup::GroupLayoutMode RibbonPage::groupLayoutMode() const
     return d->m_groupLayoutMode;
 }
 
-/**
- * @brief 设置group的模式
- *
- * 在@ref RibbonBar 调用@ref RibbonBar::setRibbonStyle 函数时，会对所有的RibbonPage调用此函数
- * 把新的RibbonGroup::GroupLayoutMode设置进去
- * @param m
- */
 void RibbonPage::setGroupLayoutMode(RibbonGroup::GroupLayoutMode m)
 {
     Q_D(RibbonPage);
@@ -537,7 +522,6 @@ void RibbonPage::addGroup(RibbonGroup *group)
  * @param title group的title
  * @param index 插入的位置，如果index超出page里group的个数，将插入到最后
  * @return 返回生成的@ref RibbonGroup 指针
- * @note 如果
  */
 RibbonGroup *RibbonPage::insertGroup(int index, const QString &title)
 {
@@ -577,7 +561,7 @@ RibbonGroup *RibbonPage::groupByName(const QString &title) const
 /**
  * @brief 通过ObjectName查找group
  * @param objname
- * @return
+ * @return 如果有重名，只会返回第一个符合条件的
  */
 RibbonGroup *RibbonPage::groupByObjectName(const QString &objname) const
 {
@@ -618,17 +602,14 @@ int RibbonPage::groupIndex(RibbonGroup *group) const
 void RibbonPage::moveGroup(int from, int to)
 {
     Q_D(RibbonPage);
+    if (from == to) {
+        return;
+    }
     int c = groupCount();
     if (c <= 0) {
         return;
     }
-    if (from < 0 || from >= c) {
-        from = c - 1;
-    }
-    if (to < 0 || to >= c) {
-        to = c - 1;
-    }
-    if (from == to) {
+    if (from < 0 || from >= c || to < 0 || to >= c) {
         return;
     }
     // This is the same as insert(to, takeAt(from))
@@ -636,11 +617,6 @@ void RibbonPage::moveGroup(int from, int to)
     d->updateItemGeometry();
 }
 
-/**
- * @brief 把group脱离RibbonPage的管理
- * @param group 需要提取的group
- * @return 成功返回true，否则返回false
- */
 bool RibbonPage::takeGroup(RibbonGroup *group)
 {
     Q_D(RibbonPage);
@@ -655,7 +631,7 @@ bool RibbonPage::takeGroup(RibbonGroup *group)
  * 此操作等同于：
  *
  * @code
- * RibbonGroup* group;
+ * RibbonGroup *group;
  * ...
  * page->takeGroup(group);
  * group->hide();
@@ -683,20 +659,12 @@ bool RibbonPage::removeGroup(int index)
     return removeGroup(grp);
 }
 
-/**
- * @brief 返回Page下的所有group
- * @return
- */
 QList<RibbonGroup *> RibbonPage::groupList() const
 {
     Q_D(const RibbonPage);
     return d->groupList();
 }
 
-///
-/// \brief RibbonPage::setBackgroundBrush
-/// \param brush
-///
 void RibbonPage::setBackgroundBrush(const QBrush &brush)
 {
     QPalette p = palette();
@@ -720,40 +688,24 @@ bool RibbonPage::isPageContext() const
     return d->m_isPageContext;
 }
 
-/**
- * @brief 返回group的个数
- * @return
- */
 int RibbonPage::groupCount() const
 {
     Q_D(const RibbonPage);
     return d->m_itemList.size();
 }
 
-/**
- * @brief 判断是否可以自定义
- * @return
- */
 bool RibbonPage::isCanCustomize() const
 {
     Q_D(const RibbonPage);
     return d->m_isCanCustomize;
 }
 
-/**
- * @brief 设置是否可以自定义
- * @param b
- */
 void RibbonPage::setCanCustomize(bool b)
 {
     Q_D(RibbonPage);
     d->m_isCanCustomize = b;
 }
 
-/**
- * @brief 获取对应的ribbonbar
- * @return 如果没有加入ribbonbar的管理，此值为null
- */
 RibbonBar *RibbonPage::ribbonBar() const
 {
     Q_D(const RibbonPage);
@@ -783,11 +735,6 @@ void RibbonPage::markIsPageContext(bool isPageContext)
     d->m_isPageContext = isPageContext;
 }
 
-/**
- * @brief RibbonPage::event
- * @param event
- * @return
- */
 bool RibbonPage::event(QEvent *e)
 {
     Q_D(RibbonPage);
@@ -806,55 +753,15 @@ void RibbonPage::resizeEvent(QResizeEvent *e)
 {
     Q_D(RibbonPage);
     QWidget::resizeEvent(e);
-
-    // 尺寸没变就不用管
-    // QSize delta = e->size() - e->oldSize();
-    // if (delta.isNull()) {
-    //     return;
-    // }
     d->updateItemGeometry();
 }
 
-bool RibbonPage::eventFilter(QObject *watched, QEvent *event)
-{
-    if (Q_NULLPTR == watched) {
-        return false;
-    }
-    RibbonGroup *group = qobject_cast<RibbonGroup *>(watched);
-
-    if (group) {
-        switch (event->type()) {
-        case QEvent::HideToParent: {
-            // 隐藏和显示都要重新布局
-            //  layout()->invalidate();
-        } break;
-
-        case QEvent::ShowToParent: {
-            // 隐藏和显示都要重新布局
-            //  layout()->invalidate();
-        } break;
-
-        default:
-            break;
-        }
-    }
-    return false;
-}
-
-/**
- * @brief 在超出边界情况下，滚轮可滚动group
- * @param event
- */
 void RibbonPage::wheelEvent(QWheelEvent *event)
 {
     Q_D(RibbonPage);
     d->doWheelEvent(event);
 }
 
-/**
- * @brief 设置ribbonbar，此函数仅提供给ribbonbar调用
- * @param bar ribbonbar指针
- */
 void RibbonPage::setRibbonBar(RibbonBar *bar)
 {
     Q_D(RibbonPage);
