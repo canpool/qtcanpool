@@ -32,9 +32,6 @@ public:
 
     bool takePage(RibbonPage *page);
 
-    QVariant id() const;
-    void setId(const QVariant &id);
-
     QColor contextColor() const;
     void setContextColor(const QColor color);
 

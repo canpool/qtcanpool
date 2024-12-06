@@ -23,7 +23,6 @@ class RibbonPageContextPrivate
     QX_DECLARE_PUBLIC(RibbonPageContext)
 public:
     QList<RibbonPageData> pageDataList;
-    QVariant contextID;
     QColor contextColor;
     QString contextTitle;
 };
@@ -59,18 +58,6 @@ int RibbonPageContext::pageCount() const
 {
     Q_D(const RibbonPageContext);
     return d->pageDataList.count();
-}
-
-void RibbonPageContext::setId(const QVariant &id)
-{
-    Q_D(RibbonPageContext);
-    d->contextID = id;
-}
-
-QVariant RibbonPageContext::id() const
-{
-    Q_D(const RibbonPageContext);
-    return d->contextID;
 }
 
 void RibbonPageContext::setContextColor(const QColor color)
@@ -112,10 +99,6 @@ bool RibbonPageContext::eventFilter(QObject *watched, QEvent *e)
     return false;
 }
 
-/**
- * @brief 获取上下文标签的标题
- * @return
- */
 QString RibbonPageContext::contextTitle() const
 {
     Q_D(const RibbonPageContext);
@@ -132,11 +115,6 @@ void RibbonPageContext::setContextTitle(const QString &title)
     d->contextTitle = title;
 }
 
-/**
- * @brief 获取对应的tab页
- * @param index
- * @return
- */
 RibbonPage *RibbonPageContext::page(int index)
 {
     Q_D(RibbonPageContext);
@@ -146,10 +124,6 @@ RibbonPage *RibbonPageContext::page(int index)
     return d->pageDataList[index].page;
 }
 
-/**
- * @brief 获取所有的RibbonPage*
- * @return
- */
 QList<RibbonPage *> RibbonPageContext::pageList() const
 {
     Q_D(const RibbonPageContext);

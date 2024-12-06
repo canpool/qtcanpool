@@ -1267,19 +1267,17 @@ int RibbonBar::pageIndex(RibbonPage *page) const
  * @param title 上下文标签的标题，在Office模式下会显示，在wps模式下不显示。默认情况下RibbonPageContext的object
  * name也被设置为title
  * @param color 上下文标签的颜色，如果指定为空QColor(),将会使用RibbonBar的默认色系
- * @param id 上下文标签的id，以便进行查找
  * @return 返回上下文标签指针
  * @note RibbonBar拥有RibbonPageContext的管理权，用户避免在外部直接delete,如果要删除，调用@ref
  * destroyPageContext 函数
  */
-RibbonPageContext *RibbonBar::addPageContext(const QString &title, const QColor &color, const QVariant &id)
+RibbonPageContext *RibbonBar::addPageContext(const QString &title, const QColor &color)
 {
     Q_D(RibbonBar);
     RibbonPageContext *context = new RibbonPageContext(this);
 
     context->setObjectName(title);
     context->setContextTitle(title);
-    context->setId(id);
     context->setContextColor(color.isValid() ? color : d->getPageContextColor());
     addPageContext(context);
     return context;

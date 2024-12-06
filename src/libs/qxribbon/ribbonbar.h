@@ -146,8 +146,7 @@ public:
 
     int pageIndex(RibbonPage *page) const;
 
-    RibbonPageContext *addPageContext(const QString &title, const QColor &color = QColor(),
-                                      const QVariant &id = QVariant());
+    RibbonPageContext *addPageContext(const QString &title, const QColor &color = QColor());
     void addPageContext(RibbonPageContext *context);
 
     void showPageContext(RibbonPageContext *context);
