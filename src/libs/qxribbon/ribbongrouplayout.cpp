@@ -51,10 +51,9 @@ public:
     RibbonGroupItem *createItem(QAction *action, RibbonGroup::RowProportion rp = RibbonGroup::Auto);
     void updateGeomArray(const QRect &setrect);
     void layoutActions();
-
 public:
     QList<RibbonGroupItem *> m_items;
-    QSize m_sizeHint;    ///< sizeHint返回的尺寸
+    QSize m_sizeHint;   ///< sizeHint返回的尺寸
     static QMargins s_contentsMargins;
     int m_columnCount;   ///< 记录有多少列
     int m_largeHeight;   ///< 记录大图标的高度
@@ -69,21 +68,20 @@ RibbonGroupLayoutPrivate::RibbonGroupLayoutPrivate()
     , m_expandFlag(false)
     , m_dirty(true)
 {
-
 }
 
 /**
  * @brief 根据列数，计算窗口的宽度，以及最大宽度
- * @param colindex
+ * @param colIndex
  * @param width 如果传入没有这个列，返回-1
  * @param maximum 如果传入没有这个列，返回-1
  */
-void RibbonGroupLayoutPrivate::columnWidthInfo(int colindex, int &width, int &maximum) const
+void RibbonGroupLayoutPrivate::columnWidthInfo(int colIndex, int &width, int &maximum) const
 {
     width = -1;
     maximum = -1;
     for (RibbonGroupItem *item : qAsConst(m_items)) {
-        if (!item->isEmpty() && (item->columnIndex == colindex)) {
+        if (!item->isEmpty() && (item->columnIndex == colIndex)) {
             width = qMax(width, item->willGeometry.width());
             maximum = qMax(maximum, item->widget()->maximumWidth());
         }
@@ -96,7 +94,6 @@ void RibbonGroupLayoutPrivate::recalcExpandGeomArray(const QRect &setrect)
     int expandwidth = setrect.width() - m_sizeHint.width();
 
     if (expandwidth <= 0) {
-        // 没有必要设置
         return;
     }
     // 列扩展信息
@@ -125,7 +122,7 @@ void RibbonGroupLayoutPrivate::recalcExpandGeomArray(const QRect &setrect)
     }
     // 获取完可扩展的列和控件后，计算对应的列的尺寸
     // 计算能扩展的尺寸
-    int oneColCanexpandWidth = expandwidth / columnExpandInfo.size();
+    int oneColCanExpandWidth = expandwidth / columnExpandInfo.size();
 
     for (QMap<int, _columnExpandInfo>::iterator i = columnExpandInfo.begin(); i != columnExpandInfo.end();) {
         int &oldColumnWidth = i.value().oldColumnWidth;
@@ -133,17 +130,16 @@ void RibbonGroupLayoutPrivate::recalcExpandGeomArray(const QRect &setrect)
         columnWidthInfo(i.key(), oldColumnWidth, columnMaximumWidth);
         if ((oldColumnWidth <= 0) || (oldColumnWidth > columnMaximumWidth)) {
             // 如果小于0说明没有这个列，这种属于异常，删除继续
-            //  oldColumnWidth > columnMaximumWidth也是异常
+            // oldColumnWidth > columnMaximumWidth也是异常
             i = columnExpandInfo.erase(i);
             continue;
         }
         // 开始调整
-        int colwidth = oneColCanexpandWidth + oldColumnWidth;   // 先扩展了
-        if (colwidth >= columnMaximumWidth) {
-            // 过最大宽度要求
+        int colWidth = oneColCanExpandWidth + oldColumnWidth;   // 先扩展了
+        if (colWidth >= columnMaximumWidth) {
             i.value().columnExpandedWidth = columnMaximumWidth;
         } else {
-            i.value().columnExpandedWidth = colwidth;
+            i.value().columnExpandedWidth = colWidth;
         }
         ++i;
     }
@@ -184,7 +180,6 @@ void RibbonGroupLayoutPrivate::recalcExpandGeomArray(const QRect &setrect)
  * @return 转换的RibbonGroupItem
  * @note 每个RibbonGroupItem最终都会携带一个widget，传入的是QWidgetAction的话，会直接使用QWidgetAction带的widget，
  * 否则会内部生成一个RibbonButton
- *
  */
 RibbonGroupItem *RibbonGroupLayoutPrivate::createItem(QAction *action, RibbonGroup::RowProportion rp)
 {
@@ -199,7 +194,8 @@ RibbonGroupItem *RibbonGroupLayoutPrivate::createItem(QAction *action, RibbonGro
         widget = widgetAction->requestWidget(group);
         if (widget != Q_NULLPTR) {
             widget->setAttribute(Qt::WA_LayoutUsesWidgetRect);
-            customWidget = true;   // 标记为true，在移除的时候是不会对这个窗口进行删除，false默认会进行删除如RibbonSeparator和RibbonButton
+            // 标记为true，在移除的时候是不会对这个窗口进行删除，false默认会进行删除如RibbonSeparator和RibbonButton
+            customWidget = true;
         }
     } else if (action->isSeparator()) {
         RibbonSeparator *sep = new RibbonSeparator(group);
@@ -219,7 +215,6 @@ RibbonGroupItem *RibbonGroupLayoutPrivate::createItem(QAction *action, RibbonGro
             button->setLargeButtonType(group->isTwoRow() ? RibbonButton::Lite : RibbonButton::Normal);
         }
         button->setDefaultAction(action);
-        // 根据QAction的属性设置按钮的大小
 
         QObject::connect(button, &RibbonButton::triggered, group, &RibbonGroup::actionTriggered);
         widget = button;
@@ -245,15 +240,14 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
         return;
     }
 #if RibbonGroupLayout_DEBUG_PRINT
-    qDebug() << "RibbonGroupLayout::updateGeomArray(" << setrect << ")";
+    qDebug() << "RibbonGroupLayoutPrivate::updateGeomArray(" << setrect << ")";
 #endif
     int height = setrect.height();
-    const QMargins &mag = q->groupContentsMargins();
+    const QMargins &margin = q->groupContentsMargins();
     const int spacing = q->spacing();
-    int x = mag.left();
+    int x = margin.left();
 
-    // 获取group的布局模式 3行或者2行
-    //  rowcount 是ribbon的行，有2行和3行两种
+    // 获取group的布局模式，3行或者2行
     const short rowCount = (group->groupLayoutMode() == RibbonGroup::ThreeRowMode) ? 3 : 2;
     // largeHeight是对应large占比的高度,group->titleHeight()在两行模式返回0
     const int largeHeight = q->calcLargeHeight(setrect, group);
@@ -262,14 +256,16 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
     const int smallHeight = (largeHeight - (rowCount - 1) * spacing) / rowCount;
 
     // Medium行的y位置
-    // 三行模式：不考虑spacing，假设两个 Medium 的上中下间隔高度为 y，每个 Medium 高度为 smallHeight，
-    // 则 largeHeight = y + smallHeight  + y + smallHeight + y = 3 * y + 2 * smallHeight
-    // 即 y = ((largeHeight - 2 * smallHeight) / 3)
-    const int yMediumRow0 = (2 == rowCount) ? mag.top() : (mag.top() + ((largeHeight - 2 * smallHeight) / 3));
+    // 三行模式：假设两个 Medium 的上中下间隔高度为 mediumSpacing，每个 Medium 高度为 smallHeight，
+    // 则 largeHeight = mediumSpacing + smallHeight  + mediumSpacing + smallHeight + mediumSpacing
+    //                = 3 * mediumSpacing + 2 * smallHeight
+    // 即 mediumSpacing = (largeHeight - 2 * smallHeight) / 3
+    const int mediumSpacing = (largeHeight - 2 * smallHeight) / 3;
+    const int yMediumRow0 = (2 == rowCount) ? margin.top() : (margin.top() + mediumSpacing);
     const int yMediumRow1 = (2 == rowCount) ? (yMediumRow0 + smallHeight + spacing)
-                                            : (yMediumRow0 + smallHeight + ((largeHeight - 2 * smallHeight) / 3));
+                                            : (yMediumRow0 + smallHeight + mediumSpacing);
     // Small行的y位置
-    const int ySmallRow0 = mag.top();
+    const int ySmallRow0 = margin.top();
     const int ySmallRow1 = ySmallRow0 + smallHeight + spacing;
     const int ySmallRow2 = ySmallRow1 + smallHeight + spacing;
 
@@ -290,7 +286,7 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
 
 #if RibbonGroupLayout_DEBUG_PRINT
     qDebug() << "\r\n\r\n============================================="
-             << "\r\nRibbonGroupLayout::updateGeomArray()"
+             << "\r\RibbonGroupLayoutPrivate::updateGeomArray()"
              << " setrect:" << setrect << "\r\ngroup name:" << group->windowTitle()
              << "\r\n largeHeight:" << largeHeight << "\r\n smallHeight:" << smallHeight
              << "\r\n rowCount:" << rowCount;
@@ -335,11 +331,12 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
             // ！！在Large，如果不是处于新列的第一行，就需要进行换列处理
             // 把large一直设置在下一列的开始
             if (row != 0) {
+                // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
                 x += (columnMaxWidth + spacing); ++column; row = 0; columnMaxWidth = 0;
             }
             item->rowIndex = 0;
             item->columnIndex = column;
-            item->willGeometry = QRect(x, mag.top(), hint.width(), largeHeight);
+            item->willGeometry = QRect(x, margin.top(), hint.width(), largeHeight);
             columnMaxWidth = hint.width();
             // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
             x += (columnMaxWidth + spacing); ++column; row = 0; columnMaxWidth = 0;
@@ -462,12 +459,12 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
             // 说明最后一个元素处于最后位置，触发了换列，此时真实列数需要减1，直接等于column索引
             m_columnCount = column;
             // 由于最后一个元素触发了换列，x值是新一列的位置，直接作为totalWidth
-            totalWidth = x + mag.right();
+            totalWidth = x + margin.right();
         } else {
             // 说明最后一个元素处于非最后位置，没有触发下一个换列，此时真实列数等于column索引+1
             m_columnCount = column + 1;
             // 由于最后一个元素未触发换列，需要计算totalWidth
-            totalWidth = x + columnMaxWidth + spacing + mag.right();
+            totalWidth = x + columnMaxWidth + spacing + margin.right();
         }
     }
     // 在有optionButton情况下，不显示标题时，需要调整totalWidth
@@ -497,7 +494,7 @@ void RibbonGroupLayoutPrivate::layoutActions()
 
 #if RibbonGroupLayout_DEBUG_PRINT
     qDebug() << "\r\n\r\n =============================================="
-                "\r\n RibbonGroupLayout::layoutActions"
+                "\r\n RibbonGroupLayoutPrivate::layoutActions"
              << " \r\n name:" << q->parentWidget()->windowTitle() << " sizehint:" << q->sizeHint();
 #endif
     for (RibbonGroupItem *item : qAsConst(m_items)) {
@@ -608,10 +605,10 @@ QLayoutItem *RibbonGroupLayout::takeAt(int index)
 
     QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(item->action);
 
-    if ((widgetAction != 0) && item->customWidget) {
+    if ((widgetAction != Q_NULLPTR) && item->customWidget) {
         widgetAction->releaseWidget(item->widget());
     } else {
-        // destroy the QToolButton/QToolBarSeparator
+        // destroy the RibbonButton/RibbonSeparator
         item->widget()->hide();
         item->widget()->deleteLater();
     }
@@ -656,11 +653,6 @@ QSize RibbonGroupLayout::sizeHint() const
     return d->m_sizeHint;
 }
 
-/**
- * @brief 通过action获取RibbonGroupItem
- * @param action
- * @return 如果没有返回Q_NULLPTR
- */
 RibbonGroupItem *RibbonGroupLayout::groupItem(QAction *action) const
 {
     Q_D(const RibbonGroupLayout);
@@ -672,10 +664,6 @@ RibbonGroupItem *RibbonGroupLayout::groupItem(QAction *action) const
     return Q_NULLPTR;
 }
 
-/**
- * @brief 获取最后一个添加的item
- * @return 如果没有返回Q_NULLPTR
- */
 RibbonGroupItem *RibbonGroupLayout::lastItem() const
 {
     Q_D(const RibbonGroupLayout);
@@ -712,13 +700,10 @@ void RibbonGroupLayout::move(int from, int to)
     if (c <= 0) {
         return;
     }
-    if (from < 0 || from >= c) {
-        from = c - 1;
-    }
-    if (to < 0 || to >= c) {
-        to = c - 1;
-    }
     if (from == to) {
+        return;
+    }
+    if (from < 0 || from >= c || to < 0 || to >= c) {
         return;
     }
     d->m_items.move(from, to);
@@ -743,8 +728,8 @@ bool RibbonGroupLayout::isDirty() const
  */
 int RibbonGroupLayout::calcLargeHeight(const QRect &setrect, const RibbonGroup *group)
 {
-    const QMargins &mag = groupContentsMargins();
-    return setrect.height() - mag.top() - mag.bottom() - group->titleHeight();
+    const QMargins &m = groupContentsMargins();
+    return setrect.height() - m.top() - m.bottom() - group->titleHeight();
 }
 
 /**
@@ -762,7 +747,7 @@ const QMargins &RibbonGroupLayout::groupContentsMargins()
 
 /**
  * @brief 全局的contentsMargins
- * @note RibbonStyleOption会用到此函数，调用设置函数后需要手动重新计算RibbonStyleOption的内容,@sa
+ * @note RibbonStyleOption会用到groupContentsMargins函数，调用设置函数后需要手动重新计算RibbonStyleOption的内容,@sa
  * RibbonStyleOption::recalc
  * @sa RibbonStyleOption
  * @param m
