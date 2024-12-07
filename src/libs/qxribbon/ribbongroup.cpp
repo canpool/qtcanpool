@@ -1,7 +1,7 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbongroup.h"
 #include "ribbongroup_p.h"
 #include "ribbongallery.h"
@@ -38,8 +38,8 @@ QX_RIBBON_BEGIN_NAMESPACE
         p.restore();                                                                                                   \
     } while (0)
 
-
-RibbonGroupOptionButton::RibbonGroupOptionButton(QWidget *parent) : QToolButton(parent)
+RibbonGroupOptionButton::RibbonGroupOptionButton(QWidget *parent)
+    : QToolButton(parent)
 {
     setAutoRaise(true);
     setCheckable(false);
@@ -116,7 +116,7 @@ const QList<RibbonGroupItem *> &RibbonGroupPrivate::ribbonGroupItems() const
 RibbonGroup::RibbonGroup(QWidget *parent)
     : QWidget(parent)
 {
-    QX_INIT_PRIVATE(RibbonGroup)
+    QX_INIT_PRIVATE(RibbonGroup);
     Q_D(RibbonGroup);
     d->init();
     setGroupLayoutMode(ThreeRowMode);
@@ -130,7 +130,7 @@ RibbonGroup::RibbonGroup(const QString &name, QWidget *parent)
 
 RibbonGroup::~RibbonGroup()
 {
-    QX_FINI_PRIVATE()
+    QX_FINI_PRIVATE();
 }
 
 QString RibbonGroup::groupName() const
@@ -139,7 +139,7 @@ QString RibbonGroup::groupName() const
 }
 
 /**
- * @brief RibbonGroup::setGroupTitle group的标题
+ * @brief 设置group的标题
  * @note 注意会触发windowTitleChange信号
  * @param title 标题
  */
@@ -189,9 +189,9 @@ void RibbonGroup::setActionRowProportion(QAction *action, RibbonGroup::RowPropor
     if (action == Q_NULLPTR) {
         return;
     }
-    RibbonGroupLayout *lay = d->m_layout;
-
     setActionRowProportionProperty(action, rp);
+
+    RibbonGroupLayout *lay = d->m_layout;
     if (lay) {
         RibbonGroupItem *it = lay->groupItem(action);
         if (it) {
@@ -205,7 +205,7 @@ void RibbonGroup::setActionRowProportion(QAction *action, RibbonGroup::RowPropor
  * @brief 添加action
  * @param action action
  * @param rp 指定action的行占比
- * @return 返回对应的RibbonButton，如果是窗口，返回的toolbutton为Q_NULLPTR
+ * @return 返回对应的RibbonButton
  */
 RibbonButton *RibbonGroup::addAction(QAction *action, RibbonGroup::RowProportion rp)
 {
@@ -258,8 +258,7 @@ RibbonButton *RibbonGroup::addSmallAction(QAction *action)
  * @param popMode 按钮的样式
  * @param rp action在group中的占位情况，默认是大图标
  */
-void RibbonGroup::addAction(QAction *act, QToolButton::ToolButtonPopupMode popMode,
-                            RibbonGroup::RowProportion rp)
+void RibbonGroup::addAction(QAction *act, QToolButton::ToolButtonPopupMode popMode, RibbonGroup::RowProportion rp)
 {
     Q_D(RibbonGroup);
     if (act == Q_NULLPTR) {
@@ -302,8 +301,7 @@ QAction *RibbonGroup::addAction(const QString &text, const QIcon &icon, QToolBut
  * @param popMode,菜单弹出模式，默认InstantPopup模式
  * @return
  */
-RibbonButton *RibbonGroup::addMenu(QMenu *menu, RibbonGroup::RowProportion rp,
-                                   QToolButton::ToolButtonPopupMode popMode)
+RibbonButton *RibbonGroup::addMenu(QMenu *menu, RibbonGroup::RowProportion rp, QToolButton::ToolButtonPopupMode popMode)
 {
     Q_D(RibbonGroup);
     if (menu == Q_NULLPTR) {
@@ -465,10 +463,6 @@ RibbonButton *RibbonGroup::ribbonButtonForAction(QAction *action) const
     return Q_NULLPTR;
 }
 
-/**
- * @brief 获取group下面的所有toolbutton
- * @return
- */
 QList<RibbonButton *> RibbonGroup::ribbonButtons() const
 {
     const QObjectList &objs = children();
@@ -483,10 +477,6 @@ QList<RibbonButton *> RibbonGroup::ribbonButtons() const
     return res;
 }
 
-/**
- * @brief 判断是否存在OptionAction
- * @return 存在返回true
- */
 bool RibbonGroup::hasOptionAction() const
 {
     Q_D(const RibbonGroup);
@@ -548,10 +538,6 @@ RibbonGroup::GroupLayoutMode RibbonGroup::groupLayoutMode() const
     return d->m_groupLayoutMode;
 }
 
-/**
- * @brief 设置GroupLayoutMode
- * @param mode
- */
 void RibbonGroup::setGroupLayoutMode(RibbonGroup::GroupLayoutMode mode)
 {
     Q_D(RibbonGroup);
@@ -578,10 +564,6 @@ bool RibbonGroup::isTwoRow() const
     return (TwoRowMode == d->m_groupLayoutMode);
 }
 
-/**
- * @brief 返回optionActionButton的尺寸
- * @return
- */
 QSize RibbonGroup::optionActionButtonSize() const
 {
     return (isTwoRow() ? QSize(12, 12) : QSize(16, 16));
@@ -595,7 +577,7 @@ QSize RibbonGroup::sizeHint() const
 
     if (titleVisible()) {
         QFontMetrics fm = fontMetrics();
-        QSize titleSize = fm.size(Qt::TextShowMnemonic, windowTitle());
+        QSize titleSize = fm.size(Qt::TextShowMnemonic, groupName());
         if (d->m_optionActionButton) {
             // optionActionButton的宽度需要预留
             titleSize.setWidth(titleSize.width() + d->m_optionActionButton->width() + 4);
@@ -630,20 +612,12 @@ void RibbonGroup::setExpanding(bool expanding)
     setSizePolicy(expanding ? QSizePolicy::Expanding : QSizePolicy::Preferred, QSizePolicy::Fixed);
 }
 
-/**
- * @brief 判断是否可以自定义
- * @return
- */
 bool RibbonGroup::isCanCustomize() const
 {
     Q_D(const RibbonGroup);
     return d->m_isCanCustomize;
 }
 
-/**
- * @brief 设置是否可以自定义
- * @param b
- */
 void RibbonGroup::setCanCustomize(bool b)
 {
     Q_D(RibbonGroup);
@@ -659,10 +633,6 @@ int RibbonGroup::largeHeight() const
     return RibbonGroupLayout::calcLargeHeight(rect(), this);
 }
 
-/**
- * @brief 标题栏高度，仅在三行模式下生效
- * @return
- */
 int RibbonGroup::titleHeight() const
 {
     return (titleVisible() ? groupTitleHeight() : 0);
@@ -683,7 +653,7 @@ void RibbonGroup::setTitleVisible(bool visible)
 
 /**
  * @brief 定义所有的 group 的标题栏高度，有别于 @sa titleHeight 此函数是静态函数，获取的是全局的高度
- * 而 @sa titleHeight 函数会根据当前的行情况返回标题栏高度，在2行情况下返回0
+ * 而 @sa titleHeight 函数会根据当前标题栏是否显示来返回标题栏高度，标题栏显示时调用该函数，否则返回0
  *
  * @return
  */
@@ -711,7 +681,6 @@ void RibbonGroup::paintEvent(QPaintEvent *event)
     Q_D(RibbonGroup);
     QPainter p(this);
 
-    //! 1. 绘制标题
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
     HELP_DRAW_RECT(p, rect());
 #endif
@@ -725,7 +694,7 @@ void RibbonGroup::paintEvent(QPaintEvent *event)
         } else {
             r = QRect(1, height() - th, width(), th);
         }
-        p.drawText(r, Qt::AlignCenter, windowTitle());
+        p.drawText(r, Qt::AlignCenter, groupName());
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
         HELP_DRAW_RECT(p, r);
 #endif
@@ -741,7 +710,8 @@ void RibbonGroup::resizeEvent(QResizeEvent *event)
     if (d->m_optionActionButton) {
         if (titleVisible()) {
             d->m_optionActionButton->move(width() - d->m_optionActionButton->width() - 2,
-                height() - titleHeight() + (titleHeight() - d->m_optionActionButton->height()) / 2);
+                                          height() - titleHeight() +
+                                              (titleHeight() - d->m_optionActionButton->height()) / 2);
         } else {
             d->m_optionActionButton->move(width() - d->m_optionActionButton->width(),
                                           height() - d->m_optionActionButton->height());

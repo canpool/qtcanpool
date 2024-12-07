@@ -557,8 +557,12 @@ void tst_RibbonGroup::other()
     {
         RibbonGroup grp;
 
+        QCOMPARE(grp.isExpanding(), false);
+
         RibbonGallery *gallery = grp.addGallery();
         QCOMPARE(gallery->parentWidget(), &grp);
+
+        QCOMPARE(grp.isExpanding(), true);
     }
 
     // separator
@@ -570,6 +574,8 @@ void tst_RibbonGroup::other()
 
         QCOMPARE(a1->parentWidget(), &grp);
         QCOMPARE(a2->isSeparator(), true);
+
+        QCOMPARE(grp.ribbonButtonForAction(a1), nullptr);
 
         QCOMPARE(RibbonGroup::getActionRowProportionProperty(a1), RibbonGroup::Large);
         QCOMPARE(RibbonGroup::getActionRowProportionProperty(a2), RibbonGroup::Large);
