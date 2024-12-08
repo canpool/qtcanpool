@@ -82,7 +82,7 @@ signals:
      */
     void triggered(QAction *action);
     /**
-     * @brief 等同QActionGroup的triggered
+     * @brief 等同QActionGroup的hovered
      * 所有加入RibbonGalleryGroup的action都会被一个QActionGroup管理,可以通过@sa actionGroup获取到对应的actiongroup
      * @note 此属性需要通过QAbstractItemView::entered(const QModelIndex &index)激活，因此要保证设置了setMouseTracking(true)
      * @param action

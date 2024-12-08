@@ -52,7 +52,6 @@ public:
     RibbonGalleryGroup *currentViewGroup() const;
     void setCurrentViewGroup(RibbonGalleryGroup *group);
 
-    RibbonGalleryViewport *getPopupViewPort() const;
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
     static void setGalleryButtonMaximumWidth(int w = 15);
 signals:

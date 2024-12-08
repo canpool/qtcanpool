@@ -176,16 +176,6 @@ void RibbonGallery::setCurrentViewGroup(RibbonGalleryGroup *group)
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
-/**
- * @brief 获取弹出窗口
- * @return
- */
-RibbonGalleryViewport *RibbonGallery::getPopupViewPort() const
-{
-    Q_D(const RibbonGallery);
-    return d->m_popupWidget;
-}
-
 QSize RibbonGallery::sizeHint() const
 {
     return QSize(100, 62);
@@ -200,9 +190,6 @@ void RibbonGallery::setGalleryButtonMaximumWidth(int w)
     RibbonGalleryPrivate::s_galleryButtonMaximumWidth = w;
 }
 
-/**
- * @brief 上翻页
- */
 void RibbonGallery::pageDown()
 {
     Q_D(RibbonGallery);
@@ -214,9 +201,6 @@ void RibbonGallery::pageDown()
     }
 }
 
-/**
- * @brief 下翻页
- */
 void RibbonGallery::pageUp()
 {
     Q_D(RibbonGallery);
@@ -317,8 +301,7 @@ void RibbonGallery::paintEvent(QPaintEvent *event)
     QFrame::paintEvent(event);
 }
 
-//////////////////////////////////////////////
-
+/* RibbonGalleryViewportPrivate */
 class RibbonGalleryViewportPrivate
 {
     QX_DECLARE_PUBLIC(RibbonGalleryViewport)
@@ -327,7 +310,7 @@ public:
     void init();
 public:
     QVBoxLayout *m_layout;
-    QMap<QWidget *, QLabel *> m_widgetToTitleLabel;   ///< QWidget和lable的对应
+    QMap<QWidget *, QLabel *> m_widgetToTitleLabel;
 };
 
 RibbonGalleryViewportPrivate::RibbonGalleryViewportPrivate()
@@ -339,7 +322,7 @@ void RibbonGalleryViewportPrivate::init()
 {
     Q_Q(RibbonGalleryViewport);
     m_layout = new QVBoxLayout(q);
-    m_layout->setSpacing(0);
+    m_layout->setSpacing(2);
     m_layout->setContentsMargins(0, 0, 0, 0);
 }
 
@@ -361,10 +344,6 @@ RibbonGalleryViewport::~RibbonGalleryViewport()
     QX_FINI_PRIVATE()
 }
 
-/**
- * @brief 添加窗口不带标题
- * @param w
- */
 void RibbonGalleryViewport::addWidget(QWidget *w)
 {
     Q_D(RibbonGalleryViewport);
@@ -372,27 +351,19 @@ void RibbonGalleryViewport::addWidget(QWidget *w)
     d->m_layout->addWidget(w);
 }
 
-/**
- * @brief 添加窗口，带标题
- * @param w
- * @param title
- */
 void RibbonGalleryViewport::addWidget(QWidget *w, const QString &title)
 {
     Q_D(RibbonGalleryViewport);
     QLabel *label = new QLabel(this);
     label->setText(title);
     label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    label->setObjectName(QLatin1String("RibbonGalleryGroupTitle"));
     d->m_layout->addWidget(label);
     w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     d->m_layout->addWidget(w);
     d->m_widgetToTitleLabel[w] = label;
 }
 
-/**
- * @brief 移除窗口
- * @param w
- */
 void RibbonGalleryViewport::removeWidget(QWidget *w)
 {
     Q_D(RibbonGalleryViewport);
@@ -400,13 +371,15 @@ void RibbonGalleryViewport::removeWidget(QWidget *w)
     if (label) {
         d->m_layout->removeWidget(label);
         d->m_widgetToTitleLabel.remove(w);
+        label->hide();
+        label->deleteLater();
     }
     d->m_layout->removeWidget(w);
 }
 
 /**
  * @brief 通过RibbonGalleryGroup获取对应的标题，用户可以通过此函数设置QLabel的属性
- * @param g
+ * @param w
  * @return 如果没有管理group，将返回Q_NULLPTRTR
  */
 QLabel *RibbonGalleryViewport::getWidgetTitleLabel(QWidget *w)
@@ -415,11 +388,6 @@ QLabel *RibbonGalleryViewport::getWidgetTitleLabel(QWidget *w)
     return d->m_widgetToTitleLabel.value(w, Q_NULLPTR);
 }
 
-/**
- * @brief widget的标题改变
- * @param g
- * @param title
- */
 void RibbonGalleryViewport::widgetTitleChanged(QWidget *w, const QString &title)
 {
     QLabel *label = getWidgetTitleLabel(w);

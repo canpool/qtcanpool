@@ -215,12 +215,14 @@ void RibbonGalleryGroupItemDelegate::paintIconOnly(QPainter *painter, const QSty
 {
     QStyle *style = m_group->style();
     int sp = m_group->spacing();
-    sp += 3;
+    QRect rect = option.rect;
+    rect.adjust(sp, sp, -sp, -sp);
     painter->save();
-    painter->setClipRect(option.rect);
+    painter->setClipRect(rect);
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, m_group);
     // draw the icon
     QRect iconRect = option.rect;
+    sp += 2;
     iconRect.adjust(sp, sp, -sp, -sp);
     QIcon ico = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
     ico.paint(painter, iconRect, Qt::AlignCenter, QIcon::Normal, QIcon::On);
@@ -464,7 +466,7 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
         w = mw;
     }
     setGridSize(QSize(w, h));
-    // 在通过GalleryGroupStyle确定icon的尺寸
+    // 再通过GalleryGroupStyle确定icon的尺寸
     // 这个是移动像素，qt在鼠标移动到图标上时会移动一下，给用户明确的动态，导致如果布局很满会超出显示范围，因此要在此基础上缩放一点
     const int shiftpix = 4;
     switch (galleryGroupStyle()) {
@@ -588,10 +590,6 @@ void RibbonGalleryGroup::selectByIndex(int i)
     }
 }
 
-/**
- * @brief 设置显示的行数
- * @param r
- */
 void RibbonGalleryGroup::setDisplayRow(DisplayRow r)
 {
     Q_D(RibbonGalleryGroup);
@@ -599,10 +597,6 @@ void RibbonGalleryGroup::setDisplayRow(DisplayRow r)
     recalcGridSize();
 }
 
-/**
- * @brief Gallery显示的行数
- * @return
- */
 RibbonGalleryGroup::DisplayRow RibbonGalleryGroup::displayRow() const
 {
     Q_D(const RibbonGalleryGroup);
