@@ -8,4 +8,5 @@ SUBDIRS = \
     pagecontext \
     ribbonbar \
     ribbonbuttongroup \
+    ribbongallery \
     ribbonquickaccessbar
