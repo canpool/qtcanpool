@@ -24,12 +24,12 @@ public:
     QHash<QString, QAction *> m_keyToAction;        ///< key对应action
     QMap<QAction *, QString> m_actionToKey;         ///< action对应key
     QMap<int, RibbonPage *> m_tagToPage;   ///< 仅仅在autoRegisteActions函数会有用
-    int m_sale;     ///< 盐用于生成固定的id，在用户不主动设置key时，id基于msale生成，
-                    ///< 只要RibbonActionsManager的调用registeAction顺序不变，生成的id都不变，因为它是基于自增实现的
+    int m_salt;     ///< 盐用于生成固定的id，在用户不主动设置key时，id基于msale生成，
+                    ///< 只要RibbonActionsManager的调用registerAction顺序不变，生成的id都不变，因为它是基于自增实现的
 };
 
 RibbonActionsManagerPrivate::RibbonActionsManagerPrivate()
-    : m_sale(0)
+    : m_salt(0)
 {
 }
 
@@ -40,14 +40,14 @@ void RibbonActionsManagerPrivate::clear()
     m_keyToAction.clear();
     m_actionToKey.clear();
     m_tagToPage.clear();
-    m_sale = 0;
+    m_salt = 0;
 }
 
-RibbonActionsManager::RibbonActionsManager(RibbonBar *p)
-    : QObject(p)
+RibbonActionsManager::RibbonActionsManager(RibbonBar *bar)
+    : QObject(bar)
 {
     QX_INIT_PRIVATE(RibbonActionsManager);
-    autoRegisteActions(p);
+    autoRegisterActions(bar);
 }
 
 RibbonActionsManager::~RibbonActionsManager()
@@ -86,25 +86,26 @@ QString RibbonActionsManager::tagName(int tag) const
 void RibbonActionsManager::removeTag(int tag)
 {
     Q_D(RibbonActionsManager);
-    QList<QAction *> oldacts = actions(tag);
+    QList<QAction *> willRemoveActs = actions(tag);
 
     // 开始移除
     d->m_tagToActions.remove(tag);
     d->m_tagToName.remove(tag);
+
     // 开始查找需要移出总表的action
-    QList<QAction *> needRemoveAct;
-    QList<QAction *> total;
+    QList<QAction *> needRemoveActs;
+    QList<QAction *> remainingActs;
 
     for (auto i = d->m_tagToActions.begin(); i != d->m_tagToActions.end(); ++i) {
-        total += i.value();
+        remainingActs += i.value();
     }
-    for (QAction *a : oldacts) {
-        if (!total.contains(a)) {
-            needRemoveAct.append(a);
+    for (QAction *a : willRemoveActs) {
+        if (!remainingActs.contains(a)) {
+            needRemoveActs.append(a);
         }
     }
     // 从总表移除action
-    for (QAction *a : needRemoveAct) {
+    for (QAction *a : needRemoveActs) {
         auto i = d->m_actionToKey.find(a);
         if (i != d->m_actionToKey.end()) {
             d->m_keyToAction.remove(i.value());
@@ -118,13 +119,13 @@ void RibbonActionsManager::removeTag(int tag)
  * @param act
  * @param tag tag是可以按照位进行叠加，见 @ref ActionTag 如果
  * 要定义自己的标签，建议定义大于 @ref ActionTag::UserDefineActionTag 的值，
- * registeAction的tag是直接记录进去的，如果要多个标签并存，在registe之前先或好tag
+ * registerAction的tag是直接记录进去的，如果要多个标签并存，在registe之前先或好tag
  * @param key key是action对应的key，一个key只对应一个action，是查找action的关键
  * ,默认情况为一个QString(),这时key是QAction的objectName
  * @note 同一个action多次注册不同的tag可以通过tag索引到action，但通过action只能索引到最后一个注册的tag
  * @note tag的新增会触发actionTagChanged信号
  */
-bool RibbonActionsManager::registeAction(QAction *act, int tag, const QString &key, bool enableEmit)
+bool RibbonActionsManager::registerAction(QAction *act, int tag, const QString &key, bool enableEmit)
 {
     Q_D(RibbonActionsManager);
     if (Q_NULLPTR == act) {
@@ -133,12 +134,12 @@ bool RibbonActionsManager::registeAction(QAction *act, int tag, const QString &k
     QString k = key;
 
     if (k.isEmpty()) {
-        k = QString("id_%1_%2").arg(d->m_sale++).arg(act->objectName());
+        k = QString("id_%1_%2").arg(d->m_salt++).arg(act->objectName());
     }
     if (d->m_keyToAction.contains(k)) {
         qWarning()
             << "key: " << k
-            << " have been exist,you can set key in an unique value when use RibbonActionsManager::registeAction";
+            << " have been exist,you can set key in an unique value when use RibbonActionsManager::registerAction";
         return false;
     }
     d->m_keyToAction[k] = act;
@@ -164,7 +165,7 @@ bool RibbonActionsManager::registeAction(QAction *act, int tag, const QString &k
  * @note tag的删除会触发actionTagChanged信号
  * @note 如果action关联了多个tag，这些tag里的action都会被删除，对应的key也同理
  */
-void RibbonActionsManager::unregisteAction(QAction *act, bool enableEmit)
+void RibbonActionsManager::unregisterAction(QAction *act, bool enableEmit)
 {
     if (Q_NULLPTR == act) {
         return;
@@ -185,15 +186,20 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
 {
     Q_D(RibbonActionsManager);
     QList<int> deletedTags;                      // 记录删除的tag，用于触发actionTagChanged
-    QMap<int, QList<QAction *> > tagToActions;   ///< tag : QList<QAction*>
+    QMap<int, QList<QAction *> > tagToActions;
+
+    if (!d->m_actionToKey.contains(act)) {
+        return;
+    }
 
     for (auto i = d->m_tagToActions.begin(); i != d->m_tagToActions.end(); ++i) {
-        // 把不是act的内容转移到tagToActions和tagToActionKeys中，之后再和m_d里的替换
+        // 把不是act的内容转移到tagToActions中，之后再和d里的替换
         auto tmpi = tagToActions.insert(i.key(), QList<QAction *>());
         int count = 0;
         for (int j = 0; j < i.value().size(); ++j) {
-            if (i.value()[j] != act) {
-                tmpi.value().append(act);
+            QAction *tmpAct = i.value()[j];
+            if (tmpAct != act) {
+                tmpi.value().append(tmpAct);
                 ++count;
             }
         }
@@ -203,9 +209,8 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
             deletedTags.append(i.key());
         }
     }
-    // 删除mKeyToAction
+    // 删除keyToAction
     QString key = d->m_actionToKey.value(act);
-
     d->m_actionToKey.remove(act);
     d->m_keyToAction.remove(key);
 
@@ -213,20 +218,10 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
     d->m_tagToActions.swap(tagToActions);
     // 发射信号
     if (enableEmit) {
-        for (int tagdelete : deletedTags) {
-            emit actionTagChanged(tagdelete, true);
+        for (int delTag : deletedTags) {
+            emit actionTagChanged(delTag, true);
         }
     }
-}
-
-/**
- * @brief 等同actions
- * @param tag
- * @return
- */
-QList<QAction *> &RibbonActionsManager::filter(int tag)
-{
-    return actions(tag);
 }
 
 /**
@@ -234,16 +229,10 @@ QList<QAction *> &RibbonActionsManager::filter(int tag)
  * @param tag
  * @return
  */
-QList<QAction *> &RibbonActionsManager::actions(int tag)
-{
-    Q_D(RibbonActionsManager);
-    return d->m_tagToActions[tag];
-}
-
-const QList<QAction *> RibbonActionsManager::actions(int tag) const
+QList<QAction *> RibbonActionsManager::actions(int tag) const
 {
     Q_D(const RibbonActionsManager);
-    return d->m_tagToActions[tag];
+    return d->m_tagToActions.value(tag);
 }
 
 /**
@@ -312,12 +301,11 @@ QList<QAction *> RibbonActionsManager::allActions() const
  * @return
  * @note 此函数的调用最好在page设置了标题后调用，因为会以page的标题作为标签的命名
  */
-QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
+QMap<int, RibbonPage *> RibbonActionsManager::autoRegisterActions(RibbonBar *bar)
 {
     Q_D(RibbonActionsManager);
     QMap<int, RibbonPage *> res;
     if (Q_NULLPTR == bar) {
-        // 非ribbon模式，直接退出
         return res;
     }
     // 先遍历RibbonBar下的所有子对象，把所有action找到
@@ -325,7 +313,6 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
 
     for (QObject *o : bar->children()) {
         if (QAction *a = qobject_cast<QAction *>(o)) {
-            // 说明是action
             if (!a->objectName().isEmpty()) {
                 ribbonBarActions.insert(a);
             }
@@ -336,24 +323,24 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
     QList<RibbonPage *> pages = bar->pages();
     int tag = AutoPageDistinguishBeginTag;
 
-    for (RibbonPage *c : pages) {
-        QList<RibbonGroup *> groups = c->groupList();
-        for (RibbonGroup *p : groups) {
-            pageActions += autoRegisteWidgetActions(p, tag, false);
+    for (RibbonPage *page : pages) {
+        QList<RibbonGroup *> groups = page->groupList();
+        for (RibbonGroup *group : groups) {
+            pageActions += autoRegisterWidgetActions(group, tag, false);
         }
-        setTagName(tag, c->windowTitle());
-        res[tag] = c;
+        setTagName(tag, page->windowTitle());
+        res[tag] = page;
         ++tag;
     }
     // 找到不在功能区的actions
-    QSet<QAction *> notinpage = ribbonBarActions - pageActions;
+    QSet<QAction *> notInPageActions = ribbonBarActions - pageActions;
 
-    for (QAction *a : notinpage) {
+    for (QAction *a : notInPageActions) {
         if (!a->objectName().isEmpty()) {
-            registeAction(a, NotInRibbonPageTag, a->objectName(), false);
+            registerAction(a, NotInRibbonPageTag, a->objectName(), false);
         }
     }
-    if (notinpage.size() > 0) {
+    if (notInPageActions.size() > 0) {
         setTagName(NotInRibbonPageTag, tr("not in ribbon"));
     }
     for (auto i = res.begin(); i != res.end(); ++i) {
@@ -370,18 +357,17 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisteActions(RibbonBar *bar)
  * @param enableEmit
  * @return 返回成功加入RibbonActionsManager管理的action
  */
-QSet<QAction *> RibbonActionsManager::autoRegisteWidgetActions(QWidget *w, int tag, bool enableEmit)
+QSet<QAction *> RibbonActionsManager::autoRegisterWidgetActions(QWidget *w, int tag, bool enableEmit)
 {
     QSet<QAction *> res;
     QList<QAction *> was = w->actions();
 
     for (QAction *a : was) {
         if (res.contains(a) || a->objectName().isEmpty()) {
-            // 重复内容不重复加入
-            // 没有object name不加入
+            // 重复内容不重复加入，没有object name不加入
             continue;
         }
-        if (registeAction(a, tag, a->objectName(), enableEmit)) {
+        if (registerAction(a, tag, a->objectName(), enableEmit)) {
             res.insert(a);
         }
     }
@@ -459,12 +445,12 @@ void RibbonActionsManager::onActionDestroyed(QObject *o)
 void RibbonActionsManager::onPageTitleChanged(const QString &title)
 {
     Q_D(RibbonActionsManager);
-    RibbonPage *c = qobject_cast<RibbonPage *>(sender());
+    RibbonPage *page = qobject_cast<RibbonPage *>(sender());
 
-    if (Q_NULLPTR == c) {
+    if (Q_NULLPTR == page) {
         return;
     }
-    int tag = d->m_tagToPage.key(c, -1);
+    int tag = d->m_tagToPage.key(page, -1);
 
     if (tag == -1) {
         return;
@@ -623,7 +609,7 @@ void RibbonActionsManagerModel::setupActionsManager(RibbonActionsManager *m)
     Q_D(RibbonActionsManagerModel);
     d->m_mgr = m;
     d->m_tag = RibbonActionsManager::CommonlyUsedActionTag;
-    d->m_actions = m->filter(d->m_tag);
+    d->m_actions = m->actions(d->m_tag);
     connect(m, &RibbonActionsManager::actionTagChanged, this, &RibbonActionsManagerModel::onActionTagChanged);
     update();
 }

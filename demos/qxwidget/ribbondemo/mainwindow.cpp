@@ -1018,21 +1018,21 @@ void MainWindow::addSomeOtherAction()
     m_actionTagText = RibbonActionsManager::UserDefineActionTag + 1;
     m_actionTagWithIcon = RibbonActionsManager::UserDefineActionTag + 2;
 
-    m_actMgr = new RibbonActionsManager(bar);   // 申明过程已经自动注册所有action
+    m_actMgr = new RibbonActionsManager(bar);   // 声明过程已经自动注册所有action
 
     // 以下注册特别的action
-    m_actMgr->registeAction(acttext1, RibbonActionsManager::CommonlyUsedActionTag);
-    m_actMgr->registeAction(acttext3, RibbonActionsManager::CommonlyUsedActionTag);
-    m_actMgr->registeAction(acttext5, RibbonActionsManager::CommonlyUsedActionTag);
-    m_actMgr->registeAction(actIcon1, RibbonActionsManager::CommonlyUsedActionTag);
+    m_actMgr->registerAction(acttext1, RibbonActionsManager::CommonlyUsedActionTag);
+    m_actMgr->registerAction(acttext3, RibbonActionsManager::CommonlyUsedActionTag);
+    m_actMgr->registerAction(acttext5, RibbonActionsManager::CommonlyUsedActionTag);
+    m_actMgr->registerAction(actIcon1, RibbonActionsManager::CommonlyUsedActionTag);
 
-    m_actMgr->registeAction(acttext1, m_actionTagText);
-    m_actMgr->registeAction(acttext2, m_actionTagText);
-    m_actMgr->registeAction(acttext3, m_actionTagText);
-    m_actMgr->registeAction(acttext4, m_actionTagText);
-    m_actMgr->registeAction(acttext5, m_actionTagText);
+    m_actMgr->registerAction(acttext1, m_actionTagText);
+    m_actMgr->registerAction(acttext2, m_actionTagText);
+    m_actMgr->registerAction(acttext3, m_actionTagText);
+    m_actMgr->registerAction(acttext4, m_actionTagText);
+    m_actMgr->registerAction(acttext5, m_actionTagText);
 
-    m_actMgr->registeAction(actIcon1, m_actionTagWithIcon);
+    m_actMgr->registerAction(actIcon1, m_actionTagWithIcon);
 
     m_actMgr->setTagName(RibbonActionsManager::CommonlyUsedActionTag, tr("in common use"));
     m_actMgr->setTagName(m_actionTagText, tr("no icon action"));

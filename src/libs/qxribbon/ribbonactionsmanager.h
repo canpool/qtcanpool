@@ -39,9 +39,9 @@ class RibbonActionsManagerModelPrivate;
  * @ref filter （等同 @ref actions ）函数用于提取标签管理的 action list， @ref allActions 函数返回 RibbonActionsManager
  * 管理的所有标签。
  *
- * 通过 @ref autoRegisteActions 函数可以快速的建立 action 的管理，此函数会遍历 @ref RibbonBar 下的所有子 object，
+ * 通过 @ref autoRegisterActions 函数可以快速的建立 action 的管理，此函数会遍历 @ref RibbonBar 下的所有子 object，
  * 同时遍历 RibbonBar 下所有 @ref RibbonGroup
- * 添加的 action, 并给予 Page 建立 tag，正常使用用户仅需关注此 autoRegisteActions 函数即可
+ * 添加的 action, 并给予 Page 建立 tag，正常使用用户仅需关注此 autoRegisterActions 函数即可
  *
  */
 class QX_RIBBON_EXPORT RibbonActionsManager : public QObject
@@ -55,14 +55,14 @@ public:
         UnknowActionTag = 0,                    ///< 未知的tag
         CommonlyUsedActionTag = 0x01,           ///< 预设tag-常用命令
         NotInFunctionalAreaActionTag = 0x02,    ///< 预设tag-不在功能区命令
-        AutoPageDistinguishBeginTag = 0x1000,   ///< 自动按Page划分的标签起始，在 @ref autoRegisteActions 函数会用到
-        AutoPageDistinguishEndTag = 0x2000,     ///< 自动按Page划分的标签结束，在 @ref autoRegisteActions 函数会用到
-        NotInRibbonPageTag = 0x2001,            ///< 不在功能区的标签@ref autoRegisteActions
+        AutoPageDistinguishBeginTag = 0x1000,   ///< 自动按Page划分的标签起始，在 @ref autoRegisterActions 函数会用到
+        AutoPageDistinguishEndTag = 0x2000,     ///< 自动按Page划分的标签结束，在 @ref autoRegisterActions 函数会用到
+        NotInRibbonPageTag = 0x2001,            ///< 不在功能区的标签@ref autoRegisterActions
                                                 ///< 函数会遍历所有page的action以及RibbonBar下的action，如果两个
         UserDefineActionTag = 0x8000,           ///< 自定义标签，所有用户自定义tag要大于此tag
     };
 public:
-    RibbonActionsManager(RibbonBar *p);
+    RibbonActionsManager(RibbonBar *bar);
     ~RibbonActionsManager();
 
     // 设置tag对应的名字
@@ -75,17 +75,13 @@ public:
     void removeTag(int tag);
 
     // 注册action
-    bool registeAction(QAction *act, int tag, const QString &key = QString(), bool enableEmit = true);
+    bool registerAction(QAction *act, int tag, const QString &key = QString(), bool enableEmit = true);
 
     // 取消action的注册
-    void unregisteAction(QAction *act, bool enableEmit = true);
-
-    // 过滤得到actions对应的引用，实际是一个迭代器
-    QList<QAction *> &filter(int tag);
+    void unregisterAction(QAction *act, bool enableEmit = true);
 
     // 通过tag筛选出系列action
-    QList<QAction *> &actions(int tag);
-    const QList<QAction *> actions(int tag) const;
+    QList<QAction *> actions(int tag) const;
 
     // 获取所有的标签
     QList<int> actionTags() const;
@@ -102,11 +98,11 @@ public:
     // 返回所有管理的actions
     QList<QAction *> allActions() const;
 
-    // 自动加载action,返回tag对应的Page指针
-    QMap<int, RibbonPage *> autoRegisteActions(RibbonBar *bar);
+    // 自动加载RibbonBar下的actions
+    QMap<int, RibbonPage *> autoRegisterActions(RibbonBar *bar);
 
-    // 自动加载widget下的actions函数返回的action,返回加载的数量，这些
-    QSet<QAction *> autoRegisteWidgetActions(QWidget *w, int tag, bool enableEmit = false);
+    // 自动加载widget下的actions
+    QSet<QAction *> autoRegisterWidgetActions(QWidget *w, int tag, bool enableEmit = false);
 
     // 根据标题查找action
     QList<QAction *> search(const QString &text);
@@ -124,7 +120,7 @@ signals:
     /**
      * @brief 标签变化触发的信号，变化包括新增和删除
      */
-    void actionTagChanged(int tag, bool isdelete);
+    void actionTagChanged(int tag, bool isDeleted);
 
 private slots:
     void onActionDestroyed(QObject *o);
