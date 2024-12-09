@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribboncustomizewidget.h"
 #include "ribbonbar.h"
 #include "ribboncustomizedata.h"
@@ -350,25 +350,24 @@ public:
         lineEditSearchAction->setInputMask(QString());
         lineEditSearchAction->setText(QString());
         lineEditSearchAction->setPlaceholderText(
-            QApplication::translate("RibbonCustomizeWidget", "Find Command", Q_NULLPTR));   // cn:查找命令
+            QApplication::translate("RibbonCustomizeWidget", "Find Command", Q_NULLPTR));                // cn:查找命令
         pushButtonAdd->setText(QApplication::translate("RibbonCustomizeWidget", "Add >>", Q_NULLPTR));   // cn:添加 >>
         pushButtonDelete->setText(
-            QApplication::translate("RibbonCustomizeWidget", "<< Remove", Q_NULLPTR));              // cn:<< 移除
+            QApplication::translate("RibbonCustomizeWidget", "<< Remove", Q_NULLPTR));   // cn:<< 移除
         labelCustomize->setText(
             QApplication::translate("RibbonCustomizeWidget", "Customize the Ribbon", Q_NULLPTR));   // cn:自定义功能区
         radioButtonMainPage->setText(
-            QApplication::translate("RibbonCustomizeWidget", "Main Page", Q_NULLPTR));          // cn:主要页
+            QApplication::translate("RibbonCustomizeWidget", "Main Page", Q_NULLPTR));   // cn:主要页
         radioButtonAllPage->setText(
             QApplication::translate("RibbonCustomizeWidget", "All Page", Q_NULLPTR));   // cn:所有页
         pushButtonNewPage->setText(
             QApplication::translate("RibbonCustomizeWidget", "New Page", Q_NULLPTR));   // cn:新建页
         pushButtonNewGroup->setText(
-            QApplication::translate("RibbonCustomizeWidget", "New Group", Q_NULLPTR));      // cn:新建组
-        pushButtonRename->setText(
-            QApplication::translate("RibbonCustomizeWidget", "Rename", Q_NULLPTR));         // cn:重命名
-        pushButtonReset->setText(QApplication::translate("RibbonCustomizeWidget", "reset", Q_NULLPTR));   // cn:重置
+            QApplication::translate("RibbonCustomizeWidget", "New Group", Q_NULLPTR));                      // cn:新建组
+        pushButtonRename->setText(QApplication::translate("RibbonCustomizeWidget", "Rename", Q_NULLPTR));   // cn:重命名
+        pushButtonReset->setText(QApplication::translate("RibbonCustomizeWidget", "reset", Q_NULLPTR));     // cn:重置
         labelProportion->setText(
-            QApplication::translate("RibbonCustomizeWidget", "proportion:", Q_NULLPTR));                  // cn:比例
+            QApplication::translate("RibbonCustomizeWidget", "proportion:", Q_NULLPTR));   // cn:比例
     }   // retranslateUi
 };
 
@@ -406,15 +405,15 @@ public:
 public:
     RibbonCustomizeWidget *q;
     RibbonCustomizeWidget::RibbonTreeShowType m_showType;   ///< 显示类型
-    RibbonBar *m_ribbonBar;                             ///< 保存RibbonBar的指针
-    RibbonActionsManager *m_actionMgr;                  ///< action管理器
-    RibbonActionsManagerModel *m_acionModel;            ///< action管理器对应的model
-    QStandardItemModel *m_ribbonModel;                  ///< 用于生成ribbon的树
-    int m_customizePageCount;                           ///< 记录自定义Page的个数
-    int m_customizeGroupCount;                          ///< 记录自定义Group的个数
+    RibbonBar *m_ribbonBar;                                 ///< 保存RibbonBar的指针
+    RibbonActionsManager *m_actionMgr;                      ///< action管理器
+    RibbonActionsManagerModel *m_acionModel;                ///< action管理器对应的model
+    QStandardItemModel *m_ribbonModel;                      ///< 用于生成ribbon的树
+    int m_customizePageCount;                               ///< 记录自定义Page的个数
+    int m_customizeGroupCount;                              ///< 记录自定义Group的个数
 
-    QList<RibbonCustomizeData> m_customizeDatas;        ///< 记录所有的自定义动作
-    QList<RibbonCustomizeData> m_oldCustomizeDatas;     ///< 记录旧的自定义动作
+    QList<RibbonCustomizeData> m_customizeDatas;      ///< 记录所有的自定义动作
+    QList<RibbonCustomizeData> m_oldCustomizeDatas;   ///< 记录旧的自定义动作
 };
 
 RibbonCustomizeWidgetPrivate::RibbonCustomizeWidgetPrivate(RibbonCustomizeWidget *p)
@@ -474,7 +473,7 @@ void RibbonCustomizeWidgetPrivate::updateModel()
                 QStandardItem *stdItem = new QStandardItem();
                 if (grpItem->customWidget) {
                     // 如果是自定义窗口
-                    if (grpItem->widget()->windowTitle().isEmpty()/* && grpItem->widget()->windowIcon().isNull()*/) {
+                    if (grpItem->widget()->windowTitle().isEmpty() /* && grpItem->widget()->windowIcon().isNull()*/) {
                         delete stdItem;
                         continue;   // 如果窗口啥也没有，就跳过
                     }
@@ -647,7 +646,9 @@ QAction *RibbonCustomizeWidgetPrivate::itemToAction(QStandardItem *item) const
  * @param f 同QWidget::QWidget的第二个参数
  */
 RibbonCustomizeWidget::RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent, Qt::WindowFlags f)
-    : QWidget(parent, f), ui(new RibbonCustomizeWidgetUi), d(new RibbonCustomizeWidgetPrivate(this))
+    : QWidget(parent, f)
+    , ui(new RibbonCustomizeWidgetUi)
+    , d(new RibbonCustomizeWidgetPrivate(this))
 {
     d->m_ribbonBar = ribbonBar;
 
@@ -667,13 +668,13 @@ RibbonCustomizeWidget::~RibbonCustomizeWidget()
 void RibbonCustomizeWidget::initConnection()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-    connect(ui->comboBoxActionIndex, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &RibbonCustomizeWidget::onComboBoxActionIndexCurrentIndexChanged);
-    connect(ui->radioButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
-            this, &RibbonCustomizeWidget::onRadioButtonGroupButtonClicked);
+    connect(ui->comboBoxActionIndex, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+            &RibbonCustomizeWidget::onComboBoxActionIndexCurrentIndexChanged);
+    connect(ui->radioButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), this,
+            &RibbonCustomizeWidget::onRadioButtonGroupButtonClicked);
 #else
-    connect(ui->comboBoxActionIndex, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, &RibbonCustomizeWidget::onComboBoxActionIndexCurrentIndexChanged);
+    connect(ui->comboBoxActionIndex, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            &RibbonCustomizeWidget::onComboBoxActionIndexCurrentIndexChanged);
     connect(ui->radioButtonGroup, static_cast<void (QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
             this, &RibbonCustomizeWidget::onRadioButtonGroupButtonClicked);
 #endif
@@ -687,8 +688,8 @@ void RibbonCustomizeWidget::initConnection()
     connect(ui->toolButtonUp, &QToolButton::clicked, this, &RibbonCustomizeWidget::onToolButtonUpClicked);
     connect(ui->toolButtonDown, &QToolButton::clicked, this, &RibbonCustomizeWidget::onToolButtonDownClicked);
     connect(d->m_ribbonModel, &QStandardItemModel::itemChanged, this, &RibbonCustomizeWidget::onItemChanged);
-    connect(ui->lineEditSearchAction, &QLineEdit::textEdited,
-            this, &RibbonCustomizeWidget::onLineEditSearchActionTextEdited);
+    connect(ui->lineEditSearchAction, &QLineEdit::textEdited, this,
+            &RibbonCustomizeWidget::onLineEditSearchActionTextEdited);
     connect(ui->pushButtonReset, &QPushButton::clicked, this, &RibbonCustomizeWidget::onPushButtonResetClicked);
 }
 
@@ -1023,7 +1024,7 @@ void RibbonCustomizeWidget::setSelectItem(QStandardItem *item, bool ensureVisibl
     // 如果用select，看起来选中了，但是itemFromIndex却返回空
     // 比如：新建一个页，接着新建一个组，onPushButtonNewGroupClicked中的selectedItem返回空，导致无法新建组。
     // 备注：命令用SelectCurrent也没有用
-    //m->select(item->index(), QItemSelectionModel::Select);
+    // m->select(item->index(), QItemSelectionModel::Select);
     m->setCurrentIndex(item->index(), QItemSelectionModel::Select);
 
     if (ensureVisible) {
@@ -1308,8 +1309,7 @@ void RibbonCustomizeWidget::onToolButtonUpClicked()
 
     if (0 == level) {
         // 移动page
-        RibbonCustomizeData data =
-            RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), -1);
+        RibbonCustomizeData data = RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), -1);
         d->m_customizeDatas.append(data);
         int r = item->row();
         item = d->m_ribbonModel->takeItem(r);
@@ -1317,8 +1317,8 @@ void RibbonCustomizeWidget::onToolButtonUpClicked()
         d->m_ribbonModel->insertRow(r - 1, item);
     } else if (1 == level) {
         QStandardItem *paritem = item->parent();
-        RibbonCustomizeData data = RibbonCustomizeData::makeChangeGroupOrderCustomizeData(
-            d->itemObjectName(paritem), d->itemObjectName(item), -1);
+        RibbonCustomizeData data = RibbonCustomizeData::makeChangeGroupOrderCustomizeData(d->itemObjectName(paritem),
+                                                                                          d->itemObjectName(item), -1);
         d->m_customizeDatas.append(data);
         int r = item->row();
         item = paritem->takeChild(r);
@@ -1363,8 +1363,7 @@ void RibbonCustomizeWidget::onToolButtonDownClicked()
 
     if (0 == level) {
         // 移动page
-        RibbonCustomizeData data =
-            RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), 1);
+        RibbonCustomizeData data = RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), 1);
         d->m_customizeDatas.append(data);
         int r = item->row();
         item = d->m_ribbonModel->takeItem(item->row());

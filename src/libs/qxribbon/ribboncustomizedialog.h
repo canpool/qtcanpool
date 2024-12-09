@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -30,8 +30,7 @@ class QX_RIBBON_EXPORT RibbonCustomizeDialog : public QDialog
 {
     Q_OBJECT
 public:
-    RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p = Q_NULLPTR,
-                          Qt::WindowFlags f = Qt::WindowFlags());
+    RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
 
     // 设置action管理器
     void setupActionsManager(RibbonActionsManager *mgr);
@@ -49,7 +48,6 @@ public:
     // 从xml中加载QList<RibbonCustomizeData>，对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
     void fromXml(QXmlStreamReader *xml);
     void fromXml(const QString &xmlpath);
-
 private:
     void initConnection();
 

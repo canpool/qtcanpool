@@ -297,7 +297,7 @@ void RibbonCustomizeData::setActionsManager(RibbonActionsManager *mgr)
 
 /**
  * @brief 创建一个AddPageActionType的RibbonCustomizeData
- * @param title page 的标题
+ * @param title page的标题
  * @param index page要插入的位置
  * @param objName page的object name
  * @return 返回AddPageActionType的RibbonCustomizeData

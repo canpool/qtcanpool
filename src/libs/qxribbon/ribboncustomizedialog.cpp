@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribboncustomizedialog.h"
 #include "ribboncustomizewidget.h"
 #include <QFile>
@@ -70,7 +70,8 @@ public:
 ////////////////////////////////////////////////////////////////////
 
 RibbonCustomizeDialog::RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p, Qt::WindowFlags f)
-    : QDialog(p, f), ui(new RibbonCustomizeDialogUi)
+    : QDialog(p, f)
+    , ui(new RibbonCustomizeDialogUi)
 {
     ui->setupUi(ribbonBar, this);
     initConnection();

@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -10,7 +10,6 @@
 #include "ribbongroup.h"
 
 #include <QWidget>
-
 
 class QStandardItemModel;
 class QStandardItem;
@@ -43,15 +42,14 @@ public:
      * @brief QStandardItem对应的role
      */
     enum ItemRole {
-        LevelRole = Qt::UserRole + 1,          ///< 代表这是层级，有0：page 1：group 2：item
-        PointerRole,        ///< 代表这是存放指针。根据LevelRole来进行转
-        CanCustomizeRole,   ///< 代表个item是可以自定义的.bool
-        CustomizeRole,///< 代表这个是自定义的item,bool,主要用于那些自己添加的标签和group，有此角色必有CanCustomizeRole
+        LevelRole = Qt::UserRole + 1,   ///< 代表这是层级，有0：page 1：group 2：item
+        PointerRole,                    ///< 代表这是存放指针。根据LevelRole来进行转
+        CanCustomizeRole,               ///< 代表个item是可以自定义的.bool
+        CustomizeRole,   ///< 代表这个是自定义的item,bool,主要用于那些自己添加的标签和group，有此角色必有CanCustomizeRole
         CustomizeObjNameRole,   ///< 记录了临时的自定义内容的obj名 QString
     };
 public:
-    RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent = Q_NULLPTR,
-                           Qt::WindowFlags f = Qt::WindowFlags());
+    RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~RibbonCustomizeWidget();
 
     // 设置action管理器
