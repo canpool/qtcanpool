@@ -36,7 +36,7 @@ public:
     void setupActionsManager(RibbonActionsManager *mgr);
 
     // 应用所有的设定
-    bool applys();
+    bool apply();
 
     // 清除所有动作
     void clear();
@@ -49,8 +49,6 @@ public:
     void fromXml(QXmlStreamReader *xml);
     void fromXml(const QString &xmlpath);
 private:
-    void initConnection();
-
     RibbonCustomizeDialogUi *ui;
 };
 

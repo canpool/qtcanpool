@@ -18,8 +18,6 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonBar;
 class RibbonPage;
 class RibbonActionsManagerPrivate;
-// RibbonActionsModel 特有
-class RibbonActionsManagerModelPrivate;
 
 /**
  * @brief 用于管理 Ribbon 的所有 Action
@@ -130,34 +128,6 @@ private:
 private:
     QX_DECLARE_PRIVATE(RibbonActionsManager)
     friend class RibbonActionsManagerModel;
-};
-
-/**
- * @brief RibbonActionsManager 对应的model
- */
-class QX_RIBBON_EXPORT RibbonActionsManagerModel : public QAbstractListModel
-{
-    Q_OBJECT
-public:
-    explicit RibbonActionsManagerModel(QObject *p = Q_NULLPTR);
-    explicit RibbonActionsManagerModel(RibbonActionsManager *m, QObject *p = Q_NULLPTR);
-    ~RibbonActionsManagerModel();
-
-    virtual int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
-    virtual QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
-    void setFilter(int tag);
-    void update();
-    void setupActionsManager(RibbonActionsManager *m);
-    void uninstallActionsManager();
-    QAction *indexToAction(QModelIndex index) const;
-    void search(const QString &text);
-
-private slots:
-    void onActionTagChanged(int tag, bool isdelete);
-private:
-    QX_DECLARE_PRIVATE(RibbonActionsManagerModel)
 };
 
 QX_RIBBON_END_NAMESPACE

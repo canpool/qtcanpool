@@ -1116,7 +1116,7 @@ void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
     dlg.setupActionsManager(m_actMgr);
     dlg.fromXml("customize.xml");
     if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
-        dlg.applys();
+        dlg.apply();
         QByteArray str;
         QXmlStreamWriter xml(&str);
         xml.setAutoFormatting(true);
@@ -1125,9 +1125,9 @@ void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
         xml.setCodec("utf-8");
 #endif
         xml.writeStartDocument();
-        bool isok = dlg.toXml(&xml);
+        bool isOk = dlg.toXml(&xml);
         xml.writeEndDocument();
-        if (isok) {
+        if (isOk) {
             QFile f("customize.xml");
             if (f.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)) {
                 QTextStream s(&f);

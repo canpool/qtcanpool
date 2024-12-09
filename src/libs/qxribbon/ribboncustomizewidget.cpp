@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: MIT
  **/
 #include "ribboncustomizewidget.h"
+#include "ribboncustomizewidget_p.h"
+#include "ribbonactionsmanager_p.h"
 #include "ribbonbar.h"
 #include "ribboncustomizedata.h"
 #include "ribbonwindow.h"
@@ -42,8 +44,8 @@ QX_RIBBON_BEGIN_NAMESPACE
 bool QxRibbonCustomizeDataSetToXml(QXmlStreamWriter *xml, const QList<RibbonCustomizeData> &cds, bool force = false)
 {
     // 如果xml中之前记录了添加页的定制数据，当再次删除该页时，经过simplify后，cds被抵消为空
-    // 此时不如因为cds为空不写，那么xml中始终保留一份添加的定制数据，所以增加force参数，当cds为空，old数据非空时，应该强制写
-    if (cds.size() <= 0 && !force) {
+    // 此时如果因为cds为空不写，那么xml中始终保留一份添加的定制数据，所以增加force参数，当cds为空，old数据非空时，应该强制写
+    if (cds.size() == 0 && !force) {
         return false;
     }
 
@@ -764,14 +766,14 @@ void RibbonCustomizeWidget::updateModel(RibbonTreeShowType type)
  *
  * 如果先simplify后apply会存在如下问题：
  * 比如：
- *   1.先添加一个元素，执行applys，元素被添加到ribbonWindow
- *   2.接着删除该元素，执行applys，由于先simplify，那么添加和删除相互抵消，
- *     再apply时，元素将无法从ribbonWindow中删除
+ *   1.先添加一个元素，执行apply，元素被添加到ribbonBar
+ *   2.接着删除该元素，执行apply，由于先simplify，那么添加和删除相互抵消，
+ *     再apply时，元素将无法从ribbonBar中删除
  *
  * @return 应用成功返回true
  * @note 所有设定有一个应用成功都会返回true
  */
-bool RibbonCustomizeWidget::applys()
+bool RibbonCustomizeWidget::apply()
 {
     int res = QxRibbonCustomizeDataApply(d->m_customizeDatas, d->m_ribbonBar);
     simplify();
@@ -791,16 +793,16 @@ bool RibbonCustomizeWidget::applys()
  * RibbonCustomizeDialog dlg(this);//this为RibbonWindow的窗口
  * dlg.setupActionsManager(m_actMgr);
  * if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
- *    dlg.applys();
+ *    dlg.apply();
  *    QByteArray str;
  *    QXmlStreamWriter xml(&str);//QXmlStreamWriter不建议通过QString构造，遇到中文会异常
  *    xml.setAutoFormatting(true);
  *    xml.setAutoFormattingIndent(2);
  *    xml.setCodec("utf-8");//在writeStartDocument之前指定编码
  *    xml.writeStartDocument();
- *    bool isok = dlg.toXml(&xml);
+ *    bool isOk = dlg.toXml(&xml);
  *    xml.writeEndDocument();
- *    if (isok) {
+ *    if (isOk) {
  *        QFile f("customize.xml");
  *        if (f.open(QIODevice::ReadWrite|QIODevice::Text|QIODevice::Truncate)) {
  *            QTextStream s(&f);

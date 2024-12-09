@@ -24,7 +24,6 @@ public:
     QHBoxLayout *horizontalLayoutButtonGroup;
     QPushButton *pushButtonCancel;
     QPushButton *pushButtonOk;
-    QPushButton *pushButtonApply;
     QSpacerItem *spacerItemleft;
 
     void setupUi(RibbonBar *ribbonBar, QWidget *customizeDialog)
@@ -69,91 +68,49 @@ public:
 
 ////////////////////////////////////////////////////////////////////
 
-RibbonCustomizeDialog::RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p, Qt::WindowFlags f)
+RibbonCustomizeDialog::RibbonCustomizeDialog(RibbonBar *bar, QWidget *p, Qt::WindowFlags f)
     : QDialog(p, f)
     , ui(new RibbonCustomizeDialogUi)
 {
-    ui->setupUi(ribbonBar, this);
-    initConnection();
+    ui->setupUi(bar, this);
+
+    connect(ui->pushButtonOk, &QPushButton::clicked, this, &QDialog::accept);
+    connect(ui->pushButtonCancel, &QPushButton::clicked, this, &QDialog::reject);
 }
 
-/**
- * @brief 设置action管理器
- *
- * 等同@ref RibbonCustomizeWidget::setupActionsManager
- * @param mgr
- */
 void RibbonCustomizeDialog::setupActionsManager(RibbonActionsManager *mgr)
 {
     ui->customWidget->setupActionsManager(mgr);
 }
 
-void RibbonCustomizeDialog::initConnection()
-{
-    connect(ui->pushButtonOk, &QPushButton::clicked, this, &QDialog::accept);
-    connect(ui->pushButtonCancel, &QPushButton::clicked, this, &QDialog::reject);
-}
-
-/**
- * @brief 等同RibbonCustomizeWidget::applys
- *
- * @ref RibbonCustomizeWidget::applys
- * @return
- */
-bool RibbonCustomizeDialog::applys()
+bool RibbonCustomizeDialog::apply()
 {
     // FIXME: 打开对话框，新建页后，应用，然后关闭对话框，不写文件，定制临时数据丢失
     // 当再次打开对话框，删除新建的页后，应用，然后选择ok，定制的临时数据都是删除数据，实际上要删除的对象已经不存在了，但是还会写到文件中
     // TODO: 先去掉应用按钮，未来应该私有化该接口
-    return ui->customWidget->applys();
+    return ui->customWidget->apply();
 }
 
-/**
- * @brief 清除所有动作
- *
- * @ref RibbonCustomizeWidget::clear
- */
 void RibbonCustomizeDialog::clear()
 {
     ui->customWidget->clear();
 }
 
-/**
- * @brief 转换为xml
- *
- * @ref RibbonCustomizeWidget::toXml
- * @param xml
- * @return
- */
 bool RibbonCustomizeDialog::toXml(QXmlStreamWriter *xml) const
 {
     return ui->customWidget->toXml(xml);
 }
 
-/**
- * @brief 等同RibbonCustomizeWidget::toXml
- * @ref RibbonCustomizeWidget::toXml
- * @param xmlpath
- * @return
- */
 bool RibbonCustomizeDialog::toXml(const QString &xmlpath) const
 {
     return ui->customWidget->toXml(xmlpath);
 }
 
-/**
- * @brief 等同RibbonCustomizeWidget::fromXml
- * @param xml
- */
 void RibbonCustomizeDialog::fromXml(QXmlStreamReader *xml)
 {
     ui->customWidget->fromXml(xml);
 }
 
-/**
- * @brief 等同RibbonCustomizeWidget::fromXml
- * @param xmlpath
- */
 void RibbonCustomizeDialog::fromXml(const QString &xmlpath)
 {
     ui->customWidget->fromXml(xmlpath);

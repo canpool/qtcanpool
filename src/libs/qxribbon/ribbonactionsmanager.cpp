@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbonactionsmanager.h"
+#include "ribbonactionsmanager_p.h"
 #include "ribboncustomizedata.h"
 #include "ribbonbar.h"
 

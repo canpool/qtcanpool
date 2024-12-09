@@ -33,12 +33,14 @@ PUBLIC_HEADERS = \
 
 PRIVATE_HEADERS = \
     $$PWD/framelesshelper.h \
+    $$PWD/ribbonactionsmanager_p.h \
     $$PWD/ribbontabbar.h \
     $$PWD/ribbonbar_p.h \
     $$PWD/ribbonbutton_p.h \
     $$PWD/ribboncolorbutton_p.h \
     $$PWD/ribboncustomizedata.h \
     $$PWD/ribboncustomizewidget.h \
+    $$PWD/ribboncustomizewidget_p.h \
     $$PWD/ribbongallerygroup_p.h \
     $$PWD/ribbongroup_p.h \
     $$PWD/ribbongrouplayout.h \
