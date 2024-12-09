@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribboncustomizedata.h"
 #include "ribbonbar.h"
 #include "ribbonwindow.h"
@@ -303,7 +303,7 @@ void RibbonCustomizeData::setActionsManager(RibbonActionsManager *mgr)
  * @return 返回AddPageActionType的RibbonCustomizeData
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString &title, int index,
-                                                                        const QString &objName)
+                                                                  const QString &objName)
 {
     RibbonCustomizeData data(AddPageActionType);
 
@@ -322,8 +322,7 @@ RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString 
  * @return 返回AddGroupActionType的RibbonCustomizeData
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddGroupCustomizeData(const QString &title, int index,
-                                                                      const QString &pageobjName,
-                                                                      const QString &objName)
+                                                                   const QString &pageobjName, const QString &objName)
 {
     RibbonCustomizeData data(AddGroupActionType);
 
@@ -345,9 +344,9 @@ RibbonCustomizeData RibbonCustomizeData::makeAddGroupCustomizeData(const QString
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddActionCustomizeData(const QString &key, RibbonActionsManager *mgr,
-                                                                      RibbonGroup::RowProportion rp,
-                                                                      const QString &pageObjName,
-                                                                      const QString &groupObjName)
+                                                                    RibbonGroup::RowProportion rp,
+                                                                    const QString &pageObjName,
+                                                                    const QString &groupObjName)
 {
     RibbonCustomizeData data(AddActionActionType, mgr);
 
@@ -365,8 +364,7 @@ RibbonCustomizeData RibbonCustomizeData::makeAddActionCustomizeData(const QStrin
  * @param index page的索引
  * @return 返回RenamePageActionType的RibbonCustomizeData
  */
-RibbonCustomizeData RibbonCustomizeData::makeRenamePageCustomizeData(const QString &newname,
-                                                                           const QString &pageobjName)
+RibbonCustomizeData RibbonCustomizeData::makeRenamePageCustomizeData(const QString &newname, const QString &pageobjName)
 {
     RibbonCustomizeData data(RenamePageActionType);
 
@@ -389,8 +387,8 @@ RibbonCustomizeData RibbonCustomizeData::makeRenamePageCustomizeData(const QStri
  * @return 返回RenameGroupActionType的RibbonCustomizeData
  */
 RibbonCustomizeData RibbonCustomizeData::makeRenameGroupCustomizeData(const QString &newname,
-                                                                         const QString &pageobjName,
-                                                                         const QString &groupObjName)
+                                                                      const QString &pageobjName,
+                                                                      const QString &groupObjName)
 {
     RibbonCustomizeData data(RenameGroupActionType);
 
@@ -412,8 +410,7 @@ RibbonCustomizeData RibbonCustomizeData::makeRenameGroupCustomizeData(const QStr
  * @param moveindex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
  * @return
  */
-RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const QString &pageobjName,
-                                                                                int moveindex)
+RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const QString &pageobjName, int moveindex)
 {
     RibbonCustomizeData data(ChangePageOrderActionType);
 
@@ -436,8 +433,7 @@ RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const 
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeChangeGroupOrderCustomizeData(const QString &pageobjName,
-                                                                              const QString &groupObjName,
-                                                                              int moveindex)
+                                                                           const QString &groupObjName, int moveindex)
 {
     RibbonCustomizeData data(ChangeGroupOrderActionType);
 
@@ -463,9 +459,9 @@ RibbonCustomizeData RibbonCustomizeData::makeChangeGroupOrderCustomizeData(const
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeChangeActionOrderCustomizeData(const QString &pageobjName,
-                                                                              const QString &groupObjName,
-                                                                              const QString &key,
-                                                                              RibbonActionsManager *mgr, int moveindex)
+                                                                            const QString &groupObjName,
+                                                                            const QString &key,
+                                                                            RibbonActionsManager *mgr, int moveindex)
 {
     RibbonCustomizeData data(ChangeActionOrderActionType, mgr);
 
@@ -508,7 +504,7 @@ RibbonCustomizeData RibbonCustomizeData::makeRemovePageCustomizeData(const QStri
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QString &pageobjName,
-                                                                         const QString &groupObjName)
+                                                                      const QString &groupObjName)
 {
     RibbonCustomizeData data(RemoveGroupActionType);
 
@@ -532,8 +528,8 @@ RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QStr
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeRemoveActionCustomizeData(const QString &pageobjName,
-                                                                         const QString &groupObjName,
-                                                                         const QString &key, RibbonActionsManager *mgr)
+                                                                       const QString &groupObjName, const QString &key,
+                                                                       RibbonActionsManager *mgr)
 {
     RibbonCustomizeData data(RemoveActionActionType, mgr);
 
@@ -647,8 +643,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
                 if (csd[j].actionType() != RemoveActionActionType) {
                     continue;
                 }
-                if ((csd[i].keyValue == csd[j].keyValue) &&
-                    (csd[i].groupObjNameValue == csd[j].groupObjNameValue) &&
+                if ((csd[i].keyValue == csd[j].keyValue) && (csd[i].groupObjNameValue == csd[j].groupObjNameValue) &&
                     (csd[i].pageObjNameValue == csd[j].pageObjNameValue)) {
                     willRemoveIndexs << i << j;
                     break;
@@ -662,7 +657,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     //! 筛选VisiblePageActionType，对于多次出现的操作只保留最后一步
     // 说明：同一个元素可能会被反复隐藏和显示，所以二级循环遍历，找到就删除前一个、记录后一个，直到内循环结束
     // 下一次外循环，如果已被删除的或已经是最后的，就直接跳过
-    QList<int> willNotCheckIndexs; // 记录免检的index
+    QList<int> willNotCheckIndexs;   // 记录免检的index
     size = res.size();
     for (int i = 0; i < size; ++i) {
         if (res[i].actionType() == VisiblePageActionType) {
@@ -679,7 +674,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
                     }
                 }
             }
-            if (last != i) { // 说明多次出现，last已经是最后了，下次可以免检了
+            if (last != i) {   // 说明多次出现，last已经是最后了，下次可以免检了
                 willNotCheckIndexs << last;
             }
         }
@@ -748,8 +743,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     //! 上一步操作可能会产生indexvalue为0的情况，此操作把indexvalue为0的删除
     size = res.size();
     for (int i = 0; i < size; ++i) {
-        if ((res[i].actionType() == ChangePageOrderActionType) ||
-            (res[i].actionType() == ChangeGroupOrderActionType) ||
+        if ((res[i].actionType() == ChangePageOrderActionType) || (res[i].actionType() == ChangeGroupOrderActionType) ||
             (res[i].actionType() == ChangeActionOrderActionType)) {
             if (0 == res[i].indexValue) {
                 willRemoveIndexs << i;

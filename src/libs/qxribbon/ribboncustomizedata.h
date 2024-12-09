@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -22,19 +22,19 @@ class RibbonCustomizeData
 {
 public:
     enum ActionType {
-        UnknowActionType = 0,           ///< 未知操作
-        AddPageActionType,              ///< 添加page操作
-        AddGroupActionType,             ///< 添加group操作
-        AddActionActionType,            ///< 添加action操作
-        RemovePageActionType,           ///< 删除page操作
-        RemoveGroupActionType,          ///< 删除group操作
-        RemoveActionActionType,         ///< 删除action操作
-        ChangePageOrderActionType,      ///< 改变page顺序的操作
-        ChangeGroupOrderActionType,     ///< 改变group顺序的操作
-        ChangeActionOrderActionType,    ///< 改变action顺序的操作
-        RenamePageActionType,           ///< 对page更名操作
-        RenameGroupActionType,          ///< 对Group更名操作
-        VisiblePageActionType,          ///< 对page执行隐藏/显示操作
+        UnknowActionType = 0,          ///< 未知操作
+        AddPageActionType,             ///< 添加page操作
+        AddGroupActionType,            ///< 添加group操作
+        AddActionActionType,           ///< 添加action操作
+        RemovePageActionType,          ///< 删除page操作
+        RemoveGroupActionType,         ///< 删除group操作
+        RemoveActionActionType,        ///< 删除action操作
+        ChangePageOrderActionType,     ///< 改变page顺序的操作
+        ChangeGroupOrderActionType,    ///< 改变group顺序的操作
+        ChangeActionOrderActionType,   ///< 改变action顺序的操作
+        RenamePageActionType,          ///< 对page更名操作
+        RenameGroupActionType,         ///< 对Group更名操作
+        VisiblePageActionType,         ///< 对page执行隐藏/显示操作
     };
 public:
     RibbonCustomizeData();
@@ -62,21 +62,20 @@ public:
     static RibbonCustomizeData makeAddPageCustomizeData(const QString &title, int index, const QString &objName);
 
     // 对应AddGroupActionType
-    static RibbonCustomizeData makeAddGroupCustomizeData(const QString &title, int index,
-                                                           const QString &pageobjName, const QString &objName);
+    static RibbonCustomizeData makeAddGroupCustomizeData(const QString &title, int index, const QString &pageobjName,
+                                                         const QString &objName);
 
     // 对应AddActionActionType
     static RibbonCustomizeData makeAddActionCustomizeData(const QString &key, RibbonActionsManager *mgr,
-                                                           RibbonGroup::RowProportion rp,
-                                                           const QString &pageObjName,
-                                                           const QString &groupObjName);
+                                                          RibbonGroup::RowProportion rp, const QString &pageObjName,
+                                                          const QString &groupObjName);
 
     // 对应RenamePageActionType
     static RibbonCustomizeData makeRenamePageCustomizeData(const QString &newname, const QString &pageobjName);
 
     // 对应RenameGroupActionType
     static RibbonCustomizeData makeRenameGroupCustomizeData(const QString &newname, const QString &pageobjName,
-                                                              const QString &groupObjName);
+                                                            const QString &groupObjName);
 
     // 对应RemovePageActionType
     static RibbonCustomizeData makeRemovePageCustomizeData(const QString &pageobjName);
@@ -86,21 +85,19 @@ public:
 
     // 对应ChangeGroupOrderActionType
     static RibbonCustomizeData makeChangeGroupOrderCustomizeData(const QString &pageobjName,
-                                                                   const QString &groupObjName, int moveindex);
+                                                                 const QString &groupObjName, int moveindex);
 
     // 对应ChangeActionOrderActionType
     static RibbonCustomizeData makeChangeActionOrderCustomizeData(const QString &pageobjName,
-                                                                   const QString &groupObjName, const QString &key,
-                                                                   RibbonActionsManager *mgr, int moveindex);
+                                                                  const QString &groupObjName, const QString &key,
+                                                                  RibbonActionsManager *mgr, int moveindex);
 
     // 对应RemoveGroupActionType
-    static RibbonCustomizeData makeRemoveGroupCustomizeData(const QString &pageobjName,
-                                                              const QString &groupObjName);
+    static RibbonCustomizeData makeRemoveGroupCustomizeData(const QString &pageobjName, const QString &groupObjName);
 
     // 对应RemoveActionActionType
-    static RibbonCustomizeData makeRemoveActionCustomizeData(const QString &pageobjName,
-                                                              const QString &groupObjName, const QString &key,
-                                                              RibbonActionsManager *mgr);
+    static RibbonCustomizeData makeRemoveActionCustomizeData(const QString &pageobjName, const QString &groupObjName,
+                                                             const QString &key, RibbonActionsManager *mgr);
 
     // 对应VisiblePageActionType
     static RibbonCustomizeData makeVisiblePageCustomizeData(const QString &pageobjName, bool isShow);
@@ -143,7 +140,7 @@ public:
     ///< 行的占比，ribbon中有large，medium和small三种占比,见@ref RowProportion
     RibbonGroup::RowProportion actionRowProportionValue;
 private:
-    ActionType m_type;              ///< 标记这个data是page还是group亦或是action
+    ActionType m_type;   ///< 标记这个data是page还是group亦或是action
     RibbonActionsManager *m_actionsManager;
     bool customized;
 };
