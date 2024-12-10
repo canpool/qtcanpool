@@ -21,17 +21,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     RibbonBar *rb = ribbonBar();
 
+    // action can only be managed by RibbonActionsManager if the object name is set
     RibbonPage *p1 = rb->addPage(tr("page1"));
     RibbonGroup *g1 = p1->addGroup(tr("group1"));
     g1->addLargeAction(new QAction(icon, tr("La"), this));
-    g1->addLargeAction(new QAction(icon, tr("Lala lalalala"), this));
+    g1->addLargeAction(createAction(icon, tr("Lala lalalala"), this));
     g1->addMediumAction(new QAction(icon, tr("Ma1"), this));
-    g1->addMediumAction(new QAction(icon, tr("Maaaaaaa2"), this));
+    g1->addMediumAction(createAction(icon, tr("Maaaaaaa2")));
     g1->addSmallAction(new QAction(tr("Sa11111111"), this));
-    g1->addSmallAction(new QAction(tr("Sa2222"), this));
-    g1->addSmallAction(new QAction(tr("Sa3333333"), this));
+    g1->addSmallAction(createAction(QIcon(), tr("Sa2222"), this));
+    g1->addSmallAction(createAction(QIcon(), tr("Sa3333333")));
 
-    rb->addPage(tr("loooooooooooongpage2"));
+    RibbonPage *p2 = rb->addPage(tr("loooooooooooongpage2"));
+    RibbonGroup *g2 = p2->addGroup(tr("group2"));
+    g2->addLargeAction(createAction(icon, tr("La"), this));
+    g2->addMediumAction(createAction(icon, tr("Ma1")));
+    g2->addSmallAction(createAction(QIcon(), tr("Sa11111111")));
+    g2->addSmallAction(createAction(QIcon(), tr("Sa3333333"))); // key Sa3333333 have been exist
 
     RibbonPageContext *pc1 = rb->addPageContext(tr("context1"));
     pc1->addPage(tr("page1"));
@@ -121,4 +127,13 @@ void MainWindow::createActionsManager()
     m_actMgr->setTagName(RibbonActionsManager::CommonlyUsedActionTag, tr("in common use"));
     m_actMgr->setTagName(m_actionTagText, tr("no icon action"));
     m_actMgr->setTagName(m_actionTagWithIcon, tr("have icon action"));
+
+    qDebug() << m_actMgr->actionTags();
+}
+
+QAction *MainWindow::createAction(const QIcon &icon, const QString &text, QObject *parent)
+{
+    QAction *a = new QAction(icon, text, parent);
+    a->setObjectName(text);
+    return a;
 }

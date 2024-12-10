@@ -17,6 +17,8 @@ private slots:
     void onActionCustomizeTriggered();
 private:
     void createActionsManager();
+
+    QAction *createAction(const QIcon &icon, const QString &text, QObject *parent = nullptr);
 private:
     QxRibbon::RibbonActionsManager *m_actMgr;
     int m_actionTagText;
