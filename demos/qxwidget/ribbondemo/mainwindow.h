@@ -90,12 +90,12 @@ private slots:
 private:
     RibbonPageContext *m_pageContext;
     RibbonPageContext *m_pageContext2;
-    RibbonCustomizeWidget *m_customizeWidget;
     QTextEdit *m_edit;
     QActionGroup *m_themeGroup;
     RibbonActionsManager *m_actMgr;
     int m_actionTagText;
     int m_actionTagWithIcon;
+    QString m_customizeXml;
 };
 
 #endif   // MAINWINDOW_H

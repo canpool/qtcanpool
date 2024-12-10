@@ -70,9 +70,10 @@ QCANPOOL_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *par)
     : RibbonMainWindow(par)
-    , m_customizeWidget(nullptr)
     , m_themeGroup(nullptr)
 {
+    m_customizeXml = qApp->applicationDirPath() + QDir::separator() + "customize.xml";
+
     COST_START();
 
     createCentralWidget();
@@ -100,6 +101,8 @@ MainWindow::MainWindow(QWidget *par)
         framelessCB->click();
     }
 #endif
+
+    QxRibbonCustomizeApplyFromXmlFile(m_customizeXml, ribbonBar(), m_actMgr);
 }
 
 void MainWindow::setRibbonTheme(int theme)
@@ -1114,9 +1117,8 @@ void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
     Q_UNUSED(b);
     RibbonCustomizeDialog dlg(this->ribbonBar(), this);
     dlg.setupActionsManager(m_actMgr);
-    dlg.fromXml("customize.xml");
+    dlg.fromXml(m_customizeXml);
     if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
-        dlg.apply();
         QByteArray str;
         QXmlStreamWriter xml(&str);
         xml.setAutoFormatting(true);
@@ -1128,7 +1130,7 @@ void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
         bool isOk = dlg.toXml(&xml);
         xml.writeEndDocument();
         if (isOk) {
-            QFile f("customize.xml");
+            QFile f(m_customizeXml);
             if (f.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)) {
                 QTextStream s(&f);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)   // QTextStream always encodes XML in UTF-8.

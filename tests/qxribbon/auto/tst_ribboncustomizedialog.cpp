@@ -40,8 +40,6 @@ void tst_RibbonCustomizeDialog::actionsManager()
     QCOMPARE(mgr.registerAction(a2, RibbonActionsManager::NotInRibbonPageTag, "key1"), true);
     dlg.setupActionsManager(&mgr);
 
-    dlg.apply();
-
     QByteArray str;
     QXmlStreamWriter xml(&str);
     xml.setAutoFormatting(true);
@@ -67,8 +65,6 @@ void tst_RibbonCustomizeDialog::page()
     g2->addAction(a2, RibbonGroup::Large);
 
     RibbonCustomizeDialog dlg(&rb);
-
-    dlg.apply();
 
     QByteArray str;
     QXmlStreamWriter xml(&str);

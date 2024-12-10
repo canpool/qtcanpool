@@ -23,5 +23,6 @@ private:
     QxRibbon::RibbonActionsManager *m_actMgr;
     int m_actionTagText;
     int m_actionTagWithIcon;
+    QString m_customizeXml;
 };
 #endif   // MAINWINDOW_H

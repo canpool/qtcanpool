@@ -10,6 +10,8 @@
 #include <QToolBar>
 #include <QTextStream>
 #include <QXmlStreamWriter>
+#include <QApplication>
+#include <QDir>
 #include <QDebug>
 
 QX_RIBBON_USE_NAMESPACE
@@ -18,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     : RibbonWindow(parent)
 {
     QIcon icon(":/logo");
+
+    m_customizeXml = qApp->applicationDirPath() + QDir::separator() + "customize.xml";
 
     RibbonBar *rb = ribbonBar();
 
@@ -54,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent)
     QAction *a = tb->addAction(tr("customzie"));
     connect(a, &QAction::triggered, this, &MainWindow::onActionCustomizeTriggered);
 
+    QxRibbonCustomizeApplyFromXmlFile(m_customizeXml, rb, m_actMgr);
+
     resize(800, 400);
 }
 
@@ -65,9 +71,8 @@ void MainWindow::onActionCustomizeTriggered()
 {
     RibbonCustomizeDialog dlg(this->ribbonBar(), this);
     dlg.setupActionsManager(m_actMgr);
-    dlg.fromXml("customize.xml");
+    dlg.fromXml(m_customizeXml);
     if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
-        dlg.apply();
         QByteArray str;
         QXmlStreamWriter xml(&str);
         xml.setAutoFormatting(true);
@@ -79,7 +84,7 @@ void MainWindow::onActionCustomizeTriggered()
         bool isOk = dlg.toXml(&xml);
         xml.writeEndDocument();
         if (isOk) {
-            QFile f("customize.xml");
+            QFile f(m_customizeXml);
             if (f.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)) {
                 QTextStream s(&f);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)   // QTextStream always encodes XML in UTF-8.
