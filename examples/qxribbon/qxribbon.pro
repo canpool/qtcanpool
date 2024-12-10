@@ -5,6 +5,7 @@ SUBDIRS = \
     simple \
     groupautolayout \
     coloricon \
+    customizewidget \
     pagecontext \
     ribbonbar \
     ribbonbuttongroup \
