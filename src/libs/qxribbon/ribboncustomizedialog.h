@@ -35,6 +35,12 @@ public:
     // 设置action管理器
     void setupActionsManager(RibbonActionsManager *mgr);
 
+    // 应用所有的设定
+    bool apply();
+
+    // 清除所有动作
+    void clear();
+
     // 转换为xml
     bool toXml(QXmlStreamWriter *xml) const;
     bool toXml(const QString &xmlpath) const;

@@ -86,6 +86,19 @@ void RibbonCustomizeDialog::setupActionsManager(RibbonActionsManager *mgr)
     ui->customWidget->setupActionsManager(mgr);
 }
 
+bool RibbonCustomizeDialog::apply()
+{
+    // FIXME: 打开对话框，新建页后，应用，然后关闭对话框，不写文件，定制临时数据丢失
+    // 当再次打开对话框，删除新建的页后，应用，然后选择ok，定制的临时数据都是删除数据，实际上要删除的对象已经不存在了，但是还会写到文件中
+    // TODO: 先去掉应用按钮，未来应该私有化该接口
+    return ui->customWidget->apply();
+}
+
+void RibbonCustomizeDialog::clear()
+{
+    ui->customWidget->clear();
+}
+
 bool RibbonCustomizeDialog::toXml(QXmlStreamWriter *xml) const
 {
     return ui->customWidget->toXml(xml);
