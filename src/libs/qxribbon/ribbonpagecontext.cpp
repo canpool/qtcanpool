@@ -45,7 +45,7 @@ RibbonPage *RibbonPageContext::addPage(const QString &title)
     RibbonPage *page = new RibbonPage(parentWidget());
 
     page->markIsPageContext(true);
-    page->setWindowTitle(title);
+    page->setPageName(title);
     pageData.page = page;
     d->pageDataList.append(pageData);
     page->installEventFilter(this);

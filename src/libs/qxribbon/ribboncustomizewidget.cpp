@@ -445,6 +445,9 @@ void RibbonCustomizeWidgetPrivate::updateModel()
             // 如果是只显示主内容，如果是上下文标签就忽略
             continue;
         }
+        if (page->objectName().isEmpty()) {
+            continue;
+        }
         QStandardItem *pageSI = new QStandardItem();
         if (page->isPageContext()) {
             pageSI->setText(QString("[%1]").arg(page->windowTitle()));
@@ -461,6 +464,9 @@ void RibbonCustomizeWidgetPrivate::updateModel()
         pageSI->setData(QVariant::fromValue<qintptr>(qintptr(page)), RibbonCustomizeWidget::PointerRole);
         QList<RibbonGroup *> groups = page->groupList();
         for (RibbonGroup *grp : qAsConst(groups)) {
+            if (grp->objectName().isEmpty()) {
+                continue;
+            }
             QStandardItem *grpSI = new QStandardItem(grp->windowTitle());
             grpSI->setData(1, RibbonCustomizeWidget::LevelRole);
             grpSI->setData(QVariant::fromValue<qintptr>(qintptr(grp)), RibbonCustomizeWidget::PointerRole);
@@ -1160,7 +1166,7 @@ void RibbonCustomizeWidget::onPushButtonNewGroupClicked()
     // 也就是说操作的时候是在两个page上，但是最终只会显示在第一个page上。
     // TODO：
     // 方案1，为每个page设置objectName，如果objectName不唯一，也会存在显示在第一个page上
-    // 方案2，不允许操作objectName为空的page
+    // 方案2，不允许操作objectName为空的page（采用）
     // 方案3，为每个page分配一个唯一的id，使用id来代替objectName
     d->m_customizeDatas.append(data);
     ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole

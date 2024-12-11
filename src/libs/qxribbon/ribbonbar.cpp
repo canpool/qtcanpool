@@ -1026,7 +1026,7 @@ RibbonPage *RibbonBar::insertPage(int index, const QString &title)
 {
     RibbonPage *page = new RibbonPage(this);
     page->setObjectName(title);
-    page->setWindowTitle(title);
+    page->setPageName(title);
     insertPage(index, page);
     return page;
 }

@@ -44,12 +44,14 @@ MainWindow::MainWindow(QWidget *parent)
     g2->addSmallAction(createAction(QIcon(), tr("Sa3333333"))); // key Sa3333333 have been exist
 
     RibbonPageContext *pc1 = rb->addPageContext(tr("context1"));
-    pc1->addPage(tr("page1"));
+    RibbonPage *page = pc1->addPage(tr("page1"));
+    page->setObjectName(QString("%1-%2").arg(pc1->contextTitle(), page->pageName()));
     pc1->addPage(tr("loooooooooooongpage2"));
     rb->showPageContext(pc1);
     RibbonPageContext *pc2 = rb->addPageContext(tr("looooooooooongcontext2"));
     pc2->addPage(tr("page1"));
-    pc2->addPage(tr("loooooooooooongpage2"));
+    page = pc2->addPage(tr("loooooooooooongpage2"));
+    page->setObjectName(QString("%1-%2").arg(pc2->contextTitle(), page->pageName()));
     rb->showPageContext(pc2);
 
     createActionsManager();
