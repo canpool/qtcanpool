@@ -106,6 +106,13 @@ void RibbonCustomizeDialog::fromXml(const QString &xmlpath)
     ui->customWidget->fromXml(xmlpath);
 }
 
+void RibbonCustomizeDialog::showEvent(QShowEvent *e)
+{
+    bool isModal = this->isModal();
+    ui->pushButtonCancel->setVisible(isModal);
+    ui->pushButtonOk->setVisible(isModal);
+}
+
 bool QxRibbonCustomizeApplyFromXmlFile(const QString &filePath, RibbonBar *bar, RibbonActionsManager *mgr)
 {
     QFile f(filePath);

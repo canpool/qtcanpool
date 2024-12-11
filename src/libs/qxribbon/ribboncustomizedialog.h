@@ -42,6 +42,8 @@ public:
     // 从xml中加载QList<RibbonCustomizeData>，对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
     void fromXml(QXmlStreamReader *xml);
     void fromXml(const QString &xmlpath);
+protected:
+    void showEvent(QShowEvent *e) override;
 private:
     RibbonCustomizeDialogUi *ui;
 };
