@@ -1456,6 +1456,7 @@ void RibbonCustomizeWidget::onPushButtonResetClicked()
 
     if (btn == QMessageBox::Yes) {
         clear();
+        d->updateModel();
     }
 }
 
