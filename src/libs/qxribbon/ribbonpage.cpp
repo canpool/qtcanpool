@@ -112,6 +112,7 @@ bool RibbonPagePrivate::takeGroup(RibbonGroup *group)
         item.m_separator->hide();
         item.m_separator->deleteLater();
     }
+    updateItemGeometry();
     return true;
 }
 
