@@ -62,7 +62,7 @@ public:
     static RibbonCustomizeData makeAddPageCustomizeData(const QString &title, int index, const QString &objName);
 
     // 对应AddGroupActionType
-    static RibbonCustomizeData makeAddGroupCustomizeData(const QString &title, int index, const QString &pageobjName,
+    static RibbonCustomizeData makeAddGroupCustomizeData(const QString &title, int index, const QString &pageObjName,
                                                          const QString &objName);
 
     // 对应AddActionActionType
@@ -71,36 +71,36 @@ public:
                                                           const QString &groupObjName);
 
     // 对应RenamePageActionType
-    static RibbonCustomizeData makeRenamePageCustomizeData(const QString &newname, const QString &pageobjName);
+    static RibbonCustomizeData makeRenamePageCustomizeData(const QString &newName, const QString &pageObjName);
 
     // 对应RenameGroupActionType
-    static RibbonCustomizeData makeRenameGroupCustomizeData(const QString &newname, const QString &pageobjName,
+    static RibbonCustomizeData makeRenameGroupCustomizeData(const QString &newName, const QString &pageObjName,
                                                             const QString &groupObjName);
 
     // 对应RemovePageActionType
-    static RibbonCustomizeData makeRemovePageCustomizeData(const QString &pageobjName);
+    static RibbonCustomizeData makeRemovePageCustomizeData(const QString &pageObjName);
 
     // 对应ChangePageOrderActionType
-    static RibbonCustomizeData makeChangePageOrderCustomizeData(const QString &pageobjName, int moveindex);
+    static RibbonCustomizeData makeChangePageOrderCustomizeData(const QString &pageObjName, int moveIndex);
 
     // 对应ChangeGroupOrderActionType
-    static RibbonCustomizeData makeChangeGroupOrderCustomizeData(const QString &pageobjName,
-                                                                 const QString &groupObjName, int moveindex);
+    static RibbonCustomizeData makeChangeGroupOrderCustomizeData(const QString &pageObjName,
+                                                                 const QString &groupObjName, int moveIndex);
 
     // 对应ChangeActionOrderActionType
-    static RibbonCustomizeData makeChangeActionOrderCustomizeData(const QString &pageobjName,
+    static RibbonCustomizeData makeChangeActionOrderCustomizeData(const QString &pageObjName,
                                                                   const QString &groupObjName, const QString &key,
-                                                                  RibbonActionsManager *mgr, int moveindex);
+                                                                  RibbonActionsManager *mgr, int moveIndex);
 
     // 对应RemoveGroupActionType
-    static RibbonCustomizeData makeRemoveGroupCustomizeData(const QString &pageobjName, const QString &groupObjName);
+    static RibbonCustomizeData makeRemoveGroupCustomizeData(const QString &pageObjName, const QString &groupObjName);
 
     // 对应RemoveActionActionType
-    static RibbonCustomizeData makeRemoveActionCustomizeData(const QString &pageobjName, const QString &groupObjName,
+    static RibbonCustomizeData makeRemoveActionCustomizeData(const QString &pageObjName, const QString &groupObjName,
                                                              const QString &key, RibbonActionsManager *mgr);
 
     // 对应VisiblePageActionType
-    static RibbonCustomizeData makeVisiblePageCustomizeData(const QString &pageobjName, bool isShow);
+    static RibbonCustomizeData makeVisiblePageCustomizeData(const QString &pageObjName, bool isShow);
 
     // 判断是否可以自定义,如果某个action不想被编辑，可以通过此函数设置
     static bool isCanCustomize(QObject *obj);

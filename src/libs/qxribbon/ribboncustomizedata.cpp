@@ -277,31 +277,16 @@ bool RibbonCustomizeData::apply(RibbonBar *bar)
     return true;
 }
 
-/**
- * @brief 获取actionsmanager指针
- * @return
- */
 RibbonActionsManager *RibbonCustomizeData::actionsManager()
 {
     return m_actionsManager;
 }
 
-/**
- * @brief 设置ActionsManager
- * @param mgr
- */
 void RibbonCustomizeData::setActionsManager(RibbonActionsManager *mgr)
 {
     m_actionsManager = mgr;
 }
 
-/**
- * @brief 创建一个AddPageActionType的RibbonCustomizeData
- * @param title page的标题
- * @param index page要插入的位置
- * @param objName page的object name
- * @return 返回AddPageActionType的RibbonCustomizeData
- */
 RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString &title, int index,
                                                                   const QString &objName)
 {
@@ -310,8 +295,12 @@ RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString 
     data.indexValue = index;
     data.keyValue = title;
     data.pageObjNameValue = objName;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("add page %1").arg(objName);
+#endif
     return data;
 }
+
 
 /**
  * @brief 创建一个AddGroupActionType的RibbonCustomizeData
@@ -322,14 +311,17 @@ RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString 
  * @return 返回AddGroupActionType的RibbonCustomizeData
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddGroupCustomizeData(const QString &title, int index,
-                                                                   const QString &pageobjName, const QString &objName)
+                                                                   const QString &pageObjName, const QString &objName)
 {
     RibbonCustomizeData data(AddGroupActionType);
 
     data.indexValue = index;
     data.keyValue = title;
     data.groupObjNameValue = objName;
-    data.pageObjNameValue = pageobjName;
+    data.pageObjNameValue = pageObjName;
+#ifdef QX_RIBBON_DEBUG
+    qDebug() << QString("add group %1 to page %2").arg(objName, pageObjName);
+#endif
     return data;
 }
 
@@ -340,7 +332,6 @@ RibbonCustomizeData RibbonCustomizeData::makeAddGroupCustomizeData(const QString
  * @param rp 定义action的占位情况
  * @param pageObjName action添加到的page的objname
  * @param groupObjName action添加到的page下的group的objname
- * @param index action添加到的group的索引
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddActionCustomizeData(const QString &key, RibbonActionsManager *mgr,
@@ -354,167 +345,161 @@ RibbonCustomizeData RibbonCustomizeData::makeAddActionCustomizeData(const QStrin
     data.pageObjNameValue = pageObjName;
     data.groupObjNameValue = groupObjName;
     data.actionRowProportionValue = rp;
-
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("add action %1 to %2/%3").arg(key, pageObjName, groupObjName);
+#endif
     return data;
 }
 
-/**
- * @brief 创建一个RenamePageActionType的RibbonCustomizeData
- * @param newname 新名字
- * @param index page的索引
- * @return 返回RenamePageActionType的RibbonCustomizeData
- */
-RibbonCustomizeData RibbonCustomizeData::makeRenamePageCustomizeData(const QString &newname, const QString &pageobjName)
+RibbonCustomizeData RibbonCustomizeData::makeRenamePageCustomizeData(const QString &newName, const QString &pageObjName)
 {
     RibbonCustomizeData data(RenamePageActionType);
 
-    if (pageobjName.isEmpty()) {
+    if (pageObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize rename page,"
                                 "but get an empty page object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.keyValue = newname;
-    data.pageObjNameValue = pageobjName;
+    data.keyValue = newName;
+    data.pageObjNameValue = pageObjName;
+
     return data;
 }
 
-/**
- * @brief 创建一个RenameGroupActionType的RibbonCustomizeData
- * @param newname group的名字
- * @param indexValue group的索引
- * @param pageobjName group对应的page的object name
- * @return 返回RenameGroupActionType的RibbonCustomizeData
- */
-RibbonCustomizeData RibbonCustomizeData::makeRenameGroupCustomizeData(const QString &newname,
-                                                                      const QString &pageobjName,
+RibbonCustomizeData RibbonCustomizeData::makeRenameGroupCustomizeData(const QString &newName,
+                                                                      const QString &pageObjName,
                                                                       const QString &groupObjName)
 {
     RibbonCustomizeData data(RenameGroupActionType);
 
-    if (groupObjName.isEmpty() || pageobjName.isEmpty()) {
+    if (groupObjName.isEmpty() || pageObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize rename group,"
                                 "but get an empty page/group object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.keyValue = newname;
+    data.keyValue = newName;
     data.groupObjNameValue = groupObjName;
-    data.pageObjNameValue = pageobjName;
+    data.pageObjNameValue = pageObjName;
     return data;
 }
 
 /**
  * @brief 对应ChangePageOrderActionType
- * @param pageobjName 需要移动的pageobjName
- * @param moveindex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
+ * @param pageObjName 需要移动的pageobjName
+ * @param moveIndex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
  * @return
  */
-RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const QString &pageobjName, int moveindex)
+RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const QString &pageObjName, int moveIndex)
 {
     RibbonCustomizeData data(ChangePageOrderActionType);
 
-    if (pageobjName.isEmpty()) {
+    if (pageObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize change page order,"
                                 "but get an empty page object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
-    data.indexValue = moveindex;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("change page %1 order from %2 to %3").arg(pageObjName).arg(data.indexValue).arg(moveIndex);
+#endif
+    data.pageObjNameValue = pageObjName;
+    data.indexValue = moveIndex;
     return data;
 }
 
 /**
  * @brief 对应ChangeGroupOrderActionType
- * @param pageobjName 需要移动的group对应的pageobjName
+ * @param pageObjName 需要移动的group对应的pageobjName
  * @param groupObjName 需要移动的groupObjName
- * @param moveindex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
+ * @param moveIndex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
  * @return
  */
-RibbonCustomizeData RibbonCustomizeData::makeChangeGroupOrderCustomizeData(const QString &pageobjName,
-                                                                           const QString &groupObjName, int moveindex)
+RibbonCustomizeData RibbonCustomizeData::makeChangeGroupOrderCustomizeData(const QString &pageObjName,
+                                                                           const QString &groupObjName, int moveIndex)
 {
     RibbonCustomizeData data(ChangeGroupOrderActionType);
 
-    if (pageobjName.isEmpty() || groupObjName.isEmpty()) {
+    if (pageObjName.isEmpty() || groupObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize change group order,"
                                 "but get an empty page/group object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("change group %1 order from %2 to %3").arg(groupObjName).arg(data.indexValue).arg(moveIndex);
+#endif
+    data.pageObjNameValue = pageObjName;
     data.groupObjNameValue = groupObjName;
-    data.indexValue = moveindex;
+    data.indexValue = moveIndex;
     return data;
 }
 
 /**
  * @brief 对应ChangeActionOrderActionType
- * @param pageobjName 需要移动的group对应的pageobjName
+ * @param pageObjName 需要移动的group对应的pageobjName
  * @param groupObjName 需要移动的groupObjName
  * @param key RibbonActionsManager管理的key名
  * @param mgr RibbonActionsManager指针
- * @param moveindex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
+ * @param moveIndex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
  * @return
  */
-RibbonCustomizeData RibbonCustomizeData::makeChangeActionOrderCustomizeData(const QString &pageobjName,
+RibbonCustomizeData RibbonCustomizeData::makeChangeActionOrderCustomizeData(const QString &pageObjName,
                                                                             const QString &groupObjName,
                                                                             const QString &key,
-                                                                            RibbonActionsManager *mgr, int moveindex)
+                                                                            RibbonActionsManager *mgr, int moveIndex)
 {
     RibbonCustomizeData data(ChangeActionOrderActionType, mgr);
 
-    if (pageobjName.isEmpty() || groupObjName.isEmpty() || key.isEmpty()) {
+    if (pageObjName.isEmpty() || groupObjName.isEmpty() || key.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize change action order,"
                                 "but get an empty page/group/action object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("change action %1 order from %2 to %3").arg(key).arg(data.indexValue).arg(moveIndex);
+#endif
+    data.pageObjNameValue = pageObjName;
     data.groupObjNameValue = groupObjName;
     data.keyValue = key;
-    data.indexValue = moveindex;
+    data.indexValue = moveIndex;
     return data;
 }
 
-/**
- * @brief 对应RemovePageActionType
- * @param pageobjName 需要移除的objname
- * @return
- */
-RibbonCustomizeData RibbonCustomizeData::makeRemovePageCustomizeData(const QString &pageobjName)
+RibbonCustomizeData RibbonCustomizeData::makeRemovePageCustomizeData(const QString &pageObjName)
 {
     RibbonCustomizeData data(RemovePageActionType);
 
-    if (pageobjName.isEmpty()) {
+    if (pageObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize remove page,"
                                 "but get an empty page object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("remove page %1").arg(pageObjName);
+#endif
+    data.pageObjNameValue = pageObjName;
     return data;
 }
 
-/**
- * @brief 对应RemoveGroupActionType
- * @param pageobjName group对应的page的obj name
- * @param groupObjName group对应的 obj name
- * @return
- */
-RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QString &pageobjName,
+RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QString &pageObjName,
                                                                       const QString &groupObjName)
 {
     RibbonCustomizeData data(RemoveGroupActionType);
 
-    if (pageobjName.isEmpty() || groupObjName.isEmpty()) {
+    if (pageObjName.isEmpty() || groupObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize remove group,"
                                 "but get an empty page/group object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("remove group %1 from page %2").arg(groupObjName, pageObjName);
+#endif
+    data.pageObjNameValue = pageObjName;
     data.groupObjNameValue = groupObjName;
     return data;
 }
@@ -527,19 +512,22 @@ RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QStr
  * @param mgr RibbonActionsManager指针
  * @return
  */
-RibbonCustomizeData RibbonCustomizeData::makeRemoveActionCustomizeData(const QString &pageobjName,
+RibbonCustomizeData RibbonCustomizeData::makeRemoveActionCustomizeData(const QString &pageObjName,
                                                                        const QString &groupObjName, const QString &key,
                                                                        RibbonActionsManager *mgr)
 {
     RibbonCustomizeData data(RemoveActionActionType, mgr);
 
-    if (pageobjName.isEmpty() || groupObjName.isEmpty() || key.isEmpty()) {
+    if (pageObjName.isEmpty() || groupObjName.isEmpty() || key.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize remove action,"
                                 "but get an empty page/group/action object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
+#if QX_RIBBON_DEBUG
+    qDebug() << QString("remove action %1 from %2/%3").arg(key, pageObjName, groupObjName);
+#endif
+    data.pageObjNameValue = pageObjName;
     data.groupObjNameValue = groupObjName;
     data.keyValue = key;
     return data;
@@ -547,30 +535,25 @@ RibbonCustomizeData RibbonCustomizeData::makeRemoveActionCustomizeData(const QSt
 
 /**
  * @brief RibbonCustomizeData::makeVisiblePageCustomizeData
- * @param pageobjName
+ * @param pageObjName
  * @param isShow
  * @return
  */
-RibbonCustomizeData RibbonCustomizeData::makeVisiblePageCustomizeData(const QString &pageobjName, bool isShow)
+RibbonCustomizeData RibbonCustomizeData::makeVisiblePageCustomizeData(const QString &pageObjName, bool isShow)
 {
     RibbonCustomizeData data(VisiblePageActionType);
 
-    if (pageobjName.isEmpty()) {
+    if (pageObjName.isEmpty()) {
         qDebug() << QObject::tr("Ribbon Warning !!! customize visible page,"
                                 "but get an empty page object name,"
                                 "if you want to customize Ribbon,"
                                 "please make sure every element has been set object name.");
     }
-    data.pageObjNameValue = pageobjName;
+    data.pageObjNameValue = pageObjName;
     data.indexValue = isShow ? 1 : 0;
     return data;
 }
 
-/**
- * @brief 判断外置属性，是否允许自定义
- * @param obj
- * @return
- */
 bool RibbonCustomizeData::isCanCustomize(QObject *obj)
 {
     QVariant v = obj->property(QX_RIBBON_PROP_CAN_CUSTOMIZE);
@@ -581,11 +564,6 @@ bool RibbonCustomizeData::isCanCustomize(QObject *obj)
     return false;
 }
 
-/**
- * @brief 设置外置属性允许自定义
- * @param obj
- * @param canbe
- */
 void RibbonCustomizeData::setCanCustomize(QObject *obj, bool canbe)
 {
     obj->setProperty(QX_RIBBON_PROP_CAN_CUSTOMIZE, canbe);
