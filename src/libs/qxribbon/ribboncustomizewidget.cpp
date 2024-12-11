@@ -325,6 +325,7 @@ public:
         toolButtonUp->setObjectName(QStringLiteral("pushButtonUp"));
         toolButtonUp->setArrowType(Qt::UpArrow);
         toolButtonUp->setAutoRaise(true);
+        toolButtonUp->setEnabled(false);
 
         verticalLayoutRightButtons->addWidget(toolButtonUp);
 
@@ -332,6 +333,7 @@ public:
         toolButtonDown->setObjectName(QStringLiteral("pushButtonDown"));
         toolButtonDown->setArrowType(Qt::DownArrow);
         toolButtonDown->setAutoRaise(true);
+        toolButtonDown->setEnabled(false);
 
         verticalLayoutRightButtons->addWidget(toolButtonDown);
 
@@ -1316,8 +1318,15 @@ void RibbonCustomizeWidget::onTreeViewResultClicked(const QModelIndex &index)
 
     ui->pushButtonAdd->setEnabled(selectedAction() && (level > 0) && isItemCanCustomize(item));
     ui->pushButtonDelete->setEnabled(isItemCanCustomize(item));   // 有CustomizeRole，必有CanCustomizeRole
-    ui->pushButtonRename->setEnabled(
-        level != 2 || isItemCanCustomize(item));   // QAction 不能改名 ， 有CustomizeRole，必有CanCustomizeRole
+    ui->pushButtonRename->setEnabled(level != 2 || isItemCanCustomize(item));   // QAction 不能改名
+    ui->toolButtonUp->setEnabled(item->index().row() != 0);
+
+    QStandardItem *parItem = item->parent();
+    if (parItem) {
+        ui->toolButtonDown->setEnabled(item->index().row() + 1 < parItem->rowCount());
+    } else {
+        ui->toolButtonDown->setEnabled(item->index().row() + 1 < ui->treeViewResult->model()->rowCount());
+    }
 }
 
 void RibbonCustomizeWidget::onToolButtonUpClicked()
