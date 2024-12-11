@@ -299,11 +299,13 @@ public:
 
         pushButtonNewGroup = new QPushButton(customizeWidget);
         pushButtonNewGroup->setObjectName(QStringLiteral("pushButtonNewGroup"));
+        pushButtonNewGroup->setEnabled(false);
 
         horizontalLayoutActionOptBtns->addWidget(pushButtonNewGroup);
 
         pushButtonRename = new QPushButton(customizeWidget);
         pushButtonRename->setObjectName(QStringLiteral("pushButtonRename"));
+        pushButtonRename->setEnabled(false);
 
         horizontalLayoutActionOptBtns->addWidget(pushButtonRename);
 
@@ -1319,6 +1321,7 @@ void RibbonCustomizeWidget::onTreeViewResultClicked(const QModelIndex &index)
     ui->pushButtonAdd->setEnabled(selectedAction() && (level > 0) && isItemCanCustomize(item));
     ui->pushButtonDelete->setEnabled(isItemCanCustomize(item));   // 有CustomizeRole，必有CanCustomizeRole
     ui->pushButtonRename->setEnabled(level != 2 || isItemCanCustomize(item));   // QAction 不能改名
+    ui->pushButtonNewGroup->setEnabled(level != 2);
     ui->toolButtonUp->setEnabled(item->index().row() != 0);
 
     QStandardItem *parItem = item->parent();
