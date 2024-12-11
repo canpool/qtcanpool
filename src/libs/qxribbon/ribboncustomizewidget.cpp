@@ -72,8 +72,9 @@ QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml
 {
     // 先找到"qx-ribbon-customize"
     while (!xml->atEnd()) {
+#ifdef QX_RIBBON_DEBUG
         qDebug() << "name:" << xml->name() << " qualifiedName:" << xml->qualifiedName();
-
+#endif
         if (xml->isStartElement() && (xml->name().toString() == "qx-ribbon-customize")) {
             break;
         }
@@ -1154,6 +1155,13 @@ void RibbonCustomizeWidget::onPushButtonNewGroupClicked()
     RibbonCustomizeData data = RibbonCustomizeData::makeAddGroupCustomizeData(
         ni->text(), ni->row(), pageObjName, RibbonCustomizeWidgetPrivate::makeRandomObjName("group"));
 
+    // FIXME：如果有多个page的pageObjName都为空，比如：page1、page2，当分别为page1，page2添加组后，最后apply时，由于两个
+    // pageObjName都为空，所以pageByObjectName都会返回第一个page，即page1。
+    // 也就是说操作的时候是在两个page上，但是最终只会显示在第一个page上。
+    // TODO：
+    // 方案1，为每个page设置objectName，如果objectName不唯一，也会存在显示在第一个page上
+    // 方案2，不允许操作objectName为空的page
+    // 方案3，为每个page分配一个唯一的id，使用id来代替objectName
     d->m_customizeDatas.append(data);
     ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole
     ni->setData(true, RibbonCustomizeWidget::CustomizeRole);
@@ -1180,14 +1188,20 @@ void RibbonCustomizeWidget::onPushButtonRenameClicked()
 
     if (0 == level) {
         // 改Page名
-        QString cateObjName = d->itemObjectName(item);
-        RibbonCustomizeData data = RibbonCustomizeData::makeRenamePageCustomizeData(text, cateObjName);
+        QString pageObjName = d->itemObjectName(item);
+        RibbonCustomizeData data = RibbonCustomizeData::makeRenamePageCustomizeData(text, pageObjName);
         d->m_customizeDatas.append(data);
+#if QX_RIBBON_DEBUG
+        qDebug() << QString("rename page %1 from %2 to %3").arg(pageObjName, item->text(), text);
+#endif
     } else if (1 == level) {
-        QString cateObjName = d->itemObjectName(item->parent());
+        QString pageObjName = d->itemObjectName(item->parent());
         QString groupObjName = d->itemObjectName(item);
-        RibbonCustomizeData data = RibbonCustomizeData::makeRenameGroupCustomizeData(text, cateObjName, groupObjName);
+        RibbonCustomizeData data = RibbonCustomizeData::makeRenameGroupCustomizeData(text, pageObjName, groupObjName);
         d->m_customizeDatas.append(data);
+#if QX_RIBBON_DEBUG
+        qDebug() << QString("rename group %1 from %2 to %3").arg(groupObjName, item->text(), text);
+#endif
     } else {
         // action 不允许改名
         return;
@@ -1249,22 +1263,22 @@ void RibbonCustomizeWidget::onPushButtonDeleteClicked()
         d->m_customizeDatas.append(data);
     } else if (1 == level) {
         // 删除group
-        QString catObjName = d->itemObjectName(item->parent());
+        QString pageObjName = d->itemObjectName(item->parent());
         QString groupObjName = d->itemObjectName(item);
-        RibbonCustomizeData data = RibbonCustomizeData::makeRemoveGroupCustomizeData(catObjName, groupObjName);
+        RibbonCustomizeData data = RibbonCustomizeData::makeRemoveGroupCustomizeData(pageObjName, groupObjName);
         d->m_customizeDatas.append(data);
     } else if (2 == level) {
         // 删除Action
-        QString catObjName = d->itemObjectName(item->parent()->parent());
+        QString pageObjName = d->itemObjectName(item->parent()->parent());
         QString groupObjName = d->itemObjectName(item->parent());
         QAction *act = itemToAction(item);
         QString key = d->m_actionMgr->key(act);
-        if (key.isEmpty() || catObjName.isEmpty() || groupObjName.isEmpty()) {
+        if (key.isEmpty() || pageObjName.isEmpty() || groupObjName.isEmpty()) {
             return;
         }
 
         RibbonCustomizeData data =
-            RibbonCustomizeData::makeRemoveActionCustomizeData(catObjName, groupObjName, key, d->m_actionMgr);
+            RibbonCustomizeData::makeRemoveActionCustomizeData(pageObjName, groupObjName, key, d->m_actionMgr);
         d->m_customizeDatas.append(data);
     }
     // 执行删除操作
