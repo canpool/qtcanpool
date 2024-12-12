@@ -346,6 +346,7 @@ public:
     void init();
     RibbonGalleryGroupModel *groupModel();
     void itemActivate(const QModelIndex &index, QAction::ActionEvent event);
+    int displayRowCount() const;
 public:
     QString m_groupTitle;
     RibbonGalleryGroup::GalleryGroupStyle m_preStyle;
@@ -390,6 +391,19 @@ void RibbonGalleryGroupPrivate::itemActivate(const QModelIndex &index, QAction::
             }
         }
     }
+}
+
+int RibbonGalleryGroupPrivate::displayRowCount() const
+{
+    switch (m_displayRow) {
+    case RibbonGalleryGroup::DisplayOneRow:
+        return 1;
+    case RibbonGalleryGroup::DisplayTwoRow:
+        return 2;
+    case RibbonGalleryGroup::DisplayThreeRow:
+        return 3;
+    }
+    return 1;
 }
 
 /* RibbonGalleryGroup */
@@ -446,12 +460,8 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
         return;
     }
     // 首先通过DisplayRow计算GridSize
-    int dr = static_cast<int>(displayRow());
-    if (dr < 1) {
-        dr = 1;
-    } else if (dr > 3) {
-        dr = 3;
-    }
+    Q_D(RibbonGalleryGroup);
+    int dr = d->displayRowCount();
     int h = galleryHeight / dr;
     if (h <= 1) {
         h = galleryHeight;
@@ -499,7 +509,7 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
         break;
     }
     }
-#if 0
+#ifdef QX_RIBBON_DEBUG
     qDebug() << "RibbonGalleryGroup::recalcGridSize(" << galleryHeight << "): gridSize=" << gridSize()
              << " iconSize=" << iconSize();
 #endif
@@ -641,6 +651,14 @@ int RibbonGalleryGroup::gridMaximumWidth() const
 {
     Q_D(const RibbonGalleryGroup);
     return d->m_gridMaximumWidth;
+}
+
+QSize RibbonGalleryGroup::sizeHint() const
+{
+    QSize sz = QListView::sizeHint();
+    Q_D(const RibbonGalleryGroup);
+    int dr = d->displayRowCount();
+    return QSize(sz.width(), sz.height() / dr);
 }
 
 /**

@@ -69,6 +69,8 @@ public:
     void setGridMaximumWidth(int w);
     int gridMaximumWidth() const;
 
+    QSize sizeHint() const override;
+
     QActionGroup *actionGroup() const;
 private slots:
     void onItemClicked(const QModelIndex &index);
