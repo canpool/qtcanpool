@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbongallery.h"
+#include "ribbongallery_p.h"
 #include "ribboncontrols.h"
 
 #include <QApplication>
@@ -25,6 +26,7 @@ public:
 public:
     void init();
     void setViewPort(RibbonGalleryGroup *v);
+    RibbonGalleryViewport *getPopupViewPort();
 public:
     RibbonControlButton *m_buttonUp;
     RibbonControlButton *m_buttonDown;
@@ -105,6 +107,14 @@ void RibbonGalleryPrivate::setViewPort(RibbonGalleryGroup *v)
     m_viewportGroup->show();
 }
 
+RibbonGalleryViewport *RibbonGalleryPrivate::getPopupViewPort()
+{
+    Q_Q(RibbonGallery);
+    if (Q_NULLPTR == m_popupWidget) {
+        m_popupWidget = new RibbonGalleryViewport(q);
+    }
+    return m_popupWidget;
+}
 
 //////////////////////////////////////////////
 
@@ -141,7 +151,8 @@ RibbonGalleryGroup *RibbonGallery::addGalleryGroup()
  */
 void RibbonGallery::addGalleryGroup(RibbonGalleryGroup *group)
 {
-    RibbonGalleryViewport *viewport = getPopupViewPort();
+    Q_D(RibbonGallery);
+    RibbonGalleryViewport *viewport = d->getPopupViewPort();
     viewport->addWidget(group, group->groupTitle());
     connect(group, &QAbstractItemView::clicked, this, &RibbonGallery::onItemClicked);
     connect(group, &RibbonGalleryGroup::groupTitleChanged, this, [group, viewport](const QString &t) {
@@ -251,15 +262,6 @@ void RibbonGallery::onTriggered(QAction *action)
     if (d->m_popupWidget && d->m_popupWidget->isVisible()) {
         d->m_popupWidget->hide();
     }
-}
-
-RibbonGalleryViewport *RibbonGallery::getPopupViewPort()
-{
-    Q_D(RibbonGallery);
-    if (Q_NULLPTR == d->m_popupWidget) {
-        d->m_popupWidget = new RibbonGalleryViewport(this);
-    }
-    return d->m_popupWidget;
 }
 
 void RibbonGallery::resizeEvent(QResizeEvent *event)

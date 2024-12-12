@@ -41,6 +41,7 @@ PRIVATE_HEADERS = \
     $$PWD/ribboncustomizedata.h \
     $$PWD/ribboncustomizewidget.h \
     $$PWD/ribboncustomizewidget_p.h \
+    $$PWD/ribbongallery_p.h \
     $$PWD/ribbongallerygroup_p.h \
     $$PWD/ribbongroup_p.h \
     $$PWD/ribbongrouplayout.h \

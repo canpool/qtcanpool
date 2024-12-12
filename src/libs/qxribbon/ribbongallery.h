@@ -8,15 +8,10 @@
 #include "ribbongallerygroup.h"
 
 #include <QFrame>
-#include <QSizeGrip>
-
-class QLabel;
-class QVBoxLayout;
 
 QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGalleryPrivate;
-class RibbonGalleryViewport;
 
 /**
  * @brief Gallery 控件
@@ -68,28 +63,7 @@ protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 private:
-    RibbonGalleryViewport *getPopupViewPort();
-private:
     QX_DECLARE_PRIVATE(RibbonGallery)
-};
-
-class RibbonGalleryViewportPrivate;
-/* RibbonGalleryViewport */
-class QX_RIBBON_EXPORT RibbonGalleryViewport : public QWidget
-{
-    Q_OBJECT
-public:
-    RibbonGalleryViewport(QWidget *parent);
-    ~RibbonGalleryViewport();
-public:
-    void addWidget(QWidget *w);
-    void addWidget(QWidget *w, const QString &title);
-    void removeWidget(QWidget *w);
-    QLabel *getWidgetTitleLabel(QWidget *w);
-public slots:
-    void widgetTitleChanged(QWidget *w, const QString &title);
-private:
-    QX_DECLARE_PRIVATE(RibbonGalleryViewport)
 };
 
 QX_RIBBON_END_NAMESPACE
