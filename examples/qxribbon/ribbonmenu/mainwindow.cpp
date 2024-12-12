@@ -34,6 +34,9 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addAction(tr("action3"));
     menu->addSeparator();
     menu->addAction(tr("action4"));
+    connect(tb, &QToolBar::actionTriggered, this, [menu]() {
+        menu->hide();
+    });
 
 
     page = rb->addPage(tr("loooooooooooongpage2"));
