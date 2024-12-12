@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribboncontainers.h"
+#include "ribbonmenu.h"
+
 #include <QDebug>
 #include <QBoxLayout>
 #include <QHBoxLayout>
@@ -10,6 +12,10 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QStylePainter>
+
+#include <QGridLayout>
+#include <QActionGroup>
+#include <QToolButton>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -198,6 +204,107 @@ void RibbonCtrlContainer::setOrientation(Qt::Orientation orientation)
         d->m_layout->setDirection(QBoxLayout::TopToBottom);
         d->m_labelPixmap->setAlignment(Qt::AlignLeft);
     }
+}
+
+/* RibbonGridContainerPrivate */
+class RibbonGridContainerPrivate
+{
+    QX_DECLARE_PUBLIC(RibbonGridContainer)
+public:
+    RibbonGridContainerPrivate();
+
+    void init();
+    void updateLayout();
+    void addWidget(QWidget *widget);
+
+public:
+    QGridLayout *m_gridLayout;
+    QActionGroup *m_actionGroup;
+    int m_columnCount = 5;
+};
+
+RibbonGridContainerPrivate::RibbonGridContainerPrivate()
+{}
+
+void RibbonGridContainerPrivate::init()
+{
+    Q_Q(RibbonGridContainer);
+
+    m_gridLayout = new QGridLayout(q);
+    m_gridLayout->setSpacing(0);
+    m_gridLayout->setContentsMargins(2, 1, 2, 1);
+    q->setLayout(m_gridLayout);
+
+    m_actionGroup = new QActionGroup(q);
+    QObject::connect(m_actionGroup, &QActionGroup::triggered, q, [q]() {
+        QWidget *parWidget = q->parentWidget();
+        while (parWidget) {
+            if (RibbonMenu *menu = qobject_cast<RibbonMenu*>(parWidget)) {
+                menu->hide();
+                break;
+            }
+            parWidget = parWidget->parentWidget();
+        }
+    });
+}
+
+void RibbonGridContainerPrivate::updateLayout()
+{
+
+}
+
+void RibbonGridContainerPrivate::addWidget(QWidget *widget)
+{
+    int cnt = m_gridLayout->count();
+    int row = cnt / m_columnCount;
+    int column = row ? (cnt % m_columnCount) : cnt;
+    m_gridLayout->addWidget(widget, row, column, Qt::AlignLeft);
+}
+
+/* RibbonGridContainer */
+RibbonGridContainer::RibbonGridContainer(QWidget *parent)
+    : QWidget(parent)
+{
+    QX_INIT_PRIVATE(RibbonGridContainer);
+    Q_D(RibbonGridContainer);
+    d->init();
+}
+
+RibbonGridContainer::~RibbonGridContainer()
+{
+    QX_FINI_PRIVATE();
+}
+
+QAction *RibbonGridContainer::addAction(const QIcon &icon, const QString &text)
+{
+    Q_D(RibbonGridContainer);
+    QAction *action = new QAction(icon, text, this);
+    QToolButton *btn = new QToolButton(this);
+    btn->setAutoRaise(true);
+    btn->setFocusPolicy(Qt::NoFocus);
+    btn->setDefaultAction(action);
+    d->m_actionGroup->addAction(action);
+    d->addWidget(btn);
+    return action;
+}
+
+void RibbonGridContainer::setColumnCount(int count)
+{
+    Q_D(RibbonGridContainer);
+    if (count < 3) {
+        count = 3;
+    }
+    if (d->m_columnCount == count) {
+        return;
+    }
+    d->m_columnCount = count;
+    d->updateLayout();
+}
+
+int RibbonGridContainer::columnCount() const
+{
+    Q_D(const RibbonGridContainer);
+    return d->m_columnCount;
 }
 
 QX_RIBBON_END_NAMESPACE

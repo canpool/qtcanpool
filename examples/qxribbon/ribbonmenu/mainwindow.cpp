@@ -5,6 +5,8 @@
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonbutton.h"
 #include "qxribbon/ribbonmenu.h"
+#include "qxribbon/ribboncontainers.h"
+#include "qxribbon/ribbonutils.h"
 
 #include <QAction>
 #include <QToolBar>
@@ -37,6 +39,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tb, &QToolBar::actionTriggered, this, [menu]() {
         menu->hide();
     });
+
+    btn = group->addLargeAction(new QAction(icon, tr("Lala lalala"), this));
+    btn->setPopupMode(QToolButton::InstantPopup);
+    menu = new RibbonMenu(this);
+    btn->setMenu(menu);
+    RibbonGridContainer *container = new RibbonGridContainer(this);
+    container->setColumnCount(10);
+    for (int i = 1; i <= 35; ++i) {
+        container->addAction(colorIcon(Qt::green, QSize(32, 32)), tr("action%1").arg(i));
+    }
+    menu->addAction(tr("action1"));
+    menu->addWidget(container);
+    menu->addAction(tr("action2"));
 
 
     page = rb->addPage(tr("loooooooooooongpage2"));

@@ -56,4 +56,23 @@ private:
     QX_DECLARE_PRIVATE(RibbonCtrlContainer)
 };
 
+/* RibbonGridContainer */
+class RibbonGridContainerPrivate;
+class QX_RIBBON_EXPORT RibbonGridContainer : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit RibbonGridContainer(QWidget *parent = nullptr);
+    virtual ~RibbonGridContainer();
+
+public:
+    QAction *addAction(const QIcon &icon, const QString &text);
+
+    void setColumnCount(int count);
+    int columnCount() const;
+
+private:
+    QX_DECLARE_PRIVATE(RibbonGridContainer)
+};
+
 QX_RIBBON_END_NAMESPACE
