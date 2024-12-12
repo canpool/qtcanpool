@@ -4,7 +4,6 @@
 **/
 #include "ribboncontrols.h"
 
-#include <QWidgetAction>
 #include <QPainter>
 
 QX_RIBBON_BEGIN_NAMESPACE
@@ -33,46 +32,6 @@ RibbonControlButton::RibbonControlButton(QWidget *parent) : QToolButton(parent)
 /* RibbonLineEdit */
 RibbonLineEdit::RibbonLineEdit(QWidget *parent) : QLineEdit(parent)
 {
-}
-
-/* RibbonMenu */
-RibbonMenu::RibbonMenu(QWidget *parent)
-    : RibbonMenu(QString(), parent)
-{
-}
-
-RibbonMenu::RibbonMenu(const QString &title, QWidget *parent)
-    : QMenu(title, parent)
-{
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-}
-
-QAction *RibbonMenu::addRibbonMenu(RibbonMenu *menu)
-{
-    return QMenu::addMenu(menu);
-}
-
-RibbonMenu *RibbonMenu::addRibbonMenu(const QString &title)
-{
-    RibbonMenu *menu = new RibbonMenu(title, this);
-    addAction(menu->menuAction());
-    return menu;
-}
-
-RibbonMenu *RibbonMenu::addRibbonMenu(const QIcon &icon, const QString &title)
-{
-    RibbonMenu *menu = new RibbonMenu(title, this);
-    menu->setIcon(icon);
-    addAction(menu->menuAction());
-    return menu;
-}
-
-QAction *RibbonMenu::addWidget(QWidget *w)
-{
-    QWidgetAction *action = new QWidgetAction(this);
-    action->setDefaultWidget(w);
-    addAction(action);
-    return action;
 }
 
 /* RibbonSeparator */

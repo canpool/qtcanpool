@@ -13,6 +13,7 @@ ribbongallery.h
 ribbongallerygroup.h
 ribbongroup.h
 ribbonmanager.h
+ribbonmenu.h
 ribbonpage.h
 ribbonpagecontext.h
 ribbonquickaccessbar.h

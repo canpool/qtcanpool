@@ -6,6 +6,7 @@
 #include "qxribbon/ribboncolorbutton.h"
 #include "qxribbon/ribbonbuttongroup.h"
 #include "qxribbon/ribboncontrols.h"
+#include "qxribbon/ribbonmenu.h"
 #include "qxribbon/ribboncustomizedialog.h"
 #include "qxribbon/ribbonactionsmanager.h"
 #include "qxribbon/ribbonmanager.h"

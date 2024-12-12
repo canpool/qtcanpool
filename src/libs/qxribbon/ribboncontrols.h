@@ -11,7 +11,6 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QLineEdit>
-#include <QMenu>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -53,20 +52,6 @@ class QX_RIBBON_EXPORT RibbonLineEdit : public QLineEdit
     Q_OBJECT
 public:
     explicit RibbonLineEdit(QWidget *parent = Q_NULLPTR);
-};
-
-/* RibbonMenu */
-class QX_RIBBON_EXPORT RibbonMenu : public QMenu
-{
-    Q_OBJECT
-public:
-    explicit RibbonMenu(QWidget *parent = Q_NULLPTR);
-    explicit RibbonMenu(const QString &title, QWidget *parent = Q_NULLPTR);
-
-    QAction *addRibbonMenu(RibbonMenu *menu);
-    RibbonMenu *addRibbonMenu(const QString &title);
-    RibbonMenu *addRibbonMenu(const QIcon &icon, const QString &title);
-    QAction *addWidget(QWidget *w);
 };
 
 /* RibbonSeparator */

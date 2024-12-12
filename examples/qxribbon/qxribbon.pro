@@ -8,6 +8,7 @@ SUBDIRS = \
     customizedialogmodeless \
     customizewidget \
     pagecontext \
+    ribbonmenu \
     ribbonbar \
     ribbonbuttongroup \
     ribbongallery \

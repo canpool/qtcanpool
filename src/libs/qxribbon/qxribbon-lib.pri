@@ -22,6 +22,7 @@ PUBLIC_HEADERS = \
     $$PWD/ribbongallerygroup.h \
     $$PWD/ribbongroup.h \
     $$PWD/ribbonmanager.h \
+    $$PWD/ribbonmenu.h \
     $$PWD/ribbonpage.h \
     $$PWD/ribbonpagecontext.h \
     $$PWD/ribbonquickaccessbar.h \
@@ -72,6 +73,7 @@ SOURCES += \
     $$PWD/ribbongroup.cpp \
     $$PWD/ribbongrouplayout.cpp \
     $$PWD/ribbonmanager.cpp \
+    $$PWD/ribbonmenu.cpp \
     $$PWD/ribbonpage.cpp \
     $$PWD/ribbonpagecontext.cpp \
     $$PWD/ribbonquickaccessbar.cpp \
