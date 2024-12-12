@@ -53,6 +53,17 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addWidget(container);
     menu->addAction(tr("action2"));
 
+    container = new RibbonGridContainer(this);
+    container->setColumnCount(10);
+    for (int i = 1; i <= 28; ++i) {
+        RibbonButton *btn = new RibbonButton(this);
+        btn->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        btn->setIcon(icon);
+        btn->setText(tr("button%1").arg(i));
+        container->addButton(btn);
+    }
+    menu->addWidget(container);
+    menu->addAction(tr("action3"));
 
     page = rb->addPage(tr("loooooooooooongpage2"));
 

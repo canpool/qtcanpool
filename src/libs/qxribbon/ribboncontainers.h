@@ -7,6 +7,8 @@
 #include "qxribbon_global.h"
 #include <QWidget>
 
+class QAbstractButton;
+
 QX_RIBBON_BEGIN_NAMESPACE
 
 /**
@@ -67,6 +69,7 @@ public:
 
 public:
     QAction *addAction(const QIcon &icon, const QString &text);
+    void addButton(QAbstractButton *button);
 
     void setColumnCount(int count);
     int columnCount() const;

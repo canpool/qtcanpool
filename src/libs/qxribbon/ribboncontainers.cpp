@@ -14,7 +14,7 @@
 #include <QStylePainter>
 
 #include <QGridLayout>
-#include <QActionGroup>
+#include <QButtonGroup>
 #include <QToolButton>
 
 QX_RIBBON_BEGIN_NAMESPACE
@@ -219,7 +219,7 @@ public:
 
 public:
     QGridLayout *m_gridLayout;
-    QActionGroup *m_actionGroup;
+    QButtonGroup *m_buttonGroup;
     int m_columnCount = 5;
 };
 
@@ -235,8 +235,15 @@ void RibbonGridContainerPrivate::init()
     m_gridLayout->setContentsMargins(2, 1, 2, 1);
     q->setLayout(m_gridLayout);
 
-    m_actionGroup = new QActionGroup(q);
-    QObject::connect(m_actionGroup, &QActionGroup::triggered, q, [q]() {
+    m_buttonGroup = new QButtonGroup(q);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    QObject::connect(m_buttonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
+#else
+    QObject::connect(m_buttonGroup,
+                     static_cast<void (QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
+#endif
+            q, [q](QAbstractButton *) {
         QWidget *parWidget = q->parentWidget();
         while (parWidget) {
             if (RibbonMenu *menu = qobject_cast<RibbonMenu*>(parWidget)) {
@@ -283,9 +290,16 @@ QAction *RibbonGridContainer::addAction(const QIcon &icon, const QString &text)
     btn->setAutoRaise(true);
     btn->setFocusPolicy(Qt::NoFocus);
     btn->setDefaultAction(action);
-    d->m_actionGroup->addAction(action);
+    d->m_buttonGroup->addButton(btn);
     d->addWidget(btn);
     return action;
+}
+
+void RibbonGridContainer::addButton(QAbstractButton *button)
+{
+    Q_D(RibbonGridContainer);
+    d->m_buttonGroup->addButton(button);
+    d->addWidget(button);
 }
 
 void RibbonGridContainer::setColumnCount(int count)
