@@ -286,6 +286,17 @@ void MainWindow::createPageHome()
     });
 
     cb = new QCheckBox();
+    cb->setObjectName(QStringLiteral("center tab bar"));
+    cb->setText(tr("center tab bar"));
+    cb->setWindowTitle(cb->text());
+    cb->setChecked(false);
+    groupStyle->addSmallWidget(cb);
+    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
+        this->ribbonBar()->setTabBarPosition(checked ? RibbonBar::TBCenterPosition
+                                                     : RibbonBar::TBLeftPosition);
+    });
+
+    cb = new QCheckBox();
     cb->setObjectName(QStringLiteral("show group title"));
     cb->setText(tr("show group title"));
     cb->setWindowTitle(cb->text());

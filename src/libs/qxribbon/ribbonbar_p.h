@@ -143,6 +143,7 @@ public:
     QWidget *m_windowButtonGroup;
     RibbonQuickAccessBarContainer *m_quickAccessBar;
     RibbonBar::QuickAccessBarPosition m_quickAccessBarPosition;
+    RibbonBar::TabBarPosition m_tabBarPosition;
     RibbonBar::RibbonStyle m_ribbonStyle;
     RibbonBar::RibbonStyle m_lastShowStyle;
     QList<QColor> m_pageContextColorList;

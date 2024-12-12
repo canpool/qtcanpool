@@ -119,6 +119,12 @@ public:
         QABRightPosition
     };
     Q_ENUM(QuickAccessBarPosition)
+
+    enum TabBarPosition {
+        TBLeftPosition,
+        TBCenterPosition
+    };
+    Q_ENUM(TabBarPosition)
 public:
     RibbonBar(QWidget *parent = Q_NULLPTR);
     ~RibbonBar() Q_DECL_OVERRIDE;
@@ -182,6 +188,9 @@ public:
     RibbonQuickAccessBar *quickAccessBar() const;
     void setQuickAccessBarPosition(QuickAccessBarPosition position);
     QuickAccessBarPosition quickAccessBarPosition() const;
+
+    void setTabBarPosition(TabBarPosition position);
+    TabBarPosition tabBarPosition() const;
 
     RibbonStyle currentRibbonStyle() const;
     void setRibbonStyle(RibbonStyle v);

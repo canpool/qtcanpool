@@ -136,6 +136,7 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_bottomRightButtonGroup(Q_NULLPTR)
     , m_windowButtonGroup(Q_NULLPTR)
     , m_quickAccessBarPosition(RibbonBar::QABRightPosition)
+    , m_tabBarPosition(RibbonBar::TBLeftPosition)
     , m_ribbonStyle(RibbonBar::OfficeStyle)
     , m_lastShowStyle(RibbonBar::OfficeStyle)
     , m_pageContextColorListIndex(-1)
@@ -645,8 +646,20 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         endX -= wSize.width();
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
-    int tabBarWidth = endX - x;
-    m_tabBar->setGeometry(x, y, tabBarWidth, tabH);
+    int allowedTabBarWidth = endX - x;
+    if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
+        m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
+    } else { // RibbonBar::TBCenterPosition
+        int minTabBarWidth = calcMinTabBarWidth();
+        if (minTabBarWidth < allowedTabBarWidth) {
+            // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
+            // |~~ xOffset ~~|~~~~ mintabBarWidth ~~~~|~~ xOffset ~~|
+            int xOffset = (allowedTabBarWidth - minTabBarWidth) / 2;
+            m_tabBar->setGeometry(x + xOffset, y, minTabBarWidth, tabH);
+        } else {
+            m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
+        }
+    }
 
     resizeStackedWidget();
 }
@@ -738,16 +751,27 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), tabH);
         x = m_topLeftButtonGroup->geometry().right() + 2;
     }
-    int tabBarWidth = endX - x;
+    int allowedTabBarWidth = endX - x;
     // 20200831
     // tabBarWidth的宽度原来为endX - x;，现需要根据实际进行调整
     // 为了把tabbar没有tab的部分不占用，这里的宽度需要根据tab的size来进行设置，让tabbar的长度刚刚好，这样能让出
     // mainwindow的空间，接受鼠标事件，从而实现拖动等操作，否则tabbar占用整个顶栏，鼠标无法点击到mainwindow
-    int mintabBarWidth = calcMinTabBarWidth();
-    if (mintabBarWidth < tabBarWidth) {
-        tabBarWidth = mintabBarWidth;
+    int minTabBarWidth = calcMinTabBarWidth();
+    if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
+        if (minTabBarWidth < allowedTabBarWidth) {
+            allowedTabBarWidth = minTabBarWidth;
+        }
+        m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
+    } else { // RibbonBar::TBCenterPosition
+        if (minTabBarWidth < allowedTabBarWidth) {
+            // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
+            // |~~ xOffset ~~|~~~~ mintabBarWidth ~~~~|~~ xOffset ~~|
+            int xOffset = (allowedTabBarWidth - minTabBarWidth) / 2;
+            m_tabBar->setGeometry(x + xOffset, y, minTabBarWidth, tabH);
+        } else {
+            m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
+        }
     }
-    m_tabBar->setGeometry(x, y, tabBarWidth, tabH);
 
     resizeStackedWidget();
 }
@@ -1555,6 +1579,22 @@ RibbonBar::QuickAccessBarPosition RibbonBar::quickAccessBarPosition() const
 {
     Q_D(const RibbonBar);
     return d->m_quickAccessBarPosition;
+}
+
+void RibbonBar::setTabBarPosition(RibbonBar::TabBarPosition position)
+{
+    Q_D(RibbonBar);
+    if (d->m_tabBarPosition == position) {
+        return;
+    }
+    d->m_tabBarPosition = position;
+    resizeRibbon();
+}
+
+RibbonBar::TabBarPosition RibbonBar::tabBarPosition() const
+{
+    Q_D(const RibbonBar);
+    return d->m_tabBarPosition;
 }
 
 RibbonBar::RibbonStyle RibbonBar::currentRibbonStyle() const
