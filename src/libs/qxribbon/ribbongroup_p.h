@@ -52,4 +52,21 @@ public:
     bool m_isCanCustomize;                                ///< 记录是否可自定义
 };
 
+/* RibbonSeparator */
+class RibbonSeparator : public QWidget
+{
+    Q_OBJECT
+public:
+    RibbonSeparator(int height, QWidget *parent = Q_NULLPTR);
+    RibbonSeparator(QWidget *parent = Q_NULLPTR);
+
+    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+    void setTopBottomMargins(int top, int bottom);
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+private:
+    int m_topMargin;
+    int m_bottomMargin;
+};
+
 QX_RIBBON_END_NAMESPACE

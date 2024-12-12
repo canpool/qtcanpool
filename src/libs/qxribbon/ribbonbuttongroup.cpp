@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbonbuttongroup.h"
-#include "ribboncontrols.h"
+#include "ribbongroup_p.h"
 #include "ribbonbutton.h"
 
 #include <QActionEvent>

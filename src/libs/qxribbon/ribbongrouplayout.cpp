@@ -4,7 +4,7 @@
 **/
 #include "ribbongrouplayout.h"
 #include "ribbongroup.h"
-#include "ribboncontrols.h"
+#include "ribbongroup_p.h"
 #include "ribbonmanager.h"
 
 #include <QQueue>

@@ -4,7 +4,7 @@
  **/
 #include "ribbonpage.h"
 #include "ribbonpage_p.h"
-#include "ribboncontrols.h"
+#include "ribbongroup_p.h"
 
 #include <QApplication>
 #include <QDebug>
