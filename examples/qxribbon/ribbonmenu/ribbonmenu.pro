@@ -6,7 +6,9 @@ TARGET = Example_Ribbon_Menu
 INCLUDEPATH += $$PWD
 
 HEADERS += \
-    $$PWD/mainwindow.h
+    $$PWD/mainwindow.h \
+    $$PWD/colorbutton.h
 
 SOURCES += \
-    $$PWD/mainwindow.cpp
+    $$PWD/mainwindow.cpp \
+    $$PWD/colorbutton.cpp
