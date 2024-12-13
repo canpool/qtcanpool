@@ -9,6 +9,11 @@ namespace QxRibbon {
 
 QIcon colorIcon(const QColor &color, const QSize &size)
 {
+    return QIcon(colorPixmap(color, size));
+}
+
+QPixmap colorPixmap(const QColor &color, const QSize &size)
+{
     QPixmap res(size);
     res.fill(Qt::transparent);
     QPainter painter(&res);
@@ -25,7 +30,7 @@ QIcon colorIcon(const QColor &color, const QSize &size)
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.drawLine(QPoint(1, size.height()), QPoint(size.width() - 1, 1));
     }
-    return QIcon(res);
+    return res;
 }
 
 } // namespace QxRibbon

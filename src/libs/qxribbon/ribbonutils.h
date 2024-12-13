@@ -11,5 +11,6 @@ namespace QxRibbon {
 
 /* color */
 QX_RIBBON_EXPORT QIcon colorIcon(const QColor &color, const QSize &size);
+QX_RIBBON_EXPORT QPixmap colorPixmap(const QColor &color, const QSize &size);
 
 } // namespace QxRibbon
