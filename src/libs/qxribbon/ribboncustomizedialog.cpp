@@ -121,6 +121,7 @@ void RibbonCustomizeDialog::fromXml(const QString &xmlpath)
 
 void RibbonCustomizeDialog::showEvent(QShowEvent *e)
 {
+    Q_UNUSED(e);
     bool isModal = this->isModal();
     ui->pushButtonCancel->setVisible(isModal);
     ui->pushButtonOk->setVisible(isModal);
