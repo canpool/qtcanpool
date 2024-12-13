@@ -575,7 +575,7 @@ void RibbonCustomizeData::setCanCustomize(QObject *obj, bool canbe)
  * 此函数会执行如下操作：
  * 1、针对同一个元素出现添加和删除操作的进行移除（先添加，后删除）
  * 2、针对VisiblePageActionType，对于多次出现的操作只保留最后一步
- * 3、针对RenamePageActionType和RenameGroupActionType操作，只保留最后一个
+ * 3、针对RenamePageActionType和RenameGroupActionType操作，先只保留最后一个，然后直接修改
  * 4、针对连续的ChangePageOrderActionType，ChangeGroupOrderActionType，ChangeActionOrderActionType进行合并为一个动作，
  * 如果合并后原地不动，则删除
  *
@@ -663,6 +663,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
 
     //! 针对RenamePageActionType和RenameGroupActionType操作，只需保留最后一个
     size = res.size();
+    QList<int> willRenameIndexs;
     for (int i = 0; i < size; ++i) {
         if (res[i].actionType() == RenamePageActionType) {
             // 向后查询，如果查询到有同一个Page改名，把这个索引加入删除队列
@@ -674,6 +675,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
                     last = j;
                 }
             }
+            willRenameIndexs << last;
         } else if (res[i].actionType() == RenameGroupActionType) {
             // 向后查询，如果查询到有同一个group改名，把这个索引加入删除队列
             int last = i;
@@ -685,10 +687,33 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
                     last = j;
                 }
             }
+            willRenameIndexs << last;
         }
     }
     res = remove_indexs(res, willRemoveIndexs);
     willRemoveIndexs.clear();
+
+    //! 对于RenamePageActionType和RenameGroupActionType操作，直接修改，不留到apply时
+    foreach (int i, willRenameIndexs) {
+        if (res[i].actionType() == RenamePageActionType) {
+            for (int j = 0; j < i; ++j) {
+                if (res[j].pageObjNameValue == res[i].pageObjNameValue) {
+                    res[j].keyValue = res[i].keyValue;
+                    break;
+                }
+            }
+        } else if (res[i].actionType() == RenameGroupActionType) {
+            for (int j = 0; j < i; ++j) {
+                if ((res[j].groupObjNameValue == res[i].groupObjNameValue) &&
+                    (res[j].pageObjNameValue == res[i].pageObjNameValue)) {
+                    res[j].keyValue = res[i].keyValue;
+                    break;
+                }
+            }
+        }
+    }
+    res = remove_indexs(res, willRenameIndexs);
+    willRenameIndexs.clear();
 
     //! 针对连续的ChangePageOrderActionType，ChangeGroupOrderActionType，ChangeActionOrderActionType进行合并
     size = res.size();
