@@ -38,7 +38,7 @@ void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
         loadTheme(":/qxribbon/res/wpsdark.css", widget);
         break;
     case NormalTheme:
-        loadTheme(":/qxribbon/res/default.css", widget);
+        loadTheme(":/qxribbon/res/normal.css", widget);
         break;
     default:
         break;

@@ -24,7 +24,7 @@
         <file>res/lighter/titlebar_normal.svg</file>
         <file>res/lighter/titlebar_shade.svg</file>
         <file>res/lighter/titlebar_unshade.svg</file>
-        <file>res/default.css</file>
+        <file>res/normal.css</file>
         <file>res/office2013.css</file>
         <file>res/wpsdark.css</file>
     </qresource>
