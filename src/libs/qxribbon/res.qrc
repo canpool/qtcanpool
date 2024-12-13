@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/image">
+    <qresource prefix="/qxribbon">
         <file>res/group_option.png</file>
         <file>res/arrow_down.png</file>
         <file>res/arrow_more.png</file>
@@ -24,8 +24,6 @@
         <file>res/lighter/titlebar_normal.svg</file>
         <file>res/lighter/titlebar_shade.svg</file>
         <file>res/lighter/titlebar_unshade.svg</file>
-    </qresource>
-    <qresource prefix="/theme">
         <file>res/default.css</file>
         <file>res/office2013.css</file>
         <file>res/wpsdark.css</file>
