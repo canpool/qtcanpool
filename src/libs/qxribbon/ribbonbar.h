@@ -178,11 +178,6 @@ public:
     int titleBarHeight() const;
 
     RibbonButtonGroup *cornerButtonGroup(Qt::Corner corner = Qt::BottomRightCorner);
-#if QX_RIBBON_DEPRECATED_SINCE(0, 9)
-    QT_DEPRECATED_X("Use cornerButtonGroup")
-    RibbonButtonGroup *rightButtonGroup();
-    void activeRightButtonGroup();
-#endif
 
     RibbonQuickAccessBar *quickAccessBar() const;
     void setQuickAccessBarPosition(QuickAccessBarPosition position);

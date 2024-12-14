@@ -1549,18 +1549,6 @@ RibbonButtonGroup *RibbonBar::cornerButtonGroup(Qt::Corner corner)
     return buttonGroup;
 }
 
-#if QX_RIBBON_DEPRECATED_SINCE(0, 9)
-RibbonButtonGroup *RibbonBar::rightButtonGroup()
-{
-    return cornerButtonGroup(Qt::BottomRightCorner);
-}
-
-void RibbonBar::activeRightButtonGroup()
-{
-    rightButtonGroup();
-}
-#endif
-
 RibbonQuickAccessBar *RibbonBar::quickAccessBar() const
 {
     Q_D(const RibbonBar);
