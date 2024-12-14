@@ -46,6 +46,7 @@ public:
 
     inline QObject *systemButton(WindowAgentBase::SystemButton button) const;
     bool setSystemButton(WindowAgentBase::SystemButton button, QObject *obj);
+    void removeSystemButton(WindowAgentBase::SystemButton button);
 
     inline QObject *titleBar() const;
     bool setTitleBar(QObject *obj);

@@ -103,6 +103,11 @@ bool WindowContext::setSystemButton(WindowAgentBase::SystemButton button, QObjec
     return true;
 }
 
+void WindowContext::removeSystemButton(WindowAgentBase::SystemButton button)
+{
+    m_systemButtons[button] = nullptr;
+}
+
 bool WindowContext::setTitleBar(QObject *item)
 {
     Q_ASSERT(item);

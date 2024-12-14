@@ -114,6 +114,12 @@ void WindowAgentWidget::setSystemButton(SystemButton button, QWidget *w)
     Q_EMIT systemButtonChanged(button, w);
 }
 
+void WindowAgentWidget::removeSystemButton(SystemButton button)
+{
+    Q_D(WindowAgentWidget);
+    d->context->removeSystemButton(button);
+}
+
 /*!
     Returns \a true if the widget can receive mouse events on title bar.
 */

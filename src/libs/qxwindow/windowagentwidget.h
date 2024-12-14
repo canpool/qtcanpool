@@ -28,6 +28,7 @@ public:
 
     QWidget *systemButton(SystemButton button) const;
     void setSystemButton(SystemButton button, QWidget *w);
+    void removeSystemButton(SystemButton button);
 
 #ifdef Q_OS_MAC
     // The system button area APIs are experimental, very likely to change in the future.
