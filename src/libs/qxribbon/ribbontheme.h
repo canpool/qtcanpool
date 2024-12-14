@@ -16,9 +16,9 @@ class QX_RIBBON_EXPORT RibbonTheme : public QObject
     Q_OBJECT
 public:
     enum ThemeStyle {
-        NormalTheme,
-        Office2013Theme,
-        WpsdarkTheme,
+        LightYellowTheme,
+        LightOffice2013Theme,
+        DarkWpsTheme,
         CustomTheme,
     };
     Q_ENUM(ThemeStyle)

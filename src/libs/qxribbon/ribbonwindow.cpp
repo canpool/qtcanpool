@@ -34,7 +34,7 @@ RibbonWindowPrivate::RibbonWindowPrivate()
     : m_ribbonBar(Q_NULLPTR)
     , m_windowButtonGroup(Q_NULLPTR)
     , m_framelessHelper(Q_NULLPTR)
-    , m_theme(RibbonTheme::Office2013Theme)
+    , m_theme(RibbonTheme::LightOffice2013Theme)
     , m_useRibbon(true)
     , m_frameless(true)
 {

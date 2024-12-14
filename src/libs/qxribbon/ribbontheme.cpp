@@ -31,14 +31,14 @@ void RibbonTheme::loadTheme(const QString &themeFile, QWidget *widget)
 void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
 {
     switch (themeStyle) {
-    case Office2013Theme:
-        loadTheme(":/qxribbon/res/office2013.css", widget);
+    case LightOffice2013Theme:
+        loadTheme(":/qxribbon/res/stylesheets/light_office2013.css", widget);
         break;
-    case WpsdarkTheme:
-        loadTheme(":/qxribbon/res/wpsdark.css", widget);
+    case DarkWpsTheme:
+        loadTheme(":/qxribbon/res/stylesheets/dark_wps.css", widget);
         break;
-    case NormalTheme:
-        loadTheme(":/qxribbon/res/normal.css", widget);
+    case LightYellowTheme:
+        loadTheme(":/qxribbon/res/stylesheets/light_yellow.css", widget);
         break;
     default:
         break;

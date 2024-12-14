@@ -32,7 +32,7 @@ RibbonAppWindowPrivate::RibbonAppWindowPrivate()
     : m_ribbonBar(Q_NULLPTR)
     , m_windowButtonGroup(Q_NULLPTR)
     , m_windowAgent(Q_NULLPTR)
-    , m_theme(RibbonTheme::Office2013Theme)
+    , m_theme(RibbonTheme::LightOffice2013Theme)
 {
 }
 
