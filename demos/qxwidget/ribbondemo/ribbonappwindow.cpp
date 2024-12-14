@@ -134,11 +134,22 @@ int RibbonAppWindow::ribbonTheme() const
 void RibbonAppWindow::updateWindowFlags(Qt::WindowFlags flags)
 {
     Q_D(RibbonAppWindow);
+    if (!(flags & Qt::WindowMaximizeButtonHint)) {
+        if (isMaximized() || isFullScreen()) {
+            showNormal();
+        }
+    }
     setWindowFlags(flags);
     // Note: This function setWindowFlags calls setParent() when changing the flags for a window,
     // causing the widget to be hidden. You must call show() to make the widget visible again..
     show();
     if (d->m_windowButtonGroup) {
+        if (flags & Qt::WindowMaximizeButtonHint) {
+            d->m_windowAgent->setSystemButton(WindowAgentBase::Maximize,
+                                              d->m_windowButtonGroup->widgetForMaximizeButton());
+        } else {
+            d->m_windowAgent->removeSystemButton(WindowAgentBase::Maximize);
+        }
         d->m_windowButtonGroup->updateWindowFlags(flags);
         // FIXME: In the WpsLiteStyle style, there is a short time overlap between rightButtonGroup and
         // windowButtonGroup. Because the button group will be displayed first, and then resize the ribbon.
