@@ -18,6 +18,7 @@ public:
     enum ThemeStyle {
         LightYellowTheme,
         LightOffice2013Theme,
+        LightClassicTheme,
         DarkWpsTheme,
         CustomTheme,
     };

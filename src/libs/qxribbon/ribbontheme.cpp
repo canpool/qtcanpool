@@ -34,6 +34,9 @@ void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
     case LightOffice2013Theme:
         loadTheme(":/qxribbon/res/stylesheets/light_office2013.css", widget);
         break;
+    case LightClassicTheme:
+        loadTheme(":/qxribbon/res/stylesheets/light_classic.css", widget);
+        break;
     case DarkWpsTheme:
         loadTheme(":/qxribbon/res/stylesheets/dark_wps.css", widget);
         break;
