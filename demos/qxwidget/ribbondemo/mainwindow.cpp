@@ -203,11 +203,6 @@ void MainWindow::createPageHome()
     });
     actShowMinimumButton->trigger();
 
-    QAction *actWordWrapIn2row = createAction(tr("word wrap in 2row"), ":/icon/res/wordwrap.svg");
-    actWordWrapIn2row->setCheckable(true);
-    groupStyle->addSmallAction(actWordWrapIn2row);
-    connect(actWordWrapIn2row, &QAction::triggered, this, &MainWindow::onActionwordWrapIn2rowTriggered);
-
     QAction *actRemoveAppBtn = createAction(tr("remove application"), ":/icon/res/remove-app-btn.svg");
     actRemoveAppBtn->setCheckable(true);
     groupStyle->addSmallAction(actRemoveAppBtn);
@@ -1260,14 +1255,6 @@ void MainWindow::onActionFontSmallerTriggered()
     ribbonBar()->setFont(f);
     update();
     qDebug() << "set font:" << f;
-}
-
-void MainWindow::onActionwordWrapIn2rowTriggered(bool b)
-{
-    // 设置是否允许2行模式下文字换行，换行的话图标会较小
-    RibbonButton::setLiteStyleEnableWordWrap(b);
-    // 更新ribbon尺寸，目的是更新内部元素，让RibbonButton可以重新绘制
-    ribbonBar()->updateRibbonGeometry();
 }
 
 /**

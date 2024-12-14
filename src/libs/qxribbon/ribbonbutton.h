@@ -47,8 +47,6 @@ public:
 public:
     static void setToolButtonTextShift(bool on);
     static bool isToolButtonTextShift();
-    static void setLiteStyleEnableWordWrap(bool on);
-    static bool isLiteStyleEnableWordWrap();
 protected:
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
     virtual void changeEvent(QEvent *e) Q_DECL_OVERRIDE;

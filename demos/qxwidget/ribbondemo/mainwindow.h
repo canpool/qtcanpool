@@ -84,7 +84,6 @@ private slots:
     void onFontComWidgetCurrentFontChanged(const QFont &f);
     void onActionFontLargerTriggered();
     void onActionFontSmallerTriggered();
-    void onActionwordWrapIn2rowTriggered(bool b);
     void onButtonGroupActionTriggered(QAction *act);
     void onApplicationButtonClicked();
 private:

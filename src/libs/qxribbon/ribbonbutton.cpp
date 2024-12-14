@@ -61,7 +61,6 @@ QDebug operator<<(QDebug debug, const QStyleOptionToolButton &opt)
 #endif
 
 bool RibbonButtonPrivate::s_isToolButtonTextShift = false;
-bool RibbonButtonPrivate::s_liteStyleEnableWordWrap = false;
 
 RibbonButtonPrivate::RibbonButtonPrivate()
     : m_buttonType(RibbonButton::LargeButton)
@@ -106,8 +105,7 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
             // 对于建立在RibbonGroup的基础上的大按钮，把高度设置为RibbonGroup计算的大按钮高度
             s.setHeight(group->largeHeight());
         }
-        if (RibbonButton::Normal == m_largeButtonType ||
-                (RibbonButton::Lite == m_largeButtonType && s_liteStyleEnableWordWrap)) {
+        if (RibbonButton::Normal == m_largeButtonType) {
             // 普通模式下才涉及到文字换行，或者lite模式下指定了文字换行
             if (s.width() > s.height() * QX_WIDTH_HEIGHT_RATIO) {
                 // 说明是一个长方形按钮
@@ -167,10 +165,6 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
                     }
                 }
             }
-            // FIXME：当设置 Lite 可换行时，width 加 1，保证可以触发 resizeEvent，根因尚不明
-            if (RibbonButton::Lite == m_largeButtonType && s_liteStyleEnableWordWrap) {
-                s.rwidth() += 1;
-            }
         } else {
             // 否则就是lite模式，只允许1行，有菜单就偏移
             if (s.width() > s.height() * 2) {
@@ -183,8 +177,7 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
                 s.rwidth() += QX_INDICATOR_ARROW_WIDTH;
             }
         }
-        if (RibbonButton::Normal == m_largeButtonType ||
-                (RibbonButton::Lite == m_largeButtonType && !s_liteStyleEnableWordWrap)) {
+        if (RibbonButton::Normal == m_largeButtonType) {
             if (s.width() < s.height()) {
                 // 短文本的图标相对于长文本的图标可能会比较小，此处根据高度扩展短文本的按钮宽度
                 int textHeight = q->fontMetrics().lineSpacing();
@@ -263,7 +256,7 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
                 HELP_DRAW_RECT(p, textRect);
 #endif
-                if (RibbonButton::Lite == m_largeButtonType && !s_liteStyleEnableWordWrap) {
+                if (RibbonButton::Lite == m_largeButtonType) {
                     alignment |= Qt::AlignCenter;
                 } else {
                     alignment |= Qt::AlignHCenter | Qt::AlignTop;   // 文字是顶部对齐
@@ -271,7 +264,7 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
 
                 QString text = opt.text;
                 // 再绘制文本，对于Normal模式下的Largebutton，如果有菜单，且m_isWordWrap是true，箭头将在文本旁边
-                if (RibbonButton::Lite == m_largeButtonType && !s_liteStyleEnableWordWrap) {
+                if (RibbonButton::Lite == m_largeButtonType) {
                     // lite 模式，文字不换行, 显示的内容需要进行省略处理
                     text.remove('\n');
                     text = w->fontMetrics().elidedText(text, Qt::ElideRight, textRect.width(), Qt::TextShowMnemonic);
@@ -397,8 +390,7 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
             // icon 的区域就是文字以外的区域，如果m_isEnableWordWrap=true，就保证有两行文本的空间
             QFontMetrics fm = q->fontMetrics();
             int maxheight = 30;
-            if (RibbonButton::Normal == m_largeButtonType ||
-                    (RibbonButton::Lite == m_largeButtonType && s_liteStyleEnableWordWrap)) {
+            if (RibbonButton::Normal == m_largeButtonType) {
                 maxheight = opt.rect.height() - (fm.lineSpacing() * 2)   // 减去2行文本
                             - 2 * m_iconAndTextSpace                     // 减去赏析边距
                             - m_iconAndTextSpace; // 这里减去m_iconAndTextSpace，m_iconAndTextSpace是icon和text的分隔距离
@@ -421,7 +413,7 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
                 // 有菜单且换行,宽度偏移ARROW_WIDTH
                 if (m_isWordWrap) {
                     m_textRect.adjust(0, 0, -QX_INDICATOR_ARROW_WIDTH, 0);
-                } else if (RibbonButton::Lite == m_largeButtonType && !s_liteStyleEnableWordWrap) {
+                } else if (RibbonButton::Lite == m_largeButtonType) {
                     // 在lite模式下，不允许换行的时候，也需要偏移下三角
                     m_textRect.adjust(0, 0, -QX_INDICATOR_ARROW_WIDTH, 0);
                 }
@@ -505,7 +497,7 @@ QRect RibbonButtonPrivate::calcIndicatorArrowDownRect(const QStyleOptionToolButt
     if (RibbonButton::LargeButton == m_buttonType) {
         // Lite不换行和换行两种情况下，箭头的大小通过rect的宽度控制（见calcIconAndTextRect中的m_textRect），
         // 否则通过rect的高度控制（见下文的QX_INDICATOR_ARROW_WIDTH）
-        if ((RibbonButton::Lite == m_largeButtonType && !s_liteStyleEnableWordWrap)) {
+        if ((RibbonButton::Lite == m_largeButtonType)) {
             // 首先判断是否为lite且不允许换行
             // yh + QX_INDICATOR_ARROW_WIDTH + yh = m_textRect.height()
             // yh = (m_textRect.height() - QX_INDICATOR_ARROW_WIDTH) / 2
@@ -868,20 +860,6 @@ void RibbonButton::setToolButtonTextShift(bool on)
 bool RibbonButton::isToolButtonTextShift()
 {
     return RibbonButtonPrivate::s_isToolButtonTextShift;
-}
-
-/**
- * @brief 设置在lite模式下是否允许文字换行，如果允许，则图标相对比较小，默认不允许
- * @param on
- */
-void RibbonButton::setLiteStyleEnableWordWrap(bool on)
-{
-    RibbonButtonPrivate::s_liteStyleEnableWordWrap = on;
-}
-
-bool RibbonButton::isLiteStyleEnableWordWrap()
-{
-    return RibbonButtonPrivate::s_liteStyleEnableWordWrap;
 }
 
 bool RibbonButton::event(QEvent *e)

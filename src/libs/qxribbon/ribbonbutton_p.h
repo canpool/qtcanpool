@@ -50,9 +50,7 @@ public:
     QRect m_textRect;           ///< 记录text的绘制位置
     QRect m_indicatorArrowRect;   ///< 记录IndicatorArrow的绘制位置
 
-    static bool s_isToolButtonTextShift;   ///< 配置RibbonButton文字在点击时是否会轻微改变位置而达到一种类似跳动的效果,
-                                           ///< @default 默认为false
-    static bool s_liteStyleEnableWordWrap; ///< 在lite模式下是否允许文字换行，如果允许，则图标相对比较小，默认不允许
+    static bool s_isToolButtonTextShift;   ///< 配置RibbonButton文字在点击时是否会轻微改变位置而达到一种类似跳动的效果
 };
 
 QX_RIBBON_END_NAMESPACE
