@@ -19,6 +19,7 @@ public:
         LightYellowTheme,
         LightOffice2013Theme,
         LightClassicTheme,
+        LightFancyTheme,
         DarkWpsTheme,
         CustomTheme,
     };

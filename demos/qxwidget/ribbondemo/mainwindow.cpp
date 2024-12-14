@@ -971,6 +971,7 @@ void MainWindow::createRightButtonGroup()
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightYellow")), RibbonTheme::LightYellowTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightOffice2013")), RibbonTheme::LightOffice2013Theme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightClassic")), RibbonTheme::LightClassicTheme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFancy")), RibbonTheme::LightFancyTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkWps")), RibbonTheme::DarkWpsTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2016Blue")), MainWindow::Office2016BlueTheme));
     rightBar->addAction(actionTheme);
