@@ -130,6 +130,7 @@ public slots:
 public:
     QAbstractButton *m_applicationButton;
     RibbonTabBar *m_tabBar;
+    QWidget *m_tabBarBaseLine;
     RibbonStackedWidget *m_stack;
     QList<PageContextManagerData> m_currentShowingPageContextList;
     QList<RibbonPageContext *> m_pageContextList;
@@ -148,7 +149,6 @@ public:
     RibbonBar::RibbonStyle m_lastShowStyle;
     QList<QColor> m_pageContextColorList;
     int m_pageContextColorListIndex;
-    QColor m_tabBarBaseLineColor;
     Qt::Alignment m_titleAligment;
     bool m_minimized;
     bool m_titleVisible;

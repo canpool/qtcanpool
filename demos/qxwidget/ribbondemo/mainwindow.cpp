@@ -1227,11 +1227,9 @@ void MainWindow::onActionChangeThemeTriggered()
         // 暗色系
         if (theme == RibbonTheme::WpsdarkTheme || theme == MainWindow::Office2016BlueTheme) {
             ribbonBar()->setPageContextCoverTab(false);
-            ribbonBar()->setTabBarBaseLineColor(QColor("#456DA4")); // from qss file
         } else {
             // 亮色系
             ribbonBar()->setPageContextCoverTab(true);
-            ribbonBar()->setTabBarBaseLineColor(QColor(186, 201, 219));
         }
         setRibbonTheme(theme);
     }

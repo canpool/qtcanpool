@@ -140,7 +140,6 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_ribbonStyle(RibbonBar::OfficeStyle)
     , m_lastShowStyle(RibbonBar::OfficeStyle)
     , m_pageContextColorListIndex(-1)
-    , m_tabBarBaseLineColor(QColor(186, 201, 219))
     , m_titleAligment(Qt::AlignCenter)
     , m_minimized(true)
     , m_titleVisible(true)
@@ -170,6 +169,11 @@ void RibbonBarPrivate::init()
     connect(m_tabBar, &QTabBar::tabBarClicked, this, &RibbonBarPrivate::onCurrentRibbonTabClicked);
     connect(m_tabBar, &QTabBar::tabBarDoubleClicked, this, &RibbonBarPrivate::onCurrentRibbonTabDoubleClicked);
     connect(m_tabBar, &QTabBar::tabMoved, this, &RibbonBarPrivate::onTabMoved);
+
+    m_tabBarBaseLine = new QWidget(q);
+    m_tabBarBaseLine->setObjectName(QStringLiteral("qx_RibbonTabBarBaseLine"));
+    m_tabBarBaseLine->setFixedHeight(tabBarBaseLineHeight);
+    m_tabBarBaseLine->setVisible(false);
 
     m_stack = new RibbonStackedWidget(q);
     m_tabBar->setObjectName(QStringLiteral("qx_RibbonStackedWidget"));
@@ -504,7 +508,7 @@ void RibbonBarPrivate::paintBackground(QPainter &painter)
     Q_Q(RibbonBar);
     // 在tabbar下绘制一条线
     painter.save();
-    QPen pen(m_tabBarBaseLineColor);
+    QPen pen(m_tabBarBaseLine->palette().window().color());
     pen.setWidth(tabBarBaseLineHeight);
     pen.setStyle(Qt::SolidLine);
     painter.setPen(pen);
@@ -1692,18 +1696,6 @@ void RibbonBar::resizeRibbon()
     // WPS模式下，无边框和有边框之间切换后,
     // m_applicationButton.isVisible()突然返回false，导致d->resizeRibbon()中计算尺寸异常
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
-}
-
-QColor RibbonBar::tabBarBaseLineColor() const
-{
-    Q_D(const RibbonBar);
-    return d->m_tabBarBaseLineColor;
-}
-
-void RibbonBar::setTabBarBaseLineColor(const QColor &clr)
-{
-    Q_D(RibbonBar);
-    d->m_tabBarBaseLineColor = clr;
 }
 
 Qt::Alignment RibbonBar::windowTitleAligment() const

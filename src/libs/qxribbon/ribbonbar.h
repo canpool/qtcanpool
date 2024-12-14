@@ -102,7 +102,6 @@ class QX_RIBBON_EXPORT RibbonBar : public QMenuBar
     Q_PROPERTY(QuickAccessBarPosition quickAccessBarPosition READ quickAccessBarPosition WRITE setQuickAccessBarPosition)
     Q_PROPERTY(bool minimized READ isMinimized WRITE setMinimized)
     Q_PROPERTY(bool minimumButton READ haveShowMinimumButton WRITE showMinimumButton)
-    Q_PROPERTY(QColor tabBarBaseLineColor READ tabBarBaseLineColor WRITE setTabBarBaseLineColor)
     Q_PROPERTY(Qt::Alignment windowTitleAligment READ windowTitleAligment WRITE setWindowTitleAligment)
 public:
     enum RibbonStyle {
@@ -206,9 +205,6 @@ public:
     void updateRibbonGeometry();
     void updateRibbonTheme();
     void resizeRibbon();
-
-    QColor tabBarBaseLineColor() const;
-    void setTabBarBaseLineColor(const QColor &clr);
 
     Qt::Alignment windowTitleAligment() const;
     void setWindowTitleAligment(Qt::Alignment al);

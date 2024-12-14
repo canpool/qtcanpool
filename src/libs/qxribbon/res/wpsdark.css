@@ -567,6 +567,10 @@ QxRibbon--RibbonTabBar::tab:!selected {
   margin-top: 0px;
 }
 
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: #456DA4;
+}
+
 /*RibbonStackedWidget*/
 
 QxRibbon--RibbonStackedWidget {
