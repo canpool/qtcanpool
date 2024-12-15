@@ -1,3 +1,24 @@
+0.9.0
+---
+Feature
+- Add RibbonGridContainer class as widget of RibbonMenu
+- Support for setting TabBar position in RibbonBar
+
+Inerface
+- RibbonButton: remove setLiteStyleEnableWordWrap,isLiteStyleEnableWordWrap
+- RibbonBar: remove rightButtonGroup,activeRightButtonGroup
+- RibbonBar: remove tabBarBaseLineColor,setTabBarBaseLineColor
+- RibbonBar: remove ribbonTabBar
+- RibbonGallery: remove getPopupViewPort
+- RibbonPageContext: remove id,setId
+- RibbonMenu: split from ribboncontrols file, make it independent
+- Privatize RibbonGalleryViewport,RibbonTabBar
+- Perfect customize widgets
+- qss: rename prefix and ThemeStyles
+
+Optimize
+- Optimize RibbonStyleOption
+
 0.8.2
 ---
 Feature
