@@ -371,11 +371,11 @@ static inline bool isWindowFrameBorderColorized()
     if (!registry.isValid()) {
         return false;
     }
-    auto value = registry.dwordValue(L"ColorPrevalence");
-    if (!value.second) {
+    QString value = registry.stringValue(L"ColorPrevalence");
+    if (value == "0") {
         return false;
     }
-    return value.first;
+    return true;
 }
 
 static inline bool isHighContrastModeEnabled()
