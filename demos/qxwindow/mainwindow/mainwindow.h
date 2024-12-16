@@ -5,7 +5,7 @@
 #include <QtWidgets/QMainWindow>
 
 QX_WINDOW_BEGIN_NAMESPACE
-class WidgetWindowAgent;
+class WindowAgentWidget;
 class WindowStyleAgent;
 QX_WINDOW_END_NAMESPACE
 
@@ -33,7 +33,7 @@ private:
 
     Theme currentTheme{};
 
-    QX_WINDOW_PREPEND_NAMESPACE(WidgetWindowAgent) *windowAgent;
+    QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *windowAgent;
 };
 
 #endif // MAINWINDOW_H

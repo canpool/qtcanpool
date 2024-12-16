@@ -77,7 +77,6 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
         $$PWD/widgetitemdelegate_p.h \
         $$PWD/windowagentwidget.h \
         $$PWD/windowagentwidget_p.h \
-        $$PWD/widgetwindowagent.h \
 
     SOURCES += \
         $$PWD/widgetitemdelegate.cpp \

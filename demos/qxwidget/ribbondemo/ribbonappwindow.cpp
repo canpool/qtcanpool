@@ -5,7 +5,7 @@
 #include "ribbonappwindow.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/windowbuttongroup.h"
-#include "qxwindow/widgetwindowagent.h"
+#include "qxwindow/windowagentwidget.h"
 
 #include <QApplication>
 #include <QFile>
@@ -24,7 +24,7 @@ public:
 public:
     RibbonBar *m_ribbonBar;
     WindowButtonGroup *m_windowButtonGroup;
-    WidgetWindowAgent *m_windowAgent;
+    WindowAgentWidget *m_windowAgent;
     int m_theme;
 };
 
@@ -48,7 +48,7 @@ void RibbonAppWindowPrivate::setMenuWidget(QWidget *menuBar)
         m_ribbonBar = Q_NULLPTR;
     }
     if (Q_NULLPTR == m_windowAgent) {
-        m_windowAgent = new WidgetWindowAgent(q);
+        m_windowAgent = new WindowAgentWidget(q);
         m_windowAgent->setup(q);
         m_windowAgent->setTitleBar(bar);
         m_windowAgent->addCaptionClassName("QxRibbon::RibbonBar");

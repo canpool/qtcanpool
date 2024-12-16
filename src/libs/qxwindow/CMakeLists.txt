@@ -59,7 +59,6 @@ if (QX_WINDOW_CONFIG_WIDGET_AGENT)
   extend_qtc_library(qxwindow
     SOURCES
       windowagentwidget.cpp windowagentwidget.h windowagentwidget_p.h
-      widgetwindowagent.h
       widgetitemdelegate.cpp widgetitemdelegate_p.h
   )
 

@@ -14,7 +14,7 @@
 #include <QtWidgets/QActionGroup>
 #endif
 
-#include <qxwindow/widgetwindowagent.h>
+#include <qxwindow/windowagentwidget.h>
 #include <widgetframe/windowbar.h>
 #include <widgetframe/windowbutton.h>
 
@@ -117,7 +117,7 @@ bool MainWindow::event(QEvent *event)
 void MainWindow::installWindowAgent()
 {
     // 1. Setup window agent
-    windowAgent = new QxWindow::WidgetWindowAgent(this);
+    windowAgent = new QxWindow::WindowAgentWidget(this);
     windowAgent->setup(this);
 
     // 2. Construct your title bar
