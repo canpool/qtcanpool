@@ -89,7 +89,8 @@ MainWindow::MainWindow(QWidget *par)
 
     qDebug() << RibbonElementStyleOpt;
 
-#ifdef Q_OS_LINUX
+    // When tested on windows11 and qt6.8.1, FramelessHelper does not work well
+#if defined(Q_OS_LINUX) || (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
     QRadioButton *r = findChild<QRadioButton *>("use wps style");
     if (r) {
         r->click();

@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QStyle>
+#include <QStyleFactory>
 
 // 重定向qdebug的打印
 void log_out_put(QtMsgType type, const QMessageLogContext &context, const QString &msg);
@@ -53,6 +55,16 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+#endif
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+#ifdef Q_OS_WINDOWS
+    // When tested on Windows11 and Qt6.8.1, the default style is windows11,
+    // and the qss of ribbon does not work well, so for compatibility, set the style to windowsvista
+    QApplication::setStyle("windowsvista");
+    qDebug() << "Current style: " << QApplication::style()->objectName();
+    qDebug() << "Supported styles: " << QStyleFactory::keys();
 #endif
 #endif
 
