@@ -17,8 +17,6 @@
 #include "qxribbon/ribbonquickaccessbar.h"
 #include "qxribbon/ribbonutils.h"
 
-#include "qcanpool/menubutton.h"
-
 #include <QAbstractButton>
 #include <QAction>
 #include <QApplication>
@@ -51,7 +49,6 @@
 #include "editablecontainer.h"
 
 QX_RIBBON_USE_NAMESPACE
-QCANPOOL_USE_NAMESPACE
 
 #define COST_START()                                                                                                   \
     QElapsedTimer __TMP_COST;                                                                                          \
@@ -999,7 +996,10 @@ void MainWindow::createApplicationButton()
 {
 #if QXRIBBON_TEST_CUSTOMIZE_APPBTN
     // FIXME: 当前按钮在单击后会出现下沉效果
-    MenuButton *appBtn = new MenuButton(this);
+    QToolButton *appBtn = new QToolButton(this);
+    appBtn->setAutoRaise(true);
+    appBtn->setFocusPolicy(Qt::NoFocus);
+    appBtn->setPopupMode(QToolButton::InstantPopup);
     appBtn->setText(tr("&File"));
     appBtn->setToolButtonStyle(Qt::ToolButtonTextOnly);
     appBtn->setMinimumWidth(40);

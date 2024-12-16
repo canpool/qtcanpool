@@ -1,4 +1,4 @@
-QTC_LIB_DEPENDS += qxribbon qcanpool
+QTC_LIB_DEPENDS += qxribbon
 
 greaterThan(QT_MAJOR_VERSION, 5) {
 win32 {
