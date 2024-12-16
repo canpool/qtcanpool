@@ -44,7 +44,9 @@ void tst_RibbonCustomizeDialog::actionsManager()
     QXmlStreamWriter xml(&str);
     xml.setAutoFormatting(true);
     xml.setAutoFormattingIndent(2);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)   // QXmlStreamWriter always encodes XML in UTF-8.
     xml.setCodec("utf-8");
+#endif
     xml.writeStartDocument();
     bool isOk = dlg.toXml(&xml);
     xml.writeEndDocument();
@@ -70,7 +72,9 @@ void tst_RibbonCustomizeDialog::page()
     QXmlStreamWriter xml(&str);
     xml.setAutoFormatting(true);
     xml.setAutoFormattingIndent(2);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)   // QXmlStreamWriter always encodes XML in UTF-8.
     xml.setCodec("utf-8");
+#endif
     xml.writeStartDocument();
     bool isOk = dlg.toXml(&xml);
     xml.writeEndDocument();
