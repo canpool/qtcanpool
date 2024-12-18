@@ -6,6 +6,7 @@
 
 #include "qxdock_global.h"
 #include <QObject>
+#include <memory>
 
 class QSettings;
 
