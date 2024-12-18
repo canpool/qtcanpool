@@ -74,6 +74,10 @@ public:
     void setColumnCount(int count);
     int columnCount() const;
 
+protected:
+    virtual void enterEvent(QEvent *event);
+    virtual void leaveEvent(QEvent *event);
+
 private:
     QX_DECLARE_PRIVATE(RibbonGridContainer)
 };

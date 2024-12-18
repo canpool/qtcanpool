@@ -7,7 +7,6 @@
 #include "qxribbon/ribbonmenu.h"
 #include "qxribbon/ribboncontainers.h"
 #include "qxribbon/ribboncolorbutton.h"
-#include "qxribbon/ribbonutils.h"
 
 #include <QAction>
 #include <QToolBar>
@@ -106,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
     menu->addAction(tr("action1"));
     menu->addWidget(container);
+    menu->addSeparator();
     QAction *moreAct = menu->addAction(tr("More Colors..."));
     connect(moreAct, &QAction::triggered, this, [rcb]() {
         QColorDialog dlg;
