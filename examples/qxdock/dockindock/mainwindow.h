@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "qxdock/qxdock_global.h"
+#include <memory>
 
 QX_DOCK_BEGIN_NAMESPACE
 class DockGroup;

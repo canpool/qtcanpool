@@ -6,6 +6,7 @@
 
 #include "qxdock_global.h"
 #include <QFrame>
+#include <functional>
 
 class QToolBar;
 class QXmlStreamWriter;
