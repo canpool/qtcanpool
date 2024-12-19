@@ -979,6 +979,16 @@ void MainWindow::createRightButtonGroup()
     topLeftBar->addWidget(le);
 
     RibbonButtonGroup *bottomLeftBar = ribbonBar()->cornerButtonGroup(Qt::BottomLeftCorner);
+    QMenu *m1 = new QMenu(tr("menu"), this);
+    m1->addAction(tr("action1"));
+    m1->addAction(tr("action2"));
+    QMenu *m2 = m1->addMenu(tr("submenu"));
+    m2->addAction(tr("action1"));
+    m2->addAction(tr("action2"));
+    bottomLeftBar->addMenu(m1);
+
+    bottomLeftBar->addSeparator();
+
     le = new QLineEdit(this);
     le->setMinimumWidth(150);
     le->setClearButtonEnabled(true);
