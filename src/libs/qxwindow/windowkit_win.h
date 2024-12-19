@@ -130,7 +130,7 @@ inline bool IsWindows10Only_Real()
 // Registry Helpers
 //
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-class QWK_CORE_EXPORT WindowsRegistryKey
+class WindowsRegistryKey
 {
 public:
     WindowsRegistryKey(HKEY parentHandle, QStringView subKey, REGSAM permissions = KEY_READ, REGSAM access = 0);

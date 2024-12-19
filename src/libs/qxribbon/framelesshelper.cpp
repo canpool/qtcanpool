@@ -161,7 +161,11 @@ FramelessWidgetDataNativeWin::~FramelessWidgetDataNativeWin()
 
 qreal FramelessWidgetDataNativeWin::devicePixelRatio()
 {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+    return m_pWidget->windowHandle()->screen()->devicePixelRatio();
+#else
     return m_pWidget->screen()->devicePixelRatio();
+#endif
 }
 
 bool FramelessWidgetDataNativeWin::handleNativeWindowsMessage(MSG *msg, QTRESULT *result)

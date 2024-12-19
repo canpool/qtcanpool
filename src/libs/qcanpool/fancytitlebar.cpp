@@ -27,6 +27,10 @@
 #include <QScreen>
 #endif
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+#include <QWindow>
+#endif
+
 #ifdef QTC_USE_NATIVE
 // Reference documents
 // Microsoft: https://docs.microsoft.com/en-us/windows/apps/design/basics/titlebar-design
@@ -146,7 +150,12 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         int borderWidth = 5;
         long x = GET_X_LPARAM(msg->lParam);
         long y = GET_Y_LPARAM(msg->lParam);
-        QPoint pos = m_mainWidget->mapFromGlobal(QPoint(x, y) / m_mainWidget->screen()->devicePixelRatio());
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+        qreal dpr = m_mainWidget->windowHandle()->screen()->devicePixelRatio();
+#else
+        qreal dpr = m_mainWidget->screen()->devicePixelRatio();
+#endif
+        QPoint pos = m_mainWidget->mapFromGlobal(QPoint(x, y) / dpr);
         int w = m_mainWidget->width();
         int h = m_mainWidget->height();
 

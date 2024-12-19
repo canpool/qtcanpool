@@ -33,7 +33,7 @@ if (QX_WINDOW_CONFIG_NATIVE)
       windowkit_win.cpp windowkit_win.h windowkit_win_p.h
       windowcontext_win.cpp
     DEPENDS
-      user32 shell32 gdi32
+      user32 shell32 gdi32 advapi32
     DEFINES QX_WINDOW_NATIVE
   )
 

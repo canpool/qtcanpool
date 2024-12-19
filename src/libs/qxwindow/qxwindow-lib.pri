@@ -51,7 +51,7 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
             $$PWD/windowkit_win.cpp \
             $$PWD/windowcontext_win.cpp \
 
-        LIBS += -lUser32 -lShell32 -lGdi32
+        LIBS += -lUser32 -lShell32 -lGdi32 -lAdvapi32
     }
     linux* {
         HEADERS += \
