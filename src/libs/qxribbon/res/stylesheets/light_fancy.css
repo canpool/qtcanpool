@@ -56,7 +56,8 @@ QxRibbon--RibbonTabBar::tab {
   background: transparent;
   margin-left: 2px;
   padding: 4px;
-  padding-bottom: 3px;
+  padding-top: 3px;
+  padding-bottom: 4px;
 }
 
 QxRibbon--RibbonTabBar::tab:selected,

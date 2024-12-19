@@ -543,6 +543,8 @@ QxRibbon--RibbonTabBar::tab {
   background: transparent;
   margin-left: 2px;
   padding: 4px;
+  padding-top: 3px;
+  padding-bottom: 5px;
 }
 
 QxRibbon--RibbonTabBar::tab:selected, QxRibbon--RibbonTabBar::tab:hover {
