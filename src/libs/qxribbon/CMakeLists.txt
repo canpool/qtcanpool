@@ -5,7 +5,7 @@ add_qtc_library(qxribbon
   SOURCES
     framelesshelper.cpp framelesshelper.h
     res.qrc
-    ribbonactionsmanager.cpp ribbonactionsmanager.h
+    ribbonactionsmanager.cpp ribbonactionsmanager.h ribbonactionsmanager_p.h
     ribbonapplicationbutton.cpp ribbonapplicationbutton.h
     ribbonbar.cpp ribbonbar.h ribbonbar_p.h
     ribbonbutton.cpp ribbonbutton.h ribbonbutton_p.h
@@ -15,7 +15,7 @@ add_qtc_library(qxribbon
     ribboncontrols.cpp ribboncontrols.h
     ribboncustomizedata.cpp ribboncustomizedata.h
     ribboncustomizedialog.cpp ribboncustomizedialog.h
-    ribboncustomizewidget.cpp ribboncustomizewidget.h
+    ribboncustomizewidget.cpp ribboncustomizewidget.h ribboncustomizewidget_p.h
     ribbonfactory.cpp ribbonfactory.h
     ribbongallery.cpp ribbongallery.h
     ribbongallerygroup.cpp ribbongallerygroup.h ribbongallerygroup_p.h
