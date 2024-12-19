@@ -2,10 +2,10 @@
 
 - [说明](#说明)
 - [许可](#许可)
-  - [MulanPSL-2.0](#mulanpsl-20)
-  - [LGPL-2.1](#lgpl-21)
-  - [MIT](#mit)
-  - [Apache-2.0](#apache-20)
+    - [MulanPSL-2.0](#mulanpsl-20)
+    - [MulanPSL-2.0 + LGPL-2.1](#mulanpsl-20--lgpl-21)
+    - [MIT](#mit)
+    - [Apache-2.0](#apache-20)
 
 <!-- /TOC -->
 
@@ -22,9 +22,9 @@ qtcanpool 集成了一些第三方组件，这些组件具有自己的许可协�
 - src/libs/qcanpool
 - projects/template
 
-### LGPL-2.1
+### MulanPSL-2.0 + LGPL-2.1
 
-- src/libs/qads
+- src/libs/qxdock
 
 ### MIT
 
