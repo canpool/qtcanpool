@@ -142,7 +142,8 @@ inline ScreenRectCallback WindowContext::systemButtonAreaCallback() const
 
 QX_WINDOW_END_NAMESPACE
 
-#if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_NATIVE)
+// _MSC_VER: 1929 - use 5.15.2/msvc2019_64/bin/qmake to build qxwindow failure on vs2022
+#if ((_MSC_VER == 1929) || defined(Q_OS_WINDOWS)) && defined(QX_WINDOW_NATIVE)
 
 #include "windowkit_win.h"
 
