@@ -171,7 +171,7 @@ int RibbonPagePrivate::totalSizeHintWidth() const
         total += (m.left() + m.right());
     }
 
-    for (RibbonPageItem item : qAsConst(m_itemList)) {
+    for (const RibbonPageItem &item : qAsConst(m_itemList)) {
         if (item.isEmpty()) {
             continue;
         }
