@@ -1,10 +1,24 @@
+0.9.1
+---
+Interface
+- RibbonBar: add clearPages
+- RibbonPage: add clearGroups
+- RibbonGroup: using QWidget::addAction
+
+Optimize
+- qss: adjust tab text alignment
+- RibbonGridContainer: handle enter event to deactive menu action
+
+Bugfix
+- native: win: fix build failure on qt5.12.12
+
 0.9.0
 ---
 Feature
 - Add RibbonGridContainer class as widget of RibbonMenu
 - Support for setting TabBar position in RibbonBar
 
-Inerface
+Interface
 - RibbonButton: remove setLiteStyleEnableWordWrap,isLiteStyleEnableWordWrap
 - RibbonBar: remove rightButtonGroup,activeRightButtonGroup
 - RibbonBar: remove tabBarBaseLineColor,setTabBarBaseLineColor
