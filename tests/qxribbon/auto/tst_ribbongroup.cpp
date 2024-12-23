@@ -305,6 +305,34 @@ void tst_RibbonGroup::action()
         QCOMPARE(grp.actionIndex(a1), 0);
         QCOMPARE(grp.actionIndex(a6), 5);
     }
+
+    // QWidget::addAction
+    {
+        RibbonGroup grp;
+
+        QCOMPARE(grp.ribbonButtonCount(), 0);
+
+        QAction *a1 = new QAction(tr("action1"));
+        grp.addAction(a1); // equal to addLargeAction
+        QCOMPARE(grp.ribbonButtonCount(), 1);
+        RibbonButton *btn1 = grp.ribbonButtonForAction(a1);
+        QCOMPARE(grp.ribbonButtonByIndex(0), btn1);
+        QCOMPARE(btn1->buttonType(), RibbonButton::LargeButton);
+
+        QAction *a2 = new QAction(tr("action2"));
+        grp.addAction(a2);
+        QCOMPARE(grp.ribbonButtonCount(), 2);
+        RibbonButton *btn2 = grp.ribbonButtonForAction(a2);
+        QCOMPARE(grp.ribbonButtonByIndex(1), btn2);
+
+        QAction *a3 = new QAction(tr("action3"));
+        grp.addAction(a3);
+        QCOMPARE(grp.ribbonButtonCount(), 3);
+        QCOMPARE(grp.ribbonButtonByIndex(2), grp.ribbonButtonForAction(a3));
+
+        QCOMPARE(grp.ribbonButtonByIndex(-1), nullptr);
+        QCOMPARE(grp.ribbonButtonByIndex(10), nullptr);
+    }
 }
 
 void tst_RibbonGroup::menu()

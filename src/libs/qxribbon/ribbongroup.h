@@ -44,6 +44,9 @@ public:
         Small,  ///< 小占比，占RibbonGroup的一行，Medium在不满足条件时也会变为Small，但不会变为Large
     };
 public:
+    // make the addAction of QWidget visible in the subclass
+    using QWidget::addAction;
+public:
     explicit RibbonGroup(QWidget *parent = Q_NULLPTR);
     explicit RibbonGroup(const QString &name, QWidget *parent = Q_NULLPTR);
     ~RibbonGroup() Q_DECL_OVERRIDE;
@@ -83,6 +86,8 @@ public:
 
     QAction *addSeparator(int top = 6, int bottom = 6);
 
+    int ribbonButtonCount() const;
+    RibbonButton *ribbonButtonByIndex(int index) const;
     RibbonButton *ribbonButtonForAction(QAction *action) const;
     QList<RibbonButton *> ribbonButtons() const;
 

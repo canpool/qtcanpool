@@ -441,6 +441,20 @@ QAction *RibbonGroup::addSeparator(int top, int bottom)
     return action;
 }
 
+int RibbonGroup::ribbonButtonCount() const
+{
+    return ribbonButtons().count();
+}
+
+RibbonButton *RibbonGroup::ribbonButtonByIndex(int index) const
+{
+    int cnt = ribbonButtonCount();
+    if (index < 0 || index >= cnt) {
+        return nullptr;
+    }
+    return ribbonButtons().at(index);
+}
+
 /**
  * @brief 从group中把action对应的button提取出来，如果action没有对应的button，就返回Q_NULLPTR
  * @param action
