@@ -660,6 +660,15 @@ bool RibbonPage::removeGroup(int index)
     return removeGroup(grp);
 }
 
+void RibbonPage::clearGroups()
+{
+    for (RibbonGroup *group : groupList()) {
+        if (group->parent() == this) {
+            removeGroup(group);
+        }
+    }
+}
+
 QList<RibbonGroup *> RibbonPage::groupList() const
 {
     Q_D(const RibbonPage);

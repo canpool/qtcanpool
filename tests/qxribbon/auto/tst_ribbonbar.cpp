@@ -15,6 +15,7 @@ private slots:
     void applicationButton();
     void page();
     void pageContext();
+    void clear();
     void style();
 };
 
@@ -185,6 +186,33 @@ void tst_RibbonBar::pageContext()
     page4 = nullptr;
     page5 = nullptr;
     pc2 = nullptr;
+}
+
+void tst_RibbonBar::clear()
+{
+    RibbonBar rb;
+
+    RibbonPage *page1 = rb.addPage(tr("page1"));
+    RibbonPage *page2 = rb.insertPage(0, tr("page2"));
+    RibbonPage *page3 = new RibbonPage(tr("page3"));
+    rb.addPage(page3);
+    RibbonPage *page4 = new RibbonPage(tr("page4"));
+    rb.insertPage(1, page4);
+
+    rb.clearPages();
+
+    // QCOMPARE(page1->pageName(), tr("page1"));
+    // QCOMPARE(page2->pageName(), tr("page2"));
+    // QCOMPARE(page3->pageName(), tr("page3"));
+    // QCOMPARE(page4->pageName(), tr("page4"));
+
+    Q_UNUSED(page1);
+    Q_UNUSED(page2);
+
+    page1 = nullptr;
+    page2 = nullptr;
+    page3 = nullptr;
+    page4 = nullptr;
 }
 
 void tst_RibbonBar::style()

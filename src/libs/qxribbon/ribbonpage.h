@@ -60,6 +60,7 @@ public:
 
     bool removeGroup(RibbonGroup *group);
     bool removeGroup(int index);
+    void clearGroups();
 
     int groupCount() const;
     QList<RibbonGroup *> groupList() const;

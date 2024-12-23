@@ -13,6 +13,7 @@ class tst_RibbonPage : public QObject
 private slots:
     void page();
     void group();
+    void clear();
 };
 
 void tst_RibbonPage::page()
@@ -130,6 +131,41 @@ void tst_RibbonPage::group()
 
     QCOMPARE(false, page->removeGroup(-1));
     QCOMPARE(false, page->removeGroup(10));
+}
+
+void tst_RibbonPage::clear()
+{
+    RibbonBar rb;
+
+    RibbonPage *p1 = rb.addPage(tr("page1"));
+    RibbonGroup *g1 = p1->addGroup(tr("group1"));
+    RibbonGroup *g2 = p1->addGroup(tr("group2"));
+
+    RibbonPage *p2 = rb.addPage(tr("page2"));
+    RibbonGroup *g3 = new RibbonGroup(tr("group3"), p2);
+    p2->addGroup(g3);
+    RibbonGroup *g4 = new RibbonGroup(p2);
+    p2->addGroup(g4);
+
+    p2->clearGroups();
+
+    QCOMPARE(g3->groupName(), tr("group3")); // g3 deleteLater
+    QCOMPARE(g4->groupName(), QString());
+
+    rb.clearPages();
+
+    // QCOMPARE(g1->groupName(), tr("group1")); // g1 is deleted when p1 is deleted
+    // QCOMPARE(g3->groupName(), tr("group3")); // g3 is deleted when p2 is deleted
+
+    Q_UNUSED(g1);
+    Q_UNUSED(g2);
+
+    p1 = nullptr;
+    g1 = nullptr;
+    g2 = nullptr;
+    p2 = nullptr;
+    g3 = nullptr;
+    g4 = nullptr;
 }
 
 TEST_ADD(tst_RibbonPage)

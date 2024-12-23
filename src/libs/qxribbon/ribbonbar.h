@@ -147,6 +147,7 @@ public:
     void raisePage(RibbonPage *page);
 
     void removePage(RibbonPage *page);
+    void clearPages();
     void movePage(int from, int to);
 
     int pageIndex(RibbonPage *page) const;

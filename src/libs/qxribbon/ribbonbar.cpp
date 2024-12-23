@@ -1270,6 +1270,14 @@ void RibbonBar::removePage(RibbonPage *page)
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
+void RibbonBar::clearPages()
+{
+    for (RibbonPage *page : pages(false)) {
+        removePage(page);
+        delete page;
+    }
+}
+
 void RibbonBar::movePage(int from, int to)
 {
     Q_D(RibbonBar);
