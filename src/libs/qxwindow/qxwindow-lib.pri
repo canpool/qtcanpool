@@ -22,9 +22,11 @@ equals(QX_WINDOW_CONFIG_ENABLE_STYLE_AGENT, 1) {
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-HEADERS += \
+PUBLIC_HEADERS = \
     $$PWD/qxwindow_global.h \
-    $$PWD/windowagentbase.h \
+    $$PWD/windowagentbase.h
+
+PRIVATE_HEADERS = \
     $$PWD/windowagentbase_p.h \
     $$PWD/windowcontext_p.h \
     $$PWD/windowevent_p.h \
@@ -43,55 +45,52 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
     QT +=  core-private gui-private
 
     win32 {
-        HEADERS += \
+        PRIVATE_HEADERS += \
             $$PWD/windowkit_win.h \
-            $$PWD/windowkit_win_p.h \
+            $$PWD/windowkit_win_p.h
 
         SOURCES += \
             $$PWD/windowkit_win.cpp \
-            $$PWD/windowcontext_win.cpp \
+            $$PWD/windowcontext_win.cpp
 
         LIBS += -lUser32 -lShell32 -lGdi32 -lAdvapi32
     }
     linux* {
-        HEADERS += \
-            $$PWD/windowkit_linux.h \
+        PRIVATE_HEADERS += \
+            $$PWD/windowkit_linux.h
 
         SOURCES += \
-            $$PWD/windowcontext_qt.cpp \
-
+            $$PWD/windowcontext_qt.cpp
     }
     macx {
         SOURCES += \
-            $$PWD/windowcontext_cocoa.mm \
-
+            $$PWD/windowcontext_cocoa.mm
     }
 } else {
     SOURCES += \
-        $$PWD/windowcontext_qt.cpp \
-
+        $$PWD/windowcontext_qt.cpp
 }
 
 !equals(QX_WINDOW_CONFIG_WIDGET_DISABLE, 1) {
-    HEADERS += \
+    PUBLIC_HEADERS += \
+        $$PWD/windowagentwidget.h
+
+    PRIVATE_HEADERS += \
         $$PWD/widgetitemdelegate_p.h \
-        $$PWD/windowagentwidget.h \
-        $$PWD/windowagentwidget_p.h \
+        $$PWD/windowagentwidget_p.h
 
     SOURCES += \
         $$PWD/widgetitemdelegate.cpp \
-        $$PWD/windowagentwidget.cpp \
+        $$PWD/windowagentwidget.cpp
 
     equals(QX_WINDOW_CONFIG_NATIVE, 1) {
         win32 {
             SOURCES += \
-                $$PWD/windowagentwidget_win.cpp \
-
+                $$PWD/windowagentwidget_win.cpp
         }
         macx {
             SOURCES += \
-                $$PWD/windowagentwidget_mac.cpp \
-
+                $$PWD/windowagentwidget_mac.cpp
         }
     }
 }
@@ -99,3 +98,7 @@ equals(QX_WINDOW_CONFIG_NATIVE, 1) {
 equals(QX_WINDOW_CONFIG_ENABLE_STYLE_AGENT, 1) {
     include($$PWD/style/style.pri)
 }
+
+HEADERS += \
+    $$PUBLIC_HEADERS \
+    $$PRIVATE_HEADERS
