@@ -46,6 +46,12 @@ QX_WINDOW_EXPORT Q_DECLARE_LOGGING_CATEGORY(qWindowKitLog)
 
 QX_WINDOW_BEGIN_NAMESPACE
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+using QT_NATIVE_EVENT_RESULT_TYPE = qintptr;
+#else
+using QT_NATIVE_EVENT_RESULT_TYPE = long;
+#endif
+
 namespace Private {
 
 class ObjectHelper : public QObject

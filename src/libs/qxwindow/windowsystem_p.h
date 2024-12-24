@@ -22,9 +22,6 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-// Anonymous namespace
-namespace {
-
 class WindowMoveManipulator : public QObject
 {
 public:
@@ -126,8 +123,6 @@ private:
     QRect initialWindowRect;
     Qt::Edges resizeEdges;
 };
-
-}
 
 // QWindow::startSystemMove() and QWindow::startSystemResize() is first supported at Qt 5.15
 // QWindow::startSystemResize() returns false on macOS

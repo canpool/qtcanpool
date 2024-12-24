@@ -15,6 +15,7 @@
 //
 
 #include "qxwindow_global.h"
+#include "windowkit_p.h"
 
 QX_WINDOW_BEGIN_NAMESPACE
 

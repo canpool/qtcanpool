@@ -105,20 +105,12 @@
 #define QX_WINDOW_DEPRECATED_SINCE(major, minor) 0
 #endif
 
-#include <QtCore/QEvent>
-#include <QtGui/QtEvents>
+#include <QRect>
 #include <functional>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-using QT_NATIVE_EVENT_RESULT_TYPE = qintptr;
-using QT_ENTER_EVENT_TYPE = QEnterEvent;
-#else
-using QT_NATIVE_EVENT_RESULT_TYPE = long;
-using QT_ENTER_EVENT_TYPE = QEvent;
-#endif
 
 QX_WINDOW_BEGIN_NAMESPACE
 
+// QRect func_ptr(const QSize &size)
 using ScreenRectCallback = std::function<QRect(const QSize &)>;
 
 QX_WINDOW_END_NAMESPACE

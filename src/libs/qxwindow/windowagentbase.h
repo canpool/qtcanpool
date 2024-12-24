@@ -7,7 +7,6 @@
 
 #include "qxwindow_global.h"
 #include <QtCore/QObject>
-#include <memory>
 
 QX_WINDOW_BEGIN_NAMESPACE
 

@@ -220,6 +220,8 @@ inline bool isImmersiveColorSetChange(WPARAM wParam, LPARAM lParam)
 QX_WINDOW_END_NAMESPACE
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QMargins>
+// for QVariant::fromValue(QMargins(...))
 Q_DECLARE_METATYPE(QMargins)
 #endif
 

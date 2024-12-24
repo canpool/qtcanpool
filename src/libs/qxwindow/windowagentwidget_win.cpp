@@ -4,6 +4,7 @@
 **/
 #include "windowagentwidget_p.h"
 #include "windowkit_p.h"
+#include "windowkit_win.h"
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 #include <QtGui/QPainter>
