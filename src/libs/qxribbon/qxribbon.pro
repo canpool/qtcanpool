@@ -5,3 +5,7 @@ include(qxribbon-lib.pri)
 qxribbon.files = $$PUBLIC_HEADERS
 qxribbon.path = $$IDE_INC_PATH/qxribbon
 INSTALLS += qxribbon
+
+CONFIG(release, debug|release) {
+    COPIES += qxribbon
+}

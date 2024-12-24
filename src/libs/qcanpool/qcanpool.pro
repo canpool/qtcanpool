@@ -5,3 +5,7 @@ include(qcanpool-lib.pri)
 qcanpool.files = $$PUBLIC_HEADERS
 qcanpool.path = $$IDE_INC_PATH/qcanpool
 INSTALLS += qcanpool
+
+CONFIG(release, debug|release) {
+    COPIES += qcanpool
+}
