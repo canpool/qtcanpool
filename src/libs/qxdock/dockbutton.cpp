@@ -41,6 +41,7 @@ QSize DockButton::sizeHint() const
     QSize sh = QPushButton::sizeHint();
 
     if (d->m_orientation != DockButton::Horizontal) {
+        // Swaps the width and height values
         sh.transpose();
     }
 
