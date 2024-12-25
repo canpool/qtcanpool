@@ -19,7 +19,7 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-class QX_WINDOW_EXPORT WindowAgentBasePrivate
+class WindowAgentBasePrivate
 {
     Q_DECLARE_PUBLIC(WindowAgentBase)
 public:

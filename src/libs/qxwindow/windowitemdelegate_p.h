@@ -21,7 +21,7 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-class QX_WINDOW_EXPORT WindowItemDelegate
+class WindowItemDelegate
 {
 public:
     WindowItemDelegate();

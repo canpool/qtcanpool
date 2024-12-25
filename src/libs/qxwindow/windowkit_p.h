@@ -19,7 +19,7 @@
 #include <QtCore/QObject>
 #include <QtGui/QMouseEvent>
 
-QX_WINDOW_EXPORT Q_DECLARE_LOGGING_CATEGORY(qWindowKitLog)
+Q_DECLARE_LOGGING_CATEGORY(qWindowKitLog)
 
 #define QWK_INFO     qCInfo(qWindowKitLog)
 #define QWK_DEBUG    qCDebug(qWindowKitLog)

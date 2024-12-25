@@ -71,7 +71,7 @@ QX_WINDOW_BEGIN_NAMESPACE
 
 namespace Private {
 
-QX_WINDOW_EXPORT RTL_OSVERSIONINFOW GetRealOSVersion();
+RTL_OSVERSIONINFOW GetRealOSVersion();
 
 inline bool IsWindows1122H2OrGreater_Real()
 {

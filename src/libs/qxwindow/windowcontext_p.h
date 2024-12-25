@@ -27,8 +27,8 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-class QX_WINDOW_EXPORT WindowContext : public QObject, public WindowNativeEventDispatcher,
-                                       public WindowSharedEventDispatcher
+class WindowContext : public QObject, public WindowNativeEventDispatcher,
+                      public WindowSharedEventDispatcher
 {
     Q_OBJECT
 public:

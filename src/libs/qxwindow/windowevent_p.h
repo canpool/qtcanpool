@@ -21,7 +21,7 @@ QX_WINDOW_BEGIN_NAMESPACE
 
 class WindowNativeEventFilter;
 
-class QX_WINDOW_EXPORT WindowNativeEventDispatcher
+class WindowNativeEventDispatcher
 {
 public:
     WindowNativeEventDispatcher();
@@ -39,7 +39,7 @@ protected:
     Q_DISABLE_COPY(WindowNativeEventDispatcher)
 };
 
-class QX_WINDOW_EXPORT WindowNativeEventFilter
+class WindowNativeEventFilter
 {
 public:
     WindowNativeEventFilter();
@@ -55,7 +55,7 @@ protected:
 };
 
 // Automatically install to QCoreApplication at construction
-class QX_WINDOW_EXPORT AppNativeEventFilter : public WindowNativeEventFilter
+class AppNativeEventFilter : public WindowNativeEventFilter
 {
 public:
     AppNativeEventFilter();
@@ -65,7 +65,7 @@ public:
 
 class WindowSharedEventFilter;
 
-class QX_WINDOW_EXPORT WindowSharedEventDispatcher
+class WindowSharedEventDispatcher
 {
 public:
     WindowSharedEventDispatcher();
@@ -83,7 +83,7 @@ protected:
     Q_DISABLE_COPY(WindowSharedEventDispatcher)
 };
 
-class QX_WINDOW_EXPORT WindowSharedEventFilter
+class WindowSharedEventFilter
 {
 public:
     WindowSharedEventFilter();
