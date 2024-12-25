@@ -4,7 +4,7 @@ option(QX_WINDOW_CONFIG_STYLE_AGENT "Config style agent" NO)
 option(QX_WINDOW_CONFIG_WIDGET_AGENT "Config widget agent" YES)
 
 add_qtc_library(qxwindow
-  VERSION 0.1.1
+  VERSION 0.1.2
   DEFINES QX_WINDOW_LIBRARY
   DEPENDS Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES

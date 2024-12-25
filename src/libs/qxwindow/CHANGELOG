@@ -1,3 +1,9 @@
+0.1.2
+---
+- Port to Qt 5.12.12 6.8.1
+- Remove WidgetWindowAgent that was replaced by WindowAgentWidget
+- Qt: fix coverage taskbar when widget is maximized on secondary screen
+
 0.1.1
 - Add addCaptionClassName interface for custom caption
 
