@@ -51,7 +51,7 @@ bool WindowAgentWidget::setup(QWidget *w)
     }
 
     Q_D(WindowAgentWidget);
-    if (d->hostWidget) {
+    if (d->m_hostWidget) {
         return false;
     }
 
@@ -59,7 +59,7 @@ bool WindowAgentWidget::setup(QWidget *w)
     w->setAttribute(Qt::WA_NativeWindow);
 
     d->setup(w, new WidgetItemDelegate());
-    d->hostWidget = w;
+    d->m_hostWidget = w;
 
 #if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS) && defined(QX_WINDOW_NATIVE)
     d->setupWindows10BorderWorkaround();
@@ -73,7 +73,7 @@ bool WindowAgentWidget::setup(QWidget *w)
 QWidget *WindowAgentWidget::titleBar() const
 {
     Q_D(const WindowAgentWidget);
-    return static_cast<QWidget *>(d->context->titleBar());
+    return static_cast<QWidget *>(d->m_context->titleBar());
 }
 
 /*!
@@ -83,7 +83,7 @@ QWidget *WindowAgentWidget::titleBar() const
 void WindowAgentWidget::setTitleBar(QWidget *w)
 {
     Q_D(WindowAgentWidget);
-    if (!d->context->setTitleBar(w)) {
+    if (!d->m_context->setTitleBar(w)) {
         return;
     }
 #ifdef Q_OS_MAC
@@ -98,7 +98,7 @@ void WindowAgentWidget::setTitleBar(QWidget *w)
 QWidget *WindowAgentWidget::systemButton(SystemButton button) const
 {
     Q_D(const WindowAgentWidget);
-    return static_cast<QWidget *>(d->context->systemButton(button));
+    return static_cast<QWidget *>(d->m_context->systemButton(button));
 }
 
 /*!
@@ -108,7 +108,7 @@ QWidget *WindowAgentWidget::systemButton(SystemButton button) const
 void WindowAgentWidget::setSystemButton(SystemButton button, QWidget *w)
 {
     Q_D(WindowAgentWidget);
-    if (!d->context->setSystemButton(button, w)) {
+    if (!d->m_context->setSystemButton(button, w)) {
         return;
     }
     Q_EMIT systemButtonChanged(button, w);
@@ -117,7 +117,7 @@ void WindowAgentWidget::setSystemButton(SystemButton button, QWidget *w)
 void WindowAgentWidget::removeSystemButton(SystemButton button)
 {
     Q_D(WindowAgentWidget);
-    d->context->removeSystemButton(button);
+    d->m_context->removeSystemButton(button);
 }
 
 /*!
@@ -126,7 +126,7 @@ void WindowAgentWidget::removeSystemButton(SystemButton button)
 bool WindowAgentWidget::isHitTestVisible(const QWidget *w) const
 {
     Q_D(const WindowAgentWidget);
-    return d->context->isHitTestVisible(w);
+    return d->m_context->isHitTestVisible(w);
 }
 
 /*!
@@ -137,13 +137,13 @@ bool WindowAgentWidget::isHitTestVisible(const QWidget *w) const
 void WindowAgentWidget::setHitTestVisible(const QWidget *w, bool visible)
 {
     Q_D(WindowAgentWidget);
-    d->context->setHitTestVisible(w, visible);
+    d->m_context->setHitTestVisible(w, visible);
 }
 
 void WindowAgentWidget::addCaptionClassName(const QString &name)
 {
     Q_D(WindowAgentWidget);
-    d->context->addCaptionClassName(name);
+    d->m_context->addCaptionClassName(name);
 }
 
 /*!

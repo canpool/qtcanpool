@@ -194,9 +194,9 @@ protected:
 void WindowAgentWidgetPrivate::setupWindows10BorderWorkaround()
 {
     // Install painting hook
-    auto ctx = context.get();
+    auto ctx = m_context.get();
     if (ctx->windowAttribute(QStringLiteral("win10-border-needed")).toBool()) {
-        borderHandler = std::make_unique<WidgetBorderHandler>(hostWidget, ctx);
+        m_borderHandler = std::make_unique<WidgetBorderHandler>(m_hostWidget, ctx);
     }
 }
 #endif

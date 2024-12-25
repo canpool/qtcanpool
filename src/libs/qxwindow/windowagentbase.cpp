@@ -20,7 +20,7 @@ QX_WINDOW_BEGIN_NAMESPACE
     shared methods for derived classes to call.
 */
 
-WindowAgentBasePrivate::WindowAgentBasePrivate() : q_ptr(nullptr), context(nullptr)
+WindowAgentBasePrivate::WindowAgentBasePrivate() : q_ptr(nullptr), m_context(nullptr)
 {
 }
 
@@ -45,7 +45,7 @@ void WindowAgentBasePrivate::setup(QObject *host, WindowItemDelegate *delegate)
 {
     auto ctx = createContext();
     ctx->setup(host, delegate);
-    context.reset(ctx);
+    m_context.reset(ctx);
 }
 
 /*!
@@ -61,7 +61,7 @@ WindowAgentBase::~WindowAgentBase() = default;
 QVariant WindowAgentBase::windowAttribute(const QString &key) const
 {
     Q_D(const WindowAgentBase);
-    return d->context->windowAttribute(key);
+    return d->m_context->windowAttribute(key);
 }
 
 /*!
@@ -95,7 +95,7 @@ QVariant WindowAgentBase::windowAttribute(const QString &key) const
 bool WindowAgentBase::setWindowAttribute(const QString &key, const QVariant &attribute)
 {
     Q_D(WindowAgentBase);
-    return d->context->setWindowAttribute(key, attribute);
+    return d->m_context->setWindowAttribute(key, attribute);
 }
 
 /*!
@@ -104,7 +104,7 @@ bool WindowAgentBase::setWindowAttribute(const QString &key, const QVariant &att
 void WindowAgentBase::showSystemMenu(const QPoint &pos)
 {
     Q_D(WindowAgentBase);
-    d->context->showSystemMenu(pos);
+    d->m_context->showSystemMenu(pos);
 }
 
 /*!
@@ -113,7 +113,7 @@ void WindowAgentBase::showSystemMenu(const QPoint &pos)
 void WindowAgentBase::centralize()
 {
     Q_D(WindowAgentBase);
-    d->context->virtual_hook(WindowContext::CentralizeHook, nullptr);
+    d->m_context->virtual_hook(WindowContext::CentralizeHook, nullptr);
 }
 
 /*!
@@ -122,7 +122,7 @@ void WindowAgentBase::centralize()
 void WindowAgentBase::raise()
 {
     Q_D(WindowAgentBase);
-    d->context->virtual_hook(WindowContext::RaiseWindowHook, nullptr);
+    d->m_context->virtual_hook(WindowContext::RaiseWindowHook, nullptr);
 }
 
 /*!

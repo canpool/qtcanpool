@@ -51,7 +51,7 @@ protected:
 QWidget *WindowAgentWidget::systemButtonArea() const
 {
     Q_D(const WindowAgentWidget);
-    return d->systemButtonAreaWidget;
+    return d->m_systemButtonAreaWidget;
 }
 
 /*!
@@ -63,17 +63,17 @@ QWidget *WindowAgentWidget::systemButtonArea() const
 void WindowAgentWidget::setSystemButtonArea(QWidget *widget)
 {
     Q_D(WindowAgentWidget);
-    if (d->systemButtonAreaWidget == widget)
+    if (d->m_systemButtonAreaWidget == widget)
         return;
 
-    auto ctx = d->context.get();
-    d->systemButtonAreaWidget = widget;
+    auto ctx = d->m_context.get();
+    d->m_systemButtonAreaWidget = widget;
     if (!widget) {
-        d->context->setSystemButtonAreaCallback({});
-        d->systemButtonAreaWidgetEventFilter.reset();
+        d->m_context->setSystemButtonAreaCallback({});
+        d->m_systemButtonAreaWidgetEventFilter.reset();
         return;
     }
-    d->systemButtonAreaWidgetEventFilter = std::make_unique<SystemButtonAreaWidgetEventFilter>(widget, ctx);
+    d->m_systemButtonAreaWidgetEventFilter = std::make_unique<SystemButtonAreaWidgetEventFilter>(widget, ctx);
 }
 
 /*!
@@ -82,7 +82,7 @@ void WindowAgentWidget::setSystemButtonArea(QWidget *widget)
 ScreenRectCallback WindowAgentWidget::systemButtonAreaCallback() const
 {
     Q_D(const WindowAgentWidget);
-    return d->systemButtonAreaWidget ? nullptr : d->context->systemButtonAreaCallback();
+    return d->m_systemButtonAreaWidget ? nullptr : d->m_context->systemButtonAreaCallback();
 }
 
 /*!
@@ -95,7 +95,7 @@ void WindowAgentWidget::setSystemButtonAreaCallback(const ScreenRectCallback &ca
 {
     Q_D(WindowAgentWidget);
     setSystemButtonArea(nullptr);
-    d->context->setSystemButtonAreaCallback(callback);
+    d->m_context->setSystemButtonAreaCallback(callback);
 }
 
 QX_WINDOW_END_NAMESPACE

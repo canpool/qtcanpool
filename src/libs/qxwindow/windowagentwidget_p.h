@@ -29,16 +29,16 @@ public:
     void init();
 
     // Host
-    QWidget *hostWidget{};
+    QWidget *m_hostWidget{};
 
 #ifdef Q_OS_MAC
-    QWidget *systemButtonAreaWidget{};
-    std::unique_ptr<QObject> systemButtonAreaWidgetEventFilter;
+    QWidget *m_systemButtonAreaWidget{};
+    std::unique_ptr<QObject> m_systemButtonAreaWidgetEventFilter;
 #endif
 
 #if defined(Q_OS_WINDOWS) && defined(QX_WINDOW_ENABLE_SYSTEM_BORDERS) && defined(QX_WINDOW_NATIVE)
     void setupWindows10BorderWorkaround();
-    std::unique_ptr<QObject> borderHandler;
+    std::unique_ptr<QObject> m_borderHandler;
 #endif
 };
 
