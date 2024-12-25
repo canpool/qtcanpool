@@ -57,6 +57,9 @@ DockButton::Orientation DockButton::buttonOrientation() const
 void DockButton::setButtonOrientation(DockButton::Orientation orientation)
 {
     Q_D(DockButton);
+    if (d->m_orientation == orientation) {
+        return;
+    }
     d->m_orientation = orientation;
     updateGeometry();
 }
