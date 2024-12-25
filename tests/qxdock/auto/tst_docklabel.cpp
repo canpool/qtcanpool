@@ -16,24 +16,45 @@ private slots:
 void tst_DockLabel::elide()
 {
     DockLabel label("dock1");
+
+    int i = 0;
+    connect(&label, &DockLabel::elidedChanged, this, [&i](bool) {
+        ++i;
+    });
+
     QCOMPARE(label.text(), "dock1");
-    QVERIFY(!label.isElided());
+    QCOMPARE(label.isElided(), false);
     QCOMPARE(label.elideMode(), Qt::ElideNone);
+    QCOMPARE(i, 0);
 
     label.resize(label.minimumSizeHint());
-    QVERIFY(!label.isElided());
+    QCOMPARE(label.isElided(), false);
+    QCOMPARE(i, 0);
 
     label.setElideMode(Qt::ElideRight);
     QCOMPARE(label.text(), "dock1");
-    QVERIFY(!label.isElided());
+    QCOMPARE(label.isElided(), false);
+    QCOMPARE(i, 0);
 
     label.resize(label.minimumSizeHint());
     QCOMPARE(label.text(), "dock1");
-    QVERIFY(!label.isElided());
+    QCOMPARE(label.isElided(), false);
+    QCOMPARE(i, 0);
 
     label.setText("loogdock");
-    QVERIFY(label.isElided());
+    QCOMPARE(label.isElided(), true);
     QVERIFY(label.QLabel::text().endsWith(u'\x2026'));
+    QCOMPARE(i, 1);
+
+    label.setElideMode(Qt::ElideLeft);
+    QCOMPARE(label.isElided(), true);
+    QVERIFY(label.QLabel::text().startsWith(u'\x2026'));
+    QCOMPARE(i, 1);
+
+    label.setElideMode(Qt::ElideMiddle);
+    QCOMPARE(label.isElided(), true);
+    QVERIFY(label.QLabel::text().contains(u'\x2026'));
+    QCOMPARE(i, 1);
 }
 
 TEST_ADD(tst_DockLabel)
