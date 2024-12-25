@@ -60,6 +60,9 @@ QWidget *DockSplitter::lastWidget() const
     return (count() > 0) ? widget(count() - 1) : nullptr;
 }
 
+/**
+ * Returns true if the splitter contains central widget of dock window.
+ */
 bool DockSplitter::isResizingWithContainer() const
 {
     for (auto panel : findChildren<DockPanel *>()) {
