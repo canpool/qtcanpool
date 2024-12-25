@@ -11,6 +11,9 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockResizeHandlePrivate;
 
+/**
+ * Resize handle for resizing its parent widget (such as DockAutoHideContainer)
+ */
 class QX_DOCK_EXPORT DockResizeHandle : public QFrame
 {
     Q_OBJECT

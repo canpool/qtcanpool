@@ -134,6 +134,9 @@ DockResizeHandle::~DockResizeHandle()
     QX_FINI_PRIVATE();
 }
 
+/**
+ * Returns the orientation of resizing
+ */
 Qt::Orientation DockResizeHandle::orientation() const
 {
     Q_D(const DockResizeHandle);
@@ -175,12 +178,22 @@ bool DockResizeHandle::isResizing() const
     return d->m_pressed;
 }
 
+/**
+ * Sets the minimum size for the widget that is going to be resized.
+ * The resize handle will not resize the target widget to a size smaller
+ * than this value
+ */
 void DockResizeHandle::setMinResizeSize(int minSize)
 {
     Q_D(DockResizeHandle);
     d->m_minSize = minSize;
 }
 
+/**
+ * Sets the maximum size for the widget that is going to be resized
+ * The resize handle will not resize the target widget to a size bigger
+ * than this value
+ */
 void DockResizeHandle::setMaxResizeSize(int maxSize)
 {
     Q_D(DockResizeHandle);
@@ -208,15 +221,20 @@ void DockResizeHandle::setHandlePosition(Qt::Edge handlePosition)
         setCursor(Qt::SizeVerCursor);
         break;
     }
-
-    setMaxResizeSize(d->isHorizontal() ? parentWidget()->height() : parentWidget()->width());
-    if (!d->isHorizontal()) {
-        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    } else {
+    // FIXME: should be parentWidget() or m_target->parentWidget() here ??
+    setMaxResizeSize(d->isHorizontal() ? parentWidget()->width() : parentWidget()->height());
+    if (d->isHorizontal()) {
+        // horizontal resizing, the ResizeHandle with is fixed (vertical sliver)
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    } else {
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     }
 }
 
+/**
+ * Returns true if widgets are resized dynamically (opaquely) while
+ * interactively moving the resize handle. Otherwise returns false.
+ */
 bool DockResizeHandle::opaqueResize() const
 {
     Q_D(const DockResizeHandle);
