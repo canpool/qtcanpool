@@ -21,12 +21,12 @@
 
 Q_DECLARE_LOGGING_CATEGORY(qWindowKitLog)
 
-#define QWK_INFO     qCInfo(qWindowKitLog)
-#define QWK_DEBUG    qCDebug(qWindowKitLog)
-#define QWK_WARNING  qCWarning(qWindowKitLog)
-#define QWK_CRITICAL qCCritical(qWindowKitLog)
+#define QWK_INFO     qCInfo(qWindowKitLog) << "INFO:"
+#define QWK_DEBUG    qCDebug(qWindowKitLog) << "DEBUG:"
+#define QWK_WARNING  qCWarning(qWindowKitLog) << "WARNING:"
+#define QWK_CRITICAL qCCritical(qWindowKitLog) << "CRITICAL:"
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-#define QWK_FATAL qCFatal(qWindowKitLog)
+#define QWK_FATAL qCFatal(qWindowKitLog) << "FATAL:"
 #endif
 
 #define MAKE_RGB_COLOR(r, g, b) ((quint32)(((r) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((b) & 0xFF))
