@@ -5,6 +5,7 @@ SUBDIRS = \
     configflags \
     emptydockarea \
     hideshow \
+    widgettopanel \
     deleteonclose \
     sidebar \
     autohide \
