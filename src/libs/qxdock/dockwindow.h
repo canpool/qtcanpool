@@ -33,7 +33,7 @@ public:
 
     DockPanel *addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p = nullptr, int index = -1);
     DockPanel *addDockWidgetTab(Qx::DockWidgetArea area, DockWidget *w);
-    DockPanel *addDockWidgetTab(DockWidget *w, DockPanel *p, int index = 1);
+    DockPanel *addDockWidgetTab(DockWidget *w, DockPanel *p, int index = -1);
     DockPanel *addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w, DockContainer *container);
     void removeDockWidget(DockWidget *w);
     DockWidget *findDockWidget(const QString &objectName) const;
