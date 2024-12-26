@@ -22,6 +22,16 @@ class DockAutoHideContainer;
 
 class DockWindowPrivate;
 
+/**
+ * The central dock window that maintains the complete docking system.
+ * The dock window uses an internal stylesheet to style its components
+ * like splitters, tabs and buttons. If you want to disable this stylesheet
+ * because your application uses its own, just call the function for
+ * settings the stylesheet with an empty string.
+ * \code
+ * DockWindow->setStyleSheet("");
+ * \endcode
+ **/
 class QX_DOCK_EXPORT DockWindow : public DockContainer
 {
     Q_OBJECT

@@ -120,8 +120,6 @@ enum DockWidgetArea {
     BottomAutoHideArea = 0x100,
 
     InvalidDockWidgetArea = NoDockWidgetArea,
-    DockWidgetArea_Mask = 0x1f,
-    AllDockWidgetAreas = DockWidgetArea_Mask,
     OuterDockAreas = TopDockWidgetArea | LeftDockWidgetArea | RightDockWidgetArea | BottomDockWidgetArea,
     AutoHideDockAreas = LeftAutoHideArea | RightAutoHideArea | TopAutoHideArea | BottomAutoHideArea,
     AllDockAreas = OuterDockAreas | CenterDockWidgetArea

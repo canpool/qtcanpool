@@ -395,14 +395,16 @@ DockWindow::~DockWindow()
 /**
  * Adds dockwidget into the given area.
  * If DockPanel is not null, then the area parameter indicates the area
- * into the DockPanel. If DockPanel is null, the Dockwidget will
+ * into the DockPanel. If DockPanel is null, the DockWidget will
  * be dropped into the container. If you would like to add a dock widget
  * tabified, then you need to add it to an existing dock panel object
  * into the CenterDockWidgetArea. The following code shows this:
  * \code
  * DockWindow->addDockWidget(Qx::CenterDockWidgetArea, newDockWidget,
- * 	   ExisitingPanel);
+ * 	   exisitingPanel);
  * \endcode
+ * \param index Tab index, used only when DockPanel is not null and
+ *              area is CenterDockWidgetArea
  * \return Returns the dock panel that contains the new DockWidget
  */
 DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)

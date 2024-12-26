@@ -14,10 +14,14 @@ class tst_DockWindow : public QObject
 {
     Q_OBJECT
 private slots:
+    void addDockWidget_other();
     void addDockWidget();
+    void addDockWidgetTab();
+    void addDockWidgetToContainer();
+    void removeDockWidget();
 };
 
-void tst_DockWindow::addDockWidget()
+void tst_DockWindow::addDockWidget_other()
 {
     DockWindow window;
 
@@ -63,6 +67,243 @@ void tst_DockWindow::addDockWidget()
     QVERIFY(topPanel != centerPanel);
     QVERIFY(topPanel != centerPanel_3);
     QCOMPARE(topPanel->currentDockWidget(), w2);
+}
+
+void tst_DockWindow::addDockWidget()
+{
+    // add dock widget
+    {
+        DockWindow wd;
+
+        int i = 0;
+        connect(&wd, &DockWindow::dockWidgetAdded, this, [&i](DockWidget*){
+            ++i;
+        });
+
+        int j = 0;
+        connect(&wd, &DockWindow::dockAreasAdded, this, [&j](){
+            // dock panel added
+            ++j;
+        });
+
+        DockWidget *dw1 = new DockWidget("dw1");
+        DockWidget *dw2 = new DockWidget("dw2");
+        DockWidget *dw3 = new DockWidget("dw3");
+        DockWidget *dw4 = new DockWidget("dw4");
+        DockWidget *dw5 = new DockWidget("dw5");
+        DockWidget *dw6 = new DockWidget("dw6");
+        DockWidget *dw7 = new DockWidget("dw7");
+
+        DockPanel *p1 = wd.addDockWidget(Qx::NoDockWidgetArea, dw1);    // same as TopDockWidgetArea
+        DockPanel *p2 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw2);
+        DockPanel *p3 = wd.addDockWidget(Qx::RightDockWidgetArea, dw3);
+        DockPanel *p4 = wd.addDockWidget(Qx::TopDockWidgetArea, dw4);
+        DockPanel *p5 = wd.addDockWidget(Qx::BottomDockWidgetArea, dw5);
+        DockPanel *p6 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw6);
+        DockPanel *p7 = wd.addDockWidget(Qx::LeftAutoHideArea, dw7);    // same as TopDockWidgetArea
+
+        QCOMPARE(dw1->dockPanel(), p1);
+        QCOMPARE(dw2->dockPanel(), p2);
+        QCOMPARE(dw3->dockPanel(), p3);
+        QCOMPARE(dw4->dockPanel(), p4);
+        QCOMPARE(dw5->dockPanel(), p5);
+        QCOMPARE(dw6->dockPanel(), p6);
+        QCOMPARE(dw7->dockPanel(), p7);
+
+        QCOMPARE(wd.findDockWidget("dw1"), dw1);
+        QCOMPARE(wd.findDockWidget("dw2"), dw2);
+        QCOMPARE(wd.findDockWidget("dw3"), dw3);
+        QCOMPARE(wd.findDockWidget("dw4"), dw4);
+        QCOMPARE(wd.findDockWidget("dw5"), dw5);
+        QCOMPARE(wd.findDockWidget("dw6"), dw6);
+        QCOMPARE(wd.findDockWidget("dw7"), dw7);
+
+        QCOMPARE(wd.dockContainers().count(), 1);
+        QCOMPARE(wd.dockWidgetsMap().count(), 7);
+        QCOMPARE(i, 7);
+        QCOMPARE(j, 7);
+        QCOMPARE(wd.centralWidget(), nullptr);
+    }
+
+    // add dock widget to panel
+    {
+        DockWindow wd;
+
+        DockWidget *dw1 = new DockWidget("dw1");
+        DockWidget *dw2 = new DockWidget("dw2");
+        DockWidget *dw3 = new DockWidget("dw3");
+        DockWidget *dw4 = new DockWidget("dw4");
+        DockWidget *dw5 = new DockWidget("dw5");
+        DockWidget *dw6 = new DockWidget("dw6");
+        DockWidget *dw7 = new DockWidget("dw7");
+
+        DockPanel *p1 = wd.addDockWidget(Qx::NoDockWidgetArea, dw1);
+        DockPanel *p2 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw2, p1);
+        DockPanel *p3 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw3, p1);
+        DockPanel *p4 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw4, p1, 0);
+        DockPanel *p5 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw5, p1);
+        DockPanel *p6 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw6, p1);
+        DockPanel *p7 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw7, p1, 0);
+
+        QVERIFY(p1 != p2);
+        QVERIFY(p2 != p3);
+        QVERIFY(p2 != p4);
+        QVERIFY(p3 != p4);
+
+        QCOMPARE(p1, p5);
+        QCOMPARE(p1, p6);
+        QCOMPARE(p1, p7);
+
+        QCOMPARE(wd.openedDockPanels().count(), 4); // p1,p2,p3,p4
+        QCOMPARE(p1->dockWidgets().count(), 4);
+
+        QString text = "";
+        for (DockWidget *w : p1->dockWidgets()) {
+            text += w->objectName() + ",";
+        }
+        QCOMPARE(text, "dw7,dw1,dw5,dw6,");
+    }
+}
+
+void tst_DockWindow::addDockWidgetTab()
+{
+    // add dock widget
+    {
+        DockWindow wd;
+
+        int j = 0;
+        connect(&wd, &DockWindow::dockAreasAdded, this, [&j](){
+            // dock panel added
+            ++j;
+        });
+
+        DockWidget *dw1 = new DockWidget("dw1");
+        DockWidget *dw2 = new DockWidget("dw2");
+        DockWidget *dw3 = new DockWidget("dw3");
+        DockWidget *dw4 = new DockWidget("dw4");
+        DockWidget *dw5 = new DockWidget("dw5");
+        DockWidget *dw6 = new DockWidget("dw6");
+        DockWidget *dw7 = new DockWidget("dw7");
+
+        // widget same as TopDockWidgetArea, panel same as CenterDockWidgetArea
+        DockPanel *p1 = wd.addDockWidgetTab(Qx::NoDockWidgetArea, dw1);
+        DockPanel *p2 = wd.addDockWidgetTab(Qx::LeftDockWidgetArea, dw2);
+        DockPanel *p3 = wd.addDockWidgetTab(Qx::RightDockWidgetArea, dw3);
+        DockPanel *p4 = wd.addDockWidgetTab(Qx::TopDockWidgetArea, dw4);
+        DockPanel *p5 = wd.addDockWidgetTab(Qx::BottomDockWidgetArea, dw5);
+        DockPanel *p6 = wd.addDockWidgetTab(Qx::CenterDockWidgetArea, dw6);
+        // widget same as TopDockWidgetArea, panel same as CenterDockWidgetArea
+        DockPanel *p7 = wd.addDockWidgetTab(Qx::LeftAutoHideArea, dw7);
+
+        QCOMPARE(dw1->dockPanel(), p1);
+        QCOMPARE(dw2->dockPanel(), p2);
+        QCOMPARE(dw3->dockPanel(), p3);
+        QCOMPARE(dw4->dockPanel(), p4);
+        QCOMPARE(dw5->dockPanel(), p5);
+        QCOMPARE(dw6->dockPanel(), p6);
+        QCOMPARE(dw7->dockPanel(), p7);
+
+        QCOMPARE(p1, p6);
+        QCOMPARE(p6, p7);
+
+        QCOMPARE(wd.findDockWidget("dw1"), dw1);
+        QCOMPARE(wd.findDockWidget("dw2"), dw2);
+        QCOMPARE(wd.findDockWidget("dw3"), dw3);
+        QCOMPARE(wd.findDockWidget("dw4"), dw4);
+        QCOMPARE(wd.findDockWidget("dw5"), dw5);
+        QCOMPARE(wd.findDockWidget("dw6"), dw6);
+        QCOMPARE(wd.findDockWidget("dw7"), dw7);
+
+        QCOMPARE(wd.dockContainers().count(), 1);
+        QCOMPARE(wd.dockWidgetsMap().count(), 7);
+        QCOMPARE(j, 5); // p1,p2,p3,p4,p5
+        QCOMPARE(wd.centralWidget(), nullptr);
+    }
+
+    // add dock widget to panel
+    {
+        DockWindow wd;
+
+        DockWidget *dw1 = new DockWidget("dw1");
+        DockWidget *dw2 = new DockWidget("dw2");
+        DockWidget *dw3 = new DockWidget("dw3");
+        DockWidget *dw4 = new DockWidget("dw4");
+
+        DockPanel *p1 = wd.addDockWidgetTab(dw1, nullptr);
+        DockPanel *p2 = wd.addDockWidgetTab(dw2, p1);
+        DockPanel *p3 = wd.addDockWidgetTab(dw3, p1, 0);
+        DockPanel *p4 = wd.addDockWidgetTab(dw4, p1, 10);
+
+        QCOMPARE(p1, p2);
+        QCOMPARE(p2, p3);
+        QCOMPARE(p3, p4);
+
+        QCOMPARE(wd.openedDockPanels().count(), 1);
+        QCOMPARE(p1->dockWidgets().count(), 4);
+
+        QString text = "";
+        for (DockWidget *w : p1->dockWidgets()) {
+            text += w->objectName() + ",";
+        }
+        QCOMPARE(text, "dw3,dw1,dw2,dw4,");
+    }
+}
+
+void tst_DockWindow::addDockWidgetToContainer()
+{
+    DockWindow wd;
+
+    DockContainer *c = new DockContainer(&wd);
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+
+    DockPanel *p1 = wd.addDockWidgetToContainer(Qx::CenterDockWidgetArea, dw1, c);
+    DockPanel *p2 = wd.addDockWidgetToContainer(Qx::CenterDockWidgetArea, dw2, &wd);
+
+    QVERIFY(p1 != p2);
+
+    QCOMPARE(wd.dockContainers().count(), 2);
+    QCOMPARE(wd.dockWidgetsMap().count(), 2);
+
+    QCOMPARE(wd.openedDockWidgets().count(), 1);
+    QCOMPARE(wd.openedDockPanels().count(), 1);
+
+    QCOMPARE(c->openedDockWidgets().count(), 1);
+    QCOMPARE(c->openedDockPanels().count(), 1);
+}
+
+void tst_DockWindow::removeDockWidget()
+{
+    DockWindow wd;
+
+    int i = 0;
+    connect(&wd, &DockWindow::dockWidgetAboutToBeRemoved, this, [&i](DockWidget*){
+        ++i;
+    });
+    int j = 0;
+    connect(&wd, &DockWindow::dockWidgetRemoved, this, [&j](DockWidget*){
+        ++j;
+    });
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+
+    DockPanel *p1 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw1);
+    DockPanel *p2 = wd.addDockWidgetTab(Qx::CenterDockWidgetArea, dw2);
+    DockPanel *p3 = wd.addDockWidgetTab(dw3, p2);
+
+    QCOMPARE(p1, p2);
+    QCOMPARE(p2, p3);
+
+    QCOMPARE(p1->dockWidgets().count(), 3);
+
+    wd.removeDockWidget(dw1);
+    QCOMPARE(i, 1);
+    QCOMPARE(j, 1);
+
+    QCOMPARE(p1->dockWidgets().count(), 2);
 }
 
 TEST_ADD(tst_DockWindow)
