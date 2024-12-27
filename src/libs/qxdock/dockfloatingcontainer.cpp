@@ -748,7 +748,7 @@ bool DockFloatingContainer::event(QEvent *e)
             QGuiApplication::mouseButtons().testFlag(Qt::LeftButton))
 #endif
         {
-            QXDOCK_PRINT("FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type());
+            QX_DOCK_PRINT("FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type());
             d->m_dragStartPos = pos();
             d->setState(Qx::DockDraggingMousePressed);
         }
@@ -757,7 +757,7 @@ bool DockFloatingContainer::event(QEvent *e)
     case Qx::DockDraggingMousePressed:
         switch (e->type()) {
         case QEvent::NonClientAreaMouseButtonDblClick:
-            QXDOCK_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick");
+            QX_DOCK_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick");
             d->setState(Qx::DockDraggingInactive);
             break;
 
@@ -782,7 +782,7 @@ bool DockFloatingContainer::event(QEvent *e)
 
     case Qx::DockDraggingFloatingWidget:
         if (e->type() == QEvent::NonClientAreaMouseButtonRelease) {
-            QXDOCK_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease");
+            QX_DOCK_PRINT("FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease");
             d->titleMouseReleaseEvent();
         }
         break;

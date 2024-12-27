@@ -15,12 +15,13 @@
 #endif
 
 //#define QX_DOCK_DEBUG
+//#define QX_DOCK_DEBUG_PRINT
 
-// Define QXDOCK_DEBUG_PRINT to enable a lot of debug output
-#ifdef QXDOCK_DEBUG_PRINT
-#define QXDOCK_PRINT(s) qDebug() << s
+// Define QX_DOCK_DEBUG_PRINT to enable a lot of debug output
+#ifdef QX_DOCK_DEBUG_PRINT
+#define QX_DOCK_PRINT(s) qDebug() << __FUNCTION__ << s
 #else
-#define QXDOCK_PRINT(s)
+#define QX_DOCK_PRINT(s)
 #endif
 
 class QSplitter;
