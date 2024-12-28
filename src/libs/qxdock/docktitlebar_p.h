@@ -11,6 +11,12 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockTitleBar;
 
+/**
+ * Title bar button of a dock area that customizes QToolButton appearance/behaviour
+ * according to various config flags such as:
+ * DockManager::DockAreaHas_xxx_Button - if set to 'false' keeps the button always invisible
+ * DockManager::DockAreaHideDisabledButtons - if set to 'true' hides button when it is disabled
+ */
 class TitleBarButton : public QToolButton
 {
     Q_OBJECT
@@ -38,9 +44,9 @@ protected:
 
 /**
  * This spacer widget is here because of the following problem.
- * The dock area title bar handles mouse dragging and moving the floating widget.
- * The  problem is, that if the title bar becomes invisible, i.e. if the dock
- * area contains only one single dock widget and the dock area is moved
+ * The dock title bar handles mouse dragging and moving the floating widget.
+ * The problem is, that if the title bar becomes invisible, i.e. if the dock
+ * panel contains only one single dock widget and the dock panel is moved
  * into a floating widget, then mouse events are not handled anymore and dragging
  * of the floating widget stops.
  */

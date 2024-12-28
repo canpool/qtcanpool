@@ -55,6 +55,9 @@ bool TitleBarButton::isInAutoHideArea() const
     return titleBar && titleBar->isAutoHide();
 }
 
+/**
+ * Adjust this visibility change request with our internal settings:
+ */
 void TitleBarButton::setVisible(bool visible)
 {
     // 'visible' can stay 'true' if and only if this button is configured to generally visible:
@@ -69,6 +72,9 @@ void TitleBarButton::setVisible(bool visible)
     Super::setVisible(visible);
 }
 
+/**
+ * Handle EnabledChanged signal to set button invisible if the configured
+ */
 bool TitleBarButton::event(QEvent *e)
 {
     if (QEvent::EnabledChange != e->type() || !m_hideWhenDisabled || !m_showInTitleBar) {
@@ -286,6 +292,9 @@ void DockTitleBarPrivate::startFloating(const QPoint &offset)
     qApp->postEvent(m_panel, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
 }
 
+/**
+ * Makes the dock area floating
+ */
 DockFloatingWidget *DockTitleBarPrivate::makeAreaFloating(const QPoint &offset, Qx::DockDragState dragState)
 {
     QSize sz = m_panel->size();
@@ -326,6 +335,10 @@ bool DockTitleBarPrivate::testAutoHideConfigFlag(DockManager::AutoHideFlag flag)
     return DockManager::testAutoHideConfigFlag(flag);
 }
 
+/**
+ * Helper function to create and initialize the menu entries for
+ * the "Auto Hide Group To..." menu
+ */
 QAction *DockTitleBarPrivate::createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu)
 {
     Q_Q(DockTitleBar);
@@ -385,12 +398,18 @@ QAbstractButton *DockTitleBar::button(Qx::DockTitleBarButton which) const
     }
 }
 
+/**
+ * Returns the auto hide title label, used when the dock panel is expanded and auto hidden
+ */
 DockLabel *DockTitleBar::autoHideTitleLabel() const
 {
     Q_D(const DockTitleBar);
     return d->m_autoHideTitleLabel;
 }
 
+/**
+ * Call this function, to create all the required auto hide controls
+ */
 void DockTitleBar::showAutoHideControls(bool show)
 {
     Q_D(DockTitleBar);
@@ -399,6 +418,9 @@ void DockTitleBar::showAutoHideControls(bool show)
     d->m_autoHideTitleLabel->setVisible(show);
 }
 
+/**
+ * Updates the visibility of the dock widget actions in the title bar
+ */
 void DockTitleBar::updateDockWidgetActionsButtons()
 {
     Q_D(DockTitleBar);
@@ -431,24 +453,46 @@ void DockTitleBar::updateDockWidgetActionsButtons()
     }
 }
 
+/**
+ * Marks the tabs menu outdated before it calls its base class
+ * implementation
+ */
 void DockTitleBar::setVisible(bool visible)
 {
     Super::setVisible(visible);
     markTabsMenuOutdated();
 }
 
+/**
+ * Inserts a custom widget at position index into this title bar.
+ * If index is negative, the widget is added at the end.
+ * You can use this function to insert custom widgets into the title bar.
+ */
 void DockTitleBar::insertWidget(int index, QWidget *widget)
 {
     Q_D(DockTitleBar);
     d->m_layout->insertWidget(index, widget);
 }
 
+/**
+ * Searches for widget in this title bar.
+ * You can use this function, to get the position of the default
+ * widget in the tile bar.
+ * \code
+ * int tabBarIndex = titleBar->indexOf(titleBar->tabBar());
+ * int closeButtonIndex = titleBar->indexOf(titleBar->button(Qx::TitleBarButtonClose));
+ * \endcode
+ */
 int DockTitleBar::indexOf(QWidget *widget) const
 {
     Q_D(const DockTitleBar);
     return d->m_layout->indexOf(widget);
 }
 
+/**
+ * Close group tool tip based on the current state
+ * Auto hide widgets can only have one dock widget so it does not make sense for the tooltip to show close group
+ */
 QString DockTitleBar::titleBarButtonToolTip(Qx::DockTitleBarButton id) const
 {
     Q_D(const DockTitleBar);
@@ -490,12 +534,15 @@ bool DockTitleBar::isAutoHide() const
     return d->m_panel && d->m_panel->isAutoHide();
 }
 
+/**
+ * Moves the dock panel into its own floating widget if the area
+ * DockWidgetFloatable flag is true
+ */
 void DockTitleBar::setAreaFloating()
 {
     Q_D(DockTitleBar);
     // If this is the last dock panel in a dock container it does not make
-    // sense to move it to a new floating widget and leave this one
-    // empty.
+    // sense to move it to a new floating widget and leave this one empty.
     auto container = d->m_panel->dockContainer();
     if (container->isFloating() && container->dockPanelCount() == 1 && !d->m_panel->isAutoHide()) {
         return;
@@ -508,6 +555,10 @@ void DockTitleBar::setAreaFloating()
     d->makeAreaFloating(mapFromGlobal(QCursor::pos()), Qx::DockDraggingInactive);
 }
 
+/**
+ * Call this slot to tell the title bar that it should update the tabs menu
+ * the next time it is shown.
+ */
 void DockTitleBar::markTabsMenuOutdated()
 {
     Q_D(DockTitleBar);
@@ -579,6 +630,7 @@ void DockTitleBar::onCurrentTabChanged(int index)
 void DockTitleBar::onCloseButtonClicked()
 {
     Q_D(DockTitleBar);
+    QX_DOCK_PRINT("");
     if (DockManager::testAutoHideConfigFlag(DockManager::AutoHideCloseButtonCollapsesDock) &&
         d->m_panel->autoHideContainer()) {
         d->m_panel->autoHideContainer()->collapseView(true);
@@ -700,6 +752,7 @@ void DockTitleBar::mouseMoveEvent(QMouseEvent *e)
 
     int dragDistance = (d->m_dragStartMousePos - e->pos()).manhattanLength();
     if (dragDistance >= DockManager::startDragDistance()) {
+        QX_DOCK_PRINT("startFloating");
         d->startFloating(d->m_dragStartMousePos);
         auto overlay = d->m_panel->dockWindow()->containerOverlay();
         overlay->setAllowedAreas(Qx::OuterDockAreas);

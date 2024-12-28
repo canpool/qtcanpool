@@ -17,6 +17,11 @@ class DockLabel;
 
 class DockTitleBarPrivate;
 
+/**
+ * Title bar of a dock panel.
+ * The title bar contains a tabbar with all tabs for a dock widget group and
+ * with a tabs menu button, a undock button and a close button.
+ */
 class QX_DOCK_EXPORT DockTitleBar : public QFrame
 {
     Q_OBJECT
