@@ -24,6 +24,13 @@ class DockStateReader;
 
 class DockContainerPrivate;
 
+/**
+ * Container that manages a number of dock panels with single dock widgets
+ * or tabyfied dock widgets in each area.
+ * Each window that support docking has a DockContainer. That means
+ * the main application window and all floating windows contain a
+ * DockContainer instance.
+ */
 class QX_DOCK_EXPORT DockContainer : public QFrame
 {
     Q_OBJECT

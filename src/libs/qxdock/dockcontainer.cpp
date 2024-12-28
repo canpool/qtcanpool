@@ -181,6 +181,10 @@ void DockContainerPrivate::createRootSplitter()
     m_layout->addWidget(m_rootSplitter, 1, 1);
 }
 
+/**
+ * The visible dock panel count changes, if dock panels are remove, added or
+ * when its view is toggled
+ */
 void DockContainerPrivate::onVisibleDockAreaCountChanged()
 {
     Q_Q(DockContainer);
@@ -217,6 +221,10 @@ DockSplitter *DockContainerPrivate::newSplitter(Qt::Orientation orientation, QWi
     return s;
 }
 
+/**
+ * This function forces the dock container widget to update handles of splitters
+ * based if a central widget exists.
+ */
 void DockContainerPrivate::updateSplitterHandles(QSplitter *s)
 {
     if (!m_window->centralWidget() || !s) {
@@ -228,6 +236,10 @@ void DockContainerPrivate::updateSplitterHandles(QSplitter *s)
     }
 }
 
+/**
+ * Ensures equal distribution of the sizes of a splitter if an dock widget
+ * is inserted from code
+ */
 void DockContainerPrivate::adjustSplitterSizesOnInsertion(QSplitter *s, qreal lastRatio)
 {
     int areaSize = (s->orientation() == Qt::Horizontal) ? s->width() : s->height();
@@ -241,6 +253,11 @@ void DockContainerPrivate::adjustSplitterSizesOnInsertion(QSplitter *s, qreal la
     s->setSizes(splitterSizes);
 }
 
+/**
+ * If no central widget exists, the widgets resize with the container.
+ * If a central widget exists, the widgets surrounding the central widget
+ * do not resize its height or width.
+ */
 bool DockContainerPrivate::widgetResizesWithContainer(QWidget *w)
 {
     if (!m_window->centralWidget()) {
@@ -935,6 +952,12 @@ DockContainer::~DockContainer()
     QX_FINI_PRIVATE();
 }
 
+/**
+ * Adds dockwidget into the given area.
+ * If p is not null, then the area parameter indicates the area
+ * into the panel. If p is null, the Dockwidget will be dropped into the container.
+ * \return Returns the dock panel that contains the new DockWidget
+ */
 DockPanel *DockContainer::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, DockPanel *p, int index)
 {
     Q_D(DockContainer);
@@ -977,6 +1000,10 @@ unsigned int DockContainer::zOrderIndex() const
     return d->m_zOrderIndex;
 }
 
+/**
+ * This function returns true if this container widgets z order index is
+ * higher than the index of the container widget given in other parameter
+ */
 bool DockContainer::isInFrontOf(DockContainer *other) const
 {
     return this->zOrderIndex() > other->zOrderIndex();
@@ -1007,6 +1034,10 @@ DockPanel *DockContainer::dockPanel(int index) const
     return (index < dockPanelCount()) ? d->m_panels[index] : nullptr;
 }
 
+/**
+ * Returns the list of dock panels that are not closed
+ * If all dock widgets in a dock panel are closed, the dock panel will be closed
+ */
 QList<DockPanel *> DockContainer::openedDockPanels() const
 {
     Q_D(const DockContainer);
@@ -1019,6 +1050,9 @@ QList<DockPanel *> DockContainer::openedDockPanels() const
     return result;
 }
 
+/**
+ * Returns a list for all open dock widgets in all open dock panels
+ */
 QList<DockWidget *> DockContainer::openedDockWidgets() const
 {
     Q_D(const DockContainer);
@@ -1031,6 +1065,11 @@ QList<DockWidget *> DockContainer::openedDockWidgets() const
     return result;
 }
 
+/**
+ * This function returns true, if the container has open dock panels.
+ * This functions is a little bit faster than calling openedDockPanels().isEmpty()
+ * because it returns as soon as it finds an open dock panel
+ */
 bool DockContainer::hasOpenDockPanels() const
 {
     Q_D(const DockContainer);
@@ -1043,6 +1082,12 @@ bool DockContainer::hasOpenDockPanels() const
     return false;
 }
 
+/**
+ * This function returns true if this dock panel has only one single
+ * visible dock widget.
+ * A top level widget is a real floating widget. Only the isFloating()
+ * function of top level widgets may returns true.
+ */
 bool DockContainer::hasTopLevelDockWidget() const
 {
     auto panels = openedDockPanels();
@@ -1070,6 +1115,13 @@ int DockContainer::visibleDockPanelCount() const
     return result;
 }
 
+/**
+ * This functions returns the dock widget features of all dock widget in
+ * this container.
+ * A bitwise and is used to combine the flags of all dock widgets. That
+ * means, if only dock widget does not support a certain flag, the whole
+ * dock are does not support the flag.
+ */
 DockWidget::DockWidgetFeatures DockContainer::features() const
 {
     Q_D(const DockContainer);
@@ -1090,6 +1142,11 @@ bool DockContainer::isFloating() const
     return d->m_isFloating;
 }
 
+/**
+ * If this dock container is in a floating widget, this function returns
+ * the floating widget.
+ * Else, it returns a nullptr.
+ */
 DockFloatingContainer *DockContainer::floatingWidget() const
 {
     return internal::findParent<DockFloatingContainer *>(this);
@@ -1128,6 +1185,12 @@ QList<DockAutoHideContainer *> DockContainer::autoHideWidgets() const
     return d->m_autoHideWidgets;
 }
 
+/**
+ * Returns the content rectangle mapped to global space.
+ * The content rectangle is the rectangle of the dock container minus
+ * the auto hide side bars. So that means, it is the geometry of the
+ * internal root splitter mapped to global space.
+ */
 QRect DockContainer::contentRect() const
 {
     Q_D(const DockContainer);
@@ -1148,6 +1211,9 @@ QRect DockContainer::contentRect() const
     }
 }
 
+/**
+ * Access function for the internal root splitter
+ */
 DockSplitter *DockContainer::rootSplitter() const
 {
     Q_D(const DockContainer);
@@ -1243,6 +1309,9 @@ emitAndExit:
     d->emitDockAreasRemoved();
 }
 
+/**
+ * Remove all dock panles and returns the list of removed dock panles
+ */
 QList<QPointer<DockPanel>> DockContainer::removeAllDockPanels()
 {
     Q_D(DockContainer);
@@ -1251,6 +1320,10 @@ QList<QPointer<DockPanel>> DockContainer::removeAllDockPanels()
     return result;
 }
 
+/**
+ * If hasTopLevelDockWidget() returns true, this function returns the
+ * one and only visible dock widget. Otherwise it returns a nullptr.
+ */
 DockWidget *DockContainer::topLevelDockWidget() const
 {
     auto panel = topLevelDockPanel();
@@ -1273,12 +1346,24 @@ DockPanel *DockContainer::topLevelDockPanel() const
     return panels[0];
 }
 
+/**
+ * This function returns the last added dock panel for the given
+ * area identifier or 0 if no dock panel has been added for the given area
+ */
 DockPanel *DockContainer::lastAddedDockPanel(Qx::DockWidgetArea area) const
 {
     Q_D(const DockContainer);
     return d->m_lastAddedPanelCache[areaIdToIndex(area)];
 }
 
+/**
+ * This function returns a list of all dock widgets in this container.
+ * It may be possible, depending on the implementation, that dock widgets,
+ * that are not visible to the user have no parent widget. Therefore simply
+ * calling findChildren() would not work here. Therefore this function
+ * iterates over all dock panels and creates a list that contains all
+ * dock widgets returned from all dock panels.
+ */
 QList<DockWidget *> DockContainer::dockWidgets() const
 {
     Q_D(const DockContainer);
@@ -1293,12 +1378,19 @@ QList<DockWidget *> DockContainer::dockWidgets() const
     return result;
 }
 
+/**
+ * This function forces the dock container widget to update handles of splitters
+ * based on resize modes of dock widgets contained in the container.
+ */
 void DockContainer::updateSplitterHandles(QSplitter *splitter)
 {
     Q_D(DockContainer);
     d->updateSplitterHandles(splitter);
 }
 
+/**
+ * Drop floating widget into the container
+ */
 void DockContainer::dropFloatingWidget(DockFloatingContainer *floatingWidget, const QPoint &targetPos)
 {
     Q_D(DockContainer);
@@ -1360,6 +1452,13 @@ void DockContainer::dropFloatingWidget(DockFloatingContainer *floatingWidget, co
     d->m_window->notifyFloatingWidgetDrop(floatingWidget);
 }
 
+/**
+ * Drop a dock panel or a dock widget given in widget parameter.
+ * If the targetPanel is a nullptr, then the dropArea indicates
+ * the drop area for the container. If the given targetPanel is not
+ * a nullptr, then the dropArea indicates the drop area in the given
+ * targetPanel
+ */
 void DockContainer::dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, DockPanel *targetPanel, int tabIndex)
 {
     Q_D(DockContainer);
@@ -1412,6 +1511,11 @@ void DockContainer::createSideTabBarWidgets()
     }
 }
 
+/**
+ * Creates and initializes a dockwidget auto hide container into the given area.
+ * Initializing inserts the tabs into the side tab widget and hides it
+ * Returns nullptr if you try and insert into an area where the configuration is not enabled
+ */
 DockAutoHideContainer *DockContainer::createAndSetupAutoHideContainer(Qx::DockSideBarArea area, DockWidget *w,
                                                                       int tabIndex)
 {
@@ -1580,6 +1684,9 @@ bool DockContainer::restoreState(DockStateReader &s, bool testing)
     return true;
 }
 
+/**
+ * Handles activation events to update zOrderIndex
+ */
 bool DockContainer::event(QEvent *e)
 {
     Q_D(DockContainer);
