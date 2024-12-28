@@ -117,6 +117,10 @@ enum RepolishChildOptions {
     RepolishChildrenRecursively
 };
 
+/**
+ * Calls unpolish() / polish for the style of the given widget to update
+ * stylesheet if a property changes
+ */
 void repolishStyle(QWidget *w, RepolishChildOptions options = RepolishIgnoreChildren);
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)

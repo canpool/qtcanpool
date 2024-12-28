@@ -120,6 +120,9 @@ void DockTabPrivate::init()
     m_label->setVisible(true);
 }
 
+/**
+ * Returns true if the given config flag is set
+ */
 bool DockTabPrivate::testConfigFlag(DockManager::ConfigFlag flag) const
 {
     return DockManager::testConfigFlag(flag);
@@ -150,7 +153,7 @@ void DockTabPrivate::updateCloseButtonVisibility(bool active)
     bool dockWidgetClosable = m_dockWidget->features().testFlag(DockWidget::DockWidgetClosable);
     bool activeTabHasCloseButton = testConfigFlag(DockManager::ActiveTabHasCloseButton);
     bool allTabsHaveCloseButton = testConfigFlag(DockManager::AllTabsHaveCloseButton);
-    bool tabHasCloseButton = (activeTabHasCloseButton && active) | allTabsHaveCloseButton;
+    bool tabHasCloseButton = (activeTabHasCloseButton && active) || allTabsHaveCloseButton;
     m_closeButton->setVisible(dockWidgetClosable && tabHasCloseButton);
 }
 
@@ -166,6 +169,9 @@ bool DockTabPrivate::isDraggingState(Qx::DockDragState dragState) const
     return m_dragState == dragState;
 }
 
+/**
+ * Moves the tab depending on the position in the given mouse event
+ */
 void DockTabPrivate::moveTab(QMouseEvent *e)
 {
     Q_Q(DockTab);
@@ -179,25 +185,36 @@ void DockTabPrivate::moveTab(QMouseEvent *e)
     q->raise();
 }
 
+/**
+ * Starts floating of the dock widget that belongs to this title bar
+ * Returns true, if floating has been started and false if floating
+ * is not possible for any reason
+ */
 bool DockTabPrivate::startFloating(Qx::DockDragState draggingState)
 {
     Q_Q(DockTab);
     auto container = m_dockWidget->dockContainer();
+    QX_DOCK_PRINT("----");
+    QX_DOCK_PRINT("isFloating " << container->isFloating());
+    QX_DOCK_PRINT("panelCount " << container->dockPanelCount());
+    QX_DOCK_PRINT("visiblePanelCount " << container->visibleDockPanelCount());
+    QX_DOCK_PRINT("widgetCount " << m_dockWidget->dockPanel()->dockWidgetsCount());
     // if this is the last dock widget inside of this floating widget,
-    // then it does not make any sense, to make it floating because
+    // then it does not make any sense to make it floating because
     // it is already floating
     if (container->isFloating() && (container->visibleDockPanelCount() == 1) &&
         (m_dockWidget->dockPanel()->dockWidgetsCount() == 1)) {
         return false;
     }
 
+    QX_DOCK_PRINT("dragginState " << draggingState);
     m_dragState = draggingState;
     DockFloatingWidget *floatingWidget = nullptr;
     bool needCreateContainer = (Qx::DockDraggingFloatingWidget != draggingState);
 
-    // If section widget has multiple tabs, we take only one tab
+    // If panel has multiple tabs, we take only one tab.
     // If it has only one single tab, we can move the complete
-    // dock area into floating widget
+    // dock panel into floating widget
     QSize size;
     if (m_panel->dockWidgetsCount() > 1) {
         floatingWidget = createFloatingWidget(m_dockWidget, needCreateContainer);
@@ -280,6 +297,7 @@ DockTab::DockTab(DockWidget *w, QWidget *parent)
 
 DockTab::~DockTab()
 {
+    QX_DOCK_PRINT("");
     QX_FINI_PRIVATE();
 }
 
@@ -576,8 +594,8 @@ void DockTab::mouseMoveEvent(QMouseEvent *e)
     // Maybe a fixed drag distance is better here ?
     int dragDistanceY = qAbs(d->m_globalDragStartMousePosition.y() - internal::globalPositionOf(e).y());
     if (dragDistanceY >= DockManager::startDragDistance() || mouseOutsideBar) {
-        // If this is the last dock area in a dock container with only
-        // one single dock widget it does not make  sense to move it to a new
+        // If this is the last dock panel in a dock container with only
+        // one single dock widget it does not make sense to move it to a new
         // floating widget and leave this one empty
         if (d->m_panel->dockContainer()->isFloating() && d->m_panel->openDockWidgetsCount() == 1 &&
             d->m_panel->dockContainer()->visibleDockPanelCount() == 1) {
@@ -593,7 +611,7 @@ void DockTab::mouseMoveEvent(QMouseEvent *e)
             if (d->isDraggingState(Qx::DockDraggingTab)) {
                 parentWidget()->layout()->update();
             }
-            d->startFloating();
+            d->startFloating(Qx::DockDraggingFloatingWidget);
         }
         return;
     } else if (d->m_panel->openDockWidgetsCount() > 1 &&
@@ -644,7 +662,7 @@ void DockTab::contextMenuEvent(QContextMenuEvent *e)
 
     const bool isFloatable = d->m_dockWidget->features().testFlag(DockWidget::DockWidgetFloatable);
     const bool isNotOnlyTabInContainer = !d->m_panel->dockContainer()->hasTopLevelDockWidget();
-    const bool isTopLevelArea = d->m_panel->isTopLevelArea();
+    const bool isTopLevelArea = d->m_panel->isTopLevelArea(); // It is the only panel that opens in the container
     const bool isDetachable = isFloatable && isNotOnlyTabInContainer;
     QAction *action;
     QMenu menu(this);
@@ -670,7 +688,7 @@ void DockTab::contextMenuEvent(QContextMenuEvent *e)
     action = menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
     action->setEnabled(isClosable());
     if (d->m_panel->openDockWidgetsCount() > 1) {
-        action = menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
+        menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
     }
     menu.exec(e->globalPos());
 }
