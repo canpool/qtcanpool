@@ -22,6 +22,11 @@ class DockStateReader;
 
 class DockPanelPrivate;
 
+/**
+ * DockPanel manages multiple instances of DockWidgets.
+ * It displays a title tab, which is clickable and will switch to
+ * the contents associated to the title when clicked.
+ */
 class QX_DOCK_EXPORT DockPanel : public QFrame
 {
     Q_OBJECT

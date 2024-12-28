@@ -268,6 +268,9 @@ void DockPanelPrivate::updateTitleBarButtonVisibility(bool isTopLevel)
     }
 }
 
+/**
+ * Scans all contained dock widgets for the max. minimum size hint
+ */
 void DockPanelPrivate::updateMinimumSizeHint()
 {
     m_minSizeHint = QSize();
@@ -371,6 +374,10 @@ DockWidget *DockPanel::dockWidget(int index) const
     return qobject_cast<DockWidget *>(d->m_contentsLayout->widget(index));
 }
 
+/**
+ * Returns the index of the current active dock widget or -1 if there
+ * are is no active dock widget (ie.e if all dock widgets are closed)
+ */
 int DockPanel::currentIndex() const
 {
     Q_D(const DockPanel);
@@ -394,6 +401,15 @@ void DockPanel::setCurrentDockWidget(DockWidget *w)
     internalSetCurrentDockWidget(w);
 }
 
+/**
+ * This functions returns the dock widget features of all dock widget in
+ * this panel.
+ * A bitwise and is used to combine the flags of all dock widgets. That
+ * means, if only one single dock widget does not support a certain flag,
+ * the whole dock are does not support the flag. I.e. if one single
+ * dock widget in this panel is not closable, the whole dock are is not
+ * closable.
+ */
 DockWidget::DockWidgetFeatures DockPanel::features(Qx::DockBitwiseOperator mode) const
 {
     if (mode == Qx::DockBitwiseAnd) {
@@ -444,12 +460,21 @@ DockTitleBar *DockPanel::titleBar() const
     return d->m_titleBar;
 }
 
+/**
+ * Returns the dock area flags - a combination of flags that configure the
+ * appearance and features of the dock area.
+ * \see setDockAreaFlasg()
+ */
 DockPanel::DockAreaFlags DockPanel::dockAreaFlags() const
 {
     Q_D(const DockPanel);
     return d->m_flags;
 }
 
+/**
+ * Sets the dock area flags - a combination of flags that configure the
+ * appearance and features of the dock panel
+ */
 void DockPanel::setDockAreaFlags(DockAreaFlags flags)
 {
     Q_D(DockPanel);
@@ -548,6 +573,11 @@ void DockPanel::closeOtherAreas()
     dockContainer()->closeOtherAreas(this);
 }
 
+/**
+ * Sets the dock panel into auto hide mode or into normal mode.
+ * If the dock panel is switched to auto hide mode, then all dock widgets
+ * that are pinable will be added to the sidebar
+ */
 void DockPanel::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
 {
     Q_D(DockPanel);
@@ -582,6 +612,10 @@ void DockPanel::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
     }
 }
 
+/**
+ * Switches the dock panel to auto hide mode or vice versa depending on its
+ * current state.
+ */
 void DockPanel::toggleAutoHide(Qx::DockSideBarArea area)
 {
     if (!isAutoHideFeatureEnabled()) {
@@ -608,6 +642,10 @@ void DockPanel::onTabCloseRequested(int index)
     dockWidget(index)->requestCloseDockWidget();
 }
 
+/**
+ * Reorder the index position of DockWidget at fromIndx to toIndex
+ * if a tab in the tabbar is dragged from one index to another one
+ */
 void DockPanel::reorderDockWidget(int fromIndex, int toIndex)
 {
     Q_D(DockPanel);
@@ -622,6 +660,9 @@ void DockPanel::reorderDockWidget(int fromIndex, int toIndex)
     setCurrentIndex(toIndex);
 }
 
+/*
+ * Update the auto hide button checked state based on if it's contained in an auto hide container or not
+ */
 void DockPanel::updateAutoHideButtonCheckState()
 {
     auto autoHideButton = titleBarButton(Qx::TitleBarButtonAutoHide);
@@ -657,6 +698,10 @@ enum BorderLocation {
     BorderAll = BorderVertical | BorderHorizontal
 };
 
+/**
+ * Calculate the auto hide side bar are depending on the dock area
+ * widget position in the container
+ */
 Qx::DockSideBarArea DockPanel::calculateSideBarArea() const
 {
     auto container = dockContainer();
@@ -767,12 +812,23 @@ void DockPanel::onDockWidgetFeaturesChanged()
     }
 }
 
+/**
+ * Add a new dock widget to dock panel.
+ * All dockwidgets in the dock panel tabified in a stacked layout with tabs
+ */
 void DockPanel::addDockWidget(DockWidget *w)
 {
     Q_D(DockPanel);
     insertDockWidget(d->m_contentsLayout->count(), w);
 }
 
+/**
+ * Inserts a dock widget into dock panel.
+ * All dockwidgets in the dock panel tabified in a stacked layout with tabs.
+ * The index indicates the index of the new dockwidget in the tabbar and
+ * in the stacked layout. If the activate parameter is true, the new
+ * w will be the active one in the stacked layout
+ */
 void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
 {
     Q_D(DockPanel);
@@ -855,6 +911,12 @@ void DockPanel::removeDockWidget(DockWidget *w)
     }
 }
 
+/**
+ * This is a helper function to get the next open dock widget to activate
+ * if the given w will be closed or removed.
+ * The function returns the next widget that should be activated or
+ * nullptr in case there are no more open widgets in this area.
+ */
 DockWidget *DockPanel::nextOpenDockWidget(DockWidget *w) const
 {
     auto openWidgets = openedDockWidgets();
@@ -898,6 +960,9 @@ DockWidget *DockPanel::nextOpenDockWidget(DockWidget *w) const
     }
 }
 
+/**
+ * Called from dock widget if it is opened or closed
+ */
 void DockPanel::toggleDockWidgetView(DockWidget *w, bool open)
 {
     Q_UNUSED(w);
@@ -911,6 +976,10 @@ int DockPanel::indexOf(DockWidget *w) const
     return d->m_contentsLayout->indexOf(w);
 }
 
+/**
+ * Call this function, if you already know, that the dock does not
+ * contain any visible content (any open dock widgets).
+ */
 void DockPanel::hideAreaWithNoVisibleContent()
 {
     this->toggleView(false);
@@ -941,6 +1010,9 @@ void DockPanel::hideAreaWithNoVisibleContent()
     }
 }
 
+/**
+ * Updates the dock panel layout and components visibility
+ */
 void DockPanel::updateTitleBarVisibility()
 {
     Q_D(DockPanel);
@@ -964,6 +1036,11 @@ void DockPanel::updateTitleBarVisibility()
     }
 }
 
+/**
+ * This is the internal private function for setting the current widget.
+ * This function is called by the public setCurrentDockWidget() function
+ * and by the dock window when restoring the state
+ */
 void DockPanel::internalSetCurrentDockWidget(DockWidget *w)
 {
     int index = indexOf(w);
@@ -975,12 +1052,18 @@ void DockPanel::internalSetCurrentDockWidget(DockWidget *w)
     w->setClosedState(false);
 }
 
+/*
+ * Update the title bar button visibility based on if it's top level or not
+ */
 void DockPanel::updateTitleBarButtonVisibility(bool isTopLevel)
 {
     Q_D(DockPanel);
     d->updateTitleBarButtonVisibility(isTopLevel);
 }
 
+/**
+ * Marks tabs menu to update
+ */
 void DockPanel::markTitleBarMenuOutdated()
 {
     Q_D(DockPanel);
@@ -1033,6 +1116,15 @@ bool DockPanel::isAutoHide() const
     return d->m_autoHideContainer != nullptr;
 }
 
+/**
+ * Returns the index of the first open dock widgets in the list of
+ * dock widgets.
+ * This function is here for performance reasons. Normally it would
+ * be possible to take the first dock widget from the list returned by
+ * openedDockWidgets() function. But that function enumerates all
+ * dock widgets while this functions stops after the first open dock widget.
+ * If there are no open dock widgets, the function returns -1.
+ */
 int DockPanel::indexOfFirstOpenDockWidget() const
 {
     Q_D(const DockPanel);
@@ -1138,6 +1230,10 @@ bool DockPanel::restoreState(DockStateReader &s, DockPanel *&createdWidget, bool
     return true;
 }
 
+/**
+ * Returns the largest minimumSizeHint() of the dock widgets in this panel.
+ * The minimum size hint is updated if a dock widget is removed or added.
+ */
 QSize DockPanel::minimumSizeHint() const
 {
     Q_D(const DockPanel);
