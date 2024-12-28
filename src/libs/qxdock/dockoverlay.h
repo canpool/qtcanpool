@@ -11,6 +11,10 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockOverlayPrivate;
 
+/*!
+ * DockOverlay paints a translucent rectangle over another widget. The geometry
+ * of the rectangle is based on the mouse location.
+ */
 class QX_DOCK_EXPORT DockOverlay : public QFrame
 {
     Q_OBJECT
@@ -87,11 +91,11 @@ class QX_DOCK_EXPORT DockOverlayCross : public QWidget
     Q_PROPERTY(QColor iconShadowColor READ iconColor WRITE setIconShadowColor)
 public:
     enum IconColor {
-        FrameColor,
-        WindowBackgroundColor,
-        OverlayColor,
-        ArrowColor,
-        ShadowColor
+        FrameColor,             ///< the color of the frame of the small window icon
+        WindowBackgroundColor,  ///< the background color of the small window in the icon
+        OverlayColor,           ///< the color that shows the overlay (the dock side) in the icon
+        ArrowColor,             ///< the arrow that points into the direction
+        ShadowColor             ///< the color of the shadow rectangle that is painted below the icons
     };
     enum IconColorSizes {
         NIconColors = 5

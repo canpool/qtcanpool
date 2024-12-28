@@ -178,6 +178,15 @@ Qx::DockWidgetArea DockOverlay::dropAreaUnderCursor()
     return result;
 }
 
+/**
+ * If the drop area is the CenterDockWidgetArea or a sidebar area,
+ * then this function returns the index of the tab under cursor.
+ * Call this function after call to dropAreaUnderCursor() because this
+ * function updates the tab index.
+ * A value of -1 indicates a position before the first tab and a value of
+ * tabCount() indicates a position behind the last tab.
+ * A value of -2 indicates an valid value
+ */
 int DockOverlay::tabIndexUnderCursor() const
 {
     Q_D(const DockOverlay);
@@ -684,6 +693,11 @@ void DockOverlayCross::setIconColor(IconColor colorIndex, const QColor &color)
     d->m_updateRequired = true;
 }
 
+/**
+ * Returns the dock widget area depending on the current cursor location.
+ * The function checks, if the mouse cursor is inside of any drop indicator
+ * widget and returns the corresponding DockWidgetArea.
+ */
 Qx::DockWidgetArea DockOverlayCross::cursorLocation() const
 {
     Q_D(const DockOverlayCross);
@@ -766,6 +780,17 @@ void DockOverlayCross::updatePosition()
     move(crossTopLeft);
 }
 
+/**
+ * A string with all icon colors to set.
+ * You can use this property to style the overly icon via CSS stylesheet
+ * file. The colors are set via a color identifier and a hex AARRGGBB value like
+ * in the example below.
+ * \code
+ * QxDock--DockOverlayCross
+ * {
+ *     qproperty-iconColors: "Frame=#ff3d3d3d Background=#ff929292 Overlay=#1f3d3d3d Arrow=#ffb4b4b4 Shadow=#40474747";
+ * }
+ */
 void DockOverlayCross::setIconColors(const QString &colors)
 {
     Q_D(DockOverlayCross);
