@@ -16,7 +16,9 @@ class DockTab;
 class DockWidget;
 
 class DockFocusControllerPrivate;
-
+/**
+ * Manages focus styling of dock widgets and handling of focus changes
+ */
 class QX_DOCK_EXPORT DockFocusController : public QObject
 {
     Q_OBJECT

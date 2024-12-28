@@ -76,6 +76,10 @@ DockFocusControllerPrivate::DockFocusControllerPrivate()
 {
 }
 
+/**
+ * This function updates the focus style of the given dock widget and
+ * the dock panel that it belongs to
+ */
 void DockFocusControllerPrivate::updateDockWidgetFocus(DockWidget *dockWidget)
 {
     if (!dockWidget)
@@ -172,6 +176,10 @@ DockFocusController::~DockFocusController()
     QX_FINI_PRIVATE();
 }
 
+/**
+ * A container needs to call this function if a widget has been dropped
+ * into it
+ */
 void DockFocusController::notifyDockAreaRelocation(QWidget *droppedWidget)
 {
     Q_D(DockFocusController);
@@ -196,6 +204,12 @@ void DockFocusController::notifyDockAreaRelocation(QWidget *droppedWidget)
     DockManager::setWidgetFocus(dockWidget);
 }
 
+/**
+ * This function is called, if a floating widget has been dropped into
+ * an new position.
+ * When this function is called, all dock widgets of the FloatingWidget
+ * are already inserted into its new position
+ */
 void DockFocusController::notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget)
 {
     Q_D(DockFocusController);
@@ -215,6 +229,10 @@ void DockFocusController::notifyFloatingWidgetDrop(DockFloatingContainer *floati
     }
 }
 
+/**
+ * Request focus highlighting for the given dock widget assigned to the tab
+ * given in tab parameter
+ */
 void DockFocusController::setDockWidgetTabFocused(DockTab *tab)
 {
     Q_D(DockFocusController);
@@ -224,6 +242,9 @@ void DockFocusController::setDockWidgetTabFocused(DockTab *tab)
     }
 }
 
+/**
+ * Notifies the dock focus controller, that a the mouse is pressed or released
+ */
 void DockFocusController::setDockWidgetTabPressed(bool Value)
 {
     Q_D(DockFocusController);
@@ -236,12 +257,19 @@ void DockFocusController::clearDockWidgetFocus(DockWidget *w)
     updateDockWidgetFocusStyle(w, false);
 }
 
+/**
+ * Returns the dock widget that has focus style in the ui or a nullptr if
+ * not dock widget is painted focused.
+ */
 DockWidget *DockFocusController::focusedDockWidget() const
 {
     Q_D(const DockFocusController);
     return d->m_focusedDockWidget.data();
 }
 
+/**
+ * Request a focus change to the given dock widget
+ */
 void DockFocusController::setDockWidgetFocused(DockWidget *focusedNow)
 {
     Q_D(DockFocusController);
