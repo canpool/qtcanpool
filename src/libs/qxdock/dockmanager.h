@@ -30,6 +30,7 @@ public:
         AlwaysShowTabs = 0x2000,
         DockAreaHasUndockButton = 0x4000,
         DockAreaHasTabsMenuButton = 0x8000,
+        DockAreaHideDisabledButtons = 0x10000,
         DockAreaDynamicTabsMenuButtonVisibility = 0x20000,
         FloatingContainerHasWidgetTitle = 0x40000,
         FloatingContainerHasWidgetIcon = 0x80000,

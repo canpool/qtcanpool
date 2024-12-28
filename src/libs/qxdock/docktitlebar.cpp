@@ -31,7 +31,7 @@ TitleBarButton::TitleBarButton(bool showInTitleBar, bool hideWhenDisabled, Qx::D
     : QToolButton(parent)
     , m_id(id)
     , m_showInTitleBar(showInTitleBar)
-    , m_hideWhenDisabled(hideWhenDisabled)
+    , m_hideWhenDisabled(DockManager::testConfigFlag(DockManager::DockAreaHideDisabledButtons) && hideWhenDisabled)
 {
     setFocusPolicy(Qt::NoFocus);
 }
