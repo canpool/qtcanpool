@@ -89,9 +89,10 @@ void DockWidgetPrivate::showDockWidget()
 {
     Q_Q(DockWidget);
 
-    if (!m_widget) {
+    // Allow the widget not to be set when the DeleteContentOnClose flag is not set
+    if (!m_widget && m_features.testFlag(DockWidget::DeleteContentOnClose)) {
         if (!createWidgetFromFactory()) {
-            Q_ASSERT(!m_features.testFlag(DockWidget::DeleteContentOnClose) &&
+            Q_ASSERT(m_features.testFlag(DockWidget::DeleteContentOnClose) &&
                      "DeleteContentOnClose flag was set, but the widget "
                      "factory is missing or it doesn't return a valid QWidget.");
             return;
@@ -215,10 +216,6 @@ void DockWidgetPrivate::setupScrollArea()
 bool DockWidgetPrivate::createWidgetFromFactory()
 {
     Q_Q(DockWidget);
-    if (!m_features.testFlag(DockWidget::DeleteContentOnClose)) {
-        return false;
-    }
-
     if (!m_factory) {
         return false;
     }
