@@ -25,6 +25,12 @@ class DockStateReader;
 
 class DockFloatingContainerPrivate;
 
+/**
+ * This implements a floating widget that is a dock container that accepts
+ * docking of dock widgets like the main window and that can be docked into
+ * another dock container.
+ * Every floating window of the docking system is a DockFloatingContainer.
+ */
 class QX_DOCK_EXPORT DockFloatingContainer : public DockFloatingContainerBase
                                            , public DockFloatingWidget
 {

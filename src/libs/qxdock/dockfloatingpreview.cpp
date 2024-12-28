@@ -239,6 +239,9 @@ DockFloatingPreview::DockFloatingPreview(DockWidget *content)
     setWindowTitle(content->windowTitle());
 }
 
+/**
+ * The content is a DockPanel or a DockWidget
+ */
 DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent)
     : QWidget(parent)
 {
@@ -366,6 +369,9 @@ void DockFloatingPreview::cleanupAutoHideContainerWidget(Qx::DockWidgetArea cont
     autoHideContainer->cleanupAndDelete();
 }
 
+/**
+ * Cancel non opaque undocking if application becomes inactive
+ */
 void DockFloatingPreview::onApplicationStateChanged(Qt::ApplicationState state)
 {
     Q_D(DockFloatingPreview);

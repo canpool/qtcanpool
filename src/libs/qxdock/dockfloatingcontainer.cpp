@@ -222,6 +222,10 @@ void DockFloatingContainerPrivate::setWindowTitle(const QString &text)
     q->setWindowTitle(text);
 }
 
+/**
+ * Reflect the current dock widget title in the floating widget windowTitle()
+ * depending on the DockManager::FloatingContainerHasWidgetTitle flag
+ */
 void DockFloatingContainerPrivate::reflectCurrentWidget(DockWidget *currentWidget)
 {
     Q_Q(DockFloatingContainer);
@@ -241,11 +245,21 @@ void DockFloatingContainerPrivate::reflectCurrentWidget(DockWidget *currentWidge
     }
 }
 
+/**
+ * Returns the title used by all FloatingContainer that does not
+ * reflect the title of the current dock widget.
+ *
+ * If not title was set with DockManager::setFloatingContainersTitle(),
+ * it returns QGuiApplication::applicationDisplayName().
+ */
 QString DockFloatingContainerPrivate::floatingContainersTitle()
 {
     return DockManager::floatingContainersTitle();
 }
 
+/**
+ * Handles escape key press when dragging around the floating widget
+ */
 void DockFloatingContainerPrivate::handleEscapeKey()
 {
     setState(Qx::DockDraggingInactive);
@@ -356,6 +370,10 @@ DockFloatingContainer::~DockFloatingContainer()
     QX_FINI_PRIVATE();
 }
 
+/**
+ * This function returns true, if it can be closed.
+ * It can be closed, if all dock widgets in all dock areas can be closed
+ */
 bool DockFloatingContainer::isClosable() const
 {
     Q_D(const DockFloatingContainer);
@@ -368,18 +386,34 @@ DockContainer *DockFloatingContainer::dockContainer() const
     return d->m_dockContainer;
 }
 
+/**
+ * This function returns the first dock widget in the first dock panel.
+ * If the function hasTopLevelDockWidget() returns true, then this function
+ * returns this single dock widget.
+ */
 DockWidget *DockFloatingContainer::topLevelDockWidget() const
 {
     Q_D(const DockFloatingContainer);
     return d->m_dockContainer->topLevelDockWidget();
 }
 
+/**
+ * This function returns a list of all dock widget in this floating widget.
+ * This is a simple convenience function that simply calls the dockWidgets()
+ * function of the internal container widget.
+ */
 QList<DockWidget *> DockFloatingContainer::dockWidgets() const
 {
     Q_D(const DockFloatingContainer);
     return d->m_dockContainer->dockWidgets();
 }
 
+/**
+ * This function returns true, if this floating widget has only one single
+ * visible dock widget in a single visible dock panel.
+ * The single dock widget is a real top level floating widget because no
+ * other widgets are docked.
+ */
 bool DockFloatingContainer::hasTopLevelDockWidget() const
 {
     Q_D(const DockFloatingContainer);
@@ -409,7 +443,10 @@ void DockFloatingContainer::finishDropOperation()
 }
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
-
+/**
+ * This is a function that responds to DockFloatingTitleBar::maximizeRequested()
+ * Maximize or normalize the container size.
+ */
 void DockFloatingContainer::onMaximizeRequest()
 {
     if (windowState() == Qt::WindowMaximized) {
@@ -419,6 +456,12 @@ void DockFloatingContainer::onMaximizeRequest()
     }
 }
 
+/**
+ * Normalize (Unmaximize) the window.
+ *	fixGeometry parameter fixes a "bug" in QT where immediately after calling showNormal
+ *	geometry is not set properly.
+ *	Set this true when moving the window immediately after normalizing.
+ */
 void DockFloatingContainer::showNormal(bool fixGeometry)
 {
     Q_D(DockFloatingContainer);
@@ -456,6 +499,10 @@ void DockFloatingContainer::show()
     Super::show();
 }
 
+/**
+ * Returns true if the floating widget has a native titlebar or false if
+ * the floating widget has a QWidget based title bar
+ */
 bool DockFloatingContainer::hasNativeTitleBar()
 {
     Q_D(DockFloatingContainer);
@@ -564,6 +611,11 @@ void DockFloatingContainer::moveFloating()
     }
 }
 
+/**
+ * This function deletes all dock widgets in it.
+ * This functions should be called only from dock window in its
+ * destructor before deleting the floating widget
+ */
 void DockFloatingContainer::deleteContent()
 {
     std::vector<QPointer<DockPanel> > panels;

@@ -15,6 +15,11 @@ class DockWidget;
 
 class DockFloatingPreviewPrivate;
 
+/**
+ * A floating overlay is a temporary floating widget that is just used to
+ * indicate the floating widget movement.
+ * This widget is used as a placeholder for drag operations for non-opaque docking
+ */
 class QX_DOCK_EXPORT DockFloatingPreview : public QWidget
                                          , public DockFloatingWidget
 {
