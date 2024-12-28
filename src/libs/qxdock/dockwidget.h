@@ -23,6 +23,10 @@ class DockFloatingContainer;
 
 class DockWidgetPrivate;
 
+/**
+ * The DockWidget class provides a widget that can be docked inside a
+ * DockWindow or floated as a top-level window on the desktop.
+ */
 class QX_DOCK_EXPORT DockWidget : public QFrame
 {
     Q_OBJECT
@@ -30,16 +34,28 @@ public:
     using Super = QFrame;
 
     enum DockWidgetFeature {
+        // dock widget has a close button
         DockWidgetClosable = 0x001,
+        // dock widget is movable and can be moved to a new position in the current dock container
         DockWidgetMovable = 0x002,
+        // dock widget can be dragged into a floating window
         DockWidgetFloatable = 0x004,
+        // deletes the dock widget when it is closed
         DockWidgetDeleteOnClose = 0x008,
+        // clicking the close button will not close the dock widget but emits the closeRequested() signal instead
         CustomCloseHandling = 0x010,
+        // if this is enabled, a dock widget can get focus highlighting
         DockWidgetFocusable = 0x020,
+        // dock widget will be closed when the dock area hosting it is closed
         DockWidgetForceCloseWithArea = 0x040,
-        NoTab = 0x080, ///< dock widget tab will never be shown if this flag is set
+        // dock widget tab will never be shown if this flag is set
+        NoTab = 0x080,
+        // deletes only the contained widget on close, keeping the dock widget intact and in place.
+        // Attempts to rebuild the contents widget on show if there is a widget factory set.
         DeleteContentOnClose = 0x100,
+        // dock widget can be pinned and added to an auto hide dock container
         DockWidgetPinnable = 0x200,
+
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable
                                   | DockWidgetFocusable | DockWidgetPinnable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
@@ -48,12 +64,30 @@ public:
         NoDockWidgetFeatures = 0x000
     };
     Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
-
+    /**
+     * This mode configures the behavior of the toggle view action.
+     * If the mode if ActionModeToggle, then the toggle view action is
+     * a checkable action to show / hide the dock widget. If the mode
+     * is ActionModeShow, then the action is not checkable an it will
+     * always show the dock widget if clicked. If the mode is ActionModeShow,
+     * the user can only close the DockWidget with the close button.
+     */
     enum ToggleViewActionMode {
         ActionModeToggle,
         ActionModeShow
     };
-
+    /**
+     * The mode of the minimumSizeHint() that is returned by the DockWidget
+     * minimumSizeHint() function.
+     * To ensure, that a dock widget does not block resizing, the dock widget
+     * reimplements minimumSizeHint() function to return a very small minimum
+     * size hint. If you would like to adhere the minimumSizeHint() from the
+     * content widget, then set the minimumSizeHintMode() to
+     * MinimumSizeHintFromContent. If you would like to use the minimumSize()
+     * value of the content widget or the dock widget, then you can use the
+     * MinimumSizeHintFromDockWidgetMinimumSize or
+     * MinimumSizeHintFromContentMinimumSize modes.
+     */
     enum MinimumSizeHintMode {
         MinimumSizeHintFromDockWidget,
         MinimumSizeHintFromContent,
@@ -61,6 +95,23 @@ public:
         MinimumSizeHintFromContentMinimumSize,
     };
 
+    /**
+     * Sets the widget for the dock widget to widget.
+     * The InsertMode defines how the widget is inserted into the dock widget.
+     * The content of a dock widget should be resizable do a very small size to
+     * prevent the dock widget from blocking the resizing. To ensure, that a
+     * dock widget can be resized very well, it is better to insert the content+
+     * widget into a scroll area or to provide a widget that is already a scroll
+     * area or that contains a scroll area.
+     * If the InsertMode is AutoScrollArea, the DockWidget tries to automatically
+     * detect how to insert the given widget. If the widget is derived from
+     * QScrollArea (i.e. an QAbstractItemView), then the widget is inserted
+     * directly. If the given widget is not a scroll area, the widget will be
+     * inserted into a scroll area.
+     * To force insertion into a scroll area, you can also provide the InsertMode
+     * ForceScrollArea. To prevent insertion into a scroll area, you can
+     * provide the InsertMode ForceNoScrollArea
+     */
     enum WidgetInsertMode {
         AutoScrollArea,
         ForceScrollArea,
@@ -165,8 +216,18 @@ Q_SIGNALS:
     void viewToggled(bool open);
     void closeRequested();
     void closed();
+    /**
+     * This signal is emitted when the floating property changes.
+     * The topLevel parameter is true if the dock widget is now floating;
+     * otherwise it is false.
+     */
     void topLevelChanged(bool topLevel);
     void titleChanged(const QString &title);
+    /**
+     * This signal is emitted when the dock widget becomes visible (or invisible).
+     * This happens when the widget is hidden or shown, as well as when it is
+     * docked in a tabbed dock panel and its tab becomes selected or unselected.
+     */
     void visibilityChanged(bool visible);
     void featuresChanged(DockWidget::DockWidgetFeatures features);
 

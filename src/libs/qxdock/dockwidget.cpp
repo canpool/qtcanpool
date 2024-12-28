@@ -147,6 +147,11 @@ void DockWidgetPrivate::hideDockWidget()
     }
 }
 
+/**
+ * Hides a dock panel if all dock widgets in the area panel closed.
+ * This function updates the current selected tab and hides the parent
+ * dock panel if it is empty
+ */
 void DockWidgetPrivate::updateParentDockPanel()
 {
     if (!m_panel) {
@@ -164,6 +169,10 @@ void DockWidgetPrivate::updateParentDockPanel()
     }
 }
 
+/**
+ * Closes all auto hide dock widgets if there are no more opened dock panels
+ * This prevents the auto hide dock widgets from being pinned to an empty dock panel
+ */
 void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 {
     Q_Q(DockWidget);
@@ -204,6 +213,9 @@ void DockWidgetPrivate::setupToolBar()
     q->connect(q, SIGNAL(topLevelChanged(bool)), SLOT(setToolbarFloatingStyle(bool)));
 }
 
+/**
+ * Setup the main scroll area
+ */
 void DockWidgetPrivate::setupScrollArea()
 {
     Q_Q(DockWidget);
@@ -213,6 +225,10 @@ void DockWidgetPrivate::setupScrollArea()
     m_layout->addWidget(m_scrollArea);
 }
 
+/**
+ * Creates the content widget with the registered widget factory and
+ * returns true on success.
+ */
 bool DockWidgetPrivate::createWidgetFromFactory()
 {
     Q_Q(DockWidget);
@@ -229,6 +245,9 @@ bool DockWidgetPrivate::createWidgetFromFactory()
     return true;
 }
 
+/**
+ * Use the dock window toolbar style and icon size for the different states
+ */
 void DockWidgetPrivate::setToolBarStyleFromDockWindow()
 {
     Q_Q(DockWidget);
@@ -243,6 +262,19 @@ void DockWidgetPrivate::setToolBarStyleFromDockWindow()
     q->setToolBarStyle(m_window->dockWidgetToolBarStyle(state), state);
 }
 
+/**
+ * This constructor creates a dock widget with the given title.
+ * The title is the text that is shown in the window title when the dock
+ * widget is floating and it is the title that is shown in the titlebar
+ * or the tab of this dock widget if it is tabified.
+ * The object name of the dock widget is also set to the title. The
+ * object name is required by the dock window to properly save and restore
+ * the state of the dock widget. That means, the title needs to be unique.
+ * If your title is not unique or if you would like to change the title
+ * during runtime, you need to set a unique object name explicitly
+ * by calling setObjectName() after construction.
+ * Use the layoutFlags to configure the layout of the dock widget.
+ */
 DockWidget::DockWidget(const QString &title, QWidget *parent)
     : Super{parent}
 {
@@ -271,6 +303,10 @@ DockWidget::~DockWidget()
     QX_FINI_PRIVATE();
 }
 
+/**
+ * Sets the widget for the dock widget to widget.
+ * \see WidgetInsertMode for a detailed description
+ */
 void DockWidget::setWidget(QWidget *w, WidgetInsertMode insertMode)
 {
     Q_D(DockWidget);
@@ -293,12 +329,19 @@ void DockWidget::setWidget(QWidget *w, WidgetInsertMode insertMode)
     d->m_widget->setProperty("dockWidgetContent", true);
 }
 
+/**
+ * Returns the widget for the dock widget. This function returns zero if
+ * the widget has not been set.
+ */
 QWidget *DockWidget::widget() const
 {
     Q_D(const DockWidget);
     return d->m_widget;
 }
 
+/**
+ * Remove the widget from the dock and give ownership back to the caller
+ */
 QWidget *DockWidget::takeWidget()
 {
     Q_D(DockWidget);
@@ -321,12 +364,22 @@ QWidget *DockWidget::takeWidget()
     return w;
 }
 
+/**
+ * Returns the tab widget of this dock widget that is shown in the dock
+ * title bar
+ */
 DockTab *DockWidget::tab() const
 {
     Q_D(const DockWidget);
     return d->m_tab;
 }
 
+/**
+ * This property holds whether the dock widget is movable, closable, and
+ * floatable.
+ * By default, this property is set to a combination of DockWidgetClosable,
+ * DockWidgetMovable and DockWidgetFloatable.
+ */
 DockWidget::DockWidgetFeatures DockWidget::features() const
 {
     Q_D(const DockWidget);
@@ -337,6 +390,9 @@ DockWidget::DockWidgetFeatures DockWidget::features() const
     }
 }
 
+/**
+ * Sets, whether the dock widget is movable, closable, and floatable.
+ */
 void DockWidget::setFeatures(DockWidgetFeatures features)
 {
     Q_D(DockWidget);
@@ -347,6 +403,10 @@ void DockWidget::setFeatures(DockWidgetFeatures features)
     notifyFeaturesChanged();
 }
 
+/**
+ * Sets the feature flag for this dock widget if on is true; otherwise
+ * clears the flag.
+ */
 void DockWidget::setFeature(DockWidget::DockWidgetFeature flag, bool on)
 {
     auto fs = features();
@@ -354,6 +414,9 @@ void DockWidget::setFeature(DockWidget::DockWidgetFeature flag, bool on)
     setFeatures(fs);
 }
 
+/**
+ * Triggers notification of feature change signals and functions
+ */
 void DockWidget::notifyFeaturesChanged()
 {
     Q_D(DockWidget);
@@ -364,12 +427,20 @@ void DockWidget::notifyFeaturesChanged()
     }
 }
 
+/**
+ * Returns the dock window that manages the dock widget or 0 if the widget
+ * has not been assigned to any dock window yet
+ */
 DockWindow *DockWidget::dockWindow() const
 {
     Q_D(const DockWidget);
     return d->m_window;
 }
 
+/**
+ * Returns the dock container widget this dock panel belongs to or 0
+ * if this dock widget has not been docked yet
+ */
 DockContainer *DockWidget::dockContainer() const
 {
     Q_D(const DockWidget);
@@ -380,18 +451,32 @@ DockContainer *DockWidget::dockContainer() const
     }
 }
 
+/**
+ * This function return the floating DockContainer if is isFloating() is true
+ * and a nullptr if this dock widget is not floating.
+ */
 DockFloatingContainer *DockWidget::dockFloatingContainer() const
 {
     auto container = dockContainer();
     return container ? container->floatingWidget() : nullptr;
 }
 
+/**
+ * Returns the dock panel this dock widget belongs to or 0
+ * if this dock widget has not been docked yet
+ */
 DockPanel *DockWidget::dockPanel() const
 {
     Q_D(const DockWidget);
     return d->m_panel;
 }
 
+/**
+ * This property holds whether the dock widget is floating.
+ * A dock widget is only floating, if it is the one and only widget inside
+ * of a floating container. If there are more than one dock widget in a
+ * floating container, the all dock widgets are docked and not floating.
+ */
 bool DockWidget::isFloating() const
 {
     if (!isInFloatingContainer()) {
@@ -401,6 +486,10 @@ bool DockWidget::isFloating() const
     return dockContainer()->topLevelDockWidget() == this;
 }
 
+/**
+ * The function returns true, if the dock widget is floating and it also
+ * returns true if it is docked inside of a floating container.
+ */
 bool DockWidget::isInFloatingContainer() const
 {
     auto container = dockContainer();
@@ -415,12 +504,19 @@ bool DockWidget::isInFloatingContainer() const
     return true;
 }
 
+/**
+ * Returns true, if this dock widget is closed.
+ */
 bool DockWidget::isClosed() const
 {
     Q_D(const DockWidget);
     return d->m_closed;
 }
 
+/**
+ * Returns true if the dock widget is floating and if the floating dock
+ * container is full screen
+ */
 bool DockWidget::isFullScreen() const
 {
     if (isFloating()) {
@@ -430,29 +526,50 @@ bool DockWidget::isFullScreen() const
     }
 }
 
+/**
+ * Returns true if this dock widget is in a dock panel, that contains at
+ * least 2 opened dock widgets
+ */
 bool DockWidget::isTabbed() const
 {
     Q_D(const DockWidget);
     return d->m_panel && (d->m_panel->openDockWidgetsCount() > 1);
 }
 
+/**
+ * Returns true if this dock widget is the current one in the dock
+ * panel that contains it.
+ * If the dock widget is the only opened dock widget in a dock panel,
+ * the true is returned
+ */
 bool DockWidget::isCurrentTab() const
 {
     Q_D(const DockWidget);
     return d->m_panel && (d->m_panel->currentDockWidget() == this);
 }
 
+/**
+ * Returns true if the dock widget is set as central widget of it's dock window
+ */
 bool DockWidget::isCentralWidget() const
 {
     return dockWindow()->centralWidget() == this;
 }
 
+/**
+ * Returns a checkable action that can be used to show or close this dock widget.
+ * The action's text is set to the dock widget's window title.
+ */
 QAction *DockWidget::toggleViewAction() const
 {
     Q_D(const DockWidget);
     return d->m_toggleViewAction;
 }
 
+/**
+ * Use provided action to be the default toggle view action for this dock widget.
+ * This dock widget now owns the action.
+ */
 void DockWidget::setToggleViewAction(QAction *action)
 {
     if (!action) {
@@ -466,6 +583,10 @@ void DockWidget::setToggleViewAction(QAction *action)
     connect(d->m_toggleViewAction, SIGNAL(triggered(bool)), this, SLOT(toggleView(bool)));
 }
 
+/**
+ * Configures the behavior of the toggle view action.
+ * \see ToggleViewActionMode for a detailed description
+ */
 void DockWidget::setToggleViewActionMode(DockWidget::ToggleViewActionMode mode)
 {
     Q_D(DockWidget);
@@ -478,6 +599,9 @@ void DockWidget::setToggleViewActionMode(DockWidget::ToggleViewActionMode mode)
     }
 }
 
+/**
+ * This function changes the toggle view action without emitting any signal
+ */
 void DockWidget::setToggleViewActionChecked(bool checked)
 {
     Q_D(DockWidget);
@@ -493,18 +617,34 @@ QList<QAction *> DockWidget::titleBarActions() const
     return d->m_titleBarActions;
 }
 
+/**
+ * Set the actions that will be shown in the dock title bar
+ * if this dock widget is the active tab.
+ * You should not add to many actions to the title bar, because this
+ * will remove the available space for the tabs. If you have a number
+ * of actions, just add an action with a menu to show a popup menu
+ * button in the title bar.
+ */
 void DockWidget::setTitleBarActions(QList<QAction *> actions)
 {
     Q_D(DockWidget);
     d->m_titleBarActions = actions;
 }
 
+/**
+ * Get the minimum size hint mode configured by setMinimumSizeHintMode
+ */
 DockWidget::MinimumSizeHintMode DockWidget::minimumSizeHintMode() const
 {
     Q_D(const DockWidget);
     return d->m_minimumSizeHintMode;
 }
 
+/**
+ * Configures the minimum size hint that is returned by the
+ * minimumSizeHint() function.
+ * \see MinimumSizeHintMode for a detailed description
+ */
 void DockWidget::setMinimumSizeHintMode(DockWidget::MinimumSizeHintMode mode)
 {
     Q_D(DockWidget);
@@ -552,6 +692,11 @@ void DockWidget::setIcon(const QIcon &icon)
     }
 }
 
+/**
+ * This function returns the dock widget top tool bar.
+ * a default empty toolbar is assigned or you need to assign your custom
+ * toolbar via setToolBar().
+ */
 QToolBar *DockWidget::toolBar() const
 {
     if (!d_ptr->m_toolBar) {
@@ -560,6 +705,11 @@ QToolBar *DockWidget::toolBar() const
     return d_ptr->m_toolBar;
 }
 
+/**
+ * Assign a new tool bar that is shown above the content widget.
+ * The dock widget will become the owner of the tool bar and deletes it
+ * on destruction
+ */
 void DockWidget::setToolBar(QToolBar *toolBar)
 {
     Q_D(DockWidget);
@@ -579,6 +729,10 @@ DockWidget::ToolBarStyleSource DockWidget::toolBarStyleSource() const
     return d->m_toolBarStyleSource;
 }
 
+/**
+ * Configures, if the dock widget uses the global tool bar styles from
+ * dock window or if it uses its own tool bar style
+ */
 void DockWidget::setToolBarStyleSource(DockWidget::ToolBarStyleSource source)
 {
     Q_D(DockWidget);
@@ -598,6 +752,14 @@ Qt::ToolButtonStyle DockWidget::toolBarStyle(DockWidget::State state) const
     }
 }
 
+/**
+ * This function sets the tool button style for the given dock widget state.
+ * It is possible to switch the tool button style depending on the state.
+ * If a dock widget is floating, then here are more space and it is
+ * possible to select a style that requires more space like
+ * Qt::ToolButtonTextUnderIcon. For the docked state Qt::ToolButtonIconOnly
+ * might be better.
+ */
 void DockWidget::setToolBarStyle(Qt::ToolButtonStyle style, DockWidget::State state)
 {
     Q_D(DockWidget);
@@ -620,6 +782,12 @@ QSize DockWidget::toolBarIconSize(DockWidget::State state) const
     }
 }
 
+/**
+ * This function sets the tool button icon size for the given state.
+ * If a dock widget is floating, there is more space an increasing the
+ * icon size is possible. For docked widgets, small icon sizes, eg. 16 x 16
+ * might be better.
+ */
 void DockWidget::setToolBarIconSize(const QSize &iconSize, DockWidget::State state)
 {
     Q_D(DockWidget);
@@ -632,12 +800,20 @@ void DockWidget::setToolBarIconSize(const QSize &iconSize, DockWidget::State sta
     setToolBarFloatingStyle(isFloating());
 }
 
+/**
+ * Returns the side tab widget for this dock, if this dock widget is in
+ * a auto hide container. If it is not in a auto hide container, then this
+ * function returns a nullptr,
+ */
 DockSideTab *DockWidget::sideTab() const
 {
     Q_D(const DockWidget);
     return d->m_sideTab;
 }
 
+/**
+ * Assign a side tab widget if this dock widget is an auto hide container
+ */
 void DockWidget::setSideTab(DockSideTab *sideTab)
 {
     Q_D(DockWidget);
@@ -650,6 +826,10 @@ bool DockWidget::isAutoHide() const
     return !d->m_sideTab.isNull();
 }
 
+/**
+ * Returns the auto hide dock container of this dock widget
+ * or 0 if there is none
+ */
 DockAutoHideContainer *DockWidget::autoHideContainer() const
 {
     Q_D(const DockWidget);
@@ -661,11 +841,24 @@ DockAutoHideContainer *DockWidget::autoHideContainer() const
     return d->m_panel->autoHideContainer();
 }
 
+/**
+ * Returns the auto hide side bar area or Qx::DockSideBarNone if, this is not
+ * an autohide dock widget
+ */
 Qx::DockSideBarArea DockWidget::autoHideArea() const
 {
     return isAutoHide() ? autoHideContainer()->sideBarArea() : Qx::DockSideBarNone;
 }
 
+/**
+ * Only used when the feature flag DeleteContentOnClose is set.
+ * Using the flag and setting a widget factory allows to free the resources
+ * of the widget of your application while retaining the position the next
+ * time you want to show your widget, unlike the flag DockWidgetDeleteOnClose
+ * which deletes the dock widget itself. Since we keep the dock widget, all
+ * regular features of QxDock should work as normal, including saving and
+ * restoring the state of the docking system and using perspectives.
+ */
 void DockWidget::setWidgetFactory(DockWidget::FactoryFunc createWidget, DockWidget::WidgetInsertMode insertMode)
 {
     Q_D(DockWidget);
@@ -692,6 +885,10 @@ void DockWidget::setTabToolTip(const QString &text)
 }
 #endif
 
+/**
+ * This property controls whether the dock widget is open or closed.
+ * The toogleViewAction triggers this slot
+ */
 void DockWidget::toggleView(bool open)
 {
     Q_D(DockWidget);
@@ -714,6 +911,10 @@ void DockWidget::toggleView(bool open)
     }
 }
 
+/**
+ * This function will delete the dock widget and its content from the
+ * docking system
+ */
 void DockWidget::deleteDockWidget()
 {
     Q_D(DockWidget);
@@ -724,11 +925,21 @@ void DockWidget::deleteDockWidget()
     d->m_closed = true;
 }
 
+/**
+ * Closes the dock widget.
+ * The function forces closing of the dock widget even for CustomCloseHandling.
+ */
 void DockWidget::closeDockWidget()
 {
     closeDockWidgetInternal(true);
 }
 
+/**
+ * Request closing of the dock widget.
+ * For DockWidget with default close handling, the function does the same
+ * like closeDockWidget() but if the flas CustomCloseHandling is set,
+ * the function only emits the closeRequested() signal.
+ */
 void DockWidget::requestCloseDockWidget()
 {
     if (features().testFlag(DockWidget::DockWidgetDeleteOnClose) ||
@@ -739,6 +950,10 @@ void DockWidget::requestCloseDockWidget()
     }
 }
 
+/**
+ * Sets the dock widget into auto hide mode if this feature is enabled
+ * via DockManager::setAutoHideFlags(DockManager::AutoHideFeatureEnabled)
+ */
 void DockWidget::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
 {
     if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
@@ -762,6 +977,10 @@ void DockWidget::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex
     }
 }
 
+/**
+ * Switches the dock widget to auto hide mode or vice versa depending on its
+ * current state.
+ */
 void DockWidget::toggleAutoHide(Qx::DockSideBarArea area)
 {
     if (!DockManager::testAutoHideConfigFlag(DockManager::AutoHideFeatureEnabled)) {
@@ -771,6 +990,12 @@ void DockWidget::toggleAutoHide(Qx::DockSideBarArea area)
     setAutoHide(!isAutoHide(), area);
 }
 
+/**
+ * Makes this dock widget the current tab in its dock panel.
+ * The function only has an effect, if the dock widget is open. A call
+ * to this function will not toggle the view, so if it is closed,
+ * nothing will happen
+ */
 void DockWidget::setAsCurrentTab()
 {
     Q_D(DockWidget);
@@ -779,6 +1004,13 @@ void DockWidget::setAsCurrentTab()
     }
 }
 
+/**
+ * Brings the dock widget to the front
+ * This means:
+ * 	- If the dock widget is tabbed with other dock widgets but its tab is not current, it's made current.
+ * 	- If the dock widget is floating, QWindow::raise() is called.
+ * 	This only applies if the dock widget is already open. If closed, does nothing.
+ */
 void DockWidget::raise()
 {
     if (isClosed()) {
@@ -793,6 +1025,17 @@ void DockWidget::raise()
     }
 }
 
+/**
+ * Shows the widget in full-screen mode.
+ * Normally this function only affects windows. To make the interface
+ * compatible to QDockWidget, this function also maximizes a floating
+ * dock widget.
+ *  * \note Full-screen mode works fine under Windows, but has certain
+ * problems (doe not work) under X (Linux). These problems are due to
+ * limitations of the ICCCM protocol that specifies the communication
+ * between X11 clients and the window manager. ICCCM simply does not
+ * understand the concept of non-decorated full-screen windows.
+ */
 void DockWidget::showFullScreen()
 {
     if (isFloating()) {
@@ -802,6 +1045,10 @@ void DockWidget::showFullScreen()
     }
 }
 
+/**
+ * This function complements showFullScreen() to restore the widget
+ * after it has been in full screen mode.
+ */
 void DockWidget::showNormal()
 {
     if (isFloating()) {
@@ -811,6 +1058,9 @@ void DockWidget::showNormal()
     }
 }
 
+/**
+ * This function will make a docked widget floating
+ */
 void DockWidget::setFloating()
 {
     Q_D(DockWidget);
@@ -825,6 +1075,9 @@ void DockWidget::setFloating()
     }
 }
 
+/**
+ * Adjusts the toolbar icon sizes according to the floating state
+ */
 void DockWidget::setToolBarFloatingStyle(bool floating)
 {
     Q_D(DockWidget);
@@ -843,6 +1096,9 @@ void DockWidget::setToolBarFloatingStyle(bool floating)
     }
 }
 
+/**
+ * Assigns the dock window that manages this dock widget
+ */
 void DockWidget::setDockWindow(DockWindow *window)
 {
     Q_D(DockWidget);
@@ -856,6 +1112,12 @@ void DockWidget::setDockWindow(DockWindow *window)
     }
 }
 
+/**
+ * If this dock widget is inserted into a dock panel, the dock panel will
+ * be registered on this widget via this function. If a dock widget is
+ * removed from a dock panel, this function will be called with nullptr
+ * value.
+ */
 void DockWidget::setDockPanel(DockPanel *panel)
 {
     Q_D(DockWidget);
@@ -870,6 +1132,10 @@ void DockWidget::setClosedState(bool closed)
     d->m_closed = closed;
 }
 
+/**
+ * Call this function to emit a topLevelChanged() signal and to update
+ * the dock panel tool bar visibility
+ */
 void DockWidget::emitTopLevelEventForWidget(DockWidget *topLevelDockWidget, bool floating)
 {
     if (topLevelDockWidget) {
@@ -878,6 +1144,11 @@ void DockWidget::emitTopLevelEventForWidget(DockWidget *topLevelDockWidget, bool
     }
 }
 
+/**
+ * Use this function to emit a top level changed event.
+ * Do never use emit topLevelChanged(). Always use this function because
+ * it only emits a signal if the floating state has really changed
+ */
 void DockWidget::emitTopLevelChanged(bool floating)
 {
     Q_D(DockWidget);
@@ -887,6 +1158,10 @@ void DockWidget::emitTopLevelChanged(bool floating)
     }
 }
 
+/**
+ * Internal toggle view function that does not check if the widget
+ * already is in the given state
+ */
 void DockWidget::toggleViewInternal(bool open)
 {
     Q_D(DockWidget);
@@ -931,6 +1206,10 @@ void DockWidget::toggleViewInternal(bool open)
     Q_EMIT viewToggled(open);
 }
 
+/**
+ * Internal close dock widget implementation.
+ * The function returns true if the dock widget has been closed or hidden
+ */
 bool DockWidget::closeDockWidgetInternal(bool forceClose)
 {
     Q_D(DockWidget);
@@ -964,6 +1243,15 @@ bool DockWidget::closeDockWidgetInternal(bool forceClose)
     return true;
 }
 
+/**
+ * This is a helper function for the dock manager to flag this widget
+ * as unassigned.
+ * When calling the restore function, it may happen, that the saved state
+ * contains less dock widgets then currently available. All widgets whose
+ * data is not contained in the saved state, are flagged as unassigned
+ * after the restore process. If the user shows an unassigned dock widget,
+ * a floating widget will be created to take up the dock widget.
+ */
 void DockWidget::flagAsUnassigned()
 {
     Q_D(DockWidget);
@@ -983,6 +1271,9 @@ void DockWidget::saveState(QXmlStreamWriter &s) const
     s.writeEndElement();
 }
 
+/**
+ * Emits titleChanged signal if title change event occurs
+ */
 bool DockWidget::event(QEvent *e)
 {
     Q_D(DockWidget);
