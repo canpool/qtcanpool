@@ -49,9 +49,14 @@ void DockTabBarPrivate::init()
     q->setWidget(m_tabsContainerWidget);
 }
 
+/**
+ * Update tabs after current index changed or when tabs are removed.
+ * The function reassigns the stylesheet to update the tabs
+ */
 void DockTabBarPrivate::updateTabs()
 {
     Q_Q(DockTabBar);
+    // Set active tab and update all other tabs to be inactive
     for (int i = 0; i < q->count(); ++i) {
         auto tab = q->tab(i);
         if (!tab) {
@@ -96,6 +101,11 @@ DockTabBar::~DockTabBar()
     QX_FINI_PRIVATE();
 }
 
+/**
+ * Inserts the given dock tab at the given position.
+ * Inserting a new tab at an index less than or equal to the current index
+ * will increment the current index, but keep the current tab.
+ */
 void DockTabBar::insertTab(int index, DockTab *tab)
 {
     Q_D(DockTabBar);
@@ -154,6 +164,7 @@ void DockTabBar::removeTab(DockTab *tab)
     d->m_tabsLayout->removeWidget(tab);
     tab->disconnect(this);
     tab->removeEventFilter(this);
+    QX_DOCK_PRINT("newCurrentIndex " << newCurrentIndex);
     if (newCurrentIndex != d->m_currentIndex) {
         setCurrentIndex(newCurrentIndex);
     } else {
@@ -170,12 +181,18 @@ int DockTabBar::count() const
     return d->m_tabsLayout->count() - 1;
 }
 
+/**
+ * Returns the current index or -1 if no tab is selected
+ */
 int DockTabBar::currentIndex() const
 {
     Q_D(const DockTabBar);
     return d->m_currentIndex;
 }
 
+/**
+ * Returns the current tab or a nullptr if no tab is selected.
+ */
 DockTab *DockTabBar::currentTab() const
 {
     Q_D(const DockTabBar);
@@ -195,13 +212,19 @@ DockTab *DockTabBar::tab(int index) const
     return qobject_cast<DockTab *>(d->m_tabsLayout->itemAt(index)->widget());
 }
 
+/**
+ * Returns the tab at the given pos.
+ * Returns -1 if the pos is left of the first tab and count() if the
+ * pos is right of the last tab. Returns -2 to indicate an invalid value.
+ */
 int DockTabBar::tabAt(const QPoint &pos) const
 {
     if (!isVisible()) {
         return Qx::DockTabInvalidIndex;
     }
 
-    if (pos.x() < tab(0)->geometry().x()) {
+    const DockTab *t = tab(0);
+    if (!t || pos.x() < t->geometry().x()) {
         return -1;
     }
 
@@ -225,6 +248,11 @@ int DockTabBar::tabInsertIndexAt(const QPoint &pos) const
     }
 }
 
+/**
+ * This function returns true if the tab is open, that means if it is
+ * visible to the user. If the function returns false, the tab is
+ * closed
+ */
 bool DockTabBar::isTabOpen(int index) const
 {
     if (index < 0 || index >= count()) {
@@ -234,6 +262,13 @@ bool DockTabBar::isTabOpen(int index) const
     return !tab(index)->isHidden();
 }
 
+/**
+ * Overrides the minimumSizeHint() function of QScrollArea
+ * The minimumSizeHint() is bigger than the sizeHint () for the scroll
+ * area because even if the scrollbars are invisible, the required space
+ * is reserved in the minimumSizeHint(). This override simply returns
+ * sizeHint();
+ */
 QSize DockTabBar::minimumSizeHint() const
 {
     QSize Size = sizeHint();
@@ -241,6 +276,10 @@ QSize DockTabBar::minimumSizeHint() const
     return Size;
 }
 
+/**
+ * The function provides a sizeHint that matches the height of the
+ * internal viewport.
+ */
 QSize DockTabBar::sizeHint() const
 {
     Q_D(const DockTabBar);
@@ -250,6 +289,10 @@ QSize DockTabBar::sizeHint() const
     return d->m_tabsContainerWidget->sizeHint();
 }
 
+/**
+ * This function returns true, if the tabs need more space than the size
+ * of the tab bar.
+ */
 bool DockTabBar::areTabsOverflowing() const
 {
     Q_D(const DockTabBar);
@@ -263,6 +306,7 @@ void DockTabBar::setCurrentIndex(int index)
         return;
     }
     if (index < -1 || index > (count() - 1)) {
+        qWarning() << Q_FUNC_INFO << "Invalid index" << index;
         return;
     }
     Q_EMIT currentChanging(index);
@@ -272,6 +316,10 @@ void DockTabBar::setCurrentIndex(int index)
     Q_EMIT currentChanged(index);
 }
 
+/**
+ * This function will close the tab given in index param.
+ * Closing a tab means, the tab will be hidden, it will not be removed
+ */
 void DockTabBar::closeTab(int index)
 {
     if (index < 0 || index >= count()) {

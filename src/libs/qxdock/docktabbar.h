@@ -14,6 +14,15 @@ class DockTab;
 
 class DockTabBarPrivate;
 
+/**
+ * Custom tabbar implementation for tab area that is shown on top of a
+ * dock panel widget.
+ * The tabbar displays the tab widgets of the contained dock widgets.
+ * We cannot use QTabBar here because it does a lot of fancy animations
+ * that will crash the application if a tab is removed while the animation
+ * has not finished. And we need to remove a tab, if the user drags a
+ * a dock widget out of a group of tabbed widgets
+ */
 class QX_DOCK_EXPORT DockTabBar : public QScrollArea
 {
     Q_OBJECT
