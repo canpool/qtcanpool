@@ -290,7 +290,7 @@ std::shared_ptr<QSettings> DockGroupManager::getSettingsObject(const QString &fi
 
 // CreateChildDockAction
 CreateChildDockAction::CreateChildDockAction(DockGroup *group, QMenu *menu)
-    : QAction("New group...", menu)
+    : QAction(tr("New group..."), menu)
     , m_group(group)
 {
     connect(this, SIGNAL(triggered()), this, SLOT(createGroup()));
@@ -301,7 +301,7 @@ void CreateChildDockAction::createGroup()
     QString name = "";
     while (true) {
         bool ok = false;
-        name = QInputDialog::getText(NULL, this->text(), "Enter group name", QLineEdit::Normal, name, &ok);
+        name = QInputDialog::getText(NULL, this->text(), tr("Enter group name"), QLineEdit::Normal, name, &ok);
         if (ok) {
             QString error = "";
             if (m_group->topLevelGroup())
@@ -325,7 +325,7 @@ void CreateChildDockAction::createGroup()
 
 // DestroyGroupAction
 DestroyGroupAction::DestroyGroupAction(DockGroup *group, QMenu *menu)
-    : QAction("Destroy " + group->subWindow()->getGroupName(), menu)
+    : QAction(tr("Destroy ") + group->subWindow()->getGroupName(), menu)
     , m_group(group)
 {
     connect(this, SIGNAL(triggered()), this, SLOT(destroyGroup()));
@@ -343,9 +343,9 @@ MoveDockWidgetAction::MoveDockWidgetAction(DockWidget *widget, DockSubWindow *mo
     , m_moveTo(moveTo)
 {
     if (moveTo->group()->isTopLevel()) {
-        setText("To top");
+        setText(tr("To top"));
     } else {
-        setText("To " + moveTo->group()->objectName());
+        setText(tr("To ") + moveTo->group()->objectName());
     }
     connect(this, SIGNAL(triggered()), this, SLOT(move()));
 }

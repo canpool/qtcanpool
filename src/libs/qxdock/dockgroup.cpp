@@ -199,12 +199,12 @@ void DockGroup::setupViewMenu(QMenu *menu)
 
     QMenu *organize = menu;
     if (hasPerspectivesMenu)
-        organize = menu->addMenu("Organize");
+        organize = menu->addMenu(tr("Organize"));
 
     setupMenu(organize, sws);
 
     if (hasPerspectivesMenu) {
-        QMenu *perspectives = menu->addMenu("Perspectives");
+        QMenu *perspectives = menu->addMenu(tr("Perspectives"));
         fillPerspectivesMenu(perspectives);
     }
 }
@@ -219,7 +219,7 @@ void DockGroup::setupMenu(QMenu *menu, const std::vector<DockSubWindow *> &moveT
     Q_D(DockGroup);
     d->m_subWindow->fillViewMenu(menu, moveTo);
     menu->addSeparator();
-    auto moveMenu = menu->addMenu("Move");
+    auto moveMenu = menu->addMenu(tr("Move"));
     d->m_subWindow->fillMoveMenu(moveMenu, moveTo);
 }
 
@@ -258,8 +258,8 @@ void DockGroup::createPerspective()
 
     while (true) {
         bool ok = false;
-        name = QInputDialog::getText(nullptr, "Create perspective", "Enter perspective name", QLineEdit::Normal, name,
-                                     &ok);
+        name = QInputDialog::getText(nullptr, tr("Create perspective"), tr("Enter perspective name"), QLineEdit::Normal,
+                                     name, &ok);
         if (ok) {
             if (name.isEmpty()) {
                 QMessageBox::critical(nullptr, "Error", "Perspective name cannot be empty");
@@ -281,18 +281,18 @@ void DockGroup::createPerspective()
 void DockGroup::fillPerspectivesMenu(QMenu *menu)
 {
     Q_D(DockGroup);
-    menu->addAction("Create perspective...", this, SLOT(createPerspective()));
+    menu->addAction(tr("Create perspective..."), this, SLOT(createPerspective()));
 
     QStringList perspectiveNames;
     if (d->m_mgr)
         perspectiveNames = d->m_mgr->perspectiveNames();
 
     if (!perspectiveNames.isEmpty()) {
-        QMenu *load = menu->addMenu("Load perspective");
+        QMenu *load = menu->addMenu(tr("Load perspective"));
         for (const auto &name : perspectiveNames) {
             load->addAction(new LoadPerspectiveAction(load, name, this));
         }
-        QMenu *remove = menu->addMenu("Remove perspective");
+        QMenu *remove = menu->addMenu(tr("Remove perspective"));
         for (const auto &name : perspectiveNames) {
             remove->addAction(new RemovePerspectiveAction(remove, name, this));
         }
