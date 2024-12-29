@@ -77,17 +77,33 @@ bool DockManager::testAutoHideConfigFlag(DockManager::AutoHideFlag flag)
     return autoHideConfigFlags().testFlag(flag);
 }
 
+/**
+ * Returns the global icon provider.
+ * The icon provider enables the use of custom icons in case using
+ * styleheets for icons is not an option.
+ */
 DockIconProvider &DockManager::iconProvider()
 {
     static DockIconProvider instance;
     return instance;
 }
 
+/**
+ * The distance the user needs to move the mouse with the left button
+ * hold down before a dock widget start floating
+ */
 int DockManager::startDragDistance()
 {
     return QApplication::startDragDistance() * 1.5;
 }
 
+/**
+ * Returns the title used by all FloatingContainer that does not
+ * reflect the title of the current dock widget.
+ *
+ * If not title was set with setFloatingContainersTitle(), it returns
+ * QGuiApplication::applicationDisplayName().
+ */
 QString DockManager::floatingContainersTitle()
 {
     if (s_floatingContainersTitle.isEmpty())
@@ -96,6 +112,10 @@ QString DockManager::floatingContainersTitle()
     return s_floatingContainersTitle;
 }
 
+/**
+ * Set a custom title for all FloatingContainer that does not reflect
+ * the title of the current dock widget.
+ */
 void DockManager::setFloatingContainersTitle(const QString &title)
 {
     s_floatingContainersTitle = title;
