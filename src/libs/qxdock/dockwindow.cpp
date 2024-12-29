@@ -275,9 +275,9 @@ void DockWindowPrivate::restoreDockWidgetsOpenState()
 void DockWindowPrivate::restoreDockAreasIndices()
 {
     Q_Q(DockWindow);
-    // Now all dock areas are properly restored and we setup the index of
-    // The dock areas because the previous toggleView() action has changed
-    // the dock area index
+    // Now all dock panels are properly restored and we setup the index of
+    // The dock panels because the previous toggleView() action has changed
+    // the dock panel index
     for (auto dockContainer : m_containers) {
         for (int i = 0; i < dockContainer->dockPanelCount(); ++i) {
             DockPanel *panel = dockContainer->dockPanel(i);
@@ -707,13 +707,14 @@ DockWidget::DockWidgetFeatures DockWindow::globallyLockedDockWidgetFeatures() co
  * - DockWidget::DockWidgetMovable
  * - DockWidget::DockWidgetFloatable
  * - DockWidget::DockWidgetPinable
- *  * To clear the locked features, you can use DockWidget::NoDockWidgetFeatures
- * The following code shows how to lock and unlock dock widget features
- * globally.
- *  * \code
+ *
+ * To clear the locked features, you can use DockWidget::NoDockWidgetFeatures
+ * The following code shows how to lock and unlock dock widget features globally.
+ *
+ * \code
  * DockWindow->lockDockWidgetFeaturesGlobally();
  * DockWindow->lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures);
- * \code
+ * \endcode
  */
 void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures features)
 {
@@ -826,12 +827,12 @@ bool DockWindow::restoreState(const QByteArray &state, int version)
         return false;
     }
 
-    // We hide the complete dock manager here. Restoring the state means
+    // We hide the complete dock window here. Restoring the state means
     // that DockWidgets are removed from the DockArea internal stack layout
-    // which in turn  means, that each time a widget is removed the stack
+    // which in turn means, that each time a widget is removed the stack
     // will show and raise the next available widget which in turn
     // triggers show events for the dock widgets. To avoid this we hide the
-    // dock manager. Because there will be no processing of application
+    // dock window. Because there will be no processing of application
     // events until this function is finished, the user will not see this
     // hiding
     bool isHidden = this->isHidden();
@@ -938,6 +939,11 @@ void DockWindow::loadPerspectives(QSettings &settings)
     Q_EMIT perspectiveListLoaded();
 }
 
+/**
+ * Request a focus change to the given dock widget.
+ * This function only has an effect, if the flag DockManager::FocusHighlighting
+ * is enabled
+ */
 void DockWindow::setDockWidgetFocused(DockWidget *w)
 {
     Q_D(DockWindow);
@@ -966,6 +972,10 @@ void DockWindow::openPerspective(const QString &perspectiveName)
     Q_EMIT perspectiveOpened(perspectiveName);
 }
 
+/**
+ * hide DockWindow and all floating widgets. Calling regular QWidget::hide()
+ * hides the DockWindow but not the floating widgets;
+ */
 void DockWindow::hideWindowAndFloatingWidgets()
 {
     Q_D(DockWindow);
@@ -981,13 +991,13 @@ void DockWindow::hideWindowAndFloatingWidgets()
                     visibleWidgets.push_back(dockWidget);
             }
 
-            // save as floating widget to be shown when CDockManager will be shown back
+            // save as floating widget to be shown when DockWindow will be shown back
             d->m_hiddenFloatingContainers.push_back(floatingWidget);
             floatingWidget->hide();
 
-            // hiding floating widget automatically marked contained CDockWidgets as hidden
+            // hiding floating widget automatically marked contained DockWidgets as hidden
             // but they must remain marked as visible as we want them to be restored visible
-            // when CDockManager will be shown back
+            // when DockWindow will be shown back
             for (auto dockWidget : visibleWidgets) {
                 dockWidget->toggleViewAction()->setChecked(true);
             }
@@ -1164,7 +1174,6 @@ void DockWindow::showEvent(QShowEvent *e)
     Q_D(DockWindow);
     Super::showEvent(e);
 
-    // Fix Issue #380
     restoreHiddenFloatingWidgets();
     if (d->m_uninitializedFloatingWidgets.empty()) {
         return;

@@ -178,7 +178,7 @@ public:
 
     static int startDragDistance();
 
-    // Helper function to set focus depending on the configuration of the FocusStyling flag
+    // Helper function to set focus depending on the configuration of the FocusHighlighting flag
     template <class QWidgetPtr>
     static void setWidgetFocus(QWidgetPtr widget) {
         if (!DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
