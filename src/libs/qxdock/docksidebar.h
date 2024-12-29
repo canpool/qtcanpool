@@ -18,6 +18,16 @@ class DockSideTab;
 
 class DockSideBarPrivate;
 
+/**
+ * Side tab bar widget that is shown at the edges of a dock container.
+ * The tab bar is only visible, if it contains visible content, that means if
+ * it contains visible tabs. If it is empty or all tabs are hidden, then the
+ * side bar is also hidden. As soon as one single tab becomes visible, this
+ * tab bar will be shown.
+ * The DockSideBar uses a QScrollArea here, to enable proper resizing.
+ * If the side bar contains many tabs, then the tabs are simply clipped - this
+ * is the same like in visual studio
+ */
 class QX_DOCK_EXPORT DockSideBar : public QScrollArea
 {
     Q_OBJECT

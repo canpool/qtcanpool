@@ -140,6 +140,11 @@ void DockSideBar::removeTab(DockSideTab *sideTab)
     }
 }
 
+/**
+ * Insert dock widget into the side bar.
+ * The function creates the auto hide dock container, inserts the
+ * auto hide tab
+ */
 DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
 {
     Q_D(DockSideBar);
@@ -151,6 +156,12 @@ DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
     return autoHideContainer;
 }
 
+
+/**
+ * Adds the given autoHideWidget to this sidebar.
+ * If the autoHideWidget is in another sidebar, then it will be removed
+ * from this sidebar.
+ */
 void DockSideBar::addAutoHideWidget(DockAutoHideContainer *autoHideWidget, int index)
 {
     Q_D(DockSideBar);
@@ -200,6 +211,12 @@ DockSideTab *DockSideBar::tab(int index) const
     return qobject_cast<DockSideTab *>(d->m_tabsLayout->itemAt(index)->widget());
 }
 
+/**
+ * Returns the tab at the given position.
+ * Returns -1 if the position is left of the first tab and count() if the
+ * position is right of the last tab. Returns Qx::DockTabInvalidIndex (-2) to
+ * indicate an invalid value.
+ */
 int DockSideBar::tabAt(const QPoint &pos) const
 {
     if (!isVisible()) {
@@ -265,6 +282,12 @@ int DockSideBar::visibleTabCount() const
     return visibleTabCount;
 }
 
+/**
+ * Returns true, if the sidebar contains visible tabs to its parent widget.
+ * The function returns as soon as it finds the first visible tab.
+ * That means, if you just want to find out if there are visible tabs
+ * then this function is quicker than visibleTabCount()
+ */
 bool DockSideBar::hasVisibleTabs() const
 {
     auto parentWidget = this->parentWidget();
@@ -283,6 +306,13 @@ Qx::DockSideBarArea DockSideBar::sideBarArea() const
     return d->m_sideTabArea;
 }
 
+/**
+ * Overrides the minimumSizeHint() function of QScrollArea
+ * The minimumSizeHint() is bigger than the sizeHint () for the scroll
+ * area because even if the scrollbars are invisible, the required space
+ * is reserved in the minimumSizeHint(). This override simply returns
+ * sizeHint();
+ */
 QSize DockSideBar::minimumSizeHint() const
 {
     Q_D(const DockSideBar);
