@@ -447,6 +447,12 @@ DockPanel *DockWindow::addDockWidgetTab(DockWidget *w, DockPanel *p, int index)
     return addDockWidget(Qx::CenterDockWidgetArea, w, p, index);
 }
 
+/**
+ * Adds dockwidget into the given container.
+ * This allows you to place the dock widget into a container, even if that
+ * container does not yet contain a DockWidget.
+ * \return Returns the dock panel that contains the new DockWidget
+ */
 DockPanel *DockWindow::addDockWidgetToContainer(Qx::DockWidgetArea area, DockWidget *w, DockContainer *container)
 {
     Q_D(DockWindow);
@@ -466,17 +472,32 @@ void DockWindow::removeDockWidget(DockWidget *w)
     Q_EMIT dockWidgetRemoved(w);
 }
 
+/**
+ * Searches for a registered dock widget with the given objectName
+ * \return Return the found dock widget or nullptr if a dock widget with the
+ * given name is not registered
+ */
 DockWidget *DockWindow::findDockWidget(const QString &objectName) const
 {
     Q_D(const DockWindow);
     return d->m_dockWidgetsMap.value(objectName, nullptr);
 }
 
+/**
+ * Adds an Auto-Hide widget to the dock window container pinned to
+ * the given side bar location.
+ * \return Returns the DockAutoHideContainer that contains the new DockWidget
+ */
 DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w)
 {
     return addAutoHideDockWidgetToContainer(area, w, this);
 }
 
+/**
+ * Adds an Auto-Hide widget to the given container pinned to
+ * the given side bar location in this container.
+ * \return Returns the DockAutoHideContainer that contains the new DockWidget
+ */
 DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area, DockWidget *w,
                                                                     DockContainer *container)
 {
@@ -489,6 +510,10 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSide
     return c;
 }
 
+/**
+ * Adds the given DockWidget floating and returns the created
+ * DockFloatingContainer instance.
+ */
 DockFloatingContainer *DockWindow::addDockWidgetFloating(DockWidget *w)
 {
     Q_D(DockWindow);
@@ -510,12 +535,20 @@ DockFloatingContainer *DockWindow::addDockWidgetFloating(DockWidget *w)
     return floatingWidget;
 }
 
+/**
+ * Returns the list of all active and visible dock containers
+ * Dock containers are the main dock manager and all floating widgets
+ */
 const QList<DockContainer *> DockWindow::dockContainers() const
 {
     Q_D(const DockWindow);
     return d->m_containers;
 }
 
+/**
+ * This function returns a readable reference to the internal dock
+ * widgets map so that it is possible to iterate over all dock widgets
+ */
 QMap<QString, DockWidget *> DockWindow::dockWidgetsMap() const
 {
     Q_D(const DockWindow);
@@ -528,6 +561,23 @@ DockWidget *DockWindow::centralWidget() const
     return d->m_centralWidget;
 }
 
+/**
+ * Adds dockwidget widget into the central area and marks it as central widget.
+ * If central widget is set, it will be the only dock widget
+ * that will resize with the dock container. A central widget if not
+ * movable, floatable or closable and the titlebar of the central
+ * dock panel is not visible.
+ * If the given widget could be set as central widget, the function returns
+ * the created dock panel. If the widget could not be set, because there
+ * is already a central widget, this function returns a nullptr.
+ * To clear the central widget, pass a nullptr to the function.
+ * \note Setting a central widget is only possible if no other dock widgets
+ * have been registered before. That means, this function should be the
+ * first function that you call before you add other dock widgets.
+ * \retval != 0 The dock panel that contains the central widget
+ * \retval nullptr Indicates that the given widget can not be set as central
+ *         widget because there is already a central widget.
+ */
 DockPanel *DockWindow::setCentralWidget(DockWidget *widget)
 {
     Q_D(DockWindow);
@@ -561,6 +611,13 @@ DockPanel *DockWindow::setCentralWidget(DockWidget *widget)
     return centralPanel;
 }
 
+/**
+ * This function returns true, if the DockWindow window is restoring from
+ * minimized state.
+ * The DockWindow is in this state starting from the QWindowStateChangeEvent
+ * that signals the state change from minimized to normal until
+ * endLeavingMinimizedState() function is called.
+ */
 bool DockWindow::isLeavingMinimizedState() const
 {
     Q_D(const DockWindow);
@@ -577,6 +634,14 @@ Qt::ToolButtonStyle DockWindow::dockWidgetToolBarStyle(DockWidget::State state) 
     }
 }
 
+/**
+ * This function sets the tool button style for the given dock widget state.
+ * It is possible to switch the tool button style depending on the state.
+ * If a dock widget is floating, then here are more space and it is
+ * possible to select a style that requires more space like
+ * Qt::ToolButtonTextUnderIcon. For the docked state Qt::ToolButtonIconOnly
+ * might be better.
+ */
 void DockWindow::setDockWidgetToolBarStyle(Qt::ToolButtonStyle style, DockWidget::State state)
 {
     Q_D(DockWindow);
@@ -597,6 +662,12 @@ QSize DockWindow::dockWidgetToolBarIconSize(DockWidget::State state) const
     }
 }
 
+/**
+ * This function sets the tool button icon size for the given state.
+ * If a dock widget is floating, there is more space and increasing the
+ * icon size is possible. For docked widgets, small icon sizes, eg. 16 x 16
+ * might be better.
+ */
 void DockWindow::setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget::State state)
 {
     Q_D(DockWindow);
@@ -607,12 +678,37 @@ void DockWindow::setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget:
     }
 }
 
+
+/**
+ * Returns all dock widget features that are globally locked by the dock window.
+ * Globally locked features are removed from the features of all dock widgets.
+ */
 DockWidget::DockWidgetFeatures DockWindow::globallyLockedDockWidgetFeatures() const
 {
     Q_D(const DockWindow);
     return d->m_lockedDockWidgetFeatures;
 }
 
+/**
+ * Globally Lock features of all dock widgets to "freeze" the current
+ * workspace layout.
+ * For example, it is now possible to lock the workspace to avoid
+ * accidentally dragging a docked view. Locking wasn’t possible before.
+ * So, users had to manually dock it back to the desired place after
+ * each accidental undock.
+ * You can use a combination of the following feature flags:
+ * - DockWidget::DockWidgetClosable
+ * - DockWidget::DockWidgetMovable
+ * - DockWidget::DockWidgetFloatable
+ * - DockWidget::DockWidgetPinable
+ *  * To clear the locked features, you can use DockWidget::NoDockWidgetFeatures
+ * The following code shows how to lock and unlock dock widget features
+ * globally.
+ *  * \code
+ * DockWindow->lockDockWidgetFeaturesGlobally();
+ * DockWindow->lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures);
+ * \code
+ */
 void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures features)
 {
     Q_D(DockWindow);
@@ -630,6 +726,12 @@ void DockWindow::lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetFeatures f
     }
 }
 
+/**
+ * Returns the sizes of the splitter that contains the dock panel.
+ *
+ * If there is no splitter that contains the panel, an empty list will be
+ * returned.
+ */
 QList<int> DockWindow::splitterSizes(DockPanel *panel) const
 {
     if (panel) {
@@ -641,6 +743,15 @@ QList<int> DockWindow::splitterSizes(DockPanel *panel) const
     return QList<int>();
 }
 
+/**
+ * Update the sizes of a splitter
+ * Programmatically updates the sizes of a given splitter by calling
+ * QSplitter::setSizes(). The splitter will be the splitter that
+ * contains the supplied dock panel widget. If there is not splitter
+ * that contains the dock panel, or the sizes supplied does not match
+ * the number of children of the splitter, this method will have no
+ * effect.
+ */
 void DockWindow::setSplitterSizes(DockPanel *panel, const QList<int> &sizes)
 {
     if (!panel) {
@@ -653,6 +764,18 @@ void DockWindow::setSplitterSizes(DockPanel *panel, const QList<int> &sizes)
     }
 }
 
+/**
+ * Saves the current state of the dockwindow and all its dock widgets
+ * into the returned QByteArray.
+ * The XmlMode enables / disables the auto formatting for the XmlStreamWriter.
+ * If auto formatting is enabled, the output is intended and line wrapped.
+ * The XmlMode XmlAutoFormattingDisabled is better if you would like to have
+ * a more compact XML output - i.e. for storage in ini files.
+ * The version number is stored as part of the data.
+ * To restore the saved state, pass the return value and version number
+ * to restoreState().
+ * \see restoreState()
+ */
 QByteArray DockWindow::saveState(int version) const
 {
     Q_D(const DockWindow);
@@ -680,6 +803,14 @@ QByteArray DockWindow::saveState(int version) const
     return configFlags.testFlag(DockManager::XmlCompressionEnabled) ? qCompress(xmldata, 9) : xmldata;
 }
 
+/**
+ * Restores the state of this dockwindow dockwidgets.
+ * The version number is compared with that stored in state. If they do
+ * not match, the dockmanager's state is left unchanged, and this function
+ * returns false; otherwise, the state is restored, and this function
+ * returns true.
+ * \see saveState()
+ */
 bool DockWindow::restoreState(const QByteArray &state, int version)
 {
     Q_D(DockWindow);
@@ -712,12 +843,24 @@ bool DockWindow::restoreState(const QByteArray &state, int version)
     return result;
 }
 
+/**
+ * This function returns true between the restoringState() and
+ * stateRestored() signals.
+ */
 bool DockWindow::isRestoringState() const
 {
     Q_D(const DockWindow);
     return d->m_restoringState;
 }
 
+/**
+ * Saves the current perspective to the internal list of perspectives.
+ * A perspective is the current state of the dock window assigned
+ * with a certain name. This makes it possible for the user,
+ * to switch between different perspectives quickly.
+ * If a perspective with the given name already exists, then
+ * it will be overwritten with the new state.
+ */
 void DockWindow::addPerspective(const QString &uniquePrespectiveName)
 {
     Q_D(DockWindow);
