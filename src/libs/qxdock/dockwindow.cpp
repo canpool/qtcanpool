@@ -485,7 +485,7 @@ DockWidget *DockWindow::findDockWidget(const QString &objectName) const
 
 /**
  * Adds an Auto-Hide widget to the dock window container pinned to
- * the given side bar location.
+ * the given side bar area.
  * \return Returns the DockAutoHideContainer that contains the new DockWidget
  */
 DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w)
@@ -495,13 +495,16 @@ DockAutoHideContainer *DockWindow::addAutoHideDockWidget(Qx::DockSideBarArea are
 
 /**
  * Adds an Auto-Hide widget to the given container pinned to
- * the given side bar location in this container.
+ * the given side bar area in this container.
  * \return Returns the DockAutoHideContainer that contains the new DockWidget
  */
 DockAutoHideContainer *DockWindow::addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area, DockWidget *w,
                                                                     DockContainer *container)
 {
     Q_D(DockWindow);
+    if (area == Qx::DockSideBarNone) {
+        return nullptr;
+    }
     d->mapDockWidget(w);
     auto c = container->createAndSetupAutoHideContainer(area, w);
     c->collapseView(true);

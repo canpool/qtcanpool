@@ -4,6 +4,8 @@
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockcontainer.h"
+#include "qxdock/dockmanager.h"
+#include "qxdock/dockautohidecontainer.h"
 
 #include <QLabel>
 #include <QDebug>
@@ -19,6 +21,7 @@ private slots:
     void addDockWidgetTab();
     void addDockWidgetToContainer();
     void removeDockWidget();
+    void addAutoHideDockWidget();
 };
 
 void tst_DockWindow::addDockWidget_other()
@@ -304,6 +307,38 @@ void tst_DockWindow::removeDockWidget()
     QCOMPARE(j, 1);
 
     QCOMPARE(p1->dockWidgets().count(), 2);
+}
+
+void tst_DockWindow::addAutoHideDockWidget()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+
+    DockAutoHideContainer *ahc = wd.addAutoHideDockWidget(Qx::DockSideBarNone, dw1);
+    QCOMPARE(ahc, nullptr);
+
+    DockAutoHideContainer *ahc1 = wd.addAutoHideDockWidget(Qx::DockSideBarTop, dw1);
+    DockAutoHideContainer *ahc2 = wd.addAutoHideDockWidget(Qx::DockSideBarLeft, dw2);
+    DockAutoHideContainer *ahc3 = wd.addAutoHideDockWidget(Qx::DockSideBarRight, dw3);
+    DockAutoHideContainer *ahc4 = wd.addAutoHideDockWidget(Qx::DockSideBarBottom, dw4);
+
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(ahc2->sideBarArea(), Qx::DockSideBarLeft);
+    QCOMPARE(ahc3->sideBarArea(), Qx::DockSideBarRight);
+    QCOMPARE(ahc4->sideBarArea(), Qx::DockSideBarBottom);
+
+    QCOMPARE(ahc1->dockWidget(), dw1);
+    QCOMPARE(ahc2->dockWidget(), dw2);
+    QCOMPARE(ahc3->dockWidget(), dw3);
+    QCOMPARE(ahc4->dockWidget(), dw4);
+
+    QCOMPARE(wd.dockWidgetsMap().count(), 4);
 }
 
 TEST_ADD(tst_DockWindow)
