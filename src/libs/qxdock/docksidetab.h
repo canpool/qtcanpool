@@ -14,6 +14,11 @@ class DockWidget;
 
 class DockSideTabPrivate;
 
+/**
+ * A dock widget Side tab that shows a title or an icon.
+ * The dock widget tab is shown in the side tab bar to switch between
+ * pinned dock widgets
+ */
 class QX_DOCK_EXPORT DockSideTab : public DockButton
 {
     Q_OBJECT

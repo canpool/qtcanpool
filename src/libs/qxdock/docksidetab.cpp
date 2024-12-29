@@ -190,6 +190,9 @@ Qt::Orientation DockSideTab::orientation() const
     return d->m_orientation;
 }
 
+/**
+ * Set orientation vertical or horizontal
+ */
 void DockSideTab::setOrientation(Qt::Orientation orientation)
 {
     Q_D(DockSideTab);
@@ -220,6 +223,10 @@ Qx::DockSideBarArea DockSideTab::sideBarArea() const
     return Qx::DockSideBarLeft;
 }
 
+/**
+ * Returns true, if this is the active tab. The tab is active if the auto
+ * hide widget is visible
+ */
 bool DockSideTab::isActiveTab() const
 {
     Q_D(const DockSideTab);
@@ -230,17 +237,28 @@ bool DockSideTab::isActiveTab() const
     return false;
 }
 
+/**
+ * Returns true if the auto hide config flag AutoHideSideBarsIconOnly
+ * is set and if the tab has an icon - that means the icon is not null
+ */
 bool DockSideTab::iconOnly() const
 {
     return DockManager::testAutoHideConfigFlag(DockManager::AutoHideSideBarsIconOnly) && !icon().isNull();
 }
 
+/**
+ * Returns the side bar that contains this tab or a nullptr if the tab is
+ * not in a side bar
+ */
 DockSideBar *DockSideTab::sideBar() const
 {
     Q_D(const DockSideTab);
     return d->m_sideBar;
 }
 
+/**
+ * Returns the index of this tab in the sideBar
+ */
 int DockSideTab::tabIndex() const
 {
     Q_D(const DockSideTab);
