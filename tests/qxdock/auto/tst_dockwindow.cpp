@@ -24,6 +24,7 @@ private slots:
     void removeDockWidget();
     void addAutoHideDockWidget();
     void addDockWidgetFloating();
+    void centralWidget();
 };
 
 void tst_DockWindow::addDockWidget_other()
@@ -391,6 +392,45 @@ void tst_DockWindow::addDockWidgetFloating()
 
     QVERIFY(dw3->dockContainer() == dw4->dockContainer());
     QVERIFY(dw3->dockPanel() != dw4->dockPanel());
+}
+
+void tst_DockWindow::centralWidget()
+{
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+
+    QCOMPARE(wd.centralWidget(), nullptr);
+
+    DockPanel *p1 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw1);
+    QCOMPARE(dw1->dockPanel(), p1);
+
+    // the central widget need to be the first dock widget that is added to the dock window
+    DockPanel *p2 = wd.setCentralWidget(dw2);
+    QCOMPARE(wd.centralWidget(), nullptr);
+    QCOMPARE(p2, nullptr);
+
+    wd.removeDockWidget(dw1);
+    QCOMPARE(dw1->dockPanel(), nullptr);
+
+    p2 = wd.setCentralWidget(dw2);
+    QCOMPARE(dw2->dockPanel(), p2);
+    QCOMPARE(wd.centralWidget(), dw2);
+
+    // Setting a central widget not possible because there is already a central widget
+    DockPanel *p3 = wd.setCentralWidget(dw1);
+    QCOMPARE(wd.centralWidget(), dw2); // central widget is still dw2
+    QCOMPARE(p3, nullptr);
+
+    // clear central widget
+    wd.setCentralWidget(nullptr);
+    wd.removeDockWidget(dw2);
+
+    QCOMPARE(wd.centralWidget(), nullptr);
+
+    wd.setCentralWidget(dw1);
+    QCOMPARE(wd.centralWidget(), dw1);
 }
 
 TEST_ADD(tst_DockWindow)

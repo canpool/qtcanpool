@@ -566,14 +566,18 @@ DockWidget *DockWindow::centralWidget() const
 
 /**
  * Adds dockwidget widget into the central area and marks it as central widget.
+ *
  * If central widget is set, it will be the only dock widget
  * that will resize with the dock container. A central widget if not
  * movable, floatable or closable and the titlebar of the central
  * dock panel is not visible.
+ *
  * If the given widget could be set as central widget, the function returns
  * the created dock panel. If the widget could not be set, because there
  * is already a central widget, this function returns a nullptr.
+ *
  * To clear the central widget, pass a nullptr to the function.
+ *
  * \note Setting a central widget is only possible if no other dock widgets
  * have been registered before. That means, this function should be the
  * first function that you call before you add other dock widgets.
@@ -589,15 +593,14 @@ DockPanel *DockWindow::setCentralWidget(DockWidget *widget)
         return nullptr;
     }
 
-    // Setting a new central widget is now allowed if there is already a central
+    // Setting a new central widget is not allowed if there is already a central
     // widget or if there are already other dock widgets
     if (d->m_centralWidget) {
         qWarning("Setting a central widget not possible because there is already a central widget.");
         return nullptr;
     }
 
-    // Setting a central widget is now allowed if there are already other
-    // dock widgets.
+    // Setting a central widget is not allowed if there are already other dock widgets.
     if (!d->m_dockWidgetsMap.isEmpty()) {
         qWarning("Setting a central widget not possible - the central widget need to be the first "
                  "dock widget that is added to the dock window.");
