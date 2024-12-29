@@ -6,6 +6,7 @@
 #include "qxdock/dockcontainer.h"
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockautohidecontainer.h"
+#include "qxdock/dockfloatingcontainer.h"
 
 #include <QLabel>
 #include <QDebug>
@@ -22,6 +23,7 @@ private slots:
     void addDockWidgetToContainer();
     void removeDockWidget();
     void addAutoHideDockWidget();
+    void addDockWidgetFloating();
 };
 
 void tst_DockWindow::addDockWidget_other()
@@ -339,6 +341,56 @@ void tst_DockWindow::addAutoHideDockWidget()
     QCOMPARE(ahc4->dockWidget(), dw4);
 
     QCOMPARE(wd.dockWidgetsMap().count(), 4);
+}
+
+void tst_DockWindow::addDockWidgetFloating()
+{
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+
+    DockFloatingContainer *fc1 = wd.addDockWidgetFloating(dw1);
+    DockFloatingContainer *fc2 = wd.addDockWidgetFloating(dw2);
+    DockFloatingContainer *fc3 = wd.addDockWidgetFloating(dw3);
+
+    QCOMPARE(fc1->dockContainer(), dw1->dockContainer());
+    QCOMPARE(fc2->dockContainer(), dw2->dockContainer());
+    QCOMPARE(fc3->dockContainer(), dw3->dockContainer());
+
+    QCOMPARE(dw1->dockFloatingContainer(), fc1);
+    QCOMPARE(dw2->dockFloatingContainer(), fc2);
+    QCOMPARE(dw3->dockFloatingContainer(), fc3);
+
+    QCOMPARE(fc1->hasTopLevelDockWidget(), true);
+    QCOMPARE(fc2->hasTopLevelDockWidget(), true);
+    QCOMPARE(fc3->hasTopLevelDockWidget(), true);
+
+    QCOMPARE(fc1->topLevelDockWidget(), dw1);
+    QCOMPARE(fc2->topLevelDockWidget(), dw2);
+    QCOMPARE(fc3->topLevelDockWidget(), dw3);
+
+    QCOMPARE(wd.dockWidgetsMap().count(), 3);
+
+    QCOMPARE(dw1->isFloating(), true);
+    QCOMPARE(dw2->isInFloatingContainer(), true);
+    QCOMPARE(dw3->isInFloatingContainer(), true);
+    QCOMPARE(dw3->isFloating(), true);
+
+    fc3->dockContainer()->addDockWidget(Qx::CenterDockWidgetArea, dw4);
+    QCOMPARE(dw3->isInFloatingContainer(), true);
+    QCOMPARE(dw3->isFloating(), false);
+    QCOMPARE(dw4->isInFloatingContainer(), true);
+    QCOMPARE(dw4->isFloating(), false);
+    QCOMPARE(fc3->dockWidgets().count(), 2);
+
+    // It is still 3, because dw4 was not added via DockWindow
+    QCOMPARE(wd.dockWidgetsMap().count(), 3);
+
+    QVERIFY(dw3->dockContainer() == dw4->dockContainer());
+    QVERIFY(dw3->dockPanel() != dw4->dockPanel());
 }
 
 TEST_ADD(tst_DockWindow)

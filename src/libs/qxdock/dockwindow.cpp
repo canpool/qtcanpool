@@ -1168,8 +1168,7 @@ void DockWindow::showEvent(QShowEvent *e)
     }
 
     for (auto floatingWidget : d->m_uninitializedFloatingWidgets) {
-        // Check, if someone closed a floating dock widget before the dock
-        // manager is shown
+        // Check, if someone closed a floating dock widget before the dock window is shown
         if (floatingWidget->dockContainer()->hasOpenDockPanels()) {
             floatingWidget->show();
         }
