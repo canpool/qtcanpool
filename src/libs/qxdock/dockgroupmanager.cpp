@@ -19,8 +19,8 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
-// Partially bypass ADS perspective management, store list here
-// and then ADS will only have one perspective loaded
+// Partially bypass QxDock perspective management, store list here
+// and then QxDock will only have one perspective loaded
 // this is because all docking widgets must exist when a perspective is loaded
 // we will guarantee that!
 class PerspectiveInfo
