@@ -244,6 +244,9 @@ DockSideTab *DockAutoHideContainer::autoHideTab() const
     return d->m_sideTab;
 }
 
+/**
+ * Returns the index of this container in the sidebar
+ */
 int DockAutoHideContainer::tabIndex() const
 {
     Q_D(const DockAutoHideContainer);
@@ -294,6 +297,11 @@ Qx::DockSideBarArea DockAutoHideContainer::sideBarArea() const
     return d->m_sideTabBarArea;
 }
 
+/**
+ * Sets a new DockSideBarArea.
+ * If a new side bar area is set, the auto hide dock container needs
+ * to update its resize handle position
+ */
 void DockAutoHideContainer::setSideBarArea(Qx::DockSideBarArea area)
 {
     Q_D(DockAutoHideContainer);
@@ -309,6 +317,9 @@ void DockAutoHideContainer::setSideBarArea(Qx::DockSideBarArea area)
     internal::repolishStyle(this, internal::RepolishDirectChildren);
 }
 
+/**
+ * Cleanups up the side tab widget and then deletes itself
+ */
 void DockAutoHideContainer::cleanupAndDelete()
 {
     Q_D(DockAutoHideContainer);
@@ -324,6 +335,10 @@ void DockAutoHideContainer::cleanupAndDelete()
     deleteLater();
 }
 
+/**
+ * Moves the contents to the parent container widget
+ * Used before removing this Auto Hide dock container
+ */
 void DockAutoHideContainer::moveContentsToParent()
 {
     Q_D(DockAutoHideContainer);
@@ -336,6 +351,10 @@ void DockAutoHideContainer::moveContentsToParent()
     container->addDockWidget(d->getDockWidgetArea(d->m_sideTabBarArea), d->m_dockWidget);
 }
 
+/**
+ * Removes the AutoHide container from the current side bar and adds
+ * it to the new side bar given in area
+ */
 void DockAutoHideContainer::moveToNewSideBarArea(Qx::DockSideBarArea area, int tabIndex)
 {
     if (area == sideBarArea() && tabIndex == this->tabIndex()) {
@@ -353,6 +372,10 @@ void DockAutoHideContainer::moveToNewSideBarArea(Qx::DockSideBarArea area, int t
     }
 }
 
+/*
+ * Toggles the auto Hide dock container widget
+ * This will also hide the side tab widget
+ */
 void DockAutoHideContainer::toggleView(bool enable)
 {
     Q_D(DockAutoHideContainer);
@@ -369,6 +392,10 @@ void DockAutoHideContainer::toggleView(bool enable)
     }
 }
 
+/*
+ * Collapses the auto hide dock container widget
+ * Does not hide the side tab widget
+ */
 void DockAutoHideContainer::collapseView(bool enable)
 {
     Q_D(DockAutoHideContainer);
@@ -387,11 +414,19 @@ void DockAutoHideContainer::collapseView(bool enable)
     d->m_sideTab->updateStyle();
 }
 
+/**
+ * Toggles the current collapse state
+ */
 void DockAutoHideContainer::toggleCollapseState()
 {
     collapseView(isVisible());
 }
 
+/**
+ * Use this instead of resize.
+ * Depending on the sidebar area this will set the width or height
+ * of this auto hide container.
+ */
 void DockAutoHideContainer::setSize(int size)
 {
     Q_D(DockAutoHideContainer);
@@ -404,6 +439,13 @@ void DockAutoHideContainer::setSize(int size)
     updateSize();
 }
 
+/**
+ * Resets the width or height to the initial dock widget size dependinng on
+ * the orientation.
+ * If the orientation is Qt::Horizontal, then the height is reset to
+ * the initial size and if orientation is Qt::Vertical, then the width is
+ * reset to the initial size
+ */
 void DockAutoHideContainer::resetToInitialDockWidgetSize()
 {
     Q_D(DockAutoHideContainer);
@@ -414,6 +456,13 @@ void DockAutoHideContainer::resetToInitialDockWidgetSize()
     }
 }
 
+/**
+ * Returns orientation of this container.
+ * Left and right containers have a Qt::Vertical orientation and top / bottom
+ * containers have a Qt::Horizontal orientation.
+ * The function returns the orientation of the corresponding auto hide
+ * side bar.
+ */
 Qt::Orientation DockAutoHideContainer::orientation() const
 {
     Q_D(const DockAutoHideContainer);
@@ -516,6 +565,9 @@ bool DockAutoHideContainer::event(QEvent *event)
     return Super::event(event);
 }
 
+/**
+ * Updates the size considering the size limits and the resize margins
+ */
 void DockAutoHideContainer::updateSize()
 {
     Q_D(DockAutoHideContainer);

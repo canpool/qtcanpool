@@ -18,6 +18,9 @@ class DockSideBar;
 
 class DockAutoHideContainerPrivate;
 
+/**
+ * Auto hide container for hosting an auto hide dock widget
+ */
 class QX_DOCK_EXPORT DockAutoHideContainer : public QFrame
 {
     Q_OBJECT
