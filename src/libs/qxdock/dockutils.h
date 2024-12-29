@@ -64,6 +64,15 @@ void setToolTip(QObjectPtr obj, const QString &tip)
 #endif
 }
 
+/**
+ * Searches for the parent widget of the given type.
+ * Returns the parent widget of the given widget or 0 if the widget is not
+ * child of any widget of type T
+ *
+ * It is not safe to use this function in in DockWidget because only
+ * the current dock widget has a parent. All dock widgets that are not the
+ * current dock widget in a dock panel have no parent.
+ */
 template <class T>
 T findParent(const QWidget *w)
 {

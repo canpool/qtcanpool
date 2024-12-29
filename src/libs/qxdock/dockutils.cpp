@@ -33,6 +33,11 @@ namespace internal
 const int FloatingWidgetDragStartEvent = QEvent::registerEventType();
 const int DockedWidgetDragStartEvent = QEvent::registerEventType();
 
+/**
+ * Creates a semi transparent pixmap from the given pixmap Source.
+ * The Opacity parameter defines the opacity from completely transparent (0.0)
+ * to completely opaque (1.0)
+ */
 QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity)
 {
     QPixmap transparentPixmap(source.size());
@@ -43,6 +48,19 @@ QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity)
     return transparentPixmap;
 }
 
+/**
+ * Helper function to set the icon of a certain button.
+ * Use this function to set the icons for the dock area and dock widget buttons.
+ * The function first uses the CustomIconId to get an icon from the
+ * CIconProvider. You can register your custom icons with the icon provider, if
+ * you do not want to use the default buttons and if you do not want to use
+ * stylesheets.
+ * If the IconProvider does not return a valid icon (icon is null), the function
+ * fetches the given standard pixmap from the QStyle.
+ * \param[in] b The button whose icons are to be set
+ * \param[in] pixmap The standard pixmap to be used for the button
+ * \param[in] iconId The identifier for the custom icon.
+ */
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId)
 {
     // First we try to use custom icons if available
@@ -83,6 +101,10 @@ DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area)
     return DockInsertParam(Qt::Vertical, false);
 }
 
+/**
+ * Calls unpolish() / polish for the style of the given widget to update
+ * stylesheet if a property changes
+ */
 void repolishStyle(QWidget *w, RepolishChildOptions options)
 {
     if (!w) {
@@ -104,6 +126,10 @@ void repolishStyle(QWidget *w, RepolishChildOptions options)
     }
 }
 
+/**
+ * This function walks the splitter tree upwards to hides all splitters
+ * that do not have visible content
+ */
 void hideEmptyParentSplitters(DockSplitter *splitter)
 {
     while (splitter && splitter->isVisible()) {
@@ -114,6 +140,9 @@ void hideEmptyParentSplitters(DockSplitter *splitter)
     }
 }
 
+/**
+ * Replace the from widget in the given splitter with the To widget
+ */
 void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to)
 {
     int index = splitter->indexOf(from);
