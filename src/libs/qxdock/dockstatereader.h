@@ -9,6 +9,9 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 
+/**
+ * Extends QXmlStreamReader with file version information
+ */
 class DockStateReader : public QXmlStreamReader
 {
 public:

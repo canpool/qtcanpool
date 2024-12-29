@@ -38,8 +38,8 @@ PUBLIC_HEADERS = \
     $$PWD/docksubwindow.h
 
 PRIVATE_HEADERS = \
-    $$PWD/docktitlebar_p.h \ \
-    $$PWD/dockgroupmanager_p.h
+    $$PWD/docktitlebar_p.h \
+    $$PWD/dockgroupmanager_p.h \
     $$PWD/dockstatereader.h
 
 HEADERS += \
