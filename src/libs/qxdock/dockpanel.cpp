@@ -348,7 +348,8 @@ int DockPanel::openDockWidgetsCount() const
     Q_D(const DockPanel);
     int cnt = 0;
     for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
-        if (dockWidget(i) && !dockWidget(i)->isClosed()) {
+        DockWidget *w = dockWidget(i);
+        if (w && !w->isClosed()) {
             ++cnt;
         }
     }
@@ -362,7 +363,7 @@ QList<DockWidget *> DockPanel::openedDockWidgets() const
     for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
         DockWidget *w = dockWidget(i);
         if (w && !w->isClosed()) {
-            dwList.append(dockWidget(i));
+            dwList.append(w);
         }
     }
     return dwList;
@@ -1129,7 +1130,8 @@ int DockPanel::indexOfFirstOpenDockWidget() const
 {
     Q_D(const DockPanel);
     for (int i = 0; i < d->m_contentsLayout->count(); ++i) {
-        if (dockWidget(i) && !dockWidget(i)->isClosed()) {
+        DockWidget *w = dockWidget(i);
+        if (w && !w->isClosed()) {
             return i;
         }
     }
