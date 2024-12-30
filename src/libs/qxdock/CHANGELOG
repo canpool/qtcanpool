@@ -1,3 +1,9 @@
+0.2.0
+---
+- Annotate and perfect components
+- add perspective and group
+- fix: restoreState causes programe crash
+- fix build failure on linux, qt6, qt5.11.1
 
 0.1.0
 ---
