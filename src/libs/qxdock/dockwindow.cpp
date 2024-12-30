@@ -168,7 +168,7 @@ bool DockWindowPrivate::restoreStateFromXml(const QByteArray &state, int version
         // If we have a central widget but a state without central widget, then
         // something is wrong.
         if (centralWidgetAttribute.isEmpty()) {
-            qWarning() << "Dock manager has central widget but saved state does not have central widget.";
+            qWarning() << "Dock window has central widget but saved state does not have central widget.";
             return false;
         }
 

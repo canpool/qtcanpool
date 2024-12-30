@@ -25,6 +25,8 @@ private slots:
     void addAutoHideDockWidget();
     void addDockWidgetFloating();
     void centralWidget();
+    void lockDockWidget();
+    void state();
 };
 
 void tst_DockWindow::addDockWidget_other()
@@ -431,6 +433,79 @@ void tst_DockWindow::centralWidget()
 
     wd.setCentralWidget(dw1);
     QCOMPARE(wd.centralWidget(), dw1);
+}
+
+void tst_DockWindow::lockDockWidget()
+{
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+
+    wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    wd.addDockWidget(Qx::CenterDockWidgetArea, dw2);
+    wd.addDockWidget(Qx::RightDockWidgetArea, dw3);
+    wd.addDockWidget(Qx::TopDockWidgetArea, dw4);
+
+    QCOMPARE(dw1->features() & DockWidget::DockWidgetClosable, DockWidget::DockWidgetClosable);
+    QCOMPARE(dw2->features() & DockWidget::DockWidgetMovable, DockWidget::DockWidgetMovable);
+    QCOMPARE(dw3->features() & DockWidget::DockWidgetFloatable, DockWidget::DockWidgetFloatable);
+    QCOMPARE(dw4->features() & DockWidget::DockWidgetPinnable, DockWidget::DockWidgetPinnable);
+
+    wd.lockDockWidgetFeaturesGlobally();
+
+    QCOMPARE(dw1->features() & DockWidget::DockWidgetClosable, DockWidget::NoDockWidgetFeatures);
+    QCOMPARE(dw2->features() & DockWidget::DockWidgetMovable, DockWidget::NoDockWidgetFeatures);
+    QCOMPARE(dw3->features() & DockWidget::DockWidgetFloatable, DockWidget::NoDockWidgetFeatures);
+    QCOMPARE(dw4->features() & DockWidget::DockWidgetPinnable, DockWidget::NoDockWidgetFeatures);
+
+    wd.lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures); // unlock
+
+    QCOMPARE(dw1->features() & DockWidget::DockWidgetClosable, DockWidget::DockWidgetClosable);
+    QCOMPARE(dw2->features() & DockWidget::DockWidgetMovable, DockWidget::DockWidgetMovable);
+    QCOMPARE(dw3->features() & DockWidget::DockWidgetFloatable, DockWidget::DockWidgetFloatable);
+    QCOMPARE(dw4->features() & DockWidget::DockWidgetPinnable, DockWidget::DockWidgetPinnable);
+}
+
+void tst_DockWindow::state()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+
+    DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    DockPanel *p2 = wd.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
+    DockAutoHideContainer *ahc1 = wd.addAutoHideDockWidget(Qx::DockSideBarTop, dw3);
+    DockFloatingContainer *fc1 = wd.addDockWidgetFloating(dw4);
+
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+
+    QCOMPARE(wd.dockWidgetsMap().count(), 4);
+
+    QByteArray state = wd.saveState();
+    QCOMPARE(state.startsWith("<?xml"), false);
+    QCOMPARE(qUncompress(state).startsWith("<?xml"), true);
+
+    QCOMPARE(wd.restoreState(state), true);
+
+    QCOMPARE(wd.dockWidgetsMap().count(), 4);
+
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
 }
 
 TEST_ADD(tst_DockWindow)
