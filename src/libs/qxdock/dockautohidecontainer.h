@@ -41,7 +41,6 @@ public:
     DockContainer *dockContainer() const;
 
     Qx::DockSideBarArea sideBarArea() const;
-    void setSideBarArea(Qx::DockSideBarArea area);
 
     void cleanupAndDelete();
     void moveContentsToParent();
@@ -64,6 +63,9 @@ protected:
 
     void updateSize();
     void saveState(QXmlStreamWriter &s) const;
+
+private:
+    void setSideBarArea(Qx::DockSideBarArea area);
 
 private:
     QX_DECLARE_PRIVATE(DockAutoHideContainer)

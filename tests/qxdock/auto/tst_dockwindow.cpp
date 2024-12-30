@@ -7,6 +7,8 @@
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockautohidecontainer.h"
 #include "qxdock/dockfloatingcontainer.h"
+#include "qxdock/docksidebar.h"
+#include "qxdock/docksidetab.h"
 
 #include <QLabel>
 #include <QDebug>
@@ -27,6 +29,7 @@ private slots:
     void centralWidget();
     void lockDockWidget();
     void state();
+    void perspective();
 };
 
 void tst_DockWindow::addDockWidget_other()
@@ -505,6 +508,68 @@ void tst_DockWindow::state()
     QCOMPARE(p1->currentDockWidget(), dw1);
     QCOMPARE(p2->currentDockWidget(), dw2);
     QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+}
+
+void tst_DockWindow::perspective()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+
+    DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    DockPanel *p2 = wd.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
+    DockAutoHideContainer *ahc1 = wd.addAutoHideDockWidget(Qx::DockSideBarTop, dw3);
+    DockFloatingContainer *fc1 = wd.addDockWidgetFloating(dw4);
+
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+
+    QCOMPARE(wd.dockWidgetsMap().count(), 4);
+
+    QCOMPARE(dw3->isAutoHide(), true);
+    QCOMPARE(dw3->autoHideContainer(), ahc1);
+    QCOMPARE(ahc1->autoHideSideBar()->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(ahc1->autoHideTab()->sideBarArea(), Qx::DockSideBarTop);
+
+    wd.addPerspective("t1");
+
+    ahc1->moveToNewSideBarArea(Qx::DockSideBarBottom);
+    QCOMPARE(ahc1->autoHideSideBar()->sideBarArea(), Qx::DockSideBarBottom);
+    QCOMPARE(ahc1->autoHideTab()->sideBarArea(), Qx::DockSideBarBottom);
+
+    wd.addPerspective("t2");
+
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarBottom);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+
+    // switch t1
+    wd.openPerspective("t1");
+
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+
+    // switch t2
+    wd.openPerspective("t2");
+
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarBottom);
     QCOMPARE(fc1->topLevelDockWidget(), dw4);
 }
 
