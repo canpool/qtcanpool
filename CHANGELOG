@@ -1,3 +1,14 @@
+2.3.0
+---
+- qxdock: add and release version 0.2.0
+- qcanpool: release version 2.0.2
+- qxribbon: release version 0.9.1
+- qxwindow: release version 0.1.2
+- qads: deprecated and removed
+- qsseditor: deprecated and removed
+- test: add simple test framework
+- qt: support build on qt 5.12.12 ~ 6.8.1
+
 2.2.1
 ---
 - qtqrcode: deprecated and removed
