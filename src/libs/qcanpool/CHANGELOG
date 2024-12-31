@@ -1,3 +1,10 @@
+2.0.2
+---
+- FancyTitleBar: paint window border
+- FancyToolButton: allow disable forced center alignment
+- FancyTabBar: set orientation
+- FancyTitleBar: set frame changed on WM_SIZE
+
 2.0.1
 ---
 - Don't support windows native features on qt6 for FancyTitleBar
