@@ -70,6 +70,9 @@ MainWindow::MainWindow(QWidget *par)
     : RibbonMainWindow(par)
     , m_themeGroup(nullptr)
 {
+    setWindowTitle(tr("ribbon mainwindow demo"));
+    setWindowIcon(QIcon(":/icon/res/logo.svg"));
+
     m_customizeXml = qApp->applicationDirPath() + QDir::separator() + "customize.xml";
 
     COST_START();
@@ -81,8 +84,6 @@ MainWindow::MainWindow(QWidget *par)
     createRibbon();
     COST_PRINT("createRibbon");
 
-    setWindowTitle(tr("ribbon mainwindow demo"));
-    setWindowIcon(QIcon(":/icon/res/logo.svg"));
     setMinimumWidth(500);
 
     changeRibbonTheme(1);
@@ -1011,7 +1012,8 @@ void MainWindow::createApplicationButton()
     appBtn->setFocusPolicy(Qt::NoFocus);
     appBtn->setPopupMode(QToolButton::InstantPopup);
     appBtn->setText(tr("&File"));
-    appBtn->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    appBtn->setIcon(windowIcon());
+    appBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     appBtn->setMinimumWidth(40);
     RibbonMenu *appMenu = new RibbonMenu(this);
     // 菜单添加的Action可以来自QuickAccessBar或其它的Action，此处创建新的Action为了方便演示
