@@ -260,7 +260,7 @@ bool RibbonWindow::event(QEvent *e)
                 d->resizeRibbon();
             }
         }
-        emit windowStateChanged(s);
+        Q_EMIT windowStateChanged(s);
     } break;
     default:
         break;

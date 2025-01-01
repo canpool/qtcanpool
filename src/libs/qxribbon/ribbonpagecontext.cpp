@@ -49,7 +49,7 @@ RibbonPage *RibbonPageContext::addPage(const QString &title)
     pageData.page = page;
     d->pageDataList.append(pageData);
     page->installEventFilter(this);
-    emit pageAdded(page);
+    Q_EMIT pageAdded(page);
 
     return page;
 }
@@ -146,7 +146,7 @@ bool RibbonPageContext::takePage(RibbonPage *page)
     for (int i = 0; i < d->pageDataList.size(); ++i) {
         if (d->pageDataList[i].page == page) {
             d->pageDataList.takeAt(i);
-            emit pageRemoved(page);
+            Q_EMIT pageRemoved(page);
             return true;
         }
     }

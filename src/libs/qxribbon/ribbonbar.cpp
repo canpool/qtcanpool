@@ -76,10 +76,10 @@ bool RibbonStackedWidget::event(QEvent *event)
     if (m_isPopup) {
         switch (event->type()) {
         case QEvent::Show:
-            emit aboutToShow();
+            Q_EMIT aboutToShow();
             break;
         case QEvent::Hide:
-            emit aboutToHide();
+            Q_EMIT aboutToHide();
             break;
         default:
             break;
@@ -938,7 +938,7 @@ void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
             }
         }
     }
-    emit q->currentRibbonTabChanged(index);
+    Q_EMIT q->currentRibbonTabChanged(index);
 }
 
 /**
@@ -1471,7 +1471,7 @@ void RibbonBar::setMinimized(bool flag)
     d->updateMinimumButtonIcon();
     QResizeEvent resizeEvent(size(), size());
     QApplication::sendEvent(this, &resizeEvent);
-    emit minimizationChanged(flag);
+    Q_EMIT minimizationChanged(flag);
 }
 
 bool RibbonBar::haveShowMinimumButton() const
@@ -1632,7 +1632,7 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
         setFixedHeight(d->m_tabBar->geometry().bottom());
         d->m_blockResize = false;
     }
-    emit ribbonStyleChanged(d->m_ribbonStyle);
+    Q_EMIT ribbonStyleChanged(d->m_ribbonStyle);
 }
 
 int RibbonBar::currentIndex()

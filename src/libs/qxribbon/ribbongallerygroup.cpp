@@ -577,7 +577,7 @@ void RibbonGalleryGroup::setGroupTitle(const QString &title)
 {
     Q_D(RibbonGalleryGroup);
     d->m_groupTitle = title;
-    emit groupTitleChanged(title);
+    Q_EMIT groupTitleChanged(title);
 }
 
 QString RibbonGalleryGroup::groupTitle() const

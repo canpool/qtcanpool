@@ -189,11 +189,11 @@ void WindowButtonGroupPrivate::buttonClicked()
 
     if (m_signalEnabled) {
         if (button == m_minimizeButton) {
-            emit q->buttonMinimizeClicked();
+            Q_EMIT q->buttonMinimizeClicked();
         } else if (button == m_maximizeButton) {
-            emit q->buttonMaximzieClicked();
+            Q_EMIT q->buttonMaximzieClicked();
         } else if (button == m_closeButton) {
-            emit q->buttonCloseClicked();
+            Q_EMIT q->buttonCloseClicked();
         }
     } else {
         QWidget *pw = q->parentWidget();

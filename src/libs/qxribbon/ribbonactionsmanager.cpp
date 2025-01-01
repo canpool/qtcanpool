@@ -153,7 +153,7 @@ bool RibbonActionsManager::registerAction(QAction *act, int tag, const QString &
     connect(act, &QObject::destroyed, this, &RibbonActionsManager::onActionDestroyed);
     if (isneedemit && enableEmit) {
         // 说明新增tag
-        emit actionTagChanged(tag, false);
+        Q_EMIT actionTagChanged(tag, false);
     }
     return true;
 }
@@ -220,7 +220,7 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
     // 发射信号
     if (enableEmit) {
         for (int delTag : deletedTags) {
-            emit actionTagChanged(delTag, true);
+            Q_EMIT actionTagChanged(delTag, true);
         }
     }
 }

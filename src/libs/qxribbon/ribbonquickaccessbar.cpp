@@ -124,7 +124,7 @@ void RibbonQuickAccessBarPrivate::customizeAction(QAction *action)
     Q_Q(RibbonQuickAccessBar);
     if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
         act->m_srcAction->setVisible(act->isChecked());
-        emit q->customizeActionChanged();
+        Q_EMIT q->customizeActionChanged();
     }
 }
 
@@ -135,7 +135,7 @@ void RibbonQuickAccessBarPrivate::aboutToShowCustomizeMenu()
     foreach (QAction *action, m_actionList) {
         m_menu->addAction(action);
     }
-    emit q->showCustomizeMenu(m_menu);
+    Q_EMIT q->showCustomizeMenu(m_menu);
 }
 
 void RibbonQuickAccessBarPrivate::aboutToHideCustomizeMenu()

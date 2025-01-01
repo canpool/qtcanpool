@@ -98,13 +98,13 @@ void RibbonColorButton::setColor(const QColor &color)
     }
     d->m_color = color;
     update();
-    emit colorChanged(color);
+    Q_EMIT colorChanged(color);
 }
 
 void RibbonColorButton::onButtonClicked(bool checked)
 {
     Q_D(RibbonColorButton);
-    emit colorClicked(d->m_color, checked);
+    Q_EMIT colorClicked(d->m_color, checked);
 }
 
 QX_RIBBON_END_NAMESPACE
