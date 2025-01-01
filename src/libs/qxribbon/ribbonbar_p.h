@@ -28,7 +28,7 @@ public:
 
     void moveWidget(int from, int to);
 
-signals:
+Q_SIGNALS:
     void aboutToShow();
     void aboutToHide();
 
@@ -116,7 +116,7 @@ public:
 
     RibbonButtonGroup *createButtonGroup();
 
-public slots:
+public Q_SLOTS:
     void onWindowTitleChanged(const QString &title);
     void onWindowIconChanged(const QIcon &icon);
     void onPageWindowTitleChanged(const QString &title);

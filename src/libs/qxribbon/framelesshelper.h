@@ -40,7 +40,7 @@ public:
 
     void addCaptionClassName(const QString &name);
 
-signals:
+Q_SIGNALS:
     void windowIconChanged(const QIcon &icon);
     void windowTitleChanged(const QString &title);
     void windowStateChanged(Qt::WindowStates state);

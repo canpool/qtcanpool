@@ -24,7 +24,7 @@ public:
     void addWidget(QWidget *w, const QString &title);
     void removeWidget(QWidget *w);
     QLabel *getWidgetTitleLabel(QWidget *w);
-public slots:
+public Q_SLOTS:
     void widgetTitleChanged(QWidget *w, const QString &title);
 private:
     QX_DECLARE_PRIVATE(RibbonGalleryViewport)

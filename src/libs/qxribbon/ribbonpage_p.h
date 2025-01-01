@@ -83,7 +83,7 @@ public:
 
     void doWheelEvent(QWheelEvent *event);
 
-public slots:
+public Q_SLOTS:
     void onLeftScrollButtonClicked();
     void onRightScrollButtonClicked();
 public:

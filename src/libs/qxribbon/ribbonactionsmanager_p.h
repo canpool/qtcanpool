@@ -36,7 +36,7 @@ public:
     QAction *indexToAction(QModelIndex index) const;
     void search(const QString &text);
 
-private slots:
+private Q_SLOTS:
     void onActionTagChanged(int tag, bool isdelete);
 private:
     QX_DECLARE_PRIVATE(RibbonActionsManagerModel)

@@ -72,10 +72,10 @@ public:
     QSize sizeHint() const override;
 
     QActionGroup *actionGroup() const;
-private slots:
+private Q_SLOTS:
     void onItemClicked(const QModelIndex &index);
     void onItemEntered(const QModelIndex &index);
-signals:
+Q_SIGNALS:
     void groupTitleChanged(const QString &title);
     /**
      * @brief 等同QActionGroup的triggered

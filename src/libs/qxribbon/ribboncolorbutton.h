@@ -20,12 +20,12 @@ public:
     virtual ~RibbonColorButton();
 
     const QColor &color() const;
-signals:
+Q_SIGNALS:
     void colorChanged(const QColor &color);
     void colorClicked(const QColor &color, bool checked = false);
-public slots:
+public Q_SLOTS:
     void setColor(const QColor &color);
-private slots:
+private Q_SLOTS:
     void onButtonClicked(bool checked = false);
 private:
     Q_DECLARE_PRIVATE(RibbonColorButton)

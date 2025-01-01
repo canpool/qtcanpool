@@ -119,7 +119,7 @@ public:
 
     static int groupTitleHeight();
     static void setGroupTitleHeight(int h);
-signals:
+Q_SIGNALS:
     void actionTriggered(QAction *action);
 protected:
     void setGroupLayoutMode(GroupLayoutMode mode);

@@ -38,7 +38,7 @@ public:
     QString contextTitle() const;
     void setContextTitle(const QString &title);
 
-signals:
+Q_SIGNALS:
     void pageAdded(RibbonPage *page);
     void pageRemoved(RibbonPage *page);
 protected:

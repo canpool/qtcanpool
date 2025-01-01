@@ -49,14 +49,14 @@ public:
 
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
     static void setGalleryButtonMaximumWidth(int w = 15);
-signals:
+Q_SIGNALS:
     void triggered(QAction *action);
     void hovered(QAction *action);
-public slots:
+public Q_SLOTS:
     virtual void pageUp();
     virtual void pageDown();
     virtual void showMoreDetail();
-protected slots:
+protected Q_SLOTS:
     void onItemClicked(const QModelIndex &index);
     virtual void onTriggered(QAction *action);
 protected:

@@ -114,13 +114,13 @@ public:
     // 设置所有管理的action都可以编辑
     void setAllActionCanCustomize(bool on = true);
 
-signals:
+Q_SIGNALS:
     /**
      * @brief 标签变化触发的信号，变化包括新增和删除
      */
     void actionTagChanged(int tag, bool isDeleted);
 
-private slots:
+private Q_SLOTS:
     void onActionDestroyed(QObject *o);
     void onPageTitleChanged(const QString &title);
 private:

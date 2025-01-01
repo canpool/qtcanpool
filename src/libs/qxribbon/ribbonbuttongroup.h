@@ -29,7 +29,7 @@ public:
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-signals:
+Q_SIGNALS:
     void actionTriggered(QAction *action);
 protected:
     virtual void actionEvent(QActionEvent *e) Q_DECL_OVERRIDE;

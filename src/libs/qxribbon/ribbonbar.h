@@ -207,7 +207,7 @@ public:
 
     void setWindowTitleVisible(bool visible);
 
-signals:
+Q_SIGNALS:
     void minimizationChanged(bool minimized);
     void applicationButtonClicked();
     void currentRibbonTabChanged(int index);

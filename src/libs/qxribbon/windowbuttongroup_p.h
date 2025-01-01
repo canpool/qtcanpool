@@ -32,7 +32,7 @@ public:
     void resize(QSize size);
     QSize sizeHint() const;
     int groupHeight() const;
-public slots:
+public Q_SLOTS:
     void buttonClicked();
 public:
     WindowButton *m_closeButton;
