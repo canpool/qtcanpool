@@ -30,7 +30,7 @@ public:
     void updateStyle();
     void setMaximizedIcon(bool maximized);
 
-signals:
+Q_SIGNALS:
     void closeRequested();
     void maximizeRequested();
 

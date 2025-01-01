@@ -31,7 +31,7 @@ public:
     void removePerspective(const QString &name);
     void loadPerspectives();
     void savePerspectives() const;
-signals:
+Q_SIGNALS:
     void perspectivesListChanged();
     void openingPerspective();
     void openedPerspective();

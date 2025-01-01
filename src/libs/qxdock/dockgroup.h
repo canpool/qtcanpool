@@ -50,7 +50,7 @@ public:
     void setupMenu(QMenu *menu, const std::vector<DockSubWindow *> &moveTo);
 
     void setNewPerspectiveDefaultName(const QString &defaultName);
-private slots:
+private Q_SLOTS:
     void autoFillAttachedViewMenu();
     void createPerspective();
 private:

@@ -20,7 +20,7 @@ class CreateChildDockAction : public QAction
 public:
     CreateChildDockAction(DockGroup *group, QMenu *menu);
 
-public slots:
+public Q_SLOTS:
     void createGroup();
 private:
     DockGroup *m_group;
@@ -32,7 +32,7 @@ class DestroyGroupAction : public QAction
 public:
     DestroyGroupAction(DockGroup *group, QMenu *menu);
 
-public slots:
+public Q_SLOTS:
     void destroyGroup();
 private:
     DockGroup *m_group;
@@ -46,7 +46,7 @@ public:
 
     static void move(DockWidget *widget, DockSubWindow *moveTo);
 
-public slots:
+public Q_SLOTS:
     void move();
 private:
     DockWidget *m_widget;
@@ -59,7 +59,7 @@ class LoadPerspectiveAction : public QAction
 public:
     LoadPerspectiveAction(QMenu *parent, const QString &name, DockGroup *group);
 
-public slots:
+public Q_SLOTS:
     void load();
 private:
     QString name;
@@ -72,7 +72,7 @@ class RemovePerspectiveAction : public QAction
 public:
     RemovePerspectiveAction(QMenu *parent, const QString &name, DockGroup *group);
 
-public slots:
+public Q_SLOTS:
     void remove();
 private:
     QString name;
