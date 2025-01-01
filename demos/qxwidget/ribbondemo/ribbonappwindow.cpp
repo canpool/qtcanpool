@@ -51,7 +51,7 @@ void RibbonAppWindowPrivate::setMenuWidget(QWidget *menuBar)
         m_windowAgent = new WindowAgentWidget(q);
         m_windowAgent->setup(q);
         m_windowAgent->setTitleBar(bar);
-        m_windowAgent->addCaptionClassName("QxRibbon::RibbonBar");
+        m_windowAgent->addCaptionClassName(QString::fromLatin1("QxRibbon::RibbonBar"));
     }
 
     if (Q_NULLPTR == m_windowButtonGroup) {
