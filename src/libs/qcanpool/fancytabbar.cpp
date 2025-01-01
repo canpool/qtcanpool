@@ -397,7 +397,7 @@ void FancyTabBar::setOrientation(Qt::Orientation orientation)
     d->m_backActionLayout->setDirection(layoutDirection);
     d->m_tabLayout->setDirection(layoutDirection);
     d->m_mainLayout->setDirection(layoutDirection);
-    emit orientationChanged(orientation);
+    Q_EMIT orientationChanged(orientation);
 }
 
 void FancyTabBar::setCurrentIndex(int index)
@@ -408,7 +408,7 @@ void FancyTabBar::setCurrentIndex(int index)
     }
     d->m_currentIndex = index;
     d->m_tabs.at(d->m_currentIndex)->setChecked(true);
-    emit currentChanged(index);
+    Q_EMIT currentChanged(index);
 }
 
 QCANPOOL_END_NAMESPACE

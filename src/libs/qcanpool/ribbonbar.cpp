@@ -60,10 +60,10 @@ bool RibbonStackedWidget::event(QEvent *event)
     if (m_isPopup) {
         switch (event->type()) {
         case QEvent::Show:
-            emit aboutToShow();
+            Q_EMIT aboutToShow();
             break;
         case QEvent::Hide:
-            emit aboutToHide();
+            Q_EMIT aboutToHide();
             break;
         default:
             break;

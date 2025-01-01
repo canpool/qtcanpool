@@ -99,11 +99,11 @@ void WindowToolBarPrivate::buttonClicked()
 
     if (m_signalEnabled) {
         if (action == m_minimizeAction) {
-            emit q->buttonMinimizeClicked();
+            Q_EMIT q->buttonMinimizeClicked();
         } else if (action == m_maximizeAction) {
-            emit q->buttonMaximzieClicked();
+            Q_EMIT q->buttonMaximzieClicked();
         } else if (action == m_closeAction) {
-            emit q->buttonCloseClicked();
+            Q_EMIT q->buttonCloseClicked();
         }
     } else {
         QWidget *pw = q->parentWidget();

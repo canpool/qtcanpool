@@ -155,7 +155,7 @@ void QuickAccessBarPrivate::customizeAction(QAction *action)
     m_customizingAction = true;
     if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
         setActionVisible(act, act->m_srcAction, !q->widgetForAction(act->m_srcAction));
-        emit q->customizeActionChanged();
+        Q_EMIT q->customizeActionChanged();
     }
     m_customizingAction = false;
 }
@@ -172,7 +172,7 @@ void QuickAccessBarPrivate::aboutToShowCustomizeMenu()
     foreach (QAction *action, m_actionList) {
         m_menu->addAction(action);
     }
-    emit q->showCustomizeMenu(m_menu);
+    Q_EMIT q->showCustomizeMenu(m_menu);
 }
 
 void QuickAccessBarPrivate::aboutToHideCustomizeMenu()

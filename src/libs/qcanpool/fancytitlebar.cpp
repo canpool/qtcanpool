@@ -337,7 +337,7 @@ bool FancyTitleBarPrivateQt::handleMouseReleaseEvent(QMouseEvent *event)
             if (event->globalY() <= 3) {
                 m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
                 if (m_bWidgetMaximizable) {
-                    emit m_maximizeAction->triggered();
+                    Q_EMIT m_maximizeAction->triggered();
                     return true;
                 }
             } else {
@@ -408,7 +408,7 @@ bool FancyTitleBarPrivateQt::handleMouseDblClickEvent(QMouseEvent *event)
             if (m_isMaximized) {
                 m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
             }
-            emit m_maximizeAction->triggered();
+            Q_EMIT m_maximizeAction->triggered();
             return true;
         }
     }
@@ -935,7 +935,7 @@ bool FancyTitleBarPrivate::windowIconChange(QObject *obj)
         QIcon icon = w->windowIcon();
         if (!icon.isNull()) {
             m_logoButton->setIcon(icon);
-            emit q->windowIconChanged(icon);
+            Q_EMIT q->windowIconChanged(icon);
             return true;
         }
     }
@@ -1000,7 +1000,7 @@ void FancyTitleBarPrivate::restoreWidget(QWidget *pWidget)
 {
     m_isMaximized = false;
     pWidget->setGeometry(m_normalRect);
-    emit q->windowResizable(true);
+    Q_EMIT q->windowResizable(true);
 }
 
 void FancyTitleBarPrivate::maximizeWidget(QWidget *pWidget)
@@ -1017,7 +1017,7 @@ void FancyTitleBarPrivate::maximizeWidget(QWidget *pWidget)
     QRect rect = sreen.screenRect(m_currentScreen);
     pWidget->setGeometry(rect);
 
-    emit q->windowResizable(false);
+    Q_EMIT q->windowResizable(false);
 }
 
 /**

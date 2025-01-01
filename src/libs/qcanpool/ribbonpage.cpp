@@ -246,7 +246,7 @@ void RibbonPage::setTitle(const QString &title)
         return;
     }
     d->m_title = title;
-    emit titleChanged(d->m_title);
+    Q_EMIT titleChanged(d->m_title);
 }
 
 void RibbonPage::resizeEvent(QResizeEvent *e)

@@ -90,7 +90,7 @@ void WindowLogo::mousePressEvent(QMouseEvent *event)
     Q_D(WindowLogo);
     if (event->button() == Qt::LeftButton) {
         if (d->m_hasMenu) {
-            emit menuTriggered(event);
+            Q_EMIT menuTriggered(event);
         }
     }
 }
@@ -100,7 +100,7 @@ void WindowLogo::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         // don't emit when move out
         if (this->rect().contains(event->pos())) {
-            emit clicked();
+            Q_EMIT clicked();
         }
     }
 }

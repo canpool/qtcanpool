@@ -54,7 +54,7 @@ void TinyNavBarPrivate::customizeAction(QAction *action)
     Q_Q(TinyNavBar);
     if (QAction *lowAction = m_actionMap.key(action)) {
         lowAction->setVisible(action->isChecked());
-        emit q->customizeTabChanged();
+        Q_EMIT q->customizeTabChanged();
     }
 }
 
@@ -65,7 +65,7 @@ void TinyNavBarPrivate::aboutToShowCustomizeMenu()
     foreach (QAction *action, m_actionList) {
         m_menu->addAction(action);
     }
-    emit q->showCustomizeMenu(m_menu);
+    Q_EMIT q->showCustomizeMenu(m_menu);
 }
 
 void TinyNavBarPrivate::aboutToHideCustomizeMenu()

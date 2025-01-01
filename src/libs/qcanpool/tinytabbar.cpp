@@ -83,10 +83,10 @@ void TinyTabBarPrivate::onTriggered(QAction *action)
     int index = indexOf(action);
     if (index != m_currentIndex) {
         m_currentIndex = index;
-        emit q->currentChanged(index);
+        Q_EMIT q->currentChanged(index);
     }
     if (m_togglable) {
-        emit q->currentToggled(index, action->isChecked());
+        Q_EMIT q->currentToggled(index, action->isChecked());
     }
 }
 
@@ -191,7 +191,7 @@ void TinyTabBar::removeTab(int index)
     }
     // empty or setCurrentIndex failed
     if (d->m_currentIndex == -1) {
-        emit currentChanged(-1);
+        Q_EMIT currentChanged(-1);
     }
 }
 
