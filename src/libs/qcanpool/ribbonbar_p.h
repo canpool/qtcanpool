@@ -33,7 +33,7 @@ public:
     bool isPopup() const;
     void setPopup(bool popup);
 
-signals:
+Q_SIGNALS:
     void aboutToShow();
     void aboutToHide();
 
@@ -69,7 +69,7 @@ public:
 
     void cleanLayout(QLayout *layout);
 
-public slots:
+public Q_SLOTS:
     void showMinMaximized();
     void slotCurrentTabChanged(int index);
     void slotTabBarClicked(int index);

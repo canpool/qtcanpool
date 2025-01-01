@@ -38,7 +38,7 @@ public:
     void updateLayout();
     void doWheelEvent(QWheelEvent *event);
 
-public slots:
+public Q_SLOTS:
     void slotLeftScrollButton();
     void slotRightScrollButton();
 

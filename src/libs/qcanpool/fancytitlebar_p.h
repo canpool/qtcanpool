@@ -105,7 +105,7 @@ public:
     void restoreWidget(QWidget *pWidget);
     void maximizeWidget(QWidget *pWidget);
 
-public slots:
+public Q_SLOTS:
     virtual void systemButtonClicked();
 
 public:
@@ -204,7 +204,7 @@ public:
     bool handleWindowsMessage(void *message, QTRESULT *result);
 #endif
 
-public slots:
+public Q_SLOTS:
     void systemButtonClicked() override;
 
 public:

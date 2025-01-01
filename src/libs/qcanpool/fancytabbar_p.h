@@ -49,7 +49,7 @@ public:
         return m_orientation == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom;
     }
 
-public slots:
+public Q_SLOTS:
     void switchTab(bool checked);
     void pressTab();
 

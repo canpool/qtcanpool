@@ -50,7 +50,7 @@ public:
     void setFancyStyle(FancyStyle style);
     void updateWidgetFlags();
 
-signals:
+Q_SIGNALS:
     void maximizationChanged(bool maximized);
 
 private:

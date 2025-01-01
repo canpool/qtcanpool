@@ -80,7 +80,7 @@ public:
 
     void addCaptionClassName(const QString &name);
 
-signals:
+Q_SIGNALS:
     void windowResizable(bool resizable);
     void windowMovable(bool movable);
     void windowIconChanged(QIcon &icon);

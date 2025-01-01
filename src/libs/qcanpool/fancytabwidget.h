@@ -48,11 +48,11 @@ public:
     TabPosition tabPosition() const;
     void setTabPosition(TabPosition);
 
-signals:
+Q_SIGNALS:
     void currentChanged(int index);
     void tabPositionChanged(TabPosition pos);
 
-public slots:
+public Q_SLOTS:
     void setCurrentIndex(int index);
     void setCurrentWidget(QWidget *widget);
 

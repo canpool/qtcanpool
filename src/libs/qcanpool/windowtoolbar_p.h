@@ -27,7 +27,7 @@ public:
     void windowStateChange(QObject *obj);
     void setWindowStates(Qt::WindowStates states);
 
-public slots:
+public Q_SLOTS:
     void buttonClicked();
 public:
     QToolBar *m_toolBar;

@@ -28,7 +28,7 @@ public:
 
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
-signals:
+Q_SIGNALS:
     void menuTriggered(QMouseEvent *e);
     void clicked();
 protected:

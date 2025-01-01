@@ -72,11 +72,11 @@ public:
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation orientation);
 
-signals:
+Q_SIGNALS:
     void currentChanged(int index);
     void orientationChanged(Qt::Orientation orientation);
 
-public slots:
+public Q_SLOTS:
     void setCurrentIndex(int index);
 
 private:

@@ -20,7 +20,7 @@ public:
     virtual ~MenuAccessButton();
 public:
     virtual QSize sizeHint() const;
-public slots:
+public Q_SLOTS:
     void setOrientation(Qt::Orientation orientation);
 private:
     QCP_DECLARE_PRIVATE(MenuAccessButton)

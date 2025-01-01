@@ -41,7 +41,7 @@ public:
     void setForceAlignCenter(bool b = true);
     void setForceDefaultShowMenu(bool b = false);
 
-public slots:
+public Q_SLOTS:
     void setToolButtonStyle(Qt::ToolButtonStyle style);
 
 protected:

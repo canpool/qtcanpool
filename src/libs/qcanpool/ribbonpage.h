@@ -38,10 +38,10 @@ public:
 
     QString title() const;
 
-signals:
+Q_SIGNALS:
     void titleChanged(const QString &title);
 
-public slots:
+public Q_SLOTS:
     void setTitle(const QString &title);
 
 protected:

@@ -30,7 +30,7 @@ public:
 
     void setWindowFlags(Qt::WindowFlags type);
 
-signals:
+Q_SIGNALS:
     void resizable(bool resizable);
 
 private:
