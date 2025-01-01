@@ -215,7 +215,7 @@ void DockFloatingTitleBar::mouseMoveEvent(QMouseEvent *e)
 void DockFloatingTitleBar::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if (e->buttons() & Qt::LeftButton) {
-        emit maximizeRequested();
+        Q_EMIT maximizeRequested();
         e->accept();
     } else {
         QWidget::mouseDoubleClickEvent(e);

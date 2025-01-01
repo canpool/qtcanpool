@@ -87,7 +87,7 @@ void DockGroupManager::addPerspective(const QString &name, DockGroup *group)
         assert(false);
     }
 
-    emit perspectivesListChanged();
+    Q_EMIT perspectivesListChanged();
 }
 
 DockWidget *findWidget(QString name, const std::vector<DockSubWindow *> &sws)
@@ -107,7 +107,7 @@ void DockGroupManager::openPerspective(const QString &name, DockGroup *group)
 
     if (!d->m_perspectivesFolder.isEmpty()) {
         if (d->m_perspectives.contains(name)) {
-            emit openingPerspective();
+            Q_EMIT openingPerspective();
 
             if (group->canCreateNewGroups()) {
                 auto sws = group->subWindow()->allSubWindows(true, true);
@@ -164,7 +164,7 @@ void DockGroupManager::openPerspective(const QString &name, DockGroup *group)
             // remove internal perspectives
             group->subWindow()->removePerspectives(group->subWindow()->perspectiveNames());
 
-            emit openedPerspective();
+            Q_EMIT openedPerspective();
         }
     } else {
         assert(false);
@@ -175,14 +175,14 @@ void DockGroupManager::removePerspectives()
 {
     Q_D(DockGroupManager);
     d->m_perspectives.clear();
-    emit perspectivesListChanged();
+    Q_EMIT perspectivesListChanged();
 }
 
 void DockGroupManager::removePerspective(const QString &name)
 {
     Q_D(DockGroupManager);
     d->m_perspectives.remove(name);
-    emit perspectivesListChanged();
+    Q_EMIT perspectivesListChanged();
 }
 
 void DockGroupManager::loadPerspectives()
@@ -232,7 +232,7 @@ void DockGroupManager::loadPerspectives()
         mainSettings->endArray();
     }
 
-    emit perspectivesListChanged();
+    Q_EMIT perspectivesListChanged();
 }
 
 void DockGroupManager::savePerspectives() const
