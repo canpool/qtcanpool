@@ -53,6 +53,8 @@ public:
 
     QString groupName() const;
     void setGroupName(const QString &title);
+    QString title() const;
+    void setTitle(const QString &title);
 
     static RibbonGroup::RowProportion getActionRowProportionProperty(QAction *action);
     static void setActionRowProportionProperty(QAction *action, RibbonGroup::RowProportion rp);

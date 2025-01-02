@@ -149,6 +149,16 @@ void RibbonGroup::setGroupName(const QString &title)
     update();
 }
 
+QString RibbonGroup::title() const
+{
+    return groupName();
+}
+
+void RibbonGroup::setTitle(const QString &title)
+{
+    setGroupName(title);
+}
+
 /**
  * @brief 获取action的行属性
  * @param action
