@@ -482,6 +482,11 @@ void RibbonPage::setPageName(const QString &title)
     setWindowTitle(title);
 }
 
+QString RibbonPage::title() const
+{
+    return pageName();
+}
+
 RibbonGroup::GroupLayoutMode RibbonPage::groupLayoutMode() const
 {
     Q_D(const RibbonPage);
@@ -675,6 +680,11 @@ QList<RibbonGroup *> RibbonPage::groupList() const
     return d->groupList();
 }
 
+QList<RibbonGroup *> RibbonPage::groups() const
+{
+    return groupList();
+}
+
 void RibbonPage::setBackgroundBrush(const QBrush &brush)
 {
     QPalette p = palette();
@@ -733,6 +743,11 @@ void RibbonPage::updateItemGeometry()
         group->updateItemGeometry();
     }
     d->updateItemGeometry();
+}
+
+void RibbonPage::setTitle(const QString &title)
+{
+    setPageName(title);
 }
 
 /**

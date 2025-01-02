@@ -41,6 +41,7 @@ public:
     // equal to windowTitle and setWindowTitle
     QString pageName() const;
     void setPageName(const QString &title);
+    QString title() const;
 
     RibbonGroup::GroupLayoutMode groupLayoutMode() const;
 
@@ -64,6 +65,7 @@ public:
 
     int groupCount() const;
     QList<RibbonGroup *> groupList() const;
+    QList<RibbonGroup *> groups() const;
 
     void setBackgroundBrush(const QBrush &brush);
 
@@ -75,6 +77,8 @@ public:
     void setCanCustomize(bool b);
 
     void updateItemGeometry();
+public Q_SLOTS:
+    void setTitle(const QString &title);
 protected:
     void setGroupLayoutMode(RibbonGroup::GroupLayoutMode m);
     void markIsPageContext(bool isPageContext = true);
