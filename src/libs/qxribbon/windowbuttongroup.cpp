@@ -269,10 +269,11 @@ void WindowButtonGroup::setWindowStates(Qt::WindowStates s)
 void WindowButtonGroup::setWindowBorder(int border)
 {
     Q_D(WindowButtonGroup);
-    if (border > 1) {
-        d->m_windowBorder = border;
-        d->updateSize();
+    if (border < 0 || d->m_windowBorder == border) {
+        return;
     }
+    d->m_windowBorder = border;
+    d->updateSize();
 }
 
 QSize WindowButtonGroup::sizeHint() const
