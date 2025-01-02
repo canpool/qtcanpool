@@ -35,7 +35,6 @@ Q_SIGNALS:
     void windowStateChanged(Qt::WindowStates state);
 protected:
     void loadTheme(const QString &themeFile);
-    virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject *obj, QEvent *e) Q_DECL_OVERRIDE;
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
 private:

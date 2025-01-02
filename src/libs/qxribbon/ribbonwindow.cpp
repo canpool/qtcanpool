@@ -210,17 +210,6 @@ void RibbonWindow::setMenuBar(QMenuBar *menuBar)
     d->setMenuWidget(menuBar);
 }
 
-void RibbonWindow::resizeEvent(QResizeEvent *event)
-{
-    Q_D(RibbonWindow);
-    if (d->m_ribbonBar) {
-        if (d->m_ribbonBar->size().width() != this->size().width()) {
-            d->m_ribbonBar->setFixedWidth(this->size().width());
-        }
-    }
-    QMainWindow::resizeEvent(event);
-}
-
 bool RibbonWindow::eventFilter(QObject *obj, QEvent *e)
 {
     Q_D(RibbonWindow);
@@ -261,6 +250,13 @@ bool RibbonWindow::event(QEvent *e)
             }
         }
         Q_EMIT windowStateChanged(s);
+    } break;
+    case QEvent::Resize: {
+        if (d->m_ribbonBar) {
+            if (d->m_ribbonBar->size().width() != this->size().width()) {
+                d->m_ribbonBar->setFixedWidth(this->size().width());
+            }
+        }
     } break;
     default:
         break;
