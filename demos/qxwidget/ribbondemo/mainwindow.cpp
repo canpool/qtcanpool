@@ -365,7 +365,8 @@ void MainWindow::createPageHome()
 
     act = createAction(tr("Delayed Popup"), ":/icon/res/folder-cog.svg");
     act->setMenu(menu);
-    btn = groupToolButtonStyle->addLargeAction(act);
+    groupToolButtonStyle->addAction(act);
+    btn = groupToolButtonStyle->ribbonButtonForAction(act);
     btn->setPopupMode(QToolButton::DelayedPopup);
     connect(act, &QAction::triggered, this, &MainWindow::onDelayedPopupCheckabletriggered);
 
