@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
 #ifdef Q_OS_WINDOWS
     // When tested on Windows11 and Qt6.8.1, the default style is windows11,
     // and the qss of ribbon does not work well, so for compatibility, set the style to windowsvista
