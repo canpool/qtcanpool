@@ -46,6 +46,9 @@ void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
     case LightYellowTheme:
         loadTheme(":/qxribbon/res/stylesheets/light_yellow.css", widget);
         break;
+    case CustomTheme:
+        widget->setStyleSheet("");
+        break;
     default:
         break;
     }
