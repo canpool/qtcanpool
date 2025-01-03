@@ -399,7 +399,6 @@ private:
     bool m_bLeftButtonPressed;
     bool m_bCursorShapeChanged;
     bool m_bLeftButtonTitlePressed;
-    Qt::WindowFlags m_windowFlags;
 };
 
 FramelessWidgetDataQt::FramelessWidgetDataQt(FramelessHelperPrivate *_d, QWidget *widget)
@@ -409,7 +408,6 @@ FramelessWidgetDataQt::FramelessWidgetDataQt(FramelessHelperPrivate *_d, QWidget
     m_bCursorShapeChanged = false;
     m_bLeftButtonTitlePressed = false;
 
-    m_windowFlags = m_pWidget->windowFlags();
     m_pWidget->setMouseTracking(true);
     m_pWidget->setAttribute(Qt::WA_Hover, true);
 }
