@@ -1,5 +1,5 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
 **/
 #pragma once
@@ -20,11 +20,8 @@ public:
 
     void updateWindowFlags(Qt::WindowFlags flags);
 
-    void setButtonWidthStretch(int close = 4, int max = 3, int min = 3);
-    void setIconScale(qreal iconscale = 0.5);
+    void setIconScale(qreal scale = 0.5);
     void setWindowStates(Qt::WindowStates s);
-
-    void setWindowBorder(int border = 1);
 
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
 
@@ -32,12 +29,15 @@ public:
 
     /** default is disabled */
     bool signalIsEnabled() const;
+
 public Q_SLOTS:
     void setSignalEnabled(bool enable);
+
 Q_SIGNALS:
     void buttonMinimizeClicked();
     void buttonMaximzieClicked();
     void buttonCloseClicked();
+
 private:
     QX_DECLARE_PRIVATE(WindowButtonGroup)
 };

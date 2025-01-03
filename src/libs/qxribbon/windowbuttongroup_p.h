@@ -1,5 +1,5 @@
 /**
- * Copyleft (C) 2023-2024 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
  **/
 #pragma once
@@ -25,23 +25,19 @@ class WindowButtonGroupPrivate : public QObject
 public:
     WindowButtonGroupPrivate();
 
-    void setupMinimizeButton(bool on);
-    void setupMaximizeButton(bool on);
-    void setupCloseButton(bool on);
-    void updateSize();
-    void resize(QSize size);
+    void init();
+    void updateButton(Qt::WindowFlags flags);
+    void updateButtonIconSize();
     QSize sizeHint() const;
     int groupHeight() const;
+
 public Q_SLOTS:
     void buttonClicked();
+
 public:
     WindowButton *m_closeButton;
     WindowButton *m_minimizeButton;
     WindowButton *m_maximizeButton;
-    int m_closeStretch;
-    int m_maxStretch;
-    int m_minStretch;
-    int m_windowBorder;
     qreal m_iconScale;
     bool m_signalEnabled;
 };
