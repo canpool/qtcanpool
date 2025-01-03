@@ -211,6 +211,13 @@ void MainWindow::createPageHome()
     actWindowFlagNormalButton->setChecked(true);
     groupStyle->addSmallAction(actWindowFlagNormalButton);
     connect(actWindowFlagNormalButton, &QAction::triggered, this, &MainWindow::onActionWindowFlagNormalButtonTriggered);
+#if defined(QXRIBBON_USE_APPWINDOW) || !defined(Q_OS_WINDOWS)
+    // FIXME: 在使用 FRAMELESS_USE_NATIVE 方案时，先单击按钮禁止最大化，再单击按钮允许最大化后，窗口最大化后显示位置异常，
+    // 且鼠标不能再改变窗口大小，这是 FramelessWidgetDataNativeWin 的缺陷
+    actWindowFlagNormalButton->setEnable(true);
+#else
+    actWindowFlagNormalButton->setEnabled(false);
+#endif
 
     QButtonGroup *g = new QButtonGroup(page);
 
