@@ -18,9 +18,9 @@ QX_RIBBON_BEGIN_NAMESPACE
 #define CLS_BUTTON_WIDTH    40
 
 WindowButton::WindowButton(QWidget *p)
-    : QPushButton(p)
+    : QToolButton(p)
 {
-    setFlat(true);
+    setAutoRaise(true);
 }
 
 

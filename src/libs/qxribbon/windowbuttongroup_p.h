@@ -5,13 +5,13 @@
 #pragma once
 
 #include "qxribbon_global.h"
-#include <QPushButton>
+#include <QToolButton>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
 class WindowButtonGroup;
 
-class WindowButton : public QPushButton
+class WindowButton : public QToolButton
 {
     Q_OBJECT
 public:
