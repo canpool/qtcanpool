@@ -18,6 +18,15 @@ public:
 
     const QMargins &tabMargin() const;
     void setTabMargin(const QMargins &margin);
+
+    int insertTab(int index, const QString &text);
+
+    int currentIndex() const;
+    int count() const;
+
+public Q_SLOTS:
+    void setCurrentIndex(int index);
+
 private:
     QMargins m_tabMargin;
 };

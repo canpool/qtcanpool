@@ -990,7 +990,7 @@ void RibbonBarPrivate::onTabMoved(int from, int to)
 
 void RibbonBarPrivate::onStackWidgetHided()
 {
-    // m_tabBar->repaint();
+    m_tabBar->setCurrentIndex(-1);
 }
 
 void RibbonBarPrivate::onFontChanged(const QFont &font)

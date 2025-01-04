@@ -29,6 +29,15 @@ QxRibbon--RibbonTabBar::tab {
   padding-bottom: 5px;
 }
 
+QxRibbon--RibbonTabBar::tab:last,
+QxRibbon--RibbonTabBar::tab:last:selected,
+QxRibbon--RibbonTabBar::tab:last:hover {
+  border: none;
+  width: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
 QxRibbon--RibbonTabBar::tab:selected,
 QxRibbon--RibbonTabBar::tab:hover {
   border-top-left-radius: 0px;
