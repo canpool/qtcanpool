@@ -114,6 +114,15 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 
 ![qxwindowdemo](./doc/pics/qxwindowdemo.png)
 
+### 案例
+
+- <font size=4>MyCAD</font>
+
+![qcanpool](./doc/pics/mycad.png)
+![qcanpool](./doc/pics/mycad2.png)
+
+MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成 QxRibbon 组件的一个作品，旨在实现 FreeCAD 现代界面化（Ribbon 风格）。
+
 ### 体验
 
 下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
