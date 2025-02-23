@@ -22,7 +22,7 @@ QxRibbon--RibbonTabBar {
 
 QxRibbon--RibbonTabBar::tab {
   color: #f0f0f0;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   margin-left: 2px;
   padding: 4px;

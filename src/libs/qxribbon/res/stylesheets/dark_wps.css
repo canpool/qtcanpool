@@ -539,7 +539,7 @@ QxRibbon--RibbonTabBar {
 }
 
 QxRibbon--RibbonTabBar::tab {
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   margin-left: 2px;
   padding: 4px;

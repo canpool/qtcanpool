@@ -21,7 +21,7 @@ QxRibbon--RibbonTabBar {
 
 QxRibbon--RibbonTabBar::tab {
   color: #5779af;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   margin-left: 2px;
   padding: 4px;
@@ -52,7 +52,7 @@ QxRibbon--RibbonTabBar::tab:selected {
 }
 
 QxRibbon--RibbonTabBar::tab:hover:!selected {
-  border:1px solid #c5d2e0;
+  border: 1px solid #c5d2e0;
   border-bottom-color: #FFFFFF;
   color: #5779af;
 }
