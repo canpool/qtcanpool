@@ -29,13 +29,11 @@ include($$QTCANPOOL_DIR/src/rpath.pri)
 
 SOURCES += \
     $$PWD/aboutdialog.cpp \
-    $$PWD/editablecontainer.cpp \
     $$PWD/main.cpp \
     $$PWD/mainwindow.cpp
 
 HEADERS += \
     $$PWD/aboutdialog.h \
-    $$PWD/editablecontainer.h \
     $$PWD/mainwindow.h
 
 # Default rules for deployment.

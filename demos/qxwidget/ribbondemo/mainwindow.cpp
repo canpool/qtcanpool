@@ -46,7 +46,6 @@
 #include <QSplitter>
 
 #include "aboutdialog.h"
-#include "editablecontainer.h"
 
 QX_RIBBON_USE_NAMESPACE
 
@@ -121,19 +120,17 @@ void MainWindow::setRibbonTheme(int theme)
 void MainWindow::createCentralWidget()
 {
     m_edit = new QTextEdit(this);
-    EditableContainer *ec = new EditableContainer(this);
-    ec->setWidget(m_edit);
 #if QXRIBBON_TEST_MDIAREA
     QMdiArea *area = new QMdiArea(this);
     QTextEdit *te = new QTextEdit(this);
     area->addSubWindow(te);
     QSplitter *splitter = new QSplitter(this);
-    splitter->addWidget(ec);
+    splitter->addWidget(m_edit);
     splitter->addWidget(area);
     splitter->setSizes({400, 200});
     setCentralWidget(splitter);
 #else
-    setCentralWidget(ec);
+    setCentralWidget(m_edit);
 #endif
 }
 
