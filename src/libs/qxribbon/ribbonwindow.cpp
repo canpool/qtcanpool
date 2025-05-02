@@ -251,13 +251,6 @@ bool RibbonWindow::event(QEvent *e)
         }
         Q_EMIT windowStateChanged(s);
     } break;
-    case QEvent::Resize: {
-        if (d->m_ribbonBar) {
-            if (d->m_ribbonBar->size().width() != this->size().width()) {
-                d->m_ribbonBar->setFixedWidth(this->size().width());
-            }
-        }
-    } break;
     default:
         break;
     }
