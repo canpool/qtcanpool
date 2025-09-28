@@ -1,11 +1,11 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
 **/
 #pragma once
 
 #include "qxribbon_global.h"
-#include <QMainWindow>
+#include "ribbonmainwindow.h"
 #include "ribbontheme.h"
 
 QX_RIBBON_BEGIN_NAMESPACE
@@ -16,18 +16,11 @@ class RibbonBar;
 /**
  * @brief 如果要使用 RibbonBar，必须使用 RibbonWindow 代替 QMainWindow
  *
- * 由于 ribbon 的风格和传统的 MenuBar/Toolbar 风格差异较大，RibbonBar 使用需要把原有的 QMainWindow 替换为 RibbonWindow,
- * RibbonWindow 默认是个无边框窗体，继承自 QMainWindow, 其构造函数的参数 useRibbon, 用于指定是否使用 ribbon 风格，默认为 true
+ * 由于 ribbon 的风格和传统的 MenuBar/ToolBar 风格差异较大，RibbonBar 使用需要把原有的 QMainWindow 替换为 RibbonWindow,
+ * RibbonWindow 默认是个无边框窗体，继承自 RibbonMainWindow。
  *
  * @code
- * RibbonWindow(QWidget *parent = Q_NULLPTR, bool useRibbon = true);
- * @endcode
- *
- * 如果想使用非 ribbon 风格，只需要把 useRibbon 设置为 false 即可, 成员函数 isUseRibbon 用于判断当前是否为 ribbon 模式，
- * 这个函数在兼容传统 Toolbar 风格和 ribbon 风格时非常有用。
- *
- * @code
- * bool isUseRibbon() const;
+ * RibbonWindow(QWidget *parent = Q_NULLPTR);
  * @endcode
  *
  * 由于无边框窗体存在一些缺陷，所以提供 setFrameless 接口来设置是否采用无边框。如果不采用无边框的话，window 原生标题栏加上
@@ -43,33 +36,20 @@ class RibbonBar;
  * 常用方法：在 RibbonWindow 继承类中自定义 Theme 枚举类型，如: RibbonThemeCustom, 然后首个类型值定义为 CustomTheme + 1
  *
  */
-class QX_RIBBON_EXPORT RibbonWindow : public QMainWindow
+class QX_RIBBON_EXPORT RibbonWindow : public RibbonMainWindow
 {
     Q_OBJECT
     Q_PROPERTY(int ribbonTheme READ ribbonTheme WRITE setRibbonTheme)
 public:
-    RibbonWindow(QWidget *parent = Q_NULLPTR, bool useRibbon = true);
+    RibbonWindow(QWidget *parent = Q_NULLPTR);
     ~RibbonWindow() Q_DECL_OVERRIDE;
-
-    RibbonBar *ribbonBar() const;
-
-    /** theme, see to RibbonTheme::ThemeStyle */
-    void setRibbonTheme(int theme);
-    int ribbonTheme() const;
-
-    bool isUseRibbon() const;
 
     bool isFrameless() const;
     void setFrameless(bool frameless);
 
     void updateWindowFlags(Qt::WindowFlags flags);
 
-    void setMenuWidget(QWidget *menuBar);
-    void setMenuBar(QMenuBar *menuBar);
-Q_SIGNALS:
-    void windowStateChanged(Qt::WindowStates state);
 protected:
-    void loadTheme(const QString &themeFile);
     virtual bool eventFilter(QObject *obj, QEvent *e) Q_DECL_OVERRIDE;
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
 private:
