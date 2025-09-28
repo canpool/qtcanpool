@@ -1,0 +1,4 @@
+include($$PWD/qxdock-lib.pri)
+
+DEFINES -= QX_DOCK_LIBRARY
+DEFINES += QX_DOCK_LIBRARY_STATIC

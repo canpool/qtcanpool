@@ -1,0 +1,4 @@
+include($$PWD/qcanpool-lib.pri)
+
+DEFINES -= QCANPOOL_LIBRARY
+DEFINES += QCANPOOL_LIBRARY_STATIC

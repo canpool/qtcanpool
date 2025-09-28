@@ -1,0 +1,4 @@
+include($$PWD/qxribbon-lib.pri)
+
+DEFINES -= QX_RIBBON_LIBRARY
+DEFINES += QX_RIBBON_LIBRARY_STATIC
