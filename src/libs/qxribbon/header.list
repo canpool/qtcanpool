@@ -12,6 +12,7 @@ ribbonfactory.h
 ribbongallery.h
 ribbongallerygroup.h
 ribbongroup.h
+ribbonmainwindow.h
 ribbonmanager.h
 ribbonmenu.h
 ribbonpage.h
