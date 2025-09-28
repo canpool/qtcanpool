@@ -1,5 +1,5 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
 **/
 #pragma once
@@ -26,6 +26,9 @@ public:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
+
+protected:
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     QMargins m_tabMargin;

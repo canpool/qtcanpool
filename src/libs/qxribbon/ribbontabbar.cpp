@@ -1,10 +1,11 @@
 ﻿/**
- * Copyleft (C) 2023 maminjie <canpool@163.com>
+ * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
 **/
 #include "ribbontabbar.h"
 
 #include <QTimer>
+#include <QWheelEvent>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -72,6 +73,17 @@ void RibbonTabBar::setCurrentIndex(int index)
     } else {
         QTabBar::setCurrentIndex(index);
     }
+}
+
+void RibbonTabBar::wheelEvent(QWheelEvent *event)
+{
+    // prevent scrolling to the sentry tab
+    if (currentIndex() == count() - 1) {
+        if (event->angleDelta().y() <= 0) {
+            return;
+        }
+    }
+    QTabBar::wheelEvent(event);
 }
 
 QX_RIBBON_END_NAMESPACE
