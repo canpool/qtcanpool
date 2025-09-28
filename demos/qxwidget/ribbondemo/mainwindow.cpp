@@ -66,7 +66,7 @@ QX_RIBBON_USE_NAMESPACE
 #define QXRIBBON_TEST_CUSTOMIZE_APPBTN  1
 
 MainWindow::MainWindow(QWidget *par)
-    : RibbonMainWindow(par)
+    : MyRibbonWindow(par)
     , m_themeGroup(nullptr)
 {
     setWindowTitle(tr("ribbon mainwindow demo"));

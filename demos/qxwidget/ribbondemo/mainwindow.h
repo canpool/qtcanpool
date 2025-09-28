@@ -3,10 +3,10 @@
 
 #if defined(QXRIBBON_USE_APPWINDOW)
 #include "ribbonappwindow.h"
-#define RibbonMainWindow RibbonAppWindow
+#define MyRibbonWindow RibbonAppWindow
 #else
 #include "qxribbon/ribbonwindow.h"
-#define RibbonMainWindow RibbonWindow
+#define MyRibbonWindow RibbonWindow
 #endif
 
 class QTextEdit;
@@ -24,7 +24,7 @@ QX_RIBBON_END_NAMESPACE
 
 QX_RIBBON_USE_NAMESPACE
 
-class MainWindow : public RibbonMainWindow
+class MainWindow : public MyRibbonWindow
 {
     Q_OBJECT
 public:
