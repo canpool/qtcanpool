@@ -31,11 +31,6 @@ qtcanpool-qss {
 
 /* start ribbon set*/
 
-QxRibbon--RibbonWindow {
-  background-color: #f5f5f5;
-  border: 1px solid #707070;
-}
-
 /*RibbonBar*/
 
 QxRibbon--RibbonBar {

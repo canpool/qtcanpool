@@ -528,8 +528,6 @@ QDockWidget {
 
 QxRibbon--RibbonBar {
   background-color: #404244;
-  border: solid #303030;
-  border-width: 1px 1px 0px 1px;
 }
 
 /*RibbonTabBar*/
