@@ -1,17 +1,10 @@
 ﻿/* start ribbon set*/
 
-QxRibbon--RibbonWindow {
-  background-color: white;
-  border: 1px solid #707070;
-}
-
 /*RibbonBar*/
 
 QxRibbon--RibbonBar {
   color: white;
   background-color: #2B579A;
-  border: solid #707070;
-  border-width: 1px 1px 0px 1px;
 }
 
 /*RibbonTabBar*/

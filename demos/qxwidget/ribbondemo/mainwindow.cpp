@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *par)
     setWindowTitle(tr("ribbon mainwindow demo"));
     setWindowIcon(QIcon(":/icon/res/logo.svg"));
     // It needs to be consistent with the border size in qss
-    setContentsMargins(1, 1, 1, 1);
+    // setContentsMargins(1, 1, 1, 1);
 
     m_customizeXml = qApp->applicationDirPath() + QDir::separator() + "customize.xml";
 
