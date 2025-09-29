@@ -47,7 +47,7 @@ public:
     bool isFrameless() const;
     void setFrameless(bool frameless);
 
-    void updateWindowFlags(Qt::WindowFlags flags);
+    void updateWindowFlags(Qt::WindowFlags flags) Q_DECL_OVERRIDE;
 
 protected:
     virtual bool eventFilter(QObject *obj, QEvent *e) Q_DECL_OVERRIDE;

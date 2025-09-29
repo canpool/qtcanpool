@@ -30,7 +30,7 @@ public:
     int ribbonTheme() const;
     void loadTheme(const QString &themeFile);
 
-    void updateWindowFlags(Qt::WindowFlags flags);
+    virtual void updateWindowFlags(Qt::WindowFlags flags);
 
 Q_SIGNALS:
     void windowStateChanged(Qt::WindowStates state);

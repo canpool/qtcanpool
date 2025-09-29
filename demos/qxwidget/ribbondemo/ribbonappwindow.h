@@ -17,7 +17,7 @@ public:
     RibbonAppWindow(QWidget *parent = Q_NULLPTR);
     ~RibbonAppWindow() Q_DECL_OVERRIDE;
 
-    void updateWindowFlags(Qt::WindowFlags flags);
+    void updateWindowFlags(Qt::WindowFlags flags) Q_DECL_OVERRIDE;
 
 protected:
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
