@@ -63,9 +63,9 @@ void WindowButtonGroupPrivate::init()
     QHBoxLayout *lay = new QHBoxLayout(q);
     lay->setSpacing(0);
     lay->setContentsMargins(0, 0, 0, 0);
-    lay->addWidget(m_minimizeButton, 0, Qt::AlignTop);
-    lay->addWidget(m_maximizeButton, 0, Qt::AlignTop);
-    lay->addWidget(m_closeButton, 0, Qt::AlignTop);
+    lay->addWidget(m_minimizeButton);
+    lay->addWidget(m_maximizeButton);
+    lay->addWidget(m_closeButton);
 }
 
 void WindowButtonGroupPrivate::updateButton(Qt::WindowFlags flags)
