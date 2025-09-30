@@ -16,7 +16,8 @@ RibbonTabBar::RibbonTabBar(QWidget *parent)
     setExpanding(false);
 
     // sentry tab
-    addTab(QString());
+    QTabBar::addTab(QString());
+    setTabVisible(0, false);
 }
 
 const QMargins &RibbonTabBar::tabMargin() const
@@ -29,6 +30,11 @@ void RibbonTabBar::setTabMargin(const QMargins &margin)
     m_tabMargin = margin;
 }
 
+int RibbonTabBar::addTab(const QString &text)
+{
+    return insertTab(-1, text);
+}
+
 int RibbonTabBar::insertTab(int index, const QString &text)
 {
     int validCnt = count();
@@ -37,13 +43,7 @@ int RibbonTabBar::insertTab(int index, const QString &text)
     }
     int newIndex = QTabBar::insertTab(index, text);
     if (validCnt == 0) {
-        // Delay setting the current tab, making sure last in the style sheet is applied to the correct tab,
-        // otherwise last will be applied to the second-to-last tab
-        QTimer::singleShot(0, this, [this]() {
-            blockSignals(true);
-            setCurrentIndex(0);
-            blockSignals(false);
-        });
+        setCurrentIndex(0);
     }
     return newIndex;
 }

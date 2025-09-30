@@ -19,6 +19,7 @@ public:
     const QMargins &tabMargin() const;
     void setTabMargin(const QMargins &margin);
 
+    int addTab(const QString &text);
     int insertTab(int index, const QString &text);
 
     int currentIndex() const;
