@@ -40,24 +40,27 @@ void WindowButtonGroupPrivate::init()
 
     m_minimizeButton = new WindowButton(q);
     m_minimizeButton->setObjectName(QStringLiteral("qx_MinimizeWindowButton"));
-    m_minimizeButton->setFixedSize(MIN_BUTTON_WIDTH, groupHeight());
+    m_minimizeButton->setFixedWidth(MIN_BUTTON_WIDTH);
     m_minimizeButton->setFocusPolicy(Qt::NoFocus);
     m_minimizeButton->setIconSize(m_minimizeButton->size() * m_iconScale);
+    m_minimizeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     connect(m_minimizeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
 
     m_maximizeButton = new WindowButton(q);
     m_maximizeButton->setObjectName(QStringLiteral("qx_MaximizeWindowButton"));
-    m_maximizeButton->setFixedSize(MAX_BUTTON_WIDTH, groupHeight());
+    m_maximizeButton->setFixedWidth(MAX_BUTTON_WIDTH);
     m_maximizeButton->setCheckable(true);
     m_maximizeButton->setFocusPolicy(Qt::NoFocus);
     m_maximizeButton->setIconSize(m_maximizeButton->size() * m_iconScale);
+    m_maximizeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     connect(m_maximizeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
 
     m_closeButton = new WindowButton(q);
     m_closeButton->setObjectName(QStringLiteral("qx_CloseWindowButton"));
-    m_closeButton->setFixedSize(CLS_BUTTON_WIDTH, groupHeight());
+    m_closeButton->setFixedWidth(CLS_BUTTON_WIDTH);
     m_closeButton->setFocusPolicy(Qt::NoFocus);
     m_closeButton->setIconSize(m_closeButton->size() * m_iconScale);
+    m_closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     connect(m_closeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
 
     QHBoxLayout *lay = new QHBoxLayout(q);
