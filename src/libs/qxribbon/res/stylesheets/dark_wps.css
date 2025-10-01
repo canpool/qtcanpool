@@ -556,6 +556,11 @@ QxRibbon--RibbonTabBar::tab:selected {
   border-bottom-color: transparent;
 }
 
+QxRibbon--RibbonTabBar::tab:selected:disabled {
+  border: none;
+  background: transparent;
+}
+
 QxRibbon--RibbonTabBar::tab:hover:!selected {
   color: #ffffff;
   border:1px solid #595b5d;
