@@ -221,7 +221,7 @@ public:
     QGridLayout *m_gridLayout;
     QButtonGroup *m_buttonGroup;
     int m_columnCount = 5;
-    bool m_hasReceievedEnter = false;
+    bool m_hasReceivedEnter = false;
 };
 
 RibbonGridContainerPrivate::RibbonGridContainerPrivate()
@@ -326,7 +326,7 @@ void RibbonGridContainer::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
     Q_D(RibbonGridContainer);
-    if (!d->m_hasReceievedEnter) {
+    if (!d->m_hasReceivedEnter) {
         QWidget *parWidget = parentWidget();
         while (parWidget) {
             if (RibbonMenu *menu = qobject_cast<RibbonMenu*>(parWidget)) {
@@ -336,14 +336,14 @@ void RibbonGridContainer::enterEvent(QEvent *event)
             parWidget = parWidget->parentWidget();
         }
     }
-    d->m_hasReceievedEnter = true;
+    d->m_hasReceivedEnter = true;
 }
 
 void RibbonGridContainer::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
     Q_D(RibbonGridContainer);
-    d->m_hasReceievedEnter = false;
+    d->m_hasReceivedEnter = false;
 }
 
 QX_RIBBON_END_NAMESPACE
