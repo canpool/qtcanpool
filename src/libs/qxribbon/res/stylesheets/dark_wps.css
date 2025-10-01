@@ -540,9 +540,8 @@ QxRibbon--RibbonTabBar::tab {
   border: 1px solid transparent;
   background: transparent;
   margin-left: 2px;
-  padding: 4px;
-  padding-top: 3px;
-  padding-bottom: 5px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 QxRibbon--RibbonTabBar::tab:selected, QxRibbon--RibbonTabBar::tab:hover {
@@ -554,13 +553,13 @@ QxRibbon--RibbonTabBar::tab:selected {
   color: #ffffff;
   border: 1px solid #456DA4;
   background: #404244;
-  border-bottom-color: #ffffff;
+  border-bottom-color: transparent;
 }
 
 QxRibbon--RibbonTabBar::tab:hover:!selected {
   color: #ffffff;
   border:1px solid #595b5d;
-  border-bottom-color: #ffffff;
+  border-bottom-color: transparent;
 }
 
 QxRibbon--RibbonTabBar::tab:!selected {

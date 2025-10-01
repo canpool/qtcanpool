@@ -80,6 +80,14 @@ void RibbonTabBar::setCurrentIndex(int index)
     }
 }
 
+QSize RibbonTabBar::tabSizeHint(int index) const
+{
+    QSize sz = QTabBar::tabSizeHint(index);
+    sz.setHeight(this->height());
+
+    return sz;
+}
+
 void RibbonTabBar::wheelEvent(QWheelEvent *event)
 {
     // prevent scrolling to the sentry tab
