@@ -306,6 +306,10 @@ QxRibbon--RibbonMenu::item {
   background-color: transparent;
 }
 
+QxRibbon--RibbonMenu#qx_compatible::item {
+  padding-left: 22px;
+}
+
 QxRibbon--RibbonMenu::item:selected {
   background-color: #c7e0f4;
   border-color: #106ebe;

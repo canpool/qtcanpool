@@ -967,6 +967,9 @@ void MainWindow::createRightButtonGroup()
     m_themeGroup = new QActionGroup(this);
     QAction *actionTheme = createAction(tr("theme"), ":/icon/res/theme.svg");
     RibbonMenu *menu = new RibbonMenu(tr("theme"), this);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    menu->setObjectName(QLatin1String("qx_compatible"));
+#endif
     actionTheme->setMenu(menu);
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightYellow")), RibbonTheme::LightYellowTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightOffice2013")), RibbonTheme::LightOffice2013Theme));

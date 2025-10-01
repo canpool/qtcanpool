@@ -834,8 +834,12 @@ QxRibbon--RibbonMenu {
 }
 
 QxRibbon--RibbonMenu::item {
-  padding: 2px 10px 2px 20px;
+  padding: 5px 8px 5px 8px;
   background-color: transparent;
+}
+
+QxRibbon--RibbonMenu#qx_compatible::item {
+  padding-left: 22px;
 }
 
 QxRibbon--RibbonMenu::item:selected {
