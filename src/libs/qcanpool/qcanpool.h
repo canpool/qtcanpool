@@ -39,7 +39,7 @@
     delete d_ptr; d_ptr = Q_NULLPTR;
 
 
-#if !defined(QCANPOOL_LIBRARY_DISABLE)
+#if !defined(QCANPOOL_LIBRARY_STATIC)
 #if defined(QCANPOOL_LIBRARY)
 #  define QCANPOOL_SHARED_EXPORT Q_DECL_EXPORT
 #else

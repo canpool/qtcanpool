@@ -12,6 +12,7 @@
 #include <QWheelEvent>
 #include <QScrollBar>
 #include <QTimer>
+#include <QDebug>
 
 QX_DOCK_BEGIN_NAMESPACE
 

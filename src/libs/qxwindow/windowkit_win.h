@@ -12,6 +12,12 @@
 #include <QtCore/private/qwinregistry_p.h>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#include <QStringView>
+#include <QPair>
+#include <QString>
+#endif
+
 #include "qxwindow_global.h"
 
 #ifndef GET_X_LPARAM
@@ -221,6 +227,7 @@ QX_WINDOW_END_NAMESPACE
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QMargins>
+#include <QMetaType>
 // for QVariant::fromValue(QMargins(...))
 Q_DECLARE_METATYPE(QMargins)
 #endif
