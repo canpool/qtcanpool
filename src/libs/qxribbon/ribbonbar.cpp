@@ -952,6 +952,9 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
         // 点击的标签不一致通过changed槽去处理
         return;
     }
+    if (index == -1) {
+        return;
+    }
     if (m_minimized) {
         if (!m_stack->isVisible() && m_stack->isPopup()) {
             // 在StackedWindget弹出前，先给tabbar一个QHoverEvent,让tabbar知道鼠标已经移开
