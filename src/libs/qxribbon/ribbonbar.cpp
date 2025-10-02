@@ -651,10 +651,10 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
     int allowedTabBarWidth = endX - x;
+    int minTabBarWidth = calcMinTabBarWidth();
     if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
-        m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
+        m_tabBar->setGeometry(x, y, qMin(minTabBarWidth, allowedTabBarWidth), tabH);
     } else { // RibbonBar::TBCenterPosition
-        int minTabBarWidth = calcMinTabBarWidth();
         if (minTabBarWidth < allowedTabBarWidth) {
             // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
             // |~~ xOffset ~~|~~~~ mintabBarWidth ~~~~|~~ xOffset ~~|
@@ -762,10 +762,7 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     // mainwindow的空间，接受鼠标事件，从而实现拖动等操作，否则tabbar占用整个顶栏，鼠标无法点击到mainwindow
     int minTabBarWidth = calcMinTabBarWidth();
     if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
-        if (minTabBarWidth < allowedTabBarWidth) {
-            allowedTabBarWidth = minTabBarWidth;
-        }
-        m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
+        m_tabBar->setGeometry(x, y, qMin(minTabBarWidth, allowedTabBarWidth), tabH);
     } else { // RibbonBar::TBCenterPosition
         if (minTabBarWidth < allowedTabBarWidth) {
             // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
