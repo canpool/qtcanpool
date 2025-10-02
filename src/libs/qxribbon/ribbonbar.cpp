@@ -810,9 +810,7 @@ int RibbonBarPrivate::calcMinTabBarWidth() const
     int mintabBarWidth = 0;
 
     int cnt = m_tabBar->count();
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     ++cnt; // add sentry tab
-#endif
 
     for (int i = 0; i < cnt; ++i) {
         mintabBarWidth += m_tabBar->tabRect(i).width();
@@ -960,11 +958,9 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
     if (index == -1) {
         return;
     }
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     if (index == m_tabBar->count()) {
         return; // sentry tab
     }
-#endif
     if (m_minimized) {
         if (!m_stack->isVisible() && m_stack->isPopup()) {
             // 在StackedWindget弹出前，先给tabbar一个QHoverEvent,让tabbar知道鼠标已经移开
@@ -990,11 +986,9 @@ void RibbonBarPrivate::onCurrentRibbonTabDoubleClicked(int index)
     if (index == -1) {
         return;
     }
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     if (index == m_tabBar->count()) {
         return; // sentry tab
     }
-#endif
     q->setMinimized(!m_minimized);
 }
 

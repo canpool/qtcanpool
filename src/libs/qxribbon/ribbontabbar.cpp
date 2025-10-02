@@ -17,12 +17,8 @@ RibbonTabBar::RibbonTabBar(QWidget *parent)
 
     // sentry tab
     QTabBar::addTab(QString());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-    setTabVisible(0, false);
-#else
     // Disable tab to prevent tab from being clicked
     setTabEnabled(0, false);
-#endif
 }
 
 const QMargins &RibbonTabBar::tabMargin() const

@@ -29,7 +29,7 @@ public Q_SLOTS:
     void setCurrentIndex(int index);
 
 protected:
-    virtual QSize tabSizeHint(int index) const;
+    virtual QSize tabSizeHint(int index) const override;
 
     void wheelEvent(QWheelEvent *event) override;
 
