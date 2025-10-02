@@ -242,6 +242,11 @@ QAbstractButton#qx_RibbonApplicationButton {
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   background-color: #2b579a;
+  min-width: 55px;
+}
+
+QAbstractButton#qx_RibbonApplicationButton[popupMode="2"] {
+  padding-right: 12px;
 }
 
 QAbstractButton#qx_RibbonApplicationButton:hover {
