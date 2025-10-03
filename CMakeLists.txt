@@ -69,11 +69,11 @@ endif()
 find_package(Qt5
   ${IDE_QT_VERSION_MIN}
   COMPONENTS Concurrent Core Gui Widgets
-    Core5Compat ${QT_TEST_COMPONENT}
+    ${QT_TEST_COMPONENT}
   REQUIRED
 )
 if (Qt5_VERSION VERSION_LESS 6.0.0)
-  install(TARGETS Qt6Core5Compat EXPORT QtCanpool)
+  install(TARGETS EXPORT QtCanpool)
 
   if (MSVC AND MSVC_VERSION LESS_EQUAL 1916)
     # Fix build pch failure, test on MSVC-1916 (Qt 5.14.2 MSVC2017)
