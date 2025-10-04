@@ -87,7 +87,7 @@ MainWindow::MainWindow(QWidget *par)
 
     setMinimumWidth(500);
 
-    changeRibbonTheme(1);
+    changeRibbonTheme(2);
 
     qDebug() << RibbonElementStyleOpt;
 
