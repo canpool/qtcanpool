@@ -11,6 +11,7 @@
 #include <QStyle>
 #include <QToolButton>
 #include <QHBoxLayout>
+#include <QTimer>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -137,6 +138,14 @@ void WindowButtonGroupPrivate::buttonClicked()
                 pw->close();
             }
         }
+    }
+    // It's a Qt issue that if a QAbstractButton::clicked triggers a window's maximization,
+    // the button remains to be hovered until the mouse move. As a result, we need to
+    // manually send leave events to the button.
+    if (button == m_maximizeButton) {
+        QTimer::singleShot(50, this, [this]() {
+            QCoreApplication::postEvent(m_maximizeButton, new QEvent(QEvent::Leave));
+        });
     }
 }
 
