@@ -123,7 +123,6 @@ void RibbonButtonGroup::actionEvent(QActionEvent *e)
     switch (e->type()) {
     case QEvent::ActionAdded: {
         if (widgetAction) {
-            widgetAction->setParent(this);
             widget = widgetAction->requestWidget(this);
             if (widget != Q_NULLPTR) {
                 widget->setAttribute(Qt::WA_LayoutUsesWidgetRect);

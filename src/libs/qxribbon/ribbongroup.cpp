@@ -378,6 +378,7 @@ QAction *RibbonGroup::addWidget(QWidget *w, RibbonGroup::RowProportion rp)
 {
     QWidgetAction *action = new QWidgetAction(this);
 
+    // The lifecycle of w is taken over by action
     action->setDefaultWidget(w);
     w->setAttribute(Qt::WA_Hover);
     setActionRowProportionProperty(action, rp);
@@ -766,16 +767,10 @@ void RibbonGroup::actionEvent(QActionEvent *event)
 {
     Q_D(RibbonGroup);
     QAction *action = event->action();
-    QWidgetAction *widgetAction = qobject_cast<QWidgetAction *>(action);
 
     switch (event->type()) {
     case QEvent::ActionAdded: {
         RibbonGroupLayout *lay = d->m_layout;
-        if (Q_NULLPTR != widgetAction) {
-            if (widgetAction->parent() != this) {
-                widgetAction->setParent(this);
-            }
-        }
         int index = layout()->count();
         if (event->before()) {
             // 说明是插入
