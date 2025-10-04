@@ -31,6 +31,11 @@ static QString compilerString()
     return QLatin1String("<unknown compiler>");
 }
 
+static QString systemString()
+{
+    return QSysInfo::productType() + QSysInfo::productVersion();
+}
+
 AboutDialog::AboutDialog(const QString &softlogo, const QString &softname, const QString &softver,
                          const QString &softdesc, QWidget *parent)
     : QDialog(parent)
@@ -43,7 +48,8 @@ AboutDialog::AboutDialog(const QString &softlogo, const QString &softname, const
     QString versionString = tr("%1 %2").arg(softname, softver);
     QDate dt = QLocale(QLocale::English).toDate(QString(__DATE__).replace("  ", " 0"), "MMM dd yyyy");
     QString buildDateInfo = tr("<br/>Built on %1 %2<br/>").arg(dt.toString("yyyy-MM-dd"), __TIME__);
-    QString buildCompatibilityString = tr("Based on Qt %1 (%2, %3 bit)").arg(QLatin1String(qVersion()),
+    QString buildCompatibilityString = tr("Based on Qt %1 (%2, %3, %4 bit)").arg(QLatin1String(qVersion()),
+                                                                             systemString(),
                                                                              compilerString(),
                                                                              QString::number(QSysInfo::WordSize));
     const QString description = tr(
