@@ -44,6 +44,7 @@
 #include <QActionGroup>
 #include <QMdiArea>
 #include <QSplitter>
+#include <QTimer>
 
 #include "aboutdialog.h"
 
@@ -87,7 +88,9 @@ MainWindow::MainWindow(QWidget *par)
 
     setMinimumWidth(500);
 
-    changeRibbonTheme(2);
+    QTimer::singleShot(0, this, [this]() {
+        changeRibbonTheme(2);
+    });
 
     qDebug() << RibbonElementStyleOpt;
 
