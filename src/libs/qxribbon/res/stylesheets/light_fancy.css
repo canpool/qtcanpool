@@ -194,6 +194,7 @@ QxRibbon--RibbonCtrlContainer {
 /*RibbonApplicationButton*/
 
 QAbstractButton#qx_RibbonApplicationButton {
+  margin: 0px;
   color: #f5f5f5;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
