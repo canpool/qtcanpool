@@ -21,6 +21,7 @@ public:
         LightClassicTheme,
         LightFancyTheme,
         DarkWpsTheme,
+        DarkOfficePlusTheme,
         CustomTheme,
     };
     Q_ENUM(ThemeStyle)

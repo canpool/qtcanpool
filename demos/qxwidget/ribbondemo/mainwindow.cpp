@@ -981,6 +981,7 @@ void MainWindow::createRightButtonGroup()
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightClassic")), RibbonTheme::LightClassicTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFancy")), RibbonTheme::LightFancyTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkWps")), RibbonTheme::DarkWpsTheme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkOfficePlus")), RibbonTheme::DarkOfficePlusTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2016Blue")), MainWindow::Office2016BlueTheme));
     rightBar->addAction(actionTheme);
 
@@ -1249,7 +1250,8 @@ void MainWindow::onActionChangeThemeTriggered()
     if (action) {
         int theme = action->data().toInt();
         // 暗色系
-        if (theme == RibbonTheme::DarkWpsTheme || theme == MainWindow::Office2016BlueTheme) {
+        if (theme == RibbonTheme::DarkWpsTheme || theme == MainWindow::Office2016BlueTheme ||
+            theme == RibbonTheme::DarkOfficePlusTheme) {
             ribbonBar()->setPageContextCoverTab(false);
         } else {
             // 亮色系

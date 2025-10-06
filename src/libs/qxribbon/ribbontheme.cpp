@@ -43,6 +43,9 @@ void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
     case DarkWpsTheme:
         loadTheme(":/qxribbon/res/stylesheets/dark_wps.css", widget);
         break;
+    case DarkOfficePlusTheme:
+        loadTheme(":/qxribbon/res/stylesheets/dark_officeplus.css", widget);
+        break;
     case LightYellowTheme:
         loadTheme(":/qxribbon/res/stylesheets/light_yellow.css", widget);
         break;

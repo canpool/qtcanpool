@@ -33,5 +33,6 @@
         <file>res/stylesheets/light_classic.css</file>
         <file>res/stylesheets/light_fancy.css</file>
         <file>res/stylesheets/dark_wps.css</file>
+        <file>res/stylesheets/dark_officeplus.css</file>
     </qresource>
 </RCC>
