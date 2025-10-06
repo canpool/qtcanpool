@@ -2,12 +2,16 @@
     <qresource prefix="/qxribbon">
         <file>res/group_option.png</file>
         <file>res/arrow_down.png</file>
+        <file>res/arrow_left.png</file>
         <file>res/arrow_more.png</file>
+        <file>res/arrow_right.png</file>
         <file>res/arrow_up.png</file>
         <file>res/qaccess_button.png</file>
         <file>res/lighter/group_option.png</file>
         <file>res/lighter/arrow_down.png</file>
+        <file>res/lighter/arrow_left.png</file>
         <file>res/lighter/arrow_more.png</file>
+        <file>res/lighter/arrow_right.png</file>
         <file>res/lighter/arrow_up.png</file>
         <file>res/lighter/qaccess_button.png</file>
         <file>res/titlebar_close.svg</file>

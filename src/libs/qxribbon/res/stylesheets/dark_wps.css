@@ -91,15 +91,100 @@ QProgressBar::chunk {
 }
 
 QScrollBar:vertical {
-  width: 15px;
+  background: #262829;
+  width: 16px;
+  margin: 18px 0px;
+  border: 1px solid #404244;
+}
+
+QScrollBar::handle:vertical {
+  background: #505050;
+  min-height: 25px;
+  margin: 0px 2px;
+  border-radius: 3px;
+}
+
+QScrollBar::handle:vertical:hover {
+  background: #595b5d;
+}
+
+QScrollBar::sub-line:vertical {
+  background: #404244;
+  height: 18px;
+  subcontrol-position: top;
+  subcontrol-origin: margin;
+  border-bottom: 1px solid #404244;
+}
+
+QScrollBar::add-line:vertical {
+  background: #404244;
+  height: 18px;
+  subcontrol-position: bottom;
+  subcontrol-origin: margin;
+  border-top: 1px solid #404244;
 }
 
 QScrollBar:horizontal {
-  height: 15px;
+  background: #262829;
+  height: 16px;
+  margin: 0px 18px;
+  border: 1px solid #404244;
 }
 
-QScrollBar::sub-page, QScrollBar::add-page {
+QScrollBar::handle:horizontal {
   background: #505050;
+  min-width: 25px;
+  margin: 2px 0px;
+  border-radius: 3px;
+}
+
+QScrollBar::handle:horizontal:hover {
+  background: #595b5d;
+}
+
+QScrollBar::sub-line:horizontal {
+  background: #404244;
+  width: 18px;
+  subcontrol-position: left;
+  subcontrol-origin: margin;
+  border-bottom: 1px solid #404244;
+}
+
+QScrollBar::add-line:horizontal {
+  background: #404244;
+  width: 18px;
+  subcontrol-position: right;
+  subcontrol-origin: margin;
+  border-top: 1px solid #404244;
+}
+
+QScrollBar::up-arrow:vertical {
+  image: url(:/qxribbon/res/lighter/arrow_up.png);
+}
+
+QScrollBar::down-arrow:vertical {
+  image: url(:/qxribbon/res/lighter/arrow_down.png);
+}
+
+QScrollBar::left-arrow:horizontal {
+  image: url(:/qxribbon/res/lighter/arrow_left.png);
+}
+
+QScrollBar::right-arrow:horizontal {
+  image: url(:/qxribbon/res/lighter/arrow_right.png);
+}
+
+QScrollBar::up-arrow,
+QScrollBar::down-arrow,
+QScrollBar::left-arrow,
+QScrollBar::right-arrow {
+  width: 12px;
+  height: 12px;
+}
+
+QScrollBar::sub-page,
+QScrollBar::add-page {
+  background: #262829;
 }
 
 QScrollArea {

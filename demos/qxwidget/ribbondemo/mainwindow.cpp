@@ -123,6 +123,8 @@ void MainWindow::setRibbonTheme(int theme)
 void MainWindow::createCentralWidget()
 {
     m_edit = new QTextEdit(this);
+    m_edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_edit->setLineWrapMode(QTextEdit::NoWrap);
 #if QXRIBBON_TEST_MDIAREA
     QMdiArea *area = new QMdiArea(this);
     QTextEdit *te = new QTextEdit(this);
