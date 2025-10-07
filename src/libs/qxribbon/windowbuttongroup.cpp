@@ -12,6 +12,7 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QCoreApplication>
 
 QX_RIBBON_BEGIN_NAMESPACE
 
