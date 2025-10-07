@@ -1,3 +1,25 @@
+0.10.0
+---
+Feature
+- Support RibbonTabBar unselect all tabs
+- Add OfficePlus Dark theme
+- Add native RibbonMainWindow
+
+Interface
+- RibbonWindow: inherit RibbonMainWindow instead of QMainWindow
+- WindowButtonGroup: remove setButtonWidthStretch,setWindowBorder
+- RibbonGroup: add title,setTitle compatible with other ribbon framework
+- RibbonPage: add title,setTitle,groups compatible with other ribbon framework
+
+Optimize
+- RibbonQuickAccessBar: perfect control action visible
+- WindowButtonGroup: manually send leave event to maximizeButton
+- RibbonTabBar: only handle the valid click area
+- RibbonTabBar: use tabSizeHint to control tab height
+- WindowButton: use SizePolicy to control height
+- WindowButton: inherit QToolButton instead of QPushButton
+
+
 0.9.1
 ---
 Interface
@@ -32,6 +54,7 @@ Interface
 
 Optimize
 - Optimize RibbonStyleOption
+
 
 0.8.2
 ---

@@ -70,8 +70,8 @@
 #endif // QX_RIBBON_LIBRARY_STATIC
 
 #define QX_RIBBON_VERSION_MAJOR 0
-#define QX_RIBBON_VERSION_MINOR 9
-#define QX_RIBBON_VERSION_PATCH 1
+#define QX_RIBBON_VERSION_MINOR 10
+#define QX_RIBBON_VERSION_PATCH 0
 /*
    QX_RIBBON_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_RIBBON_VERSION >= QT_VERSION_CHECK(0, 5, 3))
