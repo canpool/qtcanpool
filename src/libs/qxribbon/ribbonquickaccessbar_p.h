@@ -44,6 +44,7 @@ private:
 /* QuickAccessAction */
 class QuickAccessAction : public QAction
 {
+    Q_OBJECT
 public:
     QuickAccessAction(QObject *p, QAction *srcAction)
         : QAction(srcAction->text(), p)
@@ -51,10 +52,13 @@ public:
     {
         setCheckable(true);
         setChecked(m_srcAction->isVisible());
+
+        connect(m_srcAction, &QAction::changed, this, [this](){
+            setChecked(m_srcAction->isVisible());
+        });
     }
     void update()
     {
-        setChecked(m_srcAction->isVisible());
         setText(m_srcAction->text());
     }
 public:
@@ -76,6 +80,8 @@ public:
     void updateAction(QAction *action);
     void setActionVisible(QAction *action, bool visible);
     void setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible);
+    void setActionShown(QuickAccessAction *action, QAction *srcAction, bool visible);
+    QAction *nextSrcAction(QAction *action);
 private Q_SLOTS:
     void customizeAction(QAction *action);
     void aboutToShowCustomizeMenu();
@@ -87,6 +93,7 @@ public:
     RibbonQuickAccessButton *m_accessPopup;
     QList<QAction *> m_actionList;
     bool m_removingAction : 1;
+    bool m_takingAction : 1;
 };
 
 QX_RIBBON_END_NAMESPACE

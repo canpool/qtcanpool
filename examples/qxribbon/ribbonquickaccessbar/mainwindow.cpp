@@ -17,11 +17,18 @@ MainWindow::MainWindow(QWidget *parent)
     qab->addAction(actionRemove);
     qab->removeAction(actionRemove);
     delete actionRemove;
+    QAction *actions[5];
     for (int i = 0; i < 5; ++i) {
-        qab->addAction(icon, tr("action %1").arg(i + 1));
+        actions[i] = qab->addAction(icon, tr("action %1").arg(i + 1));
     }
+    qDebug() << "1)" << qab->state() << qab->visibleCount();    // "11111" 5
+    actions[1]->setVisible(false);
+    qDebug() << "2)" << qab->state() << qab->visibleCount();    // "10111" 4
+    qab->setActionVisible(actions[0], false);
+    qab->setActionVisible(actions[3], false);
+    qDebug() << "3)" << qab->state() << qab->visibleCount();    // "00101" 2
     qab->setState("10101");
-    qDebug() << qab->state() << qab->visibleCount();
+    qDebug() << "4)" << qab->state() << qab->visibleCount();    // "10101" 3
     QAction *actionState = new QAction(tr("state"), this);
     connect(actionState, &QAction::triggered, this, [qab]() {
         qDebug() << qab->state();

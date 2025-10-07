@@ -48,6 +48,7 @@ RibbonQuickAccessBarPrivate::RibbonQuickAccessBarPrivate()
     , m_customizeGroup(Q_NULLPTR)
     , m_accessPopup(Q_NULLPTR)
     , m_removingAction(false)
+    , m_takingAction(false)
 {
 
 }
@@ -86,12 +87,8 @@ void RibbonQuickAccessBarPrivate::init()
 
 QuickAccessAction *RibbonQuickAccessBarPrivate::findQuickAccessAction(QAction *action) const
 {
-    if (m_customizeGroup == Q_NULLPTR)
-        return Q_NULLPTR;
-
-    QList<QAction *> list = m_customizeGroup->actions();
-    for (int i = 0; i < list.count(); ++i) {
-        QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i]);
+    foreach (QAction *a, m_actionList) {
+        QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(a);
         if (act && action == act->m_srcAction) {
             return act;
         }
@@ -109,21 +106,74 @@ void RibbonQuickAccessBarPrivate::updateAction(QAction *action)
 void RibbonQuickAccessBarPrivate::setActionVisible(QAction *action, bool visible)
 {
     if (QuickAccessAction *wrapper = findQuickAccessAction(action)) {
+        if (wrapper->isChecked() == visible) {
+            return;
+        }
         setActionVisible(wrapper, action, visible);
     }
 }
 
 void RibbonQuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible)
 {
-    action->setVisible(visible);
+    wrapper->setChecked(visible);
+    setActionShown(wrapper, action, visible);
     wrapper->update();
+}
+
+void RibbonQuickAccessBarPrivate::setActionShown(QuickAccessAction *action, QAction *srcAction, bool visible)
+{
+    Q_Q(RibbonQuickAccessBar);
+    bool actionInBar = (q->widgetForAction(srcAction) != NULL);
+    bool actionIsVisible = srcAction->isVisible();
+
+    if (visible) {
+        if (actionInBar) {
+            if (actionIsVisible) {
+                return;
+            }
+            blockSignals(true);
+            srcAction->setVisible(true);
+            blockSignals(false);
+            return;
+        }
+        QAction *before = nextSrcAction(action);
+        if (before) {
+            q->insertAction(before, srcAction);
+        } else {
+            q->addAction(srcAction);
+        }
+    } else {
+        if (!actionInBar) {
+            return;
+        }
+        m_takingAction = true;
+        q->removeAction(srcAction);
+    }
+}
+
+QAction *RibbonQuickAccessBarPrivate::nextSrcAction(QAction *action)
+{
+    Q_Q(RibbonQuickAccessBar);
+    bool flag = false;
+    foreach (QAction *act, m_actionList) {
+        if (flag) {
+            QuickAccessAction *a = dynamic_cast<QuickAccessAction*>(act);
+            // wrapper action isChecked or srcAction inBar
+            if (a->isChecked() || (q->widgetForAction(a->m_srcAction) != NULL)) {
+                return a->m_srcAction;
+            }
+        } else if (act == action) {
+            flag = true;
+        }
+    }
+    return NULL;
 }
 
 void RibbonQuickAccessBarPrivate::customizeAction(QAction *action)
 {
     Q_Q(RibbonQuickAccessBar);
     if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
-        act->m_srcAction->setVisible(act->isChecked());
+        setActionShown(act, act->m_srcAction, act->isChecked());
         Q_EMIT q->customizeActionChanged();
     }
 }
@@ -211,18 +261,17 @@ void RibbonQuickAccessBar::setState(const QByteArray &s)
     Q_D(RibbonQuickAccessBar);
     int cnt = s.count();
     int j = 0;
-    QList<QAction *> list = d->m_customizeGroup->actions();
-    for (int i = 0, count = list.count(); i < count; ++i) {
-        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i])) {
+    foreach (QAction *action, d->m_actionList) {
+        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
             if (j < cnt) {
-                if (s.at(j) == '1') {
+                if (s.at(j) == '1' && !act->isChecked()) {
                     d->setActionVisible(act, act->m_srcAction, true);
-                } else if (act->isChecked()) {
+                } else if (s.at(j) == '0' && act->isChecked()) {
                     d->setActionVisible(act, act->m_srcAction, false);
                 }
             }
-            ++j;
         }
+        ++j;
     }
 }
 
@@ -262,6 +311,10 @@ void RibbonQuickAccessBar::actionEvent(QActionEvent *event)
                 addAction(d->m_actionAccessPopup);
                 d->m_removingAction = false;
             } else {
+                if (d->m_takingAction) {
+                    d->m_takingAction = false;
+                    return;
+                }
                 QuickAccessAction *act = d->findQuickAccessAction(event->action());
                 if (act) {
                     d->m_actionList.removeOne(act);
