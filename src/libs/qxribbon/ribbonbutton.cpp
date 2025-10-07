@@ -178,7 +178,11 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
     } else {
         // InstantPopup在qtoolbutton不会添加控件来放下箭头，这里处理的和MenuButtonPopup一致
         // 在仅有图标的小模式显示时，预留一个下拉箭头位置
+#ifdef Q_OS_WINDOWS
         if (Qt::ToolButtonIconOnly == opt.toolButtonStyle) {
+#else
+        if (1) { // Tested on ubuntu 22.04
+#endif
             if (opt.features & QStyleOptionToolButton::MenuButtonPopup ||
                 opt.features & QStyleOptionToolButton::HasMenu) {
                 // 如果有菜单
