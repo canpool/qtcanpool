@@ -374,6 +374,16 @@ void MainWindow::createPageHome()
 
     groupToolButtonStyle->addSeparator();
 
+    act = createAction(tr("test 5"), ":/icon/res/file.svg");
+    act->setMenu(menu);
+    btn = groupToolButtonStyle->addSmallAction(act);
+    btn->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    act = createAction(tr("test 6"), ":/icon/res/file.svg");
+    groupToolButtonStyle->addSmallAction(act);
+    groupToolButtonStyle->ribbonButtonForAction(act)->setToolButtonStyle(Qt::ToolButtonTextOnly);
+
+    groupToolButtonStyle->addSeparator();
+
     act = createAction(tr("Delayed Popup"), ":/icon/res/folder-cog.svg");
     act->setMenu(menu);
     groupToolButtonStyle->addAction(act);

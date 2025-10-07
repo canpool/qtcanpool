@@ -272,7 +272,7 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
         }
     } else {
         // 小图标
-        if (!opt.icon.isNull()) {
+        if (!opt.icon.isNull() && opt.toolButtonStyle != Qt::ToolButtonTextOnly) {
             QPixmap pm = createIconPixmap(opt, m_iconRect.size());
 
             if (opt.toolButtonStyle != Qt::ToolButtonIconOnly) {
