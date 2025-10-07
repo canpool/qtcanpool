@@ -71,8 +71,7 @@ QxRibbon--RibbonTabBar::tab:selected:disabled {
 }
 
 QxRibbon--RibbonTabBar::tab:hover:!selected {
-  border:1px solid #0078d4;
-  border-bottom-color: #f5f5f5;
+  border: 1px solid #0078d4;
   color: #0f0f0f;
 }
 
