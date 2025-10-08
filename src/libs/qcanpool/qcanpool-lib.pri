@@ -37,11 +37,6 @@ PUBLIC_HEADERS = \
     $$PWD/minitabwidget.h \
     $$PWD/qcanpool.h \
     $$PWD/quickaccessbar.h \
-    $$PWD/ribbonbar.h \
-    $$PWD/ribboncontainers.h \
-    $$PWD/ribbongroup.h \
-    $$PWD/ribbonpage.h \
-    $$PWD/ribbonwindow.h \
     $$PWD/tinynavbar.h \
     $$PWD/tinytabbar.h \
     $$PWD/tinytabwidget.h \
@@ -53,16 +48,9 @@ PRIVATE_HEADERS = \
     $$PWD/fancytabbar_p.h \
     $$PWD/fancytitlebar_p.h \
     $$PWD/quickaccessbar_p.h \
-    $$PWD/ribbonbar_p.h \
-    $$PWD/ribbongroup_p.h \
-    $$PWD/ribbonpage_p.h \
     $$PWD/tinynavbar_p.h \
     $$PWD/tinytabbar_p.h \
     $$PWD/windowtoolbar_p.h
-
-HEADERS += \
-    $$PUBLIC_HEADERS \
-    $$PRIVATE_HEADERS
 
 SOURCES += \
     $$PWD/extensionbutton.cpp \
@@ -78,16 +66,40 @@ SOURCES += \
     $$PWD/minitabbar.cpp \
     $$PWD/minitabwidget.cpp \
     $$PWD/quickaccessbar.cpp \
-    $$PWD/ribbonbar.cpp \
-    $$PWD/ribboncontainers.cpp \
-    $$PWD/ribbongroup.cpp \
-    $$PWD/ribbonpage.cpp \
-    $$PWD/ribbonwindow.cpp \
     $$PWD/tinynavbar.cpp \
     $$PWD/tinytabbar.cpp \
     $$PWD/tinytabwidget.cpp \
     $$PWD/windowlogo.cpp \
     $$PWD/windowtoolbar.cpp
+
+!equals(QCANPOOL_CONFIG_RIBBON, 0) {
+    QCANPOOL_CONFIG_RIBBON = 1
+}
+
+equals(QCANPOOL_CONFIG_RIBBON, 1) {
+PUBLIC_HEADERS += \
+    $$PWD/ribbonbar.h \
+    $$PWD/ribboncontainers.h \
+    $$PWD/ribbongroup.h \
+    $$PWD/ribbonpage.h \
+    $$PWD/ribbonwindow.h
+
+PRIVATE_HEADERS += \
+    $$PWD/ribbonbar_p.h \
+    $$PWD/ribbongroup_p.h \
+    $$PWD/ribbonpage_p.h
+
+SOURCES += \
+    $$PWD/ribbonbar.cpp \
+    $$PWD/ribboncontainers.cpp \
+    $$PWD/ribbongroup.cpp \
+    $$PWD/ribbonpage.cpp \
+    $$PWD/ribbonwindow.cpp
+}
+
+HEADERS += \
+    $$PUBLIC_HEADERS \
+    $$PRIVATE_HEADERS
 
 RESOURCES += \
     $$PWD/qcanpool.qrc

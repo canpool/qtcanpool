@@ -20,9 +20,15 @@ LIBSRC_DIR = $$PWD/../../src/libs
 INCLUDEPATH += $$LIBSRC_DIR
 include($$LIBSRC_DIR/qxwindow/qxwindow.pri)
 include($$LIBSRC_DIR/qxdock/qxdock.pri)
+
 # There are conflict ribbon files with the same name in qxribbon and qcanpool
-include($$LIBSRC_DIR/qxribbon/qxribbon.pri)
-# include($$LIBSRC_DIR/qcanpool/qcanpool.pri)
+QCANPOOL_CONFIG_RIBBON = 0
+equals(QCANPOOL_CONFIG_RIBBON, 1) {
+    include($$LIBSRC_DIR/qcanpool/qcanpool.pri)
+} else {
+    include($$LIBSRC_DIR/qxribbon/qxribbon.pri)
+    include($$LIBSRC_DIR/qcanpool/qcanpool.pri)
+}
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
