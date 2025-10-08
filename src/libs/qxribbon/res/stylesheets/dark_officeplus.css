@@ -776,7 +776,8 @@ QxRibbon--RibbonButtonGroup {
   background-color: transparent;
 }
 
-QxRibbon--RibbonButtonGroup QWidget {
+QxRibbon--RibbonButtonGroup QAbstractButton,
+QxRibbon--RibbonButtonGroup QMenu {
   background-color: transparent;
 }
 
