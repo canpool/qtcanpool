@@ -362,7 +362,12 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
             contextTitleRect.setHeight(m_tabBar->height() - 1);   // 减1像素，避免tabbar基线覆盖
             contextTitleRect -= m_tabBar->tabMargin() / 2;
             contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
-            paintPageContextTab(p, pageContextDataList[i].pageContext->contextTitle(), contextTitleRect, clr);
+            QRect tabBarRect(m_tabBar->pos(), m_tabBar->size());
+            if (tabBarRect.intersects(contextTitleRect)) {
+                QRect visibleRect = tabBarRect.intersected(contextTitleRect);
+                visibleRect.setTop(contextTitleRect.top());
+                paintPageContextTab(p, pageContextDataList[i].pageContext->contextTitle(), visibleRect, clr);
+            }
             // 更新上下文标签的范围，用于控制标题栏的显示。如果pageContextPos.y()小于0，说明没有显示上下文标签
             if (contextTitleRect.left() < pageContextPos.x()) {
                 pageContextPos.setX(contextTitleRect.left());
@@ -454,7 +459,11 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
             contextTitleRect.setHeight(m_tabBar->height() - 1);
             contextTitleRect -= m_tabBar->tabMargin() / 2;
             contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
-            paintPageContextTab(p, QString(), contextTitleRect, clr);
+            QRect tabBarRect(m_tabBar->pos(), m_tabBar->size());
+            if (tabBarRect.intersects(contextTitleRect)) {
+                QRect visibleRect = tabBarRect.intersected(contextTitleRect);
+                paintPageContextTab(p, QString(), visibleRect, clr);
+            }
         }
 #ifdef QX_DRAW_CONTEXT_PAGE_BORDER
         if (indexs.contains(m_tabBar->currentIndex())) {
