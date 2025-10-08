@@ -49,8 +49,11 @@ QPushButton, QToolButton {
 }
 
 QToolButton::menu-indicator,
-QToolButton::menu-button,
 QToolButton::menu-arrow {
+}
+
+QToolButton::menu-button{
+  background: transparent;
 }
 
 QToolButton[popupMode="1"] {

@@ -195,6 +195,10 @@ QxRibbon--RibbonQuickAccessBar QToolButton {
   color: white;
 }
 
+QxRibbon--RibbonQuickAccessBar QToolButton::menu-button {
+  background: transparent;
+}
+
 QxRibbon--RibbonQuickAccessBar QToolButton:hover,
 QxRibbon--RibbonQuickAccessBar QToolButton:focus {
   background-color: #124078;
