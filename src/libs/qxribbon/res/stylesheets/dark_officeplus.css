@@ -15,6 +15,7 @@ qtcanpool-qss {
   background-disabled: #292929;
   background-hover: #595b5d;
   background-pressed: #262829;
+  background-pressed2: #0e0e0e;
 
   background-border: #303030;
   background-border-hover: #0075d1;
@@ -74,7 +75,7 @@ QPushButton:hover, QToolButton:hover {
 QPushButton:pressed, QToolButton:pressed,
 QPushButton:checked, QToolButton:checked {
   color: #ffffff;
-  background: #262829;
+  background: #0e0e0e;
 }
 
 QPushButton:default {
