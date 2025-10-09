@@ -706,7 +706,7 @@ QxRibbon--RibbonGroup {
 }
 
 QxRibbon--RibbonGroup QAbstractButton {
-  background-color: transparent;
+  background-color: #292929;
   padding: 0px;
 }
 
@@ -779,7 +779,11 @@ QxRibbon--RibbonButtonGroup {
 
 QxRibbon--RibbonButtonGroup QAbstractButton,
 QxRibbon--RibbonButtonGroup QMenu {
-  background-color: transparent;
+  background-color: #23282C;
+}
+
+QxRibbon--RibbonStackedWidget QxRibbon--RibbonButtonGroup QAbstractButton {
+  background-color: #292929;
 }
 
 QxRibbon--RibbonButtonGroup QAbstractButton {

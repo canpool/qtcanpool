@@ -93,6 +93,10 @@ QxRibbon--RibbonGroup {
   border: 0px;
 }
 
+QxRibbon--RibbonGroup QAbstractButton {
+  background-color: #FFFFFF;
+}
+
 /*RibbonGroupOptionButton*/
 
 QxRibbon--RibbonGroupOptionButton {
@@ -144,6 +148,14 @@ QxRibbon--RibbonGalleryViewport {
 
 QxRibbon--RibbonButtonGroup {
   background-color: transparent;
+}
+
+QxRibbon--RibbonButtonGroup QAbstractButton {
+  background-color: #E3E6E8;
+}
+
+QxRibbon--RibbonStackedWidget QxRibbon--RibbonButtonGroup QAbstractButton {
+  background-color: #FFFFFF;
 }
 
 QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
