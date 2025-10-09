@@ -13,6 +13,19 @@ QxRibbon--RibbonTabBar {
   background-color: transparent;
 }
 
+QxRibbon--RibbonTabBar QAbstractButton {
+  color: white;
+  background-color: #2b579a;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: #124078;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:pressed {
+  background-color: #002050;
+}
+
 QxRibbon--RibbonTabBar::tab {
   color: #f0f0f0;
   border: 1px solid transparent;
