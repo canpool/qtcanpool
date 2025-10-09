@@ -30,6 +30,8 @@
 QX_RIBBON_BEGIN_NAMESPACE
 
 const int tabBarBaseLineHeight = 1;
+const int tabBarMinimumWidth = 100;
+const int dragAreaMinimumWidth = 20;
 
 #define HELP_DRAW_RECT(p, rect)                                                                                        \
     do {                                                                                                               \
@@ -764,7 +766,7 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), tabH);
         x = m_topLeftButtonGroup->geometry().right() + 2;
     }
-    int allowedTabBarWidth = endX - x;
+    int allowedTabBarWidth = endX - x - dragAreaMinimumWidth;
     // 20200831
     // tabBarWidth的宽度原来为endX - x;，现需要根据实际进行调整
     // 为了把tabbar没有tab的部分不占用，这里的宽度需要根据tab的size来进行设置，让tabbar的长度刚刚好，这样能让出
@@ -808,6 +810,100 @@ void RibbonBarPrivate::resizeRibbon()
     } else {
         resizeInWpsLiteStyle();
     }
+}
+
+int RibbonBarPrivate::minimumWidthInOfficeStyle() const
+{
+    Q_Q(const RibbonBar);
+    QMargins border = q->contentsMargins();
+
+    int w1 = 0;
+    int w2 = 0;
+
+    // row-1
+    w1 += m_iconRightBorderPosition + 1;
+    // |cornerL|m_quickAccessBar|m_topLeftButtonGroup|~~~~~~~~~|m_topRightButtonGroup|m_windowButtonGroup|
+    QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
+    if (cornerL && cornerL->isVisible()) {
+        w1 += cornerL->sizeHint().width() + 5;
+    }
+    if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
+        w1 += m_quickAccessBar->sizeHint().width() + 5;
+    }
+    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+        w1 += m_topLeftButtonGroup->sizeHint().width();
+    }
+    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+        w1 += m_windowButtonGroup->sizeHint().width();
+    }
+    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+        w1 += m_topRightButtonGroup->sizeHint().width();
+    }
+    w1 += dragAreaMinimumWidth;
+
+    // row-2
+    // |m_applicationButton|~~~~~ m_tabBar ~~~~~|m_bottomLeftButtonGroup|m_bottomRightButtonGroup|cornerW|
+    if (m_applicationButton && m_applicationButton->isVisible()) {
+        w2 += m_applicationButton->size().width();
+    }
+    QWidget *cornerW = q->cornerWidget(Qt::TopRightCorner);
+    if (cornerW && cornerW->isVisible()) {
+        w2 += cornerW->sizeHint().width();
+    }
+    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+        w2 += m_bottomRightButtonGroup->sizeHint().width();
+    }
+    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+        w2 += m_bottomLeftButtonGroup->sizeHint().width();
+    }
+    w2 += tabBarMinimumWidth;
+
+    return qMax(w1, w2) + border.left() + border.right();
+}
+
+int RibbonBarPrivate::minimumWidthInWpsLiteStyle() const
+{
+    Q_Q(const RibbonBar);
+    QMargins border = q->contentsMargins();
+
+    int w = 0;
+
+    // ~~~~|m_bottomLeftButtonGroup|m_topRightButtonGroup|m_bottomRightButtonGroup|cornerR|m_windowButtonGroup|
+    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+        w += m_windowButtonGroup->sizeHint().width();
+    }
+    QWidget *cornerR = q->cornerWidget(Qt::TopRightCorner);
+    if (cornerR && cornerR->isVisible()) {
+        w += cornerR->sizeHint().width();
+    }
+    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+        w += m_bottomRightButtonGroup->sizeHint().width();
+    }
+    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+        w += m_topRightButtonGroup->sizeHint().width();
+    }
+    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+        w += m_bottomLeftButtonGroup->sizeHint().width();
+    }
+    // ~~~~|m_quickAccessBar|m_bottomLeftButtonGroup|~~~~~
+    if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
+        w += m_quickAccessBar->sizeHint().width();
+    }
+    // ~~~~|cornerL|<m_quickAccessBar>|m_bottomLeftButtonGroup|~~~~~
+    QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
+    if (cornerL && cornerL->isVisible()) {
+        w += cornerL->sizeHint().width();
+    }
+    // |m_applicationButton|<m_quickAccessBar>|m_topLeftButtonGroup|m_tabBar|~~~~~~
+    if (m_applicationButton && m_applicationButton->isVisible()) {
+        w += m_applicationButton->size().width();
+    }
+    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+        w += m_topLeftButtonGroup->sizeHint().width();
+    }
+    w += dragAreaMinimumWidth;
+
+    return w + tabBarMinimumWidth + border.left() + border.right();
 }
 
 /**
@@ -1729,6 +1825,25 @@ void RibbonBar::setWindowTitleVisible(bool visible)
     Q_D(RibbonBar);
     d->m_titleVisible = visible;
     d->m_quickAccessBar->setIconVisible(isOfficeStyle() && visible);
+}
+
+QSize RibbonBar::sizeHint() const
+{
+    Q_D(const RibbonBar);
+    QSize sz = QMenuBar::sizeHint();
+    int w = 0;
+    if (isOfficeStyle()) {
+        w = d->minimumWidthInOfficeStyle();
+    } else {
+        w = d->minimumWidthInWpsLiteStyle();
+    }
+    sz.setWidth(w);
+    return sz;
+}
+
+QSize RibbonBar::minimumSizeHint() const
+{
+    return sizeHint();
 }
 
 bool RibbonBar::event(QEvent *event)

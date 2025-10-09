@@ -39,6 +39,7 @@ protected:
     void setMenuBar(QMenuBar *menuBar);
 protected:
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
+    virtual bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 private:
     QX_DECLARE_PRIVATE(RibbonMainWindow)
 };

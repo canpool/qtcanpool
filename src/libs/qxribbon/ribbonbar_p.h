@@ -109,6 +109,9 @@ public:
     void resizeStackedWidget();
     void resizeRibbon();
 
+    int minimumWidthInOfficeStyle() const;
+    int minimumWidthInWpsLiteStyle() const;
+
     int calcMinTabBarWidth() const;
     int mainBarHeight() const;
 

@@ -131,4 +131,18 @@ bool RibbonMainWindow::event(QEvent *e)
     return QMainWindow::event(e);
 }
 
+bool RibbonMainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    Q_D(RibbonMainWindow);
+    if (!isMaximized() && d->m_ribbonBar && d->m_ribbonBar == obj) {
+        if (event->type() == QEvent::Resize) {
+            int w = d->m_ribbonBar->sizeHint().width();
+            if (w != minimumWidth()) {
+                setMinimumWidth(w);
+            }
+        }
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
 QX_RIBBON_END_NAMESPACE

@@ -207,6 +207,9 @@ public:
 
     void setWindowTitleVisible(bool visible);
 
+    QSize sizeHint() const Q_DECL_OVERRIDE;
+    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+
 Q_SIGNALS:
     void minimizationChanged(bool minimized);
     void applicationButtonClicked();
