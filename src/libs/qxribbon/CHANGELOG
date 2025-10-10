@@ -1,3 +1,23 @@
+0.10.1
+---
+Feature
+- RibbonBar: use sizeHint to limit the minimum width of mainwindow
+
+Optimize
+- RibbonStyleOption: the other height of group includes margin and title
+- WindowButtonGroup: reserve 1px bottom margin to prevent covering tabBarBaseLine
+- RibbonTabBar: set the style of navigation buttons
+- DarkOfficePlus: use stronger background for selected
+- RibbonBar: paint page context within the visible area
+- qss: set background for MenuButtonPopup button
+- ubuntu: qss: set the background of menu-button to transparent
+
+Bugfix
+- RibbonWindow: fix the shown when setting frameless
+- RibbonButton: ubuntu: fix the position of menu arrow
+- RibbonButton: fix the drawing of Qt::ToolButtonTextOnly style
+- ubuntu: qss: fix the white bg of QComboBox item in dark theme
+
 0.10.0
 ---
 Feature
