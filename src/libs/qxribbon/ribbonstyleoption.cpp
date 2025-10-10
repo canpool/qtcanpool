@@ -16,7 +16,7 @@ public:
     RibbonStyleOptionPrivate();
 
     int baseHeight();
-    int groupTitleHeight();
+    int groupOtherHeight();
     void calc(int baseHeight);
 public:
     int m_baseHeight = 17;
@@ -43,13 +43,13 @@ int RibbonStyleOptionPrivate::baseHeight()
     return s;
 }
 
-int RibbonStyleOptionPrivate::groupTitleHeight()
+int RibbonStyleOptionPrivate::groupOtherHeight()
 {
+    int h = RibbonGroupLayout::groupContentsMargins().top() + RibbonGroupLayout::groupContentsMargins().bottom();
     if (RibbonGroup::titleVisible()) {
-        return RibbonGroupLayout::groupContentsMargins().top() + RibbonGroupLayout::groupContentsMargins().bottom() +
-               RibbonGroup::groupTitleHeight();
+        return h + RibbonGroup::groupTitleHeight();
     }
-    return 0;
+    return h;
 }
 
 void RibbonStyleOptionPrivate::calc(int baseHeight)
@@ -59,7 +59,7 @@ void RibbonStyleOptionPrivate::calc(int baseHeight)
     m_titleBarHeight = m_baseHeight * 1.65;
     m_tabBarHeight = m_baseHeight * 1.5;
 
-    m_ribbonBarHeightOfficeStyleThreeRow = m_titleBarHeight + m_tabBarHeight + m_tabBarHeight * 3 + groupTitleHeight();
+    m_ribbonBarHeightOfficeStyleThreeRow = m_titleBarHeight + m_tabBarHeight + m_tabBarHeight * 3 + groupOtherHeight();
     m_ribbonBarHeightWpsLiteStyleThreeRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
     m_ribbonBarHeightOfficeStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
     m_ribbonBarHeightWpsLiteStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight - m_tabBarHeight;
