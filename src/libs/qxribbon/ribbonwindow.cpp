@@ -55,6 +55,11 @@ void RibbonWindowPrivate::setFrameless(bool frameless)
     Q_Q(RibbonWindow);
     RibbonBar *rb = q->ribbonBar();
 
+    // The following call to setWindowFlags will cause the widget to hide.
+    // Here, we first obtain the show status of the widget to determine
+    // whether it is from shown to hidden or from hidden to hidden
+    bool isHidden = q->isHidden();
+
     if (frameless) {
         if (Q_NULLPTR == m_framelessHelper) {
             m_framelessHelper = new FramelessHelper(q);
@@ -78,6 +83,11 @@ void RibbonWindowPrivate::setFrameless(bool frameless)
     } else {
         destroyFrameless();
         q->setWindowFlags(q->windowFlags() & ~Qt::FramelessWindowHint);
+    }
+
+    if (!isHidden) {
+        // from shown to hidden, so call show() to make the widget shown again
+        q->show();
     }
 }
 
@@ -114,7 +124,6 @@ void RibbonWindow::setFrameless(bool frameless)
     }
     d->m_frameless = frameless;
     d->setFrameless(frameless);
-    show(); // the m_windowButtonGroup.isVisible() judgment is added in resizeRibbon(), so show() is called earlier
     ribbonBar()->setWindowTitleVisible(frameless);
     resizeRibbon();
 }
