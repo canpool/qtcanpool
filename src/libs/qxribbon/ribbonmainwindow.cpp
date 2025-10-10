@@ -142,7 +142,7 @@ bool RibbonMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
         }
     }
-    return QWidget::eventFilter(obj, event);
+    return QMainWindow::eventFilter(obj, event);
 }
 
 QX_RIBBON_END_NAMESPACE
