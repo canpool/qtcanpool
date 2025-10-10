@@ -120,6 +120,15 @@ bool RibbonMainWindow::event(QEvent *e)
     switch (e->type()) {
     case QEvent::Resize: {
         if (d->m_ribbonBar) {
+            // When the main window uses the system native frame, when the main window
+            // is restored from the maximum for the first time, the restored width is
+            // smaller than the minimum width of the RibbonBar, but the Resize event of
+            // the RibbonBar will not be sent. Therefore, the minimum width also needs
+            // to be set here.
+            int w = d->m_ribbonBar->sizeHint().width();
+            if (w != minimumWidth()) {
+                setMinimumWidth(w);
+            }
             if (d->m_ribbonBar->size().width() != this->size().width()) {
                 d->m_ribbonBar->setFixedWidth(this->size().width());
             }
