@@ -576,8 +576,9 @@ void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &tit
         painter.setPen(gColor);
         painter.setBrush(Qt::NoBrush);
         QRect tabRect(contextRect.bottomLeft(),
-                      QPoint(contextRect.bottomRight().x() - 1, m_tabBar->geometry().bottom()));
-        painter.drawRect(tabRect);
+                      QPoint(contextRect.bottomRight().x(), m_tabBar->geometry().bottom()));
+        painter.drawLine(tabRect.topLeft(), tabRect.bottomLeft());
+        painter.drawLine(tabRect.topRight(), tabRect.bottomRight());
         painter.restore();
     }
 }
