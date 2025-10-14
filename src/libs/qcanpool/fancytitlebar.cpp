@@ -990,7 +990,7 @@ bool FancyTitleBarPrivate::windowPaint(QObject *obj)
         QPainter painter(w);
         QPalette palette = w->palette();
         painter.setPen(QPen(palette.color(QPalette::Shadow), 1));
-        painter.drawRect(0, 0, w->width(), w->height());
+        painter.drawRect(0, 0, w->width() - 1, w->height() - 1);
         return true;
     }
     return false;
