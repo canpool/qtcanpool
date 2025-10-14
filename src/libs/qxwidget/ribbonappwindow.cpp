@@ -1,6 +1,6 @@
 /**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: MIT && MulanPSL-2.0
  **/
 
 #include "ribbonappwindow.h"
@@ -8,8 +8,9 @@
 #include "qxwindow/windowagentwidget.h"
 
 QX_WINDOW_USE_NAMESPACE
+QX_RIBBON_USE_NAMESPACE
 
-QX_RIBBON_BEGIN_NAMESPACE
+QX_WIDGET_BEGIN_NAMESPACE
 
 class RibbonAppWindowPrivate
 {
@@ -69,7 +70,7 @@ void RibbonAppWindowPrivate::init()
 }
 
 RibbonAppWindow::RibbonAppWindow(QWidget *parent)
-    : RibbonMainWindow(parent)
+    : QX_RIBBON_PREPEND_NAMESPACE(RibbonMainWindow)(parent)
 {
     QX_INIT_PRIVATE(RibbonAppWindow)
     Q_D(RibbonAppWindow);
@@ -131,4 +132,4 @@ bool RibbonAppWindow::event(QEvent *e)
     return RibbonMainWindow::event(e);
 }
 
-QX_RIBBON_END_NAMESPACE
+QX_WIDGET_END_NAMESPACE

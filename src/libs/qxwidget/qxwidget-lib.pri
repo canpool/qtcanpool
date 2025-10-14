@@ -7,7 +7,8 @@ DEFINES += QX_WIDGET_LIBRARY
 DEFINES += QT_DEPRECATED_WARNINGS
 
 PUBLIC_HEADERS = \
-    $$PWD/qxwidget_global.h
+    $$PWD/qxwidget_global.h \
+    $$PWD/ribbonappwindow.h
 
 PRIVATE_HEADERS = \
 
@@ -17,6 +18,6 @@ HEADERS += \
     $$PRIVATE_HEADERS
 
 SOURCES += \
-
+    $$PWD/ribbonappwindow.cpp
 
 RESOURCES += \

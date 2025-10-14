@@ -4,4 +4,5 @@ add_qtc_library(qxwidget
   DEPENDS Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES
     qxwidget_global.h
+    ribbonappwindow.cpp ribbonappwindow.h
 )

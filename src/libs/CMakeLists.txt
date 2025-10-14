@@ -20,6 +20,6 @@ if (WITH_QXWINDOW)
   add_subdirectory(qxwindow)
 endif()
 
-if (WITH_QXWIDGET)
+if (WITH_QXWIDGET AND WITH_QXRIBBON AND WITH_QXWINDOW)
   add_subdirectory(qxwidget)
 endif()
