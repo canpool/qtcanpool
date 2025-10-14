@@ -1739,7 +1739,14 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     QApplication::sendEvent(this, &es);
     */
     // sendEvent会导致RibbonQuickAccessBar在样式切换后无法更新尺寸，改为用postEvent
-    resizeRibbon();
+    // resizeRibbon();
+
+    // FIXME: 使用 resizeRibbon 中的 postEvent，会存在延迟。当采用 WPS 样式且处于最小模式时，从 WPS 样式切换到
+    // OFFICE 样式，会出现 m_tabBar 的尺寸未及时更新就设置了 setFixedHeight(d->m_tabBar->geometry().bottom())
+    // 从而导致高度仍为 WPS 样式时的高度，切换到 OFFICE 样式后，m_tabBar 所在的水平区域内容无法正常显示
+    // WORKAROUND: 此处直接调用 d->resizeRibbon，保证立即更新 m_tabBar 尺寸
+    d->resizeRibbon();
+    update();
 
     if (isMinimized()) {
         // 处于最小模式下时，bar的高度为tabbar的bottom,这个调整必须在resize event之后
