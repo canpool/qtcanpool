@@ -18,13 +18,13 @@ DESTDIR = $$IDE_APP_PATH
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
 SOURCES += \
-    main.cpp \
-    mainwindow.cpp
+    $$PWD/main.cpp \
+    $$PWD/mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h
+    $$PWD/mainwindow.h
 
 RESOURCES += \
-    fancydemo.qrc
+    $$PWD/fancydemo.qrc
 
-RC_FILE = fancydemo.rc
+RC_FILE = $$PWD/fancydemo.rc

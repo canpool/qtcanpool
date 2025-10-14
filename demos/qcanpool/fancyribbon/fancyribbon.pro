@@ -24,14 +24,14 @@ CONFIG += c++11
 
 include($$QTCANPOOL_DIR/src/rpath.pri)
 
-INCLUDEPATH += ..
+INCLUDEPATH += $$PWD/..
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp
+        $$PWD/main.cpp \
+        $$PWD/mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h
+        $$PWD/mainwindow.h
 
 RESOURCES += \
-    resource.qrc
+    $$PWD/resource.qrc
