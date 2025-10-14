@@ -4,7 +4,8 @@ SUBDIRS =   \
     qcanpool \
     qxribbon \
     qxdock \
-    qxwindow
+    qxwindow \
+    qxwidget
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =

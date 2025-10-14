@@ -1,0 +1,4 @@
+include($$PWD/qxwidget-lib.pri)
+
+DEFINES -= QX_WIDGET_LIBRARY
+DEFINES += QX_WIDGET_LIBRARY_STATIC

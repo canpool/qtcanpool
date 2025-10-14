@@ -2,6 +2,7 @@ option(WITH_QCANPOOL "Build qcanpool library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
+option(WITH_QXWIDGET "Build qxwidget library" ON)
 
 if (WITH_QCANPOOL)
   add_subdirectory(qcanpool)
@@ -17,4 +18,8 @@ endif()
 
 if (WITH_QXWINDOW)
   add_subdirectory(qxwindow)
+endif()
+
+if (WITH_QXWIDGET)
+  add_subdirectory(qxwidget)
 endif()
