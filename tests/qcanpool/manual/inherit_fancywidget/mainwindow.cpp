@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     FancyBar *fb = fancyBar();
     QToolBar *tb = fb->toolBar();
     tb->addAction(tr("action1"), this, [this]() {
-        Dialog dlg;
+        Dialog dlg(this);
         dlg.exec();
     });
     // toolBar in menuWidget is hidden by default
