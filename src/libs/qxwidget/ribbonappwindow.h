@@ -15,7 +15,7 @@ class QX_WIDGET_EXPORT RibbonAppWindow : public QX_RIBBON_PREPEND_NAMESPACE(Ribb
 {
     Q_OBJECT
 public:
-    RibbonAppWindow(QWidget *parent = Q_NULLPTR);
+    RibbonAppWindow(QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
     ~RibbonAppWindow() Q_DECL_OVERRIDE;
 
     void updateWindowFlags(Qt::WindowFlags flags) Q_DECL_OVERRIDE;

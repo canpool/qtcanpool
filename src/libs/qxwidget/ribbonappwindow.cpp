@@ -69,9 +69,10 @@ void RibbonAppWindowPrivate::init()
     m_windowAgent->setHitTestVisible(m_windowButtonGroup, true);
 }
 
-RibbonAppWindow::RibbonAppWindow(QWidget *parent)
+RibbonAppWindow::RibbonAppWindow(QWidget *parent, Qt::WindowFlags flags)
     : QX_RIBBON_PREPEND_NAMESPACE(RibbonMainWindow)(parent)
 {
+    Q_UNUSED(flags);
     QX_INIT_PRIVATE(RibbonAppWindow)
     Q_D(RibbonAppWindow);
     d->init();
