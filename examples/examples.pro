@@ -4,4 +4,5 @@ CONFIG += ordered
 SUBDIRS = \
     qcanpool \
     qxdock \
+    qxwidget \
     qxribbon
