@@ -2,7 +2,7 @@ QTC_LIB_DEPENDS += qxribbon
 
 greaterThan(QT_MAJOR_VERSION, 5) {
 win32 {
-    QTC_LIB_DEPENDS += qxwidget
+    QTC_LIB_DEPENDS += qxapp
     DEFINES += QXRIBBON_USE_APPWINDOW
 } # win32
 } # > 5

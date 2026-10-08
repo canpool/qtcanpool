@@ -1,2 +1,2 @@
 add_subdirectory(qcanpool)
-add_subdirectory(qxwidget)
+add_subdirectory(qxapp)

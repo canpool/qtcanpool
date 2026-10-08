@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "qxwidget/ribbonappwindow.h"
+#include "qxapp/ribbonappwindow.h"
 
-class MainWindow : public QxWidget::RibbonAppWindow
+class MainWindow : public QxApp::RibbonAppWindow
 {
     Q_OBJECT
 public:

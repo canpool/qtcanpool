@@ -3,7 +3,7 @@ CONFIG += ordered
 
 SUBDIRS = \
     qcanpool \
-    qxwidget \
+    qxapp \
     qxwindow
 
 DEMO_OTHERS_ENABLE = 0

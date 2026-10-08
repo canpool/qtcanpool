@@ -1,0 +1,4 @@
+include($$PWD/qxapp-lib.pri)
+
+DEFINES -= QX_APP_LIBRARY
+DEFINES += QX_APP_LIBRARY_STATIC

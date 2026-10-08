@@ -5,7 +5,7 @@ SUBDIRS =   \
     qxribbon \
     qxdock \
     qxwindow \
-    qxwidget
+    qxapp
 
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =

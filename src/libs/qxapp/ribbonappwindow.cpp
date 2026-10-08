@@ -10,7 +10,7 @@
 QX_WINDOW_USE_NAMESPACE
 QX_RIBBON_USE_NAMESPACE
 
-QX_WIDGET_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
 class RibbonAppWindowPrivate
 {
@@ -133,4 +133,4 @@ bool RibbonAppWindow::event(QEvent *e)
     return RibbonMainWindow::event(e);
 }
 
-QX_WIDGET_END_NAMESPACE
+QX_APP_END_NAMESPACE

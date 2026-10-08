@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-QX_WIDGET_USE_NAMESPACE
+QX_APP_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *parent)
     : RibbonAppWindow(parent)

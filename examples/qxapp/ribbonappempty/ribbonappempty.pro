@@ -1,4 +1,4 @@
-QTC_LIB_DEPENDS += qxwidget
+QTC_LIB_DEPENDS += qxapp
 include(../shared/shared.pri)
 
 TARGET = Example_RibbonAppEmpty

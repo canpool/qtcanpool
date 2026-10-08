@@ -1,9 +1,9 @@
-add_qtc_library(qxwidget
+add_qtc_library(qxapp
   VERSION 0.0.1
-  DEFINES QX_WIDGET_LIBRARY
+  DEFINES QX_APP_LIBRARY
   DEPENDS qxwindow
   PUBLIC_DEPENDS qxribbon Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES
-    qxwidget_global.h
+    qxapp_global.h
     ribbonappwindow.cpp ribbonappwindow.h
 )

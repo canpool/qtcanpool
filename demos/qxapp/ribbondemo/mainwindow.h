@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #if defined(QXRIBBON_USE_APPWINDOW)
-#include "qxwidget/ribbonappwindow.h"
-QX_WIDGET_USE_NAMESPACE
+#include "qxapp/ribbonappwindow.h"
+QX_APP_USE_NAMESPACE
 #define MyRibbonWindow RibbonAppWindow
 #else
 #include "qxribbon/ribbonwindow.h"
