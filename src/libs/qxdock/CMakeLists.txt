@@ -17,3 +17,17 @@ add_qtc_library(qxdock
     ${DOCK_HEADERS}
     ${DOCK_QRCFILES}
 )
+
+if (UNIX AND NOT APPLE)
+  # The X11 helpers in dockutils.h/.cpp use the Qt platform plugin private API
+  # and link against xcb directly; DockFloatingTitleBar is the X11-only custom
+  # title bar. Mirrors qxdock-lib.pri (QT += gui-private, LIBS += -lxcb).
+  extend_qtc_library(qxdock
+    SOURCES
+      linux/dockfloatingtitlebar.cpp
+      linux/dockfloatingtitlebar.h
+    DEPENDS
+      Qt5::GuiPrivate
+      xcb
+  )
+endif()

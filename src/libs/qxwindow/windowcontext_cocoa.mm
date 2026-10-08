@@ -87,7 +87,7 @@ public:
 
 - (void)windowWillEnterFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
-    if (auto proxy = QWK::g_proxyIndexes->value(nswindow)) {
+    if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
         reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
             QWK_NSWindowDelegate::WillEnterFullScreen);
     }
@@ -95,7 +95,7 @@ public:
 
 - (void)windowDidEnterFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
-    if (auto proxy = QWK::g_proxyIndexes->value(nswindow)) {
+    if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
         reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
             QWK_NSWindowDelegate::DidEnterFullScreen);
     }
@@ -103,7 +103,7 @@ public:
 
 - (void)windowWillExitFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
-    if (auto proxy = QWK::g_proxyIndexes->value(nswindow)) {
+    if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
         reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
             QWK_NSWindowDelegate::WillExitFullScreen);
     }
@@ -111,7 +111,7 @@ public:
 
 - (void)windowDidExitFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
-    if (auto proxy = QWK::g_proxyIndexes->value(nswindow)) {
+    if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
         reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
             QWK_NSWindowDelegate::DidExitFullScreen);
     }
@@ -119,7 +119,7 @@ public:
 
 - (void)windowDidResize:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
-    if (auto proxy = QWK::g_proxyIndexes->value(nswindow)) {
+    if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
         reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
             QWK_NSWindowDelegate::DidResize);
     }

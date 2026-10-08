@@ -40,6 +40,7 @@ if (QX_WINDOW_CONFIG_NATIVE)
   extend_qtc_library(qxwindow CONDITION APPLE
     SOURCES
       windowcontext_cocoa.mm
+    DEFINES QX_WINDOW_NATIVE
   )
 
   extend_qtc_library(qxwindow CONDITION UNIX
