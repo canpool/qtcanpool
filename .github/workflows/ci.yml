@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build / ${{ matrix.os }} / Qt ${{ matrix.qt }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  qt: '6.8.1' }
+          - { os: windows-latest, qt: '6.8.1' }
+          - { os: macos-latest,   qt: '6.8.1' }
+          - { os: ubuntu-latest,  qt: '5.15.2' }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt }}
+          cache: true
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DWITH_DEMOS=ON
+          -DWITH_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        env:
+          # 无头环境（CI runner）下使用 offscreen 平台，避免 GUI 测试失败
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build -C Release --output-on-failure --timeout 120
+
+  format:
+    # 说明：本任务目前仅提示（continue-on-error），待全量格式化完成后再转为强制门禁。
+    name: clang-format
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Check formatting
+        run: |
+          FILES=$(git ls-files 'src/**/*.h' 'src/**/*.cpp' 'tests/**/*.h' 'tests/**/*.cpp')
+          clang-format --style=file --dry-run --Werror $FILES
