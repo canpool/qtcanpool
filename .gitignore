@@ -58,3 +58,6 @@ compile_commands.json
 .vscode
 bak
 build
+
+# AI assistant workspace (local only)
+.workbuddy/
