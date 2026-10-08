@@ -853,10 +853,20 @@ function(add_qtc_test name)
     SKIP_AUTOMOC ${_arg_SKIP_AUTOMOC}
   )
 
+  qtc_output_binary_dir(_output_binary_dir)
+
   set_target_properties(${name} PROPERTIES
     LINK_DEPENDS_NO_SHARED ON
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
+    # Put the test executables next to the shared libraries they exercise.
+    # BUILD_RPATH below is expressed relative to IDE_BIN_PATH, and Windows has
+    # no RPATH support at all, so sharing the directory with the qx* DLLs is
+    # what keeps `ctest` working on every platform. Without it the test
+    # binaries end up in <build>/tests/<config> while the libraries live in
+    # <build>/bin/<config>, and a Windows run blocks forever on the modal
+    # "DLL not found" dialog.
+    RUNTIME_OUTPUT_DIRECTORY "${_output_binary_dir}/${IDE_BIN_PATH}"
     BUILD_RPATH "${_RPATH_BASE}/${_RPATH};${CMAKE_BUILD_RPATH}"
     INSTALL_RPATH "${_RPATH_BASE}/${_RPATH};${CMAKE_INSTALL_RPATH}"
   )
