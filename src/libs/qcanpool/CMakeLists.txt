@@ -1,7 +1,7 @@
 option(QCANPOOL_CONFIG_RIBBON "Config ribbon" YES)
 
 add_qtc_library(qcanpool
-  DEPENDS Qt5::Core Qt5::Widgets
+  PUBLIC_DEPENDS Qt5::Core Qt5::Widgets
   SOURCES
     extensionbutton.cpp extensionbutton.h
     fancybar.cpp fancybar.h fancybar_p.h
