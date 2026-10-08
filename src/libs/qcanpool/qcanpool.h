@@ -115,9 +115,17 @@ Example:
 
  Note that this differs from Qt's QT_DEPRECATED_SINCE: the class declaration is
  never compiled out here, QCANPOOL_DISABLE_DEPRECATED_BEFORE only silences the
- warning.
+ * warning.
+ *
+ * The annotation is deliberately not applied while the library itself is being
+ * compiled: the legacy classes reference each other by design (RibbonWindow
+ * owns a RibbonBar, RibbonBar owns RibbonPages, ...), and those warnings would
+ * drown out the ones that matter. Consumers of the library still get the
+ * warning, which is the entire point of the annotation. QCANPOOL_LIBRARY /
+ * QCANPOOL_LIBRARY_STATIC are defined for the library target only, by both the
+ * CMake and the qmake build.
  */
-#if QCANPOOL_DEPRECATED_SINCE(3, 0)
+#if QCANPOOL_DEPRECATED_SINCE(3, 0) && !defined(QCANPOOL_LIBRARY) && !defined(QCANPOOL_LIBRARY_STATIC)
 #define QCANPOOL_DEPRECATED_X(text) QT_DEPRECATED_X(text)
 #else
 #define QCANPOOL_DEPRECATED_X(text)
