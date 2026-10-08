@@ -1,8 +1,8 @@
 # qtcanpool 3.0 开发规划
 
-> 版本定位：**现代化收敛版（Modern Consolidation）**
-> 主题：**Qt6 优先、CMake 优先、组件化收敛、工程化补齐**
-> 文档状态：草案 v1 · 待评审
+> 版本定位：**现代化收敛版（Modern Consolidation）**  
+> 主题：**Qt6 优先、CMake 优先、组件化收敛、工程化补齐**  
+> 文档状态：草案 v1 · 待评审  
 > 适用仓库：`https://github.com/canpool/qtcanpool` / `https://gitee.com/icanpool/qtcanpool`
 
 ---
@@ -45,27 +45,27 @@ qtcanpool/
 
 ### 1.3 组件现状矩阵
 
-| 组件 | 版本 | 规模 | 来源 / 定位 | 状态 |
-| :--- | :--- | :--- | :--- | :--- |
-| **qcanpool** | 2.0.2 | 57 文件 / 8.3k 行 | 自研 legacy 控件（fancy*）+ 简易 ribbon | ⚠️ 新旧 ribbon 并存，需收敛 |
-| **qxribbon** | 0.10.1 | 70 文件 / 15.4k 行 | 自研现代 Ribbon（Office/WPS/Dark 主题） | ✅ 主力演进中 |
-| **qxdock** | 0.2.0 | 57 文件 / 16.7k 行 | Qt-Advanced-Docking-System 4.3.1 | ✅ 已同步，较稳定 |
-| **qxwindow** | 0.1.2 | 30 文件 / 5.7k 行 | qwindowkit 派生（原生无边框/系统特性） | ✅ 稳定 |
-| **qxwidget** | 0.0.1 | 3 文件 / 0.27k 行 | 应用框架整合层 | 🚧 刚起步，仅 `RibbonAppWindow` |
-| 全仓库 src | — | ~46.4k 行 | — | — |
+| 组件           | 版本     | 规模              | 来源 / 定位                          | 状态                         |
+| :----------- | :----- | :-------------- | :------------------------------- | :------------------------- |
+| **qcanpool** | 2.0.2  | 57 文件 / 8.3k 行  | 自研 legacy 控件（fancy*）+ 简易 ribbon  | ⚠️ 新旧 ribbon 并存，需收敛        |
+| **qxribbon** | 0.10.1 | 70 文件 / 15.4k 行 | 自研现代 Ribbon（Office/WPS/Dark 主题）  | ✅ 主力演进中                    |
+| **qxdock**   | 0.2.0  | 57 文件 / 16.7k 行 | Qt-Advanced-Docking-System 4.3.1 | ✅ 已同步，较稳定                  |
+| **qxwindow** | 0.1.2  | 30 文件 / 5.7k 行  | qwindowkit 派生（原生无边框/系统特性）        | ✅ 稳定                       |
+| **qxwidget** | 0.0.1  | 3 文件 / 0.27k 行  | 应用框架整合层                          | 🚧 刚起步，仅 `RibbonAppWindow` |
+| 全仓库 src      | —      | ~46.4k 行        | —                                | —                          |
 
 依赖关系：`qxwidget → (qxribbon, qxwindow)`；`qcanpool / qxribbon / qxdock / qxwindow` 相互独立（均只依赖 Qt）。
 
 ### 1.4 构建与工具链现状
 
-| 维度 | 现状 | 问题 |
-| :--- | :--- | :--- |
-| 构建系统 | qmake（.pro/.pri）+ CMake 双轨 | 双轨维护成本高 |
-| C++ 标准 | qmake 侧 `c++14`，CMake 侧 `C++17` | 不一致 |
-| Qt 版本 | 5.12.12 / 5.14.2 / 5.15.2 / 6.5.3 / 6.8.1 | 兼容面过宽，测试矩阵难以覆盖 |
-| 编译器 | MinGW / MSVC2017 / MSVC2022 / GCC | 旧编译器（MSVC2017）拖累 |
-| 包管理 | 无（源码引用 `qtconfig.pri` / `find_package`） | 无 vcpkg / Conan 集成 |
-| CI / 测试 | 无可见 CI；测试仅 2 组 auto | 质量门禁缺失 |
+| 维度      | 现状                                        | 问题                 |
+| :------ | :---------------------------------------- | :----------------- |
+| 构建系统    | qmake（.pro/.pri）+ CMake 双轨                | 双轨维护成本高            |
+| C++ 标准  | qmake 侧 `c++14`，CMake 侧 `C++17`           | 不一致                |
+| Qt 版本   | 5.12.12 / 5.14.2 / 5.15.2 / 6.5.3 / 6.8.1 | 兼容面过宽，测试矩阵难以覆盖     |
+| 编译器     | MinGW / MSVC2017 / MSVC2022 / GCC         | 旧编译器（MSVC2017）拖累   |
+| 包管理     | 无（源码引用 `qtconfig.pri` / `find_package`）   | 无 vcpkg / Conan 集成 |
+| CI / 测试 | 无可见 CI；测试仅 2 组 auto                       | 质量门禁缺失             |
 
 ### 1.5 生态资产（已有优势，3.0 要放大）
 
@@ -95,20 +95,20 @@ qtcanpool/
 
 ## 二、问题与债务诊断
 
-| 编号 | 问题 | 维度 | 优先级 |
-| :--- | :--- | :--- | :--- |
-| D1 | **两套 Ribbon 并存**：`qcanpool` 内简易 ribbon 与 `qxribbon` 功能重叠 | 架构 | **P0** |
-| D2 | **命名体系不统一**：`qcanpool`（QCanpool ns）与 `qx*`（QxRibbon/QxWindow... ns）风格割裂 | 架构/API | **P0** |
-| D3 | **`qxwidget` 名不符实**：名为 widget 库，实为应用框架整合层，且仅 1 个类 | 架构 | **P0** |
-| D4 | **构建双轨**：qmake + CMake 并行维护，C++ 标准不一致 | 构建 | **P0** |
-| D5 | **兼容面过宽**：Qt 5.12~6.8、MSVC2017 全都要支持 | 构建 | **P1** |
-| D6 | **无 CI / 质量门禁**：无自动构建矩阵、无静态分析、无覆盖率 | 质量 | **P1** |
-| D7 | **测试覆盖薄**：仅 2 组 auto test，核心控件基本无单测 | 质量 | **P1** |
-| D8 | **文档薄弱**：无 API 文档、无在线文档、无迁移指南 | 文档 | **P1** |
-| D9 | **插件体系未落地**：`src/plugins` 仅骨架，`modules` 为空 | 架构 | **P2** |
-| D10 | **版本号割裂**：仓库版本 2.3.0 与各库版本（2.0.2/0.10.1/0.2.0/0.1.2/0.0.1）各自为政，用户难感知 | 发布 | **P2** |
-| D11 | **主题系统分散**：样式散落在 qss 资源与各库中，未抽象为统一主题引擎 | 体验 | **P2** |
-| D12 | **旧 API 迁移路径缺失**：legacy fancy* / ribbon 用户无平滑升级指引 | 生态 | **P2** |
+| 编号  | 问题                                                                      | 维度     | 优先级    |
+| :-- | :---------------------------------------------------------------------- | :----- | :----- |
+| D1  | **两套 Ribbon 并存**：`qcanpool` 内简易 ribbon 与 `qxribbon` 功能重叠                | 架构     | **P0** |
+| D2  | **命名体系不统一**：`qcanpool`（QCanpool ns）与 `qx*`（QxRibbon/QxWindow... ns）风格割裂 | 架构/API | **P0** |
+| D3  | **`qxwidget` 名不符实**：名为 widget 库，实为应用框架整合层，且仅 1 个类                       | 架构     | **P0** |
+| D4  | **构建双轨**：qmake + CMake 并行维护，C++ 标准不一致                                   | 构建     | **P0** |
+| D5  | **兼容面过宽**：Qt 5.12~6.8、MSVC2017 全都要支持                                    | 构建     | **P1** |
+| D6  | **无 CI / 质量门禁**：无自动构建矩阵、无静态分析、无覆盖率                                      | 质量     | **P1** |
+| D7  | **测试覆盖薄**：仅 2 组 auto test，核心控件基本无单测                                     | 质量     | **P1** |
+| D8  | **文档薄弱**：无 API 文档、无在线文档、无迁移指南                                           | 文档     | **P1** |
+| D9  | **插件体系未落地**：`src/plugins` 仅骨架，`modules` 为空                              | 架构     | **P2** |
+| D10 | **版本号割裂**：仓库版本 2.3.0 与各库版本（2.0.2/0.10.1/0.2.0/0.1.2/0.0.1）各自为政，用户难感知    | 发布     | **P2** |
+| D11 | **主题系统分散**：样式散落在 qss 资源与各库中，未抽象为统一主题引擎                                  | 体验     | **P2** |
+| D12 | **旧 API 迁移路径缺失**：legacy fancy* / ribbon 用户无平滑升级指引                       | 生态     | **P2** |
 
 ---
 
@@ -182,15 +182,15 @@ src/libs/
 
 ### 方向 E：新组件与能力（P2，3.0 后续小版本）
 
-| 组件 | 说明 |
-| :--- | :--- |
-| **主题引擎** | 统一 Office/WPS/Dark 主题，支持运行时切换、QSS 集中管理、高 DPI |
-| **配置框架** | QSettings 封装、分组/默认值/迁移 |
-| **日志框架** | 分级、文件滚动、异步、可挂 UI |
-| **通知/Toast** | 应用内轻提示 |
-| **属性编辑器 / 设置对话框** | 通用配置界面组件 |
-| **AppShell 骨架** | 导航 + Ribbon + Dock + 状态栏 + 启动屏 的完整应用外壳 |
-| **i18n 基础设施** | 翻译加载/切换/语言包 |
+| 组件                | 说明                                           |
+| :---------------- | :------------------------------------------- |
+| **主题引擎**          | 统一 Office/WPS/Dark 主题，支持运行时切换、QSS 集中管理、高 DPI |
+| **配置框架**          | QSettings 封装、分组/默认值/迁移                       |
+| **日志框架**          | 分级、文件滚动、异步、可挂 UI                             |
+| **通知/Toast**      | 应用内轻提示                                       |
+| **属性编辑器 / 设置对话框** | 通用配置界面组件                                     |
+| **AppShell 骨架**   | 导航 + Ribbon + Dock + 状态栏 + 启动屏 的完整应用外壳       |
+| **i18n 基础设施**     | 翻译加载/切换/语言包                                  |
 
 ### 方向 F：插件/模块体系落地（P2）
 
@@ -202,19 +202,18 @@ src/libs/
 
 ## 五、分阶段路线图
 
-| 阶段 | 目标 | 关键交付 | 出口标准 |
-| :--- | :--- | :--- | :--- |
-| **M1 地基** | 统一构建与质量底座 | CMake 主构建成型、C++17 统一、CI 矩阵跑通、clang-format、单测骨架 | 全平台 CI 绿灯，`find_package` 可消费 |
+| 阶段        | 目标        | 关键交付                                                   | 出口标准                               |
+| :-------- | :-------- | :----------------------------------------------------- | :--------------------------------- |
+| **M1 地基** | 统一构建与质量底座 | CMake 主构建成型、C++17 统一、CI 矩阵跑通、clang-format、单测骨架         | 全平台 CI 绿灯，`find_package` 可消费       |
 | **M2 收敛** | 消除冗余、统一命名 | 冻结 legacy ribbon、统一 `qx*` 命名、`qxwidget→qxapp` 重定位、迁移指南 | 无重复 ribbon；旧 API 全部有 deprecated 标注 |
-| **M3 增强** | 新能力与体验 | 主题引擎、配置/日志、AppShell、文档站点、在线 demo | 文档可发布；demo 可在线体验 |
-| **M4 发布** | 3.0.0 正式版 | 版本对齐、Release Notes、发布包（含 vcpkg/Conan） | 3.0.0 tag + 发布说明 + 迁移指引 |
+| **M3 增强** | 新能力与体验    | 主题引擎、配置/日志、AppShell、文档站点、在线 demo                       | 文档可发布；demo 可在线体验                   |
+| **M4 发布** | 3.0.0 正式版 | 版本对齐、Release Notes、发布包（含 vcpkg/Conan）                  | 3.0.0 tag + 发布说明 + 迁移指引            |
 
 > 节奏建议：**M1/M2 为核心投入**（决定 3.0 的"骨架"），M3 可按小版本增量推进，M4 收口发布。
 >
 > **进度（2026-10-08）**
-> - ✅ **M1 地基已完成**（含收尾）：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
->   - 全量 clang-format 已应用（233 文件，纯格式）；CI 格式检查升级为**强制门禁**（clang-format 版本固定 21.1.8）
->   - CI 触发分支补充 `release-*`
+>
+> - ✅ **M1 地基已完成**：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
 > - ✅ **M2 收敛核心项已落地**：`qxwidget→qxapp` 重定位、legacy ribbon deprecated 标注：[`design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x；`qxcore` 归 M3
 
@@ -224,34 +223,34 @@ src/libs/
 
 > 决策人：项目作者 · 确认日期：2026-10-08 · 以下决策为 3.0 的基线约束，后续如需变更须走决策记录。
 
-| # | 决策 | 最终结论 | 落地影响 |
-| :--- | :--- | :--- | :--- |
-| **K1** | Qt 最低支持版本 | ✅ **Qt 5.15 尽力兼容，主推 Qt 6.5 / 6.8 LTS** | 放弃 ≤5.14 与 MSVC2017；CI 覆盖 5.15 + 6.8 |
-| **K2** | qmake 去留 | ✅ **3.0 冻结（只读），后续版本移除** | 新增内容一律只进 CMake；.pro 不再新增特性 |
-| **K3** | 统一命名前缀 | ✅ **统一为 `qx*`（QxRibbon/QxWindow/QxDock/QxApp），`qcanpool` 冻结** | 库/include/宏/命名空间统一风格 |
-| **K4** | `qxwidget` 去向 | ✅ **重定位为 `qxapp`（应用框架）** | 命名空间 QxWidget→QxApp，保留转发兼容期 |
-| **K5** | legacy `fancy*` 控件 | ✅ **评估后：通用者迁入 qxapp/qxcore，专用者 3.x 内下线** | 见《3.0-MIGRATION》存废表 |
-| **K6** | 源码/二进制兼容 | ✅ **不保证二进制兼容，提供 2.x→3.0 源码级迁移指南** | 旧 API 加 deprecated 宏 + 迁移对照表 |
+| #      | 决策                 | 最终结论                                                          | 落地影响                                 |
+| :----- | :----------------- | :------------------------------------------------------------ | :----------------------------------- |
+| **K1** | Qt 最低支持版本          | ✅ **Qt 5.15 尽力兼容，主推 Qt 6.5 / 6.8 LTS**                        | 放弃 ≤5.14 与 MSVC2017；CI 覆盖 5.15 + 6.8 |
+| **K2** | qmake 去留           | ✅ **3.0 冻结（只读），后续版本移除**                                       | 新增内容一律只进 CMake；.pro 不再新增特性           |
+| **K3** | 统一命名前缀             | ✅ **统一为 `qx*`（QxRibbon/QxWindow/QxDock/QxApp），`qcanpool` 冻结** | 库/include/宏/命名空间统一风格                 |
+| **K4** | `qxwidget` 去向      | ✅ **重定位为 `qxapp`（应用框架）**                                      | 命名空间 QxWidget→QxApp，保留转发兼容期          |
+| **K5** | legacy `fancy*` 控件 | ✅ **评估后：通用者迁入 qxapp/qxcore，专用者 3.x 内下线**                      | 见《3.0-MIGRATION》存废表                  |
+| **K6** | 源码/二进制兼容           | ✅ **不保证二进制兼容，提供 2.x→3.0 源码级迁移指南**                             | 旧 API 加 deprecated 宏 + 迁移对照表         |
 
 ### 配套设计文档
 
-| 文档 | 内容 |
-| :--- | :--- |
-| [`doc/design/3.0-MIGRATION.md`](./design/3.0-MIGRATION.md) | 2.x→3.0 迁移指南：命名空间、Ribbon 类/方法对照、fancy* 存废、qxwidget→qxapp、构建迁移 |
-| [`doc/design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md) | M1 可执行任务清单：CMake 主构建、C++17、CI 矩阵、clang-format、测试骨架（含开箱即用配置） |
-| [`doc/design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md) | M2 可执行任务清单：`qxwidget→qxapp` 重命名、legacy ribbon deprecated 标注（含实测踩坑记录） |
+| 文档                                                         | 内容                                                                   |
+| :--------------------------------------------------------- | :------------------------------------------------------------------- |
+| [`doc/design/3.0-MIGRATION.md`](./design/3.0-MIGRATION.md) | 2.x→3.0 迁移指南：命名空间、Ribbon 类/方法对照、fancy* 存废、qxwidget→qxapp、构建迁移        |
+| [`doc/design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)   | M1 可执行任务清单：CMake 主构建、C++17、CI 矩阵、clang-format、测试骨架（含开箱即用配置）          |
+| [`doc/design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)   | M2 可执行任务清单：`qxwidget→qxapp` 重命名、legacy ribbon deprecated 标注（含实测踩坑记录） |
 
 ---
 
 ## 七、风险与依赖
 
-| 风险 | 影响 | 缓解 |
-| :--- | :--- | :--- |
-| 收敛幅度大，破坏存量用户（如 MyCAD） | 高 | 保留 legacy 冻结库 + 迁移指南；给足过渡期 |
-| 个人维护带宽有限 | 高 | 按里程碑小步走；优先自动化（CI/测试/文档）减负 |
-| Qt6 WebAssembly 打包 demo 有坑 | 中 | 作为 M3 增强项，非阻塞发布 |
-| vcpkg/Conan 维护成本 | 中 | 先出最简 port，社区可贡献 |
-| 命名/更名引发下游引用断裂 | 中 | 提供兼容头 + 过渡宏 |
+| 风险                         | 影响 | 缓解                         |
+| :------------------------- | :- | :------------------------- |
+| 收敛幅度大，破坏存量用户（如 MyCAD）      | 高  | 保留 legacy 冻结库 + 迁移指南；给足过渡期 |
+| 个人维护带宽有限                   | 高  | 按里程碑小步走；优先自动化（CI/测试/文档）减负  |
+| Qt6 WebAssembly 打包 demo 有坑 | 中  | 作为 M3 增强项，非阻塞发布            |
+| vcpkg/Conan 维护成本           | 中  | 先出最简 port，社区可贡献            |
+| 命名/更名引发下游引用断裂              | 中  | 提供兼容头 + 过渡宏                |
 
 ---
 
@@ -280,6 +279,9 @@ src/libs/qxwidget  (1 个类)          src/libs/qxapp      (应用框架)
                                      src/libs/qxcore     (基础设施, 新增)
 ```
 
+
+```
+
 ---
 
 ## 附录 B：CHANGELOG 3.0.0 草案
@@ -287,8 +289,9 @@ src/libs/qxwidget  (1 个类)          src/libs/qxapp      (应用框架)
 > 说明：以下为发布前草案，最终以正式发布说明为准。
 
 ```
-3.0.0
----
+
+## 3.0.0
+
 - qt: Qt6-first, primary support Qt 6.5 LTS / 6.8 LTS; best-effort Qt 5.15
 - qt: drop Qt <= 5.14 and MSVC2017
 - project: cmake is the primary build system; qmake frozen (read-only)
@@ -304,5 +307,6 @@ src/libs/qxwidget  (1 个类)          src/libs/qxapp      (应用框架)
 - ci: add cross-platform build matrix (Windows/Linux/macOS x Qt5.15/Qt6.8)
 - test: expand automated tests and enable coverage report
 - docs: add API reference, component guides and 2.x -> 3.0 migration guide
-```
 
+```
+```
