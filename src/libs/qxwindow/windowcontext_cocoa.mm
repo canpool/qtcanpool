@@ -12,7 +12,7 @@
 #include <QtGui/QGuiApplication>
 
 #include "windowkit_p.h"
-#include "systemwindow_p.h"
+#include "windowsystem_p.h"
 
 // https://forgetsou.github.io/2020/11/06/macos%E5%BC%80%E5%8F%91-%E5%85%B3%E9%97%AD-%E6%9C%80%E5%B0%8F%E5%8C%96-%E5%85%A8%E5%B1%8F%E5%B1%85%E4%B8%AD%E5%A4%84%E7%90%86(%E4%BB%BFMac%20QQ)/
 // https://nyrra33.com/2019/03/26/changing-titlebars-height/
