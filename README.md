@@ -80,8 +80,10 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 - [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)
 - [Qt 编程风格与规范](https://blog.csdn.net/qq_35488967/article/details/70055490)
 - 源文件全英文的采用 UTF-8 编码，包含中文的采用 UTF-8 with BOM 编码
+- **代码中的注释一律使用英文**（文档、README 等 `.md` 不拘）
 - 代码格式化：随仓库提供 [`.clang-format`](./.clang-format)，C++ 标准 C++17
 - 代码 git 提交格式（**自 3.0 起**）：采用 `type(scope): subject` 形式，以区分早期提交格式
+    - 提交信息一律使用**英文**（subject 与正文）
     - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
     - `scope`：受影响范围，如 `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qcanpool` / `project` / `ci` / `test` / `docs`
     - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
