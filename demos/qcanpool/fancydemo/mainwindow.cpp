@@ -55,14 +55,14 @@ void MainWindow::createWindow()
 void MainWindow::createCentralWidget()
 {
     FancyTabBar *tabBar = m_pTabWidget->tabBar();
-    connect(tabBar, &FancyTabBar::orientationChanged, this, [tabBar](Qt::Orientation o){
-        QList<FancyToolButton*> buttons = tabBar->findChildren<FancyToolButton*>();
+    connect(tabBar, &FancyTabBar::orientationChanged, this, [tabBar](Qt::Orientation o) {
+        QList<FancyToolButton *> buttons = tabBar->findChildren<FancyToolButton *>();
         foreach (FancyToolButton *button, buttons) {
             button->setMenuArrowType(o == Qt::Horizontal ? Qt::DownArrow : Qt::RightArrow);
         }
     });
-    connect(m_pTabWidget, &FancyTabWidget::tabPositionChanged, this, [&](FancyTabWidget::TabPosition p){
-        QList<FancyToolButton*> buttons = m_pTabWidget->findChildren<FancyToolButton*>();
+    connect(m_pTabWidget, &FancyTabWidget::tabPositionChanged, this, [&](FancyTabWidget::TabPosition p) {
+        QList<FancyToolButton *> buttons = m_pTabWidget->findChildren<FancyToolButton *>();
         foreach (FancyToolButton *button, buttons) {
             button->setForceDefaultShowMenu(p == FancyTabWidget::East);
         }
@@ -96,8 +96,8 @@ void MainWindow::createCentralWidget()
     tabBar->addActionButton(button, FancyTabBar::Middle);
 
     button = new FancyToolButton();
-    button->setToolButtonStyle(Qt::ToolButtonIconOnly);     // Also set to RightMenuArea
-    button->setMenuArea(FancyToolButton::RightMenuArea);    // No need
+    button->setToolButtonStyle(Qt::ToolButtonIconOnly);    // Also set to RightMenuArea
+    button->setMenuArea(FancyToolButton::RightMenuArea);   // No need
     button->setMenuArrowType(Qt::RightArrow);
     action = new QAction(QIcon(":/main/logo"), tr("testMenu"));
     menu = new QMenu(this);
@@ -123,8 +123,7 @@ void MainWindow::createCentralWidget()
 
 void MainWindow::createQuickAccessBar()
 {
-    if (QuickAccessBar *quickAccessBar = fancyBar()->quickAccessBar())
-    {
+    if (QuickAccessBar *quickAccessBar = fancyBar()->quickAccessBar()) {
         QAction *action = quickAccessBar->actionCustomizeButton();
         action->setToolTip(tr("Customize Quick Access Bar"));
 
@@ -167,8 +166,7 @@ void MainWindow::createQuickAccessBar()
 
 void MainWindow::createMenuBar()
 {
-    if (QMenuBar *menuBar = fancyBar()->menuBar())
-    {
+    if (QMenuBar *menuBar = fancyBar()->menuBar()) {
         QAction *action = new QAction(tr("action1"), this);
         QMenu *menu = menuBar->addMenu(tr("&File"));
         menu->addAction(action);

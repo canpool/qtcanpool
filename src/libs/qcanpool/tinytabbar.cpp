@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "tinytabbar.h"
 #include "tinytabbar_p.h"
 
@@ -15,7 +15,6 @@
 
 QCANPOOL_BEGIN_NAMESPACE
 
-
 TinyTabBarPrivate::TinyTabBarPrivate()
     : m_currentIndex(-1)
     , m_togglable(true)
@@ -27,7 +26,6 @@ TinyTabBarPrivate::TinyTabBarPrivate()
 
 TinyTabBarPrivate::~TinyTabBarPrivate()
 {
-
 }
 
 void TinyTabBarPrivate::init()
@@ -64,7 +62,8 @@ void TinyTabBarPrivate::layoutActions()
         int w = 0;
         foreach (QAction *act, m_tabs) {
             int aw = q->widgetForAction(act)->sizeHint().width();
-            if (w < aw) w = aw;
+            if (w < aw)
+                w = aw;
         }
         foreach (QAction *act, m_tabs) {
             q->widgetForAction(act)->setFixedWidth(w);

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowcontext_p.h"
 #include "windowkit_p.h"
 #include "windowsystem_p.h"
@@ -103,7 +103,9 @@ private:
 };
 
 QtWindowEventFilter::QtWindowEventFilter(WindowContext *context)
-    : m_context(context), m_cursorShapeChanged(false), m_windowStatus(Idle)
+    : m_context(context)
+    , m_cursorShapeChanged(false)
+    , m_windowStatus(Idle)
 {
     m_context->installSharedEventFilter(this);
 }
@@ -251,7 +253,8 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-WindowContextQt::WindowContextQt() : WindowContext()
+WindowContextQt::WindowContextQt()
+    : WindowContext()
 {
     qtWindowEventFilter = std::make_unique<QtWindowEventFilter>(this);
 }

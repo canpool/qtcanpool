@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -45,7 +45,6 @@ private Q_SLOTS:
     void onFocusedDockAreaViewToggled(bool open);
     void onDockWidgetVisibilityChanged(bool visible);
     void onStateRestored();
-
 private:
     QX_DECLARE_PRIVATE(DockFocusController)
 };

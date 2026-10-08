@@ -14,11 +14,9 @@ QCANPOOL_END_NAMESPACE
 class MainWindow : public FancyWindow
 {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 public:
     void createWindow();
     void createQuickAccessBar();
@@ -26,7 +24,6 @@ public:
     void createSystemMenu();
     void createCentralWidget();
     void createStatusBar();
-
 private:
     void addThemeStyleItem(QActionGroup *group, QAction *action, const QString &qss);
     void setThemeStyle(const QString &style);
@@ -41,12 +38,10 @@ private slots:
     void slotChangeThemeStyle();
     void slotChangeWindowStyle();
     void slotSetTabPosition();
-
 protected:
     virtual void closeEvent(QCloseEvent *event);
-
 private:
     FancyTabWidget *m_pTabWidget;
     QString m_themeStyle;
 };
-#endif // MAINWINDOW_H
+#endif   // MAINWINDOW_H

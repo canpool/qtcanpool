@@ -32,10 +32,7 @@ ExtensionButton::ExtensionButton(QWidget *parent)
     setPopupMode(QToolButton::InstantPopup);
 }
 
-ExtensionButton::~ExtensionButton()
-{
-    QCP_FINI_PRIVATE()
-}
+ExtensionButton::~ExtensionButton(){QCP_FINI_PRIVATE()}
 
 QSize ExtensionButton::sizeHint() const
 {

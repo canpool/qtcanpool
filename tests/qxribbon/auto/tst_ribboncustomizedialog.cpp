@@ -51,7 +51,7 @@ void tst_RibbonCustomizeDialog::actionsManager()
     bool isOk = dlg.toXml(&xml);
     xml.writeEndDocument();
 
-    QCOMPARE(isOk, false);  // dialog can not customize widget
+    QCOMPARE(isOk, false);   // dialog can not customize widget
 }
 
 void tst_RibbonCustomizeDialog::page()
@@ -79,7 +79,7 @@ void tst_RibbonCustomizeDialog::page()
     bool isOk = dlg.toXml(&xml);
     xml.writeEndDocument();
 
-    QCOMPARE(isOk, false);  // dialog can not customize widget
+    QCOMPARE(isOk, false);   // dialog can not customize widget
 }
 
 TEST_ADD(tst_RibbonCustomizeDialog)

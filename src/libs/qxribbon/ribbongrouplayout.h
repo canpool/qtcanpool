@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -18,7 +18,8 @@ class RibbonGroupLayoutPrivate;
  * @brief 是对 group 所有子窗口的抽象，参考 qt 的 toolbar
  *
  * 参考 qt 的 toolbar，group 所有子窗口内容都通过 QAction 进行抽象，包括 gallery 这些窗口，也是通过 QAction 进行抽象
- * QAction 最终会转换为 RibbonGroupItem，每个 RibbonGroupItem 都含有一个 widget，RibbonGroup 的布局就基于 RibbonGroupItem
+ * QAction 最终会转换为 RibbonGroupItem，每个 RibbonGroupItem 都含有一个 widget，RibbonGroup 的布局就基于
+ * RibbonGroupItem
  *
  * 无窗口的 action 会在内部生成一个 RibbonButton
  */
@@ -28,13 +29,14 @@ public:
     RibbonGroupItem(QWidget *widget);
     bool isEmpty() const Q_DECL_OVERRIDE;
 
-    short rowIndex;             ///< 记录当前item属于第几行，hide模式下为-1
-    int columnIndex;            ///< 记录当前item属于第几列，hide模式下为-1
-    QRect willGeometry;         ///< 在调用RibbonGroupLayout::updateGeomArray会更新该成员，
-                                ///< 实际设置的时候会传给QWidgetItem::setGeometry设置Geometry
-    QAction *action;            ///< 记录action，参考QToolBarLayoutItem
-    bool customWidget;          ///< 对于没有窗口的action，实际也会有一个RibbonButton，在销毁时要delete掉
-    RibbonGroup::RowProportion rowProportion; ///< 行的占比，ribbon中有large，medium和small三种占比,见@ref RowProportion
+    short rowIndex;       ///< 记录当前item属于第几行，hide模式下为-1
+    int columnIndex;      ///< 记录当前item属于第几列，hide模式下为-1
+    QRect willGeometry;   ///< 在调用RibbonGroupLayout::updateGeomArray会更新该成员，
+                          ///< 实际设置的时候会传给QWidgetItem::setGeometry设置Geometry
+    QAction *action;      ///< 记录action，参考QToolBarLayoutItem
+    bool customWidget;    ///< 对于没有窗口的action，实际也会有一个RibbonButton，在销毁时要delete掉
+    RibbonGroup::RowProportion
+        rowProportion;   ///< 行的占比，ribbon中有large，medium和small三种占比,见@ref RowProportion
 };
 
 /**
@@ -55,7 +57,7 @@ public:
 
     virtual int indexOf(QAction *action) const;
 
-    void addItem(QLayoutItem *item) Q_DECL_OVERRIDE; // useless
+    void addItem(QLayoutItem *item) Q_DECL_OVERRIDE;   // useless
 
     void insertAction(int index, QAction *act, RibbonGroup::RowProportion rp = RibbonGroup::Auto);
 

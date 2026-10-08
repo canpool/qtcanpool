@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonpagecontext.h"
 
 #include <QDebug>
@@ -28,17 +28,12 @@ public:
 };
 
 RibbonPageContext::RibbonPageContext(QWidget *parent)
-    : QObject(parent)
-{
-    QX_INIT_PRIVATE(RibbonPageContext)
-}
+    : QObject(parent){QX_INIT_PRIVATE(RibbonPageContext)}
 
-RibbonPageContext::~RibbonPageContext()
-{
-    QX_FINI_PRIVATE()
-}
+    RibbonPageContext::~RibbonPageContext(){QX_FINI_PRIVATE()}
 
-RibbonPage *RibbonPageContext::addPage(const QString &title)
+    RibbonPage
+    * RibbonPageContext::addPage(const QString &title)
 {
     Q_D(RibbonPageContext);
     RibbonPageData pageData;

@@ -98,7 +98,7 @@ void tst_DockContainer::zOrder()
     DockPanel *p2 = c2.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
 
     QCOMPARE(p1->dockContainer(), &c1);
-    QCOMPARE(p2->dockContainer(), &c1); // not c2 ??
+    QCOMPARE(p2->dockContainer(), &c1);   // not c2 ??
 
     c2.setVisible(true);
     QCOMPARE(c2.zOrderIndex(), 1);

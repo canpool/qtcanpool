@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "fancydialog.h"
 #include "fancybar.h"
 #include "fancytitlebar.h"
@@ -28,16 +28,14 @@ FancyDialogPrivate::FancyDialogPrivate()
 }
 
 FancyDialog::FancyDialog(QWidget *parent, Qt::WindowFlags f)
-    : QDialog(parent), d(new FancyDialogPrivate())
+    : QDialog(parent)
+    , d(new FancyDialogPrivate())
 {
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QLatin1String("qtc_dialog"));
     // When using the native title bar, it needs to be set before creating the title bar
-    QDialog::setWindowFlags(Qt::WindowSystemMenuHint |
-                   Qt::WindowMinimizeButtonHint |
-                   Qt::FramelessWindowHint |
-                   Qt::Dialog |
-                   f);
+    QDialog::setWindowFlags(Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint | Qt::FramelessWindowHint |
+                            Qt::Dialog | f);
 
     d->fancyBar = new FancyBar(this);
     d->fancyBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);

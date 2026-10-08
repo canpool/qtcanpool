@@ -30,10 +30,8 @@ public:
 
     Orientation buttonOrientation() const;
     void setButtonOrientation(Orientation orientation);
-
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
-
 private:
     QX_DECLARE_PRIVATE(DockButton)
 };

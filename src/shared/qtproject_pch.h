@@ -18,9 +18,9 @@
 #include <QtGlobal>
 
 #ifdef Q_WS_WIN
-# define _POSIX_
-# include <limits.h>
-# undef _POSIX_
+#define _POSIX_
+#include <limits.h>
+#undef _POSIX_
 #endif
 
 #include <QCoreApplication>
@@ -45,4 +45,4 @@
 #include <stdlib.h>
 #endif
 
-#endif // QTPROJECT_PCH_H
+#endif   // QTPROJECT_PCH_H

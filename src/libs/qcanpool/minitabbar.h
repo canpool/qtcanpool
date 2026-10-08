@@ -15,7 +15,6 @@ class QCANPOOL_SHARED_EXPORT MiniTabBar : public QTabBar
 public:
     explicit MiniTabBar(QWidget *parent = nullptr);
     ~MiniTabBar();
-
 protected:
     virtual QSize tabSizeHint(int index) const;
     virtual void paintEvent(QPaintEvent *event) override;

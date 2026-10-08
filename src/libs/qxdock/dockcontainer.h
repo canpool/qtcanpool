@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -73,20 +73,19 @@ Q_SIGNALS:
     void dockAreasRemoved();
     void autoHideWidgetCreated(DockAutoHideContainer *autoHideWidget);
     void dockAreaViewToggled(DockPanel *panel, bool open);
-
 protected:
     DockSplitter *rootSplitter() const;
     void createRootSplitter();
     void addDockPanel(DockPanel *panel, Qx::DockWidgetArea area = Qx::CenterDockWidgetArea);
     void removeDockPanel(DockPanel *panel);
-    QList<QPointer<DockPanel> > removeAllDockPanels();
+    QList<QPointer<DockPanel>> removeAllDockPanels();
     DockWidget *topLevelDockWidget() const;
     DockPanel *topLevelDockPanel() const;
     DockPanel *lastAddedDockPanel(Qx::DockWidgetArea area) const;
     QList<DockWidget *> dockWidgets() const;
     void updateSplitterHandles(QSplitter *splitter);
     void dropFloatingWidget(DockFloatingContainer *floatingWidget, const QPoint &targetPos);
-    void dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, DockPanel* targetPanel, int tabIndex = -1);
+    void dropWidget(QWidget *widget, Qx::DockWidgetArea dropArea, DockPanel *targetPanel, int tabIndex = -1);
 
     void createSideTabBarWidgets();
     DockAutoHideContainer *createAndSetupAutoHideContainer(Qx::DockSideBarArea area, DockWidget *w, int tabIndex = -1);
@@ -96,10 +95,8 @@ protected:
 
     void saveState(QXmlStreamWriter &s) const;
     bool restoreState(DockStateReader &s, bool testing);
-
 protected:
     virtual bool event(QEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockContainer)
     friend class DockPanel;

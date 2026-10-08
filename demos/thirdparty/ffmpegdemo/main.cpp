@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    qDebug() <<  avcodec_configuration();
+    qDebug() << avcodec_configuration();
     unsigned int version = avcodec_version();
     qDebug() << "version:" << version;
 

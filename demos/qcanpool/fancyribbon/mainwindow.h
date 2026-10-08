@@ -10,11 +10,9 @@ QCANPOOL_USE_NAMESPACE
 class MainWindow : public RibbonWindow
 {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 private:
     QToolButton *createToolButton(const QIcon &icon, const QString &text);
 
@@ -23,4 +21,4 @@ private slots:
     void slotSetFrameless(bool frameless);
 };
 
-#endif // MAINWINDOW_H
+#endif   // MAINWINDOW_H

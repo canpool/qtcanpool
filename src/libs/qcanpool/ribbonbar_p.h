@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONBAR_P_H
 #define RIBBONBAR_P_H
 
@@ -36,14 +36,11 @@ public:
 Q_SIGNALS:
     void aboutToShow();
     void aboutToHide();
-
 protected:
     virtual bool event(QEvent *event);
-
 private:
     bool m_isPopup;
 };
-
 
 /* RibbonBarPrivate */
 class RibbonBarPrivate : public QObject
@@ -57,7 +54,9 @@ public:
     void setRibbonStyle(RibbonBar::RibbonStyle style);
 
     inline bool validateIndex(int index) const
-    { return index >= 0 && index < m_listPages.count(); }
+    {
+        return index >= 0 && index < m_listPages.count();
+    }
 
     void insertPage(int index, RibbonPage *page);
     void removePage(int index);
@@ -75,23 +74,22 @@ public Q_SLOTS:
     void slotTabBarClicked(int index);
     void slotTabBarDoubleClicked(int index);
     void slotPagePopupHide();
-
 public:
-    RibbonBar               *q;
-    FancyTitleBar           *m_titleBar;
-    QWidget                 *m_titleWidget;
-    QTabBar                 *m_tabBar;
-    QuickAccessBar          *m_quickAccessBar;
-    RibbonStackedWidget     *m_stack;
-    QToolBar                *m_baseToolBar;
-    QToolBar                *m_topToolBar;
-    QToolBar                *m_bottomToolBar;
-    QHBoxLayout             *m_topLayout;
-    QHBoxLayout             *m_bottomLayout;
-    QVBoxLayout             *m_mainLayout;
-    QWidget                 *m_mainWidget;
-    QAction                 *m_minimizeAction;
-    QToolButton             *m_minimizeButton;
+    RibbonBar *q;
+    FancyTitleBar *m_titleBar;
+    QWidget *m_titleWidget;
+    QTabBar *m_tabBar;
+    QuickAccessBar *m_quickAccessBar;
+    RibbonStackedWidget *m_stack;
+    QToolBar *m_baseToolBar;
+    QToolBar *m_topToolBar;
+    QToolBar *m_bottomToolBar;
+    QHBoxLayout *m_topLayout;
+    QHBoxLayout *m_bottomLayout;
+    QVBoxLayout *m_mainLayout;
+    QWidget *m_mainWidget;
+    QAction *m_minimizeAction;
+    QToolButton *m_minimizeButton;
 
     QIcon m_normalIcon;
     QIcon m_minimizeIcon;
@@ -105,4 +103,4 @@ public:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONBAR_P_H
+#endif   // RIBBONBAR_P_H

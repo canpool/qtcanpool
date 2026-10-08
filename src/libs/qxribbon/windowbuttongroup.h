@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -37,7 +37,6 @@ Q_SIGNALS:
     void buttonMinimizeClicked();
     void buttonMaximzieClicked();
     void buttonCloseClicked();
-
 private:
     QX_DECLARE_PRIVATE(WindowButtonGroup)
 };

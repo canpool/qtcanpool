@@ -1,6 +1,6 @@
 #include <QtTest/QtTest>
 
-class tst_QString: public QObject
+class tst_QString : public QObject
 {
     Q_OBJECT
 

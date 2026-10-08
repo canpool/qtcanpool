@@ -35,19 +35,18 @@ public:
 
     void drawButton(QStyleOptionToolButton &opt, QPainter &p, const QWidget *w);
     void drawIconAndLabel(QStyleOptionToolButton &opt, QPainter &p, const QWidget *w);
-    void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton, const QRect &rect,
-                   QPainter *painter, const QWidget *widget = Q_NULLPTR);
-
+    void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton, const QRect &rect, QPainter *painter,
+                   const QWidget *widget = Q_NULLPTR);
 public:
     RibbonButton::RibbonButtonType m_buttonType;
     RibbonButton::LargeButtonType m_largeButtonType;
     bool m_mouseOnSubControl;   ///< 这个用于标记MenuButtonPopup模式下，鼠标在文本区域
     bool m_menuButtonPressed;
-    bool m_isWordWrap;          ///< 标记是否文字换行 @default false
-    int m_spacing;     ///< 按钮和边框的距离
-    QSize m_sizeHint;           ///< 保存计算好的sizehint
-    QRect m_iconRect;           ///< 记录icon的绘制位置
-    QRect m_textRect;           ///< 记录text的绘制位置
+    bool m_isWordWrap;            ///< 标记是否文字换行 @default false
+    int m_spacing;                ///< 按钮和边框的距离
+    QSize m_sizeHint;             ///< 保存计算好的sizehint
+    QRect m_iconRect;             ///< 记录icon的绘制位置
+    QRect m_textRect;             ///< 记录text的绘制位置
     QRect m_indicatorArrowRect;   ///< 记录IndicatorArrow的绘制位置
 
     static bool s_isToolButtonTextShift;   ///< 配置RibbonButton文字在点击时是否会轻微改变位置而达到一种类似跳动的效果

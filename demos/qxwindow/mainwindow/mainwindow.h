@@ -9,7 +9,8 @@ class WindowAgentWidget;
 class WindowStyleAgent;
 QX_WINDOW_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -23,17 +24,15 @@ public:
 
 Q_SIGNALS:
     void themeChanged();
-
 protected:
     bool event(QEvent *event) override;
-
 private:
     void installWindowAgent();
     void loadStyleSheet(Theme theme);
 
     Theme currentTheme{};
 
-    QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *windowAgent;
+    QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) * windowAgent;
 };
 
-#endif // MAINWINDOW_H
+#endif   // MAINWINDOW_H

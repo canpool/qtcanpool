@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #ifndef WINDOWSYSTEM_P_H
 #define WINDOWSYSTEM_P_H
 
@@ -26,8 +26,10 @@ class WindowMoveManipulator : public QObject
 {
 public:
     explicit WindowMoveManipulator(QWindow *targetWindow)
-        : QObject(targetWindow), target(targetWindow), initialMousePosition(QCursor::pos()),
-          initialWindowPosition(targetWindow->position())
+        : QObject(targetWindow)
+        , target(targetWindow)
+        , initialMousePosition(QCursor::pos())
+        , initialWindowPosition(targetWindow->position())
     {
         target->installEventFilter(this);
     }
@@ -71,8 +73,11 @@ class WindowResizeManipulator : public QObject
 {
 public:
     WindowResizeManipulator(QWindow *targetWindow, Qt::Edges edges)
-        : QObject(targetWindow), target(targetWindow), initialMousePosition(QCursor::pos()),
-          initialWindowRect(target->geometry()), resizeEdges(edges)
+        : QObject(targetWindow)
+        , target(targetWindow)
+        , initialMousePosition(QCursor::pos())
+        , initialWindowRect(target->geometry())
+        , resizeEdges(edges)
     {
         target->installEventFilter(this);
     }

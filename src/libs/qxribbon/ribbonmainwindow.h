@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"

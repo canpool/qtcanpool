@@ -16,8 +16,7 @@
 
 QX_RIBBON_USE_NAMESPACE
 
-struct colorPreviewRect
-{
+struct colorPreviewRect {
     QColor clr;
     QString caption;
 };
@@ -74,32 +73,30 @@ MainWindow::MainWindow(QWidget *parent)
     container = new RibbonGridContainer(this);
     container->setColumnCount(10);
 
-    QList<colorPreviewRect> standardColors({
-        {QColor(192, 0,   0),   QObject::tr("Dark Red")},
-        {QColor(255, 0,   0),   QObject::tr("Red")},
-        {QColor(255, 192, 0),   QObject::tr("Orange")},
-        {QColor(255, 255, 0),   QObject::tr("Yellow")},
-        {QColor(146, 208, 80),  QObject::tr("Light Green")},
-        {QColor(0,   176, 80),  QObject::tr("Green")},
-        {QColor(0,   176, 240), QObject::tr("Light Blue")},
-        {QColor(0,   112, 192), QObject::tr("Blue")},
-        {QColor(0,   32,  96),  QObject::tr("Dark Blue")},
-        {QColor(112, 48,  160), QObject::tr("Purple")}
-    });
+    QList<colorPreviewRect> standardColors({{QColor(192, 0, 0), QObject::tr("Dark Red")},
+                                            {QColor(255, 0, 0), QObject::tr("Red")},
+                                            {QColor(255, 192, 0), QObject::tr("Orange")},
+                                            {QColor(255, 255, 0), QObject::tr("Yellow")},
+                                            {QColor(146, 208, 80), QObject::tr("Light Green")},
+                                            {QColor(0, 176, 80), QObject::tr("Green")},
+                                            {QColor(0, 176, 240), QObject::tr("Light Blue")},
+                                            {QColor(0, 112, 192), QObject::tr("Blue")},
+                                            {QColor(0, 32, 96), QObject::tr("Dark Blue")},
+                                            {QColor(112, 48, 160), QObject::tr("Purple")}});
     for (colorPreviewRect c : standardColors) {
         ColorButton *cb = createColorButton(c.clr, c.caption);
         container->addButton(cb);
         connect(cb, &ColorButton::colorClicked, this, [rcb](const QColor &color, bool) {
-           rcb->setColor(color);
+            rcb->setColor(color);
         });
     }
-    QList<int> factors {180, 160, 140, 75, 50};
+    QList<int> factors{180, 160, 140, 75, 50};
     for (int factor : factors) {
         for (colorPreviewRect c : standardColors) {
             ColorButton *cb = createColorButton(c.clr.lighter(factor), c.caption);
             container->addButton(cb);
             connect(cb, &ColorButton::colorClicked, this, [rcb](const QColor &color, bool) {
-               rcb->setColor(color);
+                rcb->setColor(color);
             });
         }
     }
@@ -113,7 +110,6 @@ MainWindow::MainWindow(QWidget *parent)
             rcb->setColor(dlg.selectedColor());
         }
     });
-
 
     page = rb->addPage(tr("loooooooooooongpage2"));
 

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYTITLEBAR_P_H
 #define FANCYTITLEBAR_P_H
 
@@ -30,8 +30,8 @@
 #define QTRESULT qintptr
 #else
 #define QTRESULT long
-#endif // QTRESULT
-#endif // QTC_USE_NATIVE
+#endif   // QTRESULT
+#endif   // QTC_USE_NATIVE
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -43,7 +43,6 @@ public:
 
     void reset();
     void update(const QPoint &gMousePos, const QRect &frameRect);
-
 public:
     bool m_bOnEdges;
     bool m_bOnLeftEdge;
@@ -68,7 +67,6 @@ public:
     QRect screenRect(const int current);
 
     static QRect normalRect();
-
 private:
     QList<QRect> m_screenRects;
 };
@@ -93,7 +91,6 @@ public:
     void updateWindowButtons();
 
     bool isCaptionClassName(const char *name);
-
 public:
     // window
     bool windowTitleChange(QObject *obj);
@@ -107,37 +104,36 @@ public:
 
 public Q_SLOTS:
     virtual void systemButtonClicked();
-
 public:
-    FancyTitleBar   *q;
-    QWidget         *m_mainWidget;
-    QWidget         *m_titleWidget;
+    FancyTitleBar *q;
+    QWidget *m_mainWidget;
+    QWidget *m_titleWidget;
 
     // title widget
-    QToolButton     *m_logoButton;
-    QLabel          *m_titleLabel;
-    QToolBar        *m_toolBar;
-    QAction         *m_minimizeAction;
-    QAction         *m_maximizeAction;
-    QAction         *m_closeAction;
-    QToolButton     *m_maximizeButton;
+    QToolButton *m_logoButton;
+    QLabel *m_titleLabel;
+    QToolBar *m_toolBar;
+    QAction *m_minimizeAction;
+    QAction *m_maximizeAction;
+    QAction *m_closeAction;
+    QToolButton *m_maximizeButton;
 
-    QIcon           m_maximizeIcon;
-    QIcon           m_normalIcon;
+    QIcon m_maximizeIcon;
+    QIcon m_normalIcon;
 
-    QString         m_maximizeTip;
-    QString         m_normalTip;
+    QString m_maximizeTip;
+    QString m_normalTip;
 
     // main window
     Qt::WindowFlags m_windowFlags;
-    bool            m_isMaximized;
-    bool            m_isMinimized;
-    bool            m_isDisabled;
-    bool            m_bWidgetMaximizable;
-    bool            m_bWidgetResizable;
-    bool            m_bWidgetMovable;
-    QRect           m_normalRect;
-    int             m_currentScreen;
+    bool m_isMaximized;
+    bool m_isMinimized;
+    bool m_isDisabled;
+    bool m_bWidgetMaximizable;
+    bool m_bWidgetResizable;
+    bool m_bWidgetMovable;
+    QRect m_normalRect;
+    int m_currentScreen;
 
     QList<QString> m_captionClassNameList;
 };
@@ -155,7 +151,6 @@ public:
 
     // mouse event
     bool handleWidgetMouseEvent(QObject *obj, QEvent *event);
-
 private:
     // mouse event
     bool handleMousePressEvent(QMouseEvent *event);
@@ -173,19 +168,17 @@ private:
 
     QPoint windowStartPos(QWidget *pWindow, QMouseEvent *event) const;
     QRect validDragRect();
-
 protected:
     virtual bool eventFilter(QObject *object, QEvent *event) override;
-
 public:
     // main window
-    FancyCursor     m_pressCursor;
-    FancyCursor     m_moveCursor;
-    bool            m_bLeftButtonPressed;
-    bool            m_bLeftButtonTitlePressed;
-    bool            m_bCursorShapeChanged;
+    FancyCursor m_pressCursor;
+    FancyCursor m_moveCursor;
+    bool m_bLeftButtonPressed;
+    bool m_bLeftButtonTitlePressed;
+    bool m_bCursorShapeChanged;
 
-    QPoint          m_movePoint;
+    QPoint m_movePoint;
 };
 
 #ifdef QTC_USE_NATIVE
@@ -206,16 +199,14 @@ public:
 
 public Q_SLOTS:
     void systemButtonClicked() override;
-
 public:
     virtual bool nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result) override;
-
 private:
     void installNativeEventFilter();
 };
 
-#endif // QTC_USE_NATIVE
+#endif   // QTC_USE_NATIVE
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYTITLEBAR_P_H
+#endif   // FANCYTITLEBAR_P_H

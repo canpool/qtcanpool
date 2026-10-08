@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowcontext_p.h"
 #include "windowkit_p.h"
 #include <QtGui/QPainter>
@@ -11,13 +11,15 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-namespace {
+namespace
+{
 
 class WinIdChangeEventFilter : public QObject
 {
 public:
     explicit WinIdChangeEventFilter(QObject *widget, WindowContext *ctx, QObject *parent = nullptr)
-        : QObject(parent), ctx(ctx)
+        : QObject(parent)
+        , ctx(ctx)
     {
         widget->installEventFilter(this);
     }
@@ -38,7 +40,9 @@ class WindowEventFilter : public QObject
 {
 public:
     explicit WindowEventFilter(QWindow *window, WindowContext *ctx, QObject *parent = nullptr)
-        : QObject(parent), ctx(ctx), window(window)
+        : QObject(parent)
+        , ctx(ctx)
+        , window(window)
     {
         window->installEventFilter(this);
     }
@@ -333,8 +337,7 @@ bool WindowContext::setWindowAttribute(const QString &key, const QVariant &attri
     return true;
 }
 
-bool WindowContext::windowAttributeChanged(const QString &key, const QVariant &attribute,
-                                                   const QVariant &oldAttribute)
+bool WindowContext::windowAttributeChanged(const QString &key, const QVariant &attribute, const QVariant &oldAttribute)
 {
     Q_UNUSED(key);
     Q_UNUSED(attribute);

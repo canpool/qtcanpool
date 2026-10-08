@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONBAR_H
 #define RIBBONBAR_H
 
@@ -30,11 +30,9 @@ public:
         ToolBarTopPosition,
         ToolBarBottomPosition,
     };
-
 public:
     explicit RibbonBar(QWidget *parent = nullptr);
     ~RibbonBar();
-
 public:
     RibbonPage *addPage(const QString &text);
     RibbonPage *addPage(const QIcon &icon, const QString &text);
@@ -64,14 +62,12 @@ public:
     FancyTitleBar *titleBar() const;
 
     void updateParentFlags();
-
 protected:
     virtual bool eventFilter(QObject *object, QEvent *event);
-
 private:
     RibbonBarPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONBAR_H
+#endif   // RIBBONBAR_H

@@ -23,7 +23,6 @@ public:
 
 public Q_SLOTS:
     void setOrientation(Qt::Orientation o);
-
 protected:
     void paintEvent(QPaintEvent *) override;
     bool event(QEvent *event) override;
@@ -33,4 +32,4 @@ private:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // EXTENSIONBUTTON_H
+#endif   // EXTENSIONBUTTON_H

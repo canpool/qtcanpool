@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #ifndef WINDOWEVENT_H
 #define WINDOWEVENT_H
 
@@ -61,7 +61,6 @@ public:
     AppNativeEventFilter();
     ~AppNativeEventFilter() override;
 };
-
 
 class WindowSharedEventFilter;
 

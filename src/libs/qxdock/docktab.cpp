@@ -662,7 +662,7 @@ void DockTab::contextMenuEvent(QContextMenuEvent *e)
 
     const bool isFloatable = d->m_dockWidget->features().testFlag(DockWidget::DockWidgetFloatable);
     const bool isNotOnlyTabInContainer = !d->m_panel->dockContainer()->hasTopLevelDockWidget();
-    const bool isTopLevelArea = d->m_panel->isTopLevelArea(); // It is the only panel that opens in the container
+    const bool isTopLevelArea = d->m_panel->isTopLevelArea();   // It is the only panel that opens in the container
     const bool isDetachable = isFloatable && isNotOnlyTabInContainer;
     QAction *action;
     QMenu menu(this);

@@ -149,7 +149,7 @@ void tst_RibbonPage::clear()
 
     p2->clearGroups();
 
-    QCOMPARE(g3->groupName(), tr("group3")); // g3 deleteLater
+    QCOMPARE(g3->groupName(), tr("group3"));   // g3 deleteLater
     QCOMPARE(g4->groupName(), QString());
 
     rb.clearPages();

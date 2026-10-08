@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -23,8 +23,8 @@ public:
      * Starts floating.
      * This function should get called typically from a mouse press event handler
      */
-    virtual void startFloating(const QPoint &dragStartMousePos, const QSize &size,
-        Qx::DockDragState dragState, QWidget *mouseEventHandler) = 0;
+    virtual void startFloating(const QPoint &dragStartMousePos, const QSize &size, Qx::DockDragState dragState,
+                               QWidget *mouseEventHandler) = 0;
 
     /**
      * Moves the widget to a new position relative to the position given when

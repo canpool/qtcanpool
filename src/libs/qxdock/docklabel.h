@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -24,7 +24,6 @@ public:
     void setElideMode(Qt::TextElideMode mode);
 
     bool isElided() const;
-
 public:
     virtual QSize minimumSizeHint() const override;
     virtual QSize sizeHint() const override;
@@ -35,12 +34,10 @@ Q_SIGNALS:
     void clicked();
     void doubleClicked();
     void elidedChanged(bool elided);
-
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void resizeEvent(QResizeEvent *e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockLabel)
 };

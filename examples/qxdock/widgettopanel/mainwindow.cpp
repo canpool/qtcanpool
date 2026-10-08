@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
      *      |          p6(dw6)          |
      *      -----------------------------
      */
-    DockPanel *p1 = wd->addDockWidget(Qx::NoDockWidgetArea, dw1);       // same as TopDockWidgetArea
+    DockPanel *p1 = wd->addDockWidget(Qx::NoDockWidgetArea, dw1);   // same as TopDockWidgetArea
     DockPanel *p2 = wd->addDockWidget(Qx::LeftDockWidgetArea, dw2);
     DockPanel *p3 = wd->addDockWidget(Qx::RightDockWidgetArea, dw3);
     DockPanel *p4 = wd->addDockWidget(Qx::TopDockWidgetArea, dw4);

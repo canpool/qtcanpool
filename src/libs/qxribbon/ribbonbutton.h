@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -28,8 +28,9 @@ public:
     Q_ENUM(RibbonButtonType)
 
     enum LargeButtonType {
-        Normal, ///< icon占大按钮的一半区域, 箭头在按钮最下方，文字可以换一行，对应于office的菜单按钮，下箭头在按钮最下方(默认)
-        Lite    ///< icon占大按钮的60%，文字占40%，且文字不换行，对应于wps模式的菜单按钮，下箭头在文字旁边
+        Normal,   ///< icon占大按钮的一半区域,
+                  ///< 箭头在按钮最下方，文字可以换一行，对应于office的菜单按钮，下箭头在按钮最下方(默认)
+        Lite      ///< icon占大按钮的60%，文字占40%，且文字不换行，对应于wps模式的菜单按钮，下箭头在文字旁边
     };
 public:
     explicit RibbonButton(QWidget *parent = Q_NULLPTR);

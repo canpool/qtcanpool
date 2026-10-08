@@ -74,7 +74,7 @@ void tst_DockWindow::addDockWidget_other()
     QCOMPARE(window.dockWidgetsMap().value("Label 1"), w);
 
     DockPanel *topPanel = window.addDockWidget(Qx::TopDockWidgetArea, w2, centerPanel);
-    QCOMPARE(centerPanel_3->dockWidgetsCount(), 0); // w2 was removed from centerPanel_3
+    QCOMPARE(centerPanel_3->dockWidgetsCount(), 0);   // w2 was removed from centerPanel_3
     QVERIFY(topPanel != centerPanel);
     QVERIFY(topPanel != centerPanel_3);
     QCOMPARE(topPanel->currentDockWidget(), w2);
@@ -87,12 +87,12 @@ void tst_DockWindow::addDockWidget()
         DockWindow wd;
 
         int i = 0;
-        connect(&wd, &DockWindow::dockWidgetAdded, this, [&i](DockWidget*){
+        connect(&wd, &DockWindow::dockWidgetAdded, this, [&i](DockWidget *) {
             ++i;
         });
 
         int j = 0;
-        connect(&wd, &DockWindow::dockAreasAdded, this, [&j](){
+        connect(&wd, &DockWindow::dockAreasAdded, this, [&j]() {
             // dock panel added
             ++j;
         });
@@ -105,13 +105,13 @@ void tst_DockWindow::addDockWidget()
         DockWidget *dw6 = new DockWidget("dw6");
         DockWidget *dw7 = new DockWidget("dw7");
 
-        DockPanel *p1 = wd.addDockWidget(Qx::NoDockWidgetArea, dw1);    // same as TopDockWidgetArea
+        DockPanel *p1 = wd.addDockWidget(Qx::NoDockWidgetArea, dw1);   // same as TopDockWidgetArea
         DockPanel *p2 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw2);
         DockPanel *p3 = wd.addDockWidget(Qx::RightDockWidgetArea, dw3);
         DockPanel *p4 = wd.addDockWidget(Qx::TopDockWidgetArea, dw4);
         DockPanel *p5 = wd.addDockWidget(Qx::BottomDockWidgetArea, dw5);
         DockPanel *p6 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw6);
-        DockPanel *p7 = wd.addDockWidget(Qx::LeftAutoHideArea, dw7);    // same as TopDockWidgetArea
+        DockPanel *p7 = wd.addDockWidget(Qx::LeftAutoHideArea, dw7);   // same as TopDockWidgetArea
 
         QCOMPARE(dw1->dockPanel(), p1);
         QCOMPARE(dw2->dockPanel(), p2);
@@ -165,7 +165,7 @@ void tst_DockWindow::addDockWidget()
         QCOMPARE(p1, p6);
         QCOMPARE(p1, p7);
 
-        QCOMPARE(wd.openedDockPanels().count(), 4); // p1,p2,p3,p4
+        QCOMPARE(wd.openedDockPanels().count(), 4);   // p1,p2,p3,p4
         QCOMPARE(p1->dockWidgets().count(), 4);
 
         QString text = "";
@@ -183,7 +183,7 @@ void tst_DockWindow::addDockWidgetTab()
         DockWindow wd;
 
         int j = 0;
-        connect(&wd, &DockWindow::dockAreasAdded, this, [&j](){
+        connect(&wd, &DockWindow::dockAreasAdded, this, [&j]() {
             // dock panel added
             ++j;
         });
@@ -227,7 +227,7 @@ void tst_DockWindow::addDockWidgetTab()
 
         QCOMPARE(wd.dockContainers().count(), 1);
         QCOMPARE(wd.dockWidgetsMap().count(), 7);
-        QCOMPARE(j, 5); // p1,p2,p3,p4,p5
+        QCOMPARE(j, 5);   // p1,p2,p3,p4,p5
         QCOMPARE(wd.centralWidget(), nullptr);
     }
 
@@ -289,11 +289,11 @@ void tst_DockWindow::removeDockWidget()
     DockWindow wd;
 
     int i = 0;
-    connect(&wd, &DockWindow::dockWidgetAboutToBeRemoved, this, [&i](DockWidget*){
+    connect(&wd, &DockWindow::dockWidgetAboutToBeRemoved, this, [&i](DockWidget *) {
         ++i;
     });
     int j = 0;
-    connect(&wd, &DockWindow::dockWidgetRemoved, this, [&j](DockWidget*){
+    connect(&wd, &DockWindow::dockWidgetRemoved, this, [&j](DockWidget *) {
         ++j;
     });
 
@@ -425,7 +425,7 @@ void tst_DockWindow::centralWidget()
 
     // Setting a central widget not possible because there is already a central widget
     DockPanel *p3 = wd.setCentralWidget(dw1);
-    QCOMPARE(wd.centralWidget(), dw2); // central widget is still dw2
+    QCOMPARE(wd.centralWidget(), dw2);   // central widget is still dw2
     QCOMPARE(p3, nullptr);
 
     // clear central widget
@@ -464,7 +464,7 @@ void tst_DockWindow::lockDockWidget()
     QCOMPARE(dw3->features() & DockWidget::DockWidgetFloatable, DockWidget::NoDockWidgetFeatures);
     QCOMPARE(dw4->features() & DockWidget::DockWidgetPinnable, DockWidget::NoDockWidgetFeatures);
 
-    wd.lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures); // unlock
+    wd.lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures);   // unlock
 
     QCOMPARE(dw1->features() & DockWidget::DockWidgetClosable, DockWidget::DockWidgetClosable);
     QCOMPARE(dw2->features() & DockWidget::DockWidgetMovable, DockWidget::DockWidgetMovable);

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowagentbase.h"
 #include "windowkit_p.h"
 #include "windowagentbase_p.h"
@@ -20,7 +20,9 @@ QX_WINDOW_BEGIN_NAMESPACE
     shared methods for derived classes to call.
 */
 
-WindowAgentBasePrivate::WindowAgentBasePrivate() : q_ptr(nullptr), m_context(nullptr)
+WindowAgentBasePrivate::WindowAgentBasePrivate()
+    : q_ptr(nullptr)
+    , m_context(nullptr)
 {
 }
 
@@ -128,7 +130,9 @@ void WindowAgentBase::raise()
 /*!
     \internal
 */
-WindowAgentBase::WindowAgentBase(WindowAgentBasePrivate &d, QObject *parent) : QObject(parent), d_ptr(&d)
+WindowAgentBase::WindowAgentBase(WindowAgentBasePrivate &d, QObject *parent)
+    : QObject(parent)
+    , d_ptr(&d)
 {
     d.q_ptr = this;
 

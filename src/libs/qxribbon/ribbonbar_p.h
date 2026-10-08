@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -31,10 +31,8 @@ public:
 Q_SIGNALS:
     void aboutToShow();
     void aboutToHide();
-
 protected:
     virtual bool event(QEvent *event);
-
 private:
     bool m_isPopup;
 };
@@ -68,7 +66,9 @@ class RibbonTabData
 public:
     RibbonPage *page;
     int index;
-    RibbonTabData() : page(Q_NULLPTR), index(-1)
+    RibbonTabData()
+        : page(Q_NULLPTR)
+        , index(-1)
     {
     }
 };
@@ -90,8 +90,14 @@ public:
 
     QColor getPageContextColor();
 
-    bool isOfficeStyle() const { return ((m_ribbonStyle & 0x00FF) == 0); }
-    bool isTwoRowStyle() const { return ((m_ribbonStyle & 0xFF00) != 0); }
+    bool isOfficeStyle() const
+    {
+        return ((m_ribbonStyle & 0x00FF) == 0);
+    }
+    bool isTwoRowStyle() const
+    {
+        return ((m_ribbonStyle & 0xFF00) != 0);
+    }
 
     void updateTabData();
     void updatePageContextManagerData();
@@ -138,12 +144,12 @@ public:
     QList<PageContextManagerData> m_currentShowingPageContextList;
     QList<RibbonPageContext *> m_pageContextList;
     QList<RibbonTabData> m_hidedPage;
-    int m_iconRightBorderPosition;   ///< 标题栏x值的最小值，在有图标和快捷启动按钮，此值都需要变化
+    int m_iconRightBorderPosition;              ///< 标题栏x值的最小值，在有图标和快捷启动按钮，此值都需要变化
     RibbonControlButton *m_minimumPageButton;   ///< 隐藏面板按钮
     RibbonButtonGroup *m_topLeftButtonGroup;
     RibbonButtonGroup *m_topRightButtonGroup;
     RibbonButtonGroup *m_bottomLeftButtonGroup;
-    RibbonButtonGroup *m_bottomRightButtonGroup;      ///< 在 tabbar 右边的按钮群
+    RibbonButtonGroup *m_bottomRightButtonGroup;   ///< 在 tabbar 右边的按钮群
     QWidget *m_windowButtonGroup;
     RibbonQuickAccessBarContainer *m_quickAccessBar;
     RibbonBar::QuickAccessBarPosition m_quickAccessBarPosition;

@@ -1,7 +1,7 @@
 #include <QtTest/QtTest>
 #include <QLineEdit>
 
-class tst_QLineEdit: public QObject
+class tst_QLineEdit : public QObject
 {
     Q_OBJECT
 

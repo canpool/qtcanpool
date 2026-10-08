@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbongallerygroup.h"
 #include "ribbongallerygroup_p.h"
 
@@ -27,7 +27,6 @@ RibbonGalleryItemPrivate::RibbonGalleryItemPrivate()
     : m_flags(Qt::ItemIsEnabled | Qt::ItemIsSelectable)
     , m_action(Q_NULLPTR)
 {
-
 }
 
 /* RibbonGalleryItem */
@@ -184,12 +183,13 @@ Qt::Alignment RibbonGalleryItem::textAlignment() const
 
 /* RibbonGalleryGroupItemDelegate */
 RibbonGalleryGroupItemDelegate::RibbonGalleryGroupItemDelegate(RibbonGalleryGroup *group, QObject *parent)
-    : QStyledItemDelegate(parent), m_group(group)
+    : QStyledItemDelegate(parent)
+    , m_group(group)
 {
 }
 
 void RibbonGalleryGroupItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                                            const QModelIndex &index) const
+                                           const QModelIndex &index) const
 {
     if (Q_NULLPTR == m_group) {
         return;
@@ -211,7 +211,7 @@ void RibbonGalleryGroupItemDelegate::paint(QPainter *painter, const QStyleOption
 }
 
 void RibbonGalleryGroupItemDelegate::paintIconOnly(QPainter *painter, const QStyleOptionViewItem &option,
-                                                    const QModelIndex &index) const
+                                                   const QModelIndex &index) const
 {
     QStyle *style = m_group->style();
     int sp = m_group->spacing();
@@ -230,13 +230,13 @@ void RibbonGalleryGroupItemDelegate::paintIconOnly(QPainter *painter, const QSty
 }
 
 void RibbonGalleryGroupItemDelegate::paintIconWithText(QPainter *painter, const QStyleOptionViewItem &option,
-                                                        const QModelIndex &index) const
+                                                       const QModelIndex &index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
 }
 
 void RibbonGalleryGroupItemDelegate::paintIconWithTextWordWrap(QPainter *painter, const QStyleOptionViewItem &option,
-                                                                const QModelIndex &index) const
+                                                               const QModelIndex &index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
 }

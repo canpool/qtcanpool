@@ -12,12 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setAttribute(Qt::WA_StyledBackground, true);
-    setWindowFlags(Qt::WindowSystemMenuHint |
-                Qt::WindowMinimizeButtonHint |
-                Qt::WindowMaximizeButtonHint |
-                Qt::FramelessWindowHint |
-                Qt::Window
-                );
+    setWindowFlags(Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint |
+                   Qt::FramelessWindowHint | Qt::Window);
 
     QWidget *titleWidget = new QWidget();
     QPalette palette;
@@ -53,4 +49,3 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 }
-

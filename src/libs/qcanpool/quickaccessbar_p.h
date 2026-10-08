@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef QUICKACCESSBAR_P_H
 #define QUICKACCESSBAR_P_H
 
@@ -32,9 +32,8 @@ class QuickAccessButton : public QToolButton
 {
     Q_OBJECT
 public:
-    explicit QuickAccessButton(QWidget* parent = Q_NULLPTR);
+    explicit QuickAccessButton(QWidget *parent = Q_NULLPTR);
     virtual ~QuickAccessButton();
-
 public:
     virtual QSize sizeHint() const;
 
@@ -75,10 +74,9 @@ class QuickAccessBarPrivate : public QObject
 public:
     explicit QuickAccessBarPrivate();
     virtual ~QuickAccessBarPrivate();
-
 public:
     void init();
-    QuickAccessAction *findQuickAccessAction(QAction* action) const;
+    QuickAccessAction *findQuickAccessAction(QAction *action) const;
     QAction *findBeforeAction(QAction *action) const;
     void updateAction(QAction *action);
     void setActionVisible(QAction *action, bool visible);
@@ -100,4 +98,4 @@ public:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // QUICKACCESSBAR_P_H
+#endif   // QUICKACCESSBAR_P_H

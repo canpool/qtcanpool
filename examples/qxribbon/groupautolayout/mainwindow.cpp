@@ -73,7 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
     addSmallAction(group, createAction(icon, tr("Small")));
     addSmallAction(group, createAction(icon, tr("Small")));
 
-
     rb->addPage(tr("loooooooooooongpage"));
 
     resize(800, 400);

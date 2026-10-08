@@ -1,7 +1,7 @@
 ﻿/**
  * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonquickaccessbar_p.h"
 #include "ribbonquickaccessbar.h"
 
@@ -23,7 +23,6 @@ RibbonQuickAccessButton::RibbonQuickAccessButton(QWidget *parent)
 
 RibbonQuickAccessButton::~RibbonQuickAccessButton()
 {
-
 }
 
 QSize RibbonQuickAccessButton::sizeHint() const
@@ -41,7 +40,6 @@ void RibbonQuickAccessButton::setOrientation(Qt::Orientation orientation)
     m_orientation = orientation;
 }
 
-
 RibbonQuickAccessBarPrivate::RibbonQuickAccessBarPrivate()
     : m_menu(Q_NULLPTR)
     , m_actionAccessPopup(Q_NULLPTR)
@@ -50,12 +48,10 @@ RibbonQuickAccessBarPrivate::RibbonQuickAccessBarPrivate()
     , m_removingAction(false)
     , m_takingAction(false)
 {
-
 }
 
 RibbonQuickAccessBarPrivate::~RibbonQuickAccessBarPrivate()
 {
-
 }
 
 void RibbonQuickAccessBarPrivate::init()
@@ -70,8 +66,8 @@ void RibbonQuickAccessBarPrivate::init()
 
     m_accessPopup = new RibbonQuickAccessButton(q);
     m_accessPopup->setPopupMode(QToolButton::InstantPopup);
-    QObject::connect(q, SIGNAL(orientationChanged(Qt::Orientation)),
-                     m_accessPopup, SLOT(setOrientation(Qt::Orientation)));
+    QObject::connect(q, SIGNAL(orientationChanged(Qt::Orientation)), m_accessPopup,
+                     SLOT(setOrientation(Qt::Orientation)));
     m_menu = new QMenu(q);
     m_accessPopup->setMenu(m_menu);
 
@@ -88,7 +84,7 @@ void RibbonQuickAccessBarPrivate::init()
 QuickAccessAction *RibbonQuickAccessBarPrivate::findQuickAccessAction(QAction *action) const
 {
     foreach (QAction *a, m_actionList) {
-        QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(a);
+        QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(a);
         if (act && action == act->m_srcAction) {
             return act;
         }
@@ -98,7 +94,7 @@ QuickAccessAction *RibbonQuickAccessBarPrivate::findQuickAccessAction(QAction *a
 
 void RibbonQuickAccessBarPrivate::updateAction(QAction *action)
 {
-    if (QuickAccessAction* wrapper = findQuickAccessAction(action)) {
+    if (QuickAccessAction *wrapper = findQuickAccessAction(action)) {
         wrapper->update();
     }
 }
@@ -157,7 +153,7 @@ QAction *RibbonQuickAccessBarPrivate::nextSrcAction(QAction *action)
     bool flag = false;
     foreach (QAction *act, m_actionList) {
         if (flag) {
-            QuickAccessAction *a = dynamic_cast<QuickAccessAction*>(act);
+            QuickAccessAction *a = dynamic_cast<QuickAccessAction *>(act);
             // wrapper action isChecked or srcAction inBar
             if (a->isChecked() || (q->widgetForAction(a->m_srcAction) != NULL)) {
                 return a->m_srcAction;
@@ -172,7 +168,7 @@ QAction *RibbonQuickAccessBarPrivate::nextSrcAction(QAction *action)
 void RibbonQuickAccessBarPrivate::customizeAction(QAction *action)
 {
     Q_Q(RibbonQuickAccessBar);
-    if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
+    if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(action)) {
         setActionShown(act, act->m_srcAction, act->isChecked());
         Q_EMIT q->customizeActionChanged();
     }
@@ -202,10 +198,7 @@ RibbonQuickAccessBar::RibbonQuickAccessBar(QWidget *parent)
     layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-RibbonQuickAccessBar::~RibbonQuickAccessBar()
-{
-    QX_FINI_PRIVATE()
-}
+RibbonQuickAccessBar::~RibbonQuickAccessBar(){QX_FINI_PRIVATE()}
 
 QAction *RibbonQuickAccessBar::actionCustomizeButton() const
 {
@@ -234,7 +227,7 @@ int RibbonQuickAccessBar::visibleCount() const
     int visibleCount = 0;
     QList<QAction *> list = d->m_customizeGroup->actions();
     for (int i = 0, count = list.count(); i < count; ++i) {
-        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i])) {
+        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(list[i])) {
             if (act->isChecked()) {
                 visibleCount++;
             }
@@ -262,7 +255,7 @@ void RibbonQuickAccessBar::setState(const QByteArray &s)
     int cnt = s.count();
     int j = 0;
     foreach (QAction *action, d->m_actionList) {
-        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
+        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(action)) {
             if (j < cnt) {
                 if (s.at(j) == '1' && !act->isChecked()) {
                     d->setActionVisible(act, act->m_srcAction, true);
@@ -290,7 +283,7 @@ void RibbonQuickAccessBar::actionEvent(QActionEvent *event)
 {
     Q_D(RibbonQuickAccessBar);
     QToolBar::actionEvent(event);
-    if (d->m_actionAccessPopup)  {
+    if (d->m_actionAccessPopup) {
         if (event->type() == QEvent::ActionAdded) {
             if (!d->m_removingAction) {
                 // remove, then add back in QEvent::ActionRemoved

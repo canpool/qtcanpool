@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -19,7 +19,6 @@ public:
 
     QIcon customIcon(Qx::DockIcon id) const;
     void registerCustomIcon(Qx::DockIcon id, const QIcon &icon);
-
 private:
     QX_DECLARE_PRIVATE(DockIconProvider)
 };

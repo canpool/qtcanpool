@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #ifndef WINDOWKIT_P_H
 #define WINDOWKIT_P_H
 
@@ -52,7 +52,8 @@ using QT_NATIVE_EVENT_RESULT_TYPE = qintptr;
 using QT_NATIVE_EVENT_RESULT_TYPE = long;
 #endif
 
-namespace Private {
+namespace Private
+{
 
 class ObjectHelper : public QObject
 {
@@ -63,7 +64,7 @@ public:
     }
 };
 
-} // namespace Private
+}   // namespace Private
 
 inline QPoint getMouseEventScenePos(const QMouseEvent *event)
 {

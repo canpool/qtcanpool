@@ -38,7 +38,7 @@ void tst_RibbonPageContext::page()
     QCOMPARE("page1,page2,page3,", titles);
 
     QCOMPARE(false, pc.takePage(nullptr));
-    QCOMPARE(true, pc.takePage(page2)); // not deleted
+    QCOMPARE(true, pc.takePage(page2));   // not deleted
     QCOMPARE(tr("page2"), page2->pageName());
     QCOMPARE(page3, pc.page(1));
     QCOMPARE(nullptr, pc.page(2));

@@ -7,10 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     QuickAccessBar *quickAccessBar = new QuickAccessBar();
-    QAction* action = quickAccessBar->actionCustomizeButton();
+    QAction *action = quickAccessBar->actionCustomizeButton();
     action->setToolTip(tr("Customize Quick Access Bar"));
 
-    QAction* smallButton = quickAccessBar->addAction(QIcon(":/resource/image/logo.png"), tr("New"));
+    QAction *smallButton = quickAccessBar->addAction(QIcon(":/resource/image/logo.png"), tr("New"));
     smallButton->setShortcut(QKeySequence::New);
     smallButton->setToolTip(tr("New File or Project\nCtrl+N"));
 
@@ -35,5 +35,4 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-
 }

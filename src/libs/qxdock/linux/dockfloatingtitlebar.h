@@ -33,19 +33,16 @@ public:
 Q_SIGNALS:
     void closeRequested();
     void maximizeRequested();
-
 protected:
     QIcon maximizeIcon() const;
     void setMaximizeIcon(const QIcon &icon);
     QIcon normalIcon() const;
     void setNormalIcon(const QIcon &icon);
-
 protected:
     virtual void mousePressEvent(QMouseEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void mouseMoveEvent(QMouseEvent *e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockFloatingTitleBar)
 };

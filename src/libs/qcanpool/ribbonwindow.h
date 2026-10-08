@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2021-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONWINDOW_H
 #define RIBBONWINDOW_H
 
@@ -24,11 +24,10 @@ public:
     RibbonBar *ribbonBar() const;
 
     void setFrameless(bool frameless);
-
 private:
     RibbonWindowPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONWINDOW_H
+#endif   // RIBBONWINDOW_H

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONPAGE_H
 #define RIBBONPAGE_H
 
@@ -23,7 +23,6 @@ class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") Ribbo
 public:
     explicit RibbonPage(QWidget *parent = nullptr);
     ~RibbonPage();
-
 public:
     void addGroup(RibbonGroup *group);
     RibbonGroup *addGroup(const QString &title);
@@ -43,7 +42,6 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void setTitle(const QString &title);
-
 protected:
     void resizeEvent(QResizeEvent *e) override;
     void wheelEvent(QWheelEvent *event) override;
@@ -53,4 +51,4 @@ private:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONPAGE_H
+#endif   // RIBBONPAGE_H

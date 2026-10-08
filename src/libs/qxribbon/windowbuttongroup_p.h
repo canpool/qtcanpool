@@ -33,7 +33,6 @@ public:
 
 public Q_SLOTS:
     void buttonClicked();
-
 public:
     WindowButton *m_closeButton;
     WindowButton *m_minimizeButton;
@@ -43,4 +42,3 @@ public:
 };
 
 QX_RIBBON_END_NAMESPACE
-

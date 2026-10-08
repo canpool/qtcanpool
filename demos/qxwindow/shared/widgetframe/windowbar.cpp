@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowbar.h"
 #include "windowbar_p.h"
 #include <QtCore/QDebug>
@@ -62,7 +62,8 @@ QWidget *WindowBarPrivate::takeWidgetAt(int index)
     return orgWidget;
 }
 
-WindowBar::WindowBar(QWidget *parent) : WindowBar(*new WindowBarPrivate(), parent)
+WindowBar::WindowBar(QWidget *parent)
+    : WindowBar(*new WindowBarPrivate(), parent)
 {
 }
 
@@ -321,7 +322,9 @@ void WindowBar::iconChanged(const QIcon &icon)
     Q_UNUSED(icon)
 }
 
-WindowBar::WindowBar(WindowBarPrivate &d, QWidget *parent) : QFrame(parent), d_ptr(&d)
+WindowBar::WindowBar(WindowBarPrivate &d, QWidget *parent)
+    : QFrame(parent)
+    , d_ptr(&d)
 {
     d.q_ptr = this;
 

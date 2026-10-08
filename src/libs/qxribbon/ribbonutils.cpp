@@ -5,7 +5,8 @@
 #include "ribbonutils.h"
 #include <QPainter>
 
-namespace QxRibbon {
+namespace QxRibbon
+{
 
 QIcon colorIcon(const QColor &color, const QSize &size)
 {
@@ -33,4 +34,4 @@ QPixmap colorPixmap(const QColor &color, const QSize &size)
     return res;
 }
 
-} // namespace QxRibbon
+}   // namespace QxRibbon

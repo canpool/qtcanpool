@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "ribbongroup.h"
@@ -19,7 +19,9 @@ class RibbonPageScrollButton;
 class RibbonPageItem
 {
 public:
-    RibbonPageItem() : m_group(Q_NULLPTR), m_separator(Q_NULLPTR)
+    RibbonPageItem()
+        : m_group(Q_NULLPTR)
+        , m_separator(Q_NULLPTR)
     {
     }
 
@@ -41,7 +43,6 @@ public:
     QRect m_groupWillGeometry;
     QRect m_separatorWillGeometry;
 };
-
 
 class RibbonPageScrollButton : public QToolButton
 {

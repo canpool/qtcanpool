@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "fancytitlebar_p.h"
 #include "qxribbon/framelesshelper.h"
 #include "fancytitlebar.h"
@@ -19,7 +19,7 @@
 #include <QLayout>
 #include <QPainter>
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QApplication>
 #include <QDesktopWidget>
 #else
@@ -43,9 +43,9 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <winuser.h>
-#endif // Q_OS_WINDOWS
+#endif   // Q_OS_WINDOWS
 
-#endif // QTC_USE_NATIVE
+#endif   // QTC_USE_NATIVE
 
 QCANPOOL_BEGIN_NAMESPACE
 
@@ -67,7 +67,7 @@ void FancyTitleBarPrivateNative::installNativeEventFilter()
     HWND hwnd = (HWND)m_mainWidget->winId();
     DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
     ::SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION);
-#endif // Q_OS_WINDOWS
+#endif   // Q_OS_WINDOWS
 
     qApp->installNativeEventFilter(this);
 }
@@ -95,11 +95,12 @@ void FancyTitleBarPrivateNative::setDisabled(bool disable)
 #ifdef Q_OS_WINDOWS
 bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *result)
 {
-    // Workaround for known bug -> check Qt forum : https://forum.qt.io/topic/93141/qtablewidget-itemselectionchanged/13
+        // Workaround for known bug -> check Qt forum :
+        // https://forum.qt.io/topic/93141/qtablewidget-itemselectionchanged/13
 #if (QT_VERSION == QT_VERSION_CHECK(5, 11, 1))
-    MSG *msg = *reinterpret_cast<MSG**>(message);
+    MSG *msg = *reinterpret_cast<MSG **>(message);
 #else
-    MSG *msg = reinterpret_cast<MSG*>(message);
+    MSG *msg = reinterpret_cast<MSG *>(message);
 #endif
 
     QWidget *widget = QWidget::find(reinterpret_cast<WId>(msg->hwnd));
@@ -201,9 +202,8 @@ bool FancyTitleBarPrivateNative::handleWindowsMessage(void *message, QTRESULT *r
         RECT rcClient;
         GetWindowRect(msg->hwnd, &rcClient);
         // Inform application of the frame change.
-        SetWindowPos(msg->hwnd, NULL, rcClient.left, rcClient.top,
-                     rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
-                     SWP_FRAMECHANGED);
+        SetWindowPos(msg->hwnd, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left,
+                     rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
     }
 
     return false;
@@ -242,7 +242,7 @@ bool FancyTitleBarPrivateNative::nativeEventFilter(const QByteArray &eventType, 
     return false;
 }
 
-#endif // QTC_USE_NATIVE
+#endif   // QTC_USE_NATIVE
 
 /* FancyTitleBarPrivateQt */
 FancyTitleBarPrivateQt::FancyTitleBarPrivateQt(QWidget *mainWidget)
@@ -252,7 +252,6 @@ FancyTitleBarPrivateQt::FancyTitleBarPrivateQt(QWidget *mainWidget)
     , m_bCursorShapeChanged(false)
     , m_movePoint(QPoint(0, 0))
 {
-
 }
 
 FancyTitleBarPrivateQt::~FancyTitleBarPrivateQt()
@@ -286,20 +285,20 @@ bool FancyTitleBarPrivateQt::handleWidgetMouseEvent(QObject *obj, QEvent *event)
     Q_UNUSED(obj);
 
     switch (event->type()) {
-        case QEvent::MouseButtonPress:
-            return handleMousePressEvent(static_cast<QMouseEvent *>(event));
-        case QEvent::MouseButtonRelease:
-            return handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
-        case QEvent::MouseMove:
-            return handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
-        case QEvent::Leave:
-            return handleLeaveEvent(event);
-        case QEvent::HoverMove:
-            return handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
-        case QEvent::MouseButtonDblClick:
-            return handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
-        default:
-            break;
+    case QEvent::MouseButtonPress:
+        return handleMousePressEvent(static_cast<QMouseEvent *>(event));
+    case QEvent::MouseButtonRelease:
+        return handleMouseReleaseEvent(static_cast<QMouseEvent *>(event));
+    case QEvent::MouseMove:
+        return handleMouseMoveEvent(static_cast<QMouseEvent *>(event));
+    case QEvent::Leave:
+        return handleLeaveEvent(event);
+    case QEvent::HoverMove:
+        return handleHoverMoveEvent(static_cast<QHoverEvent *>(event));
+    case QEvent::MouseButtonDblClick:
+        return handleMouseDblClickEvent(static_cast<QMouseEvent *>(event));
+    default:
+        break;
     }
     return false;
 }
@@ -592,9 +591,9 @@ QPoint FancyTitleBarPrivateQt::windowStartPos(QWidget *pWindow, QMouseEvent *eve
     point.setY(0);
 
     if (mouseX - screenX < oriWidth / 2) {
-        point.setX(screenX);                // Align screen left
+        point.setX(screenX);   // Align screen left
     } else if (maxWidth - mouseX < oriWidth / 2) {
-        point.setX(maxWidth - oriWidth);    // Align screen right
+        point.setX(maxWidth - oriWidth);   // Align screen right
     } else {
         point.setX(mouseX - oriWidth / 2);
     }
@@ -629,17 +628,17 @@ QRect FancyTitleBarPrivateQt::validDragRect()
 bool FancyTitleBarPrivateQt::eventFilter(QObject *object, QEvent *event)
 {
     switch (event->type()) {
-        case QEvent::Resize:
-            return windowSizeChange(object);
-        case QEvent::MouseMove:
-        case QEvent::HoverMove:
-        case QEvent::Leave:
-        case QEvent::MouseButtonPress:
-        case QEvent::MouseButtonRelease:
-        case QEvent::MouseButtonDblClick:
-            return handleWidgetMouseEvent(object, event);
-        default:
-            break;
+    case QEvent::Resize:
+        return windowSizeChange(object);
+    case QEvent::MouseMove:
+    case QEvent::HoverMove:
+    case QEvent::Leave:
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+        return handleWidgetMouseEvent(object, event);
+    default:
+        break;
     }
 
     return QObject::eventFilter(object, event);
@@ -654,15 +653,15 @@ FancyCursor::FancyCursor()
 
 void FancyCursor::reset()
 {
-    m_bOnEdges              = false;
-    m_bOnLeftEdge           = false;
-    m_bOnRightEdge          = false;
-    m_bOnTopEdge            = false;
-    m_bOnBottomEdge         = false;
-    m_bOnTopLeftEdge        = false;
-    m_bOnBottomLeftEdge     = false;
-    m_bOnTopRightEdge       = false;
-    m_bOnBottomRightEdge    = false;
+    m_bOnEdges = false;
+    m_bOnLeftEdge = false;
+    m_bOnRightEdge = false;
+    m_bOnTopEdge = false;
+    m_bOnBottomEdge = false;
+    m_bOnTopLeftEdge = false;
+    m_bOnBottomLeftEdge = false;
+    m_bOnTopRightEdge = false;
+    m_bOnBottomRightEdge = false;
 }
 
 /**
@@ -686,21 +685,19 @@ void FancyCursor::update(const QPoint &gMousePos, const QRect &frameRect)
 {
     int globalMouseX = gMousePos.x();
     int globalMouseY = gMousePos.y();
-    int frameX       = frameRect.x();
-    int frameY       = frameRect.y();
-    int frameWidth   = frameRect.width();
-    int frameHeight  = frameRect.height();
+    int frameX = frameRect.x();
+    int frameY = frameRect.y();
+    int frameWidth = frameRect.width();
+    int frameHeight = frameRect.height();
 
-    m_bOnLeftEdge    = (globalMouseX >= frameX && globalMouseX <= frameX + m_nBorderWidth);
-    m_bOnRightEdge   = (globalMouseX >= frameX + frameWidth - m_nBorderWidth &&
-                        globalMouseX <= frameX + frameWidth);
-    m_bOnTopEdge     = (globalMouseY >= frameY && globalMouseY <= frameY + m_nBorderWidth);
-    m_bOnBottomEdge  = (globalMouseY >= frameY + frameHeight - m_nBorderWidth &&
-                        globalMouseY <= frameY + frameHeight);
+    m_bOnLeftEdge = (globalMouseX >= frameX && globalMouseX <= frameX + m_nBorderWidth);
+    m_bOnRightEdge = (globalMouseX >= frameX + frameWidth - m_nBorderWidth && globalMouseX <= frameX + frameWidth);
+    m_bOnTopEdge = (globalMouseY >= frameY && globalMouseY <= frameY + m_nBorderWidth);
+    m_bOnBottomEdge = (globalMouseY >= frameY + frameHeight - m_nBorderWidth && globalMouseY <= frameY + frameHeight);
 
-    m_bOnTopLeftEdge     = m_bOnTopEdge && m_bOnLeftEdge;
-    m_bOnBottomLeftEdge  = m_bOnBottomEdge && m_bOnLeftEdge;
-    m_bOnTopRightEdge    = m_bOnTopEdge && m_bOnRightEdge;
+    m_bOnTopLeftEdge = m_bOnTopEdge && m_bOnLeftEdge;
+    m_bOnBottomLeftEdge = m_bOnBottomEdge && m_bOnLeftEdge;
+    m_bOnTopRightEdge = m_bOnTopEdge && m_bOnRightEdge;
     m_bOnBottomRightEdge = m_bOnBottomEdge && m_bOnRightEdge;
 
     m_bOnEdges = m_bOnLeftEdge || m_bOnRightEdge || m_bOnTopEdge || m_bOnBottomEdge;
@@ -710,7 +707,7 @@ FancyScreen::FancyScreen()
 {
     m_screenRects.clear();
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     QDesktopWidget *desktop = QApplication::desktop();
     int screenCnt = desktop->screenCount();
 
@@ -755,7 +752,7 @@ QRect FancyScreen::screenRect(const int current)
 QRect FancyScreen::normalRect()
 {
     QRect geom;
-#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     geom = QApplication::desktop()->availableGeometry();
 #else
 #if defined(Q_OS_WIN)
@@ -764,8 +761,7 @@ QRect FancyScreen::normalRect()
     geom = QGuiApplication::primaryScreen()->virtualGeometry();
 #endif
 #endif
-    return QRect(geom.x() + 100, geom.y() + 100,
-                 2 * geom.width() / 3, 2 * geom.height() / 3);
+    return QRect(geom.x() + 100, geom.y() + 100, 2 * geom.width() / 3, 2 * geom.height() / 3);
 }
 
 /* FancyTitleBarPrivate */
@@ -789,7 +785,8 @@ FancyTitleBarPrivate::FancyTitleBarPrivate(QWidget *mainWidget)
 }
 
 FancyTitleBarPrivate::~FancyTitleBarPrivate()
-{}
+{
+}
 
 void FancyTitleBarPrivate::init()
 {
@@ -805,7 +802,7 @@ void FancyTitleBarPrivate::init()
     m_toolBar = new QToolBar(m_mainWidget);
     m_toolBar->layout()->setSizeConstraint(QLayout::SetFixedSize);
     m_toolBar->setObjectName(QLatin1String("qtc_sys_toolbar"));
-//    m_toolBar->setStyleSheet("QToolBar{border:none; background:transparent;}");
+    //    m_toolBar->setStyleSheet("QToolBar{border:none; background:transparent;}");
     m_toolBar->setIconSize(QSize(sz, sz));
 
     m_minimizeAction = new QAction(m_mainWidget);
@@ -1109,48 +1106,48 @@ QWidget *FancyTitleBar::systemToolBar() const
 void FancyTitleBar::setButtonIcon(FancyTitleBar::ButtonRole role, const QIcon &icon)
 {
     switch (role) {
-        case FancyTitleBar::MinButton: {
-            d->m_minimizeAction->setIcon(icon);
-        } break;
-        case FancyTitleBar::MaxButton: {
-            d->m_maximizeIcon = icon;
-            if (!d->m_isMaximized) {
-                d->m_maximizeAction->setIcon(icon);
-            }
-        } break;
-        case FancyTitleBar::NormalButton: {
-            d->m_normalIcon = icon;
-            if (d->m_isMaximized) {
-                d->m_maximizeAction->setIcon(icon);
-            }
-        } break;
-        case FancyTitleBar::CloseButton: {
-            d->m_closeAction->setIcon(icon);
-        } break;
+    case FancyTitleBar::MinButton: {
+        d->m_minimizeAction->setIcon(icon);
+    } break;
+    case FancyTitleBar::MaxButton: {
+        d->m_maximizeIcon = icon;
+        if (!d->m_isMaximized) {
+            d->m_maximizeAction->setIcon(icon);
+        }
+    } break;
+    case FancyTitleBar::NormalButton: {
+        d->m_normalIcon = icon;
+        if (d->m_isMaximized) {
+            d->m_maximizeAction->setIcon(icon);
+        }
+    } break;
+    case FancyTitleBar::CloseButton: {
+        d->m_closeAction->setIcon(icon);
+    } break;
     }
 }
 
 void FancyTitleBar::setButtonTip(FancyTitleBar::ButtonRole role, const QString &tip)
 {
     switch (role) {
-        case FancyTitleBar::MinButton: {
-            d->m_minimizeAction->setToolTip(tip);
-        } break;
-        case FancyTitleBar::MaxButton: {
-            d->m_maximizeTip = tip;
-            if (!d->m_isMaximized) {
-                d->m_maximizeAction->setToolTip(tip);
-            }
-        } break;
-        case FancyTitleBar::NormalButton: {
-            d->m_normalTip = tip;
-            if (d->m_isMaximized) {
-                d->m_maximizeAction->setToolTip(tip);
-            }
-        } break;
-        case FancyTitleBar::CloseButton: {
-            d->m_closeAction->setToolTip(tip);
-        } break;
+    case FancyTitleBar::MinButton: {
+        d->m_minimizeAction->setToolTip(tip);
+    } break;
+    case FancyTitleBar::MaxButton: {
+        d->m_maximizeTip = tip;
+        if (!d->m_isMaximized) {
+            d->m_maximizeAction->setToolTip(tip);
+        }
+    } break;
+    case FancyTitleBar::NormalButton: {
+        d->m_normalTip = tip;
+        if (d->m_isMaximized) {
+            d->m_maximizeAction->setToolTip(tip);
+        }
+    } break;
+    case FancyTitleBar::CloseButton: {
+        d->m_closeAction->setToolTip(tip);
+    } break;
     }
 }
 
@@ -1195,16 +1192,16 @@ void FancyTitleBar::addCaptionClassName(const QString &name)
 bool FancyTitleBar::eventFilter(QObject *object, QEvent *event)
 {
     switch (event->type()) {
-        case QEvent::WindowTitleChange:
-            return d->windowTitleChange(object);
-        case QEvent::WindowIconChange:
-            return d->windowIconChange(object);
-        case QEvent::WindowStateChange:
-            return d->windowStateChange(object);
-        case QEvent::Paint:
-            return d->windowPaint(object);
-        default:
-            break;
+    case QEvent::WindowTitleChange:
+        return d->windowTitleChange(object);
+    case QEvent::WindowIconChange:
+        return d->windowIconChange(object);
+    case QEvent::WindowStateChange:
+        return d->windowStateChange(object);
+    case QEvent::Paint:
+        return d->windowPaint(object);
+    default:
+        break;
     }
 
     return QObject::eventFilter(object, event);

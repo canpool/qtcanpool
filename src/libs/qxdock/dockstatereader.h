@@ -15,13 +15,12 @@ QX_DOCK_BEGIN_NAMESPACE
 class DockStateReader : public QXmlStreamReader
 {
 public:
-	using QXmlStreamReader::QXmlStreamReader;
+    using QXmlStreamReader::QXmlStreamReader;
 
-	void setFileVersion(int fileVersion);
-	int fileVersion() const;
-
+    void setFileVersion(int fileVersion);
+    int fileVersion() const;
 private:
-	int m_fileVersion;
+    int m_fileVersion;
 };
 
 QX_DOCK_END_NAMESPACE

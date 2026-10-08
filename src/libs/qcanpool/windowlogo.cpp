@@ -25,7 +25,6 @@ WindowLogoPrivate::WindowLogoPrivate()
     : m_isRound(false)
     , m_hasMenu(false)
 {
-
 }
 
 WindowLogo::WindowLogo(const QPixmap &pixmap, QWidget *parent)
@@ -119,7 +118,8 @@ void WindowLogo::paintEvent(QPaintEvent *event)
         QRect rc(center - QPoint(r, r), QSize(di, di));
         if (d->m_isRound) {
             QPainterPath path;
-            if (r > 1) r -= 1;
+            if (r > 1)
+                r -= 1;
             path.addEllipse(center, r, r);
             painter.setClipPath(path);
         }

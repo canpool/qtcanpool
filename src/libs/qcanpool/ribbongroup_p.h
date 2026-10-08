@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONGROUP_P_H
 #define RIBBONGROUP_P_H
 
@@ -39,18 +39,16 @@ public:
     void init();
 
     RibbonBarInnerContainer *getContainer(RibbonGroup::GroupSize size);
-    QAction *addAction(const QIcon &icon, const QString &text,
-                       RibbonGroup::GroupSize size);
+    QAction *addAction(const QIcon &icon, const QString &text, RibbonGroup::GroupSize size);
     void addAction(QAction *action, RibbonGroup::GroupSize size);
     void formatAction(RibbonBarInnerContainer *container, QAction *action);
     void addToolButton(QToolButton *button, RibbonGroup::GroupSize size);
-
 public:
     RibbonGroup *q;
     QHBoxLayout *m_inLayout;
     QHBoxLayout *m_extLayout;
     QHBoxLayout *m_titleLayout;
-    QLabel      *m_titleLabel;
+    QLabel *m_titleLabel;
     QToolButton *m_optionButton;
 
     RibbonBarInnerContainer *m_largeContainer;
@@ -60,4 +58,4 @@ public:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONGROUP_P_H
+#endif   // RIBBONGROUP_P_H

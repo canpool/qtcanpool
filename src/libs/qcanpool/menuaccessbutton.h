@@ -16,7 +16,7 @@ class QCANPOOL_SHARED_EXPORT MenuAccessButton : public QToolButton
 {
     Q_OBJECT
 public:
-    explicit MenuAccessButton(QWidget* parent = Q_NULLPTR);
+    explicit MenuAccessButton(QWidget *parent = Q_NULLPTR);
     virtual ~MenuAccessButton();
 public:
     virtual QSize sizeHint() const;

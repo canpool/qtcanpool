@@ -15,11 +15,9 @@
 
 QCANPOOL_BEGIN_NAMESPACE
 
-
 WindowToolBarPrivate::WindowToolBarPrivate()
     : m_signalEnabled(false)
 {
-
 }
 
 void WindowToolBarPrivate::init()

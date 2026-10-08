@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "widgetitemdelegate_p.h"
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QApplication>

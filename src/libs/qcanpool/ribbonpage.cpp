@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "ribbonpage.h"
 #include "ribbonpage_p.h"
 #include "ribbongroup.h"
@@ -24,10 +24,12 @@ RibbonPagePrivate::RibbonPagePrivate()
     : m_title(QString("page"))
     , m_groupXBase(0)
     , m_groupsWidth(0)
-{}
+{
+}
 
 RibbonPagePrivate::~RibbonPagePrivate()
-{}
+{
+}
 
 void RibbonPagePrivate::init()
 {
@@ -128,7 +130,7 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
 
         int scrollpix = 0;
         if (!numPixels.isNull())
-            scrollpix = numPixels.x() / 4; // FIXME
+            scrollpix = numPixels.x() / 4;   // FIXME
         else if (!numDegrees.isNull())
             scrollpix = numDegrees.y();
         else {

@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -23,8 +23,8 @@ class RibbonBar;
  * RibbonWindow(QWidget *parent = Q_NULLPTR);
  * @endcode
  *
- * 由于无边框窗体存在一些缺陷，所以提供 setFrameless 接口来设置是否采用无边框。如果不采用无边框的话，window 原生标题栏加上
- * RibbonBar 的高度比较高，可以考虑将 RibbonBar 设置为 wps 模式 @sa RibbonBar::setRibbonStyle
+ * 由于无边框窗体存在一些缺陷，所以提供 setFrameless 接口来设置是否采用无边框。如果不采用无边框的话，window
+ * 原生标题栏加上 RibbonBar 的高度比较高，可以考虑将 RibbonBar 设置为 wps 模式 @sa RibbonBar::setRibbonStyle
  *
  * @code
  * void setFrameless(bool frameless);
@@ -48,7 +48,6 @@ public:
     void setFrameless(bool frameless);
 
     void updateWindowFlags(Qt::WindowFlags flags) Q_DECL_OVERRIDE;
-
 protected:
     virtual bool eventFilter(QObject *obj, QEvent *e) Q_DECL_OVERRIDE;
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;

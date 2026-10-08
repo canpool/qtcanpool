@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -73,11 +73,9 @@ Q_SIGNALS:
     void removingTab(int index);
     void tabInserted(int index);
     void elidedChanged(bool elided);
-
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
     virtual void wheelEvent(QWheelEvent *event) override;
-
 private:
     QX_DECLARE_PRIVATE(DockTabBar)
 };

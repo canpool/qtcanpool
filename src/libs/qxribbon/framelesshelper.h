@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include <QObject>
@@ -11,7 +11,7 @@
 #define QTRESULT qintptr
 #else
 #define QTRESULT long
-#endif // QTRESULT
+#endif   // QTRESULT
 
 class QWidget;
 class FramelessHelperPrivate;
@@ -44,11 +44,9 @@ Q_SIGNALS:
     void windowIconChanged(const QIcon &icon);
     void windowTitleChanged(const QString &title);
     void windowStateChanged(Qt::WindowStates state);
-
 protected:
-    virtual bool eventFilter(QObject* object, QEvent* event);
+    virtual bool eventFilter(QObject *object, QEvent *event);
     virtual bool nativeEventFilter(const QByteArray &eventType, void *message, QTRESULT *result);
-
 private:
     FramelessHelperPrivate *d;
 };

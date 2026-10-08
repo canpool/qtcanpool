@@ -30,4 +30,4 @@ private:
     QAction *m_actionClose;
     QMenu *m_menuView;
 };
-#endif // MAINWINDOW_H
+#endif   // MAINWINDOW_H

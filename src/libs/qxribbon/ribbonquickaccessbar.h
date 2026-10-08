@@ -1,7 +1,7 @@
 ﻿/**
  * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -19,7 +19,6 @@ class QX_RIBBON_EXPORT RibbonQuickAccessBar : public QToolBar
 public:
     explicit RibbonQuickAccessBar(QWidget *parent = Q_NULLPTR);
     virtual ~RibbonQuickAccessBar();
-
 public:
     QAction *actionCustomizeButton() const;
     void setActionVisible(QAction *action, bool visible);
@@ -32,14 +31,11 @@ public:
 Q_SIGNALS:
     void showCustomizeMenu(QMenu *menu);
     void customizeActionChanged();
-
 protected:
     virtual bool event(QEvent *event);
     virtual void actionEvent(QActionEvent *event);
-
 private:
     QX_DECLARE_PRIVATE(RibbonQuickAccessBar)
 };
 
 QX_RIBBON_END_NAMESPACE
-

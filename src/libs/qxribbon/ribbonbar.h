@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -99,7 +99,8 @@ class QX_RIBBON_EXPORT RibbonBar : public QMenuBar
 {
     Q_OBJECT
     Q_PROPERTY(RibbonStyle ribbonStyle READ currentRibbonStyle WRITE setRibbonStyle)
-    Q_PROPERTY(QuickAccessBarPosition quickAccessBarPosition READ quickAccessBarPosition WRITE setQuickAccessBarPosition)
+    Q_PROPERTY(
+        QuickAccessBarPosition quickAccessBarPosition READ quickAccessBarPosition WRITE setQuickAccessBarPosition)
     Q_PROPERTY(bool minimized READ isMinimized WRITE setMinimized)
     Q_PROPERTY(bool minimumButton READ haveShowMinimumButton WRITE showMinimumButton)
     Q_PROPERTY(Qt::Alignment windowTitleAligment READ windowTitleAligment WRITE setWindowTitleAligment)

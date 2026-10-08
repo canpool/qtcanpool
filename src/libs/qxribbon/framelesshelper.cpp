@@ -1,7 +1,7 @@
 ﻿/**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "framelesshelper.h"
 
 #include <QWidget>
@@ -13,7 +13,7 @@
 
 #ifdef FRAMELESS_USE_NATIVE
 #include <QWindow>
-#endif // FRAMELESS_USE_NATIVE
+#endif   // FRAMELESS_USE_NATIVE
 
 #ifdef Q_OS_WINDOWS
 #include <windows.h>
@@ -34,7 +34,6 @@ public:
     ~FramelessHelperPrivate();
 
     bool isCaptionClassName(const char *name);
-
 public:
     QHash<QWidget *, FramelessWidgetData *> m_widgetDataHash;
     QList<QString> m_captionClassNameList;
@@ -50,7 +49,6 @@ FramelessHelperPrivate::FramelessHelperPrivate()
 
 FramelessHelperPrivate::~FramelessHelperPrivate()
 {
-
 }
 
 bool FramelessHelperPrivate::isCaptionClassName(const char *name)
@@ -73,12 +71,10 @@ public:
     virtual bool handleWidgetEvent(QEvent *event);
 
     void handleWindowStateChangeEvent();
-
 protected:
     FramelessHelperPrivate *d;
     QWidget *m_pWidget;
 };
-
 
 FramelessWidgetData::FramelessWidgetData(FramelessHelperPrivate *_d, QWidget *widget)
 {
@@ -89,7 +85,6 @@ FramelessWidgetData::FramelessWidgetData(FramelessHelperPrivate *_d, QWidget *wi
 
 FramelessWidgetData::~FramelessWidgetData()
 {
-
 }
 
 QWidget *FramelessWidgetData::widget()
@@ -112,13 +107,12 @@ void FramelessWidgetData::handleWindowStateChangeEvent()
     }
 }
 
-
 #ifdef FRAMELESS_USE_NATIVE
 
 #ifdef Q_OS_WINDOWS
 
 #ifndef WM_DPICHANGED
-#define WM_DPICHANGED   0x02E0
+#define WM_DPICHANGED 0x02E0
 #endif
 
 /* FramelessWidgetDataNativeWin */
@@ -137,9 +131,8 @@ public:
     bool handleNonClientHitTest(MSG *msg, QTRESULT *result);
 
     void setFrameChanged(MSG *msg);
-
 private:
-    UINT m_dpi[2] = {96, 96}; // 0-old, 1-new
+    UINT m_dpi[2] = {96, 96};   // 0-old, 1-new
 };
 
 FramelessWidgetDataNativeWin::FramelessWidgetDataNativeWin(FramelessHelperPrivate *_d, QWidget *widget)
@@ -156,7 +149,6 @@ FramelessWidgetDataNativeWin::FramelessWidgetDataNativeWin(FramelessHelperPrivat
 
 FramelessWidgetDataNativeWin::~FramelessWidgetDataNativeWin()
 {
-
 }
 
 qreal FramelessWidgetDataNativeWin::devicePixelRatio()
@@ -259,14 +251,23 @@ bool FramelessWidgetDataNativeWin::handleNonClientHitTest(MSG *msg, QTRESULT *re
     bool bottom = pos.y() > h - borderWidth;
 
     if (d->m_bWidgetResizable) {
-        if      (top && left)       { *result = HTTOPLEFT; }
-        else if (top && right)      { *result = HTTOPRIGHT; }
-        else if (bottom && left)    { *result = HTBOTTOMLEFT; }
-        else if (bottom && right)   { *result = HTBOTTOMRIGHT; }
-        else if (left)              { *result = HTLEFT; }
-        else if (right)             { *result = HTRIGHT; }
-        else if (top)               { *result = HTTOP; }
-        else if (bottom)            { *result = HTBOTTOM; }
+        if (top && left) {
+            *result = HTTOPLEFT;
+        } else if (top && right) {
+            *result = HTTOPRIGHT;
+        } else if (bottom && left) {
+            *result = HTBOTTOMLEFT;
+        } else if (bottom && right) {
+            *result = HTBOTTOMRIGHT;
+        } else if (left) {
+            *result = HTLEFT;
+        } else if (right) {
+            *result = HTRIGHT;
+        } else if (top) {
+            *result = HTTOP;
+        } else if (bottom) {
+            *result = HTBOTTOM;
+        }
 
         if (*result != HTNOWHERE) {
             return true;
@@ -296,14 +297,13 @@ void FramelessWidgetDataNativeWin::setFrameChanged(MSG *msg)
     // Inform application of the frame change.
     // Specify the SWP_FRAMECHANGED flag to send a WM_NCCALCSIZE message to a window,
     // even if the window size has not changed
-    SetWindowPos(msg->hwnd, NULL, rcClient.left, rcClient.top,
-                 rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
-                 SWP_FRAMECHANGED);
+    SetWindowPos(msg->hwnd, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left,
+                 rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
 }
 
-#endif // Q_OS_WINDOWS
+#endif   // Q_OS_WINDOWS
 
-#else // not FRAMELESS_USE_NATIVE
+#else   // not FRAMELESS_USE_NATIVE
 
 /* FramelessCursor */
 
@@ -314,7 +314,6 @@ public:
 
     void reset();
     void update(const QPoint &gMousePos, const QRect &frameRect);
-
 public:
     bool m_bOnEdges;
     bool m_bOnLeftEdge;
@@ -349,26 +348,23 @@ void FramelessCursor::update(const QPoint &gMousePos, const QRect &frameRect)
 {
     int globalMouseX = gMousePos.x();
     int globalMouseY = gMousePos.y();
-    int frameX       = frameRect.x();
-    int frameY       = frameRect.y();
-    int frameWidth   = frameRect.width();
-    int frameHeight  = frameRect.height();
+    int frameX = frameRect.x();
+    int frameY = frameRect.y();
+    int frameWidth = frameRect.width();
+    int frameHeight = frameRect.height();
 
-    m_bOnLeftEdge    = (globalMouseX >= frameX && globalMouseX <= frameX + s_nBorderWidth);
-    m_bOnRightEdge   = (globalMouseX >= frameX + frameWidth - s_nBorderWidth &&
-                        globalMouseX <= frameX + frameWidth);
-    m_bOnTopEdge     = (globalMouseY >= frameY && globalMouseY <= frameY + s_nBorderWidth);
-    m_bOnBottomEdge  = (globalMouseY >= frameY + frameHeight - s_nBorderWidth &&
-                        globalMouseY <= frameY + frameHeight);
+    m_bOnLeftEdge = (globalMouseX >= frameX && globalMouseX <= frameX + s_nBorderWidth);
+    m_bOnRightEdge = (globalMouseX >= frameX + frameWidth - s_nBorderWidth && globalMouseX <= frameX + frameWidth);
+    m_bOnTopEdge = (globalMouseY >= frameY && globalMouseY <= frameY + s_nBorderWidth);
+    m_bOnBottomEdge = (globalMouseY >= frameY + frameHeight - s_nBorderWidth && globalMouseY <= frameY + frameHeight);
 
-    m_bOnTopLeftEdge     = m_bOnTopEdge && m_bOnLeftEdge;
-    m_bOnBottomLeftEdge  = m_bOnBottomEdge && m_bOnLeftEdge;
-    m_bOnTopRightEdge    = m_bOnTopEdge && m_bOnRightEdge;
+    m_bOnTopLeftEdge = m_bOnTopEdge && m_bOnLeftEdge;
+    m_bOnBottomLeftEdge = m_bOnBottomEdge && m_bOnLeftEdge;
+    m_bOnTopRightEdge = m_bOnTopEdge && m_bOnRightEdge;
     m_bOnBottomRightEdge = m_bOnBottomEdge && m_bOnRightEdge;
 
     m_bOnEdges = m_bOnLeftEdge || m_bOnRightEdge || m_bOnTopEdge || m_bOnBottomEdge;
 }
-
 
 /* FramelessWidgetDataQt  */
 
@@ -379,7 +375,6 @@ public:
     ~FramelessWidgetDataQt();
 
     bool handleWidgetEvent(QEvent *event) override;
-
 private:
     void updateCursorShape(const QPoint &gMousePos);
     void resizeWidget(const QPoint &gMousePos);
@@ -391,7 +386,6 @@ private:
     bool handleLeaveEvent(QEvent *event);
     bool handleHoverMoveEvent(QHoverEvent *event);
     bool handleDoubleClickedMouseEvent(QMouseEvent *event);
-
 private:
     QPoint m_ptDragPos;
     FramelessCursor m_pressedMousePos;
@@ -665,7 +659,7 @@ bool FramelessWidgetDataQt::handleDoubleClickedMouseEvent(QMouseEvent *event)
     return false;
 }
 
-#endif // FRAMELESS_USE_NATIVE
+#endif   // FRAMELESS_USE_NATIVE
 
 /* FramelessHelper */
 FramelessHelper::FramelessHelper(QObject *parent)
@@ -703,7 +697,7 @@ void FramelessHelper::addWidget(QWidget *w)
 #else
         FramelessWidgetData *data = new FramelessWidgetData(d, w);
 #endif
-#else // FRAMELESS_USE_NATIVE
+#else   // FRAMELESS_USE_NATIVE
         FramelessWidgetDataQt *data = new FramelessWidgetDataQt(d, w);
 #endif
         d->m_widgetDataHash.insert(w, data);
@@ -812,21 +806,21 @@ bool FramelessHelper::nativeEventFilter(const QByteArray &eventType, void *messa
         }
 #ifndef FRAMELESS_USE_NATIVE
         switch (msg->message) {
-            case WM_GETMINMAXINFO: {
-                // prevent taskbar is covered when maximized
-                if (widget->isMaximized()) {
-                    QScreen *screen = widget->screen();
-                    qreal ratio = screen->devicePixelRatio();
-                    const QRect rc = screen->availableGeometry();
-                    MINMAXINFO *p = (MINMAXINFO *)(msg->lParam);
-                    p->ptMaxPosition.x = 0;
-                    p->ptMaxPosition.y = 0;
-                    p->ptMaxSize.x = rc.width() * ratio;
-                    p->ptMaxSize.y = rc.height() * ratio;
-                    *result = ::DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
-                    return true;
-                }
+        case WM_GETMINMAXINFO: {
+            // prevent taskbar is covered when maximized
+            if (widget->isMaximized()) {
+                QScreen *screen = widget->screen();
+                qreal ratio = screen->devicePixelRatio();
+                const QRect rc = screen->availableGeometry();
+                MINMAXINFO *p = (MINMAXINFO *)(msg->lParam);
+                p->ptMaxPosition.x = 0;
+                p->ptMaxPosition.y = 0;
+                p->ptMaxSize.x = rc.width() * ratio;
+                p->ptMaxSize.y = rc.height() * ratio;
+                *result = ::DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
+                return true;
             }
+        }
         }
 #else
         FramelessWidgetDataNativeWin *winData = reinterpret_cast<FramelessWidgetDataNativeWin *>(data);
@@ -834,13 +828,13 @@ bool FramelessHelper::nativeEventFilter(const QByteArray &eventType, void *messa
             return false;
         }
         return winData->handleNativeWindowsMessage(msg, result);
-#endif // FRAMELESS_USE_NATIVE
+#endif   // FRAMELESS_USE_NATIVE
     }
 #else
     Q_UNUSED(eventType)
     Q_UNUSED(message)
     Q_UNUSED(result)
-#endif // Q_OS_WINDOWS
+#endif   // Q_OS_WINDOWS
 
     return false;
 }

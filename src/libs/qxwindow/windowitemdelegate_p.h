@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #ifndef WINDOWITEMDELEGATE_P_H
 #define WINDOWITEMDELEGATE_P_H
 

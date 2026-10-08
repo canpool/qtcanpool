@@ -41,7 +41,8 @@ void WindowStyleAgentPrivate::notifyThemeChanged(WindowStyleAgent::SystemTheme t
     Constructor. Since it is not related to a concrete window instance, it is better to be used
     as a singleton.
 */
-WindowStyleAgent::WindowStyleAgent(QObject *parent) : WindowStyleAgent(*new WindowStyleAgentPrivate(), parent)
+WindowStyleAgent::WindowStyleAgent(QObject *parent)
+    : WindowStyleAgent(*new WindowStyleAgentPrivate(), parent)
 {
 }
 
@@ -64,7 +65,9 @@ WindowStyleAgent::SystemTheme WindowStyleAgent::systemTheme() const
 /*!
     \internal
 */
-WindowStyleAgent::WindowStyleAgent(WindowStyleAgentPrivate &d, QObject *parent) : QObject(parent), d_ptr(&d)
+WindowStyleAgent::WindowStyleAgent(WindowStyleAgentPrivate &d, QObject *parent)
+    : QObject(parent)
+    , d_ptr(&d)
 {
     d.q_ptr = this;
 

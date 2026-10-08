@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #ifndef WINDOWKIT_WIN_H
 #define WINDOWKIT_WIN_H
 
@@ -75,7 +75,8 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-namespace Private {
+namespace Private
+{
 
 RTL_OSVERSIONINFOW GetRealOSVersion();
 
@@ -130,7 +131,7 @@ inline bool IsWindows10Only_Real()
     return IsWindows10OrGreater_Real() && !IsWindows11OrGreater_Real();
 }
 
-} // namespace Private
+}   // namespace Private
 
 //
 // Registry Helpers

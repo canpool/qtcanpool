@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -99,32 +99,24 @@ public:
         // If the flag is set, the user can use the mouse middle button to close the tab under the mouse
         MiddleMouseButtonClosesTab = 0x2000000,
         // Set this flag to disable eliding of tab texts in dock area tabs
-        DisableTabTextEliding =      0x4000000,
+        DisableTabTextEliding = 0x4000000,
         // Set this flag to show label texts in dock area tabs only for active tabs
         ShowTabTextOnlyForActiveTab = 0x8000000,
 
         // default configuration of dock area title bar buttons
-        DefaultDockAreaButtons = DockAreaHasCloseButton
-                               | DockAreaHasUndockButton
-                               | DockAreaHasTabsMenuButton,
+        DefaultDockAreaButtons = DockAreaHasCloseButton | DockAreaHasUndockButton | DockAreaHasTabsMenuButton,
 
         // default base configuration settings
-        DefaultBaseConfig = DefaultDockAreaButtons
-                          | ActiveTabHasCloseButton
-                          | XmlCompressionEnabled
-                          | FloatingContainerHasWidgetTitle,
+        DefaultBaseConfig =
+            DefaultDockAreaButtons | ActiveTabHasCloseButton | XmlCompressionEnabled | FloatingContainerHasWidgetTitle,
 
         // the default configuration for opaque operations
-        DefaultOpaqueConfig = DefaultBaseConfig
-                            | OpaqueSplitterResize
-                            | DragPreviewShowsContentPixmap,
+        DefaultOpaqueConfig = DefaultBaseConfig | OpaqueSplitterResize | DragPreviewShowsContentPixmap,
 
         // the default configuration for non opaque operations
-        DefaultNonOpaqueConfig = DefaultBaseConfig
-                               | DragPreviewShowsContentPixmap,
+        DefaultNonOpaqueConfig = DefaultBaseConfig | DragPreviewShowsContentPixmap,
         // the default configuration for non opaque operations that show a real window with frame
-        NonOpaqueWithWindowFrame = DefaultNonOpaqueConfig
-                                 | DragPreviewHasWindowFrame
+        NonOpaqueWithWindowFrame = DefaultNonOpaqueConfig | DragPreviewHasWindowFrame
     };
     Q_DECLARE_FLAGS(ConfigFlags, ConfigFlag)
 
@@ -154,12 +146,9 @@ public:
         // if this flag is set, the auto hide title bar has a minimize button to collapse the dock widget
         AutoHideHasMinimizeButton = 0x100,
 
-        DefaultAutoHideConfig = AutoHideFeatureEnabled
-                              | DockAreaHasAutoHideButton
-                              | AutoHideHasMinimizeButton
+        DefaultAutoHideConfig = AutoHideFeatureEnabled | DockAreaHasAutoHideButton | AutoHideHasMinimizeButton
     };
     Q_DECLARE_FLAGS(AutoHideFlags, AutoHideFlag)
-
 public:
     DockManager();
     ~DockManager();
@@ -179,8 +168,8 @@ public:
     static int startDragDistance();
 
     // Helper function to set focus depending on the configuration of the FocusHighlighting flag
-    template <class QWidgetPtr>
-    static void setWidgetFocus(QWidgetPtr widget) {
+    template <class QWidgetPtr> static void setWidgetFocus(QWidgetPtr widget)
+    {
         if (!DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
             return;
         }
@@ -189,7 +178,6 @@ public:
 
     static QString floatingContainersTitle();
     static void setFloatingContainersTitle(const QString &title);
-
 private:
     QX_DECLARE_PRIVATE(DockManager)
 };

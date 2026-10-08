@@ -849,8 +849,7 @@ void RibbonSeparator::paintEvent(QPaintEvent *event)
     painter.setPen(palette().window().color().darker(114));
     int x1 = rect().center().x();
 
-    painter.drawLine(QPoint(x1, rect().top() + m_topMargin),
-                     QPoint(x1, rect().bottom() - m_bottomMargin));
+    painter.drawLine(QPoint(x1, rect().top() + m_topMargin), QPoint(x1, rect().bottom() - m_bottomMargin));
 }
 
 QX_RIBBON_END_NAMESPACE

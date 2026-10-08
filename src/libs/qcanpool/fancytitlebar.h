@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 /****************************************************************************
  * NOTES:
  *  1) the mainWidget is host-widget, FancyTitleBar is used as its event filter
@@ -43,12 +43,13 @@ class FancyTitleBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyTitleBar : public QObject
 {
     Q_OBJECT
-
 public:
     enum ButtonRole {
-        MinButton, MaxButton, NormalButton, CloseButton,
+        MinButton,
+        MaxButton,
+        NormalButton,
+        CloseButton,
     };
-
 public:
     explicit FancyTitleBar(QWidget *mainWidget);
     virtual ~FancyTitleBar();
@@ -56,13 +57,13 @@ public:
     void setTitleWidget(QWidget *widget);
 
     QToolButton *logoButton() const;
-    QLabel  *titleLabel() const;
+    QLabel *titleLabel() const;
     QWidget *systemToolBar() const;
     QWidget *mainWidget() const;
 
     QAction *addAction(const QIcon &icon, const QString &text);
-    void     addAction(QAction *action);
-    void     insertAction(QAction *before, QAction *action);
+    void addAction(QAction *action);
+    void insertAction(QAction *before, QAction *action);
     QAction *addSeparator();
     QAction *insertSeparator(QAction *before);
     QAction *addWidget(QWidget *widget);
@@ -84,17 +85,14 @@ Q_SIGNALS:
     void windowResizable(bool resizable);
     void windowMovable(bool movable);
     void windowIconChanged(QIcon &icon);
-
 public:
     void setIconSize(const QSize &size);
-
 protected:
-    virtual bool eventFilter(QObject* object, QEvent* event);
-
+    virtual bool eventFilter(QObject *object, QEvent *event);
 private:
     FancyTitleBarPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYTITLEBAR_H
+#endif   // FANCYTITLEBAR_H

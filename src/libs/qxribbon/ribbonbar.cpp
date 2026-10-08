@@ -575,8 +575,7 @@ void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &tit
         // 绘制 tab 边框
         painter.setPen(gColor);
         painter.setBrush(Qt::NoBrush);
-        QRect tabRect(contextRect.bottomLeft(),
-                      QPoint(contextRect.bottomRight().x(), m_tabBar->geometry().bottom()));
+        QRect tabRect(contextRect.bottomLeft(), QPoint(contextRect.bottomRight().x(), m_tabBar->geometry().bottom()));
         painter.drawLine(tabRect.topLeft(), tabRect.bottomLeft());
         painter.drawLine(tabRect.topRight(), tabRect.bottomRight());
         painter.restore();
@@ -666,7 +665,7 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     int minTabBarWidth = calcMinTabBarWidth();
     if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
         m_tabBar->setGeometry(x, y, qMin(minTabBarWidth, allowedTabBarWidth), tabH);
-    } else { // RibbonBar::TBCenterPosition
+    } else {   // RibbonBar::TBCenterPosition
         if (minTabBarWidth < allowedTabBarWidth) {
             // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
             // |~~ xOffset ~~|~~~~ mintabBarWidth ~~~~|~~ xOffset ~~|
@@ -775,7 +774,7 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     int minTabBarWidth = calcMinTabBarWidth();
     if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
         m_tabBar->setGeometry(x, y, qMin(minTabBarWidth, allowedTabBarWidth), tabH);
-    } else { // RibbonBar::TBCenterPosition
+    } else {   // RibbonBar::TBCenterPosition
         if (minTabBarWidth < allowedTabBarWidth) {
             // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
             // |~~ xOffset ~~|~~~~ mintabBarWidth ~~~~|~~ xOffset ~~|
@@ -916,7 +915,7 @@ int RibbonBarPrivate::calcMinTabBarWidth() const
     int mintabBarWidth = 0;
 
     int cnt = m_tabBar->count();
-    ++cnt; // add sentry tab
+    ++cnt;   // add sentry tab
 
     for (int i = 0; i < cnt; ++i) {
         mintabBarWidth += m_tabBar->tabRect(i).width();
@@ -1065,7 +1064,7 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
         return;
     }
     if (index == m_tabBar->count()) {
-        return; // sentry tab
+        return;   // sentry tab
     }
     if (m_minimized) {
         if (!m_stack->isVisible() && m_stack->isPopup()) {
@@ -1093,7 +1092,7 @@ void RibbonBarPrivate::onCurrentRibbonTabDoubleClicked(int index)
         return;
     }
     if (index == m_tabBar->count()) {
-        return; // sentry tab
+        return;   // sentry tab
     }
     q->setMinimized(!m_minimized);
 }

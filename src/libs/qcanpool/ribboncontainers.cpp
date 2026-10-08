@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "ribboncontainers.h"
 
 #include <QGridLayout>
@@ -36,7 +36,6 @@ public:
 RibbonGridLayout::RibbonGridLayout(QWidget *parent)
     : QGridLayout(parent)
 {
-
 }
 
 void RibbonGridLayout::addWidget(QWidget *widget)
@@ -54,14 +53,14 @@ public:
     RibbonGridContainerPrivate();
 
     void init();
-
 public:
     RibbonGridContainer *q;
     RibbonGridLayout *m_gridLayout;
 };
 
 RibbonGridContainerPrivate::RibbonGridContainerPrivate()
-{}
+{
+}
 
 void RibbonGridContainerPrivate::init()
 {
@@ -99,8 +98,7 @@ public:
     void init();
 
     QAction *addAction(const QIcon &icon, const QString &text, RibbonGroup::GroupSize size);
-    void addAction(QAction *action, RibbonGroup::GroupSize size); // for action that has menu
-
+    void addAction(QAction *action, RibbonGroup::GroupSize size);   // for action that has menu
 public:
     RibbonActionContainer *q;
     QHBoxLayout *m_largeLayout;
@@ -109,7 +107,8 @@ public:
 };
 
 RibbonActionContainerPrivate::RibbonActionContainerPrivate()
-{}
+{
+}
 
 void RibbonActionContainerPrivate::init()
 {
@@ -134,8 +133,7 @@ void RibbonActionContainerPrivate::init()
     q->setLayout(mainLayout);
 }
 
-QAction *RibbonActionContainerPrivate::addAction(const QIcon &icon, const QString &text,
-                                                      RibbonGroup::GroupSize size)
+QAction *RibbonActionContainerPrivate::addAction(const QIcon &icon, const QString &text, RibbonGroup::GroupSize size)
 {
     QAction *action = new QAction(icon, text, q);
     addAction(action, size);
@@ -149,27 +147,24 @@ void RibbonActionContainerPrivate::addAction(QAction *action, RibbonGroup::Group
     button->setDefaultAction(action);
 
     switch (size) {
-        case RibbonGroup::GroupLarge: {
-            button->setIconSize(QSize(32, 32));
-            button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-            m_largeLayout->addWidget(button);
-            m_largeLayout->setAlignment(button, Qt::AlignLeft);
-        }
-        break;
-        case RibbonGroup::GroupMedium: {
-            button->setIconSize(QSize(18, 18));
-            button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-            m_mediumLayout->addWidget(button);
-            m_mediumLayout->setAlignment(button, Qt::AlignLeft);
-        }
-        break;
-        default: {
-            button->setIconSize(QSize(18, 18));
-            button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-            m_smallLayout->addWidget(button);
-            m_smallLayout->setAlignment(button, Qt::AlignLeft);
-        }
-        break;
+    case RibbonGroup::GroupLarge: {
+        button->setIconSize(QSize(32, 32));
+        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        m_largeLayout->addWidget(button);
+        m_largeLayout->setAlignment(button, Qt::AlignLeft);
+    } break;
+    case RibbonGroup::GroupMedium: {
+        button->setIconSize(QSize(18, 18));
+        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        m_mediumLayout->addWidget(button);
+        m_mediumLayout->setAlignment(button, Qt::AlignLeft);
+    } break;
+    default: {
+        button->setIconSize(QSize(18, 18));
+        button->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        m_smallLayout->addWidget(button);
+        m_smallLayout->setAlignment(button, Qt::AlignLeft);
+    } break;
     }
     button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 }
@@ -188,8 +183,7 @@ RibbonActionContainer::~RibbonActionContainer()
     delete d;
 }
 
-QAction *RibbonActionContainer::addAction(const QIcon &icon, const QString &text,
-                                               RibbonGroup::GroupSize size)
+QAction *RibbonActionContainer::addAction(const QIcon &icon, const QString &text, RibbonGroup::GroupSize size)
 {
     return d->addAction(icon, text, size);
 }
@@ -206,7 +200,6 @@ public:
     RibbonLoftContainerPrivate();
 
     void init();
-
 public:
     RibbonLoftContainer *q;
     QToolBar *m_topBar;
@@ -215,7 +208,6 @@ public:
 
 RibbonLoftContainerPrivate::RibbonLoftContainerPrivate()
 {
-
 }
 
 void RibbonLoftContainerPrivate::init()

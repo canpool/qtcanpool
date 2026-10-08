@@ -114,7 +114,7 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
                 {
                     const int maxTryCount = 3;
                     int tryCount = 0;
-                    int alignment = Qt::TextShowMnemonic | Qt::TextWordWrap; // 文本对齐方式
+                    int alignment = Qt::TextShowMnemonic | Qt::TextWordWrap;   // 文本对齐方式
                     do {
                         // 先计算两行文本的紧凑矩形，从一半开始逐渐递增
                         textRange.setWidth(s.width() / 2 + (s.width() / 2) * (float(tryCount) / maxTryCount));
@@ -181,7 +181,7 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
 #ifdef Q_OS_WINDOWS
         if (Qt::ToolButtonIconOnly == opt.toolButtonStyle) {
 #else
-        if (1) { // Tested on ubuntu 22.04
+        if (1) {   // Tested on ubuntu 22.04
 #endif
             if (opt.features & QStyleOptionToolButton::MenuButtonPopup ||
                 opt.features & QStyleOptionToolButton::HasMenu) {
@@ -577,13 +577,13 @@ void RibbonButtonPrivate::drawButton(QStyleOptionToolButton &opt, QPainter &p, c
             if (tool.state & QStyle::State_MouseOver) {
                 if (m_mouseOnSubControl) {
                     if (opt.toolButtonStyle == Qt::ToolButtonTextUnderIcon) {   // LargeButton
-                        tool.rect = m_iconRect;   // 鼠标在文字区，把图标显示为正常
+                        tool.rect = m_iconRect;                                 // 鼠标在文字区，把图标显示为正常
                     } else {
                         tool.rect = m_iconRect.united(m_textRect);   // 鼠标在箭头区，把图标和文字显示为正常
                     }
                 } else {
                     if (opt.toolButtonStyle == Qt::ToolButtonTextUnderIcon) {   // LargeButton
-                        tool.rect = m_textRect.united(m_indicatorArrowRect);   // 鼠标在图标区，把文字显示为正常
+                        tool.rect = m_textRect.united(m_indicatorArrowRect);    // 鼠标在图标区，把文字显示为正常
                     } else {
                         tool.rect = m_indicatorArrowRect;   // 鼠标在非箭头区，把箭头区显示为正常
                     }

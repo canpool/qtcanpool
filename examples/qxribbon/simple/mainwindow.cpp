@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     group->addSmallAction(new QAction(tr("Sa2222"), this));
     group->addSmallAction(new QAction(tr("Sa3333333"), this));
 
-
     page = rb->addPage(tr("loooooooooooongpage2"));
     group = page->addGroup(tr("looooooooooonggroup1"));
     RibbonGallery *gallery = group->addGallery();

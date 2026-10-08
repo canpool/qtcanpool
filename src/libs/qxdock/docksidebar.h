@@ -63,14 +63,11 @@ public:
 
     int spacing() const;
     void setSpacing(int spacing);
-
 protected:
     void insertTab(int index, DockSideTab *sideTab);
     void saveState(QXmlStreamWriter &s) const;
-
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
-
 private:
     QX_DECLARE_PRIVATE(DockSideBar)
     friend class DockContainerPrivate;

@@ -54,7 +54,6 @@ public:
     void resetToInitialDockWidgetSize();
 
     Qt::Orientation orientation() const;
-
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
@@ -63,10 +62,8 @@ protected:
 
     void updateSize();
     void saveState(QXmlStreamWriter &s) const;
-
 private:
     void setSideBarArea(Qx::DockSideBarArea area);
-
 private:
     QX_DECLARE_PRIVATE(DockAutoHideContainer)
     friend class DockSideBar;

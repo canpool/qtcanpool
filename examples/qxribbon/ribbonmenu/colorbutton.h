@@ -19,4 +19,4 @@ private:
     QColor m_color;
 };
 
-#endif // COLORBUTTON_H
+#endif   // COLORBUTTON_H

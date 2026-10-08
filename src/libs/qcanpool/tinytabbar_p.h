@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qcanpool.h"
@@ -27,7 +27,9 @@ public:
 
     void init();
     bool validIndex(int index) const
-    { return index >= 0 && index < m_tabs.count(); }
+    {
+        return index >= 0 && index < m_tabs.count();
+    }
 
     int indexOf(QAction *action);
 

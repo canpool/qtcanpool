@@ -618,7 +618,7 @@ void DockFloatingContainer::moveFloating()
  */
 void DockFloatingContainer::deleteContent()
 {
-    std::vector<QPointer<DockPanel> > panels;
+    std::vector<QPointer<DockPanel>> panels;
     for (int i = 0; i < dockContainer()->dockPanelCount(); ++i) {
         panels.push_back(dockContainer()->dockPanel(i));
     }
@@ -626,7 +626,7 @@ void DockFloatingContainer::deleteContent()
         if (!p) {
             continue;
         }
-        std::vector<QPointer<QWidget> > deleteWidgets;
+        std::vector<QPointer<QWidget>> deleteWidgets;
         for (auto w : p->dockWidgets()) {
             deleteWidgets.push_back(w);
         }

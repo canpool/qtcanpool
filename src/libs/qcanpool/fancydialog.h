@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYDIALOG_H
 #define FANCYDIALOG_H
 
@@ -36,11 +36,10 @@ public:
     void setFixedHeight(int h);
 
     void setWindowFlags(Qt::WindowFlags type);
-
 private:
     FancyDialogPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYDIALOG_H
+#endif   // FANCYDIALOG_H

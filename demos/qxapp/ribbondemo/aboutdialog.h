@@ -12,4 +12,4 @@ public:
     virtual ~AboutDialog();
 };
 
-#endif // ABOUTDIALOG_H
+#endif   // ABOUTDIALOG_H

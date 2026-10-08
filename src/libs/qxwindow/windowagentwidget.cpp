@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowagentwidget.h"
 #include "widgetitemdelegate_p.h"
 #include "windowagentwidget_p.h"
@@ -30,7 +30,8 @@ void WindowAgentWidgetPrivate::init()
 /*!
     Constructs a widget agent, it's better to set the widget to setup as \a parent.
 */
-WindowAgentWidget::WindowAgentWidget(QObject *parent) : WindowAgentWidget(*new WindowAgentWidgetPrivate(), parent)
+WindowAgentWidget::WindowAgentWidget(QObject *parent)
+    : WindowAgentWidget(*new WindowAgentWidgetPrivate(), parent)
 {
 }
 
@@ -150,7 +151,8 @@ void WindowAgentWidget::addCaptionClassName(const QString &name)
 /*!
     \internal
 */
-WindowAgentWidget::WindowAgentWidget(WindowAgentWidgetPrivate &d, QObject *parent) : WindowAgentBase(d, parent)
+WindowAgentWidget::WindowAgentWidget(WindowAgentWidgetPrivate &d, QObject *parent)
+    : WindowAgentBase(d, parent)
 {
     d.init();
 }

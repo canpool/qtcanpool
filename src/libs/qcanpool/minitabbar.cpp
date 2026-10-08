@@ -12,28 +12,23 @@ QCANPOOL_BEGIN_NAMESPACE
 
 inline static bool verticalTabs(QTabBar::Shape shape)
 {
-    return shape == QTabBar::RoundedWest
-           || shape == QTabBar::RoundedEast
-           || shape == QTabBar::TriangularWest
-           || shape == QTabBar::TriangularEast;
+    return shape == QTabBar::RoundedWest || shape == QTabBar::RoundedEast || shape == QTabBar::TriangularWest ||
+           shape == QTabBar::TriangularEast;
 }
 
 inline static bool leftVerticalTabs(QTabBar::Shape shape)
 {
-    return shape == QTabBar::RoundedWest
-           || shape == QTabBar::TriangularWest;
+    return shape == QTabBar::RoundedWest || shape == QTabBar::TriangularWest;
 }
 
 /* MiniTabBar */
 MiniTabBar::MiniTabBar(QWidget *parent)
     : QTabBar{parent}
 {
-
 }
 
 MiniTabBar::~MiniTabBar()
 {
-
 }
 
 QSize MiniTabBar::tabSizeHint(int index) const

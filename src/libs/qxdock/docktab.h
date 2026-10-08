@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -65,7 +65,6 @@ private Q_SLOTS:
     void autoHideDockWidget();
     void onAutoHideToActionClicked();
     void onDockWidgetFeaturesChanged();
-
 protected:
     virtual bool event(QEvent *e) override;
     virtual void mousePressEvent(QMouseEvent *e) override;
@@ -73,7 +72,6 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
     virtual void contextMenuEvent(QContextMenuEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockTab)
     friend class DockWidget;

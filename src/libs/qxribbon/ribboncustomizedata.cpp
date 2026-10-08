@@ -301,7 +301,6 @@ RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString 
     return data;
 }
 
-
 /**
  * @brief 创建一个AddGroupActionType的RibbonCustomizeData
  * @param title group的标题

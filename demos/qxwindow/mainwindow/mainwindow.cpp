@@ -22,7 +22,8 @@
 class ClockWidget : public QLabel
 {
 public:
-    explicit ClockWidget(QWidget *parent = nullptr) : QLabel(parent)
+    explicit ClockWidget(QWidget *parent = nullptr)
+        : QLabel(parent)
     {
         startTimer(100);
         setAlignment(Qt::AlignCenter);
@@ -37,7 +38,8 @@ protected:
     }
 };
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
 {
     installWindowAgent();
 

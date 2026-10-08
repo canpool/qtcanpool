@@ -24,10 +24,8 @@ MainWindow::~MainWindow()
 Dialog::Dialog(QWidget *parent, Qt::WindowFlags f)
     : FancyDialog(parent, f)
 {
-
 }
 
 Dialog::~Dialog()
 {
-
 }

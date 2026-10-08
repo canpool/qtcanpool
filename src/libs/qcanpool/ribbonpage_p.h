@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONPAGE_P_H
 #define RIBBONPAGE_P_H
 
@@ -28,7 +28,9 @@ public:
     void init();
 
     bool validateGroupIndex(int index) const
-    { return index >= 0 && index < m_listGroups.count(); }
+    {
+        return index >= 0 && index < m_listGroups.count();
+    }
 
     void insertGroup(int index, RibbonGroup *group);
     void removeGroup(int index);
@@ -41,7 +43,6 @@ public:
 public Q_SLOTS:
     void slotLeftScrollButton();
     void slotRightScrollButton();
-
 public:
     RibbonPage *q;
     QHBoxLayout *m_layout;
@@ -58,4 +59,4 @@ public:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONPAGE_P_H
+#endif   // RIBBONPAGE_P_H

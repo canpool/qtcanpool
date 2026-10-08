@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "fancybar_p.h"
 #include "fancybar.h"
 #include "fancytitlebar.h"
@@ -21,9 +21,8 @@
 
 QCANPOOL_BEGIN_NAMESPACE
 
-#define TITLE_BAR_HEIGHT    25
-#define MENU_BAR_HEIGHT     25
-
+#define TITLE_BAR_HEIGHT 25
+#define MENU_BAR_HEIGHT  25
 
 FancyBarPrivate::FancyBarPrivate(QWidget *parent)
     : QWidget(parent)
@@ -37,8 +36,8 @@ FancyBarPrivate::FancyBarPrivate(QWidget *parent)
 }
 
 FancyBarPrivate::~FancyBarPrivate()
-{}
-
+{
+}
 
 void FancyBarPrivate::init()
 {
@@ -81,7 +80,7 @@ void FancyBarPrivate::createTitleWidget()
     m_quickAccessBar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     m_quickAccessBar->hide();
     // to resize menuBar when quickAccessBar size was changed
-    connect(m_quickAccessBar, &QuickAccessBar::customizeActionChanged, this, [&] () {
+    connect(m_quickAccessBar, &QuickAccessBar::customizeActionChanged, this, [&]() {
         if (m_style == FancyBar::MergedStyle && m_bMenuBarVisible && m_menuBar) {
             q->update();
         }
@@ -230,7 +229,7 @@ void FancyBarPrivate::registerWidget(QWidget *widget)
 {
     m_titleBar = new FancyTitleBar(widget);
     m_titleBar->setTitleWidget(q);
-    m_titleBar->addCaptionClassName("QLabel"); // title label is caption
+    m_titleBar->addCaptionClassName("QLabel");   // title label is caption
 
     connect(m_titleBar, SIGNAL(windowResizable(bool)), q, SIGNAL(maximizationChanged(bool)));
 }
@@ -257,7 +256,8 @@ QSize FancyBarPrivate::sizeHint() const
 }
 
 FancyBar::FancyBar(QWidget *parent)
-    : QWidget(parent), d(new FancyBarPrivate(this))
+    : QWidget(parent)
+    , d(new FancyBarPrivate(this))
 {
     Q_ASSERT(parent);
     setAttribute(Qt::WA_StyledBackground, true);

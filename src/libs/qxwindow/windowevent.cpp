@@ -1,14 +1,15 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowevent_p.h"
 #include <QtCore/QAbstractNativeEventFilter>
 #include <QtCore/QCoreApplication>
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-WindowNativeEventFilter::WindowNativeEventFilter() : m_nativeDispatcher(nullptr)
+WindowNativeEventFilter::WindowNativeEventFilter()
+    : m_nativeDispatcher(nullptr)
 {
 }
 
@@ -28,7 +29,7 @@ WindowNativeEventDispatcher::~WindowNativeEventDispatcher()
 }
 
 bool WindowNativeEventDispatcher::nativeDispatch(const QByteArray &eventType, void *message,
-                                           QT_NATIVE_EVENT_RESULT_TYPE *result)
+                                                 QT_NATIVE_EVENT_RESULT_TYPE *result)
 {
     for (const auto &ef : qAsConst(m_nativeEventFilters)) {
         if (ef->nativeEventFilter(eventType, message, result))
@@ -96,8 +97,8 @@ AppNativeEventFilter::~AppNativeEventFilter()
     }
 }
 
-
-WindowSharedEventFilter::WindowSharedEventFilter() : m_sharedDispatcher(nullptr)
+WindowSharedEventFilter::WindowSharedEventFilter()
+    : m_sharedDispatcher(nullptr)
 {
 }
 

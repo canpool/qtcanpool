@@ -56,8 +56,8 @@ public:
         // dock widget can be pinned and added to an auto hide dock container
         DockWidgetPinnable = 0x200,
 
-        DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable
-                                  | DockWidgetFocusable | DockWidgetPinnable,
+        DefaultDockWidgetFeatures =
+            DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable | DockWidgetPinnable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
         GloballyLockableFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetPinnable,
@@ -124,12 +124,10 @@ public:
         StateFloating
     };
 
-    enum ToolBarStyleSource
-    {
+    enum ToolBarStyleSource {
         ToolBarStyleFromDockWindow,
         ToolBarStyleFromDockWidget
     };
-
 public:
     explicit DockWidget(const QString &title, QWidget *parent = nullptr);
     ~DockWidget();
@@ -230,7 +228,6 @@ Q_SIGNALS:
      */
     void visibilityChanged(bool visible);
     void featuresChanged(DockWidget::DockWidgetFeatures features);
-
 protected:
     void setDockWindow(DockWindow *window);
     void setDockPanel(DockPanel *panel);
@@ -241,10 +238,8 @@ protected:
     bool closeDockWidgetInternal(bool forceClose = false);
     void flagAsUnassigned();
     void saveState(QXmlStreamWriter &s) const;
-
 protected:
     virtual bool event(QEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockWidget)
     friend class DockContainer;

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowagentwidget_p.h"
 #include "windowkit_p.h"
 #include "windowkit_win.h"
@@ -39,7 +39,9 @@ class WidgetBorderHandler : public QObject, public WindowNativeEventFilter, publ
 {
 public:
     explicit WidgetBorderHandler(QWidget *widget, WindowContext *ctx, QObject *parent = nullptr)
-        : QObject(parent), widget(widget), ctx(ctx)
+        : QObject(parent)
+        , widget(widget)
+        , ctx(ctx)
     {
         widget->installEventFilter(this);
 

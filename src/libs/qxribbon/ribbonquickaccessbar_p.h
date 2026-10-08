@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 //
@@ -29,9 +29,8 @@ class RibbonQuickAccessButton : public QToolButton
 {
     Q_OBJECT
 public:
-    explicit RibbonQuickAccessButton(QWidget* parent = Q_NULLPTR);
+    explicit RibbonQuickAccessButton(QWidget *parent = Q_NULLPTR);
     virtual ~RibbonQuickAccessButton();
-
 public:
     virtual QSize sizeHint() const;
 
@@ -53,7 +52,7 @@ public:
         setCheckable(true);
         setChecked(m_srcAction->isVisible());
 
-        connect(m_srcAction, &QAction::changed, this, [this](){
+        connect(m_srcAction, &QAction::changed, this, [this]() {
             setChecked(m_srcAction->isVisible());
         });
     }
@@ -73,10 +72,9 @@ class RibbonQuickAccessBarPrivate : public QObject
 public:
     explicit RibbonQuickAccessBarPrivate();
     virtual ~RibbonQuickAccessBarPrivate();
-
 public:
     void init();
-    QuickAccessAction *findQuickAccessAction(QAction* action) const;
+    QuickAccessAction *findQuickAccessAction(QAction *action) const;
     void updateAction(QAction *action);
     void setActionVisible(QAction *action, bool visible);
     void setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible);
@@ -97,4 +95,3 @@ public:
 };
 
 QX_RIBBON_END_NAMESPACE
-

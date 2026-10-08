@@ -35,4 +35,4 @@
 
 #endif
 
-#endif // QTPROJECT_GUI_PCH_H
+#endif   // QTPROJECT_GUI_PCH_H

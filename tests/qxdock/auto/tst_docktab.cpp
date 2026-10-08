@@ -28,7 +28,7 @@ void tst_DockTab::active()
     DockTab tab(&dw);
 
     int i = 0;
-    connect(&tab, &DockTab::activeTabChanged, this, [&i](){
+    connect(&tab, &DockTab::activeTabChanged, this, [&i]() {
         ++i;
     });
 

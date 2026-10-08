@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     TinyTabBar *tb = tw->tabBar();
     tb->setTabStyle(Qt::ToolButtonTextUnderIcon);
-//    tb->layout()->setSizeConstraint(QLayout::SetFixedSize);
+    //    tb->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
     connect(tb, &TinyTabBar::currentChanged, this, [tb](int index) {
         qDebug() << "currentChanged:" << index << tb->isTabChecked(index);
@@ -44,10 +44,10 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "currentToggled:" << index << checked;
     });
 
-//    QToolButton *button = new QToolButton(this);
-//    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-//    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
-//    button->setPopupMode(QToolButton::InstantPopup);
+    //    QToolButton *button = new QToolButton(this);
+    //    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    //    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    //    button->setPopupMode(QToolButton::InstantPopup);
 
     MenuAccessButton *button = new MenuAccessButton(this);
     connect(tb, &TinyTabBar::orientationChanged, button, &MenuAccessButton::setOrientation);
@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
     nb->removeTab(3);
     nb->insertTab(2, tr("navN"));
     nb->setTabVisible(3, false);
-//    nb->layout()->setSizeConstraint(QLayout::SetFixedSize);
+    //    nb->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
     QStatusBar *sb = statusBar();
     sb->addWidget(nb);

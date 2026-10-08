@@ -51,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
     });
     emit group->actions().at(2)->trigger();
 
-
     setWindowTitle(tr("MiniTabWidget Example"));
     setWindowIcon(icon);
     resize(400, 200);

@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbongallery.h"
 #include "ribbongallery_p.h"
 #include "ribboncontrols.h"
@@ -70,7 +70,7 @@ void RibbonGalleryPrivate::init()
     QObject::connect(m_buttonUp, &QAbstractButton::clicked, q, &RibbonGallery::pageUp);
     QObject::connect(m_buttonDown, &QAbstractButton::clicked, q, &RibbonGallery::pageDown);
     QObject::connect(m_buttonMore, &QAbstractButton::clicked, q, &RibbonGallery::showMoreDetail);
-    QObject::connect(q, &RibbonGallery::triggered, q, &RibbonGallery::onTriggered); // 信号转发
+    QObject::connect(q, &RibbonGallery::triggered, q, &RibbonGallery::onTriggered);   // 信号转发
 
     m_btnLayout = new QBoxLayout(QBoxLayout::TopToBottom);
     m_btnLayout->setSpacing(0);
@@ -129,10 +129,7 @@ RibbonGallery::RibbonGallery(QWidget *parent)
     setMinimumWidth(200);
 }
 
-RibbonGallery::~RibbonGallery()
-{
-    QX_FINI_PRIVATE()
-}
+RibbonGallery::~RibbonGallery(){QX_FINI_PRIVATE()}
 
 /**
  * @brief 获取一个空白RibbonGalleryGroup
@@ -235,7 +232,7 @@ void RibbonGallery::showMoreDetail()
     QSize popupSize = d->m_popupWidget->sizeHint();
     QPoint start = mapToGlobal(QPoint(0, 0));
 
-    int width = d->m_viewportGroup->width();                           // viewport
+    int width = d->m_viewportGroup->width();   // viewport
 
     width += qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);   // scrollbar
     d->m_popupWidget->setGeometry(start.x(), start.y(), width, popupSize.height());
@@ -317,7 +314,6 @@ public:
 
 RibbonGalleryViewportPrivate::RibbonGalleryViewportPrivate()
 {
-
 }
 
 void RibbonGalleryViewportPrivate::init()

@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     QToolBar *tb = addToolBar(tr("tb"));
     WindowLogo *logo = new WindowLogo(pixmap, this);
     logo->setRound(true);
-    connect(logo, &WindowLogo::clicked, this, [&](){
+    connect(logo, &WindowLogo::clicked, this, [&]() {
         qDebug() << "logo clicked";
     });
     tb->addWidget(logo);
@@ -49,4 +49,3 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 }
-

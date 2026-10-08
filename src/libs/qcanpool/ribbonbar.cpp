@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "ribbonbar.h"
 #include "ribbonbar_p.h"
 #include "ribbonpage.h"
@@ -29,12 +29,10 @@ RibbonStackedWidget::RibbonStackedWidget(QWidget *parent)
     : QStackedWidget(parent)
     , m_isPopup(false)
 {
-
 }
 
 RibbonStackedWidget::~RibbonStackedWidget()
 {
-
 }
 
 bool RibbonStackedWidget::isPopup() const
@@ -79,12 +77,10 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_frameless(false)
     , m_style(RibbonBar::ClassicStyle)
 {
-
 }
 
 RibbonBarPrivate::~RibbonBarPrivate()
 {
-
 }
 
 void RibbonBarPrivate::init()
@@ -308,7 +304,7 @@ void RibbonBarPrivate::cleanLayout(QLayout *layout)
     while ((child = layout->takeAt(0)) != nullptr) {
         if (child->widget()) {
             child->widget()->setParent(nullptr);
-        } else if(child->layout()){
+        } else if (child->layout()) {
             cleanLayout(child->layout());
         }
     }
@@ -340,7 +336,6 @@ void RibbonBarPrivate::slotTabBarDoubleClicked(int index)
 
 void RibbonBarPrivate::slotPagePopupHide()
 {
-
 }
 
 RibbonBar::RibbonBar(QWidget *parent)
@@ -493,7 +488,7 @@ bool RibbonBar::eventFilter(QObject *object, QEvent *event)
         switch (event->type()) {
         case QEvent::MouseButtonDblClick:
         case QEvent::MouseButtonPress: {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             if (d->m_stack->rect().contains(mouseEvent->pos())) {
                 break;
             }
@@ -501,7 +496,7 @@ bool RibbonBar::eventFilter(QObject *object, QEvent *event)
             if (widget == d->m_tabBar) {
                 const QPoint pos = widget->mapFromGlobal(mouseEvent->globalPos());
                 QMouseEvent *me = new QMouseEvent(mouseEvent->type(), pos, mouseEvent->globalPos(),
-                    mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
+                                                  mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
                 QApplication::postEvent(widget, me);
                 return true;
             }

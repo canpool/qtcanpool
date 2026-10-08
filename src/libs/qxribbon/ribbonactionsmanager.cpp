@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonactionsmanager.h"
 #include "ribbonactionsmanager_p.h"
 #include "ribboncustomizedata.h"
@@ -20,13 +20,13 @@ public:
     RibbonActionsManagerPrivate();
     void clear();
 public:
-    QMap<int, QList<QAction *> > m_tagToActions;    ///< tag : QList<QAction*>
-    QMap<int, QString> m_tagToName;                 ///< tag对应的名字
-    QHash<QString, QAction *> m_keyToAction;        ///< key对应action
-    QMap<QAction *, QString> m_actionToKey;         ///< action对应key
-    QMap<int, RibbonPage *> m_tagToPage;   ///< 仅仅在autoRegisteActions函数会有用
-    int m_salt;     ///< 盐用于生成固定的id，在用户不主动设置key时，id基于msale生成，
-                    ///< 只要RibbonActionsManager的调用registerAction顺序不变，生成的id都不变，因为它是基于自增实现的
+    QMap<int, QList<QAction *>> m_tagToActions;   ///< tag : QList<QAction*>
+    QMap<int, QString> m_tagToName;               ///< tag对应的名字
+    QHash<QString, QAction *> m_keyToAction;      ///< key对应action
+    QMap<QAction *, QString> m_actionToKey;       ///< action对应key
+    QMap<int, RibbonPage *> m_tagToPage;          ///< 仅仅在autoRegisteActions函数会有用
+    int m_salt;                                   ///< 盐用于生成固定的id，在用户不主动设置key时，id基于msale生成，
+                  ///< 只要RibbonActionsManager的调用registerAction顺序不变，生成的id都不变，因为它是基于自增实现的
 };
 
 RibbonActionsManagerPrivate::RibbonActionsManagerPrivate()
@@ -186,8 +186,8 @@ void RibbonActionsManager::unregisterAction(QAction *act, bool enableEmit)
 void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
 {
     Q_D(RibbonActionsManager);
-    QList<int> deletedTags;                      // 记录删除的tag，用于触发actionTagChanged
-    QMap<int, QList<QAction *> > tagToActions;
+    QList<int> deletedTags;   // 记录删除的tag，用于触发actionTagChanged
+    QMap<int, QList<QAction *>> tagToActions;
 
     if (!d->m_actionToKey.contains(act)) {
         return;
@@ -422,7 +422,7 @@ RibbonBar *RibbonActionsManager::ribbonBar() const
 void RibbonActionsManager::setAllActionCanCustomize(bool on)
 {
     Q_D(RibbonActionsManager);
-	for (auto i = d->m_actionToKey.begin(); i != d->m_actionToKey.end(); ++i) {
+    for (auto i = d->m_actionToKey.begin(); i != d->m_actionToKey.end(); ++i) {
         RibbonCustomizeData::setCanCustomize(i.key(), on);
     }
 }
@@ -523,12 +523,9 @@ bool RibbonActionsManagerModelPrivate::isNull() const
 }
 
 RibbonActionsManagerModel::RibbonActionsManagerModel(QObject *p)
-    : QAbstractListModel(p)
-{
-    QX_INIT_PRIVATE(RibbonActionsManagerModel)
-}
+    : QAbstractListModel(p){QX_INIT_PRIVATE(RibbonActionsManagerModel)}
 
-RibbonActionsManagerModel::RibbonActionsManagerModel(RibbonActionsManager *m, QObject *p)
+    RibbonActionsManagerModel::RibbonActionsManagerModel(RibbonActionsManager * m, QObject * p)
     : RibbonActionsManagerModel(p)
 {
     setupActionsManager(m);

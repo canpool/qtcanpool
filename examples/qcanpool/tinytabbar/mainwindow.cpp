@@ -39,10 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "currentToggled:" << index << checked;
     });
 
-//    QToolButton *button = new QToolButton(this);
-//    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-//    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
-//    button->setPopupMode(QToolButton::InstantPopup);
+    //    QToolButton *button = new QToolButton(this);
+    //    button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    //    button->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    //    button->setPopupMode(QToolButton::InstantPopup);
 
     MenuAccessButton *button = new MenuAccessButton(this);
     connect(tb, &TinyTabBar::orientationChanged, button, &MenuAccessButton::setOrientation);
@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     nb->removeTab(3);
     nb->insertTab(2, tr("navN"));
     nb->setTabVisible(3, false);
-//    addToolBar(Qt::BottomToolBarArea, nb);
+    //    addToolBar(Qt::BottomToolBarArea, nb);
     QStatusBar *sb = statusBar();
     sb->addWidget(nb);
 

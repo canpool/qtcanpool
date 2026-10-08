@@ -119,17 +119,17 @@ void tst_DockPanel::splitter()
     QCOMPARE(p1->parentSplitter()->orientation(), Qt::Horizontal);
 
     DockPanel *p2 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw2);
-    QCOMPARE(p1->parentSplitter()->orientation(), Qt::Vertical); // follow second
+    QCOMPARE(p1->parentSplitter()->orientation(), Qt::Vertical);   // follow second
     QCOMPARE(p2->parentSplitter()->orientation(), Qt::Vertical);
 
     DockPanel *p3 = wd.addDockWidget(Qx::CenterDockWidgetArea, dw3, p2);
     QCOMPARE(p1->parentSplitter()->orientation(), Qt::Vertical);
     QCOMPARE(p2->parentSplitter()->orientation(), Qt::Vertical);
-    QCOMPARE(p3->parentSplitter()->orientation(), Qt::Vertical); // p2 == p3
+    QCOMPARE(p3->parentSplitter()->orientation(), Qt::Vertical);   // p2 == p3
 
     DockPanel *p4 = wd.addDockWidget(Qx::RightDockWidgetArea, dw4, p3);
     QCOMPARE(p1->parentSplitter()->orientation(), Qt::Vertical);
-    QCOMPARE(p2->parentSplitter()->orientation(), Qt::Horizontal); // p3 is added to p4 splitter
+    QCOMPARE(p2->parentSplitter()->orientation(), Qt::Horizontal);   // p3 is added to p4 splitter
     QCOMPARE(p4->parentSplitter()->orientation(), Qt::Horizontal);
 
     DockPanel *p5 = wd.addDockWidget(Qx::TopDockWidgetArea, dw5);

@@ -1319,7 +1319,7 @@ void RibbonCustomizeWidget::onTreeViewResultClicked(const QModelIndex &index)
     int level = itemLevel(item);
 
     ui->pushButtonAdd->setEnabled(selectedAction() && (level > 0) && isItemCanCustomize(item));
-    ui->pushButtonDelete->setEnabled(isItemCanCustomize(item));   // 有CustomizeRole，必有CanCustomizeRole
+    ui->pushButtonDelete->setEnabled(isItemCanCustomize(item));                 // 有CustomizeRole，必有CanCustomizeRole
     ui->pushButtonRename->setEnabled(level != 2 || isItemCanCustomize(item));   // QAction 不能改名
     ui->pushButtonNewGroup->setEnabled(level != 2);
     ui->toolButtonUp->setEnabled(item->index().row() != 0);

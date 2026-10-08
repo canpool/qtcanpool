@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "ribbongroup.h"
 #include "ribbongroup_p.h"
 
@@ -17,24 +17,21 @@ RibbonBarInnerContainer::RibbonBarInnerContainer(RibbonGroup::GroupSize size, QW
     : QToolBar(parent)
 {
     switch (size) {
-        case RibbonGroup::GroupLarge: {
-            setIconSize(QSize(32, 32));
-            setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-            setOrientation(Qt::Horizontal);
-        }
-        break;
-        case RibbonGroup::GroupMedium: {
-            setIconSize(QSize(18, 18));
-            setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-            setOrientation(Qt::Vertical);
-        }
-        break;
-        default: {
-            setIconSize(QSize(18, 18));
-            setToolButtonStyle(Qt::ToolButtonIconOnly);
-            setOrientation(Qt::Vertical);
-        }
-        break;
+    case RibbonGroup::GroupLarge: {
+        setIconSize(QSize(32, 32));
+        setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        setOrientation(Qt::Horizontal);
+    } break;
+    case RibbonGroup::GroupMedium: {
+        setIconSize(QSize(18, 18));
+        setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        setOrientation(Qt::Vertical);
+    } break;
+    default: {
+        setIconSize(QSize(18, 18));
+        setToolButtonStyle(Qt::ToolButtonIconOnly);
+        setOrientation(Qt::Vertical);
+    } break;
     }
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 #ifdef Q_OS_LINUX
@@ -46,7 +43,6 @@ RibbonBarInnerContainer::RibbonBarInnerContainer(RibbonGroup::GroupSize size, QW
 
 RibbonBarInnerContainer::~RibbonBarInnerContainer()
 {
-
 }
 
 /* RibbonGroupPrivate */
@@ -143,46 +139,42 @@ RibbonBarInnerContainer *RibbonGroupPrivate::getContainer(RibbonGroup::GroupSize
 {
     RibbonBarInnerContainer *container = nullptr;
     switch (size) {
-        case RibbonGroup::GroupLarge: {
-            if (m_largeContainer == nullptr) {
-                m_largeContainer = new RibbonBarInnerContainer(size);
-                if (m_mediumContainer != nullptr) {
-                    m_inLayout->insertWidget(m_inLayout->indexOf(m_mediumContainer), m_largeContainer);
-                } else if (m_smallContainer != nullptr) {
-                    m_inLayout->insertWidget(m_inLayout->indexOf(m_smallContainer), m_largeContainer);
-                } else {
-                    m_inLayout->addWidget(m_largeContainer);
-                }
+    case RibbonGroup::GroupLarge: {
+        if (m_largeContainer == nullptr) {
+            m_largeContainer = new RibbonBarInnerContainer(size);
+            if (m_mediumContainer != nullptr) {
+                m_inLayout->insertWidget(m_inLayout->indexOf(m_mediumContainer), m_largeContainer);
+            } else if (m_smallContainer != nullptr) {
+                m_inLayout->insertWidget(m_inLayout->indexOf(m_smallContainer), m_largeContainer);
+            } else {
+                m_inLayout->addWidget(m_largeContainer);
             }
-            container = m_largeContainer;
         }
-        break;
-        case RibbonGroup::GroupMedium: {
-            if (m_mediumContainer == nullptr) {
-                m_mediumContainer = new RibbonBarInnerContainer(size);
-                if (m_smallContainer != nullptr) {
-                    m_inLayout->insertWidget(m_inLayout->indexOf(m_smallContainer), m_mediumContainer);
-                } else {
-                    m_inLayout->addWidget(m_mediumContainer);
-                }
+        container = m_largeContainer;
+    } break;
+    case RibbonGroup::GroupMedium: {
+        if (m_mediumContainer == nullptr) {
+            m_mediumContainer = new RibbonBarInnerContainer(size);
+            if (m_smallContainer != nullptr) {
+                m_inLayout->insertWidget(m_inLayout->indexOf(m_smallContainer), m_mediumContainer);
+            } else {
+                m_inLayout->addWidget(m_mediumContainer);
             }
-            container = m_mediumContainer;
         }
-        break;
-        default: {
-            if (m_smallContainer == nullptr) {
-                m_smallContainer = new RibbonBarInnerContainer(size);
-                m_inLayout->addWidget(m_smallContainer);
-            }
-            container = m_smallContainer;
+        container = m_mediumContainer;
+    } break;
+    default: {
+        if (m_smallContainer == nullptr) {
+            m_smallContainer = new RibbonBarInnerContainer(size);
+            m_inLayout->addWidget(m_smallContainer);
         }
-        break;
+        container = m_smallContainer;
+    } break;
     }
     return container;
 }
 
-QAction *RibbonGroupPrivate::addAction(const QIcon &icon, const QString &text,
-                                       RibbonGroup::GroupSize size)
+QAction *RibbonGroupPrivate::addAction(const QIcon &icon, const QString &text, RibbonGroup::GroupSize size)
 {
     RibbonBarInnerContainer *container = getContainer(size);
     QAction *action = container->addAction(icon, text);
@@ -263,8 +255,7 @@ void RibbonGroup::setOptionButtonToolTip(const QString &tip)
     d->m_optionButton->setToolTip(tip);
 }
 
-QAction *RibbonGroup::addAction(const QIcon &icon, const QString &text,
-                                RibbonGroup::GroupSize size)
+QAction *RibbonGroup::addAction(const QIcon &icon, const QString &text, RibbonGroup::GroupSize size)
 {
     return d->addAction(icon, text, size);
 }
@@ -293,7 +284,7 @@ QSize RibbonGroup::sizeHint() const
 {
     int controlWidth = d->m_inLayout->sizeHint().width() + d->m_extLayout->sizeHint().width();
     int titleWidth = d->m_titleLayout->sizeHint().width();
-    int width = qMax(controlWidth, titleWidth) + 2; // 2 is for line
+    int width = qMax(controlWidth, titleWidth) + 2;   // 2 is for line
     int height = layout()->sizeHint().height();
     return QSize(width, height);
 }

@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     g2->addLargeAction(createAction(icon, tr("La"), this));
     g2->addMediumAction(createAction(icon, tr("Ma1")));
     g2->addSmallAction(createAction(QIcon(), tr("Sa11111111")));
-    g2->addSmallAction(createAction(QIcon(), tr("Sa3333333"))); // key Sa3333333 have been exist
+    g2->addSmallAction(createAction(QIcon(), tr("Sa3333333")));   // key Sa3333333 have been exist
 
     RibbonPageContext *pc1 = rb->addPageContext(tr("context1"));
     RibbonPage *page = pc1->addPage(tr("page1"));

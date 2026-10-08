@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "fancywindow.h"
 #include "fancybar.h"
 #include "fancytitlebar_p.h"
@@ -19,21 +19,19 @@ public:
     FancyBar *fancyBar;
 };
 
-
 FancyWindowPrivate::FancyWindowPrivate()
 {
     fancyBar = nullptr;
 }
 
 FancyWindow::FancyWindow(QWidget *parent)
-    : QMainWindow(parent), d(new FancyWindowPrivate())
+    : QMainWindow(parent)
+    , d(new FancyWindowPrivate())
 {
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QLatin1String("qtc_window"));
     // When using the native title bar, it needs to be set before creating the title bar
-    QMainWindow::setWindowFlags(windowFlags() |
-                Qt::FramelessWindowHint
-                );
+    QMainWindow::setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 
     d->fancyBar = new FancyBar(this);
     connect(d->fancyBar, SIGNAL(maximizationChanged(bool)), this, SIGNAL(resizable(bool)));

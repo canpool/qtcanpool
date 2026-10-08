@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qcanpool.h"
 #include "tinytabbar_p.h"
-#include "tinynavbar.h" // must, for Q_DECLARE_PUBLIC -> static_cast
+#include "tinynavbar.h"   // must, for Q_DECLARE_PUBLIC -> static_cast
 #include <QToolButton>
 #include <QMap>
 
@@ -36,7 +36,7 @@ public:
     QActionGroup *m_customizeGroup;
     MenuAccessButton *m_accessPopup;
     QList<QAction *> m_actionList;
-    QMap<QAction *, QAction *> m_actionMap; // lowAction,checkAction
+    QMap<QAction *, QAction *> m_actionMap;   // lowAction,checkAction
     bool m_removingAction : 1;
 };
 

@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribboncontainers.h"
 #include "ribbonmenu.h"
 
@@ -38,13 +38,11 @@ public:
     Qt::Orientation m_orientation;
 };
 
-
 RibbonCtrlContainerPrivate::RibbonCtrlContainerPrivate()
     : m_widget(Q_NULLPTR)
     , m_iconSize(18, 18)
     , m_orientation(Qt::Horizontal)
 {
-
 }
 
 void RibbonCtrlContainerPrivate::init()
@@ -216,7 +214,6 @@ public:
     void init();
     void updateLayout();
     void addWidget(QWidget *widget);
-
 public:
     QGridLayout *m_gridLayout;
     QButtonGroup *m_buttonGroup;
@@ -225,7 +222,8 @@ public:
 };
 
 RibbonGridContainerPrivate::RibbonGridContainerPrivate()
-{}
+{
+}
 
 void RibbonGridContainerPrivate::init()
 {
@@ -244,21 +242,20 @@ void RibbonGridContainerPrivate::init()
     QObject::connect(m_buttonGroup,
                      static_cast<void (QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
 #endif
-            q, [q](QAbstractButton *) {
-        QWidget *parWidget = q->parentWidget();
-        while (parWidget) {
-            if (RibbonMenu *menu = qobject_cast<RibbonMenu*>(parWidget)) {
-                menu->hide();
-                break;
-            }
-            parWidget = parWidget->parentWidget();
-        }
-    });
+                     q, [q](QAbstractButton *) {
+                         QWidget *parWidget = q->parentWidget();
+                         while (parWidget) {
+                             if (RibbonMenu *menu = qobject_cast<RibbonMenu *>(parWidget)) {
+                                 menu->hide();
+                                 break;
+                             }
+                             parWidget = parWidget->parentWidget();
+                         }
+                     });
 }
 
 void RibbonGridContainerPrivate::updateLayout()
 {
-
 }
 
 void RibbonGridContainerPrivate::addWidget(QWidget *widget)
@@ -329,7 +326,7 @@ void RibbonGridContainer::enterEvent(QEvent *event)
     if (!d->m_hasReceivedEnter) {
         QWidget *parWidget = parentWidget();
         while (parWidget) {
-            if (RibbonMenu *menu = qobject_cast<RibbonMenu*>(parWidget)) {
+            if (RibbonMenu *menu = qobject_cast<RibbonMenu *>(parWidget)) {
                 menu->setActiveAction(nullptr);
                 break;
             }

@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -43,17 +43,14 @@ public:
     void enableDropPreview(bool enable);
 
     QRect dropOverlayRect() const;
-
 protected:
     virtual bool event(QEvent *e) override;
     virtual void paintEvent(QPaintEvent *e) override;
-    virtual void showEvent(QShowEvent* e) override;
-    virtual void hideEvent(QHideEvent* e) override;
-
+    virtual void showEvent(QShowEvent *e) override;
+    virtual void hideEvent(QHideEvent *e) override;
 private:
     QX_DECLARE_PRIVATE(DockOverlay)
 };
-
 
 class DockOverlayCrossPrivate;
 /*!
@@ -91,11 +88,11 @@ class QX_DOCK_EXPORT DockOverlayCross : public QWidget
     Q_PROPERTY(QColor iconShadowColor READ iconColor WRITE setIconShadowColor)
 public:
     enum IconColor {
-        FrameColor,             ///< the color of the frame of the small window icon
-        WindowBackgroundColor,  ///< the background color of the small window in the icon
-        OverlayColor,           ///< the color that shows the overlay (the dock side) in the icon
-        ArrowColor,             ///< the arrow that points into the direction
-        ShadowColor             ///< the color of the shadow rectangle that is painted below the icons
+        FrameColor,              ///< the color of the frame of the small window icon
+        WindowBackgroundColor,   ///< the background color of the small window in the icon
+        OverlayColor,            ///< the color that shows the overlay (the dock side) in the icon
+        ArrowColor,              ///< the arrow that points into the direction
+        ShadowColor              ///< the color of the shadow rectangle that is painted below the icons
     };
     enum IconColorSizes {
         NIconColors = 5
@@ -118,21 +115,36 @@ public:
     void updatePosition();
 
     void setIconColors(const QString &colors);
-
 protected:
     QString iconColors() const;
-    QColor iconColor() const {return QColor();}
-    void setIconFrameColor(const QColor &color) {setIconColor(FrameColor, color);}
-    void setIconBackgroundColor(const QColor &color) {setIconColor(WindowBackgroundColor, color);}
-    void setIconOverlayColor(const QColor &color) {setIconColor(OverlayColor, color);}
-    void setIconArrowColor(const QColor &color) {setIconColor(ArrowColor, color);}
-    void setIconShadowColor(const QColor &color) {setIconColor(ShadowColor, color);}
+    QColor iconColor() const
+    {
+        return QColor();
+    }
+    void setIconFrameColor(const QColor &color)
+    {
+        setIconColor(FrameColor, color);
+    }
+    void setIconBackgroundColor(const QColor &color)
+    {
+        setIconColor(WindowBackgroundColor, color);
+    }
+    void setIconOverlayColor(const QColor &color)
+    {
+        setIconColor(OverlayColor, color);
+    }
+    void setIconArrowColor(const QColor &color)
+    {
+        setIconColor(ArrowColor, color);
+    }
+    void setIconShadowColor(const QColor &color)
+    {
+        setIconColor(ShadowColor, color);
+    }
 
     void setAreaWidgets(const QHash<Qx::DockWidgetArea, QWidget *> &widgets);
-
 protected:
-    virtual void showEvent(QShowEvent* e) override;
-
+    virtual void showEvent(QShowEvent *e) override;
 private:
     QX_DECLARE_PRIVATE(DockOverlayCross)
 };

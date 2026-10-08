@@ -32,7 +32,6 @@ MenuButton::MenuButton(const QIcon &icon, const QString &text, QWidget *parent)
 
 MenuButton::~MenuButton()
 {
-
 }
 
 void MenuButton::paintEvent(QPaintEvent *event)

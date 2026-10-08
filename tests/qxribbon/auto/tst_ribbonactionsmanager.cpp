@@ -140,11 +140,8 @@ void tst_RibbonActionsManager::autoRegister()
 
     RibbonActionsManager mgr(&rb);
 
-    QList<int> tags = {
-        RibbonActionsManager::AutoPageDistinguishBeginTag,
-        RibbonActionsManager::AutoPageDistinguishBeginTag + 1,
-        RibbonActionsManager::NotInRibbonPageTag
-    };
+    QList<int> tags = {RibbonActionsManager::AutoPageDistinguishBeginTag,
+                       RibbonActionsManager::AutoPageDistinguishBeginTag + 1, RibbonActionsManager::NotInRibbonPageTag};
     QCOMPARE(mgr.actionTags(), tags);
 
     QCOMPARE(mgr.tagName(RibbonActionsManager::AutoPageDistinguishBeginTag), tr("page1"));
@@ -155,7 +152,7 @@ void tst_RibbonActionsManager::autoRegister()
     QCOMPARE(mgr.actions(RibbonActionsManager::AutoPageDistinguishBeginTag + 1).count(), 4);
     QCOMPARE(mgr.actions(RibbonActionsManager::NotInRibbonPageTag).count(), 2);
 
-    QCOMPARE(mgr.count(), 10); // not 12
+    QCOMPARE(mgr.count(), 10);   // not 12
 
     QCOMPARE(mgr.key(a1), "action1");
     QCOMPARE(mgr.key(a2), "");
@@ -170,7 +167,7 @@ void tst_RibbonActionsManager::autoRegister()
     QCOMPARE(mgr.key(a11), "action11");
     QCOMPARE(mgr.key(a12), "action12");
 
-    mgr.unregisterAction(a2); // invalid
+    mgr.unregisterAction(a2);   // invalid
     QCOMPARE(mgr.count(), 10);
     mgr.unregisterAction(a12);
     QCOMPARE(mgr.key(a12), "");

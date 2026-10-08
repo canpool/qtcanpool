@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbontabbar.h"
 
 #include <QTimer>

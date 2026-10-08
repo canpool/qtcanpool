@@ -12,7 +12,7 @@ ColorButton::ColorButton(const QColor &color, QWidget *parent)
     setIcon(colorIcon(m_color, iconSize()));
 
     connect(this, &QToolButton::clicked, this, [=](bool checked) {
-       emit colorClicked(m_color, checked);
+        emit colorClicked(m_color, checked);
     });
 }
 

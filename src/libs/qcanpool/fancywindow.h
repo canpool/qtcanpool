@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYWINDOW_H
 #define FANCYWINDOW_H
 
@@ -32,11 +32,10 @@ public:
 
 Q_SIGNALS:
     void resizable(bool resizable);
-
 private:
     FancyWindowPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYWINDOW_H
+#endif   // FANCYWINDOW_H

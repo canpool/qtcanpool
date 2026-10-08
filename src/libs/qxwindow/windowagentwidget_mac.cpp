@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowagentwidget_p.h"
 #include <QtGui/QtEvents>
 
@@ -16,7 +16,9 @@ class SystemButtonAreaWidgetEventFilter : public QObject
 {
 public:
     SystemButtonAreaWidgetEventFilter(QWidget *widget, WindowContext *ctx, QObject *parent = nullptr)
-        : QObject(parent), widget(widget), ctx(ctx)
+        : QObject(parent)
+        , widget(widget)
+        , ctx(ctx)
     {
         widget->installEventFilter(this);
         ctx->setSystemButtonAreaCallback([widget](const QSize &) {

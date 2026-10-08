@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "tinynavbar.h"
 #include "tinynavbar_p.h"
 #include "menuaccessbutton.h"
@@ -39,7 +39,7 @@ void TinyNavBarPrivate::init()
 
     m_customizeGroup = new QActionGroup(q);
     m_customizeGroup->setExclusive(false);
-    connect(m_customizeGroup, SIGNAL(triggered(QAction*)), this, SLOT(customizeAction(QAction*)));
+    connect(m_customizeGroup, SIGNAL(triggered(QAction *)), this, SLOT(customizeAction(QAction *)));
 
     connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowCustomizeMenu()));
     connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideCustomizeMenu()));
@@ -72,7 +72,6 @@ void TinyNavBarPrivate::aboutToHideCustomizeMenu()
 {
     m_menu->clear();
 }
-
 
 TinyNavBar::TinyNavBar(QWidget *parent)
     : TinyTabBar(new TinyNavBarPrivate(), parent)
@@ -111,7 +110,7 @@ void TinyNavBar::actionEvent(QActionEvent *event)
     TinyTabBar::actionEvent(event);
     Q_D(TinyNavBar);
     QAction *lowAction = event->action();
-    if (d->m_actionAccessPopup)  {
+    if (d->m_actionAccessPopup) {
         if (event->type() == QEvent::ActionAdded) {
             if (!d->m_removingAction) {
                 // remove, then add back in QEvent::ActionRemoved

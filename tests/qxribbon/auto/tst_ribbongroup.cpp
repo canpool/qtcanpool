@@ -133,7 +133,7 @@ void tst_RibbonGroup::height()
     QCOMPARE(grp.groupTitleHeight(), 25);
     QCOMPARE(grp.titleHeight(), grp.groupTitleHeight());
 
-    int grpHeight = grp.height() - 1 - 1; // top, bottom margins
+    int grpHeight = grp.height() - 1 - 1;   // top, bottom margins
     QCOMPARE(grp.largeHeight(), grpHeight - grp.titleHeight());
 
     RibbonGroup::setTitleVisible(false);
@@ -313,7 +313,7 @@ void tst_RibbonGroup::action()
         QCOMPARE(grp.ribbonButtonCount(), 0);
 
         QAction *a1 = new QAction(tr("action1"));
-        grp.addAction(a1); // equal to addLargeAction
+        grp.addAction(a1);   // equal to addLargeAction
         QCOMPARE(grp.ribbonButtonCount(), 1);
         RibbonButton *btn1 = grp.ribbonButtonForAction(a1);
         QCOMPARE(grp.ribbonButtonByIndex(0), btn1);

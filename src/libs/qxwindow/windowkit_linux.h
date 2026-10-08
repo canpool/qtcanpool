@@ -1,5 +1,4 @@
 #ifndef WINDOWKIT_LINUX_H
 #define WINDOWKIT_LINUX_H
 
-
-#endif // WINDOWKIT_LINUX_H
+#endif   // WINDOWKIT_LINUX_H

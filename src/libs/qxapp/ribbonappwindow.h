@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT && MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxapp_global.h"
@@ -19,7 +19,6 @@ public:
     ~RibbonAppWindow() Q_DECL_OVERRIDE;
 
     void updateWindowFlags(Qt::WindowFlags flags) Q_DECL_OVERRIDE;
-
 protected:
     virtual bool event(QEvent *e) Q_DECL_OVERRIDE;
 private:

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYTABBAR_H
 #define FANCYTABBAR_H
 
@@ -18,10 +18,12 @@ class FancyTabBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyTabBar : public QWidget
 {
     Q_OBJECT
-
 public:
-    enum ActionPosition { Front, Middle, Back };
-
+    enum ActionPosition {
+        Front,
+        Middle,
+        Back
+    };
 public:
     explicit FancyTabBar(QWidget *parent = nullptr);
     virtual ~FancyTabBar();
@@ -78,11 +80,10 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
-
 private:
     FancyTabBarPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYTABBAR_H
+#endif   // FANCYTABBAR_H

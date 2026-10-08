@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2021-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "ribbonwindow.h"
 
 #include "ribbonbar.h"
@@ -14,7 +14,6 @@ public:
     RibbonWindowPrivate();
 
     void init();
-
 public:
     RibbonWindow *q;
     RibbonBar *m_ribbonBar;
@@ -23,7 +22,6 @@ public:
 RibbonWindowPrivate::RibbonWindowPrivate()
     : m_ribbonBar(nullptr)
 {
-
 }
 
 void RibbonWindowPrivate::init()

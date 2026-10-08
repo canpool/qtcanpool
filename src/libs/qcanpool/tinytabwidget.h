@@ -41,7 +41,12 @@ public:
 
     TinyTabBar *tabBar() const;
 
-    enum TabPosition { North, South, West, East };
+    enum TabPosition {
+        North,
+        South,
+        West,
+        East
+    };
     Q_ENUM(TabPosition)
     TabPosition tabPosition() const;
     void setTabPosition(TabPosition);

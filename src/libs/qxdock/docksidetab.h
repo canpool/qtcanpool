@@ -54,7 +54,6 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onAutoHideToActionClicked();
-
 protected:
     void setSideBar(DockSideBar *sideBar);
     void removeFromSideBar();
@@ -63,7 +62,6 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *e) override;
     virtual void mouseMoveEvent(QMouseEvent *e) override;
     virtual void contextMenuEvent(QContextMenuEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockSideTab)
     friend class DockSideBar;

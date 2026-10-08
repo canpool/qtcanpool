@@ -33,13 +33,11 @@ class QX_DOCK_EXPORT DockPanel : public QFrame
 public:
     using Super = QFrame;
 
-    enum DockAreaFlag
-    {
+    enum DockAreaFlag {
         HideSingleWidgetTitleBar = 0x0001,
         DefaultFlags = 0x0000
     };
     Q_DECLARE_FLAGS(DockAreaFlags, DockAreaFlag)
-
 public:
     explicit DockPanel(DockWindow *window, DockContainer *parent);
     ~DockPanel();
@@ -89,8 +87,8 @@ public:
     int indexOfFirstOpenDockWidget() const;
 
     void saveState(QXmlStreamWriter &s) const;
-    static bool restoreState(DockStateReader &s, DockPanel *&createdWidget,
-                             bool testing, DockContainer *parentContainer);
+    static bool restoreState(DockStateReader &s, DockPanel *&createdWidget, bool testing,
+                             DockContainer *parentContainer);
 
     virtual QSize minimumSizeHint() const override;
 
@@ -118,7 +116,6 @@ Q_SIGNALS:
     void currentChanged(int index);
     void viewToggled(bool open);
     void tabBarClicked(int index);
-
 protected:
     void addDockWidget(DockWidget *w);
     void insertDockWidget(int index, DockWidget *w, bool activate = true);
@@ -131,12 +128,10 @@ protected:
     void internalSetCurrentDockWidget(DockWidget *w);
     void updateTitleBarButtonVisibility(bool isTopLevel);
     void markTitleBarMenuOutdated();
-
 protected:
 #ifdef Q_OS_WIN
     virtual bool event(QEvent *e) override;
 #endif
-
 private:
     QX_DECLARE_PRIVATE(DockPanel)
     friend class DockContainerPrivate;

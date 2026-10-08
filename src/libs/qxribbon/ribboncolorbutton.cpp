@@ -44,7 +44,8 @@ QPixmap RibbonColorButtonPrivate::createIconPixmap(const QStyleOptionToolButton 
     res.fill(Qt::transparent);
     QPainter painter(&res);
     int xPixmap = (res.width() - pixmap.width()) / 2;
-    int yPixmap = (res.height() - c_colorHeight - 2 - pixmap.height()) / 2; // 这里要减去2而不是1，这样奇数偶数都不会影响
+    int yPixmap =
+        (res.height() - c_colorHeight - 2 - pixmap.height()) / 2;   // 这里要减去2而不是1，这样奇数偶数都不会影响
     QRect rPixmap = QRect(xPixmap, yPixmap, pixmap.width(), pixmap.height());
     painter.drawPixmap(rPixmap, pixmap);
     QRect colorRect = rPixmap.adjusted(0, pixmap.height() + 1, 0, c_colorHeight + 1);

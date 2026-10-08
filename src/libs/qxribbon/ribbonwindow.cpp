@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonwindow.h"
 #include "framelesshelper.h"
 #include "windowbuttongroup.h"
@@ -158,7 +158,7 @@ bool RibbonWindow::eventFilter(QObject *obj, QEvent *e)
             case QEvent::Leave:
             case QEvent::HoverMove:
             case QEvent::MouseButtonDblClick:
-                QApplication::sendEvent(this, e); // post to framelessHelper
+                QApplication::sendEvent(this, e);   // post to framelessHelper
             default:
                 break;
             }

@@ -35,4 +35,4 @@ private:
     QWidgetAction *m_perspectiveListAction = nullptr;
     QComboBox *m_perspectiveComboBox = nullptr;
 };
-#endif // MAINWINDOW_H
+#endif   // MAINWINDOW_H

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "fancytabbar_p.h"
 #include "fancytabbar.h"
 
@@ -79,8 +79,9 @@ void FancyTabBarPrivate::setIconSize(QSize size)
 
 void FancyTabBarPrivate::switchTab(bool checked)
 {
-    QToolButton *tab = qobject_cast<QToolButton*>(sender());
-    if (tab == nullptr) return;
+    QToolButton *tab = qobject_cast<QToolButton *>(sender());
+    if (tab == nullptr)
+        return;
     if (!checked) {
         tab->setChecked(true);
         return;
@@ -91,8 +92,9 @@ void FancyTabBarPrivate::switchTab(bool checked)
 
 void FancyTabBarPrivate::pressTab()
 {
-    QToolButton *tab = qobject_cast<QToolButton*>(sender());
-    if (tab == nullptr) return;
+    QToolButton *tab = qobject_cast<QToolButton *>(sender());
+    if (tab == nullptr)
+        return;
     int index = m_tabs.indexOf(tab);
     q->setCurrentIndex(index);
 }
@@ -142,7 +144,7 @@ int FancyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
     connect(tab, SIGNAL(clicked(bool)), d, SLOT(switchTab(bool)));
     connect(tab, SIGNAL(pressed()), d, SLOT(pressTab()));
 
-    if (d->validIndex(index)){
+    if (d->validIndex(index)) {
         d->m_tabs.insert(index, tab);
         d->m_tabLayout->insertWidget(index, tab);
     } else {
@@ -161,7 +163,8 @@ int FancyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 
 void FancyTabBar::removeTab(int index)
 {
-    if (!d->validIndex(index)) return;
+    if (!d->validIndex(index))
+        return;
 
     QToolButton *tab = d->m_tabs.takeAt(index);
     d->m_tabLayout->removeWidget(tab);
@@ -174,7 +177,7 @@ void FancyTabBar::removeTab(int index)
         d->m_currentIndex--;
     } else if (index == d->m_currentIndex) {
         d->m_currentIndex = -1;
-        if(index == count) {
+        if (index == count) {
             index--;
         }
         setCurrentIndex(index);
@@ -284,15 +287,13 @@ QString FancyTabBar::tabToolTip(int index) const
 
 void FancyTabBar::setTabIconsOnly(bool iconOnly)
 {
-    Qt::ToolButtonStyle style = iconOnly ? Qt::ToolButtonIconOnly :
-                                           Qt::ToolButtonTextUnderIcon;
+    Qt::ToolButtonStyle style = iconOnly ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon;
     foreach (QToolButton *tab, d->m_tabs) {
         tab->setToolButtonStyle(style);
     }
 }
 
-QAction *FancyTabBar::addAction(const QIcon &icon, const QString &text,
-                                FancyTabBar::ActionPosition position)
+QAction *FancyTabBar::addAction(const QIcon &icon, const QString &text, FancyTabBar::ActionPosition position)
 {
     QAction *action = new QAction(icon, text);
     addAction(action, position);
@@ -313,18 +314,18 @@ void FancyTabBar::addAction(QAction *action, FancyTabBar::ActionPosition positio
     d->m_actionTabMap.insert(action, button);
 
     switch (position) {
-        case FancyTabBar::Front: {
-            d->m_frontActionLayout->addWidget(button);
-            break;
-        }
-        case FancyTabBar::Middle: {
-            d->m_middleActionLayout->addWidget(button);
-            break;
-        }
-        case FancyTabBar::Back: {
-            d->m_backActionLayout->addWidget(button);
-            break;
-        }
+    case FancyTabBar::Front: {
+        d->m_frontActionLayout->addWidget(button);
+        break;
+    }
+    case FancyTabBar::Middle: {
+        d->m_middleActionLayout->addWidget(button);
+        break;
+    }
+    case FancyTabBar::Back: {
+        d->m_backActionLayout->addWidget(button);
+        break;
+    }
     }
 }
 
@@ -340,25 +341,24 @@ void FancyTabBar::addActionButton(QToolButton *button, FancyTabBar::ActionPositi
     }
 
     switch (position) {
-        case FancyTabBar::Front: {
-            d->m_frontActionLayout->addWidget(button);
-            break;
-        }
-        case FancyTabBar::Middle: {
-            d->m_middleActionLayout->addWidget(button);
-            break;
-        }
-        case FancyTabBar::Back: {
-            d->m_backActionLayout->addWidget(button);
-            break;
-        }
+    case FancyTabBar::Front: {
+        d->m_frontActionLayout->addWidget(button);
+        break;
+    }
+    case FancyTabBar::Middle: {
+        d->m_middleActionLayout->addWidget(button);
+        break;
+    }
+    case FancyTabBar::Back: {
+        d->m_backActionLayout->addWidget(button);
+        break;
+    }
     }
 }
 
 void FancyTabBar::setActionIconOnly(QAction *action, bool iconOnly)
 {
-    Qt::ToolButtonStyle style = iconOnly ? Qt::ToolButtonIconOnly :
-                                           Qt::ToolButtonTextUnderIcon;
+    Qt::ToolButtonStyle style = iconOnly ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon;
     if (QToolButton *button = d->m_actionTabMap.value(action)) {
         button->setToolButtonStyle(style);
     }
@@ -402,7 +402,8 @@ void FancyTabBar::setOrientation(Qt::Orientation orientation)
 
 void FancyTabBar::setCurrentIndex(int index)
 {
-    if (index == d->m_currentIndex) return;
+    if (index == d->m_currentIndex)
+        return;
     if (d->m_currentIndex != -1) {
         d->m_tabs.at(d->m_currentIndex)->setChecked(false);
     }

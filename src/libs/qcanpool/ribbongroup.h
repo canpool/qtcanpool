@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2020-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef RIBBONGROUP_H
 #define RIBBONGROUP_H
 
@@ -19,9 +19,10 @@ class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") Ribbo
     Q_OBJECT
 public:
     enum GroupSize {
-        GroupLarge, GroupMedium, GroupSmall
+        GroupLarge,
+        GroupMedium,
+        GroupSmall
     };
-
 public:
     explicit RibbonGroup(const QString &title, QWidget *parent = nullptr);
     ~RibbonGroup();
@@ -37,7 +38,7 @@ public:
     void setOptionButtonToolTip(const QString &tip);
 
     QAction *addAction(const QIcon &icon, const QString &text, GroupSize size);
-    void addAction(QAction *action, GroupSize size); // for action that has menu
+    void addAction(QAction *action, GroupSize size);   // for action that has menu
     void addToolButton(QToolButton *button, GroupSize size);
 
     void addWidget(QWidget *widget);
@@ -47,11 +48,10 @@ public:
 
 Q_SIGNALS:
     void optionClicked();
-
 private:
     RibbonGroupPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // RIBBONGROUP_H
+#endif   // RIBBONGROUP_H

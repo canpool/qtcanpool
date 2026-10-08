@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -20,18 +20,16 @@ class DockFloatingPreviewPrivate;
  * indicate the floating widget movement.
  * This widget is used as a placeholder for drag operations for non-opaque docking
  */
-class QX_DOCK_EXPORT DockFloatingPreview : public QWidget
-                                         , public DockFloatingWidget
+class QX_DOCK_EXPORT DockFloatingPreview : public QWidget, public DockFloatingWidget
 {
     Q_OBJECT
 public:
     explicit DockFloatingPreview(DockPanel *content);
     explicit DockFloatingPreview(DockWidget *content);
     virtual ~DockFloatingPreview();
-
 public:
-    virtual void startFloating(const QPoint &dragStartMousePos, const QSize &size,
-        Qx::DockDragState dragState, QWidget *mouseEventHandler) override;
+    virtual void startFloating(const QPoint &dragStartMousePos, const QSize &size, Qx::DockDragState dragState,
+                               QWidget *mouseEventHandler) override;
     virtual void finishDragging() override;
     void moveFloating() override;
 
@@ -42,13 +40,11 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void onApplicationStateChanged(Qt::ApplicationState state);
-
 protected:
     DockFloatingPreview(QWidget *content, QWidget *parent);
 
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
     virtual void paintEvent(QPaintEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockFloatingPreview)
 };

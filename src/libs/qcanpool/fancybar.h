@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYBAR_H
 #define FANCYBAR_H
 
@@ -22,12 +22,12 @@ class FancyBarPrivate;
 class QCANPOOL_SHARED_EXPORT FancyBar : public QWidget
 {
     Q_OBJECT
-
 public:
     enum FancyStyle {
-        WindowStyle, MergedStyle, DialogStyle
+        WindowStyle,
+        MergedStyle,
+        DialogStyle
     };
-
 public:
     explicit FancyBar(QWidget *parent);
     ~FancyBar();
@@ -52,11 +52,10 @@ public:
 
 Q_SIGNALS:
     void maximizationChanged(bool maximized);
-
 private:
     FancyBarPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYBAR_H
+#endif   // FANCYBAR_H

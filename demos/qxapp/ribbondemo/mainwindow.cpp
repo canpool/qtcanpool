@@ -63,8 +63,8 @@ QX_RIBBON_USE_NAMESPACE
         __TMP_LASTTIMES = ___TMP_INT;                                                                                  \
     } while (0)
 
-#define QXRIBBON_TEST_MDIAREA    0
-#define QXRIBBON_TEST_CUSTOMIZE_APPBTN  1
+#define QXRIBBON_TEST_MDIAREA          0
+#define QXRIBBON_TEST_CUSTOMIZE_APPBTN 1
 
 MainWindow::MainWindow(QWidget *par)
     : MyRibbonWindow(par)
@@ -216,8 +216,9 @@ void MainWindow::createPageHome()
     groupStyle->addSmallAction(actWindowFlagNormalButton);
     connect(actWindowFlagNormalButton, &QAction::triggered, this, &MainWindow::onActionWindowFlagNormalButtonTriggered);
 #if defined(QXRIBBON_USE_APPWINDOW) || !defined(Q_OS_WINDOWS)
-    // FIXME: 在使用 FRAMELESS_USE_NATIVE 方案时，先单击按钮禁止最大化，再单击按钮允许最大化后，窗口最大化后显示位置异常，
-    // 且鼠标不能再改变窗口大小，这是 FramelessWidgetDataNativeWin 的缺陷
+    // FIXME: 在使用 FRAMELESS_USE_NATIVE
+    // 方案时，先单击按钮禁止最大化，再单击按钮允许最大化后，窗口最大化后显示位置异常， 且鼠标不能再改变窗口大小，这是
+    // FramelessWidgetDataNativeWin 的缺陷
     actWindowFlagNormalButton->setEnabled(true);
 #else
     actWindowFlagNormalButton->setEnabled(false);
@@ -297,8 +298,7 @@ void MainWindow::createPageHome()
     cb->setChecked(false);
     groupStyle->addSmallWidget(cb);
     connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-        this->ribbonBar()->setTabBarPosition(checked ? RibbonBar::TBCenterPosition
-                                                     : RibbonBar::TBLeftPosition);
+        this->ribbonBar()->setTabBarPosition(checked ? RibbonBar::TBCenterPosition : RibbonBar::TBLeftPosition);
     });
 
     cb = new QCheckBox();
@@ -546,23 +546,30 @@ void MainWindow::createPageOther()
         });
         return act;
     };
-    galleryActions.append(lambdaCreateGalleryAction(tr("Document File"), ":/gallery-icon/res/gallery/Document-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Download File"), ":/gallery-icon/res/gallery/Download-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Drive File Four Word"), ":/gallery-icon/res/gallery/Drive-File.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("Document File"), ":/gallery-icon/res/gallery/Document-File.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("Download File"), ":/gallery-icon/res/gallery/Download-File.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("Drive File Four Word"), ":/gallery-icon/res/gallery/Drive-File.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Dropbox File"), ":/gallery-icon/res/gallery/Dropbox-File.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Email File"), ":/gallery-icon/res/gallery/Email-File.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Encode File"), ":/gallery-icon/res/gallery/Encode-File.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Favorit File"), ":/gallery-icon/res/gallery/Favorit-File.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("File Error"), ":/gallery-icon/res/gallery/File-Error.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("File Read Only"), ":/gallery-icon/res/gallery/File-Readonly.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("File Settings"), ":/gallery-icon/res/gallery/File-Settings.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Presentation File"), ":/gallery-icon/res/gallery/Presentation-File.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("File Read Only"), ":/gallery-icon/res/gallery/File-Readonly.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("File Settings"), ":/gallery-icon/res/gallery/File-Settings.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("Presentation File"), ":/gallery-icon/res/gallery/Presentation-File.svg"));
     RibbonGalleryGroup *galleryGroup1 = gallery->addGalleryGroup(tr("Files"), galleryActions);
     galleryGroup1->setGalleryGroupStyle(RibbonGalleryGroup::IconWithWordWrapText);
     galleryGroup1->setGridMinimumWidth(80);
     galleryActions.clear();
     galleryActions.append(lambdaCreateGalleryAction(tr("Photoshop"), ":/gallery-icon/res/gallery/Photoshop.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Internet-Explorer"), ":/gallery-icon/res/gallery/Internet-Explorer.svg"));
+    galleryActions.append(
+        lambdaCreateGalleryAction(tr("Internet-Explorer"), ":/gallery-icon/res/gallery/Internet-Explorer.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Illustrator"), ":/gallery-icon/res/gallery/Illustrator.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Google-Maps"), ":/gallery-icon/res/gallery/Google-Maps.svg"));
     galleryActions.append(lambdaCreateGalleryAction(tr("Adobe"), ":/gallery-icon/res/gallery/Adobe.svg"));
@@ -999,7 +1006,6 @@ void MainWindow::createRightButtonGroup()
     connect(actionHelp, &QAction::triggered, this, &MainWindow::onActionHelpTriggered);
     rightBar->addAction(actionHelp);
 
-
     RibbonButtonGroup *topLeftBar = ribbonBar()->cornerButtonGroup(Qt::TopLeftCorner);
     QLineEdit *le = new QLineEdit(this);
     le->setPlaceholderText(tr("Search..."));
@@ -1197,10 +1203,10 @@ void MainWindow::onActionHelpTriggered()
     QString url("https://gitee.com/icanpool/qtcanpool");
 
     AboutDialog ad(QLatin1String(":/icon/res/logo64.svg"), tr("QxRibbon"), QLatin1String(QX_RIBBON_VERSION_STR),
-                   tr(
-"Copyleft (C) 2023 maminjie &lt;canpool@163.com&gt;<br/>"
-"<br/>QxRibbon is a Qx componet like to Microsoft Ribbon style. "
-"For more information, please visit <a href=\"%1\">%1</a>").arg(url),
+                   tr("Copyleft (C) 2023 maminjie &lt;canpool@163.com&gt;<br/>"
+                      "<br/>QxRibbon is a Qx componet like to Microsoft Ribbon style. "
+                      "For more information, please visit <a href=\"%1\">%1</a>")
+                       .arg(url),
                    this);
     ad.exec();
 }
@@ -1220,8 +1226,7 @@ void MainWindow::onActionUseQssTriggered()
 {
     QFile f("ribbon.qss");
     if (!f.exists()) {
-        QString fdir = QFileDialog::getOpenFileName(this, tr("select stylesheet file"),
-                                                    "", tr("Files (*.qss *.css)"));
+        QString fdir = QFileDialog::getOpenFileName(this, tr("select stylesheet file"), "", tr("Files (*.qss *.css)"));
         if (fdir.isEmpty()) {
             return;
         }

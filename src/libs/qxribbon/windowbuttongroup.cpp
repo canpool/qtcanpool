@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "windowbuttongroup.h"
 #include "windowbuttongroup_p.h"
 #include "ribbonmanager.h"
@@ -16,16 +16,15 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-#define MIN_BUTTON_WIDTH    30
-#define MAX_BUTTON_WIDTH    30
-#define CLS_BUTTON_WIDTH    40
+#define MIN_BUTTON_WIDTH 30
+#define MAX_BUTTON_WIDTH 30
+#define CLS_BUTTON_WIDTH 40
 
 WindowButton::WindowButton(QWidget *p)
     : QToolButton(p)
 {
     setAutoRaise(true);
 }
-
 
 WindowButtonGroupPrivate::WindowButtonGroupPrivate()
     : m_closeButton(Q_NULLPTR)

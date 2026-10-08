@@ -14,9 +14,8 @@ class RibbonDockWindow : public Qtitan::DockMainWindow
 public:
     RibbonDockWindow(QWidget *parent = Q_NULL);
     virtual ~RibbonDockWindow();
-
 private:
     Q_DISABLE_COPY(RibbonDockWindow)
 };
 
-#endif // RIBBONDOCKWINDOW_H
+#endif   // RIBBONDOCKWINDOW_H

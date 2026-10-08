@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -27,12 +27,10 @@ public:
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
-
 protected:
     virtual QSize tabSizeHint(int index) const override;
 
     void wheelEvent(QWheelEvent *event) override;
-
 private:
     QMargins m_tabMargin;
 };

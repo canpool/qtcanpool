@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #ifndef WINDOWCONTEXT_P_H
 #define WINDOWCONTEXT_P_H
 
@@ -27,8 +27,7 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-class WindowContext : public QObject, public WindowNativeEventDispatcher,
-                      public WindowSharedEventDispatcher
+class WindowContext : public QObject, public WindowNativeEventDispatcher, public WindowSharedEventDispatcher
 {
     Q_OBJECT
 public:

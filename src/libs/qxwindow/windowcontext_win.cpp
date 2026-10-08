@@ -547,7 +547,8 @@ static inline void removeManagedWindow(HWND hWnd)
     }
 }
 
-WindowContextWin::WindowContextWin() : WindowContext()
+WindowContextWin::WindowContextWin()
+    : WindowContext()
 {
 }
 

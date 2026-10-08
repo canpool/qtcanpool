@@ -38,12 +38,10 @@ public:
 
     bool opaqueResize() const;
     void setOpaqueResize(bool opaque = true);
-
 protected:
     void mouseMoveEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockResizeHandle)
 };

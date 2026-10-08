@@ -414,7 +414,7 @@ DockPanel *DockWindow::addDockWidget(Qx::DockWidgetArea area, DockWidget *w, Doc
     DockContainer *container = p ? p->dockContainer() : this;
     if (container == nullptr) {
         container = this;
-        p = nullptr; // panel is not contained by any container, can not be used again
+        p = nullptr;   // panel is not contained by any container, can not be used again
     }
     DockPanel *panel = container->addDockWidget(area, w, p, index);
     if (panel) {
@@ -683,7 +683,6 @@ void DockWindow::setDockWidgetToolBarIconSize(const QSize &iconSize, DockWidget:
         d->m_toolBarIconSizeDocked = iconSize;
     }
 }
-
 
 /**
  * Returns all dock widget features that are globally locked by the dock window.

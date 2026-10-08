@@ -20,10 +20,8 @@ public:
 
     void saveState();
     void restoreState();
-
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
-
 private:
     DockWindow *m_dockWindow = nullptr;
 };

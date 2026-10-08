@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2021-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "quickaccessbar_p.h"
 #include "quickaccessbar.h"
 
@@ -24,7 +24,6 @@ QuickAccessButton::QuickAccessButton(QWidget *parent)
 
 QuickAccessButton::~QuickAccessButton()
 {
-
 }
 
 QSize QuickAccessButton::sizeHint() const
@@ -42,7 +41,6 @@ void QuickAccessButton::setOrientation(Qt::Orientation orientation)
     m_orientation = orientation;
 }
 
-
 QuickAccessBarPrivate::QuickAccessBarPrivate()
     : m_menu(Q_NULLPTR)
     , m_actionAccessPopup(Q_NULLPTR)
@@ -51,12 +49,10 @@ QuickAccessBarPrivate::QuickAccessBarPrivate()
     , m_removingAction(false)
     , m_customizingAction(false)
 {
-
 }
 
 QuickAccessBarPrivate::~QuickAccessBarPrivate()
 {
-
 }
 
 void QuickAccessBarPrivate::init()
@@ -70,8 +66,8 @@ void QuickAccessBarPrivate::init()
 
     m_accessPopup = new QuickAccessButton(q);
     m_accessPopup->setPopupMode(QToolButton::InstantPopup);
-    QObject::connect(q, SIGNAL(orientationChanged(Qt::Orientation)),
-                     m_accessPopup, SLOT(setOrientation(Qt::Orientation)));
+    QObject::connect(q, SIGNAL(orientationChanged(Qt::Orientation)), m_accessPopup,
+                     SLOT(setOrientation(Qt::Orientation)));
     m_menu = new QMenu(q);
     m_accessPopup->setMenu(m_menu);
 
@@ -92,7 +88,7 @@ QuickAccessAction *QuickAccessBarPrivate::findQuickAccessAction(QAction *action)
 
     QList<QAction *> list = m_customizeGroup->actions();
     for (int i = 0; i < list.count(); ++i) {
-        QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i]);
+        QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(list[i]);
         if (act && action == act->m_srcAction) {
             return act;
         }
@@ -106,7 +102,7 @@ QAction *QuickAccessBarPrivate::findBeforeAction(QAction *action) const
     bool find = false;
     for (int i = 0, count = list.count(); i < count; ++i) {
         if (find) {
-            if (QuickAccessAction *beforeAct = dynamic_cast<QuickAccessAction*>(list[i])) {
+            if (QuickAccessAction *beforeAct = dynamic_cast<QuickAccessAction *>(list[i])) {
                 if (beforeAct->isChecked()) {
                     return beforeAct->m_srcAction;
                 }
@@ -121,7 +117,7 @@ QAction *QuickAccessBarPrivate::findBeforeAction(QAction *action) const
 
 void QuickAccessBarPrivate::updateAction(QAction *action)
 {
-    if (QuickAccessAction* wrapper = findQuickAccessAction(action)) {
+    if (QuickAccessAction *wrapper = findQuickAccessAction(action)) {
         wrapper->update();
     }
 }
@@ -153,7 +149,7 @@ void QuickAccessBarPrivate::setActionVisible(QuickAccessAction *wrapper, QAction
 void QuickAccessBarPrivate::customizeAction(QAction *action)
 {
     m_customizingAction = true;
-    if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(action)) {
+    if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(action)) {
         setActionVisible(act, act->m_srcAction, !q->widgetForAction(act->m_srcAction));
         Q_EMIT q->customizeActionChanged();
     }
@@ -218,7 +214,7 @@ int QuickAccessBar::visibleCount() const
     int visibleCount = 0;
     QList<QAction *> list = d->m_customizeGroup->actions();
     for (int i = 0, count = list.count(); i < count; ++i) {
-        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i])) {
+        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(list[i])) {
             if (act->isChecked()) {
                 visibleCount++;
             }
@@ -245,7 +241,7 @@ void QuickAccessBar::setState(const QByteArray &s)
     int j = 0;
     QList<QAction *> list = d->m_customizeGroup->actions();
     for (int i = 0, count = list.count(); i < count; ++i) {
-        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction*>(list[i])) {
+        if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(list[i])) {
             if (j < cnt) {
                 if (s.at(j) == '1') {
                     d->setActionVisible(act, act->m_srcAction, true);
@@ -272,7 +268,7 @@ bool QuickAccessBar::event(QEvent *event)
 void QuickAccessBar::actionEvent(QActionEvent *event)
 {
     QToolBar::actionEvent(event);
-    if (d->m_actionAccessPopup)  {
+    if (d->m_actionAccessPopup) {
         if (event->type() == QEvent::ActionAdded) {
             if (!d->m_removingAction) {
                 // remove, then add back in QEvent::ActionRemoved

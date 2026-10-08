@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -26,9 +26,9 @@ public:
      * @brief GalleryGroup显示的样式
      */
     enum GalleryGroupStyle {
-        IconWithText,           ///< 图标带文字
+        IconWithText,   ///< 图标带文字
         IconWithWordWrapText,   ///< 图标带文字,文字会换行显示，此模式只会对DisplayOneRow生效，如果不是DisplayOneRow，等同IconWithText
-        IconOnly                ///< 只有图标
+        IconOnly   ///< 只有图标
     };
 
     /**
@@ -86,7 +86,8 @@ Q_SIGNALS:
     /**
      * @brief 等同QActionGroup的hovered
      * 所有加入RibbonGalleryGroup的action都会被一个QActionGroup管理,可以通过@sa actionGroup获取到对应的actiongroup
-     * @note 此属性需要通过QAbstractItemView::entered(const QModelIndex &index)激活，因此要保证设置了setMouseTracking(true)
+     * @note 此属性需要通过QAbstractItemView::entered(const QModelIndex
+     * &index)激活，因此要保证设置了setMouseTracking(true)
      * @param action
      */
     void hovered(QAction *action);

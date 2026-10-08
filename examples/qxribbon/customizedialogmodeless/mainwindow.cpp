@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     group->addLargeAction(new QAction(icon, tr("La"), this));
     group->addMediumAction(new QAction(icon, tr("Ma1"), this));
 
-    setCentralWidget(new RibbonCustomizeDialog(rb)); // modeless
+    setCentralWidget(new RibbonCustomizeDialog(rb));   // modeless
 
     resize(800, 400);
 }

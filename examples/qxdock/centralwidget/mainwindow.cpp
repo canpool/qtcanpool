@@ -88,26 +88,26 @@ default state contents:
 
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <QxDock Version=\"1\" UserVersion=\"0\" Containers=\"1\" CentralWidget=\"CentralWidget\">
-	<Container Floating=\"0\">
-		<Splitter Orientation=\"|\" Count=\"3\">
-			<Splitter Orientation=\"-\" Count=\"2\">
-				<Area Tabs=\"1\" Current=\"Table 1\">
-					<Widget Name=\"Table 1\" Closed=\"0\"/>
-				</Area>
-				<Area Tabs=\"1\" Current=\"Table 2\">
-					<Widget Name=\"Table 2\" Closed=\"0\"/>
-				</Area>
-			</Splitter>
-			<Sizes>211 210 </Sizes>
-			<Area Tabs=\"1\" Current=\"CentralWidget\" AllowedAreas=\"f\" Flags=\"1\">
-				<Widget Name=\"CentralWidget\" Closed=\"0\"/>
-			</Area>
-			<Area Tabs=\"1\" Current=\"Properties\">
-				<Widget Name=\"Properties\" Closed=\"0\"/>
-			</Area>
-			<Sizes>256 246 256 </Sizes>
-		</Splitter>
-	</Container>
+    <Container Floating=\"0\">
+        <Splitter Orientation=\"|\" Count=\"3\">
+            <Splitter Orientation=\"-\" Count=\"2\">
+                <Area Tabs=\"1\" Current=\"Table 1\">
+                    <Widget Name=\"Table 1\" Closed=\"0\"/>
+                </Area>
+                <Area Tabs=\"1\" Current=\"Table 2\">
+                    <Widget Name=\"Table 2\" Closed=\"0\"/>
+                </Area>
+            </Splitter>
+            <Sizes>211 210 </Sizes>
+            <Area Tabs=\"1\" Current=\"CentralWidget\" AllowedAreas=\"f\" Flags=\"1\">
+                <Widget Name=\"CentralWidget\" Closed=\"0\"/>
+            </Area>
+            <Area Tabs=\"1\" Current=\"Properties\">
+                <Widget Name=\"Properties\" Closed=\"0\"/>
+            </Area>
+            <Sizes>256 246 256 </Sizes>
+        </Splitter>
+    </Container>
 </QxDock>\n"
 
 -----------------------

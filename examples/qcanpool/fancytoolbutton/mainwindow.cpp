@@ -16,10 +16,9 @@ QCANPOOL_USE_NAMESPACE
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-
     QToolBar *toolBar = new QToolBar();
     toolBar->setIconSize(QSize(32, 32));
-//    toolBar->layout()->setSizeConstraint(QLayout::SetFixedSize);
+    //    toolBar->layout()->setSizeConstraint(QLayout::SetFixedSize);
     toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QMenu *menu = nullptr;
@@ -220,4 +219,3 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 }
-

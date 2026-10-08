@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYTABWIDGET_H
 #define FANCYTABWIDGET_H
 
@@ -19,7 +19,6 @@ class QCANPOOL_SHARED_EXPORT FancyTabWidget : public QWidget
     Q_OBJECT
 
     Q_PROPERTY(TabPosition tabPosition READ tabPosition WRITE setTabPosition)
-
 public:
     explicit FancyTabWidget(QWidget *parent = nullptr);
     ~FancyTabWidget();
@@ -28,7 +27,7 @@ public:
     int addTab(QWidget *widget, const QIcon &icon, const QString &label);
 
     int insertTab(int index, QWidget *widget, const QString &label);
-    int insertTab(int index, QWidget *widget, const QIcon& icon, const QString &label);
+    int insertTab(int index, QWidget *widget, const QIcon &icon, const QString &label);
 
     void removeTab(int index);
 
@@ -43,7 +42,12 @@ public:
 
     FancyTabBar *tabBar(void) const;
 
-    enum TabPosition { North, South, West, East };
+    enum TabPosition {
+        North,
+        South,
+        West,
+        East
+    };
     Q_ENUM(TabPosition)
     TabPosition tabPosition() const;
     void setTabPosition(TabPosition);
@@ -55,11 +59,10 @@ Q_SIGNALS:
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void setCurrentWidget(QWidget *widget);
-
 private:
     FancyTabWidgetPrivate *d;
 };
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYTABWIDGET_H
+#endif   // FANCYTABWIDGET_H

@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     RibbonPage *page = ribbonBar->addPage(tr("Home"));
     RibbonGroup *group = page->addGroup(tr("InnerContainer(QToolButtons)"));
     group->addAction(icon, tr("testgroup"), RibbonGroup::GroupLarge);
-    group->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge); // too long
+    group->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge);   // too long
     action = new QAction(icon, tr("test"));
     action->setMenu(menu);
     group->addAction(action, RibbonGroup::GroupLarge);
@@ -102,8 +102,8 @@ MainWindow::MainWindow(QWidget *parent)
     button = new FancyToolButton(icon, tr("test"));
     button->setPopupMode(QToolButton::InstantPopup);
     button->setMenu(menu);
-    button->setForceAlignCenter(false);   // disable align center for small
-    group->addToolButton(button, RibbonGroup::GroupSmall); // using QToolButton is appropriate
+    button->setForceAlignCenter(false);                      // disable align center for small
+    group->addToolButton(button, RibbonGroup::GroupSmall);   // using QToolButton is appropriate
     button = new FancyToolButton(icon, tr("test123"));
     group->addToolButton(button, RibbonGroup::GroupSmall);
     button = new FancyToolButton(icon, tr("test12345"));
@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent)
     action = new QAction(icon, tr("test"));
     action->setMenu(menu);
     actionContainer->addAction(action, RibbonGroup::GroupLarge);
-    actionContainer->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge); // too long
+    actionContainer->addAction(icon, tr("test\ngroup"), RibbonGroup::GroupLarge);   // too long
     actionContainer->addAction(icon, tr("test"), RibbonGroup::GroupMedium);
     actionContainer->addAction(icon, tr("test123"), RibbonGroup::GroupMedium);
     actionContainer->addAction(icon, tr("test12345"), RibbonGroup::GroupMedium);
@@ -170,7 +170,7 @@ MainWindow::MainWindow(QWidget *parent)
     toolBar = loftContainer->toolBar(RibbonLoftContainer::Top);
     QComboBox *cb = new QComboBox(this);
     cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    cb->addItems({ "Arial", "Helvetica", "Times" });
+    cb->addItems({"Arial", "Helvetica", "Times"});
     toolBar->addWidget(cb);
     action = new QAction(icon, tr("test"));
     action->setMenu(menu);
@@ -225,7 +225,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(actionGroup, SIGNAL(triggered(QAction *)), this, SLOT(slotChangeStyle(QAction *)));
     emit actionGroup->actions().at(1)->trigger();
 
-
     setWindowIcon(icon);
     setWindowTitle(tr("fancy ribbon demo"));
 
@@ -241,7 +240,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-
 }
 
 QToolButton *MainWindow::createToolButton(const QIcon &icon, const QString &text)

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
-**/
+ **/
 #include "windowbutton.h"
 #include "windowbutton_p.h"
 #include <QtCore/QDebug>
@@ -36,7 +36,8 @@ void WindowButtonPrivate::reloadIcon()
     }
 }
 
-WindowButton::WindowButton(QWidget *parent) : WindowButton(*new WindowButtonPrivate(), parent)
+WindowButton::WindowButton(QWidget *parent)
+    : WindowButton(*new WindowButtonPrivate(), parent)
 {
 }
 
@@ -94,7 +95,9 @@ void WindowButton::mouseDoubleClickEvent(QMouseEvent *event)
     }
 }
 
-WindowButton::WindowButton(WindowButtonPrivate &d, QWidget *parent) : QPushButton(parent), d_ptr(&d)
+WindowButton::WindowButton(WindowButtonPrivate &d, QWidget *parent)
+    : QPushButton(parent)
+    , d_ptr(&d)
 {
     d.q_ptr = this;
 

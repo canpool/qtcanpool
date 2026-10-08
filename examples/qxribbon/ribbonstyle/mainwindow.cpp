@@ -60,4 +60,3 @@ void MainWindow::onActionChangeStyleTriggered()
         ribbonBar()->setRibbonStyle(static_cast<RibbonBar::RibbonStyle>(id));
     }
 }
-

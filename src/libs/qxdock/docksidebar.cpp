@@ -156,7 +156,6 @@ DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
     return autoHideContainer;
 }
 
-
 /**
  * Adds the given autoHideWidget to this sidebar.
  * If the autoHideWidget is in another sidebar, then it will be removed

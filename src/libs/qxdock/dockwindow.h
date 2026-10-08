@@ -49,8 +49,8 @@ public:
     DockWidget *findDockWidget(const QString &objectName) const;
 
     DockAutoHideContainer *addAutoHideDockWidget(Qx::DockSideBarArea area, DockWidget *w);
-    DockAutoHideContainer *addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area,
-                                                            DockWidget *w, DockContainer *container);
+    DockAutoHideContainer *addAutoHideDockWidgetToContainer(Qx::DockSideBarArea area, DockWidget *w,
+                                                            DockContainer *container);
 
     DockFloatingContainer *addDockWidgetFloating(DockWidget *w);
 
@@ -103,7 +103,6 @@ public Q_SLOTS:
     void endLeavingMinimizedState();
     void openPerspective(const QString &perspectiveName);
     void hideWindowAndFloatingWidgets();
-
 protected:
     void registerDockContainer(DockContainer *container);
     void removeDockContainer(DockContainer *container);
@@ -119,11 +118,9 @@ protected:
     DockFocusController *dockFocusController() const;
 
     void restoreHiddenFloatingWidgets();
-
 protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
     virtual void showEvent(QShowEvent *e) override;
-
 private:
     QX_DECLARE_PRIVATE(DockWindow)
     friend class DockContainer;

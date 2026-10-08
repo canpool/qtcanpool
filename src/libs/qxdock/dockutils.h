@@ -1,7 +1,7 @@
 /**
  * Copyleft (C) 2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #pragma once
 
 #include "qxdock_global.h"
@@ -14,8 +14,8 @@
 #include <xcb/xcb.h>
 #endif
 
-//#define QX_DOCK_DEBUG
-//#define QX_DOCK_DEBUG_PRINT
+// #define QX_DOCK_DEBUG
+// #define QX_DOCK_DEBUG_PRINT
 
 // Define QX_DOCK_DEBUG_PRINT to enable a lot of debug output
 #ifdef QX_DOCK_DEBUG_PRINT
@@ -30,7 +30,8 @@ QX_DOCK_BEGIN_NAMESPACE
 
 class DockSplitter;
 
-namespace internal {
+namespace internal
+{
 extern const int FloatingWidgetDragStartEvent;
 extern const int DockedWidgetDragStartEvent;
 static const char *const LocationProperty = "Location";
@@ -39,8 +40,7 @@ static const char *const ClosedProperty = "close";
 static const bool RestoreTesting = true;
 static const bool Restore = false;
 
-template <class T>
-void setFlag(T &flags, typename T::enum_type flag, bool on = true)
+template <class T> void setFlag(T &flags, typename T::enum_type flag, bool on = true)
 {
 #if QT_VERSION >= 0x050700
     flags.setFlag(flag, on);
@@ -53,8 +53,7 @@ void setFlag(T &flags, typename T::enum_type flag, bool on = true)
 #endif
 }
 
-template <class QObjectPtr>
-void setToolTip(QObjectPtr obj, const QString &tip)
+template <class QObjectPtr> void setToolTip(QObjectPtr obj, const QString &tip)
 {
 #ifndef QT_NO_TOOLTIP
     obj->setToolTip(tip);
@@ -73,8 +72,7 @@ void setToolTip(QObjectPtr obj, const QString &tip)
  * the current dock widget has a parent. All dock widgets that are not the
  * current dock widget in a dock panel have no parent.
  */
-template <class T>
-T findParent(const QWidget *w)
+template <class T> T findParent(const QWidget *w)
 {
     QWidget *pw = w->parentWidget();
     while (pw) {
@@ -104,14 +102,22 @@ void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to);
 
 void hideEmptyParentSplitters(DockSplitter *firstParentSplitter);
 
-
 class DockInsertParam : public QPair<Qt::Orientation, bool>
 {
 public:
     using QPair<Qt::Orientation, bool>::QPair;
-    Qt::Orientation orientation() const {return this->first;}
-    bool append() const {return this->second;}
-    int insertOffset() const {return append() ? 1 : 0;}
+    Qt::Orientation orientation() const
+    {
+        return this->first;
+    }
+    bool append() const
+    {
+        return this->second;
+    }
+    int insertOffset() const
+    {
+        return append() ? 1 : 0;
+    }
 };
 
 DockInsertParam dockAreaInsertParameters(Qx::DockWidgetArea area);
@@ -161,11 +167,11 @@ QString windowManager();
 
 #ifdef QX_DOCK_DEBUG
 void setBackgroudColor(QWidget *w);
-#define QXDOCK_SET_BGCOLOR(w)    internal::setBackgroudColor(w)
+#define QXDOCK_SET_BGCOLOR(w) internal::setBackgroudColor(w)
 #else
 #define QXDOCK_SET_BGCOLOR(w)
-#endif // QX_DOCK_DEBUG
+#endif   // QX_DOCK_DEBUG
 
-} // internal
+}   // internal
 
 QX_DOCK_END_NAMESPACE

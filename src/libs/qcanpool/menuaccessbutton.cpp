@@ -27,10 +27,7 @@ MenuAccessButton::MenuAccessButton(QWidget *parent)
     setObjectName(QLatin1String("qtc_menuaccessbutton"));
 }
 
-MenuAccessButton::~MenuAccessButton()
-{
-    QCP_FINI_PRIVATE()
-}
+MenuAccessButton::~MenuAccessButton(){QCP_FINI_PRIVATE()}
 
 QSize MenuAccessButton::sizeHint() const
 {

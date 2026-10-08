@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #ifndef FANCYTABBARPRIVATE_H
 #define FANCYTABBARPRIVATE_H
 
@@ -33,7 +33,6 @@ class FancyTabBar;
 class FancyTabBarPrivate : public QObject
 {
     Q_OBJECT
-
 public:
     FancyTabBarPrivate();
     ~FancyTabBarPrivate();
@@ -42,17 +41,20 @@ public:
 
     QToolButton *at(int index);
 
-    inline bool validIndex(int index) const { return index >= 0 && index < m_tabs.count(); }
+    inline bool validIndex(int index) const
+    {
+        return index >= 0 && index < m_tabs.count();
+    }
     void setIconSize(QSize size);
 
-    inline QBoxLayout::Direction layoutDirection() const {
+    inline QBoxLayout::Direction layoutDirection() const
+    {
         return m_orientation == Qt::Horizontal ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom;
     }
 
 public Q_SLOTS:
     void switchTab(bool checked);
     void pressTab();
-
 public:
     QList<QToolButton *> m_tabs;
     QList<QToolButton *> m_actionButtons;
@@ -73,4 +75,4 @@ public:
 
 QCANPOOL_END_NAMESPACE
 
-#endif // FANCYTABBARPRIVATE_H
+#endif   // FANCYTABBARPRIVATE_H

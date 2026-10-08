@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2018-2022 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
-**/
+ **/
 #include "fancytabwidget.h"
 #include "fancytabbar.h"
 
@@ -56,31 +56,32 @@ void FancyTabWidgetPrivate::init()
 void FancyTabWidgetPrivate::updateTabBarPosition()
 {
     switch (m_pos) {
-        case FancyTabWidget::North: {
-            m_layout->setDirection(QBoxLayout::TopToBottom);
-            m_tabBar->setOrientation(Qt::Horizontal);
-            break;
-        }
-        case FancyTabWidget::South: {
-            m_layout->setDirection(QBoxLayout::BottomToTop);
-            m_tabBar->setOrientation(Qt::Horizontal);
-            break;
-        }
-        case FancyTabWidget::West: {
-            m_layout->setDirection(QBoxLayout::LeftToRight);
-            m_tabBar->setOrientation(Qt::Vertical);
-            break;
-        }
-        case FancyTabWidget::East: {
-            m_layout->setDirection(QBoxLayout::RightToLeft);
-            m_tabBar->setOrientation(Qt::Vertical);
-            break;
-        }
+    case FancyTabWidget::North: {
+        m_layout->setDirection(QBoxLayout::TopToBottom);
+        m_tabBar->setOrientation(Qt::Horizontal);
+        break;
+    }
+    case FancyTabWidget::South: {
+        m_layout->setDirection(QBoxLayout::BottomToTop);
+        m_tabBar->setOrientation(Qt::Horizontal);
+        break;
+    }
+    case FancyTabWidget::West: {
+        m_layout->setDirection(QBoxLayout::LeftToRight);
+        m_tabBar->setOrientation(Qt::Vertical);
+        break;
+    }
+    case FancyTabWidget::East: {
+        m_layout->setDirection(QBoxLayout::RightToLeft);
+        m_tabBar->setOrientation(Qt::Vertical);
+        break;
+    }
     }
 }
 
 FancyTabWidget::FancyTabWidget(QWidget *parent)
-    : QWidget(parent), d(new FancyTabWidgetPrivate())
+    : QWidget(parent)
+    , d(new FancyTabWidgetPrivate())
 {
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QLatin1String("qtc_tabwidget"));

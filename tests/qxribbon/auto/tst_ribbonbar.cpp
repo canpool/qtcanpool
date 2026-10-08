@@ -163,22 +163,22 @@ void tst_RibbonBar::pageContext()
 
     QCOMPARE(0, rb.currentIndex());
     QCOMPARE(0, rb.pageIndex(page1));
-    QCOMPARE(-1, rb.pageIndex(page2)); // page2 unusable
-    QCOMPARE(-1, rb.pageIndex(page3)); // page3 unusable
-    QCOMPARE(-1, rb.pageIndex(page4)); // page4 unusable
-    QCOMPARE(-1, rb.pageIndex(page5)); // page5 unusable
+    QCOMPARE(-1, rb.pageIndex(page2));   // page2 unusable
+    QCOMPARE(-1, rb.pageIndex(page3));   // page3 unusable
+    QCOMPARE(-1, rb.pageIndex(page4));   // page4 unusable
+    QCOMPARE(-1, rb.pageIndex(page5));   // page5 unusable
 
     rb.showPageContext(pc1);
-    QCOMPARE(1, rb.pageIndex(page2)); // page2 usable
+    QCOMPARE(1, rb.pageIndex(page2));   // page2 usable
     QCOMPARE(true, rb.isPageContextVisible(pc1));
 
     rb.setPageContextVisible(pc2, true);
-    QCOMPARE(3, rb.pageIndex(page4)); // page4 usable
+    QCOMPARE(3, rb.pageIndex(page4));   // page4 usable
     QCOMPARE(true, rb.isPageContextVisible(pc2));
 
     rb.hidePageContext(pc1);
-    QCOMPARE(-1, rb.pageIndex(page2)); // page2 unusable
-    QCOMPARE(1, rb.pageIndex(page4));  // move forward
+    QCOMPARE(-1, rb.pageIndex(page2));   // page2 unusable
+    QCOMPARE(1, rb.pageIndex(page4));    // move forward
     QCOMPARE(false, rb.isPageContextVisible(pc1));
 
     rb.destroyPageContext(pc2);

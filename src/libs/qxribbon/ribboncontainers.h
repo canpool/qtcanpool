@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #pragma once
 
 #include "qxribbon_global.h"
@@ -66,18 +66,15 @@ class QX_RIBBON_EXPORT RibbonGridContainer : public QWidget
 public:
     explicit RibbonGridContainer(QWidget *parent = nullptr);
     virtual ~RibbonGridContainer();
-
 public:
     QAction *addAction(const QIcon &icon, const QString &text);
     void addButton(QAbstractButton *button);
 
     void setColumnCount(int count);
     int columnCount() const;
-
 protected:
     virtual void enterEvent(QEvent *event);
     virtual void leaveEvent(QEvent *event);
-
 private:
     QX_DECLARE_PRIVATE(RibbonGridContainer)
 };

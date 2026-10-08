@@ -1,7 +1,7 @@
 ﻿/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
-**/
+ **/
 #include "ribbonbuttongroup.h"
 #include "ribbongroup_p.h"
 #include "ribbonbutton.h"
@@ -46,10 +46,7 @@ RibbonButtonGroup::RibbonButtonGroup(QWidget *parent)
     d->init();
 }
 
-RibbonButtonGroup::~RibbonButtonGroup()
-{
-    QX_FINI_PRIVATE()
-}
+RibbonButtonGroup::~RibbonButtonGroup(){QX_FINI_PRIVATE()}
 
 QAction *RibbonButtonGroup::addAction(QAction *a)
 {
@@ -57,8 +54,7 @@ QAction *RibbonButtonGroup::addAction(QAction *a)
     return a;
 }
 
-QAction *RibbonButtonGroup::addAction(const QString &text, const QIcon &icon,
-                                      QToolButton::ToolButtonPopupMode popMode)
+QAction *RibbonButtonGroup::addAction(const QString &text, const QIcon &icon, QToolButton::ToolButtonPopupMode popMode)
 {
     Q_D(RibbonButtonGroup);
     QAction *a = new QAction(icon, text, this);
