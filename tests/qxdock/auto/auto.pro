@@ -3,7 +3,7 @@ include(../../../qtproject.pri)
 
 QT += widgets testlib
 
-CONFIG += c++11
+CONFIG += c++17
 TARGET = tst_qxdock
 DESTDIR = $$IDE_APP_PATH
 
