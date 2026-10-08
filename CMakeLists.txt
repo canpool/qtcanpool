@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 
 set(QTCANPOOL_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-## Add paths to check for cmake modules:
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+## Add paths to check for cmake modules.
+## Prepended on purpose so that our copies win over the ones shipped inside Qt
+## (see cmake/FindWrapOpenGL.cmake for the reason).
+list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(QtCanpoolUtils)
 
 env_with_default("QTC_BUILD_WITH_PCH" ENV_QTC_BUILD_WITH_PCH ON)
@@ -105,7 +107,6 @@ find_package(Qt5 COMPONENTS LinguistTools QUIET)
 find_package(Qt5 COMPONENTS Designer DesignerComponents Help SerialPort Svg Tools QUIET)
 
 find_package(Threads)
-find_package(Clang QUIET)
 if (Qt5_VERSION VERSION_LESS 6.0.0)
 find_package(KF5SyntaxHighlighting QUIET)
 endif()
