@@ -210,6 +210,11 @@ src/libs/
 | **M4 发布** | 3.0.0 正式版 | 版本对齐、Release Notes、发布包（含 vcpkg/Conan） | 3.0.0 tag + 发布说明 + 迁移指引 |
 
 > 节奏建议：**M1/M2 为核心投入**（决定 3.0 的"骨架"），M3 可按小版本增量推进，M4 收口发布。
+>
+> **进度（2026-10-08）**
+> - ✅ **M1 地基已完成**：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
+> - ✅ **M2 收敛核心项已落地**：`qxwidget→qxapp` 重定位、legacy ribbon deprecated 标注：[`design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)
+> - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x；`qxcore` 归 M3
 
 ---
 
@@ -232,6 +237,7 @@ src/libs/
 | :--- | :--- |
 | [`doc/design/3.0-MIGRATION.md`](./design/3.0-MIGRATION.md) | 2.x→3.0 迁移指南：命名空间、Ribbon 类/方法对照、fancy* 存废、qxwidget→qxapp、构建迁移 |
 | [`doc/design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md) | M1 可执行任务清单：CMake 主构建、C++17、CI 矩阵、clang-format、测试骨架（含开箱即用配置） |
+| [`doc/design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md) | M2 可执行任务清单：`qxwidget→qxapp` 重命名、legacy ribbon deprecated 标注（含实测踩坑记录） |
 
 ---
 
