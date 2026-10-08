@@ -257,7 +257,7 @@ SpacesInParentheses: false
 # 在方括号的[后和]前添加空格，lamda表达式和未指明大小的数组的声明不受影响
 SpacesInSquareBrackets: false
 # 标准
-Standard:        Auto
+Standard:        c++17
 # 在语句前面被忽略的宏定义，就好像它们是一个属性一样
 StatementAttributeLikeMacros:
   - Q_EMIT
