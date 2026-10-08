@@ -119,7 +119,7 @@ ExperimentalAutoDetectBinPacking: false
 # 自动补充namespace注释
 FixNamespaceComments: false
 # 需要被解读为foreach循环而不是函数调用的宏
-ForEachMacros: ['RANGES_FOR', 'FOREACH']
+ForEachMacros: ['RANGES_FOR', 'FOREACH', 'foreach', 'Q_FOREACH', 'QT_FOREACH']
 IfMacros: ['IF']
 # 多个#include块合并在一起并排序为一个
 IncludeBlocks:   Merge
