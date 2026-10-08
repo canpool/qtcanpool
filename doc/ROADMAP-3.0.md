@@ -212,7 +212,9 @@ src/libs/
 > 节奏建议：**M1/M2 为核心投入**（决定 3.0 的"骨架"），M3 可按小版本增量推进，M4 收口发布。
 >
 > **进度（2026-10-08）**
-> - ✅ **M1 地基已完成**：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
+> - ✅ **M1 地基已完成**（含收尾）：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
+>   - 全量 clang-format 已应用（233 文件，纯格式）；CI 格式检查升级为**强制门禁**（clang-format 版本固定 21.1.8）
+>   - CI 触发分支补充 `release-*`
 > - ✅ **M2 收敛核心项已落地**：`qxwidget→qxapp` 重定位、legacy ribbon deprecated 标注：[`design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x；`qxcore` 归 M3
 
