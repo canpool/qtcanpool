@@ -252,7 +252,7 @@ void RibbonQuickAccessBar::setState(const QByteArray &s)
         return;
     }
     Q_D(RibbonQuickAccessBar);
-    int cnt = s.count();
+    int cnt = static_cast<int>(s.size());
     int j = 0;
     foreach (QAction *action, d->m_actionList) {
         if (QuickAccessAction *act = dynamic_cast<QuickAccessAction *>(action)) {

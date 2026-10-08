@@ -600,7 +600,7 @@ void tst_RibbonGroup::other()
         QAction *a1 = grp.addSeparator();
         QAction *a2 = grp.addSeparator();
 
-        QCOMPARE(a1->parentWidget(), &grp);
+        QCOMPARE(a1->parent(), static_cast<QObject *>(&grp));
         QCOMPARE(a2->isSeparator(), true);
 
         QCOMPARE(grp.ribbonButtonForAction(a1), nullptr);

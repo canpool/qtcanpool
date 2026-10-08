@@ -237,7 +237,7 @@ void QuickAccessBar::setState(const QByteArray &s)
     if (s.isEmpty()) {
         return;
     }
-    int cnt = s.count();
+    int cnt = static_cast<int>(s.size());
     int j = 0;
     QList<QAction *> list = d->m_customizeGroup->actions();
     for (int i = 0, count = list.count(); i < count; ++i) {

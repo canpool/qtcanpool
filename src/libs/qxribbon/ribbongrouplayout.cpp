@@ -80,7 +80,7 @@ void RibbonGroupLayoutPrivate::columnWidthInfo(int colIndex, int &width, int &ma
 {
     width = -1;
     maximum = -1;
-    for (RibbonGroupItem *item : qAsConst(m_items)) {
+    for (RibbonGroupItem *item : std::as_const(m_items)) {
         if (!item->isEmpty() && (item->columnIndex == colIndex)) {
             width = qMax(width, item->willGeometry.width());
             maximum = qMax(maximum, item->widget()->maximumWidth());
@@ -106,7 +106,7 @@ void RibbonGroupLayoutPrivate::recalcExpandGeomArray(const QRect &setrect)
     // 此变量用于记录可以水平扩展的列和控件，在布局结束后，如果还有空间，就把水平扩展的控件进行扩展
     QMap<int, _columnExpandInfo> columnExpandInfo;
 
-    for (RibbonGroupItem *item : qAsConst(m_items)) {
+    for (RibbonGroupItem *item : std::as_const(m_items)) {
         if ((!item->isEmpty()) && item->expandingDirections() & Qt::Horizontal) {
             // 只获取可见的
             QMap<int, _columnExpandInfo>::iterator i = columnExpandInfo.find(item->columnIndex);
@@ -521,7 +521,7 @@ void RibbonGroupLayoutPrivate::layoutActions()
                 "\r\n RibbonGroupLayoutPrivate::layoutActions"
              << " \r\n name:" << q->parentWidget()->windowTitle() << " sizehint:" << q->sizeHint();
 #endif
-    for (RibbonGroupItem *item : qAsConst(m_items)) {
+    for (RibbonGroupItem *item : std::as_const(m_items)) {
         if (item->isEmpty()) {
             hideWidgets << item->widget();
         } else {
@@ -537,10 +537,10 @@ void RibbonGroupLayoutPrivate::layoutActions()
     }
 
     // 不在上面那里进行show和hide因为这会触发RibbonGroupLayout的重绘，导致循环绘制，非常影响效率
-    for (QWidget *w : qAsConst(showWidgets)) {
+    for (QWidget *w : std::as_const(showWidgets)) {
         w->show();
     }
-    for (QWidget *w : qAsConst(hideWidgets)) {
+    for (QWidget *w : std::as_const(hideWidgets)) {
         w->hide();
     }
 }

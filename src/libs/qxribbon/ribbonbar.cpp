@@ -24,6 +24,7 @@
 #include <QVariant>
 #include <QEventLoop>
 #include <QMouseEvent>
+#include "qtcompat/qtcompat.h"
 #include <QEvent>
 #include <QLayout>
 
@@ -186,8 +187,6 @@ void RibbonBarPrivate::init()
     m_quickAccessBar = new RibbonQuickAccessBarContainer(q);
     m_quickAccessBar->setObjectName(QStringLiteral("qx_RibbonQuickAccessBar"));
     m_quickAccessBar->setIcon(q->windowIcon());
-
-    connect(qApp, &QApplication::fontChanged, this, &RibbonBarPrivate::onFontChanged);
 }
 
 void RibbonBarPrivate::setApplicationButton(QAbstractButton *btn)
@@ -318,7 +317,7 @@ void RibbonBarPrivate::updateRibbonElementGeometry()
     Q_Q(RibbonBar);
     // 根据样式调整 RibbonPage 的布局形式
     QList<RibbonPage *> pages = q->pages();
-    for (RibbonPage *page : qAsConst(pages)) {
+    for (RibbonPage *page : std::as_const(pages)) {
         page->setGroupLayoutMode(isTwoRowStyle() ? RibbonGroup::TwoRowMode : RibbonGroup::ThreeRowMode);
     }
     // 阻止因高度变化而会触发resizeEvent，进而执行resizeXX
@@ -1107,9 +1106,8 @@ void RibbonBarPrivate::onStackWidgetHided()
     m_tabBar->setCurrentIndex(-1);
 }
 
-void RibbonBarPrivate::onFontChanged(const QFont &font)
+void RibbonBarPrivate::onFontChanged()
 {
-    Q_UNUSED(font);
     RibbonElementStyleOpt.recalc();
 }
 
@@ -1372,7 +1370,7 @@ void RibbonBar::removePage(RibbonPage *page)
     }
     d->m_stack->removeWidget(page);
     // 同时验证这个page是否是contexpage里的
-    for (RibbonPageContext *c : qAsConst(d->m_pageContextList)) {
+    for (RibbonPageContext *c : std::as_const(d->m_pageContextList)) {
         c->takePage(page);
     }
     // 这时要刷新所有tabdata的index信息
@@ -1559,7 +1557,7 @@ void RibbonBar::destroyPageContext(RibbonPageContext *context)
     d->m_pageContextList.removeAll(context);
 
     QList<RibbonPage *> res = context->pageList();
-    for (RibbonPage *page : qAsConst(res)) {
+    for (RibbonPage *page : std::as_const(res)) {
         page->hide();
         page->deleteLater();
     }
@@ -1796,7 +1794,7 @@ void RibbonBar::updateRibbonGeometry()
     Q_D(RibbonBar);
     d->updateRibbonBarHeight();
     QList<RibbonPage *> pages = this->pages();
-    for (RibbonPage *page : qAsConst(pages)) {
+    for (RibbonPage *page : std::as_const(pages)) {
         page->updateItemGeometry();
     }
 }
@@ -1859,6 +1857,11 @@ bool RibbonBar::event(QEvent *event)
     bool res = QMenuBar::event(event);
 
     switch (event->type()) {
+    // QGuiApplication::fontChanged() is deprecated since Qt 6; the same
+    // notification arrives as an event on every widget instead.
+    case QEvent::ApplicationFontChange: {
+        d->onFontChanged();
+    } break;
     case QEvent::LayoutRequest: {
         // FIXME: 引入LayoutRequest后，如果处理不当，会增加resize次数，需要梳理触发LayoutRequest的条件，
         // 同时，需要梳理哪些postEvent或sendEvent可以由LayoutRequest代替。
@@ -1892,7 +1895,7 @@ bool RibbonBar::eventFilter(QObject *obj, QEvent *e)
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(e);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 QPoint pos = mouseEvent->pos();
-                QPoint globalPos = mouseEvent->globalPos();
+                QPoint globalPos = QtCanpoolCompat::globalMousePos(mouseEvent);
 #else
                 QPoint pos = mouseEvent->position().toPoint();
                 QPoint globalPos = mouseEvent->globalPosition().toPoint();

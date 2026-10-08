@@ -1042,7 +1042,7 @@ QList<DockPanel *> DockContainer::openedDockPanels() const
 {
     Q_D(const DockContainer);
     QList<DockPanel *> result;
-    for (const auto p : d->m_panels) {
+    for (const auto &p : d->m_panels) {
         if (p && !p->isHidden()) {
             result.append(p);
         }
@@ -1057,7 +1057,7 @@ QList<DockWidget *> DockContainer::openedDockWidgets() const
 {
     Q_D(const DockContainer);
     QList<DockWidget *> result;
-    for (const auto p : d->m_panels) {
+    for (const auto &p : d->m_panels) {
         if (p && !p->isHidden()) {
             result.append(p->openedDockWidgets());
         }

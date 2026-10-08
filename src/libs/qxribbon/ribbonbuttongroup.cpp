@@ -154,7 +154,7 @@ void RibbonButtonGroup::actionEvent(QActionEvent *e)
             // destroy the RibbonButton/RibbonSeparator
             delete widget;
         }
-        if (action->parentWidget() == this) {
+        if (action->parent() == this) {
             action->setParent(nullptr);
             delete action;
         }

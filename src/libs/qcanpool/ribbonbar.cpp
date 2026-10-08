@@ -17,6 +17,7 @@
 #include <QList>
 #include <QPoint>
 #include <QMouseEvent>
+#include "qtcompat/qtcompat.h"
 #include <QApplication>
 #include <QMenu>
 #include <QStyle>
@@ -492,10 +493,10 @@ bool RibbonBar::eventFilter(QObject *object, QEvent *event)
             if (d->m_stack->rect().contains(mouseEvent->pos())) {
                 break;
             }
-            QWidget *widget = QApplication::widgetAt(mouseEvent->globalPos());
+            QWidget *widget = QApplication::widgetAt(QtCanpoolCompat::globalMousePos(mouseEvent));
             if (widget == d->m_tabBar) {
-                const QPoint pos = widget->mapFromGlobal(mouseEvent->globalPos());
-                QMouseEvent *me = new QMouseEvent(mouseEvent->type(), pos, mouseEvent->globalPos(),
+                const QPoint pos = widget->mapFromGlobal(QtCanpoolCompat::globalMousePos(mouseEvent));
+                QMouseEvent *me = new QMouseEvent(mouseEvent->type(), pos, QtCanpoolCompat::globalMousePos(mouseEvent),
                                                   mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
                 QApplication::postEvent(widget, me);
                 return true;

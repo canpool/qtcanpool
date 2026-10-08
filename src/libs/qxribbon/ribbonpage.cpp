@@ -156,7 +156,7 @@ void RibbonPagePrivate::setGroupLayoutMode(RibbonGroup::GroupLayoutMode m)
     m_groupLayoutMode = m;
     QList<RibbonGroup *> groups = groupList();
 
-    for (RibbonGroup *group : qAsConst(groups)) {
+    for (RibbonGroup *group : std::as_const(groups)) {
         group->setGroupLayoutMode(m);
     }
     updateItemGeometry();
@@ -171,7 +171,7 @@ int RibbonPagePrivate::totalSizeHintWidth() const
         total += (m.left() + m.right());
     }
 
-    for (const RibbonPageItem &item : qAsConst(m_itemList)) {
+    for (const RibbonPageItem &item : std::as_const(m_itemList)) {
         if (item.isEmpty()) {
             continue;
         }
@@ -356,10 +356,10 @@ void RibbonPagePrivate::doItemLayout()
         m_leftScrollBtn->raise();
     }
     // 不在上面那里进行show和hide因为这会触发RibbonGroupLayout的重绘，导致循环绘制，非常影响效率
-    for (QWidget *w : qAsConst(showWidgets)) {
+    for (QWidget *w : std::as_const(showWidgets)) {
         w->show();
     }
-    for (QWidget *w : qAsConst(hideWidgets)) {
+    for (QWidget *w : std::as_const(hideWidgets)) {
         w->hide();
     }
 }
@@ -739,7 +739,7 @@ void RibbonPage::updateItemGeometry()
 {
     Q_D(RibbonPage);
     QList<RibbonGroup *> groups = groupList();
-    for (RibbonGroup *group : qAsConst(groups)) {
+    for (RibbonGroup *group : std::as_const(groups)) {
         group->updateItemGeometry();
     }
     d->updateItemGeometry();

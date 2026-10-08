@@ -87,7 +87,7 @@ void RibbonGroupPrivate::resetLargeToolButtonStyle()
     Q_Q(RibbonGroup);
     QList<RibbonButton *> btns = q->ribbonButtons();
 
-    for (RibbonButton *b : qAsConst(btns)) {
+    for (RibbonButton *b : std::as_const(btns)) {
         if ((Q_NULLPTR == b) || (RibbonButton::LargeButton != b->buttonType())) {
             continue;
         }

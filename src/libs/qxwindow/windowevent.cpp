@@ -23,7 +23,7 @@ WindowNativeEventDispatcher::WindowNativeEventDispatcher() = default;
 
 WindowNativeEventDispatcher::~WindowNativeEventDispatcher()
 {
-    for (const auto &observer : qAsConst(m_nativeEventFilters)) {
+    for (const auto &observer : std::as_const(m_nativeEventFilters)) {
         observer->m_nativeDispatcher = nullptr;
     }
 }
@@ -31,7 +31,7 @@ WindowNativeEventDispatcher::~WindowNativeEventDispatcher()
 bool WindowNativeEventDispatcher::nativeDispatch(const QByteArray &eventType, void *message,
                                                  QT_NATIVE_EVENT_RESULT_TYPE *result)
 {
-    for (const auto &ef : qAsConst(m_nativeEventFilters)) {
+    for (const auto &ef : std::as_const(m_nativeEventFilters)) {
         if (ef->nativeEventFilter(eventType, message, result))
             return true;
     }
@@ -112,14 +112,14 @@ WindowSharedEventDispatcher::WindowSharedEventDispatcher() = default;
 
 WindowSharedEventDispatcher::~WindowSharedEventDispatcher()
 {
-    for (const auto &observer : qAsConst(m_sharedEventFilters)) {
+    for (const auto &observer : std::as_const(m_sharedEventFilters)) {
         observer->m_sharedDispatcher = nullptr;
     }
 }
 
 bool WindowSharedEventDispatcher::sharedDispatch(QObject *obj, QEvent *event)
 {
-    for (const auto &ef : qAsConst(m_sharedEventFilters)) {
+    for (const auto &ef : std::as_const(m_sharedEventFilters)) {
         if (ef->sharedEventFilter(obj, event))
             return true;
     }

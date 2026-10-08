@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QHoverEvent>
 #include <QMouseEvent>
+#include "qtcompat/qtcompat.h"
 #include <QIcon>
 #include <QSizeGrip>
 
@@ -535,8 +536,8 @@ bool FramelessWidgetDataQt::handleMousePressEvent(QMouseEvent *event)
 
         QRect frameRect = m_pWidget->frameGeometry();
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        m_pressedMousePos.update(event->globalPos(), frameRect);
-        m_ptDragPos = event->globalPos() - frameRect.topLeft();
+        m_pressedMousePos.update(QtCanpoolCompat::globalMousePos(event), frameRect);
+        m_ptDragPos = QtCanpoolCompat::globalMousePos(event) - frameRect.topLeft();
 #else
         m_pressedMousePos.update(event->globalPosition().toPoint(), frameRect);
         m_ptDragPos = event->globalPosition().toPoint() - frameRect.topLeft();
@@ -570,7 +571,7 @@ bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
                 return false;
             }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            resizeWidget(event->globalPos());
+            resizeWidget(QtCanpoolCompat::globalMousePos(event));
 #else
             resizeWidget(event->globalPosition().toPoint());
 #endif
@@ -590,7 +591,7 @@ bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
                 QRect normalGeometry = m_pWidget->normalGeometry();
                 m_pWidget->showNormal();
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-                QPoint p = event->globalPos();
+                QPoint p = QtCanpoolCompat::globalMousePos(event);
 #else
                 QPoint p = event->globalPosition().toPoint();
 #endif
@@ -602,7 +603,7 @@ bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
                 return true;
             }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            moveWidget(event->globalPos());
+            moveWidget(QtCanpoolCompat::globalMousePos(event));
 #else
             moveWidget(event->globalPosition().toPoint());
 #endif
@@ -611,7 +612,7 @@ bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
         return false;
     } else if (d->m_bWidgetResizable) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        updateCursorShape(event->globalPos());
+        updateCursorShape(QtCanpoolCompat::globalMousePos(event));
 #else
         updateCursorShape(event->globalPosition().toPoint());
 #endif

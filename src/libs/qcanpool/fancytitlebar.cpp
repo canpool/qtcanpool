@@ -5,6 +5,7 @@
 #include "fancytitlebar_p.h"
 #include "qxribbon/framelesshelper.h"
 #include "fancytitlebar.h"
+#include "qtcompat/qtcompat.h"
 
 #include <QLabel>
 #include <QHBoxLayout>
@@ -310,14 +311,14 @@ bool FancyTitleBarPrivateQt::handleMousePressEvent(QMouseEvent *event)
         m_bLeftButtonTitlePressed = m_titleWidget ? (event->pos().y() < m_titleWidget->sizeHint().height()) : true;
 
         QRect frameRect = m_mainWidget->frameGeometry();
-        m_pressCursor.update(event->globalPos(), frameRect);
-        m_movePoint = event->globalPos() - m_mainWidget->pos();
+        m_pressCursor.update(QtCanpoolCompat::globalMousePos(event), frameRect);
+        m_movePoint = QtCanpoolCompat::globalMousePos(event) - m_mainWidget->pos();
 
         if (m_bLeftButtonTitlePressed) {
             if (m_isMaximized) {
-                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+                m_movePoint = QtCanpoolCompat::globalMousePos(event) - windowStartPos(m_mainWidget, event);
             } else {
-                m_movePoint = event->globalPos() - m_mainWidget->pos();
+                m_movePoint = QtCanpoolCompat::globalMousePos(event) - m_mainWidget->pos();
             }
             return true;
         }
@@ -333,7 +334,7 @@ bool FancyTitleBarPrivateQt::handleMouseReleaseEvent(QMouseEvent *event)
 
         // maximize on the top of the screen
         if (!m_isMaximized) {
-            if (event->globalY() <= 3) {
+            if (QtCanpoolCompat::globalMousePos(event).y() <= 3) {
                 m_mainWidget->move(m_mainWidget->frameGeometry().x(), 10);
                 if (m_bWidgetMaximizable) {
                     Q_EMIT m_maximizeAction->triggered();
@@ -359,23 +360,23 @@ bool FancyTitleBarPrivateQt::handleMouseMoveEvent(QMouseEvent *event)
             if (m_isMaximized) {
                 return false;
             }
-            resizeWidget(event->globalPos());
+            resizeWidget(QtCanpoolCompat::globalMousePos(event));
             return true;
         } else if (m_bWidgetMovable && m_bLeftButtonTitlePressed) {
             if (m_isMaximized) {
                 // calculate the valid rect
                 QRect rect = validDragRect();
                 if (rect.contains(event->pos())) {
-                    m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+                    m_movePoint = QtCanpoolCompat::globalMousePos(event) - windowStartPos(m_mainWidget, event);
                     restoreWidget(m_mainWidget);
                 }
             } else {
-                m_mainWidget->move(event->globalPos() - m_movePoint);
+                m_mainWidget->move(QtCanpoolCompat::globalMousePos(event) - m_movePoint);
             }
             return true;
         }
     } else if (m_bWidgetResizable) {
-        updateCursorShape(event->globalPos());
+        updateCursorShape(QtCanpoolCompat::globalMousePos(event));
     }
     return false;
 }
@@ -395,7 +396,7 @@ bool FancyTitleBarPrivateQt::handleLeaveEvent(QEvent *event)
 bool FancyTitleBarPrivateQt::handleHoverMoveEvent(QHoverEvent *event)
 {
     if (m_bWidgetResizable) {
-        updateCursorShape(m_mainWidget->mapToGlobal(event->pos()));
+        updateCursorShape(m_mainWidget->mapToGlobal(QtCanpoolCompat::hoverPos(event)));
     }
     return false;
 }
@@ -405,7 +406,7 @@ bool FancyTitleBarPrivateQt::handleMouseDblClickEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         if (m_bWidgetMaximizable && m_bLeftButtonTitlePressed) {
             if (m_isMaximized) {
-                m_movePoint = event->globalPos() - windowStartPos(m_mainWidget, event);
+                m_movePoint = QtCanpoolCompat::globalMousePos(event) - windowStartPos(m_mainWidget, event);
             }
             Q_EMIT m_maximizeAction->triggered();
             return true;
@@ -569,8 +570,9 @@ void FancyTitleBarPrivateQt::updateCursorShape(const QPoint &gMousePos)
  */
 QPoint FancyTitleBarPrivateQt::windowStartPos(QWidget *pWindow, QMouseEvent *event) const
 {
-    int mouseX = event->globalX();
-    int mouseY = event->globalY();
+    const QPoint globalMousePos = QtCanpoolCompat::globalMousePos(event);
+    int mouseX = globalMousePos.x();
+    int mouseY = globalMousePos.y();
     FancyScreen screen;
     QRect rect = screen.screenRect(m_currentScreen);
     int maxWidth = rect.x() + rect.width();

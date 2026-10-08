@@ -135,7 +135,7 @@ public Q_SLOTS:
     void onCurrentRibbonTabDoubleClicked(int index);
     void onTabMoved(int from, int to);
     void onStackWidgetHided();
-    void onFontChanged(const QFont &font);
+    void onFontChanged();
 public:
     QAbstractButton *m_applicationButton;
     RibbonTabBar *m_tabBar;

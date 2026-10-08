@@ -5,6 +5,7 @@
 #include "fancytoolbutton.h"
 
 #include <QMouseEvent>
+#include "qtcompat/qtcompat.h"
 #include <QPaintEvent>
 #include <QStyleOption>
 #include <QStyleOptionFocusRect>
@@ -607,9 +608,9 @@ void FancyToolButton::mousePressEvent(QMouseEvent *e)
                     if (action && action->menu()) {
                         d->m_showMenu = true;
                         repaint();
-                        QPoint pos = e->globalPos();
-                        pos.setX(pos.x() - e->x() + width());
-                        pos.setY(pos.y() - e->y());
+                        QPoint pos = QtCanpoolCompat::globalMousePos(e);
+                        pos.setX(pos.x() - e->pos().x() + width());
+                        pos.setY(pos.y() - e->pos().y());
                         action->menu()->exec(pos);
                         d->m_showMenu = false;
                         repaint();

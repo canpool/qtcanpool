@@ -10,7 +10,12 @@ static RTL_OSVERSIONINFOW GetRealOSVersionImpl()
 {
     HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
     using RtlGetVersionPtr = NTSTATUS(WINAPI *)(PRTL_OSVERSIONINFOW);
+    // GetProcAddress returns FARPROC; converting it to the actual signature is the
+    // documented usage, but GCC's -Wcast-function-type flags it anyway.
+    QT_WARNING_PUSH
+    QT_WARNING_DISABLE_GCC("-Wcast-function-type")
     auto pRtlGetVersion = reinterpret_cast<RtlGetVersionPtr>(::GetProcAddress(hMod, "RtlGetVersion"));
+    QT_WARNING_POP
     RTL_OSVERSIONINFOW rovi{};
     rovi.dwOSVersionInfoSize = sizeof(rovi);
     pRtlGetVersion(&rovi);

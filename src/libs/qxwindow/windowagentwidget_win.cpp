@@ -150,8 +150,15 @@ protected:
         // Since a QExposeEvent will be sent immediately after the QResizeEvent, we can simply
         // ignore it.
         if (event->type() == QEvent::Expose) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            // Qt 6 drops the region from QExposeEvent entirely, so the check only
+            // makes sense (and is still needed) on Qt 5.
             auto ee = static_cast<QExposeEvent *>(event);
-            if (window->isExposed() && isNormalWindow() && !ee->region().isNull()) {
+            const bool hasRegion = !ee->region().isNull();
+#else
+            const bool hasRegion = true;
+#endif
+            if (window->isExposed() && isNormalWindow() && hasRegion) {
                 resumeWindowEventAndDraw(window, event);
                 return true;
             }

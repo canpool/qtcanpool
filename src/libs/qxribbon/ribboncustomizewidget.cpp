@@ -444,7 +444,7 @@ void RibbonCustomizeWidgetPrivate::updateModel()
     RibbonBar *ribbonbar = m_ribbonBar;
     QList<RibbonPage *> pages = ribbonbar->pages();
 
-    for (RibbonPage *page : qAsConst(pages)) {
+    for (RibbonPage *page : std::as_const(pages)) {
         if ((m_showType == RibbonCustomizeWidget::ShowMainPage) && page->isPageContext()) {
             // 如果是只显示主内容，如果是上下文标签就忽略
             continue;
@@ -467,7 +467,7 @@ void RibbonCustomizeWidgetPrivate::updateModel()
         pageSI->setData(0, RibbonCustomizeWidget::LevelRole);
         pageSI->setData(QVariant::fromValue<qintptr>(qintptr(page)), RibbonCustomizeWidget::PointerRole);
         QList<RibbonGroup *> groups = page->groupList();
-        for (RibbonGroup *grp : qAsConst(groups)) {
+        for (RibbonGroup *grp : std::as_const(groups)) {
             if (grp->objectName().isEmpty()) {
                 continue;
             }
