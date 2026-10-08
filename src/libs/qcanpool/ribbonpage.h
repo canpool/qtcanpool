@@ -17,7 +17,7 @@ QCANPOOL_BEGIN_NAMESPACE
 class RibbonGroup;
 class RibbonPagePrivate;
 
-class QCANPOOL_SHARED_EXPORT RibbonPage : public QWidget
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonPage : public QWidget
 {
     Q_OBJECT
 public:

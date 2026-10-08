@@ -14,7 +14,7 @@ class RibbonBar;
 class RibbonWindowPrivate;
 
 /* RibbonWindow */
-class QCANPOOL_SHARED_EXPORT RibbonWindow : public QMainWindow
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonWindow : public QMainWindow
 {
     Q_OBJECT
 public:

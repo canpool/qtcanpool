@@ -14,7 +14,7 @@ class QToolButton;
 QCANPOOL_BEGIN_NAMESPACE
 
 class RibbonGroupPrivate;
-class QCANPOOL_SHARED_EXPORT RibbonGroup : public QWidget
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonGroup : public QWidget
 {
     Q_OBJECT
 public:

@@ -17,7 +17,7 @@ class FancyTitleBar;
 class RibbonPage;
 class RibbonBarPrivate;
 
-class QCANPOOL_SHARED_EXPORT RibbonBar : public QWidget
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonBar : public QWidget
 {
     Q_OBJECT
 public:

@@ -14,7 +14,7 @@ class QToolBar;
 
 QCANPOOL_BEGIN_NAMESPACE
 
-class QCANPOOL_SHARED_EXPORT RibbonContainer : public QWidget
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonContainer : public QWidget
 {
     Q_OBJECT
 public:
@@ -24,7 +24,7 @@ public:
 
 /* RibbonGridContainer */
 class RibbonGridContainerPrivate;
-class QCANPOOL_SHARED_EXPORT RibbonGridContainer : public RibbonContainer
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonGridContainer : public RibbonContainer
 {
     Q_OBJECT
 public:
@@ -40,7 +40,7 @@ private:
 
 /* RibbonActionContainer */
 class RibbonActionContainerPrivate;
-class QCANPOOL_SHARED_EXPORT RibbonActionContainer : public RibbonContainer
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonActionContainer : public RibbonContainer
 {
     Q_OBJECT
 public:
@@ -57,7 +57,7 @@ private:
 
 /* RibbonLoftContainer */
 class RibbonLoftContainerPrivate;
-class QCANPOOL_SHARED_EXPORT RibbonLoftContainer : public RibbonContainer
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxRibbon instead") RibbonLoftContainer : public RibbonContainer
 {
     Q_OBJECT
 public:

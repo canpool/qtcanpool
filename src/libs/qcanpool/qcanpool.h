@@ -103,4 +103,23 @@ Example:
 #define QCANPOOL_DEPRECATED_SINCE(major, minor) 0
 #endif
 
+/*
+ QCANPOOL_DEPRECATED_X(text) marks a class as deprecated since 3.0.
+
+ Placement matters: GCC rejects [[deprecated]] placed before the 'class' keyword
+ ("attribute must follow the 'class' keyword"), so the attribute has to go after
+ the class key and the export macro, like Qt does itself:
+
+     class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use Foo instead") Bar : public QWidget
+
+ Note that this differs from Qt's QT_DEPRECATED_SINCE: the class declaration is
+ never compiled out here, QCANPOOL_DISABLE_DEPRECATED_BEFORE only silences the
+ warning.
+ */
+#if QCANPOOL_DEPRECATED_SINCE(3, 0)
+#define QCANPOOL_DEPRECATED_X(text) QT_DEPRECATED_X(text)
+#else
+#define QCANPOOL_DEPRECATED_X(text)
+#endif
+
 #endif // QCANPOOL_H
