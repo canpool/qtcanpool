@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, develop, 'release-*' ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master, develop, 'release-*' ]
   workflow_dispatch:
 
 jobs:
@@ -40,22 +40,32 @@ jobs:
 
       - name: Test
         env:
-          # 无头环境（CI runner）下使用 offscreen 平台，避免 GUI 测试失败
+          # Headless CI runner: use the offscreen platform to avoid GUI test failures.
           QT_QPA_PLATFORM: offscreen
         run: ctest --test-dir build -C Release --output-on-failure --timeout 120
 
   format:
-    # 说明：本任务目前仅提示（continue-on-error），待全量格式化完成后再转为强制门禁。
+    # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
+    # so any unformatted change now fails the build.
     name: clang-format
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Install clang-format
-        run: sudo apt-get update && sudo apt-get install -y clang-format
+        # Pin the exact version so CI matches .clang-format and the local toolchain.
+        run: pip install 'clang-format==21.1.8'
 
       - name: Check formatting
         run: |
-          FILES=$(git ls-files 'src/**/*.h' 'src/**/*.cpp' 'tests/**/*.h' 'tests/**/*.cpp')
+          FILES=$(git ls-files \
+            'src/**/*.h' 'src/**/*.cpp' \
+            'demos/**/*.h' 'demos/**/*.cpp' \
+            'examples/**/*.h' 'examples/**/*.cpp' \
+            'tests/**/*.h' 'tests/**/*.cpp' \
+            'projects/**/*.h' 'projects/**/*.cpp')
           clang-format --style=file --dry-run --Werror $FILES
