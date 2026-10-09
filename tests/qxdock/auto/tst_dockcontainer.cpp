@@ -86,9 +86,13 @@ void tst_DockContainer::zOrder()
     DockContainer c1(&wd);
     DockContainer c2(&wd);
 
-    QCOMPARE(wd.zOrderIndex(), 0);
-    QCOMPARE(c1.zOrderIndex(), 0);
-    QCOMPARE(c2.zOrderIndex(), 0);
+    // zOrderIndex is assigned from a process-wide counter that never resets, so
+    // the test asserts the relative order rather than absolute values: pinning
+    // it to 1 and 2 would make the result depend on how many containers the
+    // previously executed test suites have created.
+    QCOMPARE(wd.zOrderIndex(), 0u);
+    QCOMPARE(c1.zOrderIndex(), 0u);
+    QCOMPARE(c2.zOrderIndex(), 0u);
     QCOMPARE(c1.isInFrontOf(&wd), false);
 
     DockWidget *dw1 = new DockWidget("dw1");
@@ -100,24 +104,30 @@ void tst_DockContainer::zOrder()
     QCOMPARE(p1->dockContainer(), &c1);
     QCOMPARE(p2->dockContainer(), &c1);   // not c2 ??
 
+    // Showing the container for the first time raises it above the others.
     c2.setVisible(true);
-    QCOMPARE(c2.zOrderIndex(), 1);
+    const unsigned int raised = c2.zOrderIndex();
+    QVERIFY(raised > 0u);
+    QVERIFY(c2.isInFrontOf(&c1));
+
+    // Hiding and showing it again keeps the index it was raised to.
     c2.setVisible(false);
-    QCOMPARE(c2.zOrderIndex(), 1);
+    QCOMPARE(c2.zOrderIndex(), raised);
     c2.setVisible(true);
-    QCOMPARE(c2.zOrderIndex(), 1);
+    QCOMPARE(c2.zOrderIndex(), raised);
 
     c2.hide();
-    QCOMPARE(c2.zOrderIndex(), 1);
+    QCOMPARE(c2.zOrderIndex(), raised);
     c2.show();
-    QCOMPARE(c2.zOrderIndex(), 1);
+    QCOMPARE(c2.zOrderIndex(), raised);
 
     c2.raise();
-    QCOMPARE(c2.zOrderIndex(), 1);
+    QCOMPARE(c2.zOrderIndex(), raised);
 
+    // An activation raises it above the current top of the stack.
     QEvent activateEvent(QEvent::WindowActivate);
     QApplication::sendEvent(&c2, &activateEvent);
-    QCOMPARE(c2.zOrderIndex(), 2);
+    QVERIFY(c2.zOrderIndex() > raised);
 
     QCOMPARE(c2.isInFrontOf(&c1), true);
 }
