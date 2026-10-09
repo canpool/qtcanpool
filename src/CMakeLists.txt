@@ -42,7 +42,7 @@ endif()
 
 include(CMakeFindDependencyMacro)
 find_dependency(Qt5 ${IDE_QT_VERSION_MIN}
-  COMPONENTS Concurrent Core Gui Widgets Core5Compat REQUIRED
+  COMPONENTS Core Gui Widgets REQUIRED
 )
 
 if (NOT QTPROJECT_VERSION)
@@ -61,7 +61,7 @@ if (NOT DEFINED add_qtc_documentation)
   include(\${CMAKE_CURRENT_LIST_DIR}/QtCanpoolDocumentation.cmake)
 endif()
 
-if (NOT TARGET QtCanpool::Core)
+if (NOT TARGET QtCanpool::qxcore)
   include(\${CMAKE_CURRENT_LIST_DIR}/QtCanpoolTargets.cmake)
 endif()
 ")
