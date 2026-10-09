@@ -3,6 +3,7 @@
 <div align="center">
 
 [![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/)
 [![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](./LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-5.15%20%7C%206.x-41CD52.svg)](https://www.qt.io/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](https://isocpp.org/)
@@ -31,6 +32,18 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 - GitHub：[https://github.com/canpool/qtcanpool](https://github.com/canpool/qtcanpool)
 - Gitee：[https://gitee.com/icanpool/qtcanpool](https://gitee.com/icanpool/qtcanpool)
 
+## 文档
+
+- **在线文档**：[https://canpool.github.io/qtcanpool/](https://canpool.github.io/qtcanpool/) —— C++ API 参考（Doxygen）+ 使用指南，由 GitHub Actions 从 `release-3.x` 自动发布
+- **本地构建文档站点**：只需要 Doxygen（和可选的 Graphviz），**不需要 Qt**，因为文档直接读头文件而非编译
+
+```bash
+cmake -S doc -B build-docs
+cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
+```
+
+- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、组件、主题、AppShell、迁移），与 API 一同发布
+
 ## 教程
 
 - [使用教程](https://blog.csdn.net/canpool/category_10631139.html)
@@ -42,7 +55,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | :------- | :------- | :--- |
 | `cmake` | | CMake 构建框架 |
 | `demos` | | 综合示例程序 |
-| `doc` | | 文档 |
+| `doc` | | 文档：Doxygen 站点源码（`Doxyfile.in`、`pages/` 指南、`doxygen.css`）与设计文档 |
 | `examples` | | 控件级示例 |
 | `projects` | | 项目目录，提供 template 模板；可在此持续添加自己的项目，实现一套框架管理多项目 |
 | `scripts` | | 辅助脚本 |
@@ -83,7 +96,8 @@ ctest --test-dir build -C Release --output-on-failure
 
 说明：
 
-- 各功能开关（`WITH_DEMOS`、`WITH_TESTS` 等）可通过 `cmake -S . -B build -LH` 查看
+- 各功能开关（`WITH_DEMOS`、`WITH_TESTS`、`WITH_DOCS` 等）可通过 `cmake -S . -B build -LH` 查看
+- `-DWITH_DOCS=ON` 会把文档站点目标 `docs` 一并加入主构建（只需 Doxygen）；只想要文档时用上面的 `cmake -S doc -B build-docs`
 - 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`（或早期兼容的 `qtcanpool.pro`）
 - 编译出的 demo 位于构建目录的 `bin/`，例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）
 

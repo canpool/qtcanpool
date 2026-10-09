@@ -1,0 +1,78 @@
+/* ---------------------------------------------------------------------------
+ * QtCanpool documentation site - a thin layer on top of the Doxygen theme.
+ *
+ * Only long-lived selectors are touched, so the sheet keeps working when the
+ * bundled theme changes: the page body, the content column and the typeface used
+ * for code. Everything else is left to Doxygen.
+ * ------------------------------------------------------------------------- */
+
+body {
+  font-family:
+    "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Microsoft YaHei", "PingFang SC",
+    "Hiragino Sans GB", sans-serif;
+  line-height: 1.7;
+}
+
+div.contents {
+  max-width: 68rem;
+  padding-bottom: 3rem;
+}
+
+div.contents p,
+div.contents li,
+div.contents td,
+div.contents th {
+  line-height: 1.7;
+}
+
+code,
+kbd,
+pre,
+samp,
+div.fragment,
+tt {
+  font-family: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, "DejaVu Sans Mono", monospace;
+}
+
+div.fragment,
+pre.fragment {
+  border-radius: 4px;
+  padding: 0.6rem 0.9rem;
+}
+
+/* Headings rule off the sections the way the project documents do. */
+div.contents h1,
+div.contents h2,
+div.contents h3 {
+  border-bottom: 1px solid var(--separator-color, rgba(128, 128, 128, 0.25));
+  padding-bottom: 0.2rem;
+}
+
+/* A single accent colour that stays legible in both the light and the dark
+ * theme, since the site ships with the color style toggle enabled. */
+div.contents a,
+div.contents a:visited,
+#nav-tree .item a:hover {
+  color: #2aa84a;
+}
+
+/* Markdown tables, which carry most of the reference material. */
+table.markdownTable {
+  border-collapse: collapse;
+}
+
+table.markdownTable th,
+table.markdownTable td {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--separator-color, rgba(128, 128, 128, 0.3));
+}
+
+table.markdownTable th {
+  background-image: none;
+}
+
+/* Keep the wide screenshots inside the content column. */
+div.contents img {
+  max-width: 100%;
+  height: auto;
+}

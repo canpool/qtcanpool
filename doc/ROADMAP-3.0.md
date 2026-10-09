@@ -218,7 +218,8 @@ src/libs/
 > - ✅ **M3.1 qxcore 基础设施已落地**：新增 `src/libs/qxcore`（`QxSettings` 配置 + `QxLogger` 日志），并修复测试驱动吞掉失败的问题：[`design/3.0-M3-TASKS.md`](./design/3.0-M3-TASKS.md)
 > - ✅ **M3.2 主题引擎已落地**：新增 `src/libs/qxtheme`（`QxThemeManager` 统一应用调色板 + 样式表、运行时切换、选择持久化、跟随系统深浅色）；与 qxribbon 解耦，不改变既有库依赖
 > - ✅ **M3.3 AppShell 骨架已落地**：`qxapp` 内新增 `QxAppShell`（导航 + 页面栈 + DockWindow + 状态栏 + 布局持久化）、`QxNavigationBar`、`QxSplashScreen`，并带 CMake demo `demos/qxapp/appshell`；qmake 侧 `qxapp` 描述文件未动
-> - ⏳ **M3.4–M3.5 计划中**：文档站点、在线 demo（`demos/qxapp/appshell` 为候选对象）
+> - ✅ **M3.4 文档站点已上线**：`doc/` 成为可独立构建的 Doxygen 工程（`cmake -S doc -B build-docs`）——API 取自 `src/libs` 头文件、指南取自 `doc/pages`，产物 966 页；新增 `.github/workflows/docs.yml` 发布到 <https://canpool.github.io/qtcanpool/>（`release-*` 分支）。同时修复了 M3.3 的 `autoSaveOnClose` 用例在 Linux + Qt 6.8 上的失败
+> - ⏳ **M3.5 计划中**：在线 demo（`demos/qxapp/appshell` 为候选对象）
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
 
 ---
@@ -243,7 +244,7 @@ src/libs/
 | [`doc/design/3.0-MIGRATION.md`](./design/3.0-MIGRATION.md) | 2.x→3.0 迁移指南：命名空间、Ribbon 类/方法对照、fancy* 存废、qxwidget→qxapp、构建迁移        |
 | [`doc/design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)   | M1 可执行任务清单：CMake 主构建、C++17、CI 矩阵、clang-format、测试骨架（含开箱即用配置）          |
 | [`doc/design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)   | M2 可执行任务清单：`qxwidget→qxapp` 重命名、legacy ribbon deprecated 标注（含实测踩坑记录） |
-| [`doc/design/3.0-M3-TASKS.md`](./design/3.0-M3-TASKS.md)   | M3 增量清单 + 执行记录：`qxcore` 配置/日志库、测试退出码修复、`qxtheme` 主题引擎、`qxapp` AppShell 骨架（含探针与踩坑）            |
+| [`doc/design/3.0-M3-TASKS.md`](./design/3.0-M3-TASKS.md)   | M3 增量清单 + 执行记录：`qxcore` 配置/日志库、测试退出码修复、`qxtheme` 主题引擎、`qxapp` AppShell 骨架、Doxygen 文档站点与 Pages 发布（含探针与踩坑） |
 
 ---
 

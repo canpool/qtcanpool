@@ -1,0 +1,97 @@
+name: Docs
+
+# Builds the Doxygen documentation site on every change that can affect it, and
+# publishes it to GitHub Pages from the release branches. The site needs Doxygen
+# only, never Qt, so this runs on its own much cheaper than the CI workflow.
+#
+# One-time setup in the repository: Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions". Without it the deploy job fails, while the build job
+# still runs and reports.
+
+on:
+  push:
+    branches: [ master, develop, 'release-*' ]
+    paths:
+      - 'doc/**'
+      - 'src/libs/**'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches: [ master, develop, 'release-*' ]
+    paths:
+      - 'doc/**'
+      - 'src/libs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        # Doxygen and Graphviz come from the distribution here rather than from a
+        # pinned download: the Doxyfile deliberately sticks to long standing
+        # settings, so a version drift only changes the warning count, and the
+        # ~50 MB tarball from doxygen.nl is a failure point worth not having.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends doxygen graphviz
+
+      - name: Configure
+        run: cmake -S doc -B build-docs -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build-docs --target docs
+
+      - name: Summary
+        run: |
+          {
+            echo "### Documentation site"
+            echo
+            echo "| | |"
+            echo "| :--- | :--- |"
+            echo "| Doxygen | $(doxygen --version) |"
+            echo "| Warnings | $(wc -l < build-docs/doxygen-warnings.log) |"
+            echo "| HTML pages | $(find build-docs/html -maxdepth 1 -name '*.html' | wc -l) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload warnings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-warnings
+          path: build-docs/doxygen-warnings.log
+          if-no-files-found: ignore
+
+      - name: Upload site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build-docs/html
+
+  deploy:
+    name: deploy
+    # Only the release branches own the published site, otherwise every push to
+    # a development branch would overwrite it.
+    if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/heads/release-')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

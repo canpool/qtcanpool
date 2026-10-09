@@ -49,7 +49,7 @@ public:
         Level level;
         /*! Rotate once the file grows past this many bytes; <= 0 disables rotation. */
         qint64 maxFileSize;
-        /*! Number of rotated files kept as <fileName>.1 .. <fileName>.N. */
+        /*! Number of rotated files kept, named after the log file with a numeric suffix. */
         int maxBackups;
         /*! Also write to stderr, which is what development builds want. */
         bool toConsole;

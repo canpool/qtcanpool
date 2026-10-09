@@ -169,6 +169,12 @@ if (WITH_TESTS)
   add_subdirectory(tests)
 endif()
 
+# The documentation site only needs Doxygen, never Qt, but when it is asked for
+# as part of the main build it should sit next to the libraries it documents.
+if (WITH_DOCS)
+  add_subdirectory(doc)
+endif()
+
 find_package(Python3 COMPONENTS Interpreter)
 if (NOT Python3_Interpreter_FOUND)
   message("No python interpreter found, skipping \"Dependencies\" install component.")
