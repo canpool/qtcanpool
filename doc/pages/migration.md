@@ -113,14 +113,16 @@ QX_APP_USE_NAMESPACE
 ## 构建迁移：qmake → CMake
 
 ```cmake
-# 3.0（CMake 包）
+# 3.0（单一 CMake 包，所有库共用 QtCanpool 命名空间）
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
-find_package(QxRibbon REQUIRED)
-find_package(QxApp REQUIRED)
+find_package(QtCanpool REQUIRED)
 
 add_executable(myapp main.cpp)
-target_link_libraries(myapp PRIVATE QxApp::QxApp)
+target_link_libraries(myapp PRIVATE QtCanpool::qxapp)
 ```
+
+> 公开头文件与 `QtCanpoolConfig.cmake` 位于 `Devel` 组件，安装时需
+> `cmake --install <build> --component Devel`。
 
 Qt 查找推荐使用兼容写法，一份工程同时支持两个大版本：
 
