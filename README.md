@@ -1,101 +1,129 @@
-### 简介
+# qtcanpool
 
-本项目是根据 QtCreator 源码结构总结出的一套通用的项目管理模板。核心库为基于 QtWidgets 的 qcanpool，同时，集成常用组件和第三方类库。
+<div align="center">
 
-qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、优质的控件……
+[![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
+[![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](./LICENSE)
+[![Qt](https://img.shields.io/badge/Qt-5.15%20%7C%206.x-41CD52.svg)](https://www.qt.io/)
+[![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](https://isocpp.org/)
 
-### 仓库
+</div>
 
-- github：[https://github.com/canpool/qtcanpool](https://github.com/canpool/qtcanpool)
-- gitee：[https://gitee.com/icanpool/qtcanpool](https://gitee.com/icanpool/qtcanpool)
+一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库 **qcanpool** 基于 QtWidgets 构建，并集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件与第三方类库。
 
-### 教程
+qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的控件。
+
+## 主要组件
+
+| 组件 | 命名空间 | 说明 |
+| :--- | :------- | :--- |
+| **qcanpool** | `QCanpool` | 核心库，提供标题栏、工具按钮等通用控件；集成并封装下列组件 |
+| **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
+| **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
+| **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
+| **qxapp** | `QxApp` | 应用层通用控件集合 |
+| **qtcompat** | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） |
+
+## 仓库
+
+- GitHub：[https://github.com/canpool/qtcanpool](https://github.com/canpool/qtcanpool)
+- Gitee：[https://gitee.com/icanpool/qtcanpool](https://gitee.com/icanpool/qtcanpool)
+
+## 教程
 
 - [使用教程](https://blog.csdn.net/canpool/category_10631139.html)
 - [官方文档](https://blog.csdn.net/canpool/article/details/114523758)
 
-### 目录
+## 目录结构
 
-| 一级目录   | 二级目录 | 说明 |
-| :--------- | :------- | :------- |
-| cmake      |          | cmake框架 |
-| demos      |          | 丰富的例子 |
-| doc        |          | 文档 |
-| examples   |          | 控件类的示例 |
-| projects   |          | 项目目录，其中提供简单的模板 template，用户可以持续添加自己的项目在此目录，从而实现一套框架管理多项目 |
-| scripts    |          | 辅助的脚本文件 |
-| src        |          | 源代码文件 |
-|            | libs     | 基础类库 |
-|            | modules  | 基础模块，实用的代码，但不具备类库的规模 |
-|            | plugins  | 基础插件 |
-|            | shared   | 共享的实用代码文件 |
-| tests      |          | 测试用例 |
-| thirdparty |          | 使用第三方库的案例 |
+| 一级目录 | 二级目录 | 说明 |
+| :------- | :------- | :--- |
+| `cmake` | | CMake 构建框架 |
+| `demos` | | 综合示例程序 |
+| `doc` | | 文档 |
+| `examples` | | 控件级示例 |
+| `projects` | | 项目目录，提供 template 模板；可在此持续添加自己的项目，实现一套框架管理多项目 |
+| `scripts` | | 辅助脚本 |
+| `src` | `libs` | 基础类库 |
+| | `modules` | 基础模块：实用的代码，但未形成类库规模 |
+| | `plugins` | 基础插件 |
+| | `shared` | 共享的实用代码 |
+| `tests` | | 单元测试（CTest） |
+| `thirdparty` | | 第三方库使用案例 |
 
-### 环境
+## 环境要求
 
-- Qt 6.8.1  MinGW/MSVC2022 64bit
-- Qt 6.5.3  MinGW/MSVC2022 64bit
-- Qt 5.15.2 MinGW/MSVC2022 64bit
-- Qt 5.14.2 MinGW/MSVC2017 64bit
-- 其它环境未测试，推荐使用 [QT LTS](https://download.qt.io/official_releases/qt/) 版本
-- 补充测试环境（后期版本不保证）
-    - Qt 5.12.12 MinGW/MSVC2017 64bit
-    - Qt 5.11.1 gcc 64bit
+**自 3.0 起的基线：**
 
-### 构建
+- Qt **5.15** 及以上（主推 Qt 6.5 / 6.8 LTS）
+- C++17
+- CMake 3.16+（推荐最新版本）
 
-- **CMake 为主构建**（推荐），qmake 自 3.0 起**冻结（只读）**，后续版本移除
-- C++ 标准：**C++17**
-- Qt6 优先：主推 **Qt 6.5 / 6.8 LTS**，尽力兼容 Qt 5.15
+**历史测试环境**（2.x 时期验证，3.0 不再保证）：
 
-### 规划
+- Qt 6.8.1 / 6.5.3 / 5.15.2 / 5.14.2 / 5.12.12 / 5.11.1（MinGW / MSVC，64bit）
+- 其它环境未测试，推荐使用 [Qt LTS](https://download.qt.io/official_releases/qt/) 版本
 
-- 3.0 开发规划：[doc/ROADMAP-3.0.md](./doc/ROADMAP-3.0.md)
-- 2.x → 3.0 迁移指南：[doc/design/3.0-MIGRATION.md](./doc/design/3.0-MIGRATION.md)
-- M1 任务清单：[doc/design/3.0-M1-TASKS.md](./doc/design/3.0-M1-TASKS.md)
+## 构建
 
-### 版本
+**CMake 为主要构建方式**（qmake 自 3.0 起冻结为只读，后续版本移除）。
 
-- 格式：x.y.z
-- 说明：主版本.次版本.补丁版本
+```bash
+# 配置（Qt 通过 CMAKE_PREFIX_PATH 指定）
+cmake -S . -B build -DCMAKE_PREFIX_PATH=<Qt安装目录>/<版本>/<编译器> -DCMAKE_BUILD_TYPE=Release
 
-### 分支
+# 编译
+cmake --build build --config Release --parallel
 
-- [master](https://gitee.com/icanpool/qtcanpool/tree/master/)：主线分支
-- [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/)：开发分支
-- [release-x.y]()：版本分支，用于修复特定发布版本的问题
+# 运行单元测试
+ctest --test-dir build -C Release --output-on-failure
+```
 
 说明：
 
-- 版本的发布以版本 tag 进行标记，若相应版本存在缺陷需要修复，将以版本分支的形式进行维护
+- 各功能开关（`WITH_DEMOS`、`WITH_TESTS` 等）可通过 `cmake -S . -B build -LH` 查看
+- 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`（或早期兼容的 `qtcanpool.pro`）
 
-### 协议
+## 路线图
 
-- 遵循 [MulanPSL2](./LICENSE) 开源许可协议
-- 集成组件遵循 [各自](./LICENSE.NOTES.md) 开源许可协议
+- [3.0 开发规划](./doc/ROADMAP-3.0.md)
+- [2.x → 3.0 迁移指南](./doc/design/3.0-MIGRATION.md)
+- [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
 
-### 规范
+## 版本
 
-- [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)
-- [Qt 编程风格与规范](https://blog.csdn.net/qq_35488967/article/details/70055490)
-- 源文件全英文的采用 UTF-8 编码，包含中文的采用 UTF-8 with BOM 编码
-- **代码中的注释一律使用英文**（文档、README 等 `.md` 不拘）
-- 代码格式化：随仓库提供 [`.clang-format`](./.clang-format)，C++ 标准 C++17
-- 代码 git 提交格式（**自 3.0 起**）：采用 `type(scope): subject` 形式，以区分早期提交格式
-    - 提交信息一律使用**英文**（subject 与正文）
-    - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
-    - `scope`：受影响范围，如 `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qcanpool` / `project` / `ci` / `test` / `docs`
-    - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
-    - 早期提交格式（参考）：[git 知：提交格式](https://blog.csdn.net/canpool/article/details/126005367)
+- 格式：`x.y.z`（主版本.次版本.补丁版本）
 
-### 贡献
+## 分支
 
-- 欢迎提交 issue 对关心的问题发起讨论
-- 欢迎 Fork 仓库，pull request 贡献
+| 分支 | 说明 |
+| :--- | :--- |
+| [master](https://gitee.com/icanpool/qtcanpool/tree/master/) | 主线分支 |
+| [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/) | 开发分支 |
+| [release-x.y](https://gitee.com/icanpool/qtcanpool/tree/release-3.x/) | 版本分支，用于维护特定发布版本 |
+
+- 版本发布以 tag 标记；若某版本存在需修复的缺陷，将以对应版本分支的形式进行维护
+
+## 开发规范
+
+- C++ 风格：[Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)、[Qt 编程风格与规范](https://blog.csdn.net/qq_35488967/article/details/70055490)
+- 源文件编码：全英文源文件采用 UTF-8；包含中文的采用 UTF-8 with BOM
+- **代码中的注释一律使用英文**（文档等 `.md` 文件不拘）
+- 代码格式化：随仓库提供 [`.clang-format`](./.clang-format)（C++17），CI 中作为强制门禁
+- Git 提交格式（**自 3.0 起**）：`type(scope): subject`，以区分早期提交格式
+  - 提交信息一律使用**英文**（subject 与正文）
+  - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
+  - `scope`：受影响范围，如 `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qcanpool` / `project` / `ci` / `test` / `docs`
+  - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
+  - 早期提交格式参考：[git 知：提交格式](https://blog.csdn.net/canpool/article/details/126005367)
+
+## 贡献
+
+- 欢迎提交 [issue](https://github.com/canpool/qtcanpool/issues) 对关心的问题发起讨论
+- 欢迎 Fork 仓库并通过 pull request 贡献代码
 - 贡献者可在文件头版权中添加个人信息，格式如下：
 
-```
+```cpp
 /**
  * Copyright (C) YYYY NAME <EMAIL>
  * Copyright (C) 2023 maminjie <canpool@163.com>
@@ -103,62 +131,66 @@ qtcanpool 旨在提供给用户优秀的项目管理方式、多样的选择、�
 **/
 ```
 
-### 交流
+## 示例
 
-- QQ 群：831617934（Qt 业余交流）
-
-### 例子
-
-- <font size=4>fancydemo</font>
+**fancydemo**
 
 ![qcanpool](./doc/pics/fancydemo.png)
 
-- <font size=4>fancyribbon</font>
+**fancyribbon**
 
 ![fancyribbon](./doc/pics/fancyribbon.png)
 
-- <font size=4>dockdemo</font>
+**dockdemo**
 
-![dockdemo](./doc/pics/dockdemo.png#pic_center)
+![dockdemo](./doc/pics/dockdemo.png)
 
-- <font size=4>ribbondemo</font>
+**ribbondemo**
 
-![ribbondemo](./doc/pics/ribbondemo.gif#pic_center)
+![ribbondemo](./doc/pics/ribbondemo.gif)
 
 最新版本效果图：
 
-![ribbondemo](./doc/pics/ribbondemo.png#pic_center)
+![ribbondemo](./doc/pics/ribbondemo.png)
 
-- <font size=4>qxwindow demo</font>
+**qxwindow demo**
 
 ![qxwindowdemo](./doc/pics/qxwindowdemo.png)
 
-### 案例
+## 应用案例
 
-- <font size=4>MyCAD</font>
+**MyCAD**
 
 ![qcanpool](./doc/pics/mycad.png)
 ![qcanpool](./doc/pics/mycad2.png)
 
-MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成 QxRibbon 组件的一个作品，旨在实现 FreeCAD 现代界面化（Ribbon 风格）。
+MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成 QxRibbon 组件的作品，旨在实现 FreeCAD 的现代化界面（Ribbon 风格）。
 
-### 体验
+## 快速体验
 
-下载源码，使用 qtcreator 打开 qtcanpool.pro，然后右击 fancydemo 并单击 Run 体验，如下所示：
+下载源码，使用 Qt Creator 打开 `qtcanpool.pro`，右击 `fancydemo` 并选择 *Run* 即可体验：
+
 ![run](./doc/pics/run.png)
 
-### 扩展
+## 扩展
 
-本仓库未来将只维护核心库，其它库将以单独的 qtcanpool-LIBNAME 仓库进行维护。可以通过 qtcanpool 标签进行检索：
+本仓库未来将只维护核心库，其它库将以独立的 `qtcanpool-LIBNAME` 仓库维护，可通过 `qtcanpool` 标签检索：
 
 ![extend](./doc/pics/extend.png)
 
-### 后语
+## 赞助
 
-如果您觉得本项目对您有很大帮助，您可以赞助本项目，助其更好的发展。
-
-赞助方式：
+如果您觉得本项目对您有帮助，欢迎赞助，助力项目更好地发展。
 
 ![sponsor](./doc/sponsor/sponsor.png)
 
 赞助名单：[名单](./doc/sponsor/sponsor.md)
+
+## 交流
+
+- QQ 群：831617934（Qt 业余交流）
+
+## 许可
+
+- 本项目遵循 [MulanPSL-2.0](./LICENSE) 开源许可协议
+- 集成组件遵循[各自](./LICENSE.NOTES.md)的开源许可协议
