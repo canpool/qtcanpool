@@ -572,14 +572,23 @@ void tst_QxAppShell::autoSaveOnClose()
 {
     const QString file = newSettingsFile();
 
-    QxAppShell shell;
-    shell.setSettings(new QxSettings(file, QSettings::IniFormat));
-    shell.addPage(QStringLiteral("one"), QIcon(), QStringLiteral("One"), new QWidget);
-    shell.addPage(QStringLiteral("two"), QIcon(), QStringLiteral("Two"), new QWidget);
-    shell.setCurrentPage(QStringLiteral("two"));
+    {
+        QxAppShell shell;
+        shell.setSettings(new QxSettings(file, QSettings::IniFormat));
+        shell.addPage(QStringLiteral("one"), QIcon(), QStringLiteral("One"), new QWidget);
+        shell.addPage(QStringLiteral("two"), QIcon(), QStringLiteral("Two"), new QWidget);
+        shell.setCurrentPage(QStringLiteral("two"));
 
-    QVERIFY(shell.autoSaveLayout());
-    shell.close();
+        // The window is shown before it is closed, the way an application uses
+        // it. Once a widget owns a QWindow, close() routes through
+        // QWindow::close(), which returns without delivering a close event
+        // while the window has no platform window yet -- the state of a window
+        // that has been created but never shown. Showing it first keeps the
+        // close event synchronous, and therefore the save that hangs off it.
+        shell.show();
+        QVERIFY(shell.autoSaveLayout());
+        QVERIFY(shell.close());
+    }
 
     QxSettings reader(file, QSettings::IniFormat);
     reader.beginGroup(QStringLiteral("ui"));
@@ -588,10 +597,17 @@ void tst_QxAppShell::autoSaveOnClose()
 
     // With the automatic save off, closing the window writes nothing.
     const QString other = newSettingsFile();
-    shell.setSettings(new QxSettings(other, QSettings::IniFormat));
-    shell.setAutoSaveLayout(false);
-    QCOMPARE(shell.autoSaveLayout(), false);
-    shell.close();
+    {
+        QxAppShell shell;
+        shell.setSettings(new QxSettings(other, QSettings::IniFormat));
+        shell.addPage(QStringLiteral("one"), QIcon(), QStringLiteral("One"), new QWidget);
+        shell.setCurrentPage(QStringLiteral("one"));
+        shell.setAutoSaveLayout(false);
+        QCOMPARE(shell.autoSaveLayout(), false);
+
+        shell.show();
+        QVERIFY(shell.close());
+    }
 
     QxSettings untouched(other, QSettings::IniFormat);
     QVERIFY(!untouched.contains(QStringLiteral("ui/currentPage")));
