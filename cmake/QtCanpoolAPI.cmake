@@ -673,7 +673,15 @@ function(add_qtc_executable name)
     set(TEST_DEFINES WITH_TESTS SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}")
   endif()
 
-  add_executable("${name}" ${_arg_SOURCES})
+  if (QTCANPOOL_WASM)
+    # Qt for WebAssembly has to go through qt_add_executable: it links the Qt
+    # entry point, which is what bridges main() to the browser's main loop, and
+    # it finalizes the target into the .html/.js/.wasm triple that the browser
+    # loads. A plain add_executable yields a bare .wasm with none of that.
+    qt_add_executable("${name}" ${_arg_SOURCES})
+  else()
+    add_executable("${name}" ${_arg_SOURCES})
+  endif()
 
   extend_qtc_target("${name}"
     INCLUDES "${CMAKE_BINARY_DIR}/src" ${_arg_INCLUDES}

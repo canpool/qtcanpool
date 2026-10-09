@@ -1,4 +1,14 @@
-option(QX_WINDOW_CONFIG_NATIVE "Config native system window" YES)
+# A browser has no native windowing system, and neither the Win32 nor the Cocoa
+# backend can be compiled for WebAssembly at all, so the portable Qt backend is
+# the only sensible default there. Mirrors the qmake build, which never picks a
+# native backend for that target either.
+if (QTCANPOOL_WASM)
+  set(_qx_window_native_default NO)
+else()
+  set(_qx_window_native_default YES)
+endif()
+
+option(QX_WINDOW_CONFIG_NATIVE "Config native system window" ${_qx_window_native_default})
 option(QX_WINDOW_CONFIG_SYSTEM_BORDERS "Config system borders" YES)
 option(QX_WINDOW_CONFIG_STYLE_AGENT "Config style agent" NO)
 option(QX_WINDOW_CONFIG_WIDGET_AGENT "Config widget agent" YES)

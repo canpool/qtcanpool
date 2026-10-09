@@ -33,6 +33,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 qtc_handle_compiler_cache_support()
 
+# Qt for WebAssembly is a cross-compile target, and the Emscripten platform
+# module reports UNIX like any other Unix-y system. Without this flag the
+# "Linux" branches of the sources and of the library CMake files would be taken,
+# and qxdock would link xcb plus Qt's private GUI headers, neither of which
+# exists for that target. Detected once here, consulted by every library that
+# carries a platform-specific backend.
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  set(QTCANPOOL_WASM TRUE)
+else()
+  set(QTCANPOOL_WASM FALSE)
+endif()
+
 option(BUILD_LINK_WITH_QT "Link with Qt from the parent Qt Creator" OFF)
 qtc_link_with_qt()
 option(WITH_TESTS "Build Tests" ${ENV_QTC_WITH_TESTS})
@@ -68,9 +80,17 @@ endif()
 if(MSVC)
   add_compile_options(/wd4573)
 endif()
+# Qt for WebAssembly is built without QtConcurrent: it needs threads, and the
+# single-threaded WebAssembly build has none. Nothing in this tree uses it, so it
+# is simply not requested for that target.
+set(_qtcanpool_qt_components Concurrent Core Gui Widgets)
+if (QTCANPOOL_WASM)
+  list(REMOVE_ITEM _qtcanpool_qt_components Concurrent)
+endif()
+
 find_package(Qt5
   ${IDE_QT_VERSION_MIN}
-  COMPONENTS Concurrent Core Gui Widgets
+  COMPONENTS ${_qtcanpool_qt_components}
     ${QT_TEST_COMPONENT}
   REQUIRED
 )
