@@ -7,6 +7,8 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 成熟产品的骨架 —— 统一的项目组织方式、一致的构建与测试流程、开箱可用的界面组件。
 
 [![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
+[![Docs](https://github.com/canpool/qtcanpool/actions/workflows/pages.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/pages.yml)
+[![Demo](https://img.shields.io/badge/Demo-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/demo/)
 [![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](https://github.com/canpool/qtcanpool/blob/release-3.x/LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-5.15%20%7C%206.x-41CD52.svg)](https://www.qt.io/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](https://isocpp.org/)
@@ -55,6 +57,15 @@ ctest --test-dir build -C Release --output-on-failure
 
 编译产物中的示例程序位于 `bin/`，例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`。
 完整的构建说明与开关列表见 [构建与安装](build.md)。
+
+### 在线体验
+
+`AppShellDemo` 已编译为 WebAssembly，可直接在浏览器中打开，无需安装 Qt 或编译器：
+
+<https://canpool.github.io/qtcanpool/demo/>
+
+它展示了一个完整的应用外壳：侧边导航、页面切换、可停靠面板、主题切换与布局持久化，全部运行在
+`QxAppShell` 之上。
 
 ## 文档导览
 

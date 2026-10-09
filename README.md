@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/)
+[![Demo](https://img.shields.io/badge/demo-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/demo/)
 [![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](./LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-5.15%20%7C%206.x-41CD52.svg)](https://www.qt.io/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](https://isocpp.org/)
@@ -43,6 +44,12 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 ```
 
 - 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、组件、主题、AppShell、迁移），与 API 一同发布
+
+## 在线体验
+
+`AppShellDemo` 已编译为 WebAssembly，可直接在浏览器中打开，无需安装 Qt 或编译器：
+
+- **在线 demo**：[https://canpool.github.io/qtcanpool/demo/](https://canpool.github.io/qtcanpool/demo/) —— 一个完整的应用外壳：侧边导航、页面切换、可停靠面板、主题切换与布局持久化
 
 ## 教程
 

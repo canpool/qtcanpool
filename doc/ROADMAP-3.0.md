@@ -211,7 +211,7 @@ src/libs/
 
 > 节奏建议：**M1/M2 为核心投入**（决定 3.0 的"骨架"），M3 可按小版本增量推进，M4 收口发布。
 >
-> **进度（2026-10-09）**
+> **进度（2026-10-10）**
 >
 > - ✅ **M1 地基已完成**：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
 > - ✅ **M2 收敛核心项已落地**：`qxwidget→qxapp` 重定位、legacy ribbon deprecated 标注：[`design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)
@@ -220,7 +220,7 @@ src/libs/
 > - ✅ **M3.3 AppShell 骨架已落地**：`qxapp` 内新增 `QxAppShell`（导航 + 页面栈 + DockWindow + 状态栏 + 布局持久化）、`QxNavigationBar`、`QxSplashScreen`，并带 CMake demo `demos/qxapp/appshell`；qmake 侧 `qxapp` 描述文件未动
 > - ✅ **M3.4 文档站点已上线**：`doc/` 成为可独立构建的 Doxygen 工程（`cmake -S doc -B build-docs`）——API 取自 `src/libs` 头文件、指南取自 `doc/pages`，产物 966 页；新增 `.github/workflows/docs.yml` 发布到 <https://canpool.github.io/qtcanpool/>（`release-*` 分支）。同时修复了 M3.3 的 `autoSaveOnClose` 用例在 Linux + Qt 6.8 上的失败
 > - ✅ **legacy 库 Doxygen 警告清零**：55 条 → **0**。其中有 8 条是真坏掉的注释块（`fancytitlebar.cpp` 里未闭合的反引号把文档吞到文件尾、`dockoverlay.cpp` 的 `\code` 缺 `\endcode`），另 16 条来自 `qxwindow` 平台后端的孤儿注释（`Q_OS_MAC` 预定义 + 排除 Windows 后端后归零），其余是 `@param` / `@ref` 与签名对不上
-> - ⏳ **M3.5 计划中**：在线 demo（`demos/qxapp/appshell` 为候选对象）
+> - ✅ **M3.5 在线 demo 已上线**：`AppShellDemo` 编译为 **WebAssembly**，随文档站点一同发布到 <https://canpool.github.io/qtcanpool/demo/>（浏览器打开即用，无需 Qt / 编译器）。为此新增 `QTCANPOOL_WASM` 平台开关、`QX_DOCK_X11` 覆盖 wasm 上"`Q_OS_UNIX` 与 `Q_OS_WASM` 同时定义"的陷阱，并把 `.github/workflows/docs.yml` 改名 `pages.yml` 增加 `wasm` 作业
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
 
 ---
@@ -255,7 +255,7 @@ src/libs/
 | :------------------------- | :- | :------------------------- |
 | 收敛幅度大，破坏存量用户（如 MyCAD）      | 高  | 保留 legacy 冻结库 + 迁移指南；给足过渡期 |
 | 个人维护带宽有限                   | 高  | 按里程碑小步走；优先自动化（CI/测试/文档）减负  |
-| Qt6 WebAssembly 打包 demo 有坑 | 中  | 作为 M3 增强项，非阻塞发布            |
+| Qt6 WebAssembly 打包 demo 有坑 | 中  | ✅ 已解决：锁定 Qt 6.8.3 + Emscripten 3.1.56 组合、强制静态库（`QTC_STATIC_BUILD`）|
 | vcpkg/Conan 维护成本           | 中  | 先出最简 port，社区可贡献            |
 | 命名/更名引发下游引用断裂              | 中  | 提供兼容头 + 过渡宏                |
 
@@ -267,7 +267,7 @@ src/libs/
 2. 主构建为 **CMake**，C++17，可在 Qt 6.5/6.8 + MSVC2022/MinGW/GCC 上构建；
 3. **CI 全平台绿灯**，核心库具备自动化测试与覆盖率报告；
 4. 发布 **在线 API 文档 + 组件指南 + 2.x→3.0 迁移指南**；
-5. demos 至少 **1 个可在线体验**（WebAssembly）；
+5. demos 至少 **1 个可在线体验**（WebAssembly）✅ `AppShellDemo` → <https://canpool.github.io/qtcanpool/demo/>；
 6. 产出可被 `find_package` 消费的 **SDK 包**（+ vcpkg/Conan port）；
 7. 版本号对齐并打 tag，附 Release Notes。
 
