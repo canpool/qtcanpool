@@ -44,6 +44,20 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: ctest --test-dir build -C Release --output-on-failure --timeout 120
 
+      - name: Check the installed SDK is consumable
+        # One leg is enough: the export is platform independent, and it is the
+        # combination of the installed targets, headers and the Qt dependency
+        # that is being exercised, not the compiler. projects/consume is a real
+        # downstream project that knows nothing but find_package(QtCanpool).
+        if: matrix.os == 'ubuntu-latest' && matrix.qt == '6.8.1'
+        run: |
+          cmake --install build --config Release --prefix "$RUNNER_TEMP/sdk"
+          cmake --install build --config Release --prefix "$RUNNER_TEMP/sdk" --component Devel
+          # Append rather than override: CMAKE_PREFIX_PATH already carries Qt.
+          export CMAKE_PREFIX_PATH="$RUNNER_TEMP/sdk:$CMAKE_PREFIX_PATH"
+          cmake -S projects/consume -B "$RUNNER_TEMP/consume" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/consume" --parallel
+
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
     # so any unformatted change now fails the build.
