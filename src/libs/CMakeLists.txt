@@ -36,6 +36,9 @@ if (WITH_QXWINDOW)
   add_subdirectory(qxwindow)
 endif()
 
-if (WITH_QXAPP AND WITH_QXRIBBON AND WITH_QXWINDOW)
+# qxapp is the application framework: it carries the ribbon window and the
+# AppShell, which combines the navigation rail, the dock system, the theme
+# engine and the settings, so it needs every layer underneath it.
+if (WITH_QXAPP AND WITH_QXRIBBON AND WITH_QXWINDOW AND WITH_QXDOCK AND WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxapp)
 endif()
