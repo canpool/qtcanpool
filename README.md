@@ -18,6 +18,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | 组件 | 命名空间 | 说明 |
 | :--- | :------- | :--- |
 | **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`），仅依赖 Qt Core |
+| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（Office / WPS / Dark）、运行时切换、选择持久化、跟随系统深浅色 |
 | **qcanpool** | `QCanpool` | 核心库，提供标题栏、工具按钮等通用控件；集成并封装下列组件 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
@@ -114,7 +115,7 @@ ctest --test-dir build -C Release --output-on-failure
 - Git 提交格式（**自 3.0 起**）：`type(scope): subject`，以区分早期提交格式
   - 提交信息一律使用**英文**（subject 与正文）
   - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
-  - `scope`：受影响范围，如 `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qcanpool` / `project` / `ci` / `test` / `docs`
+  - `scope`：受影响范围，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qcanpool` / `project` / `ci` / `test` / `docs`
   - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
   - 早期提交格式参考：[git 知：提交格式](https://blog.csdn.net/canpool/article/details/126005367)
 
