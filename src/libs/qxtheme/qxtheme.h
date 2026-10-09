@@ -15,9 +15,9 @@ QX_THEME_BEGIN_NAMESPACE
 /*!
  * The themes understood by QxThemeManager.
  *
- * The order mirrors QX_RIBBON_PREPEND_NAMESPACE(RibbonTheme)::ThemeStyle, so the
- * two enumerations map onto each other without a translation table. Custom
- * means "ship your own style sheet" and keeps the built-in resources untouched.
+ * The order mirrors the ThemeStyle enumeration of the ribbon theme, so the two
+ * enumerations map onto each other without a translation table. Custom means
+ * "ship your own style sheet" and keeps the built-in resources untouched.
  */
 enum Theme {
     LightYellow,

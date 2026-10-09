@@ -80,7 +80,11 @@ set(DOXYGEN_STRIP_FROM_INC_PATH "${QTCANPOOL_ROOT}/src/libs")
 set(DOXYGEN_INCLUDE_PATH "${QTCANPOOL_ROOT}/src/libs")
 set(DOXYGEN_IMAGE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/pics")
 set(DOXYGEN_MAINPAGE "${CMAKE_CURRENT_SOURCE_DIR}/pages/index.md")
-set(DOXYGEN_EXTRA_STYLESHEET "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.css")
+# Deliberately not named doxygen.css: that is the name of the stylesheet Doxygen
+# generates itself, and older releases refuse the file outright ("already a
+# built-in stylesheet"), while newer ones copy both and the outcome depends on
+# the order. A name of our own is unambiguous either way.
+set(DOXYGEN_EXTRA_STYLESHEET "${CMAKE_CURRENT_SOURCE_DIR}/qtcanpool-doxygen.css")
 set(DOXYGEN_WARN_LOGFILE "${CMAKE_CURRENT_BINARY_DIR}/doxygen-warnings.log")
 set(DOXYGEN_WARN_AS_ERROR "NO" CACHE STRING "Treat Doxygen warnings as errors (NO, YES or FAIL_ON_WARNINGS)")
 

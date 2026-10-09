@@ -55,7 +55,7 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 | :------- | :------- | :--- |
 | `cmake` | | CMake 构建框架 |
 | `demos` | | 综合示例程序 |
-| `doc` | | 文档：Doxygen 站点源码（`Doxyfile.in`、`pages/` 指南、`doxygen.css`）与设计文档 |
+| `doc` | | 文档：Doxygen 站点源码（`Doxyfile.in`、`pages/` 指南、`qtcanpool-doxygen.css`）与设计文档 |
 | `examples` | | 控件级示例 |
 | `projects` | | 项目目录，提供 template 模板；可在此持续添加自己的项目，实现一套框架管理多项目 |
 | `scripts` | | 辅助脚本 |
