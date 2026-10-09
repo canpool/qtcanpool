@@ -23,6 +23,15 @@
 # - "could not read Username": no usable credential helper is configured.
 #   Inspect with `git config --get-all credential.helper` (an empty value
 #   resets the list and disables every helper configured earlier).
+# - Silent hang with no output: the credential helper-selector pops a dialog
+#   and waits for a click, which never comes in a non-interactive shell.
+#   Bypass it by disabling the system config and pointing the helper straight
+#   at the manager:
+#     GIT_CONFIG_NOSYSTEM=1 \
+#     GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper \
+#     GIT_CONFIG_VALUE_0=manager scripts/push.sh
+#   Note that GIT_CONFIG_VALUE_0 alone is NOT enough: command-line config is
+#   appended after the system-level helpers, so the selector still runs first.
 # - "CONNECT tunnel failed" / HTTP 502: an http(s)_proxy is intercepting the
 #   connection. Unset it for these hosts if a direct connection is available.
 
