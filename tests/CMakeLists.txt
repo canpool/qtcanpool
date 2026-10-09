@@ -22,6 +22,18 @@ add_qtc_test(tst_qxcore
         ${QXCORE_TEST_SOURCES}
 )
 
+# ---------------------------------------------------------------- qxtheme --
+file(GLOB QXTHEME_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxtheme/auto/tst_*.cpp")
+add_qtc_test(tst_qxtheme
+    DEPENDS qxtheme
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxtheme/auto/main.cpp"
+        ${QXTHEME_TEST_SOURCES}
+)
+
 # ---------------------------------------------------------------- qxribbon --
 file(GLOB QXRIBBON_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
 add_qtc_test(tst_qxribbon
