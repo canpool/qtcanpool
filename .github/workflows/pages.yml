@@ -155,17 +155,25 @@ jobs:
             -DWITH_TESTS=OFF
           cmake --build build-wasm --target AppShellDemo --parallel
           em++ --version
-          ls -la build-wasm/bin
+          # The output directory is platform dependent: add_qtc_executable places
+          # executables in bin/ on Windows and in libexec/qtproject/ elsewhere,
+          # so list whatever the build actually produced.
+          find build-wasm -maxdepth 3 \( -name 'AppShellDemo.*' -o -name 'qtloader.js' \) | sort
 
       - name: Collect the site
         run: |
+          # The output directory is platform dependent: add_qtc_executable places
+          # executables in bin/ on Windows and in libexec/qtproject/ elsewhere.
+          # Locate the build output rather than assuming a path.
+          OUT=$(dirname "$(find build-wasm -name 'AppShellDemo.js' -print -quit)")
+          echo "collecting from $OUT"
           mkdir -p site/demo
           # The finalization turns the target into the .html/.js/.wasm triple the
-          # browser loads, plus the Qt loader and any preloaded asset.
-          cp build-wasm/bin/AppShellDemo.html site/demo/index.html
-          # The generated page pulls in AppShellDemo.js (which loads the .wasm by
+          # browser loads, plus the Qt loader and any preloaded asset. The
+          # generated page pulls in AppShellDemo.js (which loads the .wasm by
           # name), the Qt loader and the logo.
-          find build-wasm/bin -maxdepth 1 \
+          cp "$OUT/AppShellDemo.html" site/demo/index.html
+          find "$OUT" -maxdepth 1 \
             \( -name 'AppShellDemo.js' -o -name 'AppShellDemo.wasm' \
                -o -name 'AppShellDemo.data' -o -name 'qtloader.js' \
                -o -name 'qtlogo.svg' \) \
