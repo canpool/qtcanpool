@@ -1,3 +1,23 @@
+3.0.0
+---
+- qt: Qt6-first, primary support Qt 6.5 LTS / 6.8 LTS; best-effort Qt 5.15
+- qt: drop Qt <= 5.14 and MSVC2017
+- project: cmake is the primary build system; qmake frozen (read-only)
+- project: unify C++ standard to C++17
+- project: unify library naming to the qx* namespace (QxRibbon/QxWindow/QxDock/QxApp/QxCore/QxTheme)
+- project: provide an installable CMake package, consumable with find_package(QtCanpool)
+- project: build and publish a demo for Qt for WebAssembly (online demo)
+- qcanpool: freeze the legacy ribbon (ribbonbar/ribbonpage/ribbongroup/ribbonwindow)
+- qcanpool: mark the legacy API deprecated, add a migration guide
+- qxribbon: the only ribbon implementation
+- qxwidget: renamed and relocated to qxapp (application framework)
+- qxapp: add AppShell (navigation + pages + dock area + status bar + splash + layout persistence)
+- qxcore: new infrastructure library (QxSettings config, QxLogger logging)
+- qxtheme: new theme engine library (palette + stylesheet, runtime switch, follow system)
+- ci: add a cross-platform build matrix (Linux/Windows/macOS x Qt 5.15/Qt 6.8) and a clang-format gate
+- test: expand the automated test suite (qxcore/qxtheme/qxapp/qxribbon/qxdock)
+- docs: add an API reference site (Doxygen), component guides and a 2.x -> 3.0 migration guide
+
 2.3.0
 ---
 - qxdock: add and release version 0.2.0
