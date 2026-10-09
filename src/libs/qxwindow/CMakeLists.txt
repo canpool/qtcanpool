@@ -43,7 +43,11 @@ if (QX_WINDOW_CONFIG_NATIVE)
     DEFINES QX_WINDOW_NATIVE
   )
 
-  extend_qtc_library(qxwindow CONDITION UNIX
+  # The Qt fallback backend is Linux-only, exactly like the qmake build
+  # (qxwindow-lib.pri adds windowcontext_qt.cpp under "linux*"): on macOS the
+  # QX_WINDOW_NATIVE branch above declares WindowContextCocoa instead, and
+  # compiling the Qt backend there would reference an undeclared class.
+  extend_qtc_library(qxwindow CONDITION UNIX AND NOT APPLE
     SOURCES
       windowcontext_qt.cpp
       windowkit_linux.h
