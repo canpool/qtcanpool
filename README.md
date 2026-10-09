@@ -23,7 +23,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
-| **qxapp** | `QxApp` | 应用层通用控件集合 |
+| **qxapp** | `QxApp` | 应用框架库：`RibbonAppWindow`（无边框 Ribbon 窗口）与 `QxAppShell` 应用外壳（导航轨 + 页面栈 + 停靠区 + 状态栏 + 启动屏 + 布局持久化） |
 | **qtcompat** | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） |
 
 ## 仓库
@@ -85,12 +85,15 @@ ctest --test-dir build -C Release --output-on-failure
 
 - 各功能开关（`WITH_DEMOS`、`WITH_TESTS` 等）可通过 `cmake -S . -B build -LH` 查看
 - 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`（或早期兼容的 `qtcanpool.pro`）
+- 编译出的 demo 位于构建目录的 `bin/`，例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）
 
 ## 路线图
 
 - [3.0 开发规划](./doc/ROADMAP-3.0.md)
 - [2.x → 3.0 迁移指南](./doc/design/3.0-MIGRATION.md)
 - [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
+- [M2 任务清单](./doc/design/3.0-M2-TASKS.md)
+- [M3 任务清单](./doc/design/3.0-M3-TASKS.md)
 
 ## 版本
 
