@@ -211,11 +211,13 @@ src/libs/
 
 > 节奏建议：**M1/M2 为核心投入**（决定 3.0 的"骨架"），M3 可按小版本增量推进，M4 收口发布。
 >
-> **进度（2026-10-08）**
+> **进度（2026-10-09）**
 >
 > - ✅ **M1 地基已完成**：[`design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)
 > - ✅ **M2 收敛核心项已落地**：`qxwidget→qxapp` 重定位、legacy ribbon deprecated 标注：[`design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)
-> - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x；`qxcore` 归 M3
+> - ✅ **M3.1 qxcore 基础设施已落地**：新增 `src/libs/qxcore`（`QxSettings` 配置 + `QxLogger` 日志），并修复测试驱动吞掉失败的问题：[`design/3.0-M3-TASKS.md`](./design/3.0-M3-TASKS.md)
+> - ⏳ **M3.2–M3.5 计划中**：主题引擎、AppShell、文档站点、在线 demo
+> - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
 
 ---
 
@@ -239,6 +241,7 @@ src/libs/
 | [`doc/design/3.0-MIGRATION.md`](./design/3.0-MIGRATION.md) | 2.x→3.0 迁移指南：命名空间、Ribbon 类/方法对照、fancy* 存废、qxwidget→qxapp、构建迁移        |
 | [`doc/design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)   | M1 可执行任务清单：CMake 主构建、C++17、CI 矩阵、clang-format、测试骨架（含开箱即用配置）          |
 | [`doc/design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)   | M2 可执行任务清单：`qxwidget→qxapp` 重命名、legacy ribbon deprecated 标注（含实测踩坑记录） |
+| [`doc/design/3.0-M3-TASKS.md`](./design/3.0-M3-TASKS.md)   | M3 增量清单 + M3.1 执行记录：`qxcore` 配置/日志库、测试退出码修复（含探针与踩坑）            |
 
 ---
 

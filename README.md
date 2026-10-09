@@ -17,6 +17,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 
 | 组件 | 命名空间 | 说明 |
 | :--- | :------- | :--- |
+| **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`），仅依赖 Qt Core |
 | **qcanpool** | `QCanpool` | 核心库，提供标题栏、工具按钮等通用控件；集成并封装下列组件 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
