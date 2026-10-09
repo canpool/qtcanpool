@@ -109,12 +109,15 @@ jobs:
         #
         # A host Qt of the same version is needed on top of it: the WebAssembly
         # kit ships no moc/rcc/uic, because those run on the build machine. Only
-        # qtbase is fetched, since the host installation exists purely to provide
-        # those three tools.
+        # two archives are fetched, since the host installation exists purely to
+        # provide those three tools: "qtbase" carries them, and "icu" carries the
+        # ICU runtime they link against -- Qt's Linux binaries bundle ICU in its
+        # own archive, so with qtbase alone qmake and rcc die with "libicui18n.
+        # so.73: cannot open shared object file" before a single file is built.
         run: |
           pip install aqtinstall
           aqt install-qt all_os wasm 6.8.3 wasm_singlethread -O "$RUNNER_TEMP/Qt"
-          aqt install-qt linux desktop 6.8.3 linux_gcc_64 -O "$RUNNER_TEMP/QtHost" --archives qtbase
+          aqt install-qt linux desktop 6.8.3 linux_gcc_64 -O "$RUNNER_TEMP/QtHost" --archives qtbase icu
 
       - name: Install Emscripten
         # Qt 6.8 targets Emscripten 3.1.56, and the version is not interchangeable
