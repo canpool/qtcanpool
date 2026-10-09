@@ -1,13 +1,26 @@
 # qtcanpool tests (CMake / CTest)
 #
-# qmake 侧入口为 tests/tests.pro（自 3.0 起冻结）。
-# 此处为 CMake 主构建下的测试入口，仅在 -DWITH_TESTS=ON 时生效。
+# The qmake entry point is tests/tests.pro (frozen since 3.0). This file is the
+# entry point of the CMake build and only takes effect with -DWITH_TESTS=ON.
 #
-# 复用框架提供的 add_qtc_test()：自动注册 CTest、处理 rpath / automoc /
-# include 路径（库的 PUBLIC include 为 src/libs，故测试可直接
-# #include "qxribbon/xxx.h"、"qxdock/xxx.h"）。
+# It reuses add_qtc_test() from the framework, which registers the test with
+# CTest and takes care of rpath / automoc / include paths (the public include
+# directory of every library is src/libs, so a test can simply
+# #include "qxribbon/xxx.h" or "qxdock/xxx.h").
 
 set(QTCANPOOL_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# ------------------------------------------------------------------- qxcore --
+file(GLOB QXCORE_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxcore/auto/tst_*.cpp")
+add_qtc_test(tst_qxcore
+    DEPENDS qxcore
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxcore/auto/main.cpp"
+        ${QXCORE_TEST_SOURCES}
+)
 
 # ---------------------------------------------------------------- qxribbon --
 file(GLOB QXRIBBON_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
@@ -34,7 +47,7 @@ add_qtc_test(tst_qxdock
 )
 
 # -------------------------------------------------------------- helloworld --
-# 无库依赖的最小示例测试（QTEST_MAIN 自带入口）
+# Minimal tests without a library dependency (QTEST_MAIN provides the entry point).
 add_qtc_test(tst_qstring
     DEPENDS Qt5::Core
     SOURCES "${QTCANPOOL_TESTS_DIR}/helloworld/qstring/tst_qstring.cpp"
