@@ -106,7 +106,18 @@ ctest --test-dir build -C Release --output-on-failure
 - 各功能开关（`WITH_DEMOS`、`WITH_TESTS`、`WITH_DOCS` 等）可通过 `cmake -S . -B build -LH` 查看
 - `-DWITH_DOCS=ON` 会把文档站点目标 `docs` 一并加入主构建（只需 Doxygen）；只想要文档时用上面的 `cmake -S doc -B build-docs`
 - 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`（或早期兼容的 `qtcanpool.pro`）
-- 编译出的 demo 位于构建目录的 `bin/`，例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）
+- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）
+
+安装与下游消费：
+
+```bash
+# 公开头文件与 CMake 包配置位于 Devel 组件，需显式安装
+cmake --install build --config Release --prefix <安装目录>
+cmake --install build --config Release --prefix <安装目录> --component Devel
+```
+
+下游工程 `find_package(QtCanpool)` 后可直接链接 `QtCanpool::qxcore` / `QtCanpool::qxribbon` / `QtCanpool::qxapp` 等目标；
+仓库内 `projects/consume` 是最小下游示例，vcpkg / Conan 骨架见 `ports/`（未经 CI 验证）。
 
 ## 路线图
 
@@ -115,6 +126,7 @@ ctest --test-dir build -C Release --output-on-failure
 - [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
 - [M2 任务清单](./doc/design/3.0-M2-TASKS.md)
 - [M3 任务清单](./doc/design/3.0-M3-TASKS.md)
+- [M4 任务清单](./doc/design/3.0-M4-TASKS.md)
 
 ## 版本
 

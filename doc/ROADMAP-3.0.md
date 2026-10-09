@@ -221,6 +221,9 @@ src/libs/
 > - ✅ **M3.4 文档站点已上线**：`doc/` 成为可独立构建的 Doxygen 工程（`cmake -S doc -B build-docs`）——API 取自 `src/libs` 头文件、指南取自 `doc/pages`，产物 966 页；新增 `.github/workflows/docs.yml` 发布到 <https://canpool.github.io/qtcanpool/>（`release-*` 分支）。同时修复了 M3.3 的 `autoSaveOnClose` 用例在 Linux + Qt 6.8 上的失败
 > - ✅ **legacy 库 Doxygen 警告清零**：55 条 → **0**。其中有 8 条是真坏掉的注释块（`fancytitlebar.cpp` 里未闭合的反引号把文档吞到文件尾、`dockoverlay.cpp` 的 `\code` 缺 `\endcode`），另 16 条来自 `qxwindow` 平台后端的孤儿注释（`Q_OS_MAC` 预定义 + 排除 Windows 后端后归零），其余是 `@param` / `@ref` 与签名对不上
 > - ✅ **M3.5 在线 demo 已上线**：`AppShellDemo` 编译为 **WebAssembly**，随文档站点一同发布到 <https://canpool.github.io/qtcanpool/demo/>（浏览器打开即用，无需 Qt / 编译器）。为此新增 `QTCANPOOL_WASM` 平台开关、`QX_DOCK_X11` 覆盖 wasm 上"`Q_OS_UNIX` 与 `Q_OS_WASM` 同时定义"的陷阱，并把 `.github/workflows/docs.yml` 改名 `pages.yml` 增加 `wasm` 作业
+> - ✅ **M4.1 SDK 可消费性已落地**：`find_package(QtCanpool)` 的「安装 → 消费」闭环。为此修复两个从未被发现的导出缺陷（配置里多余的 `Concurrent`/`Core5Compat` 依赖、`qxribbon_global.h` 未随包安装），并新增下游工程 `projects/consume` 与 CI 门禁（`ubuntu-latest / Qt 6.8.1` 上跑完整往返）
+> - ✅ **M4.2 ~ M4.4 已落地**：项目版本对齐 `3.0.0`；`CHANGELOG` 补 `3.0.0` 条目；新增 vcpkg / Conan 骨架（`ports/` + `conanfile.py`，未经 CI 验证）
+> - ⏸ **M4.5 打 tag（`3.0.0`）待作者确认**：前置条件已全部就绪（CI 全绿、发布说明成稿、SDK 可消费）
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
 
 ---
@@ -246,6 +249,7 @@ src/libs/
 | [`doc/design/3.0-M1-TASKS.md`](./design/3.0-M1-TASKS.md)   | M1 可执行任务清单：CMake 主构建、C++17、CI 矩阵、clang-format、测试骨架（含开箱即用配置）          |
 | [`doc/design/3.0-M2-TASKS.md`](./design/3.0-M2-TASKS.md)   | M2 可执行任务清单：`qxwidget→qxapp` 重命名、legacy ribbon deprecated 标注（含实测踩坑记录） |
 | [`doc/design/3.0-M3-TASKS.md`](./design/3.0-M3-TASKS.md)   | M3 增量清单 + 执行记录：`qxcore` 配置/日志库、测试退出码修复、`qxtheme` 主题引擎、`qxapp` AppShell 骨架、Doxygen 文档站点与 Pages 发布（含探针与踩坑） |
+| [`doc/design/3.0-M4-TASKS.md`](./design/3.0-M4-TASKS.md)   | M4 发布清单 + 执行记录：SDK 可消费性（含两个导出缺陷的修复）、版本对齐、发布说明、vcpkg/Conan 骨架、打 tag 的暂停点 |
 
 ---
 

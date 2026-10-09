@@ -120,7 +120,8 @@ cmake --build build --target docs
 
 ## 示例程序
 
-构建完成后，可执行文件位于构建目录的 `bin/`：
+构建完成后，可执行文件位于构建目录的 `bin/`（Windows）；
+在其它平台上它们位于 `libexec/qtproject/`（与安装布局一致）：
 
 | 示例 | 目标 | 说明 |
 | :--- | :--- | :--- |
@@ -131,14 +132,38 @@ cmake --build build --target docs
 
 `examples/` 下另有更细粒度的控件示例（qmake 工程）。
 
-## 安装
+## 安装与消费
 
 ```bash
 cmake --install build --prefix <安装目录>
 ```
 
-头文件安装到 `<prefix>/include`，库安装到 `<prefix>/lib`，并导出 CMake 包配置，
-下游工程可以 `find_package(QtCanpool)` 后直接链接 `QtCanpool::qxcore` 这样的目标。
+头文件安装到 `<prefix>/include/qtproject`，库与可执行文件安装到 `<prefix>/lib`
+（可执行文件在 Windows 的 `<prefix>/bin`、其它平台的 `<prefix>/libexec/qtproject`）。
+
+> ⚠️ **公开头文件与 CMake 包配置位于带 `EXCLUDE_FROM_ALL` 的 `Devel` 组件**，
+> 普通安装不会装出它们，必须再执行一次组件安装：
+>
+> ```bash
+> cmake --install build --prefix <安装目录> --component Devel
+> ```
+
+安装完成后即导出 CMake 包配置，下游工程可以 `find_package(QtCanpool)` 后
+直接链接 `QtCanpool::qxcore` / `QtCanpool::qxtheme` / `QtCanpool::qcanpool` /
+`QtCanpool::qxribbon` / `QtCanpool::qxdock` / `QtCanpool::qxwindow` /
+`QtCanpool::qxapp` 这些目标：
+
+```cmake
+find_package(QtCanpool REQUIRED)
+add_executable(myapp main.cpp)
+target_link_libraries(myapp PRIVATE QtCanpool::qxapp)
+```
+
+仓库里的 [`projects/consume`](https://github.com/canpool/qtcanpool/tree/release-3.x/projects/consume)
+是一个最小下游工程，CI 在 `ubuntu-latest / Qt 6.8.1` 上执行完整的
+"安装 → `find_package` → 编译链接 → 运行" 往返，作为可消费性的门禁。
+此外还提供 [vcpkg / Conan 骨架](https://github.com/canpool/qtcanpool/tree/release-3.x/ports)
+（未经 CI 验证，供社区贡献）。
 
 ## 关于 qmake
 
