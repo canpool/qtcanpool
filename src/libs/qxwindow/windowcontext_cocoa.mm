@@ -492,6 +492,15 @@ private:
     static inline sendEventPtr oldSendEvent = nil;
 };
 
+static inline bool isCocoaPlatform() {
+    // Only the Cocoa platform hands out an NSView pointer from winId(). The
+    // offscreen and minimal plugins return small integers instead, and there is
+    // no Cocoa window to attach to in that case either way. Treating one of
+    // those as an object crashes, so the context stays dormant. qxdock guards
+    // on the platform name in the same way.
+    return QGuiApplication::platformName() == QLatin1String("cocoa");
+}
+
 static inline NSWindow *mac_getNSWindow(const WId windowId) {
     const auto nsview = reinterpret_cast<NSView *>(windowId);
     return [nsview window];
@@ -671,6 +680,9 @@ QString WindowContextCocoa::key() const {
 void WindowContextCocoa::virtual_hook(int id, void *data) {
     switch (id) {
         case SystemButtonAreaChangedHook: {
+            if (!windowId) {
+                return;
+            }
             ensureWindowProxy(windowId)->setScreenRectCallback(m_systemButtonAreaCallback);
             return;
         }
@@ -683,8 +695,9 @@ void WindowContextCocoa::virtual_hook(int id, void *data) {
 
 QVariant WindowContextCocoa::windowAttribute(const QString &key) const {
     if (key == QStringLiteral("title-bar-height")) {
-        if (!m_windowHandle)
+        if (!m_windowHandle || !windowId) {
             return 0;
+        }
         return ensureWindowProxy(windowId)->titleBarHeight();
     }
     return WindowContext::windowAttribute(key);
@@ -697,7 +710,7 @@ void WindowContextCocoa::winIdChanged() {
         windowId = 0;
     }
 
-    if (!m_windowHandle) {
+    if (!m_windowHandle || !isCocoaPlatform()) {
         return;
     }
 
@@ -712,6 +725,8 @@ bool WindowContextCocoa::windowAttributeChanged(const QString &key, const QVaria
 
     if (key == QStringLiteral("no-system-buttons")) {
         if (attribute.type() != QVariant::Bool)
+            return false;
+        if (!windowId)
             return false;
         ensureWindowProxy(windowId)->setSystemButtonVisible(!attribute.toBool());
         return true;
@@ -740,6 +755,8 @@ bool WindowContextCocoa::windowAttributeChanged(const QString &key, const QVaria
         } else {
             return false;
         }
+        if (!windowId)
+            return false;
         return ensureWindowProxy(windowId)->setBlurEffect(mode);
     }
 
