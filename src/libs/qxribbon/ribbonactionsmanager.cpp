@@ -123,6 +123,7 @@ void RibbonActionsManager::removeTag(int tag)
  * registerAction的tag是直接记录进去的，如果要多个标签并存，在registe之前先或好tag
  * @param key key是action对应的key，一个key只对应一个action，是查找action的关键
  * ,默认情况为一个QString(),这时key是QAction的objectName
+ * @param enableEmit 是否发射 actionTagChanged 信号
  * @note 同一个action多次注册不同的tag可以通过tag索引到action，但通过action只能索引到最后一个注册的tag
  * @note tag的新增会触发actionTagChanged信号
  */
@@ -163,6 +164,7 @@ bool RibbonActionsManager::registerAction(QAction *act, int tag, const QString &
  *
  * 如果tag对应的最后一个action被撤销，tag也将一块删除
  * @param act
+ * @param enableEmit 是否发射 actionTagChanged 信号
  * @note tag的删除会触发actionTagChanged信号
  * @note 如果action关联了多个tag，这些tag里的action都会被删除，对应的key也同理
  */

@@ -592,6 +592,7 @@ void RibbonGroupLayout::addItem(QLayoutItem *item)
 
 /**
  * @brief RibbonGroup主要通过此函数来添加action
+ * @param index 插入位置
  * @param act
  * @param rp 布局策略
  */

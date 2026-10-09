@@ -36,7 +36,7 @@ public:
     QAction *action;      ///< 记录action，参考QToolBarLayoutItem
     bool customWidget;    ///< 对于没有窗口的action，实际也会有一个RibbonButton，在销毁时要delete掉
     RibbonGroup::RowProportion
-        rowProportion;   ///< 行的占比，ribbon中有large，medium和small三种占比,见@ref RowProportion
+        rowProportion;   ///< 行的占比，ribbon中有large，medium和small三种占比,见 @ref RibbonGroup::RowProportion
 };
 
 /**
@@ -44,7 +44,7 @@ public:
  *
  * RibbonGroupLayout 实际是一个列布局，每一列有 2~3 行，看窗口定义占几行
  *
- * 核心函数： @ref RibbonGroupLayout::createItem
+ * 核心函数： createItem （把 QAction 转换成布局项 RibbonGroupItem）
  *
  * @note QLayout::contentsMargins 函数不会起作用, 如果要设置 contentsMargins，使用 @sa setGroupContentsMargins
  */

@@ -34,7 +34,7 @@ class RibbonActionsManagerPrivate;
  * RibbonActionsManager 默认预设了6个常用标签见 @ref RibbonActionsManager::ActionTag ，用户自定义标签需要在
  * RibbonActionsManager::UserDefineActionTag 值的基础上进行累加。
  *
- * @ref filter （等同 @ref actions ）函数用于提取标签管理的 action list， @ref allActions 函数返回 RibbonActionsManager
+ * @ref RibbonActionsManager::actions 函数用于提取标签管理的 action list， @ref allActions 函数返回 RibbonActionsManager
  * 管理的所有标签。
  *
  * 通过 @ref autoRegisterActions 函数可以快速的建立 action 的管理，此函数会遍历 @ref RibbonBar 下的所有子 object，

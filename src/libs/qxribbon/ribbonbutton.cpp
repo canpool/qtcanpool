@@ -198,8 +198,9 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
  * @brief RibbonButton::drawIconAndLabel
  *
  * 在LargeButtonType == Normal模式下，icon占大按钮的一半区域，在wps模式下，icon占大按钮的60%，文字占40%，且文字不换行
- * @param p
  * @param opt
+ * @param p
+ * @param w
  */
 void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter &p, const QWidget *w)
 {
@@ -361,7 +362,6 @@ void RibbonButtonPrivate::drawArrow(const QStyle *style, const QStyleOptionToolB
 /**
  * @brief 根据设定计算图标和文本的绘制区域
  * @param opt
- * @return
  */
 void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
 {
@@ -436,7 +436,8 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
 /**
  * @brief 根据设定计算文本显示区域
  * @param opt
- * @return
+ * @param w
+ * @return 文本显示区域
  */
 QRect RibbonButtonPrivate::adjustedTextRect(const QStyleOptionToolButton &opt, const QWidget *w)
 {

@@ -56,7 +56,7 @@ class RibbonQuickAccessBar;
  * 再把 QAction 设置进 QMenu 和 QToolBar 中
  *
  * RibbonBar 和传统方法相似，不过相对于传统的 MenuBar/ToolBar, QMenuBar 和 QToolBar 是平级的，
- * Ribbon 是有明显的层级关系，RibbonBar 下面是 @ref RibbonPage，
+ * Ribbon 是有明显的层级关系，RibbonBar 下面是 @ref RibbonPage ，
  * RibbonPage 下面是 @ref RibbonGroup ，RibbonGroup下 面是 @ref RibbonButton ，
  * RibbonButton 管理着 QAction
  *

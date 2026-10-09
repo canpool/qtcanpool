@@ -790,6 +790,7 @@ void DockOverlayCross::updatePosition()
  * {
  *     qproperty-iconColors: "Frame=#ff3d3d3d Background=#ff929292 Overlay=#1f3d3d3d Arrow=#ffb4b4b4 Shadow=#40474747";
  * }
+ * \endcode
  */
 void DockOverlayCross::setIconColors(const QString &colors)
 {

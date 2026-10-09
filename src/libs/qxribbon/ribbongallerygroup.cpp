@@ -645,7 +645,6 @@ void RibbonGalleryGroup::setGridMaximumWidth(int w)
 
 /**
  * @brief grid最大的的宽度，默认为0（不限制）
- * @param w
  */
 int RibbonGalleryGroup::gridMaximumWidth() const
 {

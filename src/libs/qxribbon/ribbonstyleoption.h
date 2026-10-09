@@ -14,7 +14,7 @@ class RibbonStyleOptionPrivate;
 
 /**
  * @brief 定义了 ribbon 所有尺寸相关信息，ribbon 的建立都基于此类的尺寸，如果想调整，
- * 可以通过 @ref RibbonFactory（通过 RibbonManager 单例管理） 的 @ref setRibbonStyleOption
+ * 可以通过 @ref RibbonFactory （通过 RibbonManager 单例管理） 的 @ref RibbonFactory::setRibbonStyleOption
  * 函数设置自己的 RibbonStyleOption
  *
  * @sa RibbonManager

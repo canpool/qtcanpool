@@ -99,6 +99,11 @@ endif()
 set(_doc_input "${QTCANPOOL_ROOT}/src/libs" "${CMAKE_CURRENT_SOURCE_DIR}/pages")
 string(REPLACE ";" " " DOXYGEN_INPUT "${_doc_input}")
 set(DOXYGEN_EXCLUDE_PATTERNS "*/moc_* */ui_* */CMakeFiles/* */.git/*")
+# The Windows backend implements a class whose declaration only exists when the
+# preprocessor is told this is a Windows build (see the Doxyfile). Documenting the
+# portable configuration means leaving the file out rather than reading member
+# comments for a class that is not there.
+set(DOXYGEN_EXCLUDE "${QTCANPOOL_ROOT}/src/libs/qxwindow/windowcontext_win.cpp")
 
 # ------------------------------------------------------------------- targets --
 

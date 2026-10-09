@@ -219,6 +219,7 @@ src/libs/
 > - ✅ **M3.2 主题引擎已落地**：新增 `src/libs/qxtheme`（`QxThemeManager` 统一应用调色板 + 样式表、运行时切换、选择持久化、跟随系统深浅色）；与 qxribbon 解耦，不改变既有库依赖
 > - ✅ **M3.3 AppShell 骨架已落地**：`qxapp` 内新增 `QxAppShell`（导航 + 页面栈 + DockWindow + 状态栏 + 布局持久化）、`QxNavigationBar`、`QxSplashScreen`，并带 CMake demo `demos/qxapp/appshell`；qmake 侧 `qxapp` 描述文件未动
 > - ✅ **M3.4 文档站点已上线**：`doc/` 成为可独立构建的 Doxygen 工程（`cmake -S doc -B build-docs`）——API 取自 `src/libs` 头文件、指南取自 `doc/pages`，产物 966 页；新增 `.github/workflows/docs.yml` 发布到 <https://canpool.github.io/qtcanpool/>（`release-*` 分支）。同时修复了 M3.3 的 `autoSaveOnClose` 用例在 Linux + Qt 6.8 上的失败
+> - ✅ **legacy 库 Doxygen 警告清零**：55 条 → **0**。其中有 8 条是真坏掉的注释块（`fancytitlebar.cpp` 里未闭合的反引号把文档吞到文件尾、`dockoverlay.cpp` 的 `\code` 缺 `\endcode`），另 16 条来自 `qxwindow` 平台后端的孤儿注释（`Q_OS_MAC` 预定义 + 排除 Windows 后端后归零），其余是 `@param` / `@ref` 与签名对不上
 > - ⏳ **M3.5 计划中**：在线 demo（`demos/qxapp/appshell` 为候选对象）
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
 

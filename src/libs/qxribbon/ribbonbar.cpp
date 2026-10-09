@@ -1142,7 +1142,7 @@ QAbstractButton *RibbonBar::applicationButton()
  * 默认会有一个RibbonApplicationButton，如果想取消，可传入Q_NULLPTR，或者自定义的button也可以传入
  *
  * @note applicationButton的所有权归RibbonBar所有，不要在外部对applicationButton进行delete操作
- * @param btn applicationButton指针，可以传入@ref RibbonApplicationButton，
+ * @param btn applicationButton指针，可以传入 @ref RibbonApplicationButton ，
  * 已经对RibbonApplicationButton进行了样式设置
  */
 void RibbonBar::setApplicationButton(QAbstractButton *btn)

@@ -308,7 +308,7 @@ QAction *RibbonGroup::addAction(const QString &text, const QIcon &icon, QToolBut
  * @brief 添加一个普通菜单
  * @param menu
  * @param rp
- * @param popMode,菜单弹出模式，默认InstantPopup模式
+ * @param popMode 菜单弹出模式，默认InstantPopup模式
  * @return
  */
 RibbonButton *RibbonGroup::addMenu(QMenu *menu, RibbonGroup::RowProportion rp, QToolButton::ToolButtonPopupMode popMode)
@@ -433,8 +433,8 @@ RibbonGallery *RibbonGroup::addGallery()
 
 /**
  * @brief 添加分割线
- * @param top 上边距 @default 6
- * @param bottom 下边距 @default 6
+ * @param top 上边距，默认 6
+ * @param bottom 下边距，默认 6
  */
 QAction *RibbonGroup::addSeparator(int top, int bottom)
 {
@@ -752,7 +752,7 @@ void RibbonGroup::resizeEvent(QResizeEvent *event)
  *
  * 这里处理了ActionAdded，ActionChanged，ActionRemoved三个事件
  *
- * ActionAdded时向布局请求，添加action，布局中同时触发了@ref RibbonGroupLayout::createItem 函数
+ * ActionAdded时向布局请求，添加action，布局中同时触发了 createItem 函数
  * 此函数用于生成窗口，例如QRibbonButton
  *
  * ActionChanged时会让布局重新计算尺寸，并向page请求重新布局，有可能page的所有要重新调整尺寸

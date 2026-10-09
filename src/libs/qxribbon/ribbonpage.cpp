@@ -141,7 +141,7 @@ QList<RibbonGroup *> RibbonPagePrivate::groupList() const
 /**
  * @brief 设置group的模式
  *
- * 在@ref RibbonBar调用@ref RibbonBar::setRibbonStyle 函数时，会对所有的RibbonPage调用此函数
+ * 在 RibbonBar 调用 @ref RibbonBar::setRibbonStyle 函数时，会对所有的RibbonPage调用此函数
  * 把新的RibbonGroup::GroupLayoutMode设置进去
  *
  * 此函数为RibbonPage::setGroupLayoutMode的代理，

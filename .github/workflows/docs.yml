@@ -54,13 +54,18 @@ jobs:
 
       - name: Summary
         run: |
+          # Count the warnings themselves, not the lines of the log: entries such
+          # as "Possible candidates:" and the "parameter 'x'" follow-ups continue
+          # a warning on their own line, and counting them inflates the number by
+          # roughly a third. grep exits non-zero when nothing matches, hence the
+          # explicit fallback -- the step would otherwise fail on a clean build.
           {
             echo "### Documentation site"
             echo
             echo "| | |"
             echo "| :--- | :--- |"
             echo "| Doxygen | $(doxygen --version) |"
-            echo "| Warnings | $(wc -l < build-docs/doxygen-warnings.log) |"
+            echo "| Warnings | $(grep -cE ': (warning|error):' build-docs/doxygen-warnings.log || echo 0) |"
             echo "| HTML pages | $(find build-docs/html -maxdepth 1 -name '*.html' | wc -l) |"
           } >> "$GITHUB_STEP_SUMMARY"
 

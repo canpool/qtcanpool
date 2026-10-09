@@ -869,7 +869,6 @@ bool RibbonCustomizeWidget::toXml(const QString &xmlpath) const
  *
  * 对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
  * @param xml
- * @return
  * @note 此函数要在@ref setupActionsManager 函数之后调用
  */
 void RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml)
@@ -919,6 +918,7 @@ void RibbonCustomizeWidget::fromXml(const QString &xmlpath)
  * @endcode
  * @param xml
  * @param bar
+ * @param mgr
  * @return 所有设定有一个应用成功都会返回true
  * @see QxRibbonCustomizeDataGetFromXml QxRibbonCustomizeDataApply QxRibbonCustomizeApplyFromXmlFile
  */
@@ -1025,6 +1025,7 @@ int RibbonCustomizeWidget::itemLevel(QStandardItem *item) const
 /**
  * @brief 设置某个item被选中
  * @param item
+ * @param ensureVisible 是否确保该项可见
  */
 void RibbonCustomizeWidget::setSelectItem(QStandardItem *item, bool ensureVisible)
 {

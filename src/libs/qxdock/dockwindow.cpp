@@ -403,6 +403,10 @@ DockWindow::~DockWindow()
  * DockWindow->addDockWidget(Qx::CenterDockWidgetArea, newDockWidget,
  * 	   exisitingPanel);
  * \endcode
+ * \param area The dock area the dock widget is added to
+ * \param w The dock widget to add
+ * \param p The dock panel to add the dock widget into, or null to use the
+ *          container itself
  * \param index Tab index, used only when DockPanel is not null and
  *              area is CenterDockWidgetArea
  * \return Returns the dock panel that contains the new DockWidget

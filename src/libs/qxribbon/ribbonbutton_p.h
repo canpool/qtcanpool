@@ -42,7 +42,7 @@ public:
     RibbonButton::LargeButtonType m_largeButtonType;
     bool m_mouseOnSubControl;   ///< 这个用于标记MenuButtonPopup模式下，鼠标在文本区域
     bool m_menuButtonPressed;
-    bool m_isWordWrap;            ///< 标记是否文字换行 @default false
+    bool m_isWordWrap;            ///< 标记是否文字换行，默认 false
     int m_spacing;                ///< 按钮和边框的距离
     QSize m_sizeHint;             ///< 保存计算好的sizehint
     QRect m_iconRect;             ///< 记录icon的绘制位置

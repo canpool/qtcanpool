@@ -137,7 +137,7 @@ public:
      */
     QString groupObjNameValue;
 
-    ///< 行的占比，ribbon中有large，medium和small三种占比,见@ref RowProportion
+    ///< 行的占比，ribbon中有large，medium和small三种占比,见 @ref RibbonGroup::RowProportion
     RibbonGroup::RowProportion actionRowProportionValue;
 private:
     ActionType m_type;   ///< 标记这个data是page还是group亦或是action

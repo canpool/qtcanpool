@@ -12,8 +12,8 @@
 QX_RIBBON_BEGIN_NAMESPACE
 
 /**
- * @def 属性，用于标记是否可以进行自定义，用于动态设置到 @ref RibbonPage 和 @ref RibbonGroup
- * 值为bool，在为true时，可以通过 @ref RibbonCustomizeWidget 改变这个RibbonPage和RibbonGroup的布局，
+ * @brief 属性，用于标记是否可以进行自定义，用于动态设置到 RibbonPage 和 RibbonGroup，
+ * 值为bool，在为true时，可以通过 RibbonCustomizeWidget 改变这个RibbonPage和RibbonGroup的布局，
  * 默认不会有此属性，仅在有此属性且为true时才会在RibbonCustomizeWidget中能显示为可设置
  */
 #ifndef QX_RIBBON_PROP_CAN_CUSTOMIZE
@@ -305,7 +305,7 @@ RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString 
  * @brief 创建一个AddGroupActionType的RibbonCustomizeData
  * @param title group的标题
  * @param index group的index
- * @param pageobjName group的page的objectname
+ * @param pageObjName group的page的objectname
  * @param objName group的objname
  * @return 返回AddGroupActionType的RibbonCustomizeData
  */
@@ -505,7 +505,7 @@ RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QStr
 
 /**
  * @brief 对应RemoveActionActionType
- * @param pageobjName group对应的page的obj name
+ * @param pageObjName group对应的page的obj name
  * @param groupObjName group对应的 obj name
  * @param key RibbonActionsManager管理的key名
  * @param mgr RibbonActionsManager指针

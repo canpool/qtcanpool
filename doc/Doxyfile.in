@@ -95,6 +95,15 @@ RECURSIVE              = YES
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = @DOXYGEN_EXCLUDE_PATTERNS@
 
+# src/libs picks its platform backend with the preprocessor, so a class only
+# exists for the configuration being documented. The Windows backend is left out
+# here: it is a private class in a _p header, its declarations are behind
+# Q_OS_WINDOWS, and reading the file would only produce "documented symbol was
+# not declared" for every member it defines. The macOS and Qt backends stay in,
+# because the macros below make the first one visible and the second one is what
+# the portable configuration selects.
+EXCLUDE                = @DOXYGEN_EXCLUDE@
+
 IMAGE_PATH             = "@DOXYGEN_IMAGE_PATH@"
 INPUT_FILTER           =
 FILTER_PATTERNS        =
@@ -165,6 +174,16 @@ INCLUDE_FILE_PATTERNS  =
 # macros expand to the very keyword they stand for so that the access specifier
 # that follows (the ':' after Q_SIGNALS) is preserved, and the export macros
 # vanish so that the signatures stay readable.
+#
+# Qt itself is not on the include path, so none of its platform macros are set
+# and every #ifdef Q_OS_* would be skipped. Q_OS_MAC is therefore defined by
+# hand: it is what guards the macOS-only public API of WindowAgentWidget, and
+# that API is worth documenting. QX_WINDOW_NATIVE stays undefined, so the
+# portable window context is still the one selected -- defining it as well would
+# switch qxwindow to the native macOS class and push the Qt context into exactly
+# the undocumented state this avoids. For the same reason Q_OS_WINDOWS is not
+# defined: it would select the native Windows backend, hide the macOS API again,
+# and pull Windows-only branches of other libraries into the documentation.
 PREDEFINED             = \
                          "QT_BEGIN_NAMESPACE=" \
                          "QT_END_NAMESPACE=" \
@@ -198,7 +217,8 @@ PREDEFINED             = \
                          "QX_APP_EXPORT=" \
                          "QX_RIBBON_EXPORT=" \
                          "QX_DOCK_EXPORT=" \
-                         "QX_WINDOW_EXPORT="
+                         "QX_WINDOW_EXPORT=" \
+                         "Q_OS_MAC=1"
 
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES

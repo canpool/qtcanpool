@@ -551,15 +551,15 @@ void FancyTitleBarPrivateQt::updateCursorShape(const QPoint &gMousePos)
  *      a) screen x coordinate, when the drag point is left half (Align screen left)
  *          |--*-------------|
  *          |-------|
- *          `-> screenX
+ *          '-> screenX
  *      b) maxwidth - oriWidth, when the drag point is right half (Align screen right)
  *          |-------------*--|
  *                   |-------|
- *                   `-> maxWidth - oriWidth
+ *                   '-> maxWidth - oriWidth
  *      c) mouseX - oriWidth/2
  *          |---------*------|
  *                |-------|
- *                `-> mouseX - oriWidth/2
+ *                '-> mouseX - oriWidth/2
  *
  * 2. When titleWidget was not set, the y coordinate is not constrained,
  * the method of calculating the y coordinate is the same as above
