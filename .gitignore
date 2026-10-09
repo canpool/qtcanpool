@@ -62,5 +62,9 @@ build
 # aqtinstall (written to the CWD when installing Qt for WebAssembly)
 aqtinstall.log
 
+# Python bytecode (conanfile.py, helper scripts)
+__pycache__/
+*.py[cod]
+
 # AI assistant workspace (local only)
 .workbuddy/
