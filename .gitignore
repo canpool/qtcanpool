@@ -59,5 +59,8 @@ compile_commands.json
 bak
 build
 
+# aqtinstall (written to the CWD when installing Qt for WebAssembly)
+aqtinstall.log
+
 # AI assistant workspace (local only)
 .workbuddy/
