@@ -18,7 +18,9 @@ add_qtc_library(qxdock
     ${DOCK_QRCFILES}
 )
 
-if (UNIX AND NOT APPLE)
+# Emscripten reports UNIX as well, but a browser has no X server and no xcb, so
+# that target has to be excluded explicitly.
+if (UNIX AND NOT APPLE AND NOT QTCANPOOL_WASM)
   # The X11 helpers in dockutils.h/.cpp use the Qt platform plugin private API
   # and link against xcb directly; DockFloatingTitleBar is the X11-only custom
   # title bar. Mirrors qxdock-lib.pri (QT += gui-private, LIBS += -lxcb).

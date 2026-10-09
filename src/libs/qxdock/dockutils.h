@@ -10,7 +10,7 @@
 #include <QAbstractButton>
 #include <QMouseEvent>
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 #include <xcb/xcb.h>
 #endif
 
@@ -138,7 +138,7 @@ enum RepolishChildOptions {
  */
 void repolishStyle(QWidget *w, RepolishChildOptions options = RepolishIgnoreChildren);
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 // Utils to directly communicate with the X server
 /**
  * Get atom from cache or request it from the XServer.

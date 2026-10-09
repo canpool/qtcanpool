@@ -260,7 +260,7 @@ DockFloatingPreview::DockFloatingPreview(QWidget *content, QWidget *parent)
         setAttribute(Qt::WA_TranslucentBackground);
     }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     auto flags = windowFlags();
     flags |= Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint;
     setWindowFlags(flags);

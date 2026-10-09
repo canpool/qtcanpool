@@ -7,7 +7,7 @@
 #include "qxdock_global.h"
 #include "dockfloatingwidget.h"
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 #include <QDockWidget>
 #define DockFloatingContainerBase QDockWidget
 #else
@@ -52,7 +52,7 @@ public:
 
     void finishDropOperation();
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     void onMaximizeRequest();
     void showNormal(bool fixGeometry = false);
     void showMaximized();
@@ -83,7 +83,7 @@ protected:
 #ifdef Q_OS_MACOS
     virtual bool event(QEvent *e) override;
     virtual void moveEvent(QMoveEvent *e) override;
-#elif defined(Q_OS_UNIX)
+#elif QX_DOCK_X11
     virtual void moveEvent(QMoveEvent *e) override;
     virtual void resizeEvent(QResizeEvent *e) override;
     virtual bool event(QEvent *e) override;

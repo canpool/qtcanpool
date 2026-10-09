@@ -12,7 +12,7 @@
 #include "docktitlebar.h"
 #include "dockmanager.h"
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 #include "linux/dockfloatingtitlebar.h"
 #endif
 
@@ -38,7 +38,7 @@ static void updateDockPanelFocusStyle(DockPanel *panel, bool focused)
     internal::repolishStyle(panel->titleBar());
 }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 static void updateFloatingWidgetFocusStyle(DockFloatingContainer *floatingWidget, bool focused)
 {
     if (floatingWidget->hasNativeTitleBar()) {
@@ -65,7 +65,7 @@ public:
     QPointer<DockWidget> m_focusedDockWidget = nullptr;
     QPointer<DockWidget> m_oldFocusedDockWidget = nullptr;
     QPointer<DockPanel> m_focusedPanel = nullptr;
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     QPointer<DockFloatingContainer> m_floatingWidget = nullptr;
 #endif
     bool m_tabPressed = false;
@@ -129,7 +129,7 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(DockWidget *dockWidget)
                                        QVariant::fromValue(QPointer<DockWidget>(dockWidget)));
     }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     // This code is required for styling the floating widget titlebar for linux
     // depending on the current focus state
     if (m_floatingWidget != newFloatingWidget) {
@@ -293,7 +293,7 @@ void DockFocusController::onApplicationFocusChanged(QWidget *focusedOld, QWidget
     if (!dockWidget) {
         dockWidget = internal::findParent<DockWidget *>(focusedNow);
     }
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     if (!dockWidget) {
         return;
     }

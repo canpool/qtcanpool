@@ -23,7 +23,7 @@
 #ifdef _MSC_VER
 #pragma comment(lib, "User32.lib")
 #endif
-#elif defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#elif QX_DOCK_X11
 #include "linux/dockfloatingtitlebar.h"
 #include <xcb/xcb.h>
 #endif
@@ -64,7 +64,7 @@ public:
     bool m_hiding = false;
     bool m_autoHideChildren = true;
     unsigned int m_zOrderIndex = ++s_zOrderCounterFloating;
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     QWidget *m_mouseEventHandler = nullptr;
     DockFloatingTitleBar *m_titleBar = nullptr;
     bool m_isResizing = false;
@@ -119,7 +119,7 @@ void DockFloatingContainerPrivate::updateDropOverlays(const QPoint &globalPos)
     if (!q->isVisible() || !m_window) {
         return;
     }
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     // Prevent display of drop overlays and docking as long as a model dialog
     // is active
     if (qApp->activeModalWidget()) {
@@ -214,7 +214,7 @@ void DockFloatingContainerPrivate::setState(Qx::DockDragState stateId)
 void DockFloatingContainerPrivate::setWindowTitle(const QString &text)
 {
     Q_Q(DockFloatingContainer);
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     if (m_titleBar) {
         m_titleBar->setTitle(text);
     }
@@ -278,7 +278,7 @@ DockFloatingContainer::DockFloatingContainer(DockWindow *window)
     connect(d->m_dockContainer, SIGNAL(dockAreasAdded()), this, SLOT(onDockAreasAddedOrRemoved()));
     connect(d->m_dockContainer, SIGNAL(dockAreasRemoved()), this, SLOT(onDockAreasAddedOrRemoved()));
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     QDockWidget::setWidget(d->m_dockContainer);
     QDockWidget::setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable |
                              QDockWidget::DockWidgetFloatable);
@@ -442,7 +442,7 @@ void DockFloatingContainer::finishDropOperation()
     }
 }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 /**
  * This is a function that responds to DockFloatingTitleBar::maximizeRequested()
  * Maximize or normalize the container size.
@@ -509,7 +509,7 @@ bool DockFloatingContainer::hasNativeTitleBar()
     return d->m_titleBar == nullptr;
 }
 
-#endif   // defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#endif   // QX_DOCK_X11
 
 void DockFloatingContainer::onDockAreasAddedOrRemoved()
 {
@@ -542,7 +542,7 @@ void QxDock::DockFloatingContainer::startFloating(const QPoint &dragStartMousePo
                                                   Qx::DockDragState dragState, QWidget *mouseEventHandler)
 {
     Q_D(DockFloatingContainer);
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     if (!isMaximized()) {
         resize(size);
         d->m_dragStartMousePosition = dragStartMousePos;
@@ -572,7 +572,7 @@ void QxDock::DockFloatingContainer::startFloating(const QPoint &dragStartMousePo
 void DockFloatingContainer::finishDragging()
 {
     Q_D(DockFloatingContainer);
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     setWindowOpacity(1);
     activateWindow();
     if (d->m_mouseEventHandler) {
@@ -663,7 +663,7 @@ bool DockFloatingContainer::restoreState(DockStateReader &stream, bool testing)
         return false;
     }
     onDockAreasAddedOrRemoved();
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     if (d->m_titleBar) {
         d->m_titleBar->setMaximizedIcon(windowState() == Qt::WindowMaximized);
     }
@@ -734,7 +734,7 @@ void DockFloatingContainer::hideEvent(QHideEvent *event)
 void DockFloatingContainer::showEvent(QShowEvent *event)
 {
     Super::showEvent(event);
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
         this->window()->activateWindow();
     }
@@ -749,7 +749,7 @@ void DockFloatingContainer::changeEvent(QEvent *event)
     case QEvent::ActivationChange:
         if (isActiveWindow()) {
             d->m_zOrderIndex = ++s_zOrderCounterFloating;
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
             if (d->m_draggingState == Qx::DockDraggingFloatingWidget) {
                 d->titleMouseReleaseEvent();
                 d->m_draggingState = Qx::DockDraggingInactive;
@@ -874,7 +874,7 @@ void DockFloatingContainer::moveEvent(QMoveEvent *e)
 }
 #endif
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 void DockFloatingContainer::moveEvent(QMoveEvent *e)
 {
     Q_D(DockFloatingContainer);
@@ -910,7 +910,7 @@ bool DockFloatingContainer::event(QEvent *e)
     return result;
 }
 
-#endif   // defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#endif   // QX_DOCK_X11
 
 #ifdef Q_OS_WIN
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))

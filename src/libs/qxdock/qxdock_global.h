@@ -6,6 +6,16 @@
 
 #include <QtCore/qglobal.h>
 
+// The X11 helpers in this library talk to the X server directly through xcb, so
+// they only exist on a Linux desktop. Qt for WebAssembly reports Q_OS_UNIX as
+// well, but there is neither an X server nor an xcb there, so it has to be
+// excluded explicitly, exactly like Windows and macOS are.
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS) && !defined(Q_OS_WASM)
+#define QX_DOCK_X11 1
+#else
+#define QX_DOCK_X11 0
+#endif
+
 #ifndef Q_NULLPTR
 #define Q_NULLPTR 0
 #endif   // Q_NULLPTR

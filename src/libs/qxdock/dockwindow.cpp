@@ -15,7 +15,7 @@
 #include "dockstatereader.h"
 #include "docksplitter.h"
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 #include "linux/dockfloatingtitlebar.h"
 #endif
 
@@ -105,7 +105,7 @@ void DockWindowPrivate::loadStylesheet()
     QString result;
     QString fileName = ":/qxdock/res/stylesheets/";
     fileName += DockManager::testConfigFlag(DockManager::FocusHighlighting) ? "focus_highlighting" : "default";
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     fileName += "_linux";
 #endif
     fileName += ".css";
@@ -348,7 +348,7 @@ DockWindow::DockWindow(QWidget *parent)
 
     window()->installEventFilter(this);
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     connect(qApp, &QApplication::focusWindowChanged, [](QWindow *focusWindow) {
         // bring modal dialogs to foreground to ensure that they are in front of any
         // floating dock widget
@@ -1099,7 +1099,7 @@ void DockWindow::restoreHiddenFloatingWidgets()
     d->m_hiddenFloatingContainers.clear();
 }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 bool DockWindow::eventFilter(QObject *obj, QEvent *e)
 {
     Q_D(DockWindow);

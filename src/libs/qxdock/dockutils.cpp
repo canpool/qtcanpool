@@ -19,7 +19,7 @@
 #include "dockfloatingcontainer.h"
 #endif
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 #include <QSettings>
 #include <QFile>
 #include <QApplication>
@@ -70,7 +70,7 @@ void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIc
         return;
     }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     b->setIcon(b->style()->standardIcon(pixmap));
 #else
     // The standard icons does not look good on high DPI screens so we create
@@ -208,7 +208,7 @@ void setBackgroudColor(QWidget *w)
 }
 #endif
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
 static QString _window_manager;
 static QHash<QString, xcb_atom_t> _xcb_atom_cache;
 

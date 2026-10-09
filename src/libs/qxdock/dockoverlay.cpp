@@ -79,7 +79,7 @@ DockOverlay::DockOverlay(QWidget *parent, OverlayMode mode)
     d->m_mode = mode;
     d->m_cross = new DockOverlayCross(this);
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
 #else
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
@@ -475,7 +475,7 @@ QColor DockOverlayCrossPrivate::iconColor(DockOverlayCross::IconColor colorIndex
 
 qreal DockOverlayCrossPrivate::dropIndicatiorWidth(QLabel *l) const
 {
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     Q_UNUSED(l)
     return 40;
 #else
@@ -666,7 +666,7 @@ DockOverlayCross::DockOverlayCross(DockOverlay *overlay)
     Q_D(DockOverlayCross);
     d->m_dockOverlay = overlay;
     d->init();
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+#if QX_DOCK_X11
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
 #else
     setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
