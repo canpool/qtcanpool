@@ -3,14 +3,14 @@
 # NOTE: this port has NOT been validated in CI -- building qtbase from source
 # is a multi-hour job that does not fit the project's CI budget. It is offered
 # as a starting point for the community. Fill in the real SHA512 once the
-# v3.0.0 tag is pushed, then run `vcpkg install qtcanpool` on a machine that
+# 3.0.0 tag is pushed, then run `vcpkg install qtcanpool` on a machine that
 # can afford to build Qt.
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO canpool/qtcanpool
-    REF "v${VERSION}"
-    SHA512 0 # TODO: real archive hash, fill in after tagging v3.0.0
+    REF "${VERSION}" # the project tags plain versions (2.3.0, 3.0.0, ...)
+    SHA512 0 # TODO: real archive hash, fill in after tagging 3.0.0
     HEAD_REF master
 )
 
