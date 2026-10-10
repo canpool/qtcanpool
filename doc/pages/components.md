@@ -114,12 +114,15 @@ themes->setTheme(DarkOfficePlus);
 | @ref QxApp::QxAppShell | 应用外壳：导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化。详见[应用外壳](appshell.md) |
 | @ref QxApp::QxNavigationBar | 竖排互斥导航轨 |
 | @ref QxApp::QxSplashScreen | 带进度与消息的启动屏 |
+| `QxToolButton` / `QxExtensionButton` / `QxMenuButton` / `QxMenuAccessButton` | 工具按钮与菜单按钮（3.1 自 `qcanpool` 迁入） |
+| `QxTabBar` / `QxTabWidget` / `QxNavBar` | 轻量 Tab 与导航（3.1 自 `qcanpool` 迁入） |
 
-## qcanpool — 通用控件（legacy，已冻结）
+## qcanpool — legacy 兼容层（3.2 删除）
 
-提供标题栏、工具按钮、侧边栏等通用控件，并在历史上集成了后来的各个组件。
-自 3.0 起该库**冻结**：其中的 legacy Ribbon 系列（`ribbonbar`、`ribbonpage`、`ribbongroup`、
-`ribbonwindow`）不再演进，新代码请使用 `qxribbon`。详见[迁移指南](migration.md)。
+该库在 3.1 已被清空：legacy Ribbon 系列（`ribbonbar`、`ribbonpage`、`ribbongroup`、`ribbonwindow`）
+**物理移除**，11 个遗留窗口/控件下线，7 个通用控件迁入 `qxapp` 并改名为 `QxApp::Qx*`。
+现存内容只有那 7 个**带弃用标注的转发头**——它们让 3.0 时代的代码还能编译（并给出迁移告警），
+到 3.2 连同这个库一起消失。新代码请直接 include `qxapp/qx*.h`。详见[迁移指南](migration.md)。
 
 ## qtcompat — 跨版本兼容
 

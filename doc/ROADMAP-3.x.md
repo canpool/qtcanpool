@@ -179,8 +179,12 @@
 > **进度（2026-10-10）**
 >
 > - ✅ **K7 已确认**：legacy ribbon 于 3.1 内物理移除
-> - ⏳ **M5 执行中**：任务清单见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md)
+> - ✅ **M5 代码与文档已收敛完毕**：任务清单与执行记录见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md)，
+>   唯一未做的 B4（demo 截图回归）是可选项，不阻塞 3.1 发布
 >   - ✅ **A3** legacy ribbon 物理移除（`qcanpool` 只剩一套 Ribbon，DoD #1 达成）
+>   - ✅ **A1** legacy 通用控件迁入 `qxapp`（7 个类换名入 `QxApp::`，`qcanpool` 留同名转发头一个版本）
+>   - ✅ **A2** legacy 专用控件下线（11 个类物理删除，`qcanpool` 不再含翻译单元）
+>   - ✅ **A4** `deprecated` 标注（随 A1 完成；已在库外以 `-Werror=deprecated-declarations` 实测可作门禁）
 >   - ✅ **B1** 覆盖率报告（`WITH_COVERAGE` + CI `quality` 作业，按 K8 不设阈值）
 >   - ✅ **B2** clang-tidy + ASan/UBSan（CI `quality` 作业；clang-tidy 只报告不阻塞）
 >   - ✅ **B3** `qxwindow` 自动化测试（8 用例，并顺带修掉一处解空指针崩溃）
@@ -189,7 +193,9 @@
 >     已在本地「安装 SDK → 配置 → 编译 → 运行」全链路验证）
 >   - ✅ **C2** `scripts/new-project` 脚手架（一条命令生成 + 编译可运行的 `QxAppShell` 应用；
 >     不新增第二套模板工程，K9）
->   - ⏳ 剩余：A1/A2/A4（legacy 存废）、B4（可选）
+>   - ⏸ 剩余：B4（可选）
+> - ⚠️ **A 组是三个连续破坏性变更**，升级前务必读 `doc/design/3.0-MIGRATION.md`。要点是
+>   A1 与 A2 的**性质不同**：A1 之后旧名仍能编译（只是告警），A2 之后旧名不存在、必须改代码。
 > - ⚠️ **B2 已产生第一笔实际收益**：`quality` 作业首次上线即被 UBSan 逐条抓出**两处既存缺陷**
 >   （`~DockContainer` 从基类析构回调派生类；`DockSideBar::insertDockWidget` 对空焦点控制器
 >   发起成员调用，默认配置下即可命中），均已修复。详见
@@ -214,7 +220,7 @@
 
 | 风险                             | 影响 | 缓解                                       |
 | :----------------------------- | :- | :--------------------------------------- |
-| A3 物理移除 legacy ribbon 破坏存量用户  | 高  | 先确认 MyCAD 等用户已迁移；`CHANGELOG` 显著标注；保留迁移对照表  |
+| A 组三次破坏性变更（A3 移除 ribbon、A1 搬迁、A2 删除）冲击存量用户 | 高  | 先确认 MyCAD 等用户已迁移；`CHANGELOG` 逐条显著标注；保留迁移对照表；A1 用"带告警的转发头"给一个版本缓冲 |
 | 个人维护带宽有限（延续 3.0 风险）            | 高  | 优先 B（自动化减负）；M5 拆成可独立发布的小版本               |
 | 覆盖率/静态分析引入大量噪声                 | 中  | K8 不设阈值；clang-tidy 从"仅新增告警"起步            |
 | 截图回归易碎                         | 中  | 置于阶段末尾，允许失败不阻塞                           |
@@ -228,12 +234,14 @@
 ### M5 · 3.1「偿还欠账」
 
 1. ✅ `src/libs` 中**物理上只有一套 Ribbon 实现**（legacy ribbon 已移除）——3.0 DoD #1 真正达成；
-2. ⏳ `fancy*` 等遗留头**全部**按存废表处置完毕（迁移或下线），无"标了 deprecated 却永不处理"的悬案；
-3. ✅ CI 产出**覆盖率报告**与 **clang-tidy 结果**，并有至少一条 **ASan/UBSan** 构建腿（首跑即抓到一处真实 UB）；
+2. ✅ `fancy*` 等遗留头**全部**按存废表处置完毕（迁移或下线），无"标了 deprecated 却永不处理"的悬案
+   —— 7 个迁入 `qxapp` 并保留**带告警**的转发头（3.2 删除），11 个直接删除；库内不再有任何未标注的遗留头；
+3. ✅ CI 产出**覆盖率报告**与 **clang-tidy 结果**，并有至少一条 **ASan/UBSan** 构建腿（首跑即抓到两处真实 UB）；
 4. ✅ `qxwindow` 有自动化测试且纳入 CI；
 5. ✅ `scripts/new-project` 能一条命令生成并编译出可运行的 `QxAppShell` 应用（CI 同腿实测）；
 6. ✅ `CMakePresets.json` 覆盖本仓常用配置（Qt6、Qt5.15、WASM、覆盖率、消毒器）；
-7. ⏳ 文档站点同步更新（迁移表、构建指南、新增的质量门禁说明）——构建指南已更新，迁移表待 A1/A2 定案后收口。
+7. ✅ 文档站点同步更新（迁移表、构建指南、新增的质量门禁说明）——迁移表已按 A1/A2 落定结果重写，
+   含每个被删类的替代对照与「A1 与 A2 性质不同」的显式提醒。
 
 ### M6 · 3.2「能力增量」
 
@@ -254,12 +262,13 @@
 ```
 3.0.0                              3.1 / 3.2 / 4.0
 ─────────────────────────────      ─────────────────────────────
-src/libs/qcanpool (legacy 冻结)     src/libs/qcanpool  (仅剩已迁入的通用件，其余删除)
-  ├─ ribbon* (deprecated)             └─ ribbon*  ← 物理移除（A3）
-  └─ fancy*/tiny*/mini* (未标注)       └─ fancy*   ← 迁入 qxapp / 下线（A1/A2）
+src/libs/qcanpool (legacy 冻结)     src/libs/qcanpool  (仅剩 7 个转发头 + qcanpool.h，无翻译单元)
+  ├─ ribbon* (deprecated)             └─ ribbon*  ← 物理移除（A3，已完成）
+  └─ fancy*/tiny*/mini* (未标注)       ├─ 7 个通用件 ← 迁入 qxapp 并保留同名转发头（A1，已完成）
+                                     └─ 其余 11 个 ← 直接删除（A2，已完成）
 src/libs/qxcore  (Settings/Logger)  src/libs/qxcore  (+ i18n)
 src/libs/qxtheme                    src/libs/qxtheme
-src/libs/qxapp   (AppShell 骨架)     src/libs/qxapp   (+ Toast/设置/属性编辑器/工作区)
+src/libs/qxapp   (AppShell 骨架)     src/libs/qxapp   (+ 7 个通用件 ← A1；再 + Toast/设置/属性编辑器/工作区 ← M6)
 src/libs/qxribbon                   src/libs/qxribbon (唯一 ribbon)
 src/libs/qxdock                     src/libs/qxdock
 src/libs/qxwindow                   src/libs/qxwindow (+ 单测)
@@ -267,3 +276,5 @@ src/modules      (空)               src/modules      (业务模块层   ← M7)
 src/plugins      (骨架)             src/plugins      (可用插件体系 ← M7)
 projects/template (qmake)           projects/template (CMake) + scripts/new-project
 ```
+
+> 3.2 要做的收尾：`qcanpool` 的 7 个转发头连同这个库本身一并消失（K5 的一个版本窗口刚好到期）。

@@ -36,11 +36,12 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | `qxribbon` | @ref QxRibbon | Ribbon 风格界面：菜单栏 / 页 / 分组 / 快捷工具栏 | `qxwindow`、Qt Widgets |
 | `qxdock` | @ref QxDock | 可停靠窗口：布局管理、标签化面板、浮动容器 | Qt Widgets |
 | `qxapp` | @ref QxApp | 应用框架：`RibbonAppWindow`、`QxAppShell`、`QxNavigationBar`、`QxSplashScreen` | `qxribbon`、`qxdock`、`qxtheme`、`qxcore` |
-| `qcanpool` | @ref QCanpool | 核心库，提供标题栏、工具按钮等通用控件（**legacy，已冻结**） | Qt Widgets |
+| `qcanpool` | @ref QCanpool | **legacy，已冻结**：只剩 7 个指向 `qxapp` 的弃用转发头（3.2 删除） | `qxapp` |
 | `qtcompat` | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） | Qt Core |
 
-> **注意**：`qcanpool` 中的 legacy Ribbon 系列（`ribbonbar`、`ribbonpage`、`ribbongroup`、`ribbonwindow`）
-自 3.0 起冻结，新代码请使用 `qxribbon`。详见 [迁移指南](migration.md)。
+> **注意**：`qcanpool` 的内容在 3.1 已被清空——legacy Ribbon 系列（`ribbonbar`、`ribbonpage`、
+> `ribbongroup`、`ribbonwindow`）**物理移除**，11 个遗留控件下线，7 个通用控件迁入 `qxapp`
+> 并改名为 `QxApp::Qx*`（旧名保留一个版本、带弃用告警）。详见 [迁移指南](migration.md)。
 
 ## 快速开始
 
@@ -76,7 +77,7 @@ ctest --test-dir build -C Release --output-on-failure
 | [组件全览](components.md) | 各组件的能力范围、主要类与最小用法 |
 | [主题引擎](theming.md) | 主题引擎：内置主题、运行时切换、跟随系统、自定义主题 |
 | [应用外壳](appshell.md) | 应用外壳：页面、停靠区、状态栏、布局持久化、启动屏 |
-| [迁移指南](migration.md) | 2.x → 3.0 迁移：命名空间、类与方法对照、构建迁移 |
+| [迁移指南](migration.md) | 2.x → 3.0 / 3.1 迁移：命名空间、类与方法对照、构建迁移 |
 
 ## 环境要求
 

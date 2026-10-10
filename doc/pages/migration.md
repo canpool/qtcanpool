@@ -1,9 +1,22 @@
-# 2.x → 3.0 迁移指南
+# 2.x → 3.0 / 3.1 迁移指南
 
-> 结论：3.0 **不保证二进制兼容**，提供源码级迁移路径。
+> 结论：3.0 **不保证二进制兼容**，提供源码级迁移路径。3.1 沿用同一方向做完了 legacy 收口。
 
 本页是迁移总览。完整的类与方法对照表、`fancy*` 控件存废表与分步清单见仓库中的
 [`doc/design/3.0-MIGRATION.md`](https://github.com/canpool/qtcanpool/blob/release-3.x/doc/design/3.0-MIGRATION.md)。
+
+## 3.1 带来的三处变化（升级前必读）
+
+3.1 的 legacy 收口是**连续三个破坏性变更**，性质各不相同：
+
+| 变更 | 你会在编译时看到 | 怎么改 |
+| :--- | :--- | :--- |
+| **A3** legacy ribbon 物理移除 | 找不到 `qcanpool/ribbon*.h` | 见下方「Ribbon 迁移要点」 |
+| **A1** 7 个通用控件迁入 `qxapp` 并改名 | **弃用告警**（旧名仍可编译） | 见下方「`qcanpool` → `qxapp`」 |
+| **A2** 11 个遗留类物理删除 | 找不到头文件，**无同名替代** | 见下方「已下线的遗留类」 |
+
+> **A1 与 A2 的区别是关键**：A1 之后旧代码还能编（只是告警），有一个版本的时间慢慢改；
+> A2 之后不能编，必须一次改完。
 
 ## 迁移总览
 
@@ -55,7 +68,6 @@ w->ribbonBar()->setRibbonStyle(RibbonBar::OfficeStyle);
 | `RibbonWindow : QMainWindow` | `RibbonMainWindow` / `RibbonWindow` | 推荐以 `RibbonMainWindow` 为基类 |
 | `RibbonContainer` 等四个容器 | `RibbonGridContainer` / `RibbonCtrlContainer` | **语义不同，需重写** |
 | `QuickAccessBar` | `RibbonQuickAccessBar` | 由 `RibbonBar::quickAccessBar()` 获取 |
-| `FancyTitleBar` | 无直接等价 | 由窗口内部处理 |
 
 `RibbonStyle` 枚举映射：`ClassicStyle` → `OfficeStyle`，`MergedStyle` → `WpsLiteStyle`；
 另新增 `OfficeStyleTwoRow`、`WpsLiteStyleTwoRow`。
@@ -78,15 +90,47 @@ g->addOptionAction(actionOption);
 connect(actionOption, &QAction::triggered, this, &MainWindow::onOption);
 ```
 
-## legacy ribbon 的弃用标注
+## `qcanpool` → `qxapp`：7 个通用控件改名（A1）
 
-`qcanpool` 的 5 个 legacy ribbon 头文件、共 **8 个类**已标注弃用，
-3.0 起编译时产生告警，提示改用 `QxRibbon`：`RibbonBar`、`RibbonPage`、`RibbonGroup`、
-`RibbonWindow`，以及 `ribboncontainers.h` 中的 `RibbonContainer`、`RibbonGridContainer`、
-`RibbonActionContainer`、`RibbonLoftContainer`。
+3.1 把这 7 个控件迁入 `qxapp` 并去掉 `Fancy`/`Tiny` 前缀。**行为未变**，改动通常只是替换
+标识符与 include。旧名在 `qcanpool` 保留一个版本（指向新类的子类 + 弃用标注），**3.2 删除**。
+
+| 旧名（`QCanpool::`） | 新名（`QxApp::`） | 旧头（保留至 3.2） | 新头 |
+| :--- | :--- | :--- | :--- |
+| `FancyToolButton` | `QxToolButton` | `qcanpool/fancytoolbutton.h` | `qxapp/qxtoolbutton.h` |
+| `ExtensionButton` | `QxExtensionButton` | `qcanpool/extensionbutton.h` | `qxapp/qxextensionbutton.h` |
+| `MenuButton` | `QxMenuButton` | `qcanpool/menubutton.h` | `qxapp/qxmenubutton.h` |
+| `MenuAccessButton` | `QxMenuAccessButton` | `qcanpool/menuaccessbutton.h` | `qxapp/qxmenuaccessbutton.h` |
+| `TinyTabBar` | `QxTabBar` | `qcanpool/tinytabbar.h` | `qxapp/qxtabbar.h` |
+| `TinyTabWidget` | `QxTabWidget` | `qcanpool/tinytabwidget.h` | `qxapp/qxtabwidget.h` |
+| `TinyNavBar` | `QxNavBar` | `qcanpool/tinynavbar.h` | `qxapp/qxnavbar.h` |
+
+> ⚠️ `TinyTabBar` 现在是**独立的另一个类型**（派生自 `QxTabBar` 的子类），不再是别名。
+> 凡是把旧类型互相传递、或接收 `TinyTabWidget::tabBar()` 返回值的代码需要改，
+> 多数情况下把变量类型改成 `QxTabBar *` 或 `auto *` 即可。
+
+## 已下线的遗留类（A2，**无同名替代**）
+
+| 已删除（`QCanpool`） | 替代 |
+| :--- | :--- |
+| `QuickAccessBar` | `QxRibbon::RibbonQuickAccessBar`（经 `RibbonBar::quickAccessBar()`） |
+| `FancyTitleBar`、`WindowLogo`、`WindowToolBar` | `QxWindow` 的无边框窗口方案 |
+| `MiniTabBar`、`MiniTabWidget` | `QxApp::QxTabBar` / `QxTabWidget` |
+| `FancyBar`、`FancyTabBar`、`FancyTabWidget` | `QxApp::QxTabBar` / `QxTabWidget` |
+| `FancyWindow`、`FancyDialog` | `QxWindow::` 或 `QxApp::RibbonAppWindow` / `QxAppShell`；对话框直接用 `QDialog` |
+
+## legacy 头文件的弃用标注
+
+3.0 时 5 个 legacy ribbon 头文件（8 个类）曾被标注弃用；**3.1 中这些文件已整体删除**，
+那些名字不再产生告警，而是直接编译失败。
+
+现存带标注的是上面 7 个转发头：用旧名编译会得到
+`'Xxx' is deprecated: use QxApp::QxXxx instead`。**在编译 `qcanpool` 库自身时该标注是空的**，
+所以它只对库的使用者响 —— 这正是"编译告警即迁移点"的含义。
 
 > **注意**：与 Qt 官方惯例的一处有意差异 —— 本项目的标注只控制**弃用提示**，
 > 类声明本身始终保留。调整 `QCANPOOL_DISABLE_DEPRECATED_BEFORE` 只会开关告警，不会让 API 消失。
+> 3.2 删除这些转发头时走的是破坏性变更流程，不会用这个宏偷偷实现。
 
 ## qxwidget → qxapp
 
@@ -147,3 +191,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 10. 主题：接入 @ref QxTheme::QxThemeManager 主题引擎（或 `RibbonTheme::loadTheme`）。
 11. 清理 `fancy*` 遗留调用。
 12. 编译告警清零 —— deprecated 提示即迁移点。
+13. **（3.1）** 7 个改名控件换成 `QxApp::Qx*`；注意 `TinyTabBar` 现在是独立类型。
+14. **（3.1）** `FancyWindow` / `FancyDialog` / `MiniTab*` / `WindowToolBar` / `WindowLogo`
+    无同名替代，按「已下线的遗留类」表换成 `QxWindow` / `QxAppShell` / `QxApp::QxTab*`。

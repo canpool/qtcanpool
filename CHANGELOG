@@ -3,6 +3,16 @@
 - qcanpool: remove the legacy ribbon (ribbonbar/ribbonpage/ribbongroup/ribbonwindow/ribboncontainer); BREAKING: use qxribbon instead, see doc/design/3.0-MIGRATION.md
 - qcanpool: drop the QCANPOOL_CONFIG_RIBBON build option
 - qcanpool: remove the fancyribbon demo (superseded by the qxribbon demos)
+- qcanpool: move the general-purpose legacy widgets to qxapp and rename them into the Qx namespace (FancyToolButton->QxToolButton, ExtensionButton->QxExtensionButton, MenuButton->QxMenuButton, MenuAccessButton->QxMenuAccessButton, TinyTabBar->QxTabBar, TinyTabWidget->QxTabWidget, TinyNavBar->QxNavBar); the old names stay as deprecated forwarding classes for one release
+- qcanpool: remove the legacy window-chrome widgets; BREAKING: QuickAccessBar, FancyTitleBar, WindowLogo, WindowToolBar, MiniTabBar, MiniTabWidget, FancyBar, FancyTabBar, FancyTabWidget, FancyWindow and FancyDialog are gone without a same-name replacement, see doc/design/3.0-MIGRATION.md
+- qcanpool: remove the fancydemo and the examples and manual tests of the retired widgets
+- qxapp: adopt the widgets taken over from qcanpool (QxToolButton, QxExtensionButton, QxMenuButton, QxMenuAccessButton, QxTabBar, QxTabWidget, QxNavBar)
+- ci: add a quality job (coverage report, ASan/UBSan, clang-tidy); the sanitizers found and fixed two pre-existing defects in qxdock
+- ci: check that the installed SDK is consumable and that scripts/new-project produces a buildable project
+- test: add an automated test suite for qxwindow
+- build: add CMakePresets.json for the common configurations (qt6, qt6-ninja, qt5, coverage, sanitize, wasm)
+- project: add scripts/new-project to scaffold a new application
+- docs: update the migration guide for the 3.1 legacy cleanup
 
 3.0.0
 ---
