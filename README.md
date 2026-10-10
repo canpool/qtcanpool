@@ -11,7 +11,7 @@
 
 </div>
 
-一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库基于 QtWidgets 构建，并集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件与第三方类库。
+一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库基于 QtWidgets 构建，集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件，并自带插件体系（qxplugin）与第三方类库。
 
 qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的控件。
 
@@ -24,6 +24,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
+| **qxplugin** | `QxPlugin` | 插件体系：插件契约（`QxPlugin`）、宿主上下文（`QxPluginContext`）、加载与依赖解析（`QxPluginManager`）、对象池（`QxObjectPool`） |
 | **qxapp** | `QxApp` | 应用框架库：`RibbonAppWindow`（无边框 Ribbon 窗口）与 `QxAppShell` 应用外壳（导航轨 + 页面栈 + 停靠区 + 状态栏 + 启动屏 + 布局持久化）、应用内通知（`QxToast`）、设置界面（`QxPropertyEditor` / `QxSettingsDialog`） |
 | **qtcompat** | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） |
 
@@ -46,7 +47,7 @@ cmake -S doc -B build-docs
 cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 ```
 
-- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、组件、主题、AppShell、迁移），与 API 一同发布
+- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、组件、主题、AppShell、插件、迁移），与 API 一同发布
 
 ## 在线体验
 
@@ -70,8 +71,8 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 | `projects` | | 项目示例：`template` 最小应用模板、`consume` SDK 消费验证 |
 | `scripts` | | 辅助脚本：`new-project` 生成新工程骨架、`push` 推送双远程、`project.py` 工程工具 |
 | `src` | `libs` | 基础类库 |
-| | `modules` | 基础模块：实用的代码，但未形成类库规模 |
-| | `plugins` | 基础插件 |
+| | `modules` | 插件样板模块：`output` / `notebook` / `filetree`（K16 样板定位） |
+| | `plugins` | 框架自身功能插件（预留，当前只有分层骨架） |
 | | `shared` | 共享的实用代码 |
 | `tests` | | 单元测试（CTest） |
 | `thirdparty` | | 第三方库使用案例 |
@@ -108,8 +109,8 @@ ctest --test-dir build -C Release --output-on-failure
 
 - 各功能开关（`WITH_DEMOS`、`WITH_TESTS`、`WITH_DOCS` 等）可通过 `cmake -S . -B build -LH` 查看
 - `-DWITH_DOCS=ON` 会把文档站点目标 `docs` 一并加入主构建（只需 Doxygen）；只想要文档时用上面的 `cmake -S doc -B build-docs`
-- 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`（或早期兼容的 `qtcanpool.pro`）
-- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）
+- 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`
+- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）、`IdeShellDemo`（插件化外壳：宿主不认识任何模块）
 
 安装与下游消费：
 
@@ -125,7 +126,8 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 ## 路线图
 
 - [3.0 开发规划](./doc/ROADMAP-3.0.md)
-- [3.x 开发规划（下一步）](./doc/ROADMAP-3.x.md)
+- [3.x / 4.0 开发规划](./doc/ROADMAP-3.x.md)
+- [4.0 任务清单（进行中）](./doc/design/4.0-TASKS.md)
 - [2.x → 3.0 迁移指南](./doc/design/3.0-MIGRATION.md)
 - [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
 - [M2 任务清单](./doc/design/3.0-M2-TASKS.md)
@@ -140,9 +142,9 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 | 分支 | 说明 |
 | :--- | :--- |
-| [master](https://gitee.com/icanpool/qtcanpool/tree/master/) | 主线分支 |
+| [master](https://gitee.com/icanpool/qtcanpool/tree/master/) | 主线分支（4.0 起为开发主线） |
 | [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/) | 历史分支，开发已统一到 master |
-| [release-x.y](https://gitee.com/icanpool/qtcanpool/tree/release-3.x/) | 版本分支，用于维护特定发布版本 |
+| [release-3.x](https://gitee.com/icanpool/qtcanpool/tree/release-3.x/) | 3.x 维护分支（4.0 起不再新建 release-4.x） |
 
 - 版本发布以 tag 标记；若某版本存在需修复的缺陷，将以对应版本分支的形式进行维护
 
@@ -155,7 +157,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 - Git 提交格式（**自 3.0 起**）：`type(scope): subject`，以区分早期提交格式
   - 提交信息一律使用**英文**（subject 与正文）
   - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
-  - `scope`：受影响范围，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `project` / `ci` / `test` / `docs`
+  - `scope`：受影响范围，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qxplugin` / `project` / `ci` / `test` / `docs`
   - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
   - 早期提交格式参考：[git 知：提交格式](https://blog.csdn.net/canpool/article/details/126005367)
 
@@ -191,7 +193,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ![qxwindowdemo](./doc/pics/qxwindowdemo.png)
 
-**appshell** —— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（<https://canpool.github.io/qtcanpool/demo/>），目前只有 CMake 构建：`cmake --preset qt6 && cmake --build --preset qt6`。
+**appshell** —— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（<https://canpool.github.io/qtcanpool/demo/>），构建：`cmake --preset qt6 && cmake --build --preset qt6`。
 
 ## 应用案例
 
@@ -204,9 +206,7 @@ MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成
 
 ## 快速体验
 
-下载源码，使用 Qt Creator 打开 `qtcanpool.pro`，右击 `ribbondemo` 或 `dockdemo` 并选择 *Run* 即可体验：
-
-![run](./doc/pics/run.png)
+下载源码，使用 Qt Creator 打开根目录 `CMakeLists.txt`，在目标中选择 `ribbondemo`、`dockdemo` 或 `AppShellDemo` 运行即可体验（命令行构建见上文「构建」一节）。
 
 ## 扩展
 
