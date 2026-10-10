@@ -152,7 +152,8 @@
 | **状态栏 / 进度 / 忙指示** | `qxapp`  | `QxAppShell` 已有 `setStatusMessage()` + `setBusy()`，只缺百分比进度条，属小补丁 | 3.3    |
 
 > 每个能力都必须有对应的 `tests/` 单测与文档页，避免重演 3.0"骨架有、测试薄"的问题。
-> 任务分解与验收标准见 [`design/3.2-TASKS.md`](./design/3.2-TASKS.md)。
+> 任务分解与验收标准：3.2 见 [`design/3.2-TASKS.md`](./design/3.2-TASKS.md)，
+> 3.3 见 [`design/3.3-TASKS.md`](./design/3.3-TASKS.md)。
 
 ### 阶段三（4.0）：插件与模块体系
 
@@ -221,7 +222,8 @@
 >   - ✅ **R3** 迁移文档与文档站收尾（含 K11 的「库版本 ↔ 项目版本」对照表）
 >   - ✅ 验收标准 #2：`projects/template` 与 `scripts/new-project` 生成的工程
 >     已接好切语言、弹 Toast、开设置界面
-> - ⏸ **M6b（3.3）**：工作区 / 布局预设、状态栏进度（K12 已定）
+> - 🔨 **M6b（3.3）进行中**：工作区 / 布局预设（`QxWorkspaceManager`）、状态栏百分比进度（K12 已定）；
+>   任务清单见 [`design/3.3-TASKS.md`](./design/3.3-TASKS.md)
 > - ⏸ M7（4.0）插件与模块，待 3.2 / 3.3 之后再细化
 
 ---
