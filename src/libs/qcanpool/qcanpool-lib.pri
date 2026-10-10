@@ -72,31 +72,6 @@ SOURCES += \
     $$PWD/windowlogo.cpp \
     $$PWD/windowtoolbar.cpp
 
-!equals(QCANPOOL_CONFIG_RIBBON, 0) {
-    QCANPOOL_CONFIG_RIBBON = 1
-}
-
-equals(QCANPOOL_CONFIG_RIBBON, 1) {
-PUBLIC_HEADERS += \
-    $$PWD/ribbonbar.h \
-    $$PWD/ribboncontainers.h \
-    $$PWD/ribbongroup.h \
-    $$PWD/ribbonpage.h \
-    $$PWD/ribbonwindow.h
-
-PRIVATE_HEADERS += \
-    $$PWD/ribbonbar_p.h \
-    $$PWD/ribbongroup_p.h \
-    $$PWD/ribbonpage_p.h
-
-SOURCES += \
-    $$PWD/ribbonbar.cpp \
-    $$PWD/ribboncontainers.cpp \
-    $$PWD/ribbongroup.cpp \
-    $$PWD/ribbonpage.cpp \
-    $$PWD/ribbonwindow.cpp
-}
-
 HEADERS += \
     $$PUBLIC_HEADERS \
     $$PRIVATE_HEADERS

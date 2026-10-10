@@ -1,3 +1,9 @@
+3.1.0 (unreleased)
+---
+- qcanpool: remove the legacy ribbon (ribbonbar/ribbonpage/ribbongroup/ribbonwindow/ribboncontainer); BREAKING: use qxribbon instead, see doc/design/3.0-MIGRATION.md
+- qcanpool: drop the QCANPOOL_CONFIG_RIBBON build option
+- qcanpool: remove the fancyribbon demo (superseded by the qxribbon demos)
+
 3.0.0
 ---
 - qt: Qt6-first, primary support Qt 6.5 LTS / 6.8 LTS; best-effort Qt 5.15
