@@ -118,6 +118,43 @@ void FramelessWidgetData::handleWindowStateChangeEvent()
 
 /* FramelessWidgetDataNativeWin */
 
+// GetDpiForWindow() arrived with Windows 10 1607. It is resolved at run time
+// instead of being linked, so the library still builds against an older SDK and
+// still loads on an older Windows; the fallbacks below cover those cases.
+typedef UINT(WINAPI *GetDpiForWindowType)(HWND);
+
+/*
+ * The DPI of the monitor the window is on.
+ *
+ * This is what the window's frame is drawn in, and it is what a "has the DPI
+ * changed since?" comparison has to start from.
+ */
+static UINT qtcWindowDpi(HWND hwnd)
+{
+    HMODULE user32 = ::GetModuleHandleW(L"user32.dll");
+    if (user32) {
+        auto getDpiForWindow = reinterpret_cast<GetDpiForWindowType>(::GetProcAddress(user32, "GetDpiForWindow"));
+        if (getDpiForWindow) {
+            const UINT dpi = getDpiForWindow(hwnd);
+            if (dpi != 0) {
+                return dpi;
+            }
+        }
+    }
+
+    // Older than Windows 10 1607. GetDeviceCaps on the desktop DC reports the
+    // *system* DPI, which is the primary monitor's - wrong for a window on a
+    // secondary monitor with a different scale, but a far better starting point
+    // than a constant.
+    HDC hdc = ::GetDC(nullptr);
+    const UINT dpi = hdc ? static_cast<UINT>(::GetDeviceCaps(hdc, LOGPIXELSY)) : 0;
+    if (hdc) {
+        ::ReleaseDC(nullptr, hdc);
+    }
+
+    return dpi ? dpi : 96;
+}
+
 class FramelessWidgetDataNativeWin : public FramelessWidgetData
 {
 public:
@@ -133,7 +170,11 @@ public:
 
     void setFrameChanged(MSG *msg);
 private:
-    UINT m_dpi[2] = {96, 96};   // 0-old, 1-new
+    // 0-old, 1-new. Both start at the window's real DPI, so that "they differ"
+    // means exactly one thing: a WM_DPICHANGED has arrived and the frame has not
+    // been reconfigured for it yet. See the message handler below for what that
+    // gates.
+    UINT m_dpi[2] = {0, 0};
 };
 
 FramelessWidgetDataNativeWin::FramelessWidgetDataNativeWin(FramelessHelperPrivate *_d, QWidget *widget)
@@ -143,9 +184,13 @@ FramelessWidgetDataNativeWin::FramelessWidgetDataNativeWin(FramelessHelperPrivat
     DWORD style = ::GetWindowLongPtr(hwnd, GWL_STYLE);
     ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_OVERLAPPEDWINDOW);
 
-    // FIXME: 96 is not real DPI, should get it through windows api
-    // there are some apis as follows: GetDpiForMonitor, GetDpiForSystem, GetDpiForWindow
-    // reference to https://learn.microsoft.com/zh-cn/windows/win32/api/_hidpi/
+    // Seeding these with a hard-coded 96 made a window that starts on a scaled
+    // monitor look like a window in the middle of a DPI change: the first
+    // WM_DPICHANGED left the pair unequal, which suppressed the frame
+    // reconfiguration that the following WM_SIZE/WM_MOVE is supposed to do.
+    const UINT dpi = qtcWindowDpi(hwnd);
+    m_dpi[0] = dpi;
+    m_dpi[1] = dpi;
 }
 
 FramelessWidgetDataNativeWin::~FramelessWidgetDataNativeWin()
