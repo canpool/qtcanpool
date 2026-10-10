@@ -77,7 +77,15 @@ static void setInternalWindowFrameMargins(QWindow *window, const QMargins &margi
         }
     }
 #else
-    // FIXME: test on qt 6.5.3 (issue #I8SPBC,#I8SPC8)
+    // Qt 6.5 stopped shipping the Windows platform private headers, so
+    // QWindowsWindow::setCustomMargins() above is out of reach from there on.
+    // It is also not needed: the property set first is what Qt's own Windows
+    // platform plugin reads - the string "_q_windowsCustomMargins" is present in
+    // plugins/platforms/qwindows.dll of the 6.8.3 kit and absent from
+    // Qt6Gui.dll, i.e. it belongs to the plugin. What has not been done is a
+    // real-window check on Qt 6.5.3, which is what issues #I8SPBC / #I8SPC8
+    // are about; the offscreen screenshot test cannot see window margins.
+    // See doc/pages/limitations.md, "frameless windows on Qt 6.5 and later".
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     if (const auto platformWindow = dynamic_cast<QNativeInterface::Private::QWindowsWindow *>(window->handle())) {
         platformWindow->setCustomMargins(margins);

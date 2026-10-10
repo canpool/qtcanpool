@@ -626,11 +626,18 @@ bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
                 return false;
             }
             if (m_pWidget->isMaximized()) {
-                // FIXME：1）Ubuntu 16.04 LTS/Unity 7.4.0环境中，最大化后鼠标拖拽标题栏获得的normalGeometry不是原始的，
-                // 而是无边框最大化后的尺寸，鼠标拖拽窗口最上面的Unity为窗口设计的标题栏才能获得真实的normalGeometry
-                // 2）GNOME环境中，最大化后鼠标拖拽标题栏获得的normalGeometry是原始的，但是会一闪而过，然后尺寸变成最大化的尺寸，
-                // 此时，由于尺寸已是最大化，又因为无边框后，鼠标移动窗口无法将窗口移到非显示区，导致根本无法移动
-                // 建议：Linux环境下不使用无边框方案
+                // NOTE: the Linux window managers this was tested against do not
+                // give a dragged frameless window what it needs to restore. Under
+                // Ubuntu 16.04 LTS/Unity 7.4.0, normalGeometry() after a maximize
+                // is the frameless-maximized size, not the original one, unless
+                // the user grabs Unity's own title bar; under GNOME the value is
+                // right but the window flashes once and then snaps back to
+                // maximized, and since a frameless window cannot be moved into an
+                // undisplayed area, it cannot be moved at all. Both are platform
+                // behaviour rather than defects here, which is why the frameless
+                // path stays experimental on Linux - see K23 in
+                // doc/design/4.1-TASKS.md and doc/pages/limitations.md,
+                // "frameless windows on Linux".
 
                 // 先求出窗口到鼠标的相对位置
                 QRect normalGeometry = m_pWidget->normalGeometry();

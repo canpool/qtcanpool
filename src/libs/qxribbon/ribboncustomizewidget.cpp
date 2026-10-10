@@ -1120,9 +1120,11 @@ void RibbonCustomizeWidget::onPushButtonNewPageClicked()
     RibbonCustomizeData data = RibbonCustomizeData::makeAddPageCustomizeData(
         ni->text(), ni->row(), RibbonCustomizeWidgetPrivate::makeRandomObjName("page"));
 
-    // FIXME: 操作数据无缓冲，导致操作无法废弃，且缺少apply按钮（当前设计，添加按钮意义并不大）
-    // DO: RibbonCustomizeWidget 不再对外提供，而是通过 RibbonCustomizeDialog 进行定制，
-    // 如果不应用定制数据，数据会随着 RibbonCustomizeDialog 销毁而废弃，所以不需要再增加缓冲
+    // No draft state, on purpose. Edits land in m_customizeDatas as they are
+    // made, so they cannot be discarded one by one - discarding means dropping
+    // the widget, and that is what the dialog does on Cancel. Since this class
+    // is not exported (RibbonCustomizeDialog owns it and is the only way in),
+    // an extra buffer would be machinery the lifetime already provides.
     d->m_customizeDatas.append(data);
     ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole
     ni->setData(true, RibbonCustomizeWidget::CustomizeRole);
@@ -1166,13 +1168,14 @@ void RibbonCustomizeWidget::onPushButtonNewGroupClicked()
     RibbonCustomizeData data = RibbonCustomizeData::makeAddGroupCustomizeData(
         ni->text(), ni->row(), pageObjName, RibbonCustomizeWidgetPrivate::makeRandomObjName("group"));
 
-    // FIXME：如果有多个page的pageObjName都为空，比如：page1、page2，当分别为page1，page2添加组后，最后apply时，由于两个
-    // pageObjName都为空，所以pageByObjectName都会返回第一个page，即page1。
-    // 也就是说操作的时候是在两个page上，但是最终只会显示在第一个page上。
-    // TODO：
-    // 方案1，为每个page设置objectName，如果objectName不唯一，也会存在显示在第一个page上
-    // 方案2，不允许操作objectName为空的page（采用）
-    // 方案3，为每个page分配一个唯一的id，使用id来代替objectName
+    // Pages are addressed by objectName when the customization is applied, so
+    // two pages sharing one - an empty name in particular - would both resolve
+    // to the first of them. That cannot happen from here: the model is built
+    // only from pages whose objectName is set (see the loop in
+    // setCustomizeMode()), groups with an empty objectName are skipped the same
+    // way, and a page created here is given a random name. Giving every page a
+    // unique id would be the alternative, and is more machinery than the
+    // problem needs.
     d->m_customizeDatas.append(data);
     ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole
     ni->setData(true, RibbonCustomizeWidget::CustomizeRole);

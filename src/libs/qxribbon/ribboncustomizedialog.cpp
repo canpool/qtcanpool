@@ -88,9 +88,14 @@ void RibbonCustomizeDialog::setupActionsManager(RibbonActionsManager *mgr)
 
 bool RibbonCustomizeDialog::apply()
 {
-    // FIXME: 打开对话框，新建页后，应用，然后关闭对话框，不写文件，定制临时数据丢失
-    // 当再次打开对话框，删除新建的页后，应用，然后选择ok，定制的临时数据都是删除数据，实际上要删除的对象已经不存在了，但是还会写到文件中
-    // TODO: 先去掉应用按钮，未来应该私有化该接口
+    // NOTE: apply() writes the pending customization into the ribbon but not to
+    // a file. Applying and then closing the dialog without saving therefore
+    // loses the change; worse, a page created and applied in one session, then
+    // deleted and applied in the next, leaves a removal record for an object
+    // that no longer exists, and saving after that writes the removal. The
+    // dialog does not offer Apply as a button - a session ends with OK, which
+    // does both - so this is only reachable by calling apply() from code.
+    // See doc/pages/limitations.md, "customization has no draft state".
     return ui->customWidget->apply();
 }
 

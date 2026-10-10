@@ -1738,10 +1738,14 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     // sendEvent会导致RibbonQuickAccessBar在样式切换后无法更新尺寸，改为用postEvent
     // resizeRibbon();
 
-    // FIXME: 使用 resizeRibbon 中的 postEvent，会存在延迟。当采用 WPS 样式且处于最小模式时，从 WPS 样式切换到
-    // OFFICE 样式，会出现 m_tabBar 的尺寸未及时更新就设置了 setFixedHeight(d->m_tabBar->geometry().bottom())
-    // 从而导致高度仍为 WPS 样式时的高度，切换到 OFFICE 样式后，m_tabBar 所在的水平区域内容无法正常显示
-    // WORKAROUND: 此处直接调用 d->resizeRibbon，保证立即更新 m_tabBar 尺寸
+    // NOTE: resizeRibbon() defers its work with postEvent(), and that delay is
+    // observable here. Coming from the WPS style while the bar is minimized,
+    // the switch to the OFFICE style reads m_tabBar->geometry().bottom() for
+    // setFixedHeight() below before the tab bar has been resized, so the height
+    // stays at the WPS value and the horizontal strip holding the tab bar does
+    // not display. Calling the resize directly is the workaround: the widget
+    // style change needs the new geometry now, not next event loop pass.
+    // See doc/pages/limitations.md, "RibbonBar resize is deferred".
     d->resizeRibbon();
     update();
 
@@ -1807,9 +1811,13 @@ void RibbonBar::updateRibbonTheme()
 
 void RibbonBar::resizeRibbon()
 {
-    // FIXME: 此处使用resizeEvent中的d->resizeRibbon()和update()来代替postEvent会出现如下问题：
-    // WPS模式下，无边框和有边框之间切换后,
-    // m_applicationButton.isVisible()突然返回false，导致d->resizeRibbon()中计算尺寸异常
+    // NOTE: doing this work directly instead of through postEvent() - the
+    // resizeEvent alternative that was tried first - breaks the WPS style: after
+    // switching between frameless and framed, m_applicationButton.isVisible()
+    // starts returning false and the size computation below goes wrong. The
+    // event is therefore queued, which is also what makes the switch visible as
+    // a single repaint rather than two. See doc/pages/limitations.md,
+    // "RibbonBar resize is deferred".
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
@@ -1863,9 +1871,14 @@ bool RibbonBar::event(QEvent *event)
         d->onFontChanged();
     } break;
     case QEvent::LayoutRequest: {
-        // FIXME: 引入LayoutRequest后，如果处理不当，会增加resize次数，需要梳理触发LayoutRequest的条件，
-        // 同时，需要梳理哪些postEvent或sendEvent可以由LayoutRequest代替。
-        // 目前，当cornerWidget为QMdiArea时，根据有效事件来设置m_layoutRequest
+        // NOTE: reacting to LayoutRequest by re-running the ribbon resize can
+        // cost more than one resize pass per event, and the conditions that
+        // produce a LayoutRequest here have never been enumerated - nor has
+        // which of the postEvent()/sendEvent() calls elsewhere could be
+        // replaced by one. The handler is therefore gated on m_layoutRequest,
+        // which is only set while the corner widget is a QMdiArea, so the cost
+        // stays bounded by that case. See doc/pages/limitations.md,
+        // "LayoutRequest can add resize passes".
         if (d->m_layoutRequest) {
             d->resizeRibbon();
             d->m_layoutRequest = false;
