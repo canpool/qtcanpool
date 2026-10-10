@@ -48,27 +48,22 @@ PRIVATE_HEADERS = \
     $$PWD/fancytabbar_p.h \
     $$PWD/fancytitlebar_p.h \
     $$PWD/quickaccessbar_p.h \
-    $$PWD/tinynavbar_p.h \
-    $$PWD/tinytabbar_p.h \
     $$PWD/windowtoolbar_p.h
 
+# extensionbutton.h, fancytoolbutton.h, menuaccessbutton.h, menubutton.h,
+# tinynavbar.h, tinytabbar.h and tinytabwidget.h are still listed above, but
+# they no longer carry an implementation: the widgets moved to qxapp in 3.1 and
+# these headers are deprecated forwarding classes now.
 SOURCES += \
-    $$PWD/extensionbutton.cpp \
     $$PWD/fancybar.cpp \
     $$PWD/fancydialog.cpp \
     $$PWD/fancytabbar.cpp \
     $$PWD/fancytabwidget.cpp \
     $$PWD/fancytitlebar.cpp \
-    $$PWD/fancytoolbutton.cpp \
     $$PWD/fancywindow.cpp \
-    $$PWD/menuaccessbutton.cpp \
-    $$PWD/menubutton.cpp \
     $$PWD/minitabbar.cpp \
     $$PWD/minitabwidget.cpp \
     $$PWD/quickaccessbar.cpp \
-    $$PWD/tinynavbar.cpp \
-    $$PWD/tinytabbar.cpp \
-    $$PWD/tinytabwidget.cpp \
     $$PWD/windowlogo.cpp \
     $$PWD/windowtoolbar.cpp
 

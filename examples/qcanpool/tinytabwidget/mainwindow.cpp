@@ -32,7 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     tw->setTabVisible(3, false);
     tw->setCurrentIndex(0);
 
-    TinyTabBar *tb = tw->tabBar();
+    // 3.1: the tab bar is a distinct type of its own now (QxApp::QxTabBar), so
+    // let the compiler deduce it rather than naming the deprecated TinyTabBar.
+    auto *tb = tw->tabBar();
     tb->setTabStyle(Qt::ToolButtonTextUnderIcon);
     //    tb->layout()->setSizeConstraint(QLayout::SetFixedSize);
 

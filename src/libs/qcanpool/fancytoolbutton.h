@@ -6,46 +6,36 @@
 #define FANCYTOOLBUTTON_H
 
 #include "qcanpool.h"
-#include <QToolButton>
+#include "qxapp/qxtoolbutton.h"
 
 QCANPOOL_BEGIN_NAMESPACE
 
-class FancyToolButtonPrivate;
-
-/* FancyToolButton */
-class QCANPOOL_SHARED_EXPORT FancyToolButton : public QToolButton
+/*!
+ * Compatibility shim for 3.0 code (decision K5).
+ *
+ * The widget itself moved to the application framework in 3.1 and is now
+ * QxApp::QxToolButton; qcanpool keeps only the old name. This class derives
+ * from the new one and forwards every constructor, so it cannot drift away
+ * from it - and because it adds nothing, there is no behaviour to keep in
+ * sync. The name disappears again in 3.2.
+ */
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxApp::QxToolButton instead") FancyToolButton :
+    public QX_APP_PREPEND_NAMESPACE(QxToolButton)
 {
     Q_OBJECT
 public:
-    // only for Qt::ToolButtonTextUnderIcon style
-    enum MenuArea {
-        RightMenuArea,    // unique value for other style
-        BottomMenuArea,   // default value
-    };
-public:
-    explicit FancyToolButton(QWidget *parent = nullptr);
-    explicit FancyToolButton(const QString &text, QWidget *parent = nullptr);
-    FancyToolButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr);
-    virtual ~FancyToolButton();
-
-    Qt::ArrowType menuArrowType() const;
-    void setMenuArrowType(Qt::ArrowType type);
-
-    MenuArea menuArea() const;
-    void setMenuArea(MenuArea area);
-
-    QSize sizeHint() const override;
-
-    void setForceAlignCenter(bool b = true);
-    void setForceDefaultShowMenu(bool b = false);
-
-public Q_SLOTS:
-    void setToolButtonStyle(Qt::ToolButtonStyle style);
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *e) override;
-private:
-    FancyToolButtonPrivate *d;
+    explicit FancyToolButton(QWidget *parent = nullptr)
+        : QX_APP_PREPEND_NAMESPACE(QxToolButton)(parent)
+    {
+    }
+    explicit FancyToolButton(const QString &text, QWidget *parent = nullptr)
+        : QX_APP_PREPEND_NAMESPACE(QxToolButton)(text, parent)
+    {
+    }
+    FancyToolButton(const QIcon &icon, const QString &text, QWidget *parent = nullptr)
+        : QX_APP_PREPEND_NAMESPACE(QxToolButton)(icon, text, parent)
+    {
+    }
 };
 
 QCANPOOL_END_NAMESPACE

@@ -2,15 +2,15 @@
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "menubutton.h"
+#include "qxmenubutton.h"
 
 #include <QPaintEvent>
 #include <QStylePainter>
 #include <QStyleOptionToolButton>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-MenuButton::MenuButton(QWidget *parent)
+QxMenuButton::QxMenuButton(QWidget *parent)
     : QToolButton(parent)
 {
     setAutoRaise(true);
@@ -18,23 +18,23 @@ MenuButton::MenuButton(QWidget *parent)
     setPopupMode(QToolButton::InstantPopup);
 }
 
-MenuButton::MenuButton(const QString &text, QWidget *parent)
-    : MenuButton(parent)
+QxMenuButton::QxMenuButton(const QString &text, QWidget *parent)
+    : QxMenuButton(parent)
 {
     setText(text);
 }
 
-MenuButton::MenuButton(const QIcon &icon, const QString &text, QWidget *parent)
-    : MenuButton(text, parent)
+QxMenuButton::QxMenuButton(const QIcon &icon, const QString &text, QWidget *parent)
+    : QxMenuButton(text, parent)
 {
     setIcon(icon);
 }
 
-MenuButton::~MenuButton()
+QxMenuButton::~QxMenuButton()
 {
 }
 
-void MenuButton::paintEvent(QPaintEvent *event)
+void QxMenuButton::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QStylePainter p(this);
@@ -45,4 +45,4 @@ void MenuButton::paintEvent(QPaintEvent *event)
     p.drawComplexControl(QStyle::CC_ToolButton, opt);
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

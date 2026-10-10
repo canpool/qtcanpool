@@ -4,26 +4,26 @@
  **/
 #pragma once
 
-#include "qcanpool.h"
-#include "tinytabbar_p.h"
-#include "tinynavbar.h"   // must, for Q_DECLARE_PUBLIC -> static_cast
+#include "qxapp_global.h"
+#include "qxtabbar_p.h"
+#include "qxnavbar.h"   // must, for Q_DECLARE_PUBLIC -> static_cast
 #include <QToolButton>
 #include <QMap>
 
 class QMenu;
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-class MenuAccessButton;
-class TinyNavBar;
+class QxMenuAccessButton;
+class QxNavBar;
 
-class TinyNavBarPrivate : public TinyTabBarPrivate
+class QxNavBarPrivate : public QxTabBarPrivate
 {
     Q_OBJECT
 public:
-    Q_DECLARE_PUBLIC(TinyNavBar)
+    Q_DECLARE_PUBLIC(QxNavBar)
 public:
-    TinyNavBarPrivate();
+    QxNavBarPrivate();
 public:
     void init();
 private Q_SLOTS:
@@ -34,10 +34,10 @@ public:
     QMenu *m_menu;
     QAction *m_actionAccessPopup;
     QActionGroup *m_customizeGroup;
-    MenuAccessButton *m_accessPopup;
+    QxMenuAccessButton *m_accessPopup;
     QList<QAction *> m_actionList;
     QMap<QAction *, QAction *> m_actionMap;   // lowAction,checkAction
     bool m_removingAction : 1;
 };
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

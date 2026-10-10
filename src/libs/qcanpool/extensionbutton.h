@@ -6,28 +6,24 @@
 #define EXTENSIONBUTTON_H
 
 #include "qcanpool.h"
-#include <QToolButton>
+#include "qxapp/qxextensionbutton.h"
 
 QCANPOOL_BEGIN_NAMESPACE
 
-class ExtensionButtonPrivate;
-
-class QCANPOOL_SHARED_EXPORT ExtensionButton : public QToolButton
+/*!
+ * Compatibility shim for 3.0 code (decision K5): the widget is now
+ * QxApp::QxExtensionButton. See fancytoolbutton.h for the rationale; the name
+ * disappears again in 3.2.
+ */
+class QCANPOOL_SHARED_EXPORT QCANPOOL_DEPRECATED_X("use QxApp::QxExtensionButton instead") ExtensionButton :
+    public QX_APP_PREPEND_NAMESPACE(QxExtensionButton)
 {
     Q_OBJECT
 public:
-    explicit ExtensionButton(QWidget *parent = nullptr);
-    ~ExtensionButton();
-
-    QSize sizeHint() const override;
-
-public Q_SLOTS:
-    void setOrientation(Qt::Orientation o);
-protected:
-    void paintEvent(QPaintEvent *) override;
-    bool event(QEvent *event) override;
-private:
-    QCP_DECLARE_PRIVATE(ExtensionButton)
+    explicit ExtensionButton(QWidget *parent = nullptr)
+        : QX_APP_PREPEND_NAMESPACE(QxExtensionButton)(parent)
+    {
+    }
 };
 
 QCANPOOL_END_NAMESPACE

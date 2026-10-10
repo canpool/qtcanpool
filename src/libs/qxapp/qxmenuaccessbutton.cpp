@@ -2,36 +2,36 @@
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "menuaccessbutton.h"
+#include "qxmenuaccessbutton.h"
 
 #include <QStyle>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-class MenuAccessButtonPrivate
+class QxMenuAccessButtonPrivate
 {
-    QCP_DECLARE_PUBLIC(MenuAccessButton)
+    QX_DECLARE_PUBLIC(QxMenuAccessButton)
 public:
     Qt::Orientation m_orientation;
 };
 
-MenuAccessButton::MenuAccessButton(QWidget *parent)
+QxMenuAccessButton::QxMenuAccessButton(QWidget *parent)
     : QToolButton(parent)
 {
-    QCP_INIT_PRIVATE(MenuAccessButton)
-    Q_D(MenuAccessButton);
+    QX_INIT_PRIVATE(QxMenuAccessButton)
+    Q_D(QxMenuAccessButton);
     d->m_orientation = Qt::Horizontal;
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setPopupMode(QToolButton::InstantPopup);
-    setObjectName(QLatin1String("qtc_menuaccessbutton"));
+    setObjectName(QLatin1String("qtc_qxmenuaccessbutton"));
 }
 
-MenuAccessButton::~MenuAccessButton(){QCP_FINI_PRIVATE()}
+QxMenuAccessButton::~QxMenuAccessButton(){QX_FINI_PRIVATE()}
 
-QSize MenuAccessButton::sizeHint() const
+QSize QxMenuAccessButton::sizeHint() const
 {
-    Q_D(const MenuAccessButton);
+    Q_D(const QxMenuAccessButton);
     QSize sz = QToolButton::sizeHint();
     int w = style()->pixelMetric(QStyle::PM_MenuButtonIndicator, Q_NULLPTR, this);
     if (d->m_orientation == Qt::Horizontal) {
@@ -41,9 +41,9 @@ QSize MenuAccessButton::sizeHint() const
     }
 }
 
-void MenuAccessButton::setOrientation(Qt::Orientation orientation)
+void QxMenuAccessButton::setOrientation(Qt::Orientation orientation)
 {
-    Q_D(MenuAccessButton);
+    Q_D(QxMenuAccessButton);
     if (d->m_orientation == orientation) {
         return;
     }
@@ -51,4 +51,4 @@ void MenuAccessButton::setOrientation(Qt::Orientation orientation)
     updateGeometry();
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

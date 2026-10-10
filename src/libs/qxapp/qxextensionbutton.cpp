@@ -2,47 +2,47 @@
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "extensionbutton.h"
+#include "qxextensionbutton.h"
 
 #include <QEvent>
 #include <QStyle>
 #include <QStyleOption>
 #include <QStylePainter>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-class ExtensionButtonPrivate
+class QxExtensionButtonPrivate
 {
-    QCP_DECLARE_PUBLIC(ExtensionButton)
+    QX_DECLARE_PUBLIC(QxExtensionButton)
 public:
     Qt::Orientation m_orientation;
 };
 
-ExtensionButton::ExtensionButton(QWidget *parent)
+QxExtensionButton::QxExtensionButton(QWidget *parent)
     : QToolButton(parent)
 {
-    QCP_INIT_PRIVATE(ExtensionButton)
-    Q_D(ExtensionButton);
+    QX_INIT_PRIVATE(QxExtensionButton)
+    Q_D(QxExtensionButton);
     d->m_orientation = Qt::Horizontal;
 
-    setObjectName(QLatin1String("qx_ExtensionButton"));
+    setObjectName(QLatin1String("qtc_qxextensionbutton"));
     setAutoRaise(true);
     setOrientation(d->m_orientation);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setPopupMode(QToolButton::InstantPopup);
 }
 
-ExtensionButton::~ExtensionButton(){QCP_FINI_PRIVATE()}
+QxExtensionButton::~QxExtensionButton(){QX_FINI_PRIVATE()}
 
-QSize ExtensionButton::sizeHint() const
+QSize QxExtensionButton::sizeHint() const
 {
     int ext = style()->pixelMetric(QStyle::PM_ToolBarExtensionExtent);
     return QSize(ext, ext);
 }
 
-void ExtensionButton::setOrientation(Qt::Orientation o)
+void QxExtensionButton::setOrientation(Qt::Orientation o)
 {
-    Q_D(ExtensionButton);
+    Q_D(QxExtensionButton);
     QStyleOption opt;
     opt.initFrom(this);
     if (o == Qt::Horizontal) {
@@ -53,7 +53,7 @@ void ExtensionButton::setOrientation(Qt::Orientation o)
     d->m_orientation = o;
 }
 
-void ExtensionButton::paintEvent(QPaintEvent *)
+void QxExtensionButton::paintEvent(QPaintEvent *)
 {
     QStylePainter p(this);
     QStyleOptionToolButton opt;
@@ -63,9 +63,9 @@ void ExtensionButton::paintEvent(QPaintEvent *)
     p.drawComplexControl(QStyle::CC_ToolButton, opt);
 }
 
-bool ExtensionButton::event(QEvent *event)
+bool QxExtensionButton::event(QEvent *event)
 {
-    Q_D(ExtensionButton);
+    Q_D(QxExtensionButton);
     switch (event->type()) {
     case QEvent::LayoutDirectionChange:
         setOrientation(d->m_orientation);
@@ -76,4 +76,4 @@ bool ExtensionButton::event(QEvent *event)
     return QToolButton::event(event);
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

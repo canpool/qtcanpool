@@ -2,8 +2,8 @@
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "tinytabbar.h"
-#include "tinytabbar_p.h"
+#include "qxtabbar.h"
+#include "qxtabbar_p.h"
 
 #include <QAction>
 #include <QWidgetAction>
@@ -13,9 +13,9 @@
 #include <QToolButton>
 #include <QDebug>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-TinyTabBarPrivate::TinyTabBarPrivate()
+QxTabBarPrivate::QxTabBarPrivate()
     : m_currentIndex(-1)
     , m_togglable(true)
 {
@@ -24,13 +24,13 @@ TinyTabBarPrivate::TinyTabBarPrivate()
 #endif
 }
 
-TinyTabBarPrivate::~TinyTabBarPrivate()
+QxTabBarPrivate::~QxTabBarPrivate()
 {
 }
 
-void TinyTabBarPrivate::init()
+void QxTabBarPrivate::init()
 {
-    Q_Q(TinyTabBar);
+    Q_Q(QxTabBar);
     q->layout()->setSpacing(0);
     q->layout()->setContentsMargins(0, 0, 0, 0);
 
@@ -40,12 +40,12 @@ void TinyTabBarPrivate::init()
 #else
     m_group->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
 #endif
-    connect(m_group, &QActionGroup::triggered, this, &TinyTabBarPrivate::onTriggered);
+    connect(m_group, &QActionGroup::triggered, this, &QxTabBarPrivate::onTriggered);
 
-    connect(q, &TinyTabBar::orientationChanged, this, &TinyTabBarPrivate::onOrientationChanged);
+    connect(q, &QxTabBar::orientationChanged, this, &QxTabBarPrivate::onOrientationChanged);
 }
 
-int TinyTabBarPrivate::indexOf(QAction *action)
+int QxTabBarPrivate::indexOf(QAction *action)
 {
     for (int i = 0; i < m_tabs.count(); ++i) {
         if (m_tabs.at(i) == action) {
@@ -55,9 +55,9 @@ int TinyTabBarPrivate::indexOf(QAction *action)
     return -1;
 }
 
-void TinyTabBarPrivate::layoutActions()
+void QxTabBarPrivate::layoutActions()
 {
-    Q_Q(TinyTabBar);
+    Q_Q(QxTabBar);
     if (q->orientation() == Qt::Vertical) {
         int w = 0;
         foreach (QAction *act, m_tabs) {
@@ -76,9 +76,9 @@ void TinyTabBarPrivate::layoutActions()
     }
 }
 
-void TinyTabBarPrivate::onTriggered(QAction *action)
+void QxTabBarPrivate::onTriggered(QAction *action)
 {
-    Q_Q(TinyTabBar);
+    Q_Q(QxTabBar);
     int index = indexOf(action);
     if (index != m_currentIndex) {
         m_currentIndex = index;
@@ -89,50 +89,50 @@ void TinyTabBarPrivate::onTriggered(QAction *action)
     }
 }
 
-void TinyTabBarPrivate::onOrientationChanged(Qt::Orientation orientation)
+void QxTabBarPrivate::onOrientationChanged(Qt::Orientation orientation)
 {
     Q_UNUSED(orientation);
     layoutActions();
 }
 
-TinyTabBar::TinyTabBar(QWidget *parent)
+QxTabBar::QxTabBar(QWidget *parent)
     : QToolBar{parent}
 {
-    QCP_INIT_PRIVATE(TinyTabBar)
-    Q_D(TinyTabBar);
+    QX_INIT_PRIVATE(QxTabBar)
+    Q_D(QxTabBar);
     d->init();
 }
 
-TinyTabBar::TinyTabBar(TinyTabBarPrivate *d, QWidget *parent)
+QxTabBar::QxTabBar(QxTabBarPrivate *d, QWidget *parent)
     : QToolBar{parent}
 {
-    QCP_SET_PRIVATE(d)
+    QX_SET_PRIVATE(d)
     d->init();
 }
 
-TinyTabBar::~TinyTabBar()
+QxTabBar::~QxTabBar()
 {
-    QCP_FINI_PRIVATE()
+    QX_FINI_PRIVATE()
 }
 
-int TinyTabBar::addTab(const QString &text)
+int QxTabBar::addTab(const QString &text)
 {
     return addTab(QIcon(), text);
 }
 
-int TinyTabBar::addTab(const QIcon &icon, const QString &text)
+int QxTabBar::addTab(const QIcon &icon, const QString &text)
 {
     return insertTab(-1, icon, text);
 }
 
-int TinyTabBar::insertTab(int index, const QString &text)
+int QxTabBar::insertTab(int index, const QString &text)
 {
     return insertTab(index, QIcon(), text);
 }
 
-int TinyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
+int QxTabBar::insertTab(int index, const QIcon &icon, const QString &text)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     QAction *action = new QAction(this);
     action->setIcon(icon);
     action->setText(text);
@@ -161,9 +161,9 @@ int TinyTabBar::insertTab(int index, const QIcon &icon, const QString &text)
     return index;
 }
 
-void TinyTabBar::removeTab(int index)
+void QxTabBar::removeTab(int index)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     if (!d->validIndex(index)) {
         return;
     }
@@ -194,87 +194,87 @@ void TinyTabBar::removeTab(int index)
     }
 }
 
-void TinyTabBar::setTabEnabled(int index, bool enable)
+void QxTabBar::setTabEnabled(int index, bool enable)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     if (d->validIndex(index)) {
         d->m_tabs[index]->setEnabled(enable);
     }
 }
 
-bool TinyTabBar::isTabEnabled(int index) const
+bool QxTabBar::isTabEnabled(int index) const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     if (d->validIndex(index)) {
         return d->m_tabs.at(index)->isEnabled();
     }
     return false;
 }
 
-void TinyTabBar::setTabVisible(int index, bool visible)
+void QxTabBar::setTabVisible(int index, bool visible)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     if (d->validIndex(index)) {
         d->m_tabs.at(index)->setVisible(visible);
     }
 }
 
-bool TinyTabBar::isTabVisible(int index) const
+bool QxTabBar::isTabVisible(int index) const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     if (d->validIndex(index)) {
         return d->m_tabs.at(index)->isVisible();
     }
     return false;
 }
 
-void TinyTabBar::setTabToolTip(int index, const QString &toolTip)
+void QxTabBar::setTabToolTip(int index, const QString &toolTip)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     if (d->validIndex(index)) {
         d->m_tabs[index]->setToolTip(toolTip);
     }
 }
 
-QString TinyTabBar::tabToolTip(int index) const
+QString QxTabBar::tabToolTip(int index) const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     if (d->validIndex(index)) {
         return d->m_tabs.at(index)->toolTip();
     }
     return QString();
 }
 
-bool TinyTabBar::isTabChecked(int index) const
+bool QxTabBar::isTabChecked(int index) const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     if (d->validIndex(index)) {
         return d->m_tabs.at(index)->isChecked();
     }
     return false;
 }
 
-void TinyTabBar::setCurrentIndex(int index)
+void QxTabBar::setCurrentIndex(int index)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     if (d->m_currentIndex != index && isTabEnabled(index)) {
         // update m_currentIndex in onTriggered
         d->m_tabs.at(index)->trigger();
     }
 }
 
-int TinyTabBar::currentIndex() const
+int QxTabBar::currentIndex() const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     return d->m_currentIndex;
 }
 
-void TinyTabBar::setTogglable(bool able)
+void QxTabBar::setTogglable(bool able)
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
     Q_UNUSED(able);
 #else
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     if (d->m_togglable == able) {
         return;
     }
@@ -284,15 +284,15 @@ void TinyTabBar::setTogglable(bool able)
 #endif
 }
 
-bool TinyTabBar::isTogglable() const
+bool QxTabBar::isTogglable() const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     return d->m_togglable;
 }
 
-void TinyTabBar::setTabStyle(Qt::ToolButtonStyle style)
+void QxTabBar::setTabStyle(Qt::ToolButtonStyle style)
 {
-    Q_D(TinyTabBar);
+    Q_D(QxTabBar);
     setToolButtonStyle(style);
     // If layoutActions are called in the slot function of toolButtonStyleChanged,
     // the size of Actions cannot be updated immediately (the size after the last
@@ -300,15 +300,15 @@ void TinyTabBar::setTabStyle(Qt::ToolButtonStyle style)
     d->layoutActions();
 }
 
-int TinyTabBar::count() const
+int QxTabBar::count() const
 {
-    Q_D(const TinyTabBar);
+    Q_D(const QxTabBar);
     return d->m_tabs.count();
 }
 
-void TinyTabBar::actionEvent(QActionEvent *event)
+void QxTabBar::actionEvent(QActionEvent *event)
 {
     QToolBar::actionEvent(event);
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

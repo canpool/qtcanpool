@@ -1,2 +1,9 @@
 qxapp_global.h
+qxextensionbutton.h
+qxmenuaccessbutton.h
+qxmenubutton.h
+qxnavbar.h
+qxtabbar.h
+qxtabwidget.h
+qxtoolbutton.h
 ribbonappwindow.h

@@ -2,46 +2,46 @@
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "tinytabwidget.h"
-#include "tinytabbar.h"
+#include "qxtabwidget.h"
+#include "qxtabbar.h"
 
 #include <QStackedWidget>
 #include <QToolButton>
 #include <QBoxLayout>
 #include <QIcon>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-class TinyTabWidgetPrivate
+class QxTabWidgetPrivate
 {
-    QCP_DECLARE_PUBLIC(TinyTabWidget)
+    QX_DECLARE_PUBLIC(QxTabWidget)
 public:
-    TinyTabWidgetPrivate();
+    QxTabWidgetPrivate();
 
     void init();
     void updateTabBarPosition();
 public:
-    TinyTabBar *m_tabBar;
+    QxTabBar *m_tabBar;
     QStackedWidget *m_stack;
     QBoxLayout *m_layout;
     QBoxLayout *m_tabLayout;
-    TinyTabWidget::TabPosition m_pos;
+    QxTabWidget::TabPosition m_pos;
 };
 
-TinyTabWidgetPrivate::TinyTabWidgetPrivate()
-    : m_pos(TinyTabWidget::North)
+QxTabWidgetPrivate::QxTabWidgetPrivate()
+    : m_pos(QxTabWidget::North)
 {
 }
 
-void TinyTabWidgetPrivate::init()
+void QxTabWidgetPrivate::init()
 {
-    Q_Q(TinyTabWidget);
-    m_tabBar = new TinyTabBar(q);
+    Q_Q(QxTabWidget);
+    m_tabBar = new QxTabBar(q);
     m_tabBar->setTogglable(false);
-    m_tabBar->setObjectName(QLatin1String("qx_TinyTabWidget_tabbar"));
+    m_tabBar->setObjectName(QLatin1String("qtc_qxtabwidget_tabbar"));
 
     m_stack = new QStackedWidget(q);
-    m_stack->setObjectName(QLatin1String("qx_TinyTabWidget_stackedwidget"));
+    m_stack->setObjectName(QLatin1String("qtc_qxtabwidget_stackedwidget"));
     m_stack->setLineWidth(0);
 
     m_tabLayout = new QBoxLayout(QBoxLayout::LeftToRight);
@@ -63,28 +63,28 @@ void TinyTabWidgetPrivate::init()
     updateTabBarPosition();
 }
 
-void TinyTabWidgetPrivate::updateTabBarPosition()
+void QxTabWidgetPrivate::updateTabBarPosition()
 {
     switch (m_pos) {
-    case TinyTabWidget::North: {
+    case QxTabWidget::North: {
         m_layout->setDirection(QBoxLayout::TopToBottom);
         m_tabLayout->setDirection(QBoxLayout::LeftToRight);
         m_tabBar->setOrientation(Qt::Horizontal);
         break;
     }
-    case TinyTabWidget::South: {
+    case QxTabWidget::South: {
         m_layout->setDirection(QBoxLayout::BottomToTop);
         m_tabLayout->setDirection(QBoxLayout::LeftToRight);
         m_tabBar->setOrientation(Qt::Horizontal);
         break;
     }
-    case TinyTabWidget::West: {
+    case QxTabWidget::West: {
         m_layout->setDirection(QBoxLayout::LeftToRight);
         m_tabLayout->setDirection(QBoxLayout::TopToBottom);
         m_tabBar->setOrientation(Qt::Vertical);
         break;
     }
-    case TinyTabWidget::East: {
+    case QxTabWidget::East: {
         m_layout->setDirection(QBoxLayout::RightToLeft);
         m_tabLayout->setDirection(QBoxLayout::TopToBottom);
         m_tabBar->setOrientation(Qt::Vertical);
@@ -93,39 +93,39 @@ void TinyTabWidgetPrivate::updateTabBarPosition()
     }
 }
 
-TinyTabWidget::TinyTabWidget(QWidget *parent)
+QxTabWidget::QxTabWidget(QWidget *parent)
     : QWidget(parent)
 {
-    QCP_INIT_PRIVATE(TinyTabWidget)
-    Q_D(TinyTabWidget);
+    QX_INIT_PRIVATE(QxTabWidget)
+    Q_D(QxTabWidget);
     d->init();
 
     setAttribute(Qt::WA_StyledBackground, true);
 }
 
-TinyTabWidget::~TinyTabWidget()
+QxTabWidget::~QxTabWidget()
 {
-    QCP_FINI_PRIVATE()
+    QX_FINI_PRIVATE()
 }
 
-int TinyTabWidget::addTab(QWidget *widget, const QString &label)
+int QxTabWidget::addTab(QWidget *widget, const QString &label)
 {
     return insertTab(-1, widget, label);
 }
 
-int TinyTabWidget::addTab(QWidget *widget, const QIcon &icon, const QString &label)
+int QxTabWidget::addTab(QWidget *widget, const QIcon &icon, const QString &label)
 {
     return insertTab(-1, widget, icon, label);
 }
 
-int TinyTabWidget::insertTab(int index, QWidget *widget, const QString &label)
+int QxTabWidget::insertTab(int index, QWidget *widget, const QString &label)
 {
     return insertTab(index, widget, QIcon(), label);
 }
 
-int TinyTabWidget::insertTab(int index, QWidget *widget, const QIcon &icon, const QString &label)
+int QxTabWidget::insertTab(int index, QWidget *widget, const QIcon &icon, const QString &label)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     if (!widget) {
         return -1;
     }
@@ -135,72 +135,72 @@ int TinyTabWidget::insertTab(int index, QWidget *widget, const QIcon &icon, cons
     return index;
 }
 
-void TinyTabWidget::removeTab(int index)
+void QxTabWidget::removeTab(int index)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     if (QWidget *w = d->m_stack->widget(index)) {
         d->m_stack->removeWidget(w);
         d->m_tabBar->removeTab(index);
     }
 }
 
-int TinyTabWidget::currentIndex() const
+int QxTabWidget::currentIndex() const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_stack->currentIndex();
 }
 
-QWidget *TinyTabWidget::currentWidget() const
+QWidget *QxTabWidget::currentWidget() const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_stack->currentWidget();
 }
 
-QWidget *TinyTabWidget::widget(int index) const
+QWidget *QxTabWidget::widget(int index) const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_stack->widget(index);
 }
 
-int TinyTabWidget::indexOf(QWidget *widget) const
+int QxTabWidget::indexOf(QWidget *widget) const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_stack->indexOf(widget);
 }
 
-int TinyTabWidget::count() const
+int QxTabWidget::count() const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_tabBar->count();
 }
 
-void TinyTabWidget::setTabEnabled(int index, bool enable)
+void QxTabWidget::setTabEnabled(int index, bool enable)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     d->m_tabBar->setTabEnabled(index, enable);
 }
 
-void TinyTabWidget::setTabVisible(int index, bool visible)
+void QxTabWidget::setTabVisible(int index, bool visible)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     d->m_tabBar->setTabVisible(index, visible);
 }
 
-TinyTabBar *TinyTabWidget::tabBar() const
+QxTabBar *QxTabWidget::tabBar() const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_tabBar;
 }
 
-TinyTabWidget::TabPosition TinyTabWidget::tabPosition() const
+QxTabWidget::TabPosition QxTabWidget::tabPosition() const
 {
-    Q_D(const TinyTabWidget);
+    Q_D(const QxTabWidget);
     return d->m_pos;
 }
 
-void TinyTabWidget::setTabPosition(TinyTabWidget::TabPosition pos)
+void QxTabWidget::setTabPosition(QxTabWidget::TabPosition pos)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     if (d->m_pos == pos) {
         return;
     }
@@ -208,14 +208,14 @@ void TinyTabWidget::setTabPosition(TinyTabWidget::TabPosition pos)
     d->updateTabBarPosition();
 }
 
-QToolButton *TinyTabWidget::addButton(const QString &text)
+QToolButton *QxTabWidget::addButton(const QString &text)
 {
     return addButton(QIcon(), text);
 }
 
-QToolButton *TinyTabWidget::addButton(const QIcon &icon, const QString &text)
+QToolButton *QxTabWidget::addButton(const QIcon &icon, const QString &text)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     QToolButton *button = new QToolButton(this);
     button->setText(text);
     button->setToolTip(text);
@@ -228,26 +228,26 @@ QToolButton *TinyTabWidget::addButton(const QIcon &icon, const QString &text)
     return button;
 }
 
-void TinyTabWidget::removeButton(QToolButton *button)
+void QxTabWidget::removeButton(QToolButton *button)
 {
     if (button == Q_NULLPTR) {
         return;
     }
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     d->m_tabLayout->removeWidget(button);
     delete button;
 }
 
-void TinyTabWidget::setCurrentIndex(int index)
+void QxTabWidget::setCurrentIndex(int index)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     d->m_tabBar->setCurrentIndex(index);
 }
 
-void TinyTabWidget::setCurrentWidget(QWidget *widget)
+void QxTabWidget::setCurrentWidget(QWidget *widget)
 {
-    Q_D(TinyTabWidget);
+    Q_D(QxTabWidget);
     d->m_tabBar->setCurrentIndex(indexOf(widget));
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

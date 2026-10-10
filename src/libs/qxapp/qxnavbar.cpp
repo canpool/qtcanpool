@@ -2,9 +2,9 @@
  * Copyright (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "tinynavbar.h"
-#include "tinynavbar_p.h"
-#include "menuaccessbutton.h"
+#include "qxnavbar.h"
+#include "qxnavbar_p.h"
+#include "qxmenuaccessbutton.h"
 
 #include <QMenu>
 #include <QAction>
@@ -12,26 +12,26 @@
 #include <QActionGroup>
 #include <QStyle>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-TinyNavBarPrivate::TinyNavBarPrivate()
-    : TinyTabBarPrivate()
+QxNavBarPrivate::QxNavBarPrivate()
+    : QxTabBarPrivate()
     , m_actionAccessPopup(Q_NULLPTR)
     , m_removingAction(false)
 {
     m_actionMap.clear();
 }
 
-void TinyNavBarPrivate::init()
+void QxNavBarPrivate::init()
 {
-    Q_Q(TinyNavBar);
+    Q_Q(QxNavBar);
 
     const int sz = q->style()->pixelMetric(QStyle::PM_SmallIconSize, Q_NULLPTR, q);
     q->setIconSize(QSize(sz, sz));
 
-    m_accessPopup = new MenuAccessButton(q);
-    connect(q, &TinyNavBar::orientationChanged, m_accessPopup, &MenuAccessButton::setOrientation);
-    connect(q, &TinyNavBar::toolButtonStyleChanged, m_accessPopup, &MenuAccessButton::setToolButtonStyle);
+    m_accessPopup = new QxMenuAccessButton(q);
+    connect(q, &QxNavBar::orientationChanged, m_accessPopup, &QxMenuAccessButton::setOrientation);
+    connect(q, &QxNavBar::toolButtonStyleChanged, m_accessPopup, &QxMenuAccessButton::setToolButtonStyle);
     m_menu = new QMenu(q);
     m_accessPopup->setMenu(m_menu);
 
@@ -49,18 +49,18 @@ void TinyNavBarPrivate::init()
     q->setTabStyle(Qt::ToolButtonTextOnly);
 }
 
-void TinyNavBarPrivate::customizeAction(QAction *action)
+void QxNavBarPrivate::customizeAction(QAction *action)
 {
-    Q_Q(TinyNavBar);
+    Q_Q(QxNavBar);
     if (QAction *lowAction = m_actionMap.key(action)) {
         lowAction->setVisible(action->isChecked());
         Q_EMIT q->customizeTabChanged();
     }
 }
 
-void TinyNavBarPrivate::aboutToShowCustomizeMenu()
+void QxNavBarPrivate::aboutToShowCustomizeMenu()
 {
-    Q_Q(TinyNavBar);
+    Q_Q(QxNavBar);
     m_menu->clear();
     foreach (QAction *action, m_actionList) {
         m_menu->addAction(action);
@@ -68,34 +68,34 @@ void TinyNavBarPrivate::aboutToShowCustomizeMenu()
     Q_EMIT q->showCustomizeMenu(m_menu);
 }
 
-void TinyNavBarPrivate::aboutToHideCustomizeMenu()
+void QxNavBarPrivate::aboutToHideCustomizeMenu()
 {
     m_menu->clear();
 }
 
-TinyNavBar::TinyNavBar(QWidget *parent)
-    : TinyTabBar(new TinyNavBarPrivate(), parent)
+QxNavBar::QxNavBar(QWidget *parent)
+    : QxTabBar(new QxNavBarPrivate(), parent)
 {
-    Q_D(TinyNavBar);
+    Q_D(QxNavBar);
     d->setPublic(this);
     d->init();
-    setObjectName(QLatin1String("qtc_tinynavbar"));
+    setObjectName(QLatin1String("qtc_qxnavbar"));
 }
 
-TinyNavBar::~TinyNavBar()
+QxNavBar::~QxNavBar()
 {
-    // d will be detroy in ~TinyTabBar()
+    // d will be detroy in ~QxTabBar()
 }
 
-QAction *TinyNavBar::actionCustomizeButton() const
+QAction *QxNavBar::actionCustomizeButton() const
 {
-    Q_D(const TinyNavBar);
+    Q_D(const QxNavBar);
     return d->m_actionAccessPopup;
 }
 
-int TinyNavBar::visibleCount() const
+int QxNavBar::visibleCount() const
 {
-    Q_D(const TinyNavBar);
+    Q_D(const QxNavBar);
     int vcnt = 0;
     foreach (QAction *act, d->m_actionList) {
         if (act->isChecked()) {
@@ -105,10 +105,10 @@ int TinyNavBar::visibleCount() const
     return vcnt;
 }
 
-void TinyNavBar::actionEvent(QActionEvent *event)
+void QxNavBar::actionEvent(QActionEvent *event)
 {
-    TinyTabBar::actionEvent(event);
-    Q_D(TinyNavBar);
+    QxTabBar::actionEvent(event);
+    Q_D(QxNavBar);
     QAction *lowAction = event->action();
     if (d->m_actionAccessPopup) {
         if (event->type() == QEvent::ActionAdded) {
@@ -158,4 +158,4 @@ void TinyNavBar::actionEvent(QActionEvent *event)
     }
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

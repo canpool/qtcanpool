@@ -6,7 +6,14 @@ add_qtc_library(qxapp
   SOURCES
     qxapp_global.h
     qxappshell.cpp qxappshell.h
+    qxextensionbutton.cpp qxextensionbutton.h
+    qxmenuaccessbutton.cpp qxmenuaccessbutton.h
+    qxmenubutton.cpp qxmenubutton.h
+    qxnavbar.cpp qxnavbar.h qxnavbar_p.h
     qxnavigationbar.cpp qxnavigationbar.h
     qxsplashscreen.cpp qxsplashscreen.h
+    qxtabbar.cpp qxtabbar.h qxtabbar_p.h
+    qxtabwidget.cpp qxtabwidget.h
+    qxtoolbutton.cpp qxtoolbutton.h
     ribbonappwindow.cpp ribbonappwindow.h
 )

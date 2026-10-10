@@ -12,11 +12,6 @@ minitabbar.h
 minitabwidget.h
 qcanpool.h
 quickaccessbar.h
-ribbonbar.h
-ribboncontainers.h
-ribbongroup.h
-ribbonpage.h
-ribbonwindow.h
 tinynavbar.h
 tinytabbar.h
 tinytabwidget.h

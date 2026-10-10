@@ -2,7 +2,7 @@
  * Copyright (C) 2022-2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "fancytoolbutton.h"
+#include "qxtoolbutton.h"
 
 #include <QMouseEvent>
 #include "qtcompat/qtcompat.h"
@@ -15,12 +15,12 @@
 #include <QAction>
 #include <QMenu>
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-class FancyToolButtonPrivate
+class QxToolButtonPrivate
 {
 public:
-    FancyToolButtonPrivate();
+    QxToolButtonPrivate();
 
     QStyle *style() const;
     QStyle::PrimitiveElement indicatorArrowType() const;
@@ -38,30 +38,30 @@ public:
     bool hasMenu(const QStyleOptionToolButton *toolbutton) const;
 public:
     Qt::ArrowType m_menuArrowType;
-    FancyToolButton::MenuArea m_menuArea;
+    QxToolButton::MenuArea m_menuArea;
     QRect m_iconRect;
     QRect m_textRect;
-    FancyToolButton *q;
+    QxToolButton *q;
     bool m_showMenu;
     bool m_forceCenter;
     bool m_forceDefaultShowMenu;
 };
 
-FancyToolButtonPrivate::FancyToolButtonPrivate()
+QxToolButtonPrivate::QxToolButtonPrivate()
     : m_menuArrowType(Qt::DownArrow)
-    , m_menuArea(FancyToolButton::BottomMenuArea)
+    , m_menuArea(QxToolButton::BottomMenuArea)
     , m_showMenu(false)
     , m_forceCenter(true)
     , m_forceDefaultShowMenu(false)
 {
 }
 
-QStyle *FancyToolButtonPrivate::style() const
+QStyle *QxToolButtonPrivate::style() const
 {
     return q->style();
 }
 
-QStyle::PrimitiveElement FancyToolButtonPrivate::indicatorArrowType() const
+QStyle::PrimitiveElement QxToolButtonPrivate::indicatorArrowType() const
 {
     switch (m_menuArrowType) {
     case Qt::LeftArrow:
@@ -76,8 +76,7 @@ QStyle::PrimitiveElement FancyToolButtonPrivate::indicatorArrowType() const
     }
 }
 
-int FancyToolButtonPrivate::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *opt,
-                                        const QWidget *widget) const
+int QxToolButtonPrivate::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *opt, const QWidget *widget) const
 {
     // When using qstylesheet, mbi may be 0
     int mbi = style()->pixelMetric(metric, opt, widget);
@@ -87,8 +86,8 @@ int FancyToolButtonPrivate::pixelMetric(QStyle::PixelMetric metric, const QStyle
     return mbi;
 }
 
-void FancyToolButtonPrivate::drawArrow(const QStyleOptionToolButton *toolbutton, const QRect &rect, QPainter *p,
-                                       const QWidget *w) const
+void QxToolButtonPrivate::drawArrow(const QStyleOptionToolButton *toolbutton, const QRect &rect, QPainter *p,
+                                    const QWidget *w) const
 {
     QStyle::PrimitiveElement pe;
 
@@ -116,7 +115,7 @@ void FancyToolButtonPrivate::drawArrow(const QStyleOptionToolButton *toolbutton,
     style()->drawPrimitive(pe, &arrowOpt, p, w);
 }
 
-void FancyToolButtonPrivate::splitString(const QString &str, QString &strFirstRow, QString &strSecondRow) const
+void QxToolButtonPrivate::splitString(const QString &str, QString &strFirstRow, QString &strSecondRow) const
 {
     strFirstRow = str;
     strSecondRow.clear();
@@ -129,7 +128,7 @@ void FancyToolButtonPrivate::splitString(const QString &str, QString &strFirstRo
     strSecondRow = strList.at(1);
 }
 
-void FancyToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt, QPainter *p, const QWidget *widget)
+void QxToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt, QPainter *p, const QWidget *widget)
 {
     const QStyleOptionToolButton *toolbutton = opt;
     QRect menuarea;
@@ -172,8 +171,7 @@ void FancyToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt, Q
         QRect ir = menuarea;
         QRect rcArrow;
 
-        if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon &&
-            m_menuArea == FancyToolButton::BottomMenuArea) {
+        if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon && m_menuArea == QxToolButton::BottomMenuArea) {
             QString strFirstRow, strSecondRow;
             splitString(toolbutton->text, strFirstRow, strSecondRow);
             int height = toolbutton->fontMetrics.height();
@@ -192,8 +190,7 @@ void FancyToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt, Q
         style()->drawPrimitive(indicatorArrowType(), &tool, p, widget);
     } else if (toolbutton->features & QStyleOptionToolButton::HasMenu) {
         QStyleOptionToolButton newBtn = *toolbutton;
-        if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon &&
-            m_menuArea == FancyToolButton::BottomMenuArea) {
+        if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon && m_menuArea == QxToolButton::BottomMenuArea) {
             QString strFirstRow, strSecondRow;
             splitString(toolbutton->text, strFirstRow, strSecondRow);
             int height = toolbutton->fontMetrics.height();
@@ -212,7 +209,7 @@ void FancyToolButtonPrivate::drawToolButton(const QStyleOptionToolButton *opt, Q
     }
 }
 
-void FancyToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPainter *p, const QWidget *w)
+void QxToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPainter *p, const QWidget *w)
 {
     const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(opt);
     QRect rect = toolbutton->rect;
@@ -296,8 +293,8 @@ void FancyToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPaint
                 QRect rcFirstRowText(QPoint(rcText.left(), rcText.top() + 1),
                                      QPoint(rcText.right(), rcText.top() + height + 1));
 
-                // if FancyToolButton::BottomMenuArea, add height in sizeHint
-                if (m_menuArea != FancyToolButton::BottomMenuArea && strSecondRow.isEmpty()) {
+                // if QxToolButton::BottomMenuArea, add height in sizeHint
+                if (m_menuArea != QxToolButton::BottomMenuArea && strSecondRow.isEmpty()) {
                     rcFirstRowText = rcText;
                 }
 
@@ -343,8 +340,8 @@ void FancyToolButtonPrivate::drawToolButtonLabel(const QStyleOption *opt, QPaint
     }
 }
 
-QRect FancyToolButtonPrivate::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex *opt,
-                                             QStyle::SubControl sc, const QWidget *widget) const
+QRect QxToolButtonPrivate::subControlRect(QStyle::ComplexControl cc, const QStyleOptionComplex *opt,
+                                          QStyle::SubControl sc, const QWidget *widget) const
 {
     switch (cc) {
     case QStyle::CC_ToolButton:
@@ -374,7 +371,7 @@ QRect FancyToolButtonPrivate::subControlRect(QStyle::ComplexControl cc, const QS
     return style()->subControlRect(cc, opt, sc, widget);
 }
 
-bool FancyToolButtonPrivate::hasMenu(const QStyleOptionToolButton *toolbutton) const
+bool QxToolButtonPrivate::hasMenu(const QStyleOptionToolButton *toolbutton) const
 {
     if ((toolbutton->subControls & QStyle::SC_ToolButtonMenu) ||
         (toolbutton->features & QStyleOptionToolButton::HasMenu)) {
@@ -383,9 +380,9 @@ bool FancyToolButtonPrivate::hasMenu(const QStyleOptionToolButton *toolbutton) c
     return false;
 }
 
-FancyToolButton::FancyToolButton(QWidget *parent)
+QxToolButton::QxToolButton(QWidget *parent)
     : QToolButton(parent)
-    , d(new FancyToolButtonPrivate())
+    , d(new QxToolButtonPrivate())
 {
     d->q = this;
     setAttribute(Qt::WA_StyledBackground, true);
@@ -393,30 +390,30 @@ FancyToolButton::FancyToolButton(QWidget *parent)
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 
-FancyToolButton::FancyToolButton(const QString &text, QWidget *parent)
-    : FancyToolButton(parent)
+QxToolButton::QxToolButton(const QString &text, QWidget *parent)
+    : QxToolButton(parent)
 {
     setText(text);
 }
 
-FancyToolButton::FancyToolButton(const QIcon &icon, const QString &text, QWidget *parent)
-    : FancyToolButton(parent)
+QxToolButton::QxToolButton(const QIcon &icon, const QString &text, QWidget *parent)
+    : QxToolButton(parent)
 {
     setIcon(icon);
     setText(text);
 }
 
-FancyToolButton::~FancyToolButton()
+QxToolButton::~QxToolButton()
 {
     delete d;
 }
 
-Qt::ArrowType FancyToolButton::menuArrowType() const
+Qt::ArrowType QxToolButton::menuArrowType() const
 {
     return d->m_menuArrowType;
 }
 
-void FancyToolButton::setMenuArrowType(Qt::ArrowType type)
+void QxToolButton::setMenuArrowType(Qt::ArrowType type)
 {
     if (d->m_menuArrowType == type) {
         return;
@@ -427,12 +424,12 @@ void FancyToolButton::setMenuArrowType(Qt::ArrowType type)
     }
 }
 
-FancyToolButton::MenuArea FancyToolButton::menuArea() const
+QxToolButton::MenuArea QxToolButton::menuArea() const
 {
     return d->m_menuArea;
 }
 
-void FancyToolButton::setMenuArea(FancyToolButton::MenuArea area)
+void QxToolButton::setMenuArea(QxToolButton::MenuArea area)
 {
     if (d->m_menuArea == area || toolButtonStyle() != Qt::ToolButtonTextUnderIcon) {
         return;
@@ -443,7 +440,7 @@ void FancyToolButton::setMenuArea(FancyToolButton::MenuArea area)
     }
 }
 
-QSize FancyToolButton::sizeHint() const
+QSize QxToolButton::sizeHint() const
 {
     QSize sz = QToolButton::sizeHint();
     QStyleOptionToolButton opt;
@@ -463,7 +460,7 @@ QSize FancyToolButton::sizeHint() const
     }
 
     bool indicatorCenter = false;
-    bool isBottomMenuArea = (menuArea() == FancyToolButton::BottomMenuArea);
+    bool isBottomMenuArea = (menuArea() == QxToolButton::BottomMenuArea);
     QToolButton::ToolButtonPopupMode mode = QToolButton::popupMode();
 
     if (opt.toolButtonStyle != Qt::ToolButtonIconOnly) {
@@ -541,7 +538,7 @@ QSize FancyToolButton::sizeHint() const
 #endif
 }
 
-void FancyToolButton::setForceAlignCenter(bool b)
+void QxToolButton::setForceAlignCenter(bool b)
 {
     if (d->m_forceCenter == b) {
         return;
@@ -553,7 +550,7 @@ void FancyToolButton::setForceAlignCenter(bool b)
     }
 }
 
-void FancyToolButton::setForceDefaultShowMenu(bool b)
+void QxToolButton::setForceDefaultShowMenu(bool b)
 {
     if (d->m_forceDefaultShowMenu == b) {
         return;
@@ -561,19 +558,19 @@ void FancyToolButton::setForceDefaultShowMenu(bool b)
     d->m_forceDefaultShowMenu = b;
 }
 
-void FancyToolButton::setToolButtonStyle(Qt::ToolButtonStyle style)
+void QxToolButton::setToolButtonStyle(Qt::ToolButtonStyle style)
 {
     QToolButton::setToolButtonStyle(style);
     if (style == Qt::ToolButtonTextUnderIcon) {
         return;
     }
-    if (d->m_menuArea == FancyToolButton::RightMenuArea) {
+    if (d->m_menuArea == QxToolButton::RightMenuArea) {
         return;
     }
-    d->m_menuArea = FancyToolButton::RightMenuArea;
+    d->m_menuArea = QxToolButton::RightMenuArea;
 }
 
-void FancyToolButton::paintEvent(QPaintEvent *event)
+void QxToolButton::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter p(this);
@@ -585,7 +582,7 @@ void FancyToolButton::paintEvent(QPaintEvent *event)
     d->drawToolButton(&opt, &p, this);
 }
 
-void FancyToolButton::mousePressEvent(QMouseEvent *e)
+void QxToolButton::mousePressEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton && popupMode() == MenuButtonPopup) {
         if (d->m_forceDefaultShowMenu) {
@@ -623,4 +620,4 @@ void FancyToolButton::mousePressEvent(QMouseEvent *e)
     QToolButton::mousePressEvent(e);
 }
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE

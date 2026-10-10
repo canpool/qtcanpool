@@ -4,7 +4,7 @@
  **/
 #pragma once
 
-#include "qcanpool.h"
+#include "qxapp_global.h"
 #include <QObject>
 #include <QMap>
 
@@ -12,18 +12,18 @@ class QAction;
 class QActionGroup;
 class QToolButton;
 
-QCANPOOL_BEGIN_NAMESPACE
+QX_APP_BEGIN_NAMESPACE
 
-class TinyTabBar;
+class QxTabBar;
 
-class TinyTabBarPrivate : public QObject
+class QxTabBarPrivate : public QObject
 {
     Q_OBJECT
 public:
-    QCP_DECLARE_PUBLIC(TinyTabBar)
+    QX_DECLARE_PUBLIC(QxTabBar)
 public:
-    TinyTabBarPrivate();
-    virtual ~TinyTabBarPrivate();
+    QxTabBarPrivate();
+    virtual ~QxTabBarPrivate();
 
     void init();
     bool validIndex(int index) const
@@ -45,4 +45,4 @@ public:
     bool m_togglable;
 };
 
-QCANPOOL_END_NAMESPACE
+QX_APP_END_NAMESPACE
