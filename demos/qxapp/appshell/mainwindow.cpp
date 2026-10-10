@@ -5,6 +5,7 @@
 
 #include "mainwindow.h"
 
+#include "qxapp/qxworkspacemanager.h"
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpage.h"
 #include "qxtheme/qxtheme.h"
@@ -14,9 +15,13 @@
 // module-less form is the one the rest of the project uses for it.
 #include <QAction>
 #include <QActionGroup>
+#include <QMenu>
+#include <QtCore/QTimer>
 #include <QtGui/QFont>
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QInputDialog>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QTreeWidget>
@@ -112,6 +117,29 @@ void MainWindow::createRibbon()
         setStatusMessage(tr("Layout restored"));
     });
 
+    // Workspaces ------------------------------------------------------------
+    // The group next to "Layout" is the point of the comparison: Layout keeps
+    // the one arrangement the shell always had, while this one keeps as many
+    // named arrangements as the user cares to store.
+    RibbonGroup *workspaces = page->addGroup(tr("Workspaces"));
+
+    QAction *saveAs = new QAction(s->standardIcon(QStyle::SP_DialogSaveButton), tr("Save as..."), this);
+    workspaces->addMediumAction(saveAs);
+    connect(saveAs, &QAction::triggered, this, &MainWindow::saveWorkspaceAs);
+
+    m_workspaceMenu = new QMenu(tr("Apply"), this);
+    workspaces->addSmallMenu(m_workspaceMenu);
+
+    QAction *forget = new QAction(tr("Forget..."), this);
+    workspaces->addMediumAction(forget);
+    connect(forget, &QAction::triggered, this, &MainWindow::forgetWorkspace);
+
+    // The menu is rebuilt from the manager rather than appended to, which is
+    // what keeps it in step with a workspace being renamed somewhere else.
+    refreshWorkspaceMenu();
+    connect(workspaceManager(), &QxWorkspaceManager::workspaceSaved, this, &MainWindow::refreshWorkspaceMenu);
+    connect(workspaceManager(), &QxWorkspaceManager::workspaceRemoved, this, &MainWindow::refreshWorkspaceMenu);
+
     // Status -----------------------------------------------------------------
     RibbonGroup *status = page->addGroup(tr("Status"));
 
@@ -122,6 +150,96 @@ void MainWindow::createRibbon()
         setBusy(on);
         setStatusMessage(on ? tr("Working...") : tr("Ready"));
     });
+
+    QAction *progress = new QAction(tr("Progress"), this);
+    status->addMediumAction(progress);
+    connect(progress, &QAction::triggered, this, &MainWindow::runProgress);
+
+    m_progressTimer = new QTimer(this);
+    connect(m_progressTimer, &QTimer::timeout, this, &MainWindow::stepProgress);
+}
+
+void MainWindow::refreshWorkspaceMenu()
+{
+    m_workspaceMenu->clear();
+
+    const QStringList names = workspaceNames();
+    for (const QString &name : names) {
+        QAction *entry = m_workspaceMenu->addAction(name);
+        connect(entry, &QAction::triggered, this, [this, name]() {
+            if (applyWorkspace(name)) {
+                setStatusMessage(tr("Workspace: %1").arg(name));
+            } else {
+                // The usual reason is a dock that the arrangement mentions and
+                // this build no longer has.
+                showToast(tr("The workspace \"%1\" could not be applied").arg(name), QxToast::Warning);
+            }
+        });
+    }
+
+    if (names.isEmpty()) {
+        QAction *empty = m_workspaceMenu->addAction(tr("(none saved yet)"));
+        empty->setEnabled(false);
+    }
+}
+
+void MainWindow::saveWorkspaceAs()
+{
+    bool accepted = false;
+    const QString name =
+        QInputDialog::getText(this, tr("Save workspace"), tr("Name:"), QLineEdit::Normal, QString(), &accepted);
+    if (!accepted) {
+        return;
+    }
+    if (saveWorkspace(name)) {
+        setStatusMessage(tr("Workspace: %1").arg(name.trimmed()));
+    } else {
+        // The only way this fails is an empty name, which is the one thing the
+        // dialog cannot prevent.
+        showToast(tr("A workspace needs a name"), QxToast::Warning);
+    }
+}
+
+void MainWindow::forgetWorkspace()
+{
+    const QStringList names = workspaceNames();
+    if (names.isEmpty()) {
+        showToast(tr("There is no workspace to forget"), QxToast::Information);
+        return;
+    }
+
+    bool accepted = false;
+    const QString name =
+        QInputDialog::getItem(this, tr("Forget workspace"), tr("Workspace:"), names, 0, false, &accepted);
+    if (!accepted) {
+        return;
+    }
+    workspaceManager()->removeWorkspace(name);
+    setStatusMessage(tr("Forgot the workspace \"%1\"").arg(name));
+}
+
+void MainWindow::runProgress()
+{
+    // A job of known length: the indicator takes over from the marquee and
+    // reports how far it has got, while the message line says what it is.
+    m_progressStep = 0;
+    setProgressRange(0, 100);
+    setProgress(0);
+    setStatusMessage(tr("Working... 0%"));
+    m_progressTimer->start(40);
+}
+
+void MainWindow::stepProgress()
+{
+    m_progressStep += 2;
+    setProgress(m_progressStep);
+    setStatusMessage(tr("Working... %1%").arg(m_progressStep));
+
+    if (m_progressStep >= 100) {
+        m_progressTimer->stop();
+        clearProgress();
+        setStatusMessage(tr("Done"));
+    }
 }
 
 void MainWindow::createPages()
@@ -133,7 +251,9 @@ void MainWindow::createPages()
     addPage(QStringLiteral("log"), s->standardIcon(QStyle::SP_FileDialogDetailedView), tr("Log"), createLogPage());
 
     connect(this, &QxAppShell::currentPageChanged, this, [this](int, const QString &id) {
-        if (isBusy()) {
+        // While the indicator says something about work in progress, the page
+        // is not the most interesting thing on screen.
+        if (isBusy() || isProgressVisible()) {
             return;
         }
         setStatusMessage(tr("Page: %1").arg(id));
