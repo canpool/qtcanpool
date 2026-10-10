@@ -4,6 +4,7 @@
  **/
 #include "qxappshell.h"
 #include "qxnavigationbar.h"
+#include "qxtoastmanager.h"
 
 #include "qxcore/qxsettings.h"
 #include "qxdock/dockwidget.h"
@@ -68,6 +69,8 @@ public:
     QString pageId(int index) const;
     /*! Creates the settings object on first use; never returns null. */
     QX_CORE_PREPEND_NAMESPACE(QxSettings) * ensureSettings() const;
+    /*! Creates the toast stack on first use; never returns null. */
+    QxToastManager *ensureToastManager() const;
 public:
     QxNavigationBar *m_navigationBar = Q_NULLPTR;
     QX_DOCK_PREPEND_NAMESPACE(DockWindow) *m_dockWindow = Q_NULLPTR;
@@ -76,6 +79,7 @@ public:
     QProgressBar *m_progress = Q_NULLPTR;
     QVector<Page> m_pages;
     mutable QX_CORE_PREPEND_NAMESPACE(QxSettings) *m_settings = Q_NULLPTR;
+    mutable QxToastManager *m_toastManager = Q_NULLPTR;
     int m_currentIndex = -1;
     bool m_busy = false;
     bool m_autoSaveLayout = true;
@@ -186,6 +190,16 @@ QX_CORE_PREPEND_NAMESPACE(QxSettings) * QxAppShellPrivate::ensureSettings() cons
         m_settings = new QX_CORE_PREPEND_NAMESPACE(QxSettings)(organization, application, q_ptr);
     }
     return m_settings;
+}
+
+QxToastManager *QxAppShellPrivate::ensureToastManager() const
+{
+    if (!m_toastManager) {
+        // The toasts are children of the shell, which is what puts them above
+        // the ribbon, the rail and the docks without touching a window manager.
+        m_toastManager = new QxToastManager(q_ptr, q_ptr);
+    }
+    return m_toastManager;
 }
 
 QxAppShell::QxAppShell(QWidget *parent)
@@ -398,6 +412,18 @@ bool QxAppShell::isBusy() const
 {
     Q_D(const QxAppShell);
     return d->m_busy;
+}
+
+QxToastManager *QxAppShell::toastManager() const
+{
+    Q_D(const QxAppShell);
+    return d->ensureToastManager();
+}
+
+QxToast *QxAppShell::showToast(const QString &text, QxToast::Level level, int timeoutMs)
+{
+    Q_D(QxAppShell);
+    return d->ensureToastManager()->show(text, level, timeoutMs);
 }
 
 QX_CORE_PREPEND_NAMESPACE(QxSettings) * QxAppShell::settings() const

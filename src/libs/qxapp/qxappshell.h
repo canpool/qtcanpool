@@ -6,6 +6,7 @@
 #define QXAPPSHELL_H
 
 #include "qxapp_global.h"
+#include "qxtoast.h"
 #include "ribbonappwindow.h"
 
 #include "qxcore/qxsettings.h"
@@ -30,6 +31,7 @@ QX_APP_BEGIN_NAMESPACE
 
 class QxAppShellPrivate;
 class QxNavigationBar;
+class QxToastManager;
 
 /*!
  * The window skeleton of a ribbon application.
@@ -128,6 +130,27 @@ public:
      */
     void setBusy(bool busy);
     bool isBusy() const;
+
+    // Notifications ---------------------------------------------------------
+    /*!
+     * The stack of toasts that shows up over the shell, created on first use
+     * and owned by the shell.
+     *
+     * A shell is a plain window, so it never asks for the object itself before
+     * someone has something to say; once it exists, every showToast() lands in
+     * it - see QxToastManager for the stacking, the timeout and the placement.
+     */
+    QxToastManager *toastManager() const;
+    /*!
+     * Puts a toast over the shell and returns it, so that a caller who needs to
+     * can hold on to it or dismiss it early.
+     *
+     * @code
+     * shell.showToast(tr("The document was saved"), QxToast::Success);
+     * @endcode
+     */
+    QxToast *showToast(const QString &text, QxToast::Level level = QxToast::Information,
+                       int timeoutMs = QxToast::DefaultTimeout);
 
     // Persistence -----------------------------------------------------------
     /*!
