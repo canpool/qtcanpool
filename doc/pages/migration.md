@@ -1,7 +1,8 @@
-# 2.x → 3.0 / 3.1 / 3.2 迁移指南
+# 2.x → 3.x / 4.0 迁移指南
 
 > 结论：3.0 **不保证二进制兼容**，提供源码级迁移路径。3.1 沿用同一方向做完了 legacy 收口，
-> 3.2 把 `qcanpool` 库本身删除——**那 7 个转发头也没了**。
+> 3.2 把 `qcanpool` 库本身删除——**那 7 个转发头也没了**。4.0 移除 qmake，并新增插件体系
+> （后者是**新增能力**，不写插件的工程无需改动）。
 
 本页是迁移总览。完整的类与方法对照表、`fancy*` 控件存废表与分步清单见仓库中的
 [`doc/design/3.0-MIGRATION.md`](https://github.com/canpool/qtcanpool/blob/master/doc/design/3.0-MIGRATION.md)。
@@ -182,6 +183,49 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 > **注意**：qmake **已于 4.0 移除**（3.0 起冻结，4.0 删除），全树不再有
 > `.pro` / `.pri`，CMake 是唯一的构建方式。
 
+## 3.x → 4.0
+
+4.0 做两件事：**移除 qmake**，和**引入插件体系**。前者对既有代码是清理，后者是**新增**能力——
+不写插件的工程一行都不用改。
+
+### qmake 彻底移除（K13）
+
+全树 88 个 `.pro` / `.pri` 已删除（`git ls-files '*.pro' '*.pri'` 无输出），CMake 是唯一构建方式。
+
+| 你会在迁移时碰到 | 怎么改 |
+| :--- | :--- |
+| 找不到 `*.pro` / `*.pri` | 按下文「构建迁移」一节改用 `find_package(QtCanpool)` |
+| `projects/staticlink` 消失 | 静态链接改用 CMake 的 `find_package` + 目标链接 |
+| `examples/` 下不再是 `.pro` | 新增根选项 `WITH_EXAMPLES`（默认 ON，与 `WITH_DEMOS` 并列） |
+
+> 少数只在 qmake 里存在、没有 CMake 对应物的示例被删除：`demos/helloworld`、`demos/qxwindow`、
+> `demos/thirdparty`；`examples/` 下的 22 个示例已补上 CMake 并恢复可构建。
+
+### 新增 `qxplugin` 库
+
+插件体系是 4.0 的新面，**不构成对既有代码的破坏性变更**。它带来：
+
+- **插件契约** @ref QxPlugin::QxPlugin：`initialize` / `extensionsInitialized` / `shutdown`；
+- **元数据加载**：放入插件目录即被认出，不写一句注册代码；
+- **三种依赖**：required / optional / test，见[插件体系](plugins.md)；
+- **失败隔离**：任一插件失败不阻止宿主启动；
+- **宿主契约** @ref QxPlugin::QxPluginContext：页面 / 停靠 / 状态栏 / 通知 / 配置 / 对象池；
+- **对象池** @ref QxPlugin::QxObjectPool：两个不共享头文件的插件协作的落点。
+
+接口版本：`QX_PLUGIN_IID` = `"org.qtcanpool.QtCanpool.QxPlugin/1.0"`，
+`QxPlugin::interfaceVersion()` 首版为 **1**；宿主可用 `QxPluginManager::setRequiredInterfaceVersion()`
+拒绝过旧的插件。
+
+> ⚠️ **`QxAppShell` 是否改名在 4.0 阶段仍未决（K14）**。插件面向的不是宿主类而是 `QxPluginContext`，
+> 所以即便将来改名，影响面也只是宿主与它的样板，**任何插件都不用跟着改**。
+
+> ⚠️ **`PLUGIN_RECOMMENDS` 不是 Qt Creator 的 `Recommends`**：我们用它生成 `Dependencies` 里
+> `"Type" : "optional"` 的项（对应 Qt Creator 的 `PluginDependency::Type::Optional`）；而 Qt Creator 的
+> `Recommends` 是"启用本插件时顺带**启用**它列出的插件"，与加载顺序无关。名字像，含义不同。
+
+> ⚠️ **行为变化：optional 依赖现在是真排序**。4.0 之前它只被登记、不建边（等同"没声明"）；现在能解析时
+> 它把供给方排到前面——这样消费方查得到对方已发布的东西；不能解析时静默跳过，且**不连带**消费方。
+
 ## 分步迁移清单
 
 1. 构建切换到 CMake，锁定 Qt ≥ 5.15（推荐 6.5 / 6.8）。
@@ -206,3 +250,5 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
     仍在用 qmake 的工程按上文「构建迁移」一节改用 `find_package(QtCanpool)`。
     参考：[`projects/consume`](https://github.com/canpool/qtcanpool/tree/master/projects/consume)、
     [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)。
+17. **（可选，4.0）** 接入[插件体系](plugins.md)：把可选的业务模块改写成插件，让宿主不再认识
+    它由哪些模块组成。这是 4.0 的**新增**能力，不做也不影响升级。
