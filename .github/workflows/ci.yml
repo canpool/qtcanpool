@@ -58,6 +58,17 @@ jobs:
           cmake -S projects/consume -B "$RUNNER_TEMP/consume" -DCMAKE_BUILD_TYPE=Release
           cmake --build "$RUNNER_TEMP/consume" --parallel
 
+      - name: Check the scaffolding script produces a buildable project
+        # Decision K9 put the skeleton in a script rather than in a second
+        # template project, which makes the script the only thing between a
+        # newcomer and a broken start - and the only way to know it still works
+        # is to run it against a real SDK. Reuses the prefix installed above.
+        if: matrix.os == 'ubuntu-latest' && matrix.qt == '6.8.1'
+        run: |
+          python3 scripts/new-project ci_scaffold -o "$RUNNER_TEMP/scaffold" \
+            --build --sdk "$RUNNER_TEMP/sdk"
+          test -x "$RUNNER_TEMP/scaffold/ci_scaffold/build/ci_scaffold"
+
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
     # so any unformatted change now fails the build.
