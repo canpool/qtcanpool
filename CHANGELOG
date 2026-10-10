@@ -1,4 +1,4 @@
-3.1.0 (unreleased)
+3.1.0
 ---
 - qcanpool: remove the legacy ribbon (ribbonbar/ribbonpage/ribbongroup/ribbonwindow/ribboncontainer); BREAKING: use qxribbon instead, see doc/design/3.0-MIGRATION.md
 - qcanpool: drop the QCANPOOL_CONFIG_RIBBON build option
