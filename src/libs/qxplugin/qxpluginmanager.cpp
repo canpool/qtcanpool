@@ -132,7 +132,12 @@ QString QxPluginManagerPrivate::cycleChain(QxPluginSpec *start, const QList<QxPl
         seen.insert(cur->id());
         chain.append(cur->id());
         QxPluginSpec *next = Q_NULLPTR;
-        for (const QString &dep : cur->dependencies()) {
+        // Both kinds of edge count here: a cycle that closes through an optional
+        // dependency is still a cycle, and naming only half of it would report a
+        // chain the reader cannot find in the metadata.
+        QStringList edges = cur->dependencies();
+        edges += cur->optionalDependencies();
+        for (const QString &dep : std::as_const(edges)) {
             QxPluginSpec *depSpec = specById.value(dep);
             // live holds exactly the candidates Kahn could not order; an edge that
             // leaves it points at a node outside the cycle, so it must not be followed.
@@ -240,6 +245,7 @@ void QxPluginManagerPrivate::resolve()
         if (s->state() == QxPluginState::Read)
             live.append(s);
     }
+    const QSet<QxPluginSpec *> liveSet(live.begin(), live.end());
 
     QHash<QString, QList<QxPluginSpec *>> dependents;
     QHash<QString, int> inDegree;
@@ -247,6 +253,18 @@ void QxPluginManagerPrivate::resolve()
         inDegree.insert(s->id(), 0);
     for (QxPluginSpec *s : live) {
         for (const QString &dep : s->dependencies()) {
+            dependents[dep].append(s);
+            inDegree[s->id()]++;
+        }
+        // An optional dependency that is actually there still orders the run -
+        // which is what makes it usable at all, since a plugin can only look up
+        // what has already published itself. What it never does is block: one
+        // that is absent, switched off, or already failed is dropped here, and
+        // the dependent starts regardless. Steps 2 and 3 deliberately read only
+        // dependencies(), which is where the difference between the two lives.
+        for (const QString &dep : s->optionalDependencies()) {
+            if (!liveSet.contains(specById.value(dep)))
+                continue;
             dependents[dep].append(s);
             inDegree[s->id()]++;
         }

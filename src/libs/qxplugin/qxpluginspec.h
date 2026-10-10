@@ -69,9 +69,24 @@ public:
     QString url() const;
 
     // Dependencies ----------------------------------------------------------
-    /*! Required dependency ids, in declaration order. */
+    /*!
+     * Required dependency ids, in declaration order. Missing one of these - or
+     * getting one that is switched off or failed - takes the plugin down with it.
+     */
     QStringList dependencies() const;
-    /*! Optional dependency ids (Type == "optional" in the metadata). */
+    /*!
+     * Optional dependency ids (Type == "optional" in the metadata), in
+     * declaration order.
+     *
+     * The difference from dependencies() is entirely about what happens when the
+     * other end is not there: an optional dependency that is resolvable is still
+     * loaded and initialized first - which is what lets a plugin look up
+     * something the other one publishes - but one that is missing, off or failed
+     * is quietly dropped, and this plugin starts either way.
+     *
+     * "test" dependencies are neither: they do not affect load order, and since
+     * nothing here runs a plugin's tests in isolation, they are read and ignored.
+     */
     QStringList optionalDependencies() const;
 
     // Enabling --------------------------------------------------------------

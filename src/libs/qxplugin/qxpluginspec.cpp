@@ -179,10 +179,17 @@ bool QxPluginSpec::read(const QString &filePath, const QJsonObject &metaData)
             if (depName.isEmpty())
                 continue;
             const QString type = obj.value(QStringLiteral("Type")).toString();
-            if (type == QStringLiteral("optional") || type == QStringLiteral("test"))
+            if (type == QStringLiteral("optional")) {
                 d->optionalDependencies.append(depName);
-            else
+            } else if (type != QStringLiteral("test")) {
+                // "test" dependencies are force-loaded for a test run only and do
+                // not affect load order. Nothing here has a test mode, so the
+                // entry is read and dropped rather than mistaken for a soft edge
+                // that would reorder the run behind the caller's back. Anything
+                // else - an explicit "required", or no Type at all - is a hard
+                // dependency, which is what the metadata means by a bare entry.
                 d->dependencies.append(depName);
+            }
         }
     }
 
