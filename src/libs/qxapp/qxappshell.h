@@ -131,6 +131,16 @@ public:
      * returned pointer to QxPluginManager::setContext().
      */
     ::QxPlugin::QxPluginContext *pluginContext() const;
+    /*!
+     * The object pool plugins use to find each other, created on first use and
+     * owned by the shell. It is what pluginContext() hands over, so everything
+     * published through a plugin's context ends up here.
+     *
+     * A shell that hosts plugins has to offer one of these - two plugins that
+     * share no header have nowhere else to meet - and the host itself can read
+     * it to see what they made available, without knowing any of them by name.
+     */
+    ::QxPlugin::QxObjectPool *pluginPool() const;
 
     // Status bar ------------------------------------------------------------
     /*! Text of the permanent message line at the left of the status bar. */

@@ -76,6 +76,8 @@ public:
     QxToastManager *ensureToastManager() const;
     /*! Creates the workspace manager on first use; never returns null. */
     QxWorkspaceManager *ensureWorkspaceManager() const;
+    /*! Creates the object pool plugins meet in on first use; never returns null. */
+    ::QxPlugin::QxObjectPool *ensurePluginPool() const;
 public:
     QxNavigationBar *m_navigationBar = Q_NULLPTR;
     QX_DOCK_PREPEND_NAMESPACE(DockWindow) *m_dockWindow = Q_NULLPTR;
@@ -86,6 +88,8 @@ public:
     mutable QX_CORE_PREPEND_NAMESPACE(QxSettings) *m_settings = Q_NULLPTR;
     mutable QxToastManager *m_toastManager = Q_NULLPTR;
     mutable QxWorkspaceManager *m_workspaceManager = Q_NULLPTR;
+    /*! The pool plugins meet in, created lazily by QxAppShell::pluginPool(). */
+    mutable ::QxPlugin::QxObjectPool *m_pool = Q_NULLPTR;
     /*! The QxPluginContext adapter, created lazily by QxAppShell::pluginContext(). */
     mutable ::QxPlugin::QxPluginContext *m_context = Q_NULLPTR;
     int m_currentIndex = -1;
@@ -111,13 +115,16 @@ QxAppShellPrivate::~QxAppShellPrivate()
  * never has to multiply-inherit a vtable-bearing interface (which would corrupt
  * the QObject memory layout and crash on teardown).
  *
- * It is held by QxAppShellPrivate and surfaced through pluginContext().
+ * It is held by QxAppShellPrivate and surfaced through pluginContext(). The
+ * object pool is the one thing it does not forward: QxPluginContext holds the
+ * pool itself, and the shell hands its own over when the adapter is built.
  */
 class QxAppShellContext : public ::QxPlugin::QxPluginContext
 {
 public:
-    explicit QxAppShellContext(QxAppShell *shell)
-        : m_shell(shell)
+    QxAppShellContext(QxAppShell *shell, ::QxPlugin::QxObjectPool *pool)
+        : ::QxPlugin::QxPluginContext(pool)
+        , m_shell(shell)
     {
     }
 
@@ -325,9 +332,23 @@ QxAppShell::~QxAppShell()
     if (!d->m_context) {
         // The adapter lives as long as the shell; const_cast is safe because the
         // shell is the owner and the adapter only reads through the public API.
-        d->m_context = new QxAppShellContext(const_cast<QxAppShell *>(this));
+        d->m_context = new QxAppShellContext(const_cast<QxAppShell *>(this), d->ensurePluginPool());
     }
     return d->m_context;
+}
+
+::QxPlugin::QxObjectPool *QxAppShell::pluginPool() const
+{
+    Q_D(const QxAppShell);
+    return d->ensurePluginPool();
+}
+
+::QxPlugin::QxObjectPool *QxAppShellPrivate::ensurePluginPool() const
+{
+    if (!m_pool) {
+        m_pool = new ::QxPlugin::QxObjectPool(q_ptr);
+    }
+    return m_pool;
 }
 
 QxNavigationBar *QxAppShell::navigationBar() const
