@@ -66,5 +66,9 @@ aqtinstall.log
 __pycache__/
 *.py[cod]
 
+# Coverage and static analysis output (CI uploads these as artifacts)
+coverage*.info
+clang-tidy.log
+
 # AI assistant workspace (local only)
 .workbuddy/

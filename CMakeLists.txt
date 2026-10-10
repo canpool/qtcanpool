@@ -58,6 +58,35 @@ add_feature_info("Build with sanitize" ${WITH_SANITIZE} "SANITIZE_FLAGS='${SANIT
 
 option(WITH_DEMOS "Build Demos" ON)
 
+option(WITH_COVERAGE "Build with coverage instrumentation (GCC/Clang only)" OFF)
+add_feature_info("Build with coverage" ${WITH_COVERAGE} "")
+
+# Coverage and the sanitizers only mean anything when they are applied to every
+# target in the tree: instrumenting part of it reports a misleadingly clean
+# picture. The flags are therefore set globally, before any subdirectory adds a
+# target. Compiler support is checked instead of assumed, and an unsupported
+# toolchain warns rather than fails, so that a stray -DWITH_COVERAGE on MSVC
+# does not turn into a confusing link error.
+if (WITH_COVERAGE OR (WITH_SANITIZE AND SANITIZE_FLAGS))
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(_qtcanpool_instrumentation "")
+    if (WITH_COVERAGE)
+      string(APPEND _qtcanpool_instrumentation " --coverage -O0 -g")
+    endif()
+    if (WITH_SANITIZE AND SANITIZE_FLAGS)
+      string(APPEND _qtcanpool_instrumentation " -fsanitize=${SANITIZE_FLAGS} -fno-omit-frame-pointer")
+    endif()
+    foreach (_flags CMAKE_CXX_FLAGS CMAKE_C_FLAGS CMAKE_EXE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+      string(APPEND ${_flags} "${_qtcanpool_instrumentation}")
+    endforeach()
+    message(STATUS "Instrumentation flags:${_qtcanpool_instrumentation}")
+  else()
+    message(WARNING
+      "WITH_COVERAGE and WITH_SANITIZE only support GCC and Clang; "
+      "ignored for the ${CMAKE_CXX_COMPILER_ID} compiler")
+  endif()
+endif()
+
 # merge binary directories of sub projects into top level
 set(QTC_MERGE_BINARY_DIR ON)
 
