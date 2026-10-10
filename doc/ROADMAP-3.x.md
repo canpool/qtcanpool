@@ -127,7 +127,7 @@
 - **B1 覆盖率**：CMake 加 `WITH_COVERAGE`，CI 的 `ubuntu-latest / Qt 6.8.1` 腿产出 lcov 报告并上传为 artifact。**先出报告不设硬阈值**，稳定后再议是否设门禁。
 - **B2 静态分析与消毒器**：新增 clang-tidy 作业（先只跑 `src/libs`，`--warnings-as-errors` 从"仅新增告警"起步）；把已有的 `WITH_SANITIZE` 用起来，在 CI 增加 ASan/UBSan 的 Linux 构建腿。
 - **B3 `qxwindow` 单测**：新增 `tests/qxwindow/auto/`，优先覆盖**平台无关逻辑**（窗口上下文选择、尺寸/命中计算、命中几何），原生后端只做"能构造"级别验证。
-- **B4 demo 截图回归（可选）**：`QT_QPA_PLATFORM=offscreen` 下对 `RibbonDemo`/`DockDemo` 截图比对。收益高但易碎，建议放在本阶段**末尾且允许失败不阻塞**。
+- **B4 demo 截图回归（可选）**：`QT_QPA_PLATFORM=offscreen` 下对 `RibbonDemo`/`DockDemo` 截图比对。收益高但易碎，建议放在本阶段**末尾且允许失败不阻塞**。（3.1 实际落地只做了 `RibbonDemo`：demo 自带 `--screenshot`，sanity 层每次跑、金样层显式选择加入，见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md) §四）
 
 #### 方向 C：工程模板与脚手架（P1）
 
@@ -180,7 +180,7 @@
 >
 > - ✅ **K7 已确认**：legacy ribbon 于 3.1 内物理移除
 > - ✅ **M5 代码与文档已收敛完毕**：任务清单与执行记录见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md)，
->   唯一未做的 B4（demo 截图回归）是可选项，不阻塞 3.1 发布
+>   含可选的 B4（demo 截图回归）在内全部落地
 >   - ✅ **A3** legacy ribbon 物理移除（`qcanpool` 只剩一套 Ribbon，DoD #1 达成）
 >   - ✅ **A1** legacy 通用控件迁入 `qxapp`（7 个类换名入 `QxApp::`，`qcanpool` 留同名转发头一个版本）
 >   - ✅ **A2** legacy 专用控件下线（11 个类物理删除，`qcanpool` 不再含翻译单元）
@@ -194,7 +194,8 @@
 >     已在本地「安装 SDK → 配置 → 编译 → 运行」全链路验证）
 >   - ✅ **C2** `scripts/new-project` 脚手架（一条命令生成 + 编译可运行的 `QxAppShell` 应用；
 >     不新增第二套模板工程，K9）
->   - ⏸ 剩余：B4（可选）
+>   - ✅ **B4** demo 截图回归（`RibbonDemo` 自渲染 `--screenshot`；sanity 层每次跑，金样层
+>     `QTCANPOOL_VISUAL_BASELINE=1` 显式选择加入——截图只在生成金样的同一台机器上可比，CI 不判金样）
 > - ⚠️ **A 组是三个连续破坏性变更**，升级前务必读 `doc/design/3.0-MIGRATION.md`。要点是
 >   A1 与 A2 的**性质不同**：A1 之后旧名仍能编译（只是告警），A2 之后旧名不存在、必须改代码。
 > - ⚠️ **B2 已产生第一笔实际收益**：`quality` 作业首次上线即被 UBSan 逐条抓出**两处既存缺陷**

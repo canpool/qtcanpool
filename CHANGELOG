@@ -12,6 +12,9 @@
 - test: add an automated test suite for qxwindow
 - build: add CMakePresets.json for the common configurations (qt6, qt6-ninja, qt5, coverage, sanitize, wasm)
 - project: add scripts/new-project to scaffold a new application
+- demos: give the ribbon demo a --screenshot switch that renders the window to a file and exits
+- test: add a demo screenshot regression (render sanity on every run, opt-in golden comparison
+  with QTCANPOOL_VISUAL_BASELINE=1, per-platform goldens)
 - docs: update the migration guide for the 3.1 legacy cleanup
 
 3.0.0
