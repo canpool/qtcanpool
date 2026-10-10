@@ -85,7 +85,13 @@ protected:
 
 QX_PLUGIN_END_NAMESPACE
 
-// Let QPluginLoader recognise the interface.
-Q_DECLARE_INTERFACE(QxPlugin::QxPlugin, QX_PLUGIN_IID)
+// No Q_DECLARE_INTERFACE here, deliberately: QxPlugin is a QObject subclass, not
+// a pure interface, so qobject_cast falls back to the meta-object chain and works
+// at any inheritance depth. Declaring it as a Qt interface would instead route
+// qobject_cast through qt_metacast(IID), which only succeeds for a class that
+// lists Q_INTERFACES(QxPlugin) itself - and moc does not inherit that list, so
+// every plugin written the documented way would load but never cast. What ties
+// a plugin to this library is the IID in its Q_PLUGIN_METADATA, which is what
+// QPluginLoader and the manager check.
 
 #endif   // QXPLUGIN_H
