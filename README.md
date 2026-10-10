@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
+[![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/)
 [![Demo](https://img.shields.io/badge/demo-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/demo/)
 [![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](./LICENSE)
@@ -38,7 +38,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 
 ## 文档
 
-- **在线文档**：[https://canpool.github.io/qtcanpool/](https://canpool.github.io/qtcanpool/) —— C++ API 参考（Doxygen）+ 使用指南，由 GitHub Actions 从 `release-3.x` 自动发布
+- **在线文档**：[https://canpool.github.io/qtcanpool/](https://canpool.github.io/qtcanpool/) —— C++ API 参考（Doxygen）+ 使用指南，由 GitHub Actions 从 `master` 自动发布
 - **本地构建文档站点**：只需要 Doxygen（和可选的 Graphviz），**不需要 Qt**，因为文档直接读头文件而非编译
 
 ```bash
@@ -141,7 +141,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 | 分支 | 说明 |
 | :--- | :--- |
 | [master](https://gitee.com/icanpool/qtcanpool/tree/master/) | 主线分支 |
-| [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/) | 开发分支 |
+| [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/) | 历史分支，开发已统一到 master |
 | [release-x.y](https://gitee.com/icanpool/qtcanpool/tree/release-3.x/) | 版本分支，用于维护特定发布版本 |
 
 - 版本发布以 tag 标记；若某版本存在需修复的缺陷，将以对应版本分支的形式进行维护

@@ -232,10 +232,10 @@ add_executable(myapp main.cpp)
 target_link_libraries(myapp PRIVATE QtCanpool::qxapp)
 ```
 
-仓库里的 [`projects/consume`](https://github.com/canpool/qtcanpool/tree/release-3.x/projects/consume)
+仓库里的 [`projects/consume`](https://github.com/canpool/qtcanpool/tree/master/projects/consume)
 是一个最小下游工程，CI 在 `ubuntu-latest / Qt 6.8.1` 上执行完整的
 "安装 → `find_package` → 编译链接 → 运行" 往返，作为可消费性的门禁。
-此外还提供 [vcpkg / Conan 骨架](https://github.com/canpool/qtcanpool/tree/release-3.x/ports)
+此外还提供 [vcpkg / Conan 骨架](https://github.com/canpool/qtcanpool/tree/master/ports)
 （未经 CI 验证，供社区贡献）。
 
 ## 新建工程
@@ -255,7 +255,7 @@ Visual Studio 生成器，若未安装 MSVC 需用 `-G Ninja`（或 `-G "MinGW M
 生成的工程只依赖**已安装的** SDK：`find_package(QtCanpool REQUIRED)` 加一条
 `QtCanpool::qxapp` 链接，不引用本仓库源码。
 
-不装 SDK 而想先看看写法，读 [`projects/template`](https://github.com/canpool/qtcanpool/tree/release-3.x/projects/template)
+不装 SDK 而想先看看写法，读 [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)
 （CMake 版；同目录的 `.pro`/`.pri`/`src/` 是 qmake 时代的历史参考，保留但不再演进）。
 
 ## 关于 qmake

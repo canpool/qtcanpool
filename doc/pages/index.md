@@ -6,10 +6,10 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 应用外壳、主题引擎，以及配置与日志这类应用层必备设施。它的目标是让一个 Qt 桌面项目**第一天就具备**
 成熟产品的骨架 —— 统一的项目组织方式、一致的构建与测试流程、开箱可用的界面组件。
 
-[![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
-[![Docs](https://github.com/canpool/qtcanpool/actions/workflows/pages.yml/badge.svg?branch=release-3.x)](https://github.com/canpool/qtcanpool/actions/workflows/pages.yml)
+[![CI](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/canpool/qtcanpool/actions/workflows/ci.yml)
+[![Docs](https://github.com/canpool/qtcanpool/actions/workflows/pages.yml/badge.svg?branch=master)](https://github.com/canpool/qtcanpool/actions/workflows/pages.yml)
 [![Demo](https://img.shields.io/badge/Demo-online-2aa84a.svg)](https://canpool.github.io/qtcanpool/demo/)
-[![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](https://github.com/canpool/qtcanpool/blob/release-3.x/LICENSE)
+[![License: MulanPSL-2.0](https://img.shields.io/badge/License-MulanPSL--2.0-blue.svg)](https://github.com/canpool/qtcanpool/blob/master/LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-5.15%20%7C%206.x-41CD52.svg)](https://www.qt.io/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](https://isocpp.org/)
 
@@ -18,7 +18,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | 关注点 | QtCanpool 的做法 |
 | :--- | :--- |
 | **项目组织** | 一套 CMake 框架管理多个项目：库、示例、插件、测试各有约定俗成的落点，新增模块只需一行 `add_subdirectory` |
-| **构建与质量** | CMake 为主构建（qmake 自 3.0 起冻结）；[clang-format](https://github.com/canpool/qtcanpool/blob/release-3.x/.clang-format) 作为 CI 强制门禁；CTest 单元测试矩阵覆盖 Qt 5.15 与 Qt 6 |
+| **构建与质量** | CMake 为主构建（qmake 自 3.0 起冻结）；[clang-format](https://github.com/canpool/qtcanpool/blob/master/.clang-format) 作为 CI 强制门禁；CTest 单元测试矩阵覆盖 Qt 5.15 与 Qt 6 |
 | **界面组件** | Ribbon、Dock、无边框窗口三类现代桌面界面范式，均可在 Qt 5 与 Qt 6 上编译 |
 | **应用骨架** | @ref QxApp::QxAppShell 把导航轨、页面栈、停靠区、状态栏与启动屏组装成一个可直接继承的窗口 |
 | **布局与工作区** | `saveLayout()` 记下窗口几何与停靠布局；@ref QxApp::QxWorkspaceManager 在此之上给排列起名字，可存多套并随时切换（3.3） |
@@ -50,7 +50,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 每次项目发版**结算一次**：这一批里**动了 API 的库才前进号**，没动的库保持原号。所以 3.0 → 3.3
 项目版本走了四位，而 `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` 一位未动——这不是遗漏，
 是在声明「这些库本期没有接口变化」。推进规则的完整约定（含发布时的操作步骤）见
-[`doc/ROADMAP-3.x.md` 附录 B](https://github.com/canpool/qtcanpool/blob/release-3.x/doc/ROADMAP-3.x.md)。
+[`doc/ROADMAP-3.x.md` 附录 B](https://github.com/canpool/qtcanpool/blob/master/doc/ROADMAP-3.x.md)。
 
 | 项目版本 | `qxcore` | `qxtheme` | `qxwindow` | `qxribbon` | `qxdock` | `qxapp` |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

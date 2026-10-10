@@ -4,7 +4,7 @@
 > 3.2 把 `qcanpool` 库本身删除——**那 7 个转发头也没了**。
 
 本页是迁移总览。完整的类与方法对照表、`fancy*` 控件存废表与分步清单见仓库中的
-[`doc/design/3.0-MIGRATION.md`](https://github.com/canpool/qtcanpool/blob/release-3.x/doc/design/3.0-MIGRATION.md)。
+[`doc/design/3.0-MIGRATION.md`](https://github.com/canpool/qtcanpool/blob/master/doc/design/3.0-MIGRATION.md)。
 
 ## 3.1 / 3.2 带来的四处变化（升级前必读）
 
