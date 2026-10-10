@@ -96,10 +96,15 @@ jobs:
           clang-format --style=file --dry-run --Werror $FILES
 
   quality:
-    # Coverage, sanitizers and clang-tidy. Each of them needs a full configure
-    # and a compiler, so they share one job and one Qt install rather than
-    # paying for three separate ones. Linux-only on purpose: the tooling is
-    # most uniform there, and these checks are about the code, not the platform.
+    # Coverage and sanitizers. Both need a full configure and a compiler, so
+    # they share one job and one Qt install rather than paying for two. Linux-only
+    # on purpose: the tooling is most uniform there, and these checks are about
+    # the code, not the platform.
+    #
+    # clang-tidy used to live here too, which made this job's wall clock the sum
+    # of three sequential analyses while only two of them are gates. It is now
+    # its own job (see below) so that the report-only analysis runs on a second
+    # runner instead of in front of everybody else's result.
     name: quality / ${{ matrix.os }} / Qt ${{ matrix.qt }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -119,7 +124,7 @@ jobs:
       - name: Install analysis tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y lcov clang-tidy ninja-build
+          sudo apt-get install -y lcov ninja-build
 
       - name: Coverage
         env:
@@ -168,29 +173,145 @@ jobs:
           cmake --build build-sanitize --parallel
           ctest --test-dir build-sanitize --output-on-failure --timeout 300
 
-      - name: clang-tidy
-        # Reporting only for now. The tree has never been analysed, so the first
-        # run is guaranteed to find things; gating on it before they are triaged
-        # would just train everyone to ignore a red job. The checks are limited
-        # to the AST-matcher families, which stay fast enough to run on the
-        # whole tree - clang-analyzer can join once the noise is down.
-        #
-        # Always: this step shares the job with the sanitizers but not their
-        # build tree, so a sanitizer failure must not hide the analysis log.
-        if: always()
-        continue-on-error: true
+  tidy:
+    # Static analysis, report-only (decision K8): it must not gate, so it has no
+    # business holding up the gating job either. Running it as its own job takes
+    # it off the critical path - it analyses in parallel with coverage and the
+    # sanitizers instead of after them.
+    name: clang-tidy (report only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Analysing only what a pull request touches needs the merge base.
+          fetch-depth: 0
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.1'
+          cache: true
+
+      - name: Install clang-tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy ninja-build
+
+      - name: Configure
+        # Configure only. clang-tidy reads compile_commands.json; nothing here
+        # has to be compiled, so this step costs seconds, not minutes.
         run: |
           cmake -S . -B build-tidy -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DWITH_DEMOS=OFF \
             -DWITH_TESTS=OFF
+
+      - name: Analyse
+        # Reporting only for now. The tree has never been analysed, so the first
+        # run is guaranteed to find things; gating on it before they are triaged
+        # would just train everyone to ignore a red job. The checks are limited
+        # to the AST-matcher families - clang-analyzer can join once the noise is
+        # down.
+        continue-on-error: true
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -u
+
+          # A pull request is analysed where it changes things, which is also the
+          # cheapest way to satisfy "report new findings only"; anything else
+          # (pushes to the integration branch) walks the whole tree.
+          SCOPE="whole tree"
+          FILES=""
+          BASE=""
+          if [ -n "${BASE_REF:-}" ]; then
+            BASE=$(git merge-base "origin/${BASE_REF}" HEAD 2>/dev/null || true)
+          fi
+          if [ -n "${BASE}" ]; then
+            CHANGED=$(git diff --name-only --diff-filter=d "${BASE}" HEAD -- src/libs || true)
+            if printf '%s\n' "${CHANGED}" | grep -qE '\.h$'; then
+              # A header change can reach every translation unit, so a diff-scoped
+              # run would report a fraction of what it changed. Fall back to the
+              # whole tree rather than quietly under-report.
+              SCOPE="whole tree (the pull request changes a header)"
+            else
+              FILES=$(printf '%s\n' "${CHANGED}" | grep -E '\.cpp$' || true)
+              if [ -n "${FILES}" ]; then
+                SCOPE="changed in the pull request against ${BASE_REF}"
+              fi
+            fi
+          fi
+          if [ -z "${FILES}" ]; then
+            FILES=$(git ls-files src/libs | grep -E '\.cpp$' || true)
+          fi
+
+          if [ -z "${FILES}" ]; then
+            echo "Nothing to analyse in src/libs."
+            {
+              echo "## clang-tidy — report only (K8)"
+              echo
+              echo "Nothing to analyse in \`src/libs\`."
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          printf '%s\n' "${FILES}" > tidy-files.txt
+          echo "Analysing $(wc -l < tidy-files.txt) file(s): ${SCOPE}"
+
+          # One worker per file, one log per file. clang-tidy writes a diagnostic
+          # with several write() calls, so several workers sharing one stream
+          # interleave them into unreadable lines.
+          JOBS=$(nproc)
+          WORK=$(mktemp -d)
+          cat > "${WORK}/tidy-one" <<'SH'
+          #!/bin/sh
           clang-tidy -p build-tidy --quiet \
-            -checks='-*,bugprone-*,performance-*' \
-            $(git ls-files 'src/libs/**/*.cpp') \
-            2>&1 | tee clang-tidy.log
+            -checks='-*,bugprone-*,performance-*' "$1" > "$2" 2>&1 || true
+          SH
+          chmod +x "${WORK}/tidy-one"
+
+          START=$(date +%s)
+          while IFS= read -r f; do
+            printf '%s\0%s\0' "$f" "${WORK}/$(echo "$f" | tr '/' '_').log"
+          done < tidy-files.txt | xargs -0 -P "${JOBS}" -n 2 "${WORK}/tidy-one" || true
+          ELAPSED=$(( $(date +%s) - START ))
+
+          cat "${WORK}"/*.log > clang-tidy.log
+          FINDINGS=$(grep -cE ': (warning|error):' clang-tidy.log || true)
           echo "===== findings ====="
-          grep -cE 'warning:|error:' clang-tidy.log || echo 0
+          echo "${FINDINGS}"
+
+          # Put the digest where it will actually be read: the step summary is
+          # one click away from the job, while an artifact is one download away.
+          {
+            echo "## clang-tidy — report only (K8)"
+            echo
+            echo "- scope: ${SCOPE}"
+            echo "- files analysed: $(wc -l < tidy-files.txt)"
+            echo "- findings: ${FINDINGS}"
+            echo "- wall clock: ${ELAPSED}s across ${JOBS} parallel jobs"
+            echo "- checks: \`-*,bugprone-*,performance-*\`"
+            echo
+            if [ "${FINDINGS}" -gt 0 ]; then
+              echo "| check | findings |"
+              echo "| :--- | ---: |"
+              grep -oE '\[[a-z0-9._-]+\]$' clang-tidy.log \
+                | tr -d '[]' | sort | uniq -c | sort -rn | awk '{printf "| %s | %s |\n", $2, $1}'
+              echo
+              echo "<details><summary>First 20 findings</summary>"
+              echo
+              echo '```'
+              grep -E ': (warning|error):' clang-tidy.log | head -20
+              echo '```'
+              echo
+              echo "</details>"
+            else
+              echo "No findings."
+            fi
+            echo
+            echo "The full log is attached to this run as the \`clang-tidy-log\` artifact."
+          } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload clang-tidy log
         if: always()
@@ -198,3 +319,6 @@ jobs:
         with:
           name: clang-tidy-log
           path: clang-tidy.log
+          # The analysis exits early when src/libs has nothing to look at, and an
+          # empty artifact is not a failure.
+          if-no-files-found: ignore

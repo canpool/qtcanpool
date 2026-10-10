@@ -186,7 +186,8 @@
 >   - ✅ **A2** legacy 专用控件下线（11 个类物理删除，`qcanpool` 不再含翻译单元）
 >   - ✅ **A4** `deprecated` 标注（随 A1 完成；已在库外以 `-Werror=deprecated-declarations` 实测可作门禁）
 >   - ✅ **B1** 覆盖率报告（`WITH_COVERAGE` + CI `quality` 作业，按 K8 不设阈值）
->   - ✅ **B2** clang-tidy + ASan/UBSan（CI `quality` 作业；clang-tidy 只报告不阻塞）
+>   - ✅ **B2** clang-tidy + ASan/UBSan（覆盖率与消毒器在 `quality` 作业（门禁），clang-tidy 独立成
+>     `tidy` 作业（只报告）——拆开是因为原先它排在门禁步骤之后，一个不阻塞的步骤反而占着关键路径）
 >   - ✅ **B3** `qxwindow` 自动化测试（8 用例，并顺带修掉一处解空指针崩溃）
 >   - ✅ **C3** `CMakePresets.json`（6 个配置预设，环境变量可覆盖默认路径）
 >   - ✅ **C1** `projects/template` CMake 化（`find_package(QtCanpool)` + `QxAppShell` 最小应用；
