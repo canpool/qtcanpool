@@ -160,7 +160,7 @@
 > ✅ **计划已定型**（2026-10-10）：任务清单见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md)。
 > 与本节原稿的四点不同：① A 组（**移除全部 qmake 文件**，K13）并入 4.0；
 > ② E1/E2 之前原以为必须先解决 **K14（宿主命名）**——已由「先上薄宿主上下文」化解，
-> **K14 从"阻塞 B1"降级为"可延后"**（见决策表）；
+> 并**于 2026-10-11 定案为保留 `QxAppShell`**（见决策表）；
 > ③ E4 的 `src/modules` 定位由 K16 收紧为「样板与时兴能力的收容所」，正式能力仍进 `src/libs`；
 > ④ 新增 **B5 对象池**（插件间软协作），它也是 K14 得以解耦的手段。
 
@@ -181,13 +181,14 @@
 - **E5 IDE 式样板**：以 MyCAD 类场景验证（对应 3.0 方向 F3）。
 
 > **前置条件**：E 必须在 A（API 干净）、B（有测试与静态分析兜底）、D（有设置/日志/主题基础设施）之后启动——否则是在沙地上盖楼。
-> 这三项**均已兑现**（3.1 / 3.2 / 3.3），方向 E 可以开工；原阻塞项 **K14** 已被 B5 的对象池化解。
+> 这三项**均已兑现**（3.1 / 3.2 / 3.3），方向 E 可以开工；原阻塞项 **K14** 已被 B5 的对象池化解，
+> **并于 2026-10-11 定案：保留 `QxAppShell`**。
 >
 > **进度（2026-10-10）**：A（qmake 归零）、B1~B5（插件运行时，含对象池）、C2（`src/modules` 三模块）、
 > D1（IDE 式样板）**均已落地**；`ctest` 12/12、qt6 全量构建 0 warning、clang-format 门禁绿。
 > 剩余：C1（管理器 UI）、E1（`doc/pages/plugins.md`）、E2（版本结算与发版）。
 > ⚠️ 其中 **B5 是计划外新增**——起因是 D1 里用一张宿主硬编码的接线表把 filetree 接到 output，
-> 与「宿主不认识模块」正面冲突（见决策表 K14 一行的说明）。
+> 与「宿主不认识模块」正面冲突（见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) 的 B5 一节与 K19）。
 
 ### 插件间如何协作（B5 的结论，写给 3.x 用户看）
 
@@ -288,11 +289,13 @@
 >   - ✅ **B1~B3**：新库 `src/libs/qxplugin`——`QxPlugin` 契约 + `QxPluginSpec` 元数据 +
 >     `QxPluginContext` 薄宿主上下文 + `QxPluginManager`（Kahn 拓扑 / 环诊断 / 失败级联隔离 / 逆序 shutdown）。
 >   - ✅ **B5**：`QxObjectPool`（插件间软协作）+ 可选依赖排序语义，`PLUGIN_RECOMMENDS` 真正生效。
->     **K14 由此降级为"可延后"**：插件只面向 `QxPluginContext` 编程，宿主改名被封死在单个类上。
->     ⚠️ **K14 仍未定案**——改名时 `QxAppShell` 的引用仍要一次性替换，只是不再波及插件。
+>     **K14 由此解耦**：插件只面向 `QxPluginContext` 编程，宿主类名被封死在单个类上。
+>     ✅ **K14 已定案（2026-10-11）：保留 `QxAppShell`，不改名**（判据见决策表 K14）。
 >   - ✅ **C2 + D1**：`src/modules` 三模块（output 登记自身、filetree 可选依赖它）+ IDE 式样板
 >     `IdeShellDemo`——**宿主连模块名都不写**，模块在池里自己相遇（原先的 `kWiring` 表已删除）。
->   - ⏭ **剩余**：C1 管理器 UI、E1 `doc/pages/plugins.md`、E2 版本结算与发版。
+>   - ✅ **C1 + E1**：`QxPluginManagerDialog`（管理器 UI）；`doc/pages/plugins.md` 插件指南 +
+> `migration.md` 的 3.x→4.0 段 + `components`/`index`/`architecture`/`README` 同步。
+>   - ⏭ **剩余**：E2（版本结算与发版）。
 >   - ⚠️ **K17 已定**：静态构建（WASM）**不支持运行时插件发现**（详见决策表）。
 
 ---
@@ -310,7 +313,7 @@
 | **K11** | 各库版本号是否收敛      | ✅ **保持各库独立演进号**（已确认 2026-10-10）；**推进规则见附录 B**——跟着发布批次结算、只前进本期有 API 改动的库、不追溯历史号；文档首页给出「库版本 ↔ 项目版本」对照表                        | D23 的处置方式已定；附发布时的操作步骤                        |
 | **K12** | 3.2 / 3.3 的拆分     | ✅ **3.2 = i18n + Toast + 属性编辑器内核 + 设置对话框 + `qcanpool` 删除**（已确认 2026-10-10）；工作区预设、状态栏进度留 3.3 | 版本节奏与范围；M6 的 DoD 拆成两批            |
 | **K13** | qmake 何去何从       | ✅ **4.0 一并删除**（已确认 2026-10-10）→ **已完成**：全树 `.pro`/`.pri` **归零**（原 88 个）。分四批删除——有 CMake 对应物的 47 个、只在 qmake 里的 3 个 demo（41 文件）、`examples/` CMake 化后的 30 个、`projects/staticlink`；其中 22 个示例由 A2 用 CMake 重建，目标名沿用原 `TARGET`。理由是它已由"冻结"变成**损坏**（`qxapp-lib.pri` 缺 8 个源文件，含 `QxAppShell` 本体，且 CI 从未构建过 qmake） | 构建方式收敛为 CMake 一种；K2 的"冻结"承诺到此结束 |
-| **K14** | 宿主命名 / 插件上下文 | 🔽 **已降级为"可延后"**（2026-10-10，B1/B5 落地后）：采纳「先引入薄宿主上下文」的做法，插件只面向 `QxPluginContext` 编程，宿主改名**不再波及任何插件**。候选名仍为保留 `QxAppShell` / `QxRibbonMainWindow` / `QxAppWindow` / `QxWorkbench`，**尚未定案** | 原名"阻塞 B1"已解除；改名仍要一次性替换 `QxAppShell` 的引用（含 demo 与测试），但不再是插件契约问题 |
+| **K14** | 宿主命名 / 插件上下文 | ✅ **保留 `QxAppShell`**（2026-10-11 定）：插件只面向 `QxPluginContext` 编程（B1/B5 落地），宿主类名对插件不可见；三个候选名各自被可核对的事实排除——`QxRibbonMainWindow` 与 `QxRibbon::RibbonMainWindow` **字面重名**、`QxAppWindow` 在 Qt Creator 里是**薄层名位**（`Utils::AppMainWindow`）且已被本仓库 `RibbonAppWindow` 占用、`QxWorkbench` 与本类自己的「命名工作区」概念打架 | 原"阻塞 B1"已解除；**不改名**，无需替换 322 处引用；判据 / 代价 / 翻转条件见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K14 |
 | **K15** | 插件加载时机         | 建议**启动时全量加载**（首版不做真正延迟加载） | 启动时间与依赖图的确定性 |
 | **K16** | `src/modules` 的定位 | ✅ **只做样板与时兴能力的收容所**，正式、稳定的能力进 `src/libs` | 避免"两处都能放"的漂移 |
 | **K17** | 静态构建（WASM）下的插件 | ✅ **不支持运行时插件发现**（2026-10-10，D1 实测后定）：`QTC_STATIC_BUILD=ON` 时 `add_qtc_plugin()` 产出的是**没人导入的静态库**（要进应用只能由应用写 `Q_IMPORT_PLUGIN` 清单，与「宿主不认识模块」正面冲突），实测 wasm 产物里 `output` 是 `liboutput.a`、`IdeShellDemo.wasm` 里没有模块元数据串。静态构建里组合模块用**编译期** `registerStaticPlugin()`；WASM demo 演示框架本身，不演示插件 | WASM 在线 demo 不含插件场景；`IdeShellDemo` 在静态配置下不构建；判据与实测见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) D1 |
@@ -365,7 +368,7 @@
 15. 存在一个**由模块拼装**、可运行的 IDE 式样板应用；
 16. 插件接口有版本化约定与迁移说明；
 17. **全树 qmake 文件归零**（`git ls-files '*.pro' '*.pri'` 无输出，K13）；
-18. **K14 落案并执行**（改名，或明确"不改名"且把理由写进文档）。
+18. ✅ **K14 已落案**（2026-10-11）：**保留 `QxAppShell`**，不改名，判据与翻转条件写进设计文档。
 
 > 17 / 18 是 2026-10-10 制订计划时补的；完整的 DoD（含外部插件验收工程与 CI 门禁）
 > 见 [`design/4.0-TASKS.md` 第五节](./design/4.0-TASKS.md)。
