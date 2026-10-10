@@ -13,6 +13,7 @@ add_qtc_library(qxapp
     qxnavigationbar.cpp qxnavigationbar.h
     qxproperty.h
     qxpropertyeditor.cpp qxpropertyeditor.h qxpropertyeditor_p.h
+    qxsettingsdialog.cpp qxsettingsdialog.h qxsettingsdialog_p.h
     qxsplashscreen.cpp qxsplashscreen.h
     qxtabbar.cpp qxtabbar.h qxtabbar_p.h
     qxtabwidget.cpp qxtabwidget.h
