@@ -223,7 +223,7 @@ src/libs/
 > - ✅ **M3.5 在线 demo 已上线**：`AppShellDemo` 编译为 **WebAssembly**，随文档站点一同发布到 <https://canpool.github.io/qtcanpool/demo/>（浏览器打开即用，无需 Qt / 编译器）。为此新增 `QTCANPOOL_WASM` 平台开关、`QX_DOCK_X11` 覆盖 wasm 上"`Q_OS_UNIX` 与 `Q_OS_WASM` 同时定义"的陷阱，并把 `.github/workflows/docs.yml` 改名 `pages.yml` 增加 `wasm` 作业
 > - ✅ **M4.1 SDK 可消费性已落地**：`find_package(QtCanpool)` 的「安装 → 消费」闭环。为此修复两个从未被发现的导出缺陷（配置里多余的 `Concurrent`/`Core5Compat` 依赖、`qxribbon_global.h` 未随包安装），并新增下游工程 `projects/consume` 与 CI 门禁（`ubuntu-latest / Qt 6.8.1` 上跑完整往返）
 > - ✅ **M4.2 ~ M4.4 已落地**：项目版本对齐 `3.0.0`；`CHANGELOG` 补 `3.0.0` 条目；新增 vcpkg / Conan 骨架（`ports/` + `conanfile.py`，未经 CI 验证）
-> - ⏸ **M4.5 打 tag（`3.0.0`）待作者确认**：前置条件已全部就绪（CI 全绿、发布说明成稿、SDK 可消费）
+> - ✅ **M4.5 已发布 `3.0.0`**：附注 tag 打在 `250126fe`（CI 全绿），推送至 github 与 gitee；GitHub Release 已创建（正文取 `CHANGELOG` 3.0.0 条目）→ <https://github.com/canpool/qtcanpool/releases/tag/3.0.0>。Gitee 发行版待作者手动创建（凭据为账号密码，非访问令牌）
 > - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
 
 ---
@@ -272,8 +272,8 @@ src/libs/
 3. **CI 全平台绿灯**，核心库具备自动化测试与覆盖率报告；
 4. 发布 **在线 API 文档 + 组件指南 + 2.x→3.0 迁移指南**；
 5. demos 至少 **1 个可在线体验**（WebAssembly）✅ `AppShellDemo` → <https://canpool.github.io/qtcanpool/demo/>；
-6. 产出可被 `find_package` 消费的 **SDK 包**（+ vcpkg/Conan port）；
-7. 版本号对齐并打 tag，附 Release Notes。
+6. 产出可被 `find_package` 消费的 **SDK 包**（+ vcpkg/Conan port）✅ `QtCanpool::*` 已可消费（`projects/consume` + CI 门禁）；`ports/` 与 `conanfile.py` 为骨架；
+7. 版本号对齐并打 tag，附 Release Notes ✅ `3.0.0`（<https://github.com/canpool/qtcanpool/releases/tag/3.0.0>）。
 
 ---
 
