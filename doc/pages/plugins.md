@@ -57,9 +57,9 @@ public:
 
 ```json
 "Dependencies" : [
-    { "Name" : "qxplugin",  "Version" : "0.2.0" },
-    { "Name" : "output",    "Version" : "4.0.0", "Type" : "optional" },
-    { "Name" : "someother", "Version" : "4.0.0", "Type" : "test" }
+    { "Name" : "output",     "Version" : "4.0.0" },
+    { "Name" : "someother",  "Version" : "4.0.0", "Type" : "optional" },
+    { "Name" : "testhelper", "Version" : "4.0.0", "Type" : "test" }
 ]
 ```
 
@@ -127,8 +127,9 @@ Read → Resolved → Loaded → Initialized →（宿主关闭时）Stopped
 | **optional** | `"Type":"optional"` | **同样先加载、先初始化** | **静默丢弃**，本插件照常启动 | 不可以 |
 | **test** | `"Type":"test"` | 不参与排序 | 无影响 | — |
 
-required 与 optional 的差别**只在"另一头不在时"**：能解析时两者都被排在后面加载（这样本插件才来得及
-查到对方已发布的东西）；区别在于 required 缺席会连带关掉本插件，optional 缺席则**当没声明过**。
+required 与 optional 的差别**只在"另一头不在时"**：能解析时两种依赖都会让对方**先**加载、先初始化
+（这样本插件才来得及查到对方已发布的东西）；区别在于 required 缺席会连带关掉本插件，optional 缺席则
+**当没声明过**。
 
 > ⚠️ **`PLUGIN_RECOMMENDS` 不是 Qt Creator 的 `Recommends`**。我们的 `PLUGIN_RECOMMENDS` 生成的是
 > `Dependencies` 里 `"Type" : "optional"` 的那一项（对应 Qt Creator 的 `PluginDependency::Type::Optional`）；
@@ -239,8 +240,10 @@ dialog.exec();
 
 ## 在仓库外构建插件
 
-一个只依赖 `QtCanpool::qxplugin` 的外部 CMake 工程即可产出插件（见 `projects/consume` 与
-`projects/template` 的写法）：
+一个只依赖 `QtCanpool::qxplugin` 的外部 CMake 工程即可产出插件：`add_qtc_plugin()` 随安装的
+`QtCanpool` 包一起导出，用法与仓库内的模块完全一致。外部工程的**骨架**（`find_package(QtCanpool)`
++ 目标定义，不需要知道构建树）可参考 `projects/consume` 与 `projects/template`——那两个是**应用**，
+把 `add_executable` 换成下面的 `add_qtc_plugin` 即得到插件工程：
 
 ```cmake
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
