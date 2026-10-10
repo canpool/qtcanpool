@@ -6,4 +6,5 @@ add_qtc_library(qxcore
     qxcore_global.h
     qxlogger.cpp qxlogger.h
     qxsettings.cpp qxsettings.h
+    qxtranslator.cpp qxtranslator.h
 )

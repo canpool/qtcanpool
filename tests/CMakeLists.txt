@@ -11,9 +11,37 @@
 set(QTCANPOOL_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # ------------------------------------------------------------------- qxcore --
+# The translator test proves that switching language really changes what
+# translate() returns, and proving that needs a compiled catalogue: QTranslator
+# parses the file it loads, so a stand-in with the right name will not do.
+# lrelease ships with LinguistTools and stays optional - without it the test
+# skips that layer rather than pretending it passed.
+set(QXCORE_TRANSLATION_DIR "${CMAKE_CURRENT_BINARY_DIR}/translations")
+set(QXCORE_TRANSLATION_DEFINES "")
+if (TARGET Qt5::lrelease)
+  file(MAKE_DIRECTORY "${QXCORE_TRANSLATION_DIR}")
+  set(_qxcore_qm_files "")
+  foreach(_language fr zh_CN)
+    set(_ts "${QTCANPOOL_TESTS_DIR}/qxcore/auto/data/qxtranslator_${_language}.ts")
+    set(_qm "${QXCORE_TRANSLATION_DIR}/qxtranslator_${_language}.qm")
+    add_custom_command(OUTPUT "${_qm}"
+        COMMAND Qt5::lrelease "${_ts}" -qm "${_qm}"
+        MAIN_DEPENDENCY "${_ts}"
+        COMMENT "Compile the ${_language} test translation"
+        VERBATIM
+    )
+    list(APPEND _qxcore_qm_files "${_qm}")
+  endforeach()
+  add_custom_target(qxcore_test_translations DEPENDS ${_qxcore_qm_files})
+  set(QXCORE_TRANSLATION_DEFINES "QXCORE_TEST_TRANSLATIONS=\"${QXCORE_TRANSLATION_DIR}\"")
+else()
+  message(STATUS "lrelease not found: the translator test will skip its load layer")
+endif()
+
 file(GLOB QXCORE_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxcore/auto/tst_*.cpp")
 add_qtc_test(tst_qxcore
     DEPENDS qxcore
+    DEFINES ${QXCORE_TRANSLATION_DEFINES}
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
@@ -21,6 +49,9 @@ add_qtc_test(tst_qxcore
         "${QTCANPOOL_TESTS_DIR}/qxcore/auto/main.cpp"
         ${QXCORE_TEST_SOURCES}
 )
+if (TARGET qxcore_test_translations)
+  add_dependencies(tst_qxcore qxcore_test_translations)
+endif()
 
 # ---------------------------------------------------------------- qxtheme --
 file(GLOB QXTHEME_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxtheme/auto/tst_*.cpp")
