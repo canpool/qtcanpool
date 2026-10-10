@@ -131,6 +131,9 @@ jobs:
           lcov --list coverage.filtered.info
 
       - name: Upload coverage report
+        # Always: the report is information, not a gate (K8), so a failing test
+        # in the coverage leg must not also cost us the numbers.
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
@@ -160,6 +163,10 @@ jobs:
         # would just train everyone to ignore a red job. The checks are limited
         # to the AST-matcher families, which stay fast enough to run on the
         # whole tree - clang-analyzer can join once the noise is down.
+        #
+        # Always: this step shares the job with the sanitizers but not their
+        # build tree, so a sanitizer failure must not hide the analysis log.
+        if: always()
         continue-on-error: true
         run: |
           cmake -S . -B build-tidy -G Ninja \
