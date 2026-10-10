@@ -3,7 +3,7 @@
 > 上承：[`ROADMAP-3.0.md`](./ROADMAP-3.0.md)（3.0「现代化收敛」，已发布 `3.0.0`）
 > 版本定位：**欠账清算与能力补齐（Pay Down & Fill In）**
 > 主题：**legacy 收敛收口 · 质量门禁补齐 · 应用框架可用化 · 插件体系落地**
-> 文档状态：**3.1.0 已发布**（2026-10-10）· **3.2 规划中**，任务清单见 [`design/3.2-TASKS.md`](./design/3.2-TASKS.md)
+> 文档状态：**3.1.0 已发布**（2026-10-10）· **3.2.0 已发布**（2026-10-10），任务清单见 [`design/3.2-TASKS.md`](./design/3.2-TASKS.md)
 > 适用仓库：`https://github.com/canpool/qtcanpool` / `https://gitee.com/icanpool/qtcanpool`
 
 ---
@@ -209,6 +209,19 @@
 > - ✅ **M6 已细化并拆版**（2026-10-10）：**3.2** = i18n + Toast + 属性编辑器内核 + 设置对话框，
 >   外加 **`qcanpool` 整库删除**（K5 的缓冲期到期，`src/libs` 收敛到 6 个库）；工作区预设、
 >   状态栏进度留 **3.3**（K12）。任务清单见 [`design/3.2-TASKS.md`](./design/3.2-TASKS.md)
+> - ✅ **M6（3.2）已发布 `3.2.0`**（2026-10-10）：tag `3.2.0` +
+>   [GitHub Release](https://github.com/canpool/qtcanpool/releases/tag/3.2.0)；变更清单见 `CHANGELOG`，
+>   升级前先读迁移指南。**这一版是破坏性的**：`qcanpool` 整库删除，A1 留的转发头也没了。
+>   - ✅ **R1** `qcanpool` 整库删除（`src/libs` 只剩 6 个库）
+>   - ✅ **R2** legacy 示例与构建接线清理（含 `projects/template` 的 qmake 侧整份删除）
+>   - ✅ **D1** i18n（`QxTranslator`，`qxcore`）
+>   - ✅ **D2** Toast 应用内通知（`QxToast` / `QxToastManager`，`qxapp`）
+>   - ✅ **D3** 属性编辑器内核（`QxProperty` / `QxPropertyEditor`）
+>   - ✅ **D4** 设置对话框（`QxSettingsDialog`）
+>   - ✅ **R3** 迁移文档与文档站收尾（含 K11 的「库版本 ↔ 项目版本」对照表）
+>   - ✅ 验收标准 #2：`projects/template` 与 `scripts/new-project` 生成的工程
+>     已接好切语言、弹 Toast、开设置界面
+> - ⏸ **M6b（3.3）**：工作区 / 布局预设、状态栏进度（K12 已定）
 > - ⏸ M7（4.0）插件与模块，待 3.2 / 3.3 之后再细化
 
 ---
@@ -279,7 +292,7 @@
 ## 附：3.0 → 3.x 目标结构（Before → After）
 
 ```
-             3.0.0                        3.1.0（已发布）                    3.2（规划）
+             3.0.0                        3.1.0（已发布）                    3.2.0（已发布）
 ──────────────────────────────  ───────────────────────────────  ──────────────────────────────
 qcanpool (legacy 冻结)          qcanpool (7 个转发头，无翻译单元)   qcanpool ← 整库删除（K5 到期）
   ├─ ribbon* (deprecated)         └─ ribbon*      ← 物理移除（A3）

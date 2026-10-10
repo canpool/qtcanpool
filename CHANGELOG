@@ -1,3 +1,28 @@
+3.2.0
+---
+- project: remove the qcanpool library; BREAKING: the deprecated forwarding
+  headers go with it, so the old QCanpool names no longer compile - 3.1 only
+  warned, see doc/design/3.0-MIGRATION.md
+- project: remove the qmake application template and the legacy qcanpool
+  examples; qmake stays frozen, so nothing new was added to replace them
+- qxcore: add QxTranslator to load, switch and enumerate translations
+- qxapp: add QxToast and QxToastManager for in-application notifications
+  (levels, timeout, hover to hold, stacking and eviction)
+- qxapp: give QxAppShell its own toast stack plus a showToast() shortcut
+- qxapp: add QxProperty and QxPropertyEditor, a key/value form generated from
+  property descriptors
+- qxapp: add QxSettingsDialog, a settings dialog that reads and writes a
+  QxSettings object
+- project: wire language switching, toasts and the settings dialog into
+  projects/template and into scripts/new-project, so a generated application
+  can do all three out of the box
+- test: cover the translator, the toasts, the property editor and the settings
+  dialog with unit tests
+- docs: document i18n, toasts, the property editor kernel and the settings
+  dialog
+- docs: give the documentation home page a library version to project version
+  table
+
 3.1.0
 ---
 - qcanpool: remove the legacy ribbon
