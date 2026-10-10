@@ -37,6 +37,17 @@ Windows 下是 `;`。
 ## 3. 从这里开始改
 
 - `main.cpp`：把示例页换成自己的部件；完整接口见 `qxapp/qxappshell.h` 的头注释。
+- 开箱已接好三件事，先看它们跑起来再改：
+
+  | 能力     | 入口                                                       |
+  | :----- | :------------------------------------------------------- |
+  | 切换语言   | 设置对话框的 **Language** 项（枚举来自可执行文件旁的 `*_<语言>.qm`）         |
+  | 应用内通知  | 启动时的欢迎 Toast；应用设置后再弹一条                                   |
+  | 打开设置界面 | 功能区 **Home → Application → Settings** 按钮                  |
+
+  三者都在 `main.cpp` 里，各约十几行：语言交给 `QxTranslator`、通知交给
+  `QxAppShell::showToast()`、设置界面对话框由 `QxProperty` 描述后交给 `QxSettingsDialog`。
+  `scripts/new-project` 生成的工程是同一份接线。
 - 需要自己的库时：建子目录 + 自己的 `CMakeLists.txt`，
   在根 `CMakeLists.txt` 里 `add_subdirectory`，然后 `target_link_libraries` 链接。
   只有在该库的**公开头**里暴露 QtCanpool 类型时才用 `PUBLIC`，否则用 `PRIVATE`。
