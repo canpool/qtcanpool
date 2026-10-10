@@ -254,25 +254,6 @@ else()
   )
 endif()
 
-# install qmake support files
-install(
-  FILES
-    qtproject.pri
-    qtdata.pri
-    qtconfig.pri
-  DESTINATION ${IDE_HEADER_INSTALL_PATH}
-  COMPONENT Devel EXCLUDE_FROM_ALL
-)
-install(
-  FILES
-    src/qtlibrary.pri
-    src/qtplugin.pri
-    src/qttool.pri
-    src/rpath.pri
-  DESTINATION ${IDE_HEADER_INSTALL_PATH}/src
-  COMPONENT Devel EXCLUDE_FROM_ALL
-)
-
 feature_summary(INCLUDE_QUIET_PACKAGES WHAT
   PACKAGES_FOUND PACKAGES_NOT_FOUND
   ENABLED_FEATURES DISABLED_FEATURES

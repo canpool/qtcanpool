@@ -1,2 +1,0 @@
-QTC_LIB_NAME = qxdock
-QTC_LIB_VERSION = 0.2.0
