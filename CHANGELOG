@@ -1,3 +1,33 @@
+4.0.0
+---
+- project: remove qmake for good; BREAKING: the 88 .pro / .pri files are gone,
+  the four demos that only qmake still built are gone, and the examples that
+  were qmake-only are rebuilt with CMake - building QtCanpool now means CMake
+  and nothing else, see doc/pages/migration.md for what to change
+- project: build the examples with CMake under WITH_EXAMPLES (on by default);
+  22 of them recovered, with the target names they had under qmake
+- qxplugin: new library holding the plugin contract (QxPlugin, QxPluginSpec),
+  discovery and dependency resolution (QxPluginManager, Kahn ordering, cycles
+  and missing dependencies reported as a named chain), the three-step lifecycle
+  with failure isolation, the surface a plugin programs against
+  (QxPluginContext) and the object pool that lets two plugins cooperate without
+  either including the other's header (QxObjectPool)
+- qxapp: add QxPluginManagerDialog - list, details, reverse dependencies and
+  diagnostics, with the switches stored as deviations from the metadata so that
+  the metadata stays the default
+- qxapp: keep the shell out of the plugin contract; pluginContext() hands out a
+  thin adapter, so the host's window class reaches no plugin, not even in a
+  comment
+- modules: add the src/modules sample layer (output, notebook, filetree) and an
+  IDE-style demo assembled from them that names not one of them in its source
+- project: normalize line endings to LF across the tree, with .gitattributes and
+  a .git-blame-ignore-revs entry (see doc/ROADMAP-3.x.md, decision K20)
+- test: cover the plugin runtime, the sample modules and the assembled demo
+- docs: add the plugin guide, the 3.x -> 4.0 migration section, and the
+  architecture and component pages for qxplugin
+- libs: qxcore 0.1.0 -> 0.1.1, qxapp 0.0.1 -> 0.1.0, qxplugin starts at 0.2.0;
+  qxtheme, qxwindow, qxribbon and qxdock did not move
+
 3.3.0
 ---
 - qxapp: add QxWorkspaceManager, which puts a name on what the shell already

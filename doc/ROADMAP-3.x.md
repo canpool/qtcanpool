@@ -295,7 +295,12 @@
 >     `IdeShellDemo`——**宿主连模块名都不写**，模块在池里自己相遇（原先的 `kWiring` 表已删除）。
 >   - ✅ **C1 + E1**：`QxPluginManagerDialog`（管理器 UI）；`doc/pages/plugins.md` 插件指南 +
 > `migration.md` 的 3.x→4.0 段 + `components`/`index`/`architecture`/`README` 同步。
->   - ⏭ **剩余**：E2（版本结算与发版）。
+>   - ✅ **F1（K20）**：全仓行尾统一为 LF——`.gitattributes` + 一次性 renormalize，
+>     `master` 与 `release-3.x` 同步落笔；旧的逐文件 CRLF/LF 纪律到此结束。
+>   - ✅ **E2**：版本结算（`qxcore` → 0.1.1、`qxapp` → 0.1.0、新 `qxplugin` 0.2.0，其余不动）、
+>     `CHANGELOG` 的 `4.0.0` 段、`projects/plugin` 外部插件验收工程 + CI 门禁。
+>   - 📌 **验收工程**：`projects/plugin` 不碰源码树，只用 `find_package(QtCanpool)` 造出一个插件，
+>     再用一个最小宿主把它真正加载起来（编译通过 ≠ 能被认出来，C2 踩过这个坑）。
 >   - ⚠️ **K17 已定**：静态构建（WASM）**不支持运行时插件发现**（详见决策表）。
 
 ---
@@ -434,19 +439,25 @@ examples/qcanpool (4 个示例)     同上                              ← 整�
 3. **版本号的定义处**：`<lib>/CMakeLists.txt` 的 `VERSION`。⚠️ 4.0 之前 qmake 侧还有两处
    （`<lib>/<lib>-lib.pri` 的 `VERSION` 与 `<lib>/<lib>_dependencies.pri` 的 `QTC_LIB_VERSION`），
    随 K13 删除 qmake 一并消失，不要再去找它们；
+   ⚠️ 另有一处**必须一起改**：`<lib>/<lib>_global.h` 里的
+   `QX_<LIB>_VERSION_{MAJOR,MINOR,PATCH}` 三个宏——它是同一个号的第二处镜像。
+   4.0 抓到两次漏改（`qxapp_global.h` 停在 0.0.1、`qxdock_global.h` 停在 0.1.0）；
 4. 项目版本三处照旧：`cmake/QtCanpoolBranding.cmake`、`ports/qtcanpool/vcpkg.json`、
    `conanfile.py`（原先的第 4 处 `qtproject.pri` 随 K13 删除）；
 5. 给 `doc/pages/index.md` 的「版本对照」表补一行，并在 `CHANGELOG` 里写明哪个库动了号、为什么。
 
-### 现状与下一批结算
+### 4.0 的结算结果（2026-10-11 已执行）
 
-| 库          | 现号    | 自 3.1.0 起的改动                                                        | 下次发版是否前进                                                                 |
-| :---------- | :------ | :------------------------------------------------------------------------ | :------------------------------------------------------------------------------- |
-| `qxapp`     | 0.0.1   | 6 commits / 20 files（Toast、属性编辑器、设置对话框、工作区、状态栏进度） | → **0.1.0**（不是 0.0.2：`0.0.x` 暗示未成型，而它已是模板与脚手架唯一链接的库） |
-| `qxcore`    | 0.1.0   | 1 commit / 3 files（`QxTranslator`）                                       | → **0.1.1**                                                                        |
-| `qxtheme`   | 0.1.0   | 无                                                                          | 不动                                                                              |
-| `qxribbon`  | 0.10.1  | 仅 `header.list` 删除                                                      | 不动                                                                              |
-| `qxdock`    | 0.2.0   | 仅 `header.list` 删除                                                      | 不动                                                                              |
-| `qxwindow`  | 0.1.2   | 仅 `header.list` 删除                                                      | 不动                                                                              |
+| 库          | 3.1.0 时的号 | **4.0.0 的号** | 依据                                                                             |
+| :---------- | :----------- | :------------- | :------------------------------------------------------------------------------- |
+| `qxcore`    | 0.1.0        | **0.1.1**      | 3.2 落地 `QxTranslator` 后一直没结算，本期结清（本期本身未再动 API）             |
+| `qxapp`     | 0.0.1        | **0.1.0**      | Toast / 属性编辑器 / 设置对话框 / 工作区 / 状态栏进度，加上 4.0 的插件上下文     |
+| `qxplugin`  | —            | **0.2.0**      | 4.0 新建；库内 0.1.0 起，B2 补 `enabledPlugins()` / `allSpecs()` 时进到 0.2.0，B5 的 `QxObjectPool` 不再单独提号（同批次一并结算） |
+| `qxtheme`   | 0.1.0        | 0.1.0          | 无 API 改动                                                                      |
+| `qxribbon`  | 0.10.1       | 0.10.1         | 仅 `header.list` 删除 —— 按规则不算 API 改动                                     |
+| `qxdock`    | 0.2.0        | 0.2.0          | 同上（顺带修了 `qxdock_global.h` 那处陈旧宏）                                    |
+| `qxwindow`  | 0.1.2        | 0.1.2          | 同上                                                                             |
 
 （`qxribbon` 的 0.10.1 是 2.x 时期沿下来的号，比 3.x 新建的库成熟得多；不要为了整齐把它抹平。）
+
+**下一批（4.1）的起点**就是这张表的最后一列；届时只前进真正动了 API 的那几个。
