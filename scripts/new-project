@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+# Copyright (C) 2026 maminjie <canpool@163.com>
+# SPDX-License-Identifier: MulanPSL-2.0
+#
+# new-project - scaffold a standalone QtCanpool application.
+#
+# It writes a small but complete CMake project: a QxAppShell window with one
+# page, an application icon in a Qt resource, a README and a .gitignore.
+#
+# The skeleton is generated from constants in this file rather than copied from
+# projects/template (decision K9). The reference project exists to be read; this
+# script is the single place that defines what a new project looks like, so the
+# two cannot drift into a "which template is current" mess.
+#
+# Usage:
+#   python scripts/new-project demo
+#   ./scripts/new-project demo                       # the file is executable
+#   python scripts/new-project demo --build          # generate, then build
+#
+# The generated project is self-contained: it consumes an *installed* QtCanpool
+# SDK through find_package and knows nothing about this repository.
+
+import argparse
+import base64
+import os
+import re
+import subprocess
+import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+
+# A C++ identifier: it becomes the project name, the executable name and the
+# resource prefix, so anything looser would have to be sanitised in three places.
+NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+# Names that would be confusing rather than wrong.
+RESERVED = ("template", "qtcanpool")
+
+# A 32x32 RGBA circle with a blue-to-teal gradient. Kept inline so that the
+# script has no data files of its own, and PNG rather than SVG so that the
+# generated application does not depend on an image-format plugin being
+# deployed next to it.
+LOGO_PNG_B64 = (
+    "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABFUlEQVR42tXW504CQRiFYa6FabvL"
+    "dYpd7GLBQlkEe0VU7PWqjhiCDGSjqNk5+iXf7+dNJpmZROK/TTD4hGDoEcHwA/yR972HP3oHf+wW"
+    "/vgN4kHTLwjSz/gK9yau4WWumtuAN9kAFfemLmGmL34ekRp4xW9xM3MOM1tv7hmouJmrwczXQMX1"
+    "wil09gSxn/lnuM4eg4rrxSPopUNQcbV8ALWyj4gAd7jKRQU4xFVuD1Rcre5Cru10Ihi4XN+2Agi4"
+    "3NjqBDBwma/aAe5xma9YAQRcFOwAAi6Km1YAARelcvddQMVbAe5wEYYRAQ5xEZaiX0Qq/hHBxFsB"
+    "8eHJcrG/fyEVbw8V7wqJ+8z7GSreO9++4f76vAEMQ9dJBwUgkAAAAABJRU5ErkJggg=="
+)
+
+# The placeholder is never a valid C++/CMake identifier sequence, so the
+# substitution cannot collide with the surrounding syntax the way str.format
+# would (the C++ file is full of braces).
+PLACEHOLDER = "@NAME@"
+
+CMAKE_LISTS = """\
+##
+## Copyright (C) 2026 maminjie <canpool@163.com>
+## SPDX-License-Identifier: MulanPSL-2.0
+##
+
+cmake_minimum_required(VERSION 3.16)
+
+project(@NAME@
+  VERSION 0.1.0
+  DESCRIPTION "@NAME@ - a QtCanpool application"
+  LANGUAGES CXX
+)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Qt's code generators: AUTORCC picks up resources/app.qrc below, and AUTOMOC is
+# what turns a Q_OBJECT in your own classes into a compilable unit.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+# Point CMAKE_PREFIX_PATH at the QtCanpool SDK prefix and at Qt; QtCanpoolConfig
+# pulls in the Qt it was built against, so nothing else is needed here.
+find_package(QtCanpool REQUIRED)
+
+# WIN32 only suppresses the console window on Windows; it is ignored elsewhere.
+add_executable(@NAME@ WIN32
+  main.cpp
+  resources/app.qrc
+)
+
+# QtCanpool::qxapp re-exports the ribbon, the dock system, the window agent, the
+# theme engine and their Qt dependencies, so one link line is enough.
+target_link_libraries(@NAME@ PRIVATE QtCanpool::qxapp)
+"""
+
+MAIN_CPP = """\
+/**
+ * Copyright (C) 2026 maminjie <canpool@163.com>
+ * SPDX-License-Identifier: MulanPSL-2.0
+ **/
+
+// The application entry point. QxAppShell already provides the ribbon window,
+// the navigation rail, the page stack and the dock area around it; replace the
+// page below with your own widget and add more with addPage()/addDock().
+//
+// Public headers only: the project links an installed SDK and never reaches
+// into the QtCanpool source tree.
+
+#include "qxapp/qxappshell.h"
+
+#include <QtCore/QCoreApplication>
+#include <QtGui/QIcon>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QLabel>
+
+namespace {
+const auto kApplicationName = QStringLiteral("@NAME@");
+const auto kLogoPath = QStringLiteral(":/@NAME@/images/logo.png");
+}   // namespace
+
+int main(int argc, char *argv[])
+{
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+
+    QApplication app(argc, argv);
+    QCoreApplication::setOrganizationName(QStringLiteral("qtcanpool"));
+    QCoreApplication::setApplicationName(kApplicationName);
+    QApplication::setWindowIcon(QIcon(kLogoPath));
+
+    QxApp::QxAppShell shell;
+    shell.setWindowTitle(kApplicationName);
+    shell.addPage(QStringLiteral("home"), QIcon(kLogoPath), QObject::tr("Home"),
+                  new QLabel(QObject::tr("Hello from @NAME@!")));
+    shell.setStatusMessage(QObject::tr("Ready"));
+
+    // Restore after every page and dock exists: the layout is keyed by page id,
+    // so a page added later would have nothing to be restored into.
+    shell.restoreLayout();
+
+    shell.show();
+    return app.exec();
+}
+"""
+
+APP_QRC = """\
+<RCC>
+    <qresource prefix="/@NAME@">
+        <file>images/logo.png</file>
+    </qresource>
+</RCC>
+"""
+
+GITIGNORE = """\
+# Build trees
+build/
+build-*/
+out/
+
+# Qt Creator / qmake leftovers
+*.user
+*.user.*
+CMakeLists.txt.user*
+.qmake.stash
+Makefile*
+
+# Compilation database
+compile_commands.json
+"""
+
+README = """\
+# @NAME@
+
+A QtCanpool application, generated by `scripts/new-project`.
+
+## Build and run
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \\
+  -DCMAKE_PREFIX_PATH="/path/to/qtcanpool-sdk;/path/to/Qt"
+cmake --build build --parallel
+./build/@NAME@        # Windows: build\\@NAME@.exe
+```
+
+`CMAKE_PREFIX_PATH` needs both the QtCanpool SDK prefix and Qt: the SDK's CMake
+package re-declares the Qt it was built against. On Windows the separator is
+`;`, on Linux and macOS it is `:`.
+
+## Layout
+
+| Path                  | Purpose                                             |
+| :-------------------- | :-------------------------------------------------- |
+| `CMakeLists.txt`      | The build; one executable, one link to `QtCanpool::qxapp` |
+| `main.cpp`            | `QxAppShell` window, one page, ready to replace     |
+| `resources/app.qrc`   | Qt resource; the application icon lives here        |
+
+Add more pages and docks with `QxAppShell::addPage()` / `addDock()`; see
+`qxapp/qxappshell.h` for the full API.
+"""
+
+FILES = (
+    ("CMakeLists.txt", CMAKE_LISTS),
+    ("main.cpp", MAIN_CPP),
+    ("resources/app.qrc", APP_QRC),
+    ("README.md", README),
+    (".gitignore", GITIGNORE),
+)
+
+
+def fail(message):
+    print("error: %s" % message, file=sys.stderr)
+    return 1
+
+
+def write_text(path, text):
+    # newline="\n" on purpose: without it Python would translate to CRLF on
+    # Windows, and the generated project would differ per platform.
+    with open(path, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
+def generate(name, project_dir):
+    for relative, content in FILES:
+        target = os.path.join(project_dir, relative)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        write_text(target, content.replace(PLACEHOLDER, name))
+
+    logo_dir = os.path.join(project_dir, "resources", "images")
+    os.makedirs(logo_dir, exist_ok=True)
+    with open(os.path.join(logo_dir, "logo.png"), "wb") as handle:
+        handle.write(base64.b64decode(LOGO_PNG_B64))
+
+
+def prefix_path(sdk, qt):
+    return ";".join(p for p in (sdk, qt) if p)
+
+
+def build_commands(project_dir, sdk, qt, generator):
+    build_dir = os.path.join(project_dir, "build")
+    configure = ["cmake", "-S", project_dir, "-B", build_dir, "-DCMAKE_BUILD_TYPE=Release"]
+    if generator:
+        configure += ["-G", generator]
+    prefix = prefix_path(sdk, qt)
+    if prefix:
+        configure.append("-DCMAKE_PREFIX_PATH=" + prefix)
+    return configure, ["cmake", "--build", build_dir, "--parallel"]
+
+
+def render(command):
+    def quote(argument):
+        if re.match(r"^[A-Za-z0-9_./:=+-]+$", argument):
+            return argument
+        return '"%s"' % argument
+
+    return " ".join(quote(argument) for argument in command)
+
+
+def configure_and_build(commands):
+    for command in commands:
+        print(">>> " + render(command))
+        if subprocess.call(command) != 0:
+            return 1
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="new-project",
+        description="Scaffold a standalone QtCanpool application.",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument("name", help="project name, a C++ identifier (e.g. myapp)")
+    parser.add_argument(
+        "-o", "--outdir", metavar="DIR",
+        help="directory to create the project in, default is the current directory",
+    )
+    parser.add_argument(
+        "--build", action="store_true",
+        help="configure and build the project right after generating it",
+    )
+    parser.add_argument(
+        "--sdk", metavar="DIR",
+        help="QtCanpool SDK prefix, default is $QTCANPOOL_SDK or <repo>/build/sdk",
+    )
+    parser.add_argument(
+        "--qt", metavar="DIR",
+        help="Qt prefix, default is $QTCANPOOL_QT_PREFIX (otherwise CMake finds Qt itself)",
+    )
+    parser.add_argument(
+        "-G", "--generator", metavar="NAME",
+        help="CMake generator for --build, e.g. Ninja or 'MinGW Makefiles'.\n"
+             "Default is CMake's own default, which is $CMAKE_GENERATOR if set",
+    )
+
+    args = parser.parse_args()
+
+    if not NAME_RE.match(args.name):
+        return fail("'%s' is not a valid project name (use letters, digits and '_')" % args.name)
+    if args.name.lower() in RESERVED:
+        return fail("'%s' is a reserved name, pick something else" % args.name)
+
+    outdir = args.outdir or os.getcwd()
+    project_dir = os.path.abspath(os.path.join(outdir, args.name))
+
+    if os.path.exists(project_dir):
+        return fail("%s already exists, remove it or pick another name" % project_dir)
+
+    generate(args.name, project_dir)
+    print("created %s" % project_dir)
+    for relative, _ in FILES:
+        print("  " + relative)
+    print("  resources/images/logo.png")
+
+    sdk = args.sdk or os.environ.get("QTCANPOOL_SDK") or os.path.join(ROOT_DIR, "build", "sdk")
+    qt = args.qt or os.environ.get("QTCANPOOL_QT_PREFIX") or ""
+    generator = args.generator or os.environ.get("CMAKE_GENERATOR") or ""
+
+    commands = build_commands(project_dir, sdk, qt, generator)
+
+    # Print exactly the commands that --build would run, so the documentation
+    # cannot rot away from the behaviour.
+    print("\nnext:")
+    for command in commands:
+        print("  " + render(command))
+    if not generator:
+        print("\n  (cmake picked its default generator; pass -G, or set $CMAKE_GENERATOR,\n"
+              "   if that is not the toolchain you want - e.g. Ninja or 'MinGW Makefiles')")
+
+    if not args.build:
+        return 0
+
+    if configure_and_build(commands) != 0:
+        return 1
+
+    executable = os.path.join(project_dir, "build", args.name)
+    print("\nbuilt: %s%s" % (executable, ".exe" if os.name == "nt" else ""))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
