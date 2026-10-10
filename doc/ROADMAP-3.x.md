@@ -158,9 +158,17 @@
 ### 阶段三（4.0）：插件与模块体系
 
 > ✅ **计划已定型**（2026-10-10）：任务清单见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md)。
-> 与本节原稿的三点不同：① A 组（**移除全部 qmake 文件**，K13）并入 4.0；
-> ② E1/E2 之前必须先解决 **K14（宿主命名）**，因为它决定插件面向什么编程；
-> ③ E4 的 `src/modules` 定位由 K16 收紧为「样板与时兴能力的收容所」，正式能力仍进 `src/libs`。
+> 与本节原稿的四点不同：① A 组（**移除全部 qmake 文件**，K13）并入 4.0；
+> ② E1/E2 之前原以为必须先解决 **K14（宿主命名）**——已由「先上薄宿主上下文」化解，
+> **K14 从"阻塞 B1"降级为"可延后"**（见决策表）；
+> ③ E4 的 `src/modules` 定位由 K16 收紧为「样板与时兴能力的收容所」，正式能力仍进 `src/libs`；
+> ④ 新增 **B5 对象池**（插件间软协作），它也是 K14 得以解耦的手段。
+
+> ⚠️ **两套编号别混**：本节沿用方向 E 的原始编号（E1…E5），
+> `4.0-TASKS.md` 里的 A/B/C/D/E 是**任务分组**编号。对照关系：
+> 本节的 E1+E2 → 任务 B1~B5（契约 / 发现与依赖 / 隔离 / 注入点 / 对象池），
+> 本节 E3 → 任务 C1，本节 E4 → 任务 C2，本节 E5 → 任务 D1，
+> 本节「接口版本化与迁移说明」→ 任务 E1/E2（文档与发版）。
 
 - **A1 移除 qmake**：全树 88 个 `.pro`/`.pri`（含 22 个无 CMake 覆盖的示例），详见清单；
 - **E1 插件元数据与加载**：插件清单（id / 版本 / 依赖 / 能力）、动态加载（`QPluginLoader`）、失败隔离与诊断。
@@ -173,7 +181,42 @@
 - **E5 IDE 式样板**：以 MyCAD 类场景验证（对应 3.0 方向 F3）。
 
 > **前置条件**：E 必须在 A（API 干净）、B（有测试与静态分析兜底）、D（有设置/日志/主题基础设施）之后启动——否则是在沙地上盖楼。
-> 这三项**均已兑现**（3.1 / 3.2 / 3.3），方向 E 可以开工；新的阻塞项是 **K14**（2026-10-10 提出）。
+> 这三项**均已兑现**（3.1 / 3.2 / 3.3），方向 E 可以开工；原阻塞项 **K14** 已被 B5 的对象池化解。
+>
+> **进度（2026-10-10）**：A（qmake 归零）、B1~B5（插件运行时，含对象池）、C2（`src/modules` 三模块）、
+> D1（IDE 式样板）**均已落地**；`ctest` 12/12、qt6 全量构建 0 warning、clang-format 门禁绿。
+> 剩余：C1（管理器 UI）、E1（`doc/pages/plugins.md`）、E2（版本结算与发版）。
+> ⚠️ 其中 **B5 是计划外新增**——起因是 D1 里用一张宿主硬编码的接线表把 filetree 接到 output，
+> 与「宿主不认识模块」正面冲突（见决策表 K14 一行的说明）。
+
+### 插件间如何协作（B5 的结论，写给 3.x 用户看）
+
+> 4.0 之前，模块间协作只有两条路：宿主硬编码接线（D1 的原稿做法），或者两插件互相 `#include` 对方的头。
+> 前者把宿主变成依赖中心，后者要求插件**静态链接**依赖方——而 `PLUGIN_DEPENDS` 生成的是真 PRIVATE link，
+> 于是"可拔插"就只剩名义上的。B5 补上第三条路，这也是 Qt Creator 走了十几年的那条。
+
+**三条语义，与 Qt Creator 的 `PluginDependency::Type` 一一对应**：
+
+| 我们的写法             | Qt Creator            | 语义                                                        | 能否 `#include` 对方并直接调用 |
+| :---------------- | :-------------------- | :-------------------------------------------------------- | :----------------- |
+| `PLUGIN_DEPENDS`  | `required`            | 必须在、版本要匹配，排在被依赖者**之后**加载                                  | **能**（满树这么干）        |
+| `PLUGIN_RECOMMENDS` | `optional`          | 能解析就"和 required 一样"先加载；解析不了**当没声明过**（不报错、不级联）              | **不能**              |
+| `PLUGIN_TEST_DEPENDS` | `test`             | force-load，**不参与排序**，非传递                                       | —                  |
+
+> ⚠️ 别把 `PLUGIN_RECOMMENDS` 和 Qt Creator 的 `Recommends` 混为一谈：后者是**另一个 JSON 键**，
+> 含义是"本插件启用时顺带**启用**列出的插件"，与加载顺序无关。我们复用的是 `optional` 的语义。
+
+**对象池（`QxObjectPool`）**是可选依赖唯一的正当用法：供给方在自己的 `initialize()` 末尾
+`context->addObject(this)` 主动登记；消费方 `context->objectByName("...")` 取回来，
+**按信号槽**（`SIGNAL/SLOT` 字符串，不查对方头文件）连上去。`QxPluginContext::object<T>()`
+就是 Qt Creator 注释里那句 "useful for soft dependencies using pure interfaces" 的对应物 ——
+但样板走**按名字 + 元对象**，因为跨动态库 `qobject_cast` 查头文件里声明的接口不可靠
+（每个模块各有一份 `staticMetaObject`），而 `QObject` 派生类又**禁止**多重继承带虚函数的普通接口
+（实测堆破坏）。两条约束都是踩出来的，见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) B5。
+
+> **可选依赖的排序有真实语义**（此前只登记不建边）：Kahn 拓扑会为"能解析到的可选依赖"建边，
+> 所以消费方仍在供给方之后启动；解析不到则那条边不存在。级联失败判定**只读 `dependencies()`**，
+> 所以被依赖者挂掉**不会**连坐可选方——这正是 filetree 关掉 output 仍能 `Initialized` 的原因。
 
 ---
 
@@ -238,9 +281,19 @@
 >   - ✅ **D3** demo 接线（`AppShellDemo` 的 `Workspaces` 分组与 `Progress` 按钮）
 >   - ✅ **R1** 文档站收尾（`appshell.md` / `components.md` / `index.md`）
 >   - 任务清单与执行记录见 [`design/3.3-TASKS.md`](./design/3.3-TASKS.md)
-> - 🔄 **M7（4.0）计划已定**（2026-10-10）：任务清单 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md)。
->   A1 移除 qmake（**K13 定案：4.0 删**，88 个文件）→ B1~B4 插件运行时 → C1/C2/D1 样板 → E1/E2 文档与发版。
->   ⏸ **K14（宿主命名）未决，阻塞 B1**——四个选项与「先用 `QxPluginContext` 封住耦合」的建议都在清单里。
+> - 🔄 **M7（4.0）进行中**（2026-10-10）：任务清单 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md)。
+>   路线 A1 移除 qmake（**K13 定案：4.0 删**，88 个文件）→ B1~B5 插件运行时 → C1/C2/D1 样板 → E1/E2 文档与发版。
+>   - ✅ **A1 + A2 + C**：全树 **`.pro`/`.pri` 归零**（`git ls-files` 无输出，验收 #17 达成）；
+>     22 个示例由 `WITH_EXAMPLES` 用 CMake 重建，目标名沿用原 `TARGET`。
+>   - ✅ **B1~B3**：新库 `src/libs/qxplugin`——`QxPlugin` 契约 + `QxPluginSpec` 元数据 +
+>     `QxPluginContext` 薄宿主上下文 + `QxPluginManager`（Kahn 拓扑 / 环诊断 / 失败级联隔离 / 逆序 shutdown）。
+>   - ✅ **B5**：`QxObjectPool`（插件间软协作）+ 可选依赖排序语义，`PLUGIN_RECOMMENDS` 真正生效。
+>     **K14 由此降级为"可延后"**：插件只面向 `QxPluginContext` 编程，宿主改名被封死在单个类上。
+>     ⚠️ **K14 仍未定案**——改名时 `QxAppShell` 的引用仍要一次性替换，只是不再波及插件。
+>   - ✅ **C2 + D1**：`src/modules` 三模块（output 登记自身、filetree 可选依赖它）+ IDE 式样板
+>     `IdeShellDemo`——**宿主连模块名都不写**，模块在池里自己相遇（原先的 `kWiring` 表已删除）。
+>   - ⏭ **剩余**：C1 管理器 UI、E1 `doc/pages/plugins.md`、E2 版本结算与发版。
+>   - ⚠️ **K17 已定**：静态构建（WASM）**不支持运行时插件发现**（详见决策表）。
 
 ---
 
@@ -257,7 +310,7 @@
 | **K11** | 各库版本号是否收敛      | ✅ **保持各库独立演进号**（已确认 2026-10-10）；**推进规则见附录 B**——跟着发布批次结算、只前进本期有 API 改动的库、不追溯历史号；文档首页给出「库版本 ↔ 项目版本」对照表                        | D23 的处置方式已定；附发布时的操作步骤                        |
 | **K12** | 3.2 / 3.3 的拆分     | ✅ **3.2 = i18n + Toast + 属性编辑器内核 + 设置对话框 + `qcanpool` 删除**（已确认 2026-10-10）；工作区预设、状态栏进度留 3.3 | 版本节奏与范围；M6 的 DoD 拆成两批            |
 | **K13** | qmake 何去何从       | ✅ **4.0 一并删除**（已确认 2026-10-10）→ **已完成**：全树 `.pro`/`.pri` **归零**（原 88 个）。分四批删除——有 CMake 对应物的 47 个、只在 qmake 里的 3 个 demo（41 文件）、`examples/` CMake 化后的 30 个、`projects/staticlink`；其中 22 个示例由 A2 用 CMake 重建，目标名沿用原 `TARGET`。理由是它已由"冻结"变成**损坏**（`qxapp-lib.pri` 缺 8 个源文件，含 `QxAppShell` 本体，且 CI 从未构建过 qmake） | 构建方式收敛为 CMake 一种；K2 的"冻结"承诺到此结束 |
-| **K14** | 宿主命名 / 插件上下文 | ⏸ **待定**：保留 `QxAppShell` / `QxRibbonMainWindow` / `QxAppWindow` / `QxWorkbench`；建议**先引入薄宿主上下文**把耦合封住，再决定名字 | **阻塞 B1**；决定插件面向什么编程、以及改名波及面 |
+| **K14** | 宿主命名 / 插件上下文 | 🔽 **已降级为"可延后"**（2026-10-10，B1/B5 落地后）：采纳「先引入薄宿主上下文」的做法，插件只面向 `QxPluginContext` 编程，宿主改名**不再波及任何插件**。候选名仍为保留 `QxAppShell` / `QxRibbonMainWindow` / `QxAppWindow` / `QxWorkbench`，**尚未定案** | 原名"阻塞 B1"已解除；改名仍要一次性替换 `QxAppShell` 的引用（含 demo 与测试），但不再是插件契约问题 |
 | **K15** | 插件加载时机         | 建议**启动时全量加载**（首版不做真正延迟加载）；K16 见 [`4.0-TASKS.md`](./design/4.0-TASKS.md) | 启动时间与依赖图的确定性 |
 | **K17** | 静态构建（WASM）下的插件 | ✅ **不支持运行时插件发现**（2026-10-10，D1 实测后定）：`QTC_STATIC_BUILD=ON` 时 `add_qtc_plugin()` 产出的是**没人导入的静态库**（要进应用只能由应用写 `Q_IMPORT_PLUGIN` 清单，与「宿主不认识模块」正面冲突），实测 wasm 产物里 `output` 是 `liboutput.a`、`IdeShellDemo.wasm` 里没有模块元数据串。静态构建里组合模块用**编译期** `registerStaticPlugin()`；WASM demo 演示框架本身，不演示插件 | WASM 在线 demo 不含插件场景；`IdeShellDemo` 在静态配置下不构建；判据与实测见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) D1 |
 
