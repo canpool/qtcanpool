@@ -3,6 +3,7 @@
 #include "qxplugin/qxplugin.h"
 #include "qxplugin/qxplugincontext.h"
 #include "qxplugin/qxpluginmanager.h"
+#include "qxplugin/qxobjectpool.h"
 #include "qxplugin/qxpluginspec.h"
 
 #include "qxapp/qxappshell.h"
@@ -11,6 +12,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QStringList>
 #include <QtCore/QVersionNumber>
+#include <QtTest/QSignalSpy>
 #include <QtWidgets/QWidget>
 
 QX_PLUGIN_USE_NAMESPACE
@@ -45,6 +47,17 @@ public:
 
     bool m_ok;
     int m_iface;
+};
+
+/*! Something a plugin could publish, for the typed half of the pool lookup. */
+class FakeService : public QObject
+{
+    Q_OBJECT
+public:
+    int answer() const
+    {
+        return 42;
+    }
 };
 
 /*! Builds a plugin.json-shaped metadata object, exactly what add_qtc_plugin produces. */
@@ -86,6 +99,8 @@ private slots:
     void dependencyOrder();
     void missingDependency();
     void optionalDependencyMayBeAbsent();
+    void optionalDependencyOrdersTheRun();
+    void objectPoolPublishesAndFinds();
     void circularDependency();
     void versionMismatch();
     void disabledByDefaultIsSkipped();
@@ -182,6 +197,131 @@ void tst_QxPlugin::optionalDependencyMayBeAbsent()
     mgr.loadPlugins();
     QVERIFY(!mgr.hasError());
     QCOMPARE(mgr.spec(QStringLiteral("x"))->state(), QxPluginState::Initialized);
+}
+
+/*!
+ * An optional dependency that is really there still orders the run, and that is
+ * not a detail: the wanting side can only look up what the providing side has
+ * already published, so "soft" has to mean "sorts when present" rather than
+ * "ignored". What it must never do is drag the dependent down with it - that is
+ * the whole difference from a required dependency, and it is what lets a plugin
+ * recommend one that the user is free to switch off.
+ */
+void tst_QxPlugin::optionalDependencyOrdersTheRun()
+{
+    const auto registerBoth = [](QxPluginManager &mgr) {
+        // Registered the wrong way round on purpose: only the metadata can put
+        // them in the right order.
+        mgr.registerStaticPlugin(QStringLiteral("b"),
+                                 metaDataOptional(QStringLiteral("b"), QStringLiteral("1.0.0"), QStringLiteral("a")),
+                                 []() {
+                                     return new FakePlugin;
+                                 });
+        mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), []() {
+            return new FakePlugin;
+        });
+    };
+
+    // Present: initialized after its optional dependency, like a required edge.
+    {
+        QxPluginManager mgr;
+        registerBoth(mgr);
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("a"))->state(), QxPluginState::Initialized);
+
+        QStringList order;
+        for (QxPluginSpec *s : mgr.specs())
+            order.append(s->id());
+        QCOMPARE(order, QStringList({QStringLiteral("a"), QStringLiteral("b")}));
+    }
+
+    // Absent: the declaration blocks nothing at all, which is exactly how an
+    // optional dependency differs from one that was never declared.
+    {
+        QxPluginManager mgr;
+        mgr.registerStaticPlugin(
+            QStringLiteral("b"),
+            metaDataOptional(QStringLiteral("b"), QStringLiteral("1.0.0"), QStringLiteral("ghost")), []() {
+                return new FakePlugin;
+            });
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("b"))->state(), QxPluginState::Initialized);
+    }
+
+    // Present but switched off: no edge, and above all no cascade. b starts even
+    // though the plugin it recommended is not running.
+    {
+        QxPluginManager mgr;
+        mgr.setDisabledPlugins({QStringLiteral("a")});
+        registerBoth(mgr);
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("a"))->state(), QxPluginState::Disabled);
+        QCOMPARE(mgr.spec(QStringLiteral("b"))->state(), QxPluginState::Initialized);
+    }
+}
+
+/*!
+ * The pool is where two plugins meet when neither has the other's header: one
+ * publishes an object under a name, the other asks for it and gets back a
+ * QObject. Everything asserted here is about that being enough - and about the
+ * pool never outliving what was put in it.
+ */
+void tst_QxPlugin::objectPoolPublishesAndFinds()
+{
+    QxAppShell shell;
+    QxPluginContext *context = shell.pluginContext();
+    QxObjectPool *pool = shell.pluginPool();
+    QVERIFY(context != Q_NULLPTR);
+    QVERIFY(pool != Q_NULLPTR);
+
+    QVERIFY(context->objects().isEmpty());
+    QVERIFY(context->objectByName(QStringLiteral("nobody")) == Q_NULLPTR);
+    QVERIFY(context->object<FakeService>() == Q_NULLPTR);
+
+    QSignalSpy added(pool, &QxObjectPool::objectAdded);
+    QSignalSpy removed(pool, &QxObjectPool::aboutToRemoveObject);
+
+    auto *service = new FakeService;
+    service->setObjectName(QStringLiteral("service"));
+    context->addObject(service);
+    QCOMPARE(added.count(), 1);
+    QCOMPARE(context->objects().count(), 1);
+    QVERIFY(context->objects().first() == service);
+    QVERIFY(context->objectByName(QStringLiteral("service")) == service);
+    QVERIFY(context->objectByName(QString()) == Q_NULLPTR);
+    // The same object reached by type: when the two ends do share a declaration,
+    // neither of them has to know the name.
+    QVERIFY(context->object<FakeService>() == service);
+    QCOMPARE(context->object<FakeService>()->answer(), 42);
+
+    context->addObject(service);   // publishing twice changes nothing
+    context->addObject(Q_NULLPTR);
+    QCOMPARE(context->objects().count(), 1);
+    QCOMPARE(added.count(), 1);
+
+    context->removeObject(service);
+    QCOMPARE(removed.count(), 1);
+    QCOMPARE(context->objects().count(), 0);
+    context->removeObject(service);   // already gone: no-op, no second signal
+    QCOMPARE(removed.count(), 1);
+    delete service;
+
+    // An object that is simply destroyed leaves by itself. The pool holds it
+    // through a guarded pointer, so a plugin that is unloaded mid-session cannot
+    // leave a dangling entry behind - and nobody has to remember anything for
+    // that to be true.
+    auto *doomed = new FakeService;
+    doomed->setObjectName(QStringLiteral("doomed"));
+    context->addObject(doomed);
+    QCOMPARE(context->objects().count(), 1);
+    delete doomed;
+    QCOMPARE(context->objects().count(), 0);
+    QVERIFY(context->objectByName(QStringLiteral("doomed")) == Q_NULLPTR);
+    QCOMPARE(added.count(), 2);
+    QCOMPARE(removed.count(), 1);   // destroyed, not removed: nothing to announce
 }
 
 void tst_QxPlugin::circularDependency()
