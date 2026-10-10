@@ -1,0 +1,7 @@
+# Commits whose changes are not worth attributing to a line.
+# Configure once per clone:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+# GitHub reads this file automatically for its blame view.
+
+# chore(repo): normalize line endings to LF
+7bc34abcd754db2f27c207289bee28c7110e3550
