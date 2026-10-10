@@ -946,9 +946,18 @@ DockContainer::DockContainer(DockWindow *window, QWidget *parent)
 DockContainer::~DockContainer()
 {
     Q_D(DockContainer);
-    if (d->m_window) {
+
+    // A DockWindow passes itself as the window (see DockWindow::DockWindow), and
+    // this destructor then runs as part of its base destruction - that is, after
+    // ~DockWindow() released the private data, and with the dynamic type already
+    // degraded to DockContainer. Calling into the derived class in that state is
+    // undefined behaviour, and it would be pointless anyway, because
+    // DockWindow::removeDockContainer() ignores the self case. Only the real
+    // child containers unregister here.
+    if (d->m_window && d->m_window != this) {
         d->m_window->removeDockContainer(this);
     }
+
     QX_FINI_PRIVATE();
 }
 

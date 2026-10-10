@@ -1017,7 +1017,11 @@ void DockWindow::registerDockContainer(DockContainer *container)
 void DockWindow::removeDockContainer(DockContainer *container)
 {
     Q_D(DockWindow);
-    if (this != container) {
+
+    // A container that is a child of this window is destroyed by ~QWidget(),
+    // which runs after ~DockWindow() deleted the private data. Dropping it from
+    // a list that is going away anyway is a no-op, not a reason to crash.
+    if (d && this != container) {
         d->m_containers.removeAll(container);
     }
 }
