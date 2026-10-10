@@ -30,6 +30,15 @@ WindowAgentBasePrivate::~WindowAgentBasePrivate() = default;
 
 void WindowAgentBasePrivate::init()
 {
+    // The context is created here rather than in setup(). Every accessor on
+    // WindowAgentBase and its subclasses goes through m_context, and asking a
+    // freshly constructed agent for its title bar is a perfectly reasonable
+    // thing to do - the answer is "none", not a null pointer dereference.
+    //
+    // createContext() is virtual, but it is not overridden anywhere and only
+    // depends on compile-time platform macros, so calling it this early is
+    // well defined.
+    m_context.reset(createContext());
 }
 
 WindowContext *WindowAgentBasePrivate::createContext() const
@@ -45,9 +54,10 @@ WindowContext *WindowAgentBasePrivate::createContext() const
 
 void WindowAgentBasePrivate::setup(QObject *host, WindowItemDelegate *delegate)
 {
-    auto ctx = createContext();
-    ctx->setup(host, delegate);
-    m_context.reset(ctx);
+    if (!m_context) {
+        m_context.reset(createContext());
+    }
+    m_context->setup(host, delegate);
 }
 
 /*!
