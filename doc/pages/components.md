@@ -7,6 +7,7 @@
 - qxwindow → @ref QxWindow
 - qxribbon → @ref QxRibbon
 - qxdock → @ref QxDock
+- qxplugin → @ref QxPlugin
 - qxapp → @ref QxApp
 
 > `qcanpool` 已于 **3.2 删除**（含 3.1 留下的转发头），本页不再列出。迁移见
@@ -143,6 +144,40 @@ themes->setTheme(DarkOfficePlus);
 `DockWindow` 要求**中央部件第一个加入**：@ref QxApp::QxAppShell 在构造时就把页面栈装为中央部件，
 其余停靠面板再围绕它排布。
 
+## qxplugin — 插件体系
+
+把「应用」与「它由哪些模块组成」分开：宿主只认识框架，模块以插件形式在运行时被发现、排序、加载。
+完整的开发指南（元数据逐字段、三种依赖、生命周期、对象池写法、失败隔离）见[插件体系](plugins.md)。
+
+| 类 | 说明 |
+| :--- | :--- |
+| @ref QxPlugin::QxPlugin | 插件基类：`initialize` / `extensionsInitialized` / `shutdown` 三个生命周期回调 |
+| @ref QxPlugin::QxPluginContext | 插件面向的宿主契约：页面 / 停靠 / 状态栏 / 通知 / 配置 / 对象池；插件看不到宿主窗口类 |
+| @ref QxPlugin::QxPluginSpec | 单个插件的元数据与运行时状态（只读视图） |
+| @ref QxPlugin::QxPluginManager | 发现 / 拓扑排序 / 加载 / 失败隔离；动态走 `QPluginLoader`，静态走 `registerStaticPlugin()` |
+| @ref QxPlugin::QxObjectPool | 插件间软协作：发布、按名或按类型查找；只认 `QObject`，两端无需互相 include |
+
+```cpp
+#include "qxplugin/qxplugin.h"
+#include "qxplugin/qxpluginmanager.h"
+
+using namespace QxPlugin;
+
+// 宿主侧：把外壳的上下文交给管理器，再加载
+QxPluginManager manager;
+manager.setContext(shell.pluginContext());
+manager.setPluginPaths({shell.pluginDirectory()});
+manager.loadPlugins();
+```
+
+要点：
+
+- **两级依赖**：`PLUGIN_DEPENDS`（硬，缺席则本插件也不启动）与 `PLUGIN_RECOMMENDS`（软，缺席则静默跳过）。
+  只有硬依赖允许直接链接并调用对方。
+- **失败隔离**：单个插件失败只搁置它及其依赖链，宿主照常启动；用 `hasError()` / `errorString()` 查询。
+- **对象池**：让两个不共享头文件、不互相链接的插件协作——一方向池发布，另一方按名查找并经元对象连接。
+- **静态构建**（WASM）**没有运行时发现**，用 `registerStaticPlugin()` 在编译期登记。
+
 ## qxapp — 应用框架
 
 | 类 | 说明 |
@@ -159,6 +194,7 @@ themes->setTheme(DarkOfficePlus);
 | @ref QxApp::QxPropertyEditor | 由 `QxProperty` 列表生成的键/值表单（3.2） |
 | @ref QxApp::QxSettingsDialog | 设置对话框：左页列表 + 右表单，负责读盘与写盘（3.2） |
 | @ref QxApp::QxWorkspaceManager | 命名工作区：存 / 取 / 改名 / 删除，切换时只动停靠布局与当前页（3.3） |
+| @ref QxApp::QxPluginManagerDialog | 插件管理器界面：列表 / 加载序 / 状态 / 依赖 / 诊断 / 启停开关（4.0） |
 
 ### Toast 应用内通知（3.2）
 

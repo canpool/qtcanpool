@@ -24,6 +24,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | **布局与工作区** | `saveLayout()` 记下窗口几何与停靠布局；@ref QxApp::QxWorkspaceManager 在此之上给排列起名字，可存多套并随时切换（3.3） |
 | **主题** | @ref QxTheme::QxThemeManager 统一应用调色板与样式表，支持运行时切换、选择持久化与跟随系统深浅色 |
 | **基础设施** | @ref QxCore::QxSettings 负责配置与版本迁移，@ref QxCore::QxLogger 负责带轮转的日志，@ref QxCore::QxTranslator 负责语言切换 |
+| **插件与模块** | 应用与「它由哪些模块组成」分开：模块以插件形式在运行时被发现、排序、加载，宿主源码里不出现任何模块名（4.0，见[插件体系](plugins.md)） |
 | **开箱即用** | 生成的工程（见 `scripts/new-project`）已接好切语言、@ref QxApp::QxToast 应用内通知与 @ref QxApp::QxSettingsDialog 设置界面 |
 
 ## 组件总览
@@ -101,7 +102,8 @@ ctest --test-dir build -C Release --output-on-failure
 | [组件全览](components.md) | 各组件的能力范围、主要类与最小用法 |
 | [主题引擎](theming.md) | 主题引擎：内置主题、运行时切换、跟随系统、自定义主题 |
 | [应用外壳](appshell.md) | 应用外壳：页面、停靠区、状态栏、布局持久化、启动屏 |
-| [迁移指南](migration.md) | 2.x → 3.0 / 3.1 迁移：命名空间、类与方法对照、构建迁移 |
+| [插件体系](plugins.md) | 插件开发指南：元数据、三种依赖、生命周期、对象池、失败隔离 |
+| [迁移指南](migration.md) | 2.x → 3.x / 4.0 迁移：命名空间、类与方法对照、构建迁移、插件条目 |
 
 ## 环境要求
 
