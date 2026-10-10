@@ -1,6 +1,6 @@
 {
   "name": "qtcanpool",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A Qt6-first desktop UI application framework: ribbon, docking, windowing, theming and an application shell.",
   "homepage": "https://canpool.github.io/qtcanpool/",
   "license": "MulanPSL-2.0",
