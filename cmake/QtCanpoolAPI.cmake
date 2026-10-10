@@ -103,6 +103,32 @@ function(qtc_output_binary_dir varName)
   endif()
 endfunction()
 
+# Multi-configuration generators (Visual Studio, Xcode, Ninja Multi-Config) append the
+# configuration name to every *_OUTPUT_DIRECTORY property, turning <build>/bin into
+# <build>/bin/Release. Every path this file computes assumes that level is not there -
+# RELATIVE_PLUGIN_PATH above all, but also every $ORIGIN-based rpath - and the failure is
+# not a build error: the IDE sample starts, looks one directory short of its plugins,
+# finds none, and reports an empty composition. Pin each configuration to the same
+# directory so the build tree has one layout on every generator. The price is that a
+# multi-configuration tree holds one configuration at a time, which is the model the
+# presets already use (one build directory per preset). Single-configuration generators
+# are untouched: CMAKE_CONFIGURATION_TYPES is empty there.
+function(qtc_pin_output_dirs target)
+  cmake_parse_arguments(_pin "" "RUNTIME;LIBRARY;ARCHIVE" "" ${ARGN})
+  if (NOT CMAKE_CONFIGURATION_TYPES)
+    return()
+  endif()
+  foreach(_config IN LISTS CMAKE_CONFIGURATION_TYPES)
+    string(TOUPPER "${_config}" _config_upper)
+    foreach(_kind IN ITEMS RUNTIME LIBRARY ARCHIVE)
+      if (_pin_${_kind})
+        set_target_properties("${target}" PROPERTIES
+          "${_kind}_OUTPUT_DIRECTORY_${_config_upper}" "${_pin_${_kind}}")
+      endif()
+    endforeach()
+  endforeach()
+endfunction()
+
 function(qtc_source_dir varName)
   if (QTC_MERGE_BINARY_DIR)
     set(${varName} ${QtCanpool_SOURCE_DIR} PARENT_SCOPE)
@@ -254,6 +280,11 @@ function(add_qtc_library name)
     ARCHIVE_OUTPUT_DIRECTORY "${_output_binary_dir}/${IDE_LIBRARY_ARCHIVE_PATH}"
     QT_COMPILE_OPTIONS_DISABLE_WARNINGS OFF
     ${_arg_PROPERTIES}
+  )
+  qtc_pin_output_dirs(${name}
+    RUNTIME "${_output_binary_dir}/${_DESTINATION}"
+    LIBRARY "${_output_binary_dir}/${IDE_LIBRARY_PATH}"
+    ARCHIVE "${_output_binary_dir}/${IDE_LIBRARY_ARCHIVE_PATH}"
   )
 
   if (NOT _arg_SKIP_PCH)
@@ -531,6 +562,11 @@ function(add_qtc_plugin target_name)
     QTC_PLUGIN_CLASS_NAME ${_arg_PLUGIN_CLASS}
     ${_arg_PROPERTIES}
   )
+  qtc_pin_output_dirs(${target_name}
+    RUNTIME "${_output_binary_dir}/${plugin_dir}"
+    LIBRARY "${_output_binary_dir}/${plugin_dir}"
+    ARCHIVE "${_output_binary_dir}/${plugin_dir}"
+  )
 
   if (NOT _arg_SKIP_PCH)
     enable_pch(${target_name})
@@ -722,6 +758,7 @@ function(add_qtc_executable name)
     QT_COMPILE_OPTIONS_DISABLE_WARNINGS OFF
     ${_arg_PROPERTIES}
   )
+  qtc_pin_output_dirs("${name}" RUNTIME "${_output_binary_dir}/${_DESTINATION}")
   if (NOT _arg_SKIP_PCH)
     enable_pch(${name})
   endif()
@@ -878,6 +915,7 @@ function(add_qtc_test name)
     BUILD_RPATH "${_RPATH_BASE}/${_RPATH};${CMAKE_BUILD_RPATH}"
     INSTALL_RPATH "${_RPATH_BASE}/${_RPATH};${CMAKE_INSTALL_RPATH}"
   )
+  qtc_pin_output_dirs(${name} RUNTIME "${_output_binary_dir}/${IDE_BIN_PATH}")
   if (NOT _arg_SKIP_PCH)
     enable_pch(${name})
   endif()

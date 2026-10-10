@@ -58,6 +58,16 @@ QTCANPOOL_QT_PREFIX=/opt/Qt/6.8.3/gcc_64 cmake --preset qt6
 > 预设里的默认路径是替作者本机准备的，并且都假设 Windows 布局。
 > 在别的机器上设置对应环境变量即可，不必改动 `CMakePresets.json`。
 
+### 生成器与构建树布局
+
+单配置生成器（Ninja、Unix Makefiles、MinGW Makefiles）与多配置生成器
+（Visual Studio、Xcode、Ninja Multi-Config）都可以用，但**一个构建目录只放一个配置**：
+
+多配置生成器默认会把配置名追加到每个产物目录后面（`build/bin/Release`、`build/lib/qtproject/plugins/Release`），
+而框架里所有相对路径与 `$ORIGIN` rpath 都是按**扁平**布局算的（`RELATIVE_PLUGIN_PATH` 正是其中之一）。
+构建框架因此把每个配置的输出目录**钉在同一个位置**（`cmake/QtCanpoolAPI.cmake` 的 `qtc_pin_output_dirs()`），
+让布局在两类生成器下一致。代价就是同一目录里放不下第二个配置——这与预设模型一致（一个预设一个构建目录）。
+
 ## 功能开关
 
 开关均为 CMake 缓存变量，可在配置时通过 `-D<名字>=ON|OFF` 指定，
