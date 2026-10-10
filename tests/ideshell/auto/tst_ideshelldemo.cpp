@@ -7,8 +7,8 @@
  * way the window does, prints what they composed and leaves without a screen, and
  * what is asserted here is that the composition is real - modules found by
  * metadata alone, a declared dependency ordering the run, the pages and docks
- * coming from them, and the host's connection between two plugins that the
- * application never linked.
+ * coming from them, and the modules meeting each other in the pool the shell
+ * handed over rather than through anything the application wrote down.
  *
  * The executable path arrives as a compile definition from tests/CMakeLists.txt;
  * the demo and the test do not share an output directory on every platform, so
@@ -72,7 +72,7 @@ private slots:
     void startsAndFindsTheModules();
     void dependencyOrderedTheRun();
     void modulesFilledTheShell();
-    void hostWiredTwoPluginsItNeverLinked();
+    void modulesMetInThePool();
 private:
     QString m_composition;
 };
@@ -152,12 +152,16 @@ void tst_IdeShellDemo::modulesFilledTheShell()
 }
 
 /*!
- * The host-side rule - filetree reports what it opened, output takes a line -
- * was applied, by member name, to two plugins the application never linked.
+ * The modules that wanted to work together met in the pool the shell handed
+ * over - the application wrote down neither of their names, and neither of them
+ * was linked into it. How far the meeting got is checked where it can be (see
+ * tst_qxmodules, which drives the pair); what is checked here is that the
+ * composition the application reports contains what they published.
  */
-void tst_IdeShellDemo::hostWiredTwoPluginsItNeverLinked()
+void tst_IdeShellDemo::modulesMetInThePool()
 {
-    QCOMPARE(valueOf(m_composition, QStringLiteral("wiring")), QStringLiteral("ok"));
+    const QString pool = valueOf(m_composition, QStringLiteral("pool"));
+    QVERIFY2(pool.contains(QStringLiteral("output")), qPrintable(QStringLiteral("pool was: %1").arg(pool)));
 }
 
 QTEST_GUILESS_MAIN(tst_IdeShellDemo)

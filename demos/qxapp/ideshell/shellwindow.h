@@ -10,7 +10,6 @@
 #include "qxplugin/qxpluginmanager.h"
 
 #include <QtCore/QString>
-#include <QtCore/QStringList>
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -29,10 +28,11 @@ QX_PLUGIN_USE_NAMESPACE
  * Turn all the modules off and the shell still starts; that is the accept
  * criterion, not a fallback.
  *
- * The one thing a host cannot delegate is introducing two plugins to each
- * other: a plugin is handed a QxPluginContext and no handle to its peers, so
- * somebody who owns the manager has to make the connection. That is what
- * kWiring in the .cpp is, and why it is a table of names rather than a call.
+ * The modules that want to work together find each other in the object pool the
+ * shell hands over with the context, so this file names no module even for that:
+ * filetree asks the pool for the object called "output" and connects itself.
+ * Something that has to be arranged by name between two plugins belongs to the
+ * plugins, not to a host that is not supposed to know either of them.
  */
 class ShellWindow : public QxAppShell
 {
@@ -42,8 +42,8 @@ public:
 
     /*!
      * Discovers, orders and loads the plugins, then does the host's part:
-     * applies the switches the plugin manager dialog stored, connects what the
-     * wiring table asks for, and reports what went wrong.
+     * applies the switches the plugin manager dialog stored and reports what
+     * went wrong.
      *
      * Kept out of the constructor because it is the step a caller wants to
      * place itself - the window shows afterwards, the --check run never shows
@@ -56,18 +56,17 @@ public:
     QxPluginManager *pluginManager() const;
 
     /*!
-     * One line per plugin (id, state, version, error) followed by the pages and
-     * docks the shell ended up with. Written for --check: the point of this
-     * sample is the composition rather than the pixels, so the composition is
-     * what a caller without a screen can read.
+     * One line per plugin (id, state, version, error) followed by what the shell
+     * ended up with: the pages, the docks and whatever the modules published
+     * into the pool. Written for --check: the point of this sample is the
+     * composition rather than the pixels, so the composition is what a caller
+     * without a screen can read.
      */
     QString composition() const;
-
 private:
     void createRibbon();
     void refreshPageMenu();
     void openPluginManager();
-    void wirePlugins();
     void announceFailures();
 
     /*! The directory the manager scans; derived, never configured. */
@@ -75,12 +74,6 @@ private:
 
     QxPluginManager *m_manager = nullptr;
     QMenu *m_pageMenu = nullptr;
-    /*!
-     * The wiring rules that could not be applied, in the order they were tried.
-     * Kept because a toast is gone in three seconds and --check has no screen:
-     * this is the same information in a form a caller can read.
-     */
-    QStringList m_wireProblems;
 };
 
 #endif   // SHELLWINDOW_H

@@ -7,10 +7,6 @@
 #include "qxapp/qxpluginmanagerdialog.h"
 
 #include "qxplugin/qxpluginspec.h"
-// The complete QxPlugin type is needed only to hand an instance to the
-// meta-object system as a QObject - the demo never names the class itself, which
-// is the point of it.
-#include "qxplugin/qxplugin.h"
 
 #include "qxdock/dockwindow.h"
 #include "qxribbon/ribbongroup.h"
@@ -31,28 +27,6 @@ QX_THEME_USE_NAMESPACE
 
 namespace
 {
-/*!
- * The one place this demo names anything a module happens to provide.
- *
- * It is the host's job and nowhere else's: a plugin is given a QxPluginContext
- * and no handle to its peers, so somebody who owns the manager has to introduce
- * them. Read what the table is not: there is no module type in it, no module
- * header above it, and no module target in this directory's CMakeLists. The two
- * ends are looked up among the loaded plugins by id and connected by member name
- * through the meta-object system - the only route a host that links no module
- * has - and a missing end is reported rather than crashing.
- */
-struct Wire {
-    const char *fromId;
-    const char *signal;
-    const char *toId;
-    const char *slot;
-};
-
-const Wire kWiring[] = {
-    {"filetree", SIGNAL(fileActivated(QString)), "output", SLOT(appendLine(QString))},
-};
-
 /*! The state names the composition report uses; QxPluginSpec only has the enum. */
 QString stateName(QxPluginState state)
 {
@@ -161,35 +135,8 @@ void ShellWindow::start()
     m_manager->setPluginPaths({pluginDirectory()});
     m_manager->loadPlugins();
 
-    wirePlugins();
     refreshPageMenu();
     announceFailures();
-}
-
-void ShellWindow::wirePlugins()
-{
-    for (const Wire &wire : kWiring) {
-        QObject *from = m_manager->plugin(QString::fromLatin1(wire.fromId));
-        QObject *to = m_manager->plugin(QString::fromLatin1(wire.toId));
-        if (from == Q_NULLPTR || to == Q_NULLPTR) {
-            // An end is switched off, failed, or was never installed. Saying so
-            // is the point: the rule is the host's, so a problem with it gets a
-            // host's message instead of a silent no-op.
-            const QString reason =
-                tr("Wiring skipped: %1 -> %2, not both loaded")
-                    .arg(QString::fromLatin1(wire.fromId), QString::fromLatin1(wire.toId));
-            m_wireProblems.append(reason);
-            showToast(reason, QxToast::Warning);
-            continue;
-        }
-
-        if (!QObject::connect(from, wire.signal, to, wire.slot)) {
-            const QString reason = tr("Wiring failed: %1 does not offer %2")
-                                       .arg(QString::fromLatin1(wire.fromId), QString::fromLatin1(wire.signal));
-            m_wireProblems.append(reason);
-            showToast(reason, QxToast::Warning);
-        }
-    }
 }
 
 void ShellWindow::announceFailures()
@@ -235,8 +182,10 @@ QString ShellWindow::composition() const
 
     lines.append(QStringLiteral("plugin dir: %1").arg(pluginDirectory()));
     for (QxPluginSpec *spec : m_manager->allSpecs()) {
-        QString line = QStringLiteral("%1 %2 %3").arg(spec->id(), -12).arg(stateName(spec->state()), -12).arg(
-            spec->version().toString());
+        QString line = QStringLiteral("%1 %2 %3")
+                           .arg(spec->id(), -12)
+                           .arg(stateName(spec->state()), -12)
+                           .arg(spec->version().toString());
         if (!spec->error().isEmpty()) {
             line += QStringLiteral(" - ") + spec->error();
         }
@@ -257,13 +206,25 @@ QString ShellWindow::composition() const
     for (int i = 0; i < pageCount(); ++i) {
         pages.append(pageId(i));
     }
-    lines.append(QStringLiteral("pages: %1").arg(pages.isEmpty() ? QStringLiteral("(none)") : pages.join(QLatin1Char(','))));
+    lines.append(
+        QStringLiteral("pages: %1").arg(pages.isEmpty() ? QStringLiteral("(none)") : pages.join(QLatin1Char(','))));
 
     QStringList docks = dockWindow()->dockWidgetsMap().keys();
-    lines.append(QStringLiteral("docks: %1").arg(docks.isEmpty() ? QStringLiteral("(none)") : docks.join(QLatin1Char(','))));
+    lines.append(
+        QStringLiteral("docks: %1").arg(docks.isEmpty() ? QStringLiteral("(none)") : docks.join(QLatin1Char(','))));
 
-    lines.append(QStringLiteral("wiring: %1")
-                     .arg(m_wireProblems.isEmpty() ? QStringLiteral("ok") : m_wireProblems.join(QLatin1String("; "))));
+    // What the modules offered each other, read back off the pool the shell
+    // handed over. The host lists names it got from the objects themselves -
+    // there is no module name in this file to compare them against, which is the
+    // point of reading the pool rather than writing the list down.
+    QStringList published;
+    for (QObject *object : pluginPool()->objects()) {
+        const QString name = object->objectName();
+        published.append(name.isEmpty() ? QStringLiteral("<unnamed>") : name);
+    }
+    lines.append(QStringLiteral("pool: %1")
+                     .arg(published.isEmpty() ? QStringLiteral("(empty)") : published.join(QLatin1Char(','))));
+
     lines.append(QStringLiteral("status: %1").arg(statusMessage()));
 
     return lines.join(QLatin1Char('\n'));
