@@ -31,7 +31,8 @@ qxapp      应用框架
   于是同一张表单可以脱离配置单独用（例如对象属性面板）。
 - **插件体系单独成层**（`qxplugin`）：它只依赖 `qxcore`（外加 Qt Widgets——`QxPluginContext`
   用 `QWidget` 讲页面与停靠面板），而 `qxapp` 反过来依赖它。插件只面向
-  @ref QxPlugin::QxPluginContext 编程，永远不面向宿主窗口类，所以宿主改名不会波及任何插件。
+  @ref QxPlugin::QxPluginContext 编程，永远不面向宿主窗口类，所以宿主类名对插件不可见
+  （K14 已据此定案为**保留 `QxAppShell`**）。
   插件之间靠 @ref QxPlugin::QxObjectPool 相遇（谁在池里，谁才可达），**不靠互相链接**。
 
 > ⚠️ `qxplugin → qxcore` 这条边**不是链接需要**：qxplugin 的 `.cpp` 不引用任何 `qxcore` 符号，

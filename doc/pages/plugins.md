@@ -142,8 +142,8 @@ required 与 optional 的差别**只在"另一头不在时"**：能解析时两�
 
 ## 插件与宿主：QxPluginContext
 
-@ref QxPlugin::QxPluginContext 是插件**唯一**的宿主句柄——插件看不到宿主窗口类（这正是宿主改名波及不到
-插件的原因，见 [K14](https://github.com/canpool/qtcanpool/blob/master/doc/design/4.0-TASKS.md)）。
+@ref QxPlugin::QxPluginContext 是插件**唯一**的宿主句柄——插件看不到宿主窗口类，宿主类名因此波及不到
+任何插件（K14 据此定案为**保留 `QxAppShell`**，见 [K14](https://github.com/canpool/qtcanpool/blob/master/doc/design/4.0-TASKS.md)）。
 它暴露宿主允许插件使用的全部能力：
 
 | 能力 | 方法 |

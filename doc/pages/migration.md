@@ -216,8 +216,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 `QxPlugin::interfaceVersion()` 首版为 **1**；宿主可用 `QxPluginManager::setRequiredInterfaceVersion()`
 拒绝过旧的插件。
 
-> ⚠️ **`QxAppShell` 是否改名在 4.0 阶段仍未决（K14）**。插件面向的不是宿主类而是 `QxPluginContext`，
-> 所以即便将来改名，影响面也只是宿主与它的样板，**任何插件都不用跟着改**。
+> ✅ **`QxAppShell` 不改名（K14 已于 4.0 定案）**。插件面向的不是宿主类而是 `QxPluginContext`，
+> 因此宿主类名对插件完全不可见——将来若真改名，影响面也只是宿主与它的样板，**任何插件都不用跟着改**。
 
 > ⚠️ **`PLUGIN_RECOMMENDS` 不是 Qt Creator 的 `Recommends`**：我们用它生成 `Dependencies` 里
 > `"Type" : "optional"` 的项（对应 Qt Creator 的 `PluginDependency::Type::Optional`）；而 Qt Creator 的
