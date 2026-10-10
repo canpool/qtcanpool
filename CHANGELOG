@@ -1,3 +1,32 @@
+4.1.0
+---
+- qxdock: scroll the active tab back into view. The code that did it sat
+  commented out because the written form ended the process: a QTimer::singleShot
+  callback captured the private pointer `q` by reference, so it read a stack slot
+  that updateTabs() had already released. Rewritten to capture by value, guard
+  the tab with a QPointer and coalesce the scrolls, with regression tests for
+  both the behaviour and the crash
+- qxribbon: start the frameless helper at the window's real DPI instead of a
+  hardcoded 96. The pair of DPI slots is a "did the DPI change" flag, and
+  starting both at 96 made the first real change look like no change at all -
+  so the one moment that needs the frame repaired was the moment the flag
+  suppressed it. Falls back from GetDpiForWindow to the desktop DC to 96
+- build: take a source file added to the tree into account on the next build. A
+  glob caches its result at configure time and AUTOMOC keeps its own list of
+  what it has scanned, so neither noticed a new file - the add_qtc_* helpers now
+  clear the autogen stamp at configure time and the globs use CONFIGURE_DEPENDS
+- project: give the 16 TODO/FIXME notes in qxdock, qxribbon and qxapp a verdict
+  each (2 fixed, 9 written up as limitations, 5 removed as questions that do not
+  stand); the 8 inherited from Qt in qxwindow are not claimed
+- docs: add doc/pages/limitations.md - six behaviours that are known and
+  deliberate, each with its cause, why it stays, and what changing it would take
+- ci: report clang-tidy findings on the lines a change touched rather than on
+  every line of the files it touched, and put the coverage listing in the job
+  summary; neither is a gate (K8), but a measurement worth taking has to be
+  measured honestly first
+- libs: no library moved this time - the public headers are untouched, and a
+  version is a claim about an interface
+
 4.0.0
 ---
 - project: remove qmake for good; BREAKING: the 88 .pro / .pri files are gone,
