@@ -347,6 +347,14 @@ jobs:
           echo "===== findings ====="
           echo "${FINDINGS}"
 
+          # A filter clang-tidy did not understand would make every file report
+          # nothing, and "0 findings" is exactly what a clean run looks like -
+          # so the failure has to be loud or it reads as good news.
+          if [ -n "${LINE_FILTER}" ] \
+            && grep -q "unknown argument.*line-filter" clang-tidy.log; then
+            echo "::error::clang-tidy rejected -line-filter; the findings above are empty because nothing was analysed, not because nothing was found"
+          fi
+
           # Put the digest where it will actually be read: the step summary is
           # one click away from the job, while an artifact is one download away.
           {
