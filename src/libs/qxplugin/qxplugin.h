@@ -24,18 +24,23 @@ class QxPluginContext;
  * shutdown() runs in reverse when the host goes down.
  *
  * QxPluginContext is a plugin's only handle: host capabilities are reached
- * through it and nothing else. A plugin has no handle to the manager or to its
- * peers - wiring plugins together is the host's job, because the host is what
- * owns the manager. Plugins program against QxPluginContext, never against the
- * window class, so renaming the host - a K14 concern - never reaches a single
- * plugin.
+ * through it and nothing else. A plugin has no handle to the manager and none to
+ * its peers as objects it may simply drive. Plugins program against
+ * QxPluginContext, never against the window class, so renaming the host - a K14
+ * concern - never reaches a single plugin.
  *
  * That is a property of the runtime and not only of this comment: a static
  * instance is owned through a private holder rather than parented to the
  * manager, and a dynamic instance is owned by its QPluginLoader and has no
  * parent, so no plugin can walk the object tree back to the manager and from
- * there to its peers. Which is what leaves the host as the only place where two
- * plugins meet.
+ * there to its peers.
+ *
+ * Two plugins still have to be able to cooperate, and the object pool on
+ * QxPluginContext is the whole of how: the providing side publishes what it
+ * offers, the wanting side looks it up by name or by type, and neither includes
+ * the other's header. What that replaces is a host that names both ends and
+ * connects them itself - a host that knows no module by name is only possible
+ * because the modules can meet without it.
  *
  * @code
  * class MyPlugin : public QxPlugin
@@ -65,11 +70,15 @@ public:
     virtual bool initialize(QxPluginContext *context, QString *errorString) = 0;
 
     /*!
-     * Called once every plugin is initialized, in dependency order: the place
-     * to finish setup that had to wait for the whole set. The plugin still has
-     * no handle to its peers or to the manager, so it cannot wire itself to
-     * anything here - cross-plugin wiring belongs to the host, which owns the
-     * manager. Empty by default.
+     * Called once every plugin is initialized: the place to finish setup that had
+     * to wait for the whole set. Peers are reachable here exactly as they are in
+     * initialize() - through the object pool on the context - and a plugin that
+     * offers something may prefer to publish it here, when it can be sure its own
+     * setup is complete. Empty by default.
+     *
+     * The call runs in the order the plugins were initialized in. That is worth
+     * knowing if you care whether a plugin you depend on has reached this point
+     * yet; it is not a reverse-order guarantee of the kind Qt Creator promises.
      */
     virtual void extensionsInitialized();
 

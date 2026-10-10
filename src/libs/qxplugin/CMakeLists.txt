@@ -6,6 +6,8 @@ add_qtc_library(qxplugin
     qxplugin_global.h
     qxplugin.h
     qxplugin.cpp
+    qxobjectpool.h
+    qxobjectpool.cpp
     qxplugincontext.h
     qxplugincontext.cpp
     qxpluginspec.h

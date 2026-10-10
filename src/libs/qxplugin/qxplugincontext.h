@@ -6,9 +6,12 @@
 #define QXPLUGINCONTEXT_H
 
 #include "qxplugin_global.h"
+#include "qxobjectpool.h"
 
 #include "qxcore/qxsettings.h"
 
+#include <QtCore/QList>
+#include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtGui/QIcon>
@@ -29,10 +32,24 @@ QX_PLUGIN_BEGIN_NAMESPACE
  * The surface only lists the host abilities a plugin is allowed to use. Adding
  * a capability here is therefore a deliberate, versioned extension of the
  * plugin contract; anything host-specific stays behind the concrete host class.
+ *
+ * "A plugin never sees the host's window class" leaves one gap that a
+ * host-mediated surface cannot close by itself: two plugins that want to
+ * cooperate - one offering something, one wanting it - have no way to find each
+ * other. The object pool below is the host's answer to that, and it is
+ * deliberately the whole of it. What a plugin publishes is a choice it makes;
+ * what it gets back is only ever a QObject, so the two ends still need no common
+ * header and no link between them. See QxObjectPool for the mechanics.
  */
 class QX_PLUGIN_EXPORT QxPluginContext
 {
 public:
+    /*!
+     * \a pool is the host's object pool - QxAppShell hands over its own - and
+     * stays the host's property. A host that offers no pool passes nothing, and
+     * every pool call below then does nothing.
+     */
+    explicit QxPluginContext(QxObjectPool *pool = Q_NULLPTR);
     virtual ~QxPluginContext();
 
     /*! Where a newly added dock lands. Mirrors Qx::DockWidgetArea without coupling the plugin to qxdock. */
@@ -92,6 +109,50 @@ public:
     // Config ----------------------------------------------------------------
     /*! The settings object backing persistence; never null. */
     virtual QX_CORE_PREPEND_NAMESPACE(QxSettings) * settings() const = 0;
+
+    // Object pool -----------------------------------------------------------
+    /*
+     * Where plugins meet. A plugin publishes what it is willing to offer, and
+     * looks up what it needs; neither end includes the other's header, and the
+     * host is not asked to know either of them.
+     *
+     * The lookups are by objectName() and by type. The name is the one that
+     * works between two plugins that share nothing - what comes back is used
+     * through the meta-object - while the type covers the cases where a common
+     * declaration exists on both sides.
+     */
+    /*!
+     * Publishes \a object under its objectName(), where other plugins can find
+     * it. Publishing is deliberate: a plugin that publishes nothing stays
+     * unreachable, which is why this is a call and not something that happens to
+     * every plugin automatically.
+     *
+     * The pool does not take ownership, and the entry disappears when \a object
+     * is destroyed. Removing it in shutdown() anyway is the tidier habit: it
+     * goes away before the plugin does, rather than with it.
+     */
+    void addObject(QObject *object);
+    /*! Takes \a object out of the pool. The object is not deleted; an unknown one is a no-op. */
+    void removeObject(QObject *object);
+    /*! Everything published by any plugin and still alive, in publication order. */
+    QList<QObject *> objects() const;
+    /*! The first live published object named \a name, or null. */
+    QObject *objectByName(const QString &name) const;
+
+    /*!
+     * The first live published object castable to \a T, or null.
+     *
+     * For the cases where the two ends share a declaration of \a T - a host
+     * service, or a type both link the same library for. Where they share
+     * nothing, objectByName() is the lookup that still works.
+     */
+    template <typename T> T *object() const
+    {
+        return m_pool ? m_pool->object<T>() : Q_NULLPTR;
+    }
+protected:
+    /*! The host's pool, or null when the host offers none. Owned by the host. */
+    QxObjectPool *m_pool = Q_NULLPTR;
 };
 
 QX_PLUGIN_END_NAMESPACE

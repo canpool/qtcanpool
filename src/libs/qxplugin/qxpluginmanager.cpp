@@ -495,7 +495,10 @@ void QxPluginManager::loadPlugins()
     }
 
     // let initialized plugins finish setup now the whole set is up, in the order
-    // they were initialized in (they cannot reach each other - the host wires)
+    // they were initialized in. Peers are reachable from here exactly as they are
+    // from initialize() - through the object pool on the context - so a plugin
+    // that offers something may well prefer to publish it here, once its own
+    // setup is complete.
     for (QxPluginSpec *s : std::as_const(d->orderedSpecs)) {
         if (s->state() == QxPluginState::Initialized && s->plugin())
             s->plugin()->extensionsInitialized();
