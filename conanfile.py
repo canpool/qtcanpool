@@ -33,7 +33,6 @@ class QtCanpoolConan(ConanFile):
         "CMakeLists.txt",
         "cmake/*",
         "src/*",
-        "qtproject.pri",
         "LICENSE",
     )
 

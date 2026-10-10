@@ -365,11 +365,11 @@ examples/qcanpool (4 个示例)     同上                              ← 整�
 
 1. 逐个库确认本期是否有真实改动：`git log <上次tag>..HEAD -- src/libs/<lib>`；
 2. 有改动的库按上面的规则定新号；
-3. **同步写全所有定义处**：CMake 是 `<lib>/CMakeLists.txt` 的 `VERSION`；qmake 侧是
-   `<lib>/<lib>-lib.pri` 的 `VERSION` **与** `<lib>/<lib>_dependencies.pri` 的 `QTC_LIB_VERSION`
-   各一处。⚠️ **`qxcore` / `qxtheme` 没有 `.pri`**——qmake 冻结之后才新建的库，按 K2 不补；
-4. 项目版本四处照旧：`cmake/QtCanpoolBranding.cmake`、`qtproject.pri`、
-   `ports/qtcanpool/vcpkg.json`、`conanfile.py`；
+3. **版本号的定义处**：`<lib>/CMakeLists.txt` 的 `VERSION`。⚠️ 4.0 之前 qmake 侧还有两处
+   （`<lib>/<lib>-lib.pri` 的 `VERSION` 与 `<lib>/<lib>_dependencies.pri` 的 `QTC_LIB_VERSION`），
+   随 K13 删除 qmake 一并消失，不要再去找它们；
+4. 项目版本三处照旧：`cmake/QtCanpoolBranding.cmake`、`ports/qtcanpool/vcpkg.json`、
+   `conanfile.py`（原先的第 4 处 `qtproject.pri` 随 K13 删除）；
 5. 给 `doc/pages/index.md` 的「版本对照」表补一行，并在 `CHANGELOG` 里写明哪个库动了号、为什么。
 
 ### 现状与下一批结算
