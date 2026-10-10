@@ -47,21 +47,24 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 ## 版本对照
 
 **项目版本**（tag 打在它上面）是发布列车号；**每个库另有自己的版本号**，两者互不绑定（K11）。
-库版本号只在该库自己的接口契约变化时前进，项目版本说明的是「哪些库属于这一批发布」——
-所以 3.0 → 3.2 项目版本走了两位，而库版本号一位没动，这不是遗漏。
+每次项目发版**结算一次**：这一批里**动了 API 的库才前进号**，没动的库保持原号。所以 3.0 → 3.3
+项目版本走了四位，而 `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` 一位未动——这不是遗漏，
+是在声明「这些库本期没有接口变化」。推进规则的完整约定（含发布时的操作步骤）见
+[`doc/ROADMAP-3.x.md` 附录 B](https://github.com/canpool/qtcanpool/blob/release-3.x/doc/ROADMAP-3.x.md)。
 
 | 项目版本 | `qxcore` | `qxtheme` | `qxwindow` | `qxribbon` | `qxdock` | `qxapp` |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 3.0.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
 | 3.1.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
 | 3.2.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
+| 3.3.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
 
 （`qcanpool` 有自己的一套号，且已于 3.2 整库删除，不再列入。）
 
-`3.2.0` 一行里库号未变，但内容变了：`qxcore` 多了 @ref QxCore::QxTranslator，
-`qxapp` 多了 @ref QxApp::QxToast / @ref QxApp::QxToastManager /
-@ref QxApp::QxPropertyEditor / @ref QxApp::QxSettingsDialog。
-库版本号的推进留给该库自己需要对外声明的那一次，不与发布批次挂钩。
+四行里库号全未动，但内容一直在长：`qxcore` 多了 @ref QxCore::QxTranslator，`qxapp` 多了
+@ref QxApp::QxToast / @ref QxApp::QxToastManager / @ref QxApp::QxPropertyEditor /
+@ref QxApp::QxSettingsDialog / @ref QxApp::QxWorkspaceManager。这些内容按上面的规则会在
+**下一批发布**时结进号里（`qxapp` 0.0.1 → 0.1.0、`qxcore` 0.1.0 → 0.1.1），而不是回头改写这里。
 
 ## 快速开始
 
