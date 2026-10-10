@@ -21,7 +21,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | :--- | :------- | :--- |
 | **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`），仅依赖 Qt Core |
 | **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（Office / WPS / Dark）、运行时切换、选择持久化、跟随系统深浅色 |
-| **qcanpool** | `QCanpool` | 核心库，提供标题栏、工具按钮等通用控件；集成并封装下列组件 |
+| **qcanpool** | `QCanpool` | legacy 兼容层：3.1 后只剩 7 个指向 `qxapp` 的弃用转发头，3.2 删除 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
@@ -172,14 +172,6 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ## 示例
 
-**fancydemo**
-
-![qcanpool](./doc/pics/fancydemo.png)
-
-**fancyribbon**
-
-![fancyribbon](./doc/pics/fancyribbon.png)
-
 **dockdemo**
 
 ![dockdemo](./doc/pics/dockdemo.png)
@@ -196,6 +188,8 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ![qxwindowdemo](./doc/pics/qxwindowdemo.png)
 
+**appshell** —— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（<https://canpool.github.io/qtcanpool/demo/>），目前只有 CMake 构建：`cmake --preset qt6 && cmake --build --preset qt6`。
+
 ## 应用案例
 
 **MyCAD**
@@ -207,7 +201,7 @@ MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成
 
 ## 快速体验
 
-下载源码，使用 Qt Creator 打开 `qtcanpool.pro`，右击 `fancydemo` 并选择 *Run* 即可体验：
+下载源码，使用 Qt Creator 打开 `qtcanpool.pro`，右击 `ribbondemo` 或 `dockdemo` 并选择 *Run* 即可体验：
 
 ![run](./doc/pics/run.png)
 
