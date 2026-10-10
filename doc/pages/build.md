@@ -26,6 +26,38 @@ cmake --build build --config Release --parallel
 `CMAKE_PREFIX_PATH` 是选用 Qt 的唯一入口，例如 `C:/Qt/6.8.3/mingw_64`。
 也可以在 Qt Creator 中直接打开根目录的 `CMakeLists.txt`。
 
+### 使用 CMake Presets（推荐）
+
+根目录的 `CMakePresets.json` 固化了常用配置，省掉一长串 `-D`：
+
+```bash
+cmake --preset qt6           # Qt 6 + MinGW Makefiles
+cmake --build --preset qt6
+ctest --preset qt6           # 已带 QT_QPA_PLATFORM=offscreen
+
+cmake --preset qt6-ninja     # 同上，但用 Ninja，构建更快
+cmake --preset qt5           # Qt 5.15（尽力兼容）
+cmake --preset coverage      # 覆盖率构建
+cmake --preset sanitize      # ASan + UBSan
+cmake --preset wasm          # Qt for WebAssembly
+```
+
+每个预设都带有默认路径，且可以用**环境变量覆盖而无需改文件**：
+
+| 环境变量 | 用于预设 | 默认值 |
+| :--- | :--- | :--- |
+| `QTCANPOOL_QT_PREFIX` | `qt6` / `qt5` | `C:/Qt/6.8.3/mingw_64` / `C:/Qt/5.15.2/mingw81_64` |
+| `QTCANPOOL_WASM_QT` | `wasm` | `C:/Qt/6.8.3/wasm_singlethread` |
+| `QTCANPOOL_HOST_QT` | `wasm` | `C:/Qt/6.8.3/mingw_64` |
+| `QTCANPOOL_EMSDK` | `wasm` | `C:/emsdk` |
+
+```bash
+QTCANPOOL_QT_PREFIX=/opt/Qt/6.8.3/gcc_64 cmake --preset qt6
+```
+
+> 预设里的默认路径是替作者本机准备的，并且都假设 Windows 布局。
+> 在别的机器上设置对应环境变量即可，不必改动 `CMakePresets.json`。
+
 ## 功能开关
 
 开关均为 CMake 缓存变量，可在配置时通过 `-D<名字>=ON|OFF` 指定，
@@ -38,7 +70,8 @@ cmake --build build --config Release --parallel
 | `WITH_DOCS` | `OFF` | 生成 Doxygen 文档站点（需要 Doxygen） |
 | `WITH_ONLINE_DOCS` | `OFF` | 生成在线文档（qdoc 通道，遗留开关） |
 | `BUILD_WITH_PCH` | `ON` | 使用预编译头加速构建 |
-| `WITH_SANITIZE` | `OFF` | 打开地址/未定义行为检测器 |
+| `WITH_SANITIZE` | `OFF` | 打开检测器；种类由 `SANITIZE_FLAGS` 指定（例如 `address,undefined`） |
+| `WITH_COVERAGE` | `OFF` | 打开覆盖率插桩（仅 GCC / Clang），产物交给 `lcov` |
 | `BUILD_LINK_WITH_QT` | `OFF` | 作为 Qt Creator 的子项目构建时链接其 Qt |
 | `SHOW_BUILD_DATE` | `OFF` | 在关于对话框中显示构建日期 |
 | `ENABLE_SVG_SUPPORT` | 自动 | 检测到 Qt SVG 时自动打开 |
@@ -91,6 +124,35 @@ QT_QPA_PLATFORM=offscreen ctest --test-dir build -C Release --output-on-failure
 ```bash
 QTC_ONLY_TEST=tst_QxAppShell ./bin/tst_qxapp
 ```
+
+## 覆盖率与动态分析
+
+覆盖率与检测器都是**全局**开关：它们作用于树里的每一个目标。只插桩一部分只会得到
+一个"看起来很干净"的假象。两者都仅支持 GCC / Clang，在其它编译器上会给出告警并忽略。
+
+```bash
+# 覆盖率
+cmake --preset coverage
+cmake --build --preset coverage
+ctest --preset coverage
+lcov --capture --directory build/coverage --output-file coverage.info \
+     --ignore-errors mismatch,gcov,source
+lcov --remove coverage.info '/usr/*' '*/tests/*' '*/Qt/*' \
+     --output-file coverage.filtered.info --ignore-errors unused
+lcov --list coverage.filtered.info
+
+# ASan + UBSan
+cmake --preset sanitize
+cmake --build --preset sanitize
+ctest --preset sanitize
+```
+
+> **覆盖率目前不是门禁**（决策 K8）：CI 会产出报告并作为构建产物上传，但不会因覆盖率
+> 偏低而失败。等有了真实基线再谈阈值，避免为了凑数字去写无效测试。
+
+CI 的 `quality` 作业在 `ubuntu-latest / Qt 6.8.1` 上依次运行覆盖率、ASan+UBSan 与
+clang-tidy。其中 clang-tidy **只报告不阻塞**——它面对的是一棵从未被静态分析过的树，
+在既有告警被甄别完之前就设成门禁，只会把人训练成忽略红灯。
 
 ## 构建文档站点
 

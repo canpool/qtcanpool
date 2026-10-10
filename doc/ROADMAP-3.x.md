@@ -179,7 +179,13 @@
 > **进度（2026-10-10）**
 >
 > - ✅ **K7 已确认**：legacy ribbon 于 3.1 内物理移除
-> - ⏳ **M5 执行中**：任务清单见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md)；A3（legacy ribbon 物理移除）已完成
+> - ⏳ **M5 执行中**：任务清单见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md)
+>   - ✅ **A3** legacy ribbon 物理移除（`qcanpool` 只剩一套 Ribbon，DoD #1 达成）
+>   - ✅ **B1** 覆盖率报告（`WITH_COVERAGE` + CI `quality` 作业，按 K8 不设阈值）
+>   - ✅ **B2** clang-tidy + ASan/UBSan（CI `quality` 作业；clang-tidy 只报告不阻塞）
+>   - ✅ **B3** `qxwindow` 自动化测试（8 用例，并顺带修掉一处解空指针崩溃）
+>   - ✅ **C3** `CMakePresets.json`（6 个配置预设，环境变量可覆盖默认路径）
+>   - ⏳ 剩余：C1（模板 CMake 化）、C2（脚手架）、A1/A2/A4（legacy 存废）、B4（可选）
 > - ⏸ M6 / M7 待 M5 完成后再细化
 
 ---
