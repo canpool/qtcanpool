@@ -1,3 +1,17 @@
+3.3.0
+---
+- qxapp: add QxWorkspaceManager, which puts a name on what the shell already
+  persisted - a workspace is the dock layout plus the current page, and never
+  the window geometry, which belongs to the window
+- qxapp: give QxAppShell the four workspace entry points a menu needs:
+  workspaceManager(), workspaceNames(), saveWorkspace() and applyWorkspace()
+- qxapp: give the status bar indicator a percentage mode; it is one widget with
+  two modes now, busy and progress, and the last call wins
+- demo: give named workspaces and the progress indicator a place in the ribbon
+  of the AppShell demo
+- test: cover the workspace manager and the progress indicator with unit tests
+- docs: document named workspaces and the status bar progress
+
 3.2.0
 ---
 - project: remove the qcanpool library; BREAKING: the deprecated forwarding

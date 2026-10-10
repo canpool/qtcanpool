@@ -222,8 +222,14 @@
 >   - ✅ **R3** 迁移文档与文档站收尾（含 K11 的「库版本 ↔ 项目版本」对照表）
 >   - ✅ 验收标准 #2：`projects/template` 与 `scripts/new-project` 生成的工程
 >     已接好切语言、弹 Toast、开设置界面
-> - 🔨 **M6b（3.3）进行中**：工作区 / 布局预设（`QxWorkspaceManager`）、状态栏百分比进度（K12 已定）；
->   任务清单见 [`design/3.3-TASKS.md`](./design/3.3-TASKS.md)
+> - ✅ **M6b（3.3）已发布 `3.3.0`**（2026-10-10）：tag `3.3.0` +
+>   [GitHub Release](https://github.com/canpool/qtcanpool/releases/tag/3.3.0)；变更清单见 `CHANGELOG`。
+>   至此**方向 D 收官**，`QxAppShell` 具备真实应用需要的一整套常用能力。
+>   - ✅ **D1** 工作区 / 布局预设（`QxWorkspaceManager`：命名存 / 取 / 改名 / 删除，切换只动停靠布局与当前页）
+>   - ✅ **D2** 状态栏进度指示（忙碌与百分比两种模式共用一个指示条，最后一次调用生效）
+>   - ✅ **D3** demo 接线（`AppShellDemo` 的 `Workspaces` 分组与 `Progress` 按钮）
+>   - ✅ **R1** 文档站收尾（`appshell.md` / `components.md` / `index.md`）
+>   - 任务清单与执行记录见 [`design/3.3-TASKS.md`](./design/3.3-TASKS.md)
 > - ⏸ M7（4.0）插件与模块，待 3.2 / 3.3 之后再细化
 
 ---
@@ -314,4 +320,6 @@ examples/qcanpool (4 个示例)     同上                              ← 整�
 
 > **3.2 的收尾** = `qcanpool` 库（含 7 个转发头）整库消失，`src/libs` 收敛到 **6 个库**；
 > 同时 `qxcore` 长出 i18n、`qxapp` 长出 Toast / 属性编辑器 / 设置对话框。
-> 工作区预设与状态栏进度属 3.3。
+>
+> **3.3 的收尾** = 方向 D 收官：`qxapp` 长出命名工作区（`QxWorkspaceManager`）与状态栏的
+> 百分比进度，两项都有单测、文档页与 demo 入口。下一步是 M7（4.0）插件与模块体系。
