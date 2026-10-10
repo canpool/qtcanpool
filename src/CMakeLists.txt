@@ -1,4 +1,11 @@
 add_subdirectory(libs)
+
+# The business module samples (plan 4.0, task C2). They are plugins, not
+# libraries: each is built with add_qtc_plugin() and loaded through qxplugin,
+# so they sit after the libraries they link and depend on nothing in
+# src/plugins, which is the framework's own plugin directory.
+add_subdirectory(modules)
+
 add_subdirectory(shared)
 add_subdirectory(plugins)
 

@@ -1,0 +1,11 @@
+{
+    \"Name\" : \"filetree\",
+    \"Version\" : \"$$QTPROJECT_VERSION\",
+    \"CompatVersion\" : \"$$QTPROJECT_COMPAT_VERSION\",
+    \"Vendor\" : \"QtCanpool\",
+    \"Copyright\" : \"(C) $$QTPROJECT_COPYRIGHT_YEAR maminjie\",
+    \"License\" : [ \"MulanPSL-2.0\" ],
+    \"Description\" : \"Sample module: a file tree in a dock, reporting what it opens to output.\",
+    \"Url\" : \"https://gitee.com/icanpool/qtcanpool\",
+    $$dependencyList
+}

@@ -94,6 +94,29 @@ add_qtc_test(tst_qxplugin
         ${QXPLUGIN_TEST_SOURCES}
 )
 
+# -------------------------------------------------------------- qxmodules --
+# The module samples are plugins, so this suite loads them the way D1's shell
+# will: out of the directory they were built into, through QxPluginManager. The
+# directory is baked in as a definition rather than guessed, because the
+# framework's plugin layout is per platform.
+#
+# Guarded by the target: with -DWITH_MODULES=OFF there is nothing to load.
+if (TARGET output)
+  file(GLOB QXMODULES_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxmodules/auto/tst_*.cpp")
+  add_qtc_test(tst_qxmodules
+      DEPENDS qxapp qxplugin qxdock
+      DEFINES "QXMODULES_PLUGIN_DIR=\"$<TARGET_FILE_DIR:output>\""
+      INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+      SOURCES
+          "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+          "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+          "${QTCANPOOL_TESTS_DIR}/qxmodules/auto/main.cpp"
+          ${QXMODULES_TEST_SOURCES}
+  )
+  # The test loads the modules, so they have to exist before it runs.
+  add_dependencies(tst_qxmodules output notebook filetree)
+endif()
+
 # ---------------------------------------------------------------- qxribbon --
 file(GLOB QXRIBBON_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
 add_qtc_test(tst_qxribbon

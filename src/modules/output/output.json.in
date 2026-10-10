@@ -1,0 +1,11 @@
+{
+    \"Name\" : \"output\",
+    \"Version\" : \"$$QTPROJECT_VERSION\",
+    \"CompatVersion\" : \"$$QTPROJECT_COMPAT_VERSION\",
+    \"Vendor\" : \"QtCanpool\",
+    \"Copyright\" : \"(C) $$QTPROJECT_COPYRIGHT_YEAR maminjie\",
+    \"License\" : [ \"MulanPSL-2.0\" ],
+    \"Description\" : \"Sample module: the output panel and its status line.\",
+    \"Url\" : \"https://gitee.com/icanpool/qtcanpool\",
+    $$dependencyList
+}

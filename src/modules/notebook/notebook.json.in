@@ -1,0 +1,11 @@
+{
+    \"Name\" : \"notebook\",
+    \"Version\" : \"$$QTPROJECT_VERSION\",
+    \"CompatVersion\" : \"$$QTPROJECT_COMPAT_VERSION\",
+    \"Vendor\" : \"QtCanpool\",
+    \"Copyright\" : \"(C) $$QTPROJECT_COPYRIGHT_YEAR maminjie\",
+    \"License\" : [ \"MulanPSL-2.0\" ],
+    \"Description\" : \"Sample module: an editor page and its navigation entry.\",
+    \"Url\" : \"https://gitee.com/icanpool/qtcanpool\",
+    $$dependencyList
+}

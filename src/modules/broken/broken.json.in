@@ -1,0 +1,11 @@
+{
+    \"Name\" : \"broken\",
+    \"Version\" : \"$$QTPROJECT_VERSION\",
+    \"CompatVersion\" : \"$$QTPROJECT_COMPAT_VERSION\",
+    \"Vendor\" : \"QtCanpool\",
+    \"Copyright\" : \"(C) $$QTPROJECT_COPYRIGHT_YEAR maminjie\",
+    \"License\" : [ \"MulanPSL-2.0\" ],
+    \"Description\" : \"Sample module with a dependency that cannot be satisfied. Not built.\",
+    \"Url\" : \"https://gitee.com/icanpool/qtcanpool\",
+    $$dependencyList
+}
