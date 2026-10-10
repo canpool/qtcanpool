@@ -32,6 +32,7 @@ QX_APP_BEGIN_NAMESPACE
 class QxAppShellPrivate;
 class QxNavigationBar;
 class QxToastManager;
+class QxWorkspaceManager;
 
 /*!
  * The window skeleton of a ribbon application.
@@ -127,6 +128,9 @@ public:
      * Shows or hides the busy indicator in the status bar. It is a bar without
      * a percentage: the shell only reports "working", the caller knows how far
      * the work is.
+     *
+     * The indicator is one widget with two modes, and the last call wins:
+     * setting a progress takes it over, and going busy takes it back.
      */
     void setBusy(bool busy);
     bool isBusy() const;
@@ -151,6 +155,37 @@ public:
      */
     QxToast *showToast(const QString &text, QxToast::Level level = QxToast::Information,
                        int timeoutMs = QxToast::DefaultTimeout);
+
+    // Workspaces ------------------------------------------------------------
+    /*!
+     * The named layouts of this shell, created on first use and owned by it.
+     *
+     * A shell persists one layout - the one saveLayout() writes - and that is
+     * enough for "start where I left off". The manager adds the cases that
+     * need a name: keeping two arrangements apart and asking for one back.
+     * See QxWorkspaceManager for what a workspace holds and, more to the
+     * point, what it does not.
+     */
+    QxWorkspaceManager *workspaceManager() const;
+    /*! Names of the stored workspaces, in the order they were saved. */
+    QStringList workspaceNames() const;
+    /*!
+     * Stores the current arrangement under \a name - see
+     * QxWorkspaceManager::saveWorkspace(). Returns false for an empty name.
+     */
+    bool saveWorkspace(const QString &name);
+    /*!
+     * Brings back the arrangement stored under \a name - see
+     * QxWorkspaceManager::applyWorkspace(). Returns false when there is no
+     * such workspace.
+     *
+     * @code
+     * if (!shell.applyWorkspace(QStringLiteral("Writing"))) {
+     *     shell.showToast(tr("That layout is gone"), QxToast::Warning);
+     * }
+     * @endcode
+     */
+    bool applyWorkspace(const QString &name);
 
     // Persistence -----------------------------------------------------------
     /*!

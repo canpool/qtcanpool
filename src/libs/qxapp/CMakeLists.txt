@@ -20,5 +20,6 @@ add_qtc_library(qxapp
     qxtoolbutton.cpp qxtoolbutton.h
     qxtoast.cpp qxtoast.h qxtoast_p.h
     qxtoastmanager.cpp qxtoastmanager.h qxtoastmanager_p.h
+    qxworkspacemanager.cpp qxworkspacemanager.h qxworkspacemanager_p.h
     ribbonappwindow.cpp ribbonappwindow.h
 )

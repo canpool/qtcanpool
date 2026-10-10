@@ -5,6 +5,7 @@
 #include "qxappshell.h"
 #include "qxnavigationbar.h"
 #include "qxtoastmanager.h"
+#include "qxworkspacemanager.h"
 
 #include "qxcore/qxsettings.h"
 #include "qxdock/dockwidget.h"
@@ -13,6 +14,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QSignalBlocker>
+#include <QtCore/QStringList>
 #include <QtCore/QVector>
 #include <QtGui/QCloseEvent>
 #include <QtWidgets/QHBoxLayout>
@@ -71,6 +73,8 @@ public:
     QX_CORE_PREPEND_NAMESPACE(QxSettings) * ensureSettings() const;
     /*! Creates the toast stack on first use; never returns null. */
     QxToastManager *ensureToastManager() const;
+    /*! Creates the workspace manager on first use; never returns null. */
+    QxWorkspaceManager *ensureWorkspaceManager() const;
 public:
     QxNavigationBar *m_navigationBar = Q_NULLPTR;
     QX_DOCK_PREPEND_NAMESPACE(DockWindow) *m_dockWindow = Q_NULLPTR;
@@ -80,6 +84,7 @@ public:
     QVector<Page> m_pages;
     mutable QX_CORE_PREPEND_NAMESPACE(QxSettings) *m_settings = Q_NULLPTR;
     mutable QxToastManager *m_toastManager = Q_NULLPTR;
+    mutable QxWorkspaceManager *m_workspaceManager = Q_NULLPTR;
     int m_currentIndex = -1;
     bool m_busy = false;
     bool m_autoSaveLayout = true;
@@ -200,6 +205,14 @@ QxToastManager *QxAppShellPrivate::ensureToastManager() const
         m_toastManager = new QxToastManager(q_ptr, q_ptr);
     }
     return m_toastManager;
+}
+
+QxWorkspaceManager *QxAppShellPrivate::ensureWorkspaceManager() const
+{
+    if (!m_workspaceManager) {
+        m_workspaceManager = new QxWorkspaceManager(q_ptr, q_ptr);
+    }
+    return m_workspaceManager;
 }
 
 QxAppShell::QxAppShell(QWidget *parent)
@@ -424,6 +437,30 @@ QxToast *QxAppShell::showToast(const QString &text, QxToast::Level level, int ti
 {
     Q_D(QxAppShell);
     return d->ensureToastManager()->show(text, level, timeoutMs);
+}
+
+QxWorkspaceManager *QxAppShell::workspaceManager() const
+{
+    Q_D(const QxAppShell);
+    return d->ensureWorkspaceManager();
+}
+
+QStringList QxAppShell::workspaceNames() const
+{
+    Q_D(const QxAppShell);
+    return d->ensureWorkspaceManager()->workspaceNames();
+}
+
+bool QxAppShell::saveWorkspace(const QString &name)
+{
+    Q_D(QxAppShell);
+    return d->ensureWorkspaceManager()->saveWorkspace(name);
+}
+
+bool QxAppShell::applyWorkspace(const QString &name)
+{
+    Q_D(QxAppShell);
+    return d->ensureWorkspaceManager()->applyWorkspace(name);
 }
 
 QX_CORE_PREPEND_NAMESPACE(QxSettings) * QxAppShell::settings() const
