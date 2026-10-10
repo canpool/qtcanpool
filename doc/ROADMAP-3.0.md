@@ -224,7 +224,9 @@ src/libs/
 > - ✅ **M4.1 SDK 可消费性已落地**：`find_package(QtCanpool)` 的「安装 → 消费」闭环。为此修复两个从未被发现的导出缺陷（配置里多余的 `Concurrent`/`Core5Compat` 依赖、`qxribbon_global.h` 未随包安装），并新增下游工程 `projects/consume` 与 CI 门禁（`ubuntu-latest / Qt 6.8.1` 上跑完整往返）
 > - ✅ **M4.2 ~ M4.4 已落地**：项目版本对齐 `3.0.0`；`CHANGELOG` 补 `3.0.0` 条目；新增 vcpkg / Conan 骨架（`ports/` + `conanfile.py`，未经 CI 验证）
 > - ✅ **M4.5 已发布 `3.0.0`**：附注 tag 打在 `250126fe`（CI 全绿），推送至 github 与 gitee；两平台的发行版均已创建（正文取 `CHANGELOG` 3.0.0 条目）→ GitHub <https://github.com/canpool/qtcanpool/releases/tag/3.0.0> · Gitee <https://gitee.com/icanpool/qtcanpool/releases/tag/3.0.0>
-> - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 3.x
+> - ⏸ M2 的 legacy ribbon **物理下线**按 A1 顺延至 **3.1**（见后续规划）
+
+> **后续规划**：3.0 交付复盘、遗留欠账清单与 3.1/3.2/4.0 的方向与里程碑，见 [`ROADMAP-3.x.md`](./ROADMAP-3.x.md)。
 
 ---
 

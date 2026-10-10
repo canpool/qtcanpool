@@ -122,6 +122,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 ## 路线图
 
 - [3.0 开发规划](./doc/ROADMAP-3.0.md)
+- [3.x 开发规划（下一步）](./doc/ROADMAP-3.x.md)
 - [2.x → 3.0 迁移指南](./doc/design/3.0-MIGRATION.md)
 - [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
 - [M2 任务清单](./doc/design/3.0-M2-TASKS.md)
