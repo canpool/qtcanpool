@@ -2,12 +2,18 @@
 
 #include "qxapp/qxappshell.h"
 #include "qxapp/qxnavigationbar.h"
+#include "qxapp/qxpluginmanagerdialog.h"
 #include "qxapp/qxsplashscreen.h"
 
 #include "qxcore/qxsettings.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
+#include "qxplugin/qxplugin.h"
+#include "qxplugin/qxpluginmanager.h"
+#include "qxplugin/qxpluginspec.h"
 
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonObject>
 #include <QtCore/QSettings>
 #include <QtGui/QIcon>
 #include <QtWidgets/QPlainTextEdit>
@@ -19,6 +25,7 @@
 QX_APP_USE_NAMESPACE
 QX_CORE_USE_NAMESPACE
 QX_DOCK_USE_NAMESPACE
+QX_PLUGIN_USE_NAMESPACE
 
 /* ------------------------------------------------------------------ rail -- */
 
@@ -682,8 +689,268 @@ void tst_QxAppShell::autoSaveOnClose()
     QVERIFY(!untouched.contains(QStringLiteral("ui/currentPage")));
 }
 
+/* --------------------------------------------------------------- plugin -- */
+
+/*! A plugin that always starts, so the dialog cases can look at the bookkeeping. */
+class ReadyPlugin : public QxPlugin
+{
+    Q_OBJECT
+public:
+    explicit ReadyPlugin(QObject *parent = Q_NULLPTR)
+        : QxPlugin(parent)
+    {
+    }
+
+    bool initialize(QxPluginContext *, QString *) override
+    {
+        return true;
+    }
+};
+
+/*! A plugin.json-shaped metadata object, the same one add_qtc_plugin produces. */
+static QJsonObject pluginMeta(const QString &name, const QStringList &deps = QStringList(),
+                              bool enabledByDefault = true)
+{
+    QJsonObject meta;
+    meta.insert(QStringLiteral("Name"), name);
+    meta.insert(QStringLiteral("Version"), QStringLiteral("1.0.0"));
+    meta.insert(QStringLiteral("EnabledByDefault"), enabledByDefault);
+    if (!deps.isEmpty()) {
+        QJsonArray array;
+        for (const QString &dep : deps)
+            array.append(QJsonObject{{QStringLiteral("Name"), dep}});
+        meta.insert(QStringLiteral("Dependencies"), array);
+    }
+    return meta;
+}
+
+class tst_QxPluginManagerDialog : public QObject
+{
+    Q_OBJECT
+private slots:
+    void initTestCase();
+
+    void listsEveryPluginInLoadOrder();
+    void switchesFollowTheMetadata();
+    void togglingStoresDeviationsOnly();
+    void switchesSurviveARestart();
+    void diagnosticsCarryTheManagerError();
+    void storedListsRoundTripThroughTheHelpers();
+private:
+    /*! a -> b -> c, plus an opt-in plugin that is off until it is asked for. */
+    static void registerPlugins(QxPluginManager &manager);
+
+    /*! A settings file of its own per case, so no case depends on another. */
+    QString newSettingsFile();
+
+    QTemporaryDir m_dir;
+    int m_sequence = 0;
+};
+
+void tst_QxPluginManagerDialog::initTestCase()
+{
+    QVERIFY(m_dir.isValid());
+}
+
+QString tst_QxPluginManagerDialog::newSettingsFile()
+{
+    return m_dir.filePath(QStringLiteral("plugins-%1.ini").arg(++m_sequence));
+}
+
+void tst_QxPluginManagerDialog::registerPlugins(QxPluginManager &manager)
+{
+    const auto ready = []() {
+        return new ReadyPlugin;
+    };
+    manager.registerStaticPlugin(QStringLiteral("a"), pluginMeta(QStringLiteral("a")), ready);
+    manager.registerStaticPlugin(QStringLiteral("b"), pluginMeta(QStringLiteral("b"), {QStringLiteral("a")}), ready);
+    manager.registerStaticPlugin(QStringLiteral("c"), pluginMeta(QStringLiteral("c"), {QStringLiteral("b")}), ready);
+    // Off by default: it only starts once it is asked for by name, which is the
+    // case the enable list exists for.
+    manager.registerStaticPlugin(QStringLiteral("optin"), pluginMeta(QStringLiteral("optin"), {}, false), ready);
+}
+
+void tst_QxPluginManagerDialog::listsEveryPluginInLoadOrder()
+{
+    QxPluginManager manager;
+    registerPlugins(manager);
+    manager.loadPlugins();
+    QVERIFY(!manager.hasError());
+
+    QxPluginManagerDialog dialog(&manager);
+
+    // Every plugin the manager knows about, the switched-off one included: that
+    // one is exactly what someone opens this dialog to look at.
+    QCOMPARE(dialog.count(), 4);
+    QCOMPARE(dialog.rowOf(QStringLiteral("a")), 0);
+    QCOMPARE(dialog.rowOf(QStringLiteral("b")), 1);
+    QCOMPARE(dialog.rowOf(QStringLiteral("c")), 2);
+    // The ones that load come first, in the order they load in; the opt-in
+    // plugin, which does not load, follows by name.
+    QCOMPARE(dialog.rowOf(QStringLiteral("optin")), 3);
+    QCOMPARE(dialog.rowOf(QStringLiteral("nope")), -1);
+
+    dialog.setCurrentPlugin(QStringLiteral("b"));
+    QCOMPARE(dialog.rowOf(QStringLiteral("b")), 1);
+
+    // No manager is not a crash, it is an empty list.
+    QxPluginManagerDialog empty(Q_NULLPTR);
+    QCOMPARE(empty.count(), 0);
+    QCOMPARE(empty.diagnostics(), QStringLiteral("No errors."));
+}
+
+void tst_QxPluginManagerDialog::switchesFollowTheMetadata()
+{
+    QxPluginManager manager;
+    registerPlugins(manager);
+    manager.loadPlugins();
+
+    QxPluginManagerDialog dialog(&manager);
+    QCOMPARE(dialog.isChecked(QStringLiteral("a")), true);
+    // Off by default and nothing said otherwise: the switch is off.
+    QCOMPARE(dialog.isChecked(QStringLiteral("optin")), false);
+    QCOMPARE(dialog.isChecked(QStringLiteral("nope")), false);
+    QVERIFY(!dialog.isModified());
+
+    // An unknown id is refused rather than invented.
+    dialog.setChecked(QStringLiteral("nope"), true);
+    QCOMPARE(dialog.isChecked(QStringLiteral("nope")), false);
+    QVERIFY(!dialog.isModified());
+
+    // Flipping a switch is a change on screen, not a change on disk.
+    dialog.setChecked(QStringLiteral("a"), false);
+    QVERIFY(dialog.isModified());
+}
+
+void tst_QxPluginManagerDialog::togglingStoresDeviationsOnly()
+{
+    const QString file = newSettingsFile();
+    QxPluginManager manager;
+    registerPlugins(manager);
+    manager.loadPlugins();
+
+    QxSettings settings(file, QSettings::IniFormat);
+    QxPluginManagerDialog dialog(&manager, &settings);
+
+    // An untouched dialog stores nothing, so the metadata stays the default a
+    // fresh installation starts from.
+    dialog.apply();
+    QVERIFY(!settings.contains(QStringLiteral("plugins/disabled")));
+    QVERIFY(!settings.contains(QStringLiteral("plugins/enabled")));
+
+    // Switching off a plugin the metadata turned on, and on one it turned off:
+    // two deviations, one per list.
+    dialog.setChecked(QStringLiteral("c"), false);
+    dialog.setChecked(QStringLiteral("optin"), true);
+    QVERIFY(dialog.isModified());
+
+    QSignalSpy spy(&dialog, &QxPluginManagerDialog::applied);
+    dialog.apply();
+    QCOMPARE(spy.count(), 1);
+    QVERIFY(!dialog.isModified());
+
+    QCOMPARE(QxPluginManagerDialog::disabledPlugins(&settings), QStringList({QStringLiteral("c")}));
+    QCOMPARE(QxPluginManagerDialog::enabledPlugins(&settings), QStringList({QStringLiteral("optin")}));
+
+    // The manager honours both lists when the host reads them back at start-up.
+    QxPluginManager reloaded;
+    registerPlugins(reloaded);
+    reloaded.setDisabledPlugins(QxPluginManagerDialog::disabledPlugins(&settings));
+    reloaded.setEnabledPlugins(QxPluginManagerDialog::enabledPlugins(&settings));
+    reloaded.loadPlugins();
+    QVERIFY(!reloaded.hasError());
+    QCOMPARE(reloaded.spec(QStringLiteral("a"))->state(), QxPluginState::Initialized);
+    QCOMPARE(reloaded.spec(QStringLiteral("c"))->state(), QxPluginState::Disabled);
+    QCOMPARE(reloaded.spec(QStringLiteral("optin"))->state(), QxPluginState::Initialized);
+    QVERIFY(reloaded.plugin(QStringLiteral("optin")) != Q_NULLPTR);
+}
+
+void tst_QxPluginManagerDialog::switchesSurviveARestart()
+{
+    const QString file = newSettingsFile();
+    QxPluginManager manager;
+    registerPlugins(manager);
+    manager.loadPlugins();
+
+    QxSettings settings(file, QSettings::IniFormat);
+    QxPluginManagerDialog first(&manager, &settings);
+    first.setChecked(QStringLiteral("a"), false);
+    first.setChecked(QStringLiteral("optin"), true);
+    first.apply();
+
+    // A dialog over the same settings comes up showing what was stored rather
+    // than the metadata defaults - and does not call that a change.
+    QxPluginManagerDialog second(&manager, &settings);
+    QCOMPARE(second.isChecked(QStringLiteral("a")), false);
+    QCOMPARE(second.isChecked(QStringLiteral("optin")), true);
+    QVERIFY(!second.isModified());
+
+    // Discarding puts the switches back where the dialog loaded them from.
+    second.setChecked(QStringLiteral("a"), true);
+    QVERIFY(second.isModified());
+    second.revert();
+    QCOMPARE(second.isChecked(QStringLiteral("a")), false);
+    QVERIFY(!second.isModified());
+
+    // Closing with Cancel is the same discard.
+    second.setChecked(QStringLiteral("optin"), false);
+    QVERIFY(second.isModified());
+    second.reject();
+    QCOMPARE(second.isChecked(QStringLiteral("optin")), true);
+    QVERIFY(!second.isModified());
+}
+
+void tst_QxPluginManagerDialog::diagnosticsCarryTheManagerError()
+{
+    const auto ready = []() {
+        return new ReadyPlugin;
+    };
+    QxPluginManager manager;
+    manager.registerStaticPlugin(QStringLiteral("good"), pluginMeta(QStringLiteral("good")), ready);
+    manager.registerStaticPlugin(QStringLiteral("broken"),
+                                 pluginMeta(QStringLiteral("broken"), {QStringLiteral("ghost")}), ready);
+    manager.loadPlugins();
+    QVERIFY(manager.hasError());
+
+    QxPluginManagerDialog dialog(&manager);
+    QCOMPARE(dialog.count(), 2);
+    // The plugin that could not start is a row of its own, not a missing one -
+    // and the reason it gives is on screen in one piece.
+    QVERIFY(dialog.rowOf(QStringLiteral("broken")) >= 0);
+    QVERIFY(dialog.diagnostics().contains(QStringLiteral("broken")));
+    QVERIFY(dialog.diagnostics().contains(QStringLiteral("ghost")));
+}
+
+void tst_QxPluginManagerDialog::storedListsRoundTripThroughTheHelpers()
+{
+    const QString file = newSettingsFile();
+    QxSettings settings(file, QSettings::IniFormat);
+
+    QCOMPARE(QxPluginManagerDialog::disabledPlugins(&settings), QStringList());
+    QCOMPARE(QxPluginManagerDialog::enabledPlugins(&settings), QStringList());
+
+    QxPluginManagerDialog::setDisabledPlugins(&settings, {QStringLiteral("a")});
+    QxPluginManagerDialog::setEnabledPlugins(&settings, {QStringLiteral("b")});
+    QCOMPARE(QxPluginManagerDialog::disabledPlugins(&settings), QStringList({QStringLiteral("a")}));
+    QCOMPARE(QxPluginManagerDialog::enabledPlugins(&settings), QStringList({QStringLiteral("b")}));
+
+    // An empty list takes the key out again, so "nothing stored" stays
+    // distinguishable from "an empty list stored".
+    QxPluginManagerDialog::setDisabledPlugins(&settings, QStringList());
+    QxPluginManagerDialog::setEnabledPlugins(&settings, QStringList());
+    QVERIFY(!settings.contains(QStringLiteral("plugins/disabled")));
+    QVERIFY(!settings.contains(QStringLiteral("plugins/enabled")));
+
+    // No settings object means "nothing stored", not a crash.
+    QCOMPARE(QxPluginManagerDialog::disabledPlugins(Q_NULLPTR), QStringList());
+    QCOMPARE(QxPluginManagerDialog::enabledPlugins(Q_NULLPTR), QStringList());
+    QxPluginManagerDialog::setDisabledPlugins(Q_NULLPTR, {QStringLiteral("a")});
+    QxPluginManagerDialog::setEnabledPlugins(Q_NULLPTR, {QStringLiteral("a")});
+}
+
 TEST_ADD(tst_QxNavigationBar)
 TEST_ADD(tst_QxSplashScreen)
 TEST_ADD(tst_QxAppShell)
+TEST_ADD(tst_QxPluginManagerDialog)
 
 #include "tst_qxapp.moc"
