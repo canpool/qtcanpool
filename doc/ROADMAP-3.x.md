@@ -185,7 +185,12 @@
 >   - ✅ **B2** clang-tidy + ASan/UBSan（CI `quality` 作业；clang-tidy 只报告不阻塞）
 >   - ✅ **B3** `qxwindow` 自动化测试（8 用例，并顺带修掉一处解空指针崩溃）
 >   - ✅ **C3** `CMakePresets.json`（6 个配置预设，环境变量可覆盖默认路径）
->   - ⏳ 剩余：C1（模板 CMake 化）、C2（脚手架）、A1/A2/A4（legacy 存废）、B4（可选）
+>   - ✅ **C1** `projects/template` CMake 化（`find_package(QtCanpool)` + `QxAppShell` 最小应用；
+>     已在本地「安装 SDK → 配置 → 编译 → 运行」全链路验证）
+>   - ⏳ 剩余：C2（脚手架）、A1/A2/A4（legacy 存废）、B4（可选）
+> - ⚠️ **B2 已产生第一笔实际收益**：`quality` 作业首次上线即被 UBSan 抓到一处真实 UB
+>   （`~DockContainer` 从基类析构回调派生类，`dockcontainer.cpp:950`），已修。详见
+>   [`design/3.1-TASKS.md`](./design/3.1-TASKS.md) 执行记录。
 > - ⏸ M6 / M7 待 M5 完成后再细化
 
 ---
