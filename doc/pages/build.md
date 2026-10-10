@@ -198,12 +198,12 @@ cmake --build build --target docs
 
 | 示例 | 目标 | 说明 |
 | :--- | :--- | :--- |
-| `fancydemo` | `FancyDemo` | 综合示例：标题栏、工具栏、侧边栏等控件 |
 | `ribbondemo` | `RibbonDemo` | Ribbon 界面：页、分组、快捷工具栏、应用按钮 |
 | `dockdemo` | `DockDemo` | 可停靠窗口：中央区域、浮动、标签化、布局保存 |
 | `appshell` | `AppShellDemo` | 应用外壳：导航轨 + 页面栈 + 停靠区 + 主题 + 启动屏 + 布局持久化 |
 
-`examples/` 下另有更细粒度的控件示例（qmake 工程）。
+`examples/` 下另有 22 个更细粒度的控件示例，同样由 CMake 构建，可用
+`-DWITH_EXAMPLES=OFF` 关掉（默认随构建一起编译，但不安装）。
 
 ## 安装与消费
 
@@ -256,12 +256,17 @@ Visual Studio 生成器，若未安装 MSVC 需用 `-G Ninja`（或 `-G "MinGW M
 `QtCanpool::qxapp` 链接，不引用本仓库源码。
 
 不装 SDK 而想先看看写法，读 [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)
-（CMake 版；同目录的 `.pro`/`.pri`/`src/` 是 qmake 时代的历史参考，保留但不再演进）。
+（CMake 版）。
 
 ## 关于 qmake
 
-根目录仍保留 `qtcanpool.pro` 等 qmake 工程文件，但**自 3.0 起已冻结为只读**：
-新增的库（`qxcore`、`qxtheme`）与 `qxapp` 的新增源码都**只进 CMake**，
-qmake 侧继续编译它一贯的源码列表。qmake 工程计划在后续版本中移除。
+**qmake 已在 4.0 移除**，全树不再有 `.pro` / `.pri`，CMake 是唯一的构建方式。
 
-> **注意**：如果需要在 qmake 构建中使用 3.0 新增的库，请先确认这一决策是否需要调整。
+此前它在 3.0 被宣布为"冻结（只读）"，但因为 CI 从未构建过 qmake，冻结无人守护——
+`qxapp` 的 `-lib.pri` 漏了 8 个源文件，其中就包括 `QxAppShell` 本体，
+用 qmake 编出来的库里根本没有主窗口类。既然这份"兼容"已经名存实亡，
+K13 决定在 4.0 将其删除，而不是继续留着一批会腐烂的文件。
+
+> **迁移**：qmake 工程请改走 CMake——安装 SDK 后 `find_package(QtCanpool)` 再
+> 链接 `QtCanpool::qxapp` 等目标即可，见 [`projects/consume`](https://github.com/canpool/qtcanpool/tree/master/projects/consume)
+> 与 [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)。

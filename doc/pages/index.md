@@ -18,7 +18,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | 关注点 | QtCanpool 的做法 |
 | :--- | :--- |
 | **项目组织** | 一套 CMake 框架管理多个项目：库、示例、插件、测试各有约定俗成的落点，新增模块只需一行 `add_subdirectory` |
-| **构建与质量** | CMake 为主构建（qmake 自 3.0 起冻结）；[clang-format](https://github.com/canpool/qtcanpool/blob/master/.clang-format) 作为 CI 强制门禁；CTest 单元测试矩阵覆盖 Qt 5.15 与 Qt 6 |
+| **构建与质量** | CMake 是唯一构建方式（qmake 已于 4.0 移除）；[clang-format](https://github.com/canpool/qtcanpool/blob/master/.clang-format) 作为 CI 强制门禁；CTest 单元测试矩阵覆盖 Qt 5.15 与 Qt 6 |
 | **界面组件** | Ribbon、Dock、无边框窗口三类现代桌面界面范式，均可在 Qt 5 与 Qt 6 上编译 |
 | **应用骨架** | @ref QxApp::QxAppShell 把导航轨、页面栈、停靠区、状态栏与启动屏组装成一个可直接继承的窗口 |
 | **布局与工作区** | `saveLayout()` 记下窗口几何与停靠布局；@ref QxApp::QxWorkspaceManager 在此之上给排列起名字，可存多套并随时切换（3.3） |

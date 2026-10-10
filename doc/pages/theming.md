@@ -123,4 +123,4 @@ themes->setStyleSheet(Custom, myCss);
 3. 只想换样式表而不改调色板时，用 `Custom` + `setStyleSheetFile()` 即可，无需改库。
 
 > **注意**：`RibbonTheme` 仍然存在，是 widget 级的样式表加载器。
-> 让它转发到引擎会引入 `qxribbon → qxtheme` 的依赖并破坏 qmake 侧，需要先确认这一决策。
+> 让它转发到引擎会引入 `qxribbon → qxtheme` 的库依赖，需要先确认这一决策。

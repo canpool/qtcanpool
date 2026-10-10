@@ -66,8 +66,8 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 | `cmake` | | CMake 构建框架 |
 | `demos` | | 综合示例程序 |
 | `doc` | | 文档：Doxygen 站点源码（`Doxyfile.in`、`pages/` 指南、`qtcanpool-doxygen.css`）与设计文档 |
-| `examples` | | 控件级示例 |
-| `projects` | | 项目示例：`template` 最小应用模板、`consume` SDK 消费验证、`staticlink` 静态链接示例 |
+| `examples` | | 控件级示例（`WITH_EXAMPLES`，默认随构建编译） |
+| `projects` | | 项目示例：`template` 最小应用模板、`consume` SDK 消费验证 |
 | `scripts` | | 辅助脚本：`new-project` 生成新工程骨架、`push` 推送双远程、`project.py` 工程工具 |
 | `src` | `libs` | 基础类库 |
 | | `modules` | 基础模块：实用的代码，但未形成类库规模 |
@@ -91,7 +91,7 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 
 ## 构建
 
-**CMake 为主要构建方式**（qmake 自 3.0 起冻结为只读，后续版本移除）。
+**CMake 是唯一构建方式**（qmake 已于 4.0 移除，全树不再有 `.pro` / `.pri`）。
 
 ```bash
 # 配置（Qt 通过 CMAKE_PREFIX_PATH 指定）

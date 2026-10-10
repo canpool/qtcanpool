@@ -148,8 +148,7 @@ connect(actionOption, &QAction::triggered, this, &MainWindow::onOption);
 | 主类 | `RibbonAppWindow` | `RibbonAppWindow`（类名不变） |
 
 3.0 **不提供转发兼容头**：`qxwidget` 的公开面只有 `RibbonAppWindow` 一个类，
-迁移成本就是改一处 include 加一处命名空间宏，而转发头需要在 CMake 与 qmake 两套构建里
-各加一个 include 根。
+迁移成本就是改一处 include 加一处命名空间宏，而转发头需要在构建配置里多加一个 include 根。
 
 ```cpp
 #include "qxwidget/ribbonappwindow.h"   // 2.x
@@ -180,7 +179,8 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 ```
 
-> **注意**：qmake 自 3.0 起**冻结**，`.pro` / `.pri` 不再新增特性，仅随 CMake 同步编译可用。
+> **注意**：qmake **已于 4.0 移除**（3.0 起冻结，4.0 删除），全树不再有
+> `.pro` / `.pri`，CMake 是唯一的构建方式。
 
 ## 分步迁移清单
 
@@ -200,6 +200,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 14. **（3.1）** `FancyWindow` / `FancyDialog` / `MiniTab*` / `WindowToolBar` / `WindowLogo`
     无同名替代，按「已下线的遗留类」表换成 `QxWindow` / `QxAppShell` / `QxApp::QxTab*`。
 15. **（3.2）** `qcanpool` 已整库删除。**最后一步**：把剩下的 `qcanpool/*.h` include 与
-    `QCanpool::` 名字全部换掉，并从构建里去掉 `qcanpool`（`find_package` 的目标、
-    qmake 的 `LIBS` / `include(...)`）。这一步之前旧名还能编（只是告警），
-    之后连头文件都找不到。
+    `QCanpool::` 名字全部换掉，并从构建里去掉 `qcanpool`（`find_package` 的目标）。
+    这一步之前旧名还能编（只是告警），之后连头文件都找不到。
+16. **（4.0）** qmake 构建彻底移除。`.pro` / `.pri` 全部消失，CMake 成为唯一构建方式；
+    仍在用 qmake 的工程按上文「构建迁移」一节改用 `find_package(QtCanpool)`。
+    参考：[`projects/consume`](https://github.com/canpool/qtcanpool/tree/master/projects/consume)、
+    [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)。

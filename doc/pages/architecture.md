@@ -37,7 +37,7 @@ qxapp      应用框架
 | `src/plugins/` | 基础插件 |
 | `src/shared/` | 跨模块共享代码 |
 | `demos/` | 综合示例（CMake） |
-| `examples/` | 控件级示例（qmake） |
+| `examples/` | 控件级示例（CMake，由 `WITH_EXAMPLES` 控制） |
 | `tests/` | 单元测试（CTest） |
 | `doc/` | 文档：设计文档、指南页面（`doc/pages/`）与文档站点构建（`doc/CMakeLists.txt`） |
 | `projects/` | 项目模板，可在此持续添加自己的项目 |
