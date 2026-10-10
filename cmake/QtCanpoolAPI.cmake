@@ -137,6 +137,32 @@ function(qtc_source_dir varName)
   endif()
 endfunction()
 
+# Make AUTOMOC re-scan the target's sources on the next build.
+#
+# AUTOMOC keeps the list of files it looked at in the dependency file it wrote
+# on its previous run, and the <target>_autogen/timestamp rule depends on that
+# file rather than on the target's sources. A file added to the target after the
+# first build is therefore never scanned: moc is not run for it, and the compile
+# then fails on its "#include "xxx.moc"" with "No such file or directory" - a
+# message that points at the wrong suspect (a missing Q_OBJECT, a missing
+# include directory) and costs more to diagnose than the mistake is worth.
+#
+# Dropping the timestamp at configure time makes AUTOMOC scan again. moc itself
+# still regenerates only what actually changed, so the price is one scan per
+# configure, not a rebuild.
+#
+# The path below is CMake's layout, not ours, so it is probed rather than
+# assumed: if a future CMake moves the timestamp, the EXISTS guard turns this
+# into a no-op instead of an error. Note that a *function* sees the
+# CMAKE_CURRENT_BINARY_DIR of its caller, which is exactly the directory the
+# target's _autogen directory lives in.
+function(qtc_autogen_rescan target)
+  set(_stamp "${CMAKE_CURRENT_BINARY_DIR}/${target}_autogen/timestamp")
+  if (EXISTS "${_stamp}")
+    file(REMOVE "${_stamp}")
+  endif()
+endfunction()
+
 function(add_qtc_library name)
   cmake_parse_arguments(_arg "STATIC;OBJECT;SHARED;SKIP_TRANSLATION;ALLOW_ASCII_CASTS;FEATURE_INFO;SKIP_PCH"
     "VERSION;COMPAT_VERSION;DESTINATION;COMPONENT;SOURCES_PREFIX;BUILD_DEFAULT"
@@ -286,6 +312,7 @@ function(add_qtc_library name)
     LIBRARY "${_output_binary_dir}/${IDE_LIBRARY_PATH}"
     ARCHIVE "${_output_binary_dir}/${IDE_LIBRARY_ARCHIVE_PATH}"
   )
+  qtc_autogen_rescan(${name})
 
   if (NOT _arg_SKIP_PCH)
     enable_pch(${name})
@@ -567,6 +594,7 @@ function(add_qtc_plugin target_name)
     LIBRARY "${_output_binary_dir}/${plugin_dir}"
     ARCHIVE "${_output_binary_dir}/${plugin_dir}"
   )
+  qtc_autogen_rescan(${target_name})
 
   if (NOT _arg_SKIP_PCH)
     enable_pch(${target_name})
@@ -759,6 +787,7 @@ function(add_qtc_executable name)
     ${_arg_PROPERTIES}
   )
   qtc_pin_output_dirs("${name}" RUNTIME "${_output_binary_dir}/${_DESTINATION}")
+  qtc_autogen_rescan("${name}")
   if (NOT _arg_SKIP_PCH)
     enable_pch(${name})
   endif()
@@ -916,6 +945,7 @@ function(add_qtc_test name)
     INSTALL_RPATH "${_RPATH_BASE}/${_RPATH};${CMAKE_INSTALL_RPATH}"
   )
   qtc_pin_output_dirs(${name} RUNTIME "${_output_binary_dir}/${IDE_BIN_PATH}")
+  qtc_autogen_rescan(${name})
   if (NOT _arg_SKIP_PCH)
     enable_pch(${name})
   endif()

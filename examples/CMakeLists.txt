@@ -14,7 +14,7 @@
 # The resource file is shared by all of them - /logo is its only alias.
 
 function(add_qtc_example name library directory main_source)
-    file(GLOB _sample_sources
+    file(GLOB _sample_sources CONFIGURE_DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*.ui")

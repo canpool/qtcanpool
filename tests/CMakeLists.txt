@@ -1,12 +1,18 @@
 # qtcanpool tests (CMake / CTest)
 #
-# The qmake entry point is tests/tests.pro (frozen since 3.0). This file is the
-# entry point of the CMake build and only takes effect with -DWITH_TESTS=ON.
+# The one and only entry point of the test build, active with -DWITH_TESTS=ON
+# (the qmake project file went away in 4.0).
 #
 # It reuses add_qtc_test() from the framework, which registers the test with
 # CTest and takes care of rpath / automoc / include paths (the public include
 # directory of every library is src/libs, so a test can simply
 # #include "qxribbon/xxx.h" or "qxdock/xxx.h").
+#
+# The per-suite source lists are globs so that adding tst_foo.cpp is all it
+# takes to add a test. CONFIGURE_DEPENDS is what makes that true: without it the
+# new file is not in the build system until someone re-runs the configure step
+# by hand, and the error that follows (an undefined symbol for the test class,
+# or a missing .moc) does not mention the static file list at all.
 
 set(QTCANPOOL_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -38,7 +44,7 @@ else()
   message(STATUS "lrelease not found: the translator test will skip its load layer")
 endif()
 
-file(GLOB QXCORE_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxcore/auto/tst_*.cpp")
+file(GLOB QXCORE_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxcore/auto/tst_*.cpp")
 add_qtc_test(tst_qxcore
     DEPENDS qxcore
     DEFINES ${QXCORE_TRANSLATION_DEFINES}
@@ -54,7 +60,7 @@ if (TARGET qxcore_test_translations)
 endif()
 
 # ---------------------------------------------------------------- qxtheme --
-file(GLOB QXTHEME_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxtheme/auto/tst_*.cpp")
+file(GLOB QXTHEME_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxtheme/auto/tst_*.cpp")
 add_qtc_test(tst_qxtheme
     DEPENDS qxtheme
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
@@ -68,7 +74,7 @@ add_qtc_test(tst_qxtheme
 # ------------------------------------------------------------------- qxapp --
 # qxapp is the application framework, so its test links the whole stack: the
 # shell builds a ribbon window with a dock area and a theme.
-file(GLOB QXAPP_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxapp/auto/tst_*.cpp")
+file(GLOB QXAPP_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxapp/auto/tst_*.cpp")
 add_qtc_test(tst_qxapp
     DEPENDS qxapp
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
@@ -83,7 +89,7 @@ add_qtc_test(tst_qxapp
 # The plugin runtime: contract, discovery, dependency resolution and failure
 # isolation. The host-adapter case links qxapp to drive a real QxAppShell as
 # the QxPluginContext, proving plugins never touch the window class.
-file(GLOB QXPLUGIN_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxplugin/auto/tst_*.cpp")
+file(GLOB QXPLUGIN_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxplugin/auto/tst_*.cpp")
 add_qtc_test(tst_qxplugin
     DEPENDS qxapp qxplugin
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
@@ -102,7 +108,7 @@ add_qtc_test(tst_qxplugin
 #
 # Guarded by the target: with -DWITH_MODULES=OFF there is nothing to load.
 if (TARGET output)
-  file(GLOB QXMODULES_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxmodules/auto/tst_*.cpp")
+  file(GLOB QXMODULES_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxmodules/auto/tst_*.cpp")
   add_qtc_test(tst_qxmodules
       DEPENDS qxapp qxplugin qxdock
       DEFINES "QXMODULES_PLUGIN_DIR=\"$<TARGET_FILE_DIR:output>\""
@@ -118,7 +124,7 @@ if (TARGET output)
 endif()
 
 # ---------------------------------------------------------------- qxribbon --
-file(GLOB QXRIBBON_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
+file(GLOB QXRIBBON_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
 add_qtc_test(tst_qxribbon
     DEPENDS qxribbon
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
@@ -130,7 +136,7 @@ add_qtc_test(tst_qxribbon
 )
 
 # ------------------------------------------------------------------ qxdock --
-file(GLOB QXDOCK_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxdock/auto/tst_*.cpp")
+file(GLOB QXDOCK_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxdock/auto/tst_*.cpp")
 add_qtc_test(tst_qxdock
     DEPENDS qxdock
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
@@ -144,7 +150,7 @@ add_qtc_test(tst_qxdock
 # -------------------------------------------------------------- qxwindow --
 # qxwindow is platform-heavy, so this suite sticks to the backend-independent
 # bookkeeping the shared WindowContext does. See the test file for the reasoning.
-file(GLOB QXWINDOW_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxwindow/auto/tst_*.cpp")
+file(GLOB QXWINDOW_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxwindow/auto/tst_*.cpp")
 add_qtc_test(tst_qxwindow
     DEPENDS qxwindow
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"

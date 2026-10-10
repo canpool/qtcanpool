@@ -1,6 +1,8 @@
-file(GLOB DOCK_SOURCES "*.cpp")
-file(GLOB DOCK_HEADERS "*.h")
-file(GLOB DOCK_QRCFILES "*.qrc")
+# CONFIGURE_DEPENDS so that adding a source file to begin with is enough - see
+# the note in tests/CMakeLists.txt for what happens without it.
+file(GLOB DOCK_SOURCES CONFIGURE_DEPENDS "*.cpp")
+file(GLOB DOCK_HEADERS CONFIGURE_DEPENDS "*.h")
+file(GLOB DOCK_QRCFILES CONFIGURE_DEPENDS "*.qrc")
 
 list(REMOVE_ITEM DEFAULT_DEFINES
     QT_NO_JAVA_STYLE_ITERATORS
