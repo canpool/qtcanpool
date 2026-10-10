@@ -35,6 +35,16 @@ def do_framework(args):
         shutil.copy(os.path.join(ROOT_DIR, f), os.path.join(outdir, f))
 
 
+def rename_in_file(path, old, new):
+    if not os.path.isfile(path):
+        return
+    with open(path, encoding="utf-8") as f:
+        content = f.read()
+    content = content.replace(old, new)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(content)
+
+
 def do_create(args):
     if "." in args.name or args.name in ("template",):
         logging.error("project name is illegal")
@@ -49,6 +59,10 @@ def do_create(args):
     shutil.copytree(template_dir, project_dir)
     os.chdir(project_dir)
     os.rename("template.pro", f"{args.name}.pro")
+    # The CMake template hardcodes its own name as the project and the target,
+    # so a copy would otherwise build an executable called qxtemplate.
+    for name in ("CMakeLists.txt", "main.cpp"):
+        rename_in_file(name, "qxtemplate", args.name)
 
 
 def do_publish(args):
