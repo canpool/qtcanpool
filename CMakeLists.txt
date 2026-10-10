@@ -57,6 +57,7 @@ set(SANITIZE_FLAGS "" CACHE STRING "Sets flags for sanitizer compilation flags u
 add_feature_info("Build with sanitize" ${WITH_SANITIZE} "SANITIZE_FLAGS='${SANITIZE_FLAGS}'")
 
 option(WITH_DEMOS "Build Demos" ON)
+option(WITH_EXAMPLES "Build Examples" ON)
 
 option(WITH_COVERAGE "Build with coverage instrumentation (GCC/Clang only)" OFF)
 add_feature_info("Build with coverage" ${WITH_COVERAGE} "")
@@ -212,6 +213,10 @@ add_subdirectory(src)
 
 if (WITH_DEMOS)
   add_subdirectory(demos)
+endif()
+
+if (WITH_EXAMPLES)
+  add_subdirectory(examples)
 endif()
 
 if (WITH_TESTS)
