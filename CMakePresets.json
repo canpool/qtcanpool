@@ -1,0 +1,158 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WITH_DEMOS": "ON",
+        "WITH_TESTS": "ON"
+      }
+    },
+    {
+      "name": "qt6",
+      "inherits": "base",
+      "displayName": "Qt 6 (MinGW Makefiles)",
+      "description": "Default local configuration: Qt 6 with the MinGW kit that ships alongside it.",
+      "generator": "MinGW Makefiles",
+      "environment": {
+        "QTCANPOOL_QT_PREFIX": "C:/Qt/6.8.3/mingw_64",
+        "PATH": "C:/Qt/Tools/mingw1310_64/bin;$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QTCANPOOL_QT_PREFIX}"
+      }
+    },
+    {
+      "name": "qt6-ninja",
+      "inherits": "qt6",
+      "displayName": "Qt 6 (Ninja)",
+      "description": "Same as qt6 but with Ninja instead of MinGW Makefiles.",
+      "generator": "Ninja"
+    },
+    {
+      "name": "qt5",
+      "inherits": "base",
+      "displayName": "Qt 5.15 (best effort)",
+      "description": "Qt 5.15 is only a best-effort target and needs the matching MinGW kit (mingw810_64), not the Qt 6 one.",
+      "generator": "MinGW Makefiles",
+      "environment": {
+        "QTCANPOOL_QT_PREFIX": "C:/Qt/5.15.2/mingw81_64",
+        "PATH": "C:/Qt/Tools/mingw810_64/bin;$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{QTCANPOOL_QT_PREFIX}"
+      }
+    },
+    {
+      "name": "coverage",
+      "inherits": "qt6-ninja",
+      "displayName": "Coverage (GCC/Clang)",
+      "description": "Debug build instrumented with --coverage; feed the result to lcov.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "WITH_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "sanitize",
+      "inherits": "qt6-ninja",
+      "displayName": "ASan + UBSan (GCC/Clang)",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "WITH_SANITIZE": "ON",
+        "SANITIZE_FLAGS": "address,undefined"
+      }
+    },
+    {
+      "name": "wasm",
+      "inherits": "base",
+      "displayName": "Qt for WebAssembly",
+      "description": "Cross-compile the demos for the browser. Needs the wasm kit, a matching host Qt and Emscripten.",
+      "generator": "Ninja",
+      "environment": {
+        "QTCANPOOL_WASM_QT": "C:/Qt/6.8.3/wasm_singlethread",
+        "QTCANPOOL_HOST_QT": "C:/Qt/6.8.3/mingw_64",
+        "QTCANPOOL_EMSDK": "C:/emsdk"
+      },
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{QTCANPOOL_WASM_QT}/lib/cmake/Qt6/qt.toolchain.cmake",
+        "QT_CHAINLOAD_TOOLCHAIN_FILE": "$env{QTCANPOOL_EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+        "QT_HOST_PATH": "$env{QTCANPOOL_HOST_QT}",
+        "QTC_STATIC_BUILD": "ON",
+        "BUILD_WITH_PCH": "OFF",
+        "WITH_TESTS": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "qt6",
+      "configurePreset": "qt6"
+    },
+    {
+      "name": "qt6-ninja",
+      "configurePreset": "qt6-ninja"
+    },
+    {
+      "name": "qt5",
+      "configurePreset": "qt5"
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage"
+    },
+    {
+      "name": "sanitize",
+      "configurePreset": "sanitize"
+    },
+    {
+      "name": "wasm",
+      "configurePreset": "wasm"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "environment": {
+        "QT_QPA_PLATFORM": "offscreen"
+      }
+    },
+    {
+      "name": "qt6",
+      "inherits": "base",
+      "configurePreset": "qt6"
+    },
+    {
+      "name": "qt6-ninja",
+      "inherits": "base",
+      "configurePreset": "qt6-ninja"
+    },
+    {
+      "name": "qt5",
+      "inherits": "base",
+      "configurePreset": "qt5"
+    },
+    {
+      "name": "coverage",
+      "inherits": "base",
+      "configurePreset": "coverage"
+    },
+    {
+      "name": "sanitize",
+      "inherits": "base",
+      "configurePreset": "sanitize"
+    }
+  ]
+}
