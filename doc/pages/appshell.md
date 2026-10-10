@@ -12,7 +12,7 @@
 │ igation│  ┌── 停靠面板（左/右/上/下，可移动、可浮动、可关闭）──┐  │
 │ Bar    │  └────────────────────────────────────────────────┘  │
 ├────────┴──────────────────────────────────────────────────────┤
-│ 状态栏：消息行 · 忙碌进度                                        │
+│ 状态栏：消息行 · 忙碌 / 进度指示                                  │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -80,12 +80,31 @@ QX_DOCK_PREPEND_NAMESPACE(DockWidget) *dock =
 
 ```cpp
 shell.setStatusMessage(tr("Loaded 120 files"));
-shell.setBusy(true);      // 忙碌指示条
+
+shell.setBusy(true);      // 忙碌：只知道"在忙"，不知道做到哪
 shell.setBusy(false);
+
+shell.setProgressRange(0, files.count());   // 进度：知道做到哪
+for (int i = 0; i < files.count(); ++i) {
+    copy(files.at(i));
+    shell.setProgress(i + 1);
+}
+shell.clearProgress();
 ```
 
-忙碌指示是一个**没有百分比**的进度条：外壳只负责表达"正在工作"，
-进度由调用方自己维护（`setStatusMessage()` 就是给它用的）。
+消息行是"在做什么"，指示条是"做到哪"，两者是**两个部件**、可以同时有内容。
+指示条本身有两种模式，且**共用同一个部件**——"在忙"与"做到 40%"不会同时对用户有意义：
+
+| 模式 | 进入 | 外观 |
+| :--- | :--- | :--- |
+| 忙碌 | `setBusy(true)` | 走马灯，无百分比 |
+| 进度 | `setProgress(value)` | 百分比条（默认 0–100，`setProgressRange()` 可改） |
+
+- **最后一次调用生效**：设进度会顶掉忙碌，转忙碌也会顶掉进度。
+- `setProgress()` **顺带显示**指示条（要设进度就是想让人看见）；`clearProgress()` 是唯一的收尾动作。
+- 越界值**夹取**到范围内，不报错——数文件的一方不该为最后一格写保护代码。
+- `setProgressRange()` 只记下范围，下一次显示进度时才生效，因此忙碌期间改范围不会把走马灯变成
+  一根停在 0 的条。
 
 ## 应用内通知
 
@@ -129,6 +148,56 @@ shell.restoreLayout();
 > **注意**：`setSettings()` **故意不自动恢复布局**，这一点与 `QxThemeManager` 不同。
 > 布局引用了具体的页面与停靠面板，只有在它们都创建之后才能应用，
 > 因此时机由调用方决定 —— 也就是上面的"先建页面和面板，再 `restoreLayout()`"。
+
+## 工作区（3.3）
+
+上面的那一份布局**没有名字**：它能让应用"下次打开长回上次的样子"，但只有一份，
+想留两套排列（写代码一套、看日志一套）就只有靠手动覆盖。
+`QxWorkspaceManager` 补的就是这个"名字"：
+
+```cpp
+QxApp::QxWorkspaceManager *workspaces = shell.workspaceManager();
+
+workspaces->saveWorkspace(tr("Writing"));   // 存下当前排列
+// ... 用户把面板拖乱 ...
+workspaces->applyWorkspace(tr("Writing"));  // 排列回来
+
+const QStringList names = shell.workspaceNames();   // 菜单按保存顺序枚举
+```
+
+一个工作区 = **停靠布局 + 当前页**，就这两样。它**不存窗口几何**：
+
+> 几何属于**窗口**，不属于**工作区**。切一套面板排列却把窗口搬走或改尺寸，
+> 在最大化与多显示器下是惊吓。几何仍归 `saveLayout()` 管——
+> 那份"没有名字的工作区"每个应用免费得到一份。
+
+| 方法 | 说明 |
+| :--- | :--- |
+| `workspaceNames()` / `count()` / `contains(name)` | 枚举，顺序即保存顺序 |
+| `saveWorkspace(name)` | 存下当前排列，并使其成为当前工作区；同名覆盖 |
+| `applyWorkspace(name)` | 恢复停靠布局与当前页；未知名字 / 存过但已不适用 → `false` |
+| `removeWorkspace(name)` / `renameWorkspace(from, to)` / `clearWorkspaces()` | 维护 |
+| `currentWorkspace()` | 最后一次保存或应用的名字，空表示无 |
+
+存储落在**同一个 `QxSettings`** 的 `ui` 组里，与 `saveLayout()` 并排：
+
+| 键 | 内容 |
+| :--- | :--- |
+| `workspaceNames` | 名字列表（菜单顺序的唯一来源） |
+| `currentWorkspace` | 最后一次应用 / 保存的名字 |
+| `workspace/<name>/dockState` | 停靠布局 |
+| `workspace/<name>/currentPage` | 当前页 id |
+
+三点值得知道：
+
+- **启动时不自动套用工作区**：要不要套、套哪个是应用的决定，框架只保证
+  `currentWorkspace()` 被记住且可读。
+- **保存即选中**：存下之后屏幕上的样子就是这个名字的含义，所以最后存的那份是当前工作区。
+- **改名发两个信号**（`workspaceRemoved(旧)` + `workspaceSaved(新)`），不另设 `renamed`——
+  否则每个消费者都要为同一个结果多写一个分支。
+
+没有"出厂 / 默认布局"：框架不知道应用何时算建完，捕获时机不可靠。
+想要默认布局的应用自己存一个叫 `Default` 的工作区即可，名字反而更清楚。
 
 ## 导航轨
 
@@ -204,4 +273,5 @@ Qt 6 默认开启高 DPI；Qt 5 必须在构造 `QApplication` **之前**设置�
 顺序反了会写到默认位置。
 
 可运行的完整示例见 `demos/qxapp/appshell`（目标名 `AppShellDemo`）：
-三个页面、三个停靠面板、主题切换、跟随系统、布局保存与恢复。
+三个页面、三个停靠面板、主题切换、跟随系统、布局保存与恢复，
+以及 `Workspaces` 分组（存 / 应用 / 删除命名工作区）与状态栏的忙碌、进度两种模式。

@@ -158,6 +158,7 @@ themes->setTheme(DarkOfficePlus);
 | @ref QxApp::QxProperty | 一个设置项的描述：键、类型、默认值与可选项（3.2） |
 | @ref QxApp::QxPropertyEditor | 由 `QxProperty` 列表生成的键/值表单（3.2） |
 | @ref QxApp::QxSettingsDialog | 设置对话框：左页列表 + 右表单，负责读盘与写盘（3.2） |
+| @ref QxApp::QxWorkspaceManager | 命名工作区：存 / 取 / 改名 / 删除，切换时只动停靠布局与当前页（3.3） |
 
 ### Toast 应用内通知（3.2）
 
@@ -266,6 +267,39 @@ dialog.exec();
   这正是首次启动看起来像已配置的原因。
 - **迁移不在这里**：升级存档布局是**启动期**的事——它要在任何东西读配置之前跑，
   还可能碰到对话框里根本没有的键——所以留给 `QxSettings::migrate()`。
+
+### 命名工作区（3.3）
+
+外壳本来就持久化一份布局，但那份**没有名字**。`QxWorkspaceManager` 补上名字：
+
+```cpp
+#include "qxapp/qxworkspacemanager.h"
+
+using namespace QxApp;
+
+QxWorkspaceManager *workspaces = shell.workspaceManager();
+workspaces->saveWorkspace(tr("Writing"));    // 存下当前排列，并使其成为当前工作区
+workspaces->applyWorkspace(tr("Writing"));   // 排列回来
+
+for (const QString &name : shell.workspaceNames()) {   // 菜单按保存顺序枚举
+    menu->addAction(name);
+}
+```
+
+要点：
+
+- **一个工作区 = 停靠布局 + 当前页**，就这两样。它**不存窗口几何**——
+  几何属于窗口，切一套面板排列却把窗口搬走或改尺寸，在最大化与多显示器下是惊吓。
+  几何仍归 `QxAppShell::saveLayout()` 管，那份「没有名字的工作区」每个应用免费得到一份。
+- **不缓存**：名字、当前工作区、存着的布局每次都从 `QxSettings` 读回来，
+  因此两个外壳指向同一个文件时口径一致——管理器是存储之上的一层薄壳，不是第二个事实来源。
+- **保存即选中**：存下之后屏幕上的样子就是这个名字的含义，所以最后存的那份是当前工作区。
+- **启动时不自动套用**：要不要套、套哪个由应用决定，框架只保证 `currentWorkspace()` 被记住。
+- **改名发两个信号**（`workspaceRemoved(旧)` + `workspaceSaved(新)`），不另设 `renamed`，
+  否则每个消费者都要为同一个结果多写一个分支。
+
+详见 [应用外壳 · 工作区](appshell.md#autotoc_md*)，可运行的入口在 `demos/qxapp/appshell`
+的 `Workspaces` 分组。
 
 ## qtcompat — 跨版本兼容
 
