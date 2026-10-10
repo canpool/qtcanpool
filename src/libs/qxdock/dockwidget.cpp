@@ -1179,10 +1179,13 @@ void DockWidget::toggleViewInternal(bool open)
     d->m_toggleViewAction->blockSignals(false);
     if (d->m_panel) {
         d->m_panel->toggleDockWidgetView(this, open);
-        if (d->m_panel->isAutoHide()) {
-            // FIXME: toggleView(true) will show sidTab before mainwindow
-            // d->m_panel->autoHideContainer()->toggleView(open);
-        }
+        // The auto-hide side tab used to be toggled from here as well. It is
+        // not needed, and was disabled because showing it from this call could
+        // bring the tab up while the window itself was still hidden (during
+        // state restore): the side tab belongs to the side bar, and the side
+        // bar is what shows and hides it - DockSideBar::insertTab() shows the
+        // bar, removeTab() hides it once the last tab is gone. Toggling the
+        // widget only decides whether the panel is open.
     }
 
     if (open && topLevelDockWidgetBefore) {

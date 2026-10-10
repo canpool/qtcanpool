@@ -221,8 +221,18 @@ void DockResizeHandle::setHandlePosition(Qt::Edge handlePosition)
         setCursor(Qt::SizeVerCursor);
         break;
     }
-    // FIXME: should be parentWidget() or m_target->parentWidget() here ??
-    setMaxResizeSize(d->isHorizontal() ? parentWidget()->width() : parentWidget()->height());
+    // The widget this handle resizes is the one it was constructed with, and
+    // that widget is also the handle's parent - m_target is pinned to the
+    // constructor's parent argument and no setter ever changes it. So
+    // parentWidget() and m_target->parentWidget() would all name the same
+    // object here; m_target is used because the rest of the class does, and
+    // because it says what is being measured.
+    //
+    // The resulting limit is only a starting point: DockAutoHideContainer
+    // recomputes it from its dock container's content rect in
+    // updateResizeHandleSizeLimitMax() once the container is laid out, and that
+    // is the value the resizing actually obeys.
+    setMaxResizeSize(d->isHorizontal() ? d->m_target->width() : d->m_target->height());
     if (d->isHorizontal()) {
         // horizontal resizing, the ResizeHandle with is fixed (vertical sliver)
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);

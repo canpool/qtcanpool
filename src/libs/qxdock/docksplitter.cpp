@@ -40,7 +40,13 @@ DockSplitter::~DockSplitter()
 
 bool DockSplitter::hasVisibleContent() const
 {
-    // TODO Cache or precalculate this to speed up
+    // Deliberately not cached. The answer changes on every show or hide of a
+    // child, and a splitter has a handful of children at most, so this walk -
+    // which stops at the first visible one - is cheaper than keeping a cache
+    // honest. It is asked once per layout pass, from
+    // hideEmptyParentSplitters() as it climbs the splitter tree and from
+    // DockContainer::contentRect() for the root splitter, which is not a rate
+    // that justifies the invalidation machinery a cache would need.
     for (int i = 0; i < count(); ++i) {
         if (!widget(i)->isHidden()) {
             return true;
