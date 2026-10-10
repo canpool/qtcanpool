@@ -149,7 +149,12 @@ DockAutoHideContainer *DockSideBar::insertDockWidget(int index, DockWidget *w)
 {
     Q_D(DockSideBar);
     auto autoHideContainer = new DockAutoHideContainer(w, d->m_sideTabArea, d->m_container);
-    w->dockWindow()->dockFocusController()->clearDockWidgetFocus(w);
+    // The focus controller only exists when DockManager::FocusHighlighting is
+    // enabled, and that is not the default, so this is a real null case rather
+    // than a theoretical one. Every other caller checks before using it.
+    if (auto *focusController = w->dockWindow()->dockFocusController()) {
+        focusController->clearDockWidgetFocus(w);
+    }
     auto tab = autoHideContainer->autoHideTab();
     w->setSideTab(tab);
     insertTab(index, tab);
