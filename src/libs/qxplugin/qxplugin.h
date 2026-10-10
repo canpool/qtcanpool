@@ -26,8 +26,8 @@ class QxPluginContext;
  * QxPluginContext is a plugin's only handle: host capabilities are reached
  * through it and nothing else. A plugin has no handle to the manager and none to
  * its peers as objects it may simply drive. Plugins program against
- * QxPluginContext, never against the window class, so renaming the host - a K14
- * concern - never reaches a single plugin.
+ * QxPluginContext, never against the window class, so the host's class name
+ * reaches no plugin at all.
  *
  * That is a property of the runtime and not only of this comment: a static
  * instance is owned through a private holder rather than parented to the

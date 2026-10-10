@@ -25,9 +25,8 @@ QX_PLUGIN_BEGIN_NAMESPACE
  * The host - the application shell that loaded the plugin - implements this
  * interface and hands it to the plugin as the context; a plugin never sees the
  * host's window class. Keeping the surface in qxplugin, which depends on
- * nothing above qxcore, is what stops a host rename (a K14 concern) from
- * rippling into every plugin: the host implements this interface, the plugin
- * codes against it.
+ * nothing above qxcore, is what keeps the host's class name out of every
+ * plugin: the host implements this interface, the plugin codes against it.
  *
  * The surface only lists the host abilities a plugin is allowed to use. Adding
  * a capability here is therefore a deliberate, versioned extension of the
