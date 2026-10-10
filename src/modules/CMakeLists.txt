@@ -9,6 +9,14 @@
 # src/plugins/CMakeLists.txt: a module may only depend on modules of a lower
 # level. The level is also what its PLUGIN_DEPENDS edge means, so the metadata
 # and this file say the same thing.
+#
+# In a static configuration (QTC_STATIC_BUILD, which is what the wasm preset
+# sets) add_qtc_plugin() produces a static library instead, and nothing imports
+# it: a static plugin only reaches an application that names it in
+# Q_IMPORT_PLUGIN. These targets are still built there - they have to compile -
+# but the way they reach a static application is registerStaticPlugin(), which
+# is what tst_qxplugin exercises. Runtime discovery is dynamic-only; see
+# doc/design/4.0-TASKS.md, D1.
 
 option(WITH_MODULES "Build the plugin module samples" ON)
 

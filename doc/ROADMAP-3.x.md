@@ -258,7 +258,8 @@
 | **K12** | 3.2 / 3.3 的拆分     | ✅ **3.2 = i18n + Toast + 属性编辑器内核 + 设置对话框 + `qcanpool` 删除**（已确认 2026-10-10）；工作区预设、状态栏进度留 3.3 | 版本节奏与范围；M6 的 DoD 拆成两批            |
 | **K13** | qmake 何去何从       | ✅ **4.0 一并删除**（已确认 2026-10-10）→ **已完成**：全树 `.pro`/`.pri` **归零**（原 88 个）。分四批删除——有 CMake 对应物的 47 个、只在 qmake 里的 3 个 demo（41 文件）、`examples/` CMake 化后的 30 个、`projects/staticlink`；其中 22 个示例由 A2 用 CMake 重建，目标名沿用原 `TARGET`。理由是它已由"冻结"变成**损坏**（`qxapp-lib.pri` 缺 8 个源文件，含 `QxAppShell` 本体，且 CI 从未构建过 qmake） | 构建方式收敛为 CMake 一种；K2 的"冻结"承诺到此结束 |
 | **K14** | 宿主命名 / 插件上下文 | ⏸ **待定**：保留 `QxAppShell` / `QxRibbonMainWindow` / `QxAppWindow` / `QxWorkbench`；建议**先引入薄宿主上下文**把耦合封住，再决定名字 | **阻塞 B1**；决定插件面向什么编程、以及改名波及面 |
-| **K15** | 插件加载时机         | 建议**启动时全量加载**（首版不做真正延迟加载）；K16/K17 见 [`4.0-TASKS.md`](./design/4.0-TASKS.md) | 启动时间与依赖图的确定性；WASM 静态构建的可行性 |
+| **K15** | 插件加载时机         | 建议**启动时全量加载**（首版不做真正延迟加载）；K16 见 [`4.0-TASKS.md`](./design/4.0-TASKS.md) | 启动时间与依赖图的确定性 |
+| **K17** | 静态构建（WASM）下的插件 | ✅ **不支持运行时插件发现**（2026-10-10，D1 实测后定）：`QTC_STATIC_BUILD=ON` 时 `add_qtc_plugin()` 产出的是**没人导入的静态库**（要进应用只能由应用写 `Q_IMPORT_PLUGIN` 清单，与「宿主不认识模块」正面冲突），实测 wasm 产物里 `output` 是 `liboutput.a`、`IdeShellDemo.wasm` 里没有模块元数据串。静态构建里组合模块用**编译期** `registerStaticPlugin()`；WASM demo 演示框架本身，不演示插件 | WASM 在线 demo 不含插件场景；`IdeShellDemo` 在静态配置下不构建；判据与实测见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) D1 |
 
 ---
 
