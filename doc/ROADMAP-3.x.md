@@ -178,6 +178,7 @@
 >
 > **进度（2026-10-10）**
 >
+> - ✅ **M5 已发布 `3.1.0`**：tag `3.1.0`（2026-10-10）+ [GitHub Release](https://github.com/canpool/qtcanpool/releases/tag/3.1.0)；变更清单见 `CHANGELOG`，升级前先读迁移指南
 > - ✅ **K7 已确认**：legacy ribbon 于 3.1 内物理移除
 > - ✅ **M5 代码与文档已收敛完毕**：任务清单与执行记录见 [`design/3.1-TASKS.md`](./design/3.1-TASKS.md)，
 >   含可选的 B4（demo 截图回归）在内全部落地
@@ -262,7 +263,7 @@
 ## 附：3.0 → 3.x 目标结构（Before → After）
 
 ```
-3.0.0                              3.1 / 3.2 / 4.0
+3.0.0                              3.1.0（已发布）/ 3.2 / 4.0
 ─────────────────────────────      ─────────────────────────────
 src/libs/qcanpool (legacy 冻结)     src/libs/qcanpool  (仅剩 7 个转发头 + qcanpool.h，无翻译单元)
   ├─ ribbon* (deprecated)             └─ ribbon*  ← 物理移除（A3，已完成）
