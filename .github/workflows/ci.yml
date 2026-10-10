@@ -216,42 +216,57 @@ jobs:
         continue-on-error: true
         env:
           BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
         run: |
           set -u
 
-          # A pull request is analysed where it changes things, which is also the
-          # cheapest way to satisfy "report new findings only"; anything else
-          # (pushes to the integration branch) walks the whole tree.
+          # Analyse what changed, which is also the cheapest way to satisfy the
+          # roadmap's "report new findings only". A push event carries the tip
+          # before the push, so a push scopes exactly like a pull request does -
+          # and that matters here, because this repository integrates by pushing
+          # to release-x rather than through pull requests. A push that touches
+          # neither the sources nor their headers therefore costs nothing.
           SCOPE="whole tree"
           FILES=""
           BASE=""
+          CONTEXT=""
+          NOTHING="src/libs has no translation unit to analyse"
           if [ -n "${BASE_REF:-}" ]; then
             BASE=$(git merge-base "origin/${BASE_REF}" HEAD 2>/dev/null || true)
+            CONTEXT="the pull request"
+          elif [ -n "${BEFORE:-}" ] && ! printf '%s' "${BEFORE}" | grep -qE '^0+$'; then
+            # All-zero means a new branch, where there is nothing to compare to.
+            if git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+              BASE="${BEFORE}"
+              CONTEXT="the push"
+            fi
           fi
+
           if [ -n "${BASE}" ]; then
             CHANGED=$(git diff --name-only --diff-filter=d "${BASE}" HEAD -- src/libs || true)
             if printf '%s\n' "${CHANGED}" | grep -qE '\.h$'; then
-              # A header change can reach every translation unit, so a diff-scoped
-              # run would report a fraction of what it changed. Fall back to the
+              # A header change can reach every translation unit, so a scoped run
+              # would report a fraction of what it changed. Fall back to the
               # whole tree rather than quietly under-report.
-              SCOPE="whole tree (the pull request changes a header)"
+              SCOPE="whole tree (${CONTEXT} changes a header)"
+              FILES=$(git ls-files src/libs | grep -E '\.cpp$' || true)
             else
+              SCOPE="changed in ${CONTEXT}"
               FILES=$(printf '%s\n' "${CHANGED}" | grep -E '\.cpp$' || true)
-              if [ -n "${FILES}" ]; then
-                SCOPE="changed in the pull request against ${BASE_REF}"
+              if [ -z "${FILES}" ]; then
+                NOTHING="${CONTEXT} changed no translation unit in src/libs"
               fi
             fi
-          fi
-          if [ -z "${FILES}" ]; then
+          else
             FILES=$(git ls-files src/libs | grep -E '\.cpp$' || true)
           fi
 
           if [ -z "${FILES}" ]; then
-            echo "Nothing to analyse in src/libs."
+            echo "Nothing to analyse: ${NOTHING}."
             {
               echo "## clang-tidy — report only (K8)"
               echo
-              echo "Nothing to analyse in \`src/libs\`."
+              echo "Nothing to analyse: ${NOTHING}."
             } >> "${GITHUB_STEP_SUMMARY}"
             exit 0
           fi
