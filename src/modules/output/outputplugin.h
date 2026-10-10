@@ -18,13 +18,14 @@ QT_END_NAMESPACE
  *
  * It shows the two smallest things a plugin can do through QxPluginContext -
  * put a widget into a dock (addDock) and speak on the status bar
- * (setStatusMessage) - and it is the module filetree requires, which is what
- * makes the manager initialize it first.
+ * (setStatusMessage) - plus the one thing that lets two modules that share no
+ * header work together: it publishes itself into the object pool.
  *
- * appendLine() is the public API a host calls after the panel is up. filetree
- * has no way to call it: a plugin holds no handle to its peers, so connecting
- * the two is the host's business (the host owns the manager). That is why the
- * method is a slot here rather than a call made from another module.
+ * filetree reports what it opens here, and it does so without ever seeing this
+ * class. A plugin holds no handle to its peers; what it can do is ask the host's
+ * pool for an object by name, and output is the object that answers to "output".
+ * Publishing is a choice - output makes itself findable, and nothing about a
+ * plugin that stays quiet is reachable.
  */
 class OutputPlugin : public QxPlugin::QxPlugin
 {
@@ -35,9 +36,12 @@ public:
     // the name QxPlugin, which then hides the namespace of the same name, so
     // QxPlugin::QxPluginContext would look for a member of the class. Every
     // module in here needs it for the same reason. See TOPIC-pitfalls.
-    /*! Fills the bottom dock and reports on the status bar. */
+    /*!
+     * Fills the bottom dock, reports on the status bar, and publishes itself
+     * into the object pool under the name "output".
+     */
     bool initialize(::QxPlugin::QxPluginContext *context, QString *errorString) override;
-    /*! Drops the handle to the panel; the host outlives the plugin and owns it. */
+    /*! Takes itself back out of the pool; the host outlives the plugin and owns the panel. */
     void shutdown() override;
 
 public Q_SLOTS:
@@ -45,9 +49,9 @@ public Q_SLOTS:
      * Appends one line to the panel. No-op before initialize() and after
      * shutdown().
      *
-     * A slot rather than a plain method because the host that wires a module to
-     * this one does not include module headers - see doc/pages/plugins.md - so
-     * the call has to be reachable by name.
+     * A slot rather than a plain method because whoever calls it - filetree, or
+     * anyone else that found this object in the pool - does not include this
+     * header, so the call has to be reachable by name through the meta-object.
      */
     void appendLine(const QString &line);
 private:

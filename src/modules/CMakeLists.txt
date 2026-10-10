@@ -7,8 +7,9 @@
 #
 # The subdirectories are grouped by the level convention of
 # src/plugins/CMakeLists.txt: a module may only depend on modules of a lower
-# level. The level is also what its PLUGIN_DEPENDS edge means, so the metadata
-# and this file say the same thing.
+# level. The level is also what a dependency edge means - PLUGIN_DEPENDS for a
+# hard one, PLUGIN_RECOMMENDS for the soft kind - so the metadata and this file
+# say the same thing.
 #
 # In a static configuration (QTC_STATIC_BUILD, which is what the wasm preset
 # sets) add_qtc_plugin() produces a static library instead, and nothing imports
@@ -28,9 +29,10 @@ endif()
 add_subdirectory(output)
 add_subdirectory(notebook)
 
-# Level 2: depends on a Level 1 module. filetree reports what it opens to the
-# output panel, so it requires output and the manager guarantees output is
-# initialized first.
+# Level 2: depends on a Level 1 module, but only softly. filetree reports what
+# it opens to the output panel and works without one, so it recommends output
+# instead of requiring it: the manager still initializes output first when it is
+# there, and filetree now starts when it is not.
 add_subdirectory(filetree)
 
 # broken/ is deliberately absent: it is a module with a dependency that cannot
