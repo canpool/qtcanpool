@@ -200,9 +200,14 @@ jobs:
 
   deploy:
     name: deploy
-    # Only the release branches own the published site, otherwise every push to
-    # a development branch would overwrite it.
-    if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/heads/release-')
+    # Only the branches that own a published line may publish the site,
+    # otherwise every push to a topic branch would overwrite it. Since 4.0 the
+    # mainline is master (see "分支模型" in doc/design/4.0-TASKS.md), so master
+    # publishes too; the release-* lines stay allowed so that a maintenance
+    # release of an older line can still refresh the site.
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release-'))
     needs: [ docs, wasm ]
     runs-on: ubuntu-latest
     permissions:
