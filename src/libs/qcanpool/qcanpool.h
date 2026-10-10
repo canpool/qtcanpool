@@ -118,10 +118,11 @@ Example:
  * warning.
  *
  * The annotation is deliberately not applied while the library itself is being
- * compiled: the legacy classes reference each other by design (FancyWindow
- * owns a FancyTitleBar, FancyTabWidget owns FancyTabBars, ...), and those
- * warnings would drown out the ones that matter. Consumers of the library
- * still get the warning, which is the entire point of the annotation.
+ * compiled: a deprecated class still has to name itself in its own declaration
+ * (and its own forwarding constructors), so every legacy translation unit would
+ * report the warning about its own definition and drown out the ones that
+ * matter - the ones seen by consumers. Consumers of the library still get the
+ * warning, which is the entire point of the annotation.
  * QCANPOOL_LIBRARY / QCANPOOL_LIBRARY_STATIC are defined for the library
  * target only, by both the CMake and the qmake build.
  */

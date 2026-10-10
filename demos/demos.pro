@@ -2,7 +2,6 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS = \
-    qcanpool \
     qxapp \
     qxwindow
 

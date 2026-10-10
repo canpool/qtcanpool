@@ -22,50 +22,25 @@ win32 {
     LIBS += -lUser32
 }
 
+# 3.1 emptied this library: the general-purpose widgets moved to qxapp (A1)
+# and the window-chrome family was retired (A2). What is listed now are the
+# deprecated forwarding classes that keep 3.0 code compiling for one release,
+# plus the resources that are still part of the published surface. The names
+# disappear in 3.2, together with the library.
 PUBLIC_HEADERS = \
     $$PWD/extensionbutton.h \
-    $$PWD/fancybar.h \
-    $$PWD/fancydialog.h \
-    $$PWD/fancytabbar.h \
-    $$PWD/fancytabwidget.h \
-    $$PWD/fancytitlebar.h \
     $$PWD/fancytoolbutton.h \
-    $$PWD/fancywindow.h \
     $$PWD/menuaccessbutton.h \
     $$PWD/menubutton.h \
-    $$PWD/minitabbar.h \
-    $$PWD/minitabwidget.h \
     $$PWD/qcanpool.h \
-    $$PWD/quickaccessbar.h \
     $$PWD/tinynavbar.h \
     $$PWD/tinytabbar.h \
-    $$PWD/tinytabwidget.h \
-    $$PWD/windowlogo.h \
-    $$PWD/windowtoolbar.h
+    $$PWD/tinytabwidget.h
 
 PRIVATE_HEADERS = \
-    $$PWD/fancybar_p.h \
-    $$PWD/fancytabbar_p.h \
-    $$PWD/fancytitlebar_p.h \
-    $$PWD/quickaccessbar_p.h \
-    $$PWD/windowtoolbar_p.h
 
-# extensionbutton.h, fancytoolbutton.h, menuaccessbutton.h, menubutton.h,
-# tinynavbar.h, tinytabbar.h and tinytabwidget.h are still listed above, but
-# they no longer carry an implementation: the widgets moved to qxapp in 3.1 and
-# these headers are deprecated forwarding classes now.
+
 SOURCES += \
-    $$PWD/fancybar.cpp \
-    $$PWD/fancydialog.cpp \
-    $$PWD/fancytabbar.cpp \
-    $$PWD/fancytabwidget.cpp \
-    $$PWD/fancytitlebar.cpp \
-    $$PWD/fancywindow.cpp \
-    $$PWD/minitabbar.cpp \
-    $$PWD/minitabwidget.cpp \
-    $$PWD/quickaccessbar.cpp \
-    $$PWD/windowlogo.cpp \
-    $$PWD/windowtoolbar.cpp
 
 HEADERS += \
     $$PUBLIC_HEADERS \
