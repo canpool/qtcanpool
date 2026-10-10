@@ -93,6 +93,7 @@ private slots:
     void initializeFailureCascadesAndIsolates();
     void interfaceTooOldIsRejected();
     void hostContextAdapter();
+    void pluginCannotReachTheManager();
     void shutdownReversesOrder();
 };
 
@@ -386,6 +387,52 @@ void tst_QxPlugin::hostContextAdapter()
     QCOMPARE(shell.currentPageId(), QStringLiteral("plug"));
     QVERIFY(shell.dock(QStringLiteral("plugout")) != Q_NULLPTR);
     QCOMPARE(shell.statusMessage(), QStringLiteral("plugin loaded"));
+}
+
+/*!
+ * QxPluginContext is the whole of what a plugin is handed, so a plugin must not
+ * be able to reach the manager and, through it, its peers. Keeping the promise
+ * is a runtime property: an instance that is parented to the manager can cast
+ * its own parent() back, which would quietly undo the contract for static
+ * builds. Ownership has to survive that, so the parent is checked to exist and
+ * to be somebody else.
+ */
+void tst_QxPlugin::pluginCannotReachTheManager()
+{
+    QxAppShell shell;
+    QxPluginManager mgr;
+    mgr.setContext(shell.pluginContext());
+    mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), []() {
+        return new FakePlugin;
+    });
+    mgr.registerStaticPlugin(QStringLiteral("b"),
+                             metaData(QStringLiteral("b"), QStringLiteral("1.0.0"), {QStringLiteral("a")}), []() {
+                                 return new FakePlugin;
+                             });
+
+    mgr.loadPlugins();
+    QVERIFY(!mgr.hasError());
+
+    // The leading :: is required here for the same reason the modules need it:
+    // this file has "using namespace QxPlugin", so a bare QxPlugin is ambiguous
+    // between the namespace and the class it holds.
+    ::QxPlugin::QxPlugin *a = mgr.plugin(QStringLiteral("a"));
+    QVERIFY(a != Q_NULLPTR);
+
+    // Still owned - dropping the parent instead of replacing it would leak.
+    QVERIFY(a->parent() != Q_NULLPTR);
+    // ... but not by the manager, and not by anything on the way to it.
+    QVERIFY(qobject_cast<QxPluginManager *>(a->parent()) == Q_NULLPTR);
+    for (QObject *ancestor = a->parent(); ancestor != Q_NULLPTR; ancestor = ancestor->parent()) {
+        QVERIFY(ancestor != &mgr);
+    }
+    // Nothing in that chain hands out the peers either.
+    for (QObject *ancestor = a->parent(); ancestor != Q_NULLPTR; ancestor = ancestor->parent()) {
+        QVERIFY(qobject_cast<QxPluginManager *>(ancestor) == Q_NULLPTR);
+    }
+
+    // The one handle it did get is the context the host handed over, unchanged.
+    QCOMPARE(a->context(), shell.pluginContext());
 }
 
 void tst_QxPlugin::shutdownReversesOrder()

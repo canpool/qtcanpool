@@ -30,6 +30,13 @@ class QxPluginContext;
  * window class, so renaming the host - a K14 concern - never reaches a single
  * plugin.
  *
+ * That is a property of the runtime and not only of this comment: a static
+ * instance is owned through a private holder rather than parented to the
+ * manager, and a dynamic instance is owned by its QPluginLoader and has no
+ * parent, so no plugin can walk the object tree back to the manager and from
+ * there to its peers. Which is what leaves the host as the only place where two
+ * plugins meet.
+ *
  * @code
  * class MyPlugin : public QxPlugin
  * {

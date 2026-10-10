@@ -63,6 +63,15 @@ public:
     QHash<QString, QxPluginSpec *> specById;
 
     // ownership
+    /*!
+     * Owner of the static plugin instances. Deliberately not the manager: a
+     * plugin is handed a QxPluginContext and nothing else, so it must not be
+     * able to walk parent() back to the manager and from there reach its peers
+     * through plugin()/specs(). A plain QObject member of the private keeps the
+     * cleanup with the manager without publishing a way back. Dynamic instances
+     * are owned by their QPluginLoader and have no parent at all.
+     */
+    QObject pluginOwner;
     QList<QxPluginSpec *> staticSpecs;
     QList<QxPluginSpec *> dynamicSpecs;
     QList<QPluginLoader *> dynamicLoaders;
@@ -276,16 +285,18 @@ void QxPluginManagerPrivate::resolve()
 
 QxPlugin *QxPluginManagerPrivate::createInstance(QxPluginSpec *spec)
 {
-    Q_Q(QxPluginManager);
     for (QxPluginManagerPrivate::Entry *e : entries) {
         if (e->spec != spec)
             continue;
         if (e->isStatic) {
             QxPlugin *instance = e->factory ? e->factory() : Q_NULLPTR;
             // Dynamic plugins are owned by their QPluginLoader; static ones are
-            // parented to the manager so they are cleaned up with it.
+            // parented to a private holder so they are cleaned up with the
+            // manager without becoming reachable through parent(). See the note
+            // on pluginOwner - this is the difference between the documented
+            // "a plugin has no handle to the manager" and a comment.
             if (instance)
-                instance->setParent(q);
+                instance->setParent(&pluginOwner);
             return instance;
         }
         if (e->loader)
