@@ -11,7 +11,7 @@
 
 </div>
 
-一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库 **qcanpool** 基于 QtWidgets 构建，并集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件与第三方类库。
+一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库基于 QtWidgets 构建，并集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件与第三方类库。
 
 qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的控件。
 
@@ -19,14 +19,17 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 
 | 组件 | 命名空间 | 说明 |
 | :--- | :------- | :--- |
-| **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`），仅依赖 Qt Core |
+| **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`），仅依赖 Qt Core |
 | **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（Office / WPS / Dark）、运行时切换、选择持久化、跟随系统深浅色 |
-| **qcanpool** | `QCanpool` | legacy 兼容层：3.1 后只剩 7 个指向 `qxapp` 的弃用转发头，3.2 删除 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
-| **qxapp** | `QxApp` | 应用框架库：`RibbonAppWindow`（无边框 Ribbon 窗口）与 `QxAppShell` 应用外壳（导航轨 + 页面栈 + 停靠区 + 状态栏 + 启动屏 + 布局持久化） |
+| **qxapp** | `QxApp` | 应用框架库：`RibbonAppWindow`（无边框 Ribbon 窗口）与 `QxAppShell` 应用外壳（导航轨 + 页面栈 + 停靠区 + 状态栏 + 启动屏 + 布局持久化）、应用内通知（`QxToast`）、设置界面（`QxPropertyEditor` / `QxSettingsDialog`） |
 | **qtcompat** | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） |
+
+> **qcanpool 已于 3.2 删除。** 它在 3.1 已被清空（legacy Ribbon 物理移除、11 个遗留控件下线、
+> 7 个通用控件迁入 `qxapp` 并改名），只剩 7 个带弃用告警的转发头；3.2 连这个库一起消失，
+> **旧名不再存在**。迁移见 [`doc/design/3.0-MIGRATION.md`](./doc/design/3.0-MIGRATION.md)。
 
 ## 仓库
 
@@ -152,7 +155,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 - Git 提交格式（**自 3.0 起**）：`type(scope): subject`，以区分早期提交格式
   - 提交信息一律使用**英文**（subject 与正文）
   - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
-  - `scope`：受影响范围，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qcanpool` / `project` / `ci` / `test` / `docs`
+  - `scope`：受影响范围，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `project` / `ci` / `test` / `docs`
   - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
   - 早期提交格式参考：[git 知：提交格式](https://blog.csdn.net/canpool/article/details/126005367)
 

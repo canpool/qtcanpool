@@ -222,7 +222,7 @@ cmake --install build --prefix <安装目录>
 > ```
 
 安装完成后即导出 CMake 包配置，下游工程可以 `find_package(QtCanpool)` 后
-直接链接 `QtCanpool::qxcore` / `QtCanpool::qxtheme` / `QtCanpool::qcanpool` /
+直接链接 `QtCanpool::qxcore` / `QtCanpool::qxtheme` /
 `QtCanpool::qxribbon` / `QtCanpool::qxdock` / `QtCanpool::qxwindow` /
 `QtCanpool::qxapp` 这些目标：
 

@@ -87,6 +87,21 @@ shell.setBusy(false);
 忙碌指示是一个**没有百分比**的进度条：外壳只负责表达"正在工作"，
 进度由调用方自己维护（`setStatusMessage()` 就是给它用的）。
 
+## 应用内通知
+
+外壳自带一个 toast 栈，`showToast()` 开箱可用：
+
+```cpp
+shell.showToast(tr("文档已保存"), QxApp::QxToast::Success);
+
+// 需要自己控制位置或同屏上限时，取 manager
+QxApp::QxToastManager *toasts = shell.toastManager();
+toasts->setPosition(QxApp::QxToastManager::BottomRight);
+```
+
+toast 是外壳的**子控件**（不是顶层窗口），因此不置顶、不抢焦点，且在 offscreen 与
+WebAssembly 下行为一致。完整说明见 [组件全览](components.md)。
+
 ## 布局持久化
 
 ```cpp

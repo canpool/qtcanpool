@@ -8,7 +8,9 @@
 - qxribbon → @ref QxRibbon
 - qxdock → @ref QxDock
 - qxapp → @ref QxApp
-- qcanpool → @ref QCanpool
+
+> `qcanpool` 已于 **3.2 删除**（含 3.1 留下的转发头），本页不再列出。迁移见
+> [迁移指南](migration.md)。
 
 ## qxcore — 基础设施
 
@@ -18,10 +20,12 @@
 | :--- | :--- |
 | @ref QxCore::QxSettings | `QSettings` 的类型化包装：带默认值的读取、分组、以及带版本号的配置迁移 |
 | @ref QxCore::QxLogger | 基于 Qt 消息处理器的日志：级别过滤、时间戳、按大小轮转的文件输出 |
+| @ref QxCore::QxTranslator | 翻译装载与切换：扫描目录里的 `.qm`、安装语言包、发出切换信号（3.2） |
 
 ```cpp
 #include "qxcore/qxlogger.h"
 #include "qxcore/qxsettings.h"
+#include "qxcore/qxtranslator.h"
 
 using namespace QxCore;
 
@@ -47,6 +51,39 @@ settings.endGroup();
 
 `QxLogger::init()` 会接管进程级消息处理器，并在 `shutdown()` 时恢复此前的处理器，
 所以它与调用方自行安装的处理器可以共存，顺序为「先装者被后装者包裹」。
+
+### i18n 语言切换（3.2）
+
+`QxTranslator` 只补 Qt 缺的**记账**部分：Qt 自己已经会为装载翻译后的顶层部件投递
+`QEvent::LanguageChange`，缺的是「有哪些语言」「哪些文件真的装上了」以及「怎么通知那些
+**不是部件**的使用者」。模型与控制器收不到 `QEvent::LanguageChange`，`languageChanged()`
+就是为它们准备的。
+
+```cpp
+#include "qxcore/qxsettings.h"
+#include "qxcore/qxtranslator.h"
+
+using namespace QxCore;
+
+QxSettings settings;
+QxTranslator translator;
+translator.setTranslationPath(QCoreApplication::applicationDirPath());
+
+// 选中的语言是普通配置：读出来装上，变了再写回去
+QObject::connect(&translator, &QxTranslator::languageChanged, &settings, [&](const QString &language) {
+    settings.setValue(QStringLiteral("ui/language"), language);
+});
+translator.setLanguage(settings.stringValue(QStringLiteral("ui/language"), QLocale::system().name()));
+```
+
+要点：
+
+- **语言来自目录**：`availableLanguages()` 读的是 `<前缀>_<语言>.qm` 的文件名，
+  前缀由文件自己带，所以应用自己的语言包与放在旁边的 Qt 语言包会被一起枚举。
+- **应用的语言包必须装上一个**：装载失败时什么都不变，也就是**装不上的语言不会让应用
+  掉进空界面**；`qtbase_<语言>.qm` 只是补充，缺了不算失败、有了也不算成功。
+- **持久化留给调用方**：语言只是一个值，而应用本来就有一份 `QxSettings`——上面那三行
+  比在这里多一个依赖更划算。
 
 ## qxtheme — 主题引擎
 
@@ -118,6 +155,9 @@ themes->setTheme(DarkOfficePlus);
 | `QxTabBar` / `QxTabWidget` / `QxNavBar` | 轻量 Tab 与导航（3.1 自 `qcanpool` 迁入） |
 | @ref QxApp::QxToast | 应用内提示条：带级别、自动消失、悬停暂停（3.2） |
 | @ref QxApp::QxToastManager | 同一宿主窗口的 toast 堆叠、超时与淘汰（3.2） |
+| @ref QxApp::QxProperty | 一个设置项的描述：键、类型、默认值与可选项（3.2） |
+| @ref QxApp::QxPropertyEditor | 由 `QxProperty` 列表生成的键/值表单（3.2） |
+| @ref QxApp::QxSettingsDialog | 设置对话框：左页列表 + 右表单，负责读盘与写盘（3.2） |
 
 ### Toast 应用内通知（3.2）
 
@@ -153,12 +193,79 @@ toasts->show(tr("设备没有回应"), QxToast::Error, 10000);
 - **队列与动画分离**：`show()` 立即入栈、每次淘汰立即出栈，动画在记账之后跑，
   所以 `count()` / `toasts()` 报的就是屏幕上真实的状态。
 
-## qcanpool — legacy 兼容层（3.2 删除）
+### 属性编辑器内核（3.2）
 
-该库在 3.1 已被清空：legacy Ribbon 系列（`ribbonbar`、`ribbonpage`、`ribbongroup`、`ribbonwindow`）
-**物理移除**，11 个遗留窗口/控件下线，7 个通用控件迁入 `qxapp` 并改名为 `QxApp::Qx*`。
-现存内容只有那 7 个**带弃用标注的转发头**——它们让 3.0 时代的代码还能编译（并给出迁移告警），
-到 3.2 连同这个库一起消失。新代码请直接 include `qxapp/qx*.h`。详见[迁移指南](migration.md)。
+设置界面由**描述**生成，而不是手写控件。`QxProperty` 是一个设置项的声明——键、类型、
+默认值——`QxPropertyEditor` 把一组声明变成一张表单：
+
+```cpp
+#include "qxapp/qxproperty.h"
+#include "qxapp/qxpropertyeditor.h"
+
+using namespace QxApp;
+
+QxProperty language;
+language.key = QStringLiteral("ui/language");
+language.label = tr("语言");
+language.type = QxProperty::Enum;
+language.choices = QStringList{QStringLiteral("zh_CN"), QStringLiteral("en")};
+language.defaultValue = QStringLiteral("zh_CN");
+
+QxPropertyEditor *editor = new QxPropertyEditor;
+editor->addGroup(tr("界面"), QList<QxProperty>{language});
+
+// 整批写入，也整批读出：与配置文件的一次往返
+QHash<QString, QVariant> stored;
+stored.insert(QStringLiteral("ui/language"), QStringLiteral("en"));
+editor->setAllValues(stored);
+
+connect(editor, &QxPropertyEditor::valueChanged, [](const QString &key, const QVariant &value) {
+    // key == "ui/language"
+});
+```
+
+要点：
+
+- **类型归一**：写进模型的值一定先转成该项声明的类型，所以从配置文件里读到的
+  `"80"` 与微调框给出的 `80` 是同一个值；转不了的会被拒绝（并 `qWarning`），
+  而不是悄悄变成 0。
+- **两个「回到原样」**：`reset()` 回到声明的默认值（重装的样子），
+  `resetToInitial()` 回到 `setAllValues()` 传进来的那批值（放弃我刚才的编辑）。
+- **枚举不丢未知值**：存档里出现列表中没有的选项时，它被追加进列表而不是被丢掉，
+  于是「这一项为什么空了」不会发生。
+- **九种类型**：`Bool` / `Int` / `Double` / `String` / `Text` / `Enum` / `Color` /
+  `Font` / `Path`，各自对应一种控件；`Color` 与 `Font` 的对话框**只在点击时**才弹。
+
+### 设置对话框（3.2）
+
+`QxPropertyEditor` 管值、不知道值从哪来；`QxSettingsDialog` 是知道**存储**的那一半——
+把值读出来，再把值写回去。
+
+```cpp
+#include "qxapp/qxsettingsdialog.h"
+
+using namespace QxApp;
+
+QxSettingsDialog dialog(shell.settings());
+dialog.addPage(QStringLiteral("general"), generalIcon, tr("常规"), generalProperties);
+dialog.addPage(QStringLiteral("editor"), editorIcon, tr("编辑器"), editorProperties);
+dialog.addGroup(QStringLiteral("editor"), tr("缩进"), indentationProperties);
+dialog.exec();
+```
+
+要点：
+
+- **显示时才读**：读取发生在 `showEvent()`，不在构造时——后加的页也会被读到，
+  而且第二次打开时看到的是**存档里的值**，不是上次编辑又被丢弃的那批。
+- **三个动作**：`apply()` 写盘并 `sync()`；`accept()` = 应用 + 关闭；
+  `reject()` = `resetToInitial()` + 关闭，所以「取消」在界面上也真的回到了原样。
+- **Apply 跟着改动亮灭**：应用之后表单以屏幕上的值为新基线，按钮随即变灰，
+  不需要重读一遍。
+- **键即路径**：`QxProperty::key` 是存储路径，因此必须稳定、**不翻译**；
+  页标题与项标签是展示，可以自由翻译。没写过的键读出来就是它的 `defaultValue`，
+  这正是首次启动看起来像已配置的原因。
+- **迁移不在这里**：升级存档布局是**启动期**的事——它要在任何东西读配置之前跑，
+  还可能碰到对话框里根本没有的键——所以留给 `QxSettings::migrate()`。
 
 ## qtcompat — 跨版本兼容
 

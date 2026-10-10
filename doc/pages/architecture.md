@@ -9,20 +9,23 @@
 ```
 qxapp      应用框架
            RibbonAppWindow / QxAppShell / QxNavigationBar / QxSplashScreen
+           QxToast / QxToastManager / QxPropertyEditor / QxSettingsDialog
    │
    ├── qxribbon   Ribbon 界面（页 / 分组 / 快捷工具栏）──► qxwindow
    ├── qxdock     可停靠窗口（布局 / 标签化 / 浮动容器）
    ├── qxtheme    主题引擎（调色板 + 样式表）      ──► qxcore
-   └── qxcore     基础设施（配置 / 日志）          ──► 仅 Qt Core
-   │
-   └── qcanpool   通用控件（legacy，已冻结）
+   └── qxcore     基础设施（配置 / 日志 / 语言）    ──► 仅 Qt Core
 ```
 
-两点值得留意：
+三点值得留意：
 
-- `qxcore` 只依赖 Qt Core，因此任何库都可以用它，包括不涉及界面的模块。
+- `qxcore` 只依赖 Qt Core，因此任何库都可以用它，包括不涉及界面的模块——
+  i18n（@ref QxCore::QxTranslator）正因此放在这一层，而不是放在 `qxapp`。
 - `qxtheme` **刻意不依赖 `qxribbon`**：内置样式表位于 qxribbon 的资源包中，靠 Qt 的进程级资源
   在运行时按路径读取。这样 qxribbon 一侧零改动，非 Ribbon 应用也能使用主题引擎。
+- 设置界面被**切成两半**：@ref QxApp::QxPropertyEditor 只管值、不知道值从哪来，
+  @ref QxApp::QxSettingsDialog 才知道读写的是 @ref QxCore::QxSettings。
+  于是同一张表单可以脱离配置单独用（例如对象属性面板）。
 
 ## 目录结构
 
@@ -53,7 +56,6 @@ qxapp      应用框架
 | qxribbon | `QxRibbon` | `QX_RIBBON_` |
 | qxdock | `QxDock` | `QX_DOCK_` |
 | qxapp | `QxApp` | `QX_APP_` |
-| qcanpool | `QCanpool` | `QCANPOOL_` |
 
 每个库提供四个宏：
 

@@ -1,22 +1,24 @@
-# 2.x → 3.0 / 3.1 迁移指南
+# 2.x → 3.0 / 3.1 / 3.2 迁移指南
 
-> 结论：3.0 **不保证二进制兼容**，提供源码级迁移路径。3.1 沿用同一方向做完了 legacy 收口。
+> 结论：3.0 **不保证二进制兼容**，提供源码级迁移路径。3.1 沿用同一方向做完了 legacy 收口，
+> 3.2 把 `qcanpool` 库本身删除——**那 7 个转发头也没了**。
 
 本页是迁移总览。完整的类与方法对照表、`fancy*` 控件存废表与分步清单见仓库中的
 [`doc/design/3.0-MIGRATION.md`](https://github.com/canpool/qtcanpool/blob/release-3.x/doc/design/3.0-MIGRATION.md)。
 
-## 3.1 带来的三处变化（升级前必读）
+## 3.1 / 3.2 带来的四处变化（升级前必读）
 
-3.1 的 legacy 收口是**连续三个破坏性变更**，性质各不相同：
+3.1 与 3.2 的 legacy 收口是**连续四个破坏性变更**，性质各不相同：
 
 | 变更 | 你会在编译时看到 | 怎么改 |
 | :--- | :--- | :--- |
 | **A3** legacy ribbon 物理移除 | 找不到 `qcanpool/ribbon*.h` | 见下方「Ribbon 迁移要点」 |
-| **A1** 7 个通用控件迁入 `qxapp` 并改名 | **弃用告警**（旧名仍可编译） | 见下方「`qcanpool` → `qxapp`」 |
+| **A1** 7 个通用控件迁入 `qxapp` 并改名 | **弃用告警**（旧名仍可编译，缓冲期到 3.2 结束） | 见下方「`qcanpool` → `qxapp`」 |
 | **A2** 11 个遗留类物理删除 | 找不到头文件，**无同名替代** | 见下方「已下线的遗留类」 |
+| **R1（3.2）** `qcanpool` 整库删除 | 找不到 `qcanpool/*.h`——**连 A1 的转发头也没了**，旧名不再存在 | 换成上表「新头」那一列；`LIBS`/`find_package` 里去掉 `qcanpool` |
 
 > **A1 与 A2 的区别是关键**：A1 之后旧代码还能编（只是告警），有一个版本的时间慢慢改；
-> A2 之后不能编，必须一次改完。
+> A2 之后不能编，必须一次改完。**3.2 的 R1 连 A1 留下的缓冲期一起结束了**。
 
 ## 迁移总览
 
@@ -35,7 +37,7 @@
 
 | 库 | 2.x | 3.0 | 启用宏 |
 | :--- | :--- | :--- | :--- |
-| qcanpool（冻结） | `QCanpool` | `QCanpool`（不变） | `QCANPOOL_BEGIN_NAMESPACE` |
+| qcanpool | `QCanpool` | `QCanpool`（不变；**3.2 整库删除**） | `QCANPOOL_BEGIN_NAMESPACE` |
 | qxribbon | `QxRibbon` | `QxRibbon` | `QX_RIBBON_BEGIN_NAMESPACE` |
 | qxwindow | `QxWindow` | `QxWindow` | `QX_WINDOW_BEGIN_NAMESPACE` |
 | qxdock | `QxDock` | `QxDock` | `QX_DOCK_BEGIN_NAMESPACE` |
@@ -93,9 +95,10 @@ connect(actionOption, &QAction::triggered, this, &MainWindow::onOption);
 ## `qcanpool` → `qxapp`：7 个通用控件改名（A1）
 
 3.1 把这 7 个控件迁入 `qxapp` 并去掉 `Fancy`/`Tiny` 前缀。**行为未变**，改动通常只是替换
-标识符与 include。旧名在 `qcanpool` 保留一个版本（指向新类的子类 + 弃用标注），**3.2 删除**。
+标识符与 include。旧名当年在 `qcanpool` 保留了一个版本（指向新类的子类 + 弃用标注），
+**该缓冲期已在 3.2 结束**：库与转发头一并删除，旧名不再存在，只剩下面这张对照表。
 
-| 旧名（`QCanpool::`） | 新名（`QxApp::`） | 旧头（保留至 3.2） | 新头 |
+| 旧名（`QCanpool::`） | 新名（`QxApp::`） | 旧头（3.2 已删除） | 新头 |
 | :--- | :--- | :--- | :--- |
 | `FancyToolButton` | `QxToolButton` | `qcanpool/fancytoolbutton.h` | `qxapp/qxtoolbutton.h` |
 | `ExtensionButton` | `QxExtensionButton` | `qcanpool/extensionbutton.h` | `qxapp/qxextensionbutton.h` |
@@ -119,18 +122,20 @@ connect(actionOption, &QAction::triggered, this, &MainWindow::onOption);
 | `FancyBar`、`FancyTabBar`、`FancyTabWidget` | `QxApp::QxTabBar` / `QxTabWidget` |
 | `FancyWindow`、`FancyDialog` | `QxWindow::` 或 `QxApp::RibbonAppWindow` / `QxAppShell`；对话框直接用 `QDialog` |
 
-## legacy 头文件的弃用标注
+## legacy 头文件的弃用标注（3.2 起已全部消失）
 
 3.0 时 5 个 legacy ribbon 头文件（8 个类）曾被标注弃用；**3.1 中这些文件已整体删除**，
 那些名字不再产生告警，而是直接编译失败。
 
-现存带标注的是上面 7 个转发头：用旧名编译会得到
-`'Xxx' is deprecated: use QxApp::QxXxx instead`。**在编译 `qcanpool` 库自身时该标注是空的**，
-所以它只对库的使用者响 —— 这正是"编译告警即迁移点"的含义。
+3.1 时仍带标注的是上面 7 个转发头：用旧名编译会得到
+`'Xxx' is deprecated: use QxApp::QxXxx instead`（**在编译 `qcanpool` 库自身时该标注是空的**，
+所以它只对库的使用者响）。**3.2 已随整库删除**，`QCANPOOL_DEPRECATED_*` 系列宏与
+`QCANPOOL_DISABLE_DEPRECATED_BEFORE` 一起不复存在——升级后旧名是"找不到头文件"，
+不再是告警。
 
 > **注意**：与 Qt 官方惯例的一处有意差异 —— 本项目的标注只控制**弃用提示**，
-> 类声明本身始终保留。调整 `QCANPOOL_DISABLE_DEPRECATED_BEFORE` 只会开关告警，不会让 API 消失。
-> 3.2 删除这些转发头时走的是破坏性变更流程，不会用这个宏偷偷实现。
+> 类声明本身始终保留，所以当年调整宏只会开关告警、不会让 API 消失。
+> 删除这些转发头走的是破坏性变更流程（3.2 的 R1），没有用这个宏偷偷实现。
 
 ## qxwidget → qxapp
 
@@ -194,3 +199,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 13. **（3.1）** 7 个改名控件换成 `QxApp::Qx*`；注意 `TinyTabBar` 现在是独立类型。
 14. **（3.1）** `FancyWindow` / `FancyDialog` / `MiniTab*` / `WindowToolBar` / `WindowLogo`
     无同名替代，按「已下线的遗留类」表换成 `QxWindow` / `QxAppShell` / `QxApp::QxTab*`。
+15. **（3.2）** `qcanpool` 已整库删除。**最后一步**：把剩下的 `qcanpool/*.h` include 与
+    `QCanpool::` 名字全部换掉，并从构建里去掉 `qcanpool`（`find_package` 的目标、
+    qmake 的 `LIBS` / `include(...)`）。这一步之前旧名还能编（只是告警），
+    之后连头文件都找不到。

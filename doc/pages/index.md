@@ -22,7 +22,8 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | **界面组件** | Ribbon、Dock、无边框窗口三类现代桌面界面范式，均可在 Qt 5 与 Qt 6 上编译 |
 | **应用骨架** | @ref QxApp::QxAppShell 把导航轨、页面栈、停靠区、状态栏与启动屏组装成一个可直接继承的窗口 |
 | **主题** | @ref QxTheme::QxThemeManager 统一应用调色板与样式表，支持运行时切换、选择持久化与跟随系统深浅色 |
-| **基础设施** | @ref QxCore::QxSettings 负责配置与版本迁移，@ref QxCore::QxLogger 负责带轮转的日志 |
+| **基础设施** | @ref QxCore::QxSettings 负责配置与版本迁移，@ref QxCore::QxLogger 负责带轮转的日志，@ref QxCore::QxTranslator 负责语言切换 |
+| **开箱即用** | 生成的工程（见 `scripts/new-project`）已接好切语言、@ref QxApp::QxToast 应用内通知与 @ref QxApp::QxSettingsDialog 设置界面 |
 
 ## 组件总览
 
@@ -30,18 +31,36 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 
 | 组件 | 命名空间 | 说明 | 依赖 |
 | :--- | :--- | :--- | :--- |
-| `qxcore` | @ref QxCore | 基础设施：配置（`QxSettings`）、日志（`QxLogger`） | Qt Core |
+| `qxcore` | @ref QxCore | 基础设施：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`） | Qt Core |
 | `qxtheme` | @ref QxTheme | 主题引擎：调色板 + 样式表统一应用、运行时切换、持久化、跟随系统 | `qxcore`、Qt Widgets |
 | `qxwindow` | @ref QxWindow | 自定义窗口：无边框窗口、系统按钮代理、原生窗口上下文 | Qt Gui |
 | `qxribbon` | @ref QxRibbon | Ribbon 风格界面：菜单栏 / 页 / 分组 / 快捷工具栏 | `qxwindow`、Qt Widgets |
 | `qxdock` | @ref QxDock | 可停靠窗口：布局管理、标签化面板、浮动容器 | Qt Widgets |
-| `qxapp` | @ref QxApp | 应用框架：`RibbonAppWindow`、`QxAppShell`、`QxNavigationBar`、`QxSplashScreen` | `qxribbon`、`qxdock`、`qxtheme`、`qxcore` |
-| `qcanpool` | @ref QCanpool | **legacy，已冻结**：只剩 7 个指向 `qxapp` 的弃用转发头（3.2 删除） | `qxapp` |
+| `qxapp` | @ref QxApp | 应用框架：`RibbonAppWindow`、`QxAppShell`、`QxNavigationBar`、`QxSplashScreen`、应用内通知（`QxToast`）、设置界面（`QxPropertyEditor` / `QxSettingsDialog`） | `qxribbon`、`qxdock`、`qxtheme`、`qxcore` |
 | `qtcompat` | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） | Qt Core |
 
-> **注意**：`qcanpool` 的内容在 3.1 已被清空——legacy Ribbon 系列（`ribbonbar`、`ribbonpage`、
-> `ribbongroup`、`ribbonwindow`）**物理移除**，11 个遗留控件下线，7 个通用控件迁入 `qxapp`
-> 并改名为 `QxApp::Qx*`（旧名保留一个版本、带弃用告警）。详见 [迁移指南](migration.md)。
+> **注意**：`qcanpool` 已于 **3.2 删除**。它在 3.1 已被清空（legacy Ribbon 系列物理移除、
+> 11 个遗留控件下线、7 个通用控件迁入 `qxapp` 并改名），只剩 7 个带弃用告警的转发头；
+> 3.2 连这个库一起消失，**旧名不再存在**。详见 [迁移指南](migration.md)。
+
+## 版本对照
+
+**项目版本**（tag 打在它上面）是发布列车号；**每个库另有自己的版本号**，两者互不绑定（K11）。
+库版本号只在该库自己的接口契约变化时前进，项目版本说明的是「哪些库属于这一批发布」——
+所以 3.0 → 3.2 项目版本走了两位，而库版本号一位没动，这不是遗漏。
+
+| 项目版本 | `qxcore` | `qxtheme` | `qxwindow` | `qxribbon` | `qxdock` | `qxapp` |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 3.0.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
+| 3.1.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
+| 3.2.0 | 0.1.0 | 0.1.0 | 0.1.2 | 0.10.1 | 0.2.0 | 0.0.1 |
+
+（`qcanpool` 有自己的一套号，且已于 3.2 整库删除，不再列入。）
+
+`3.2.0` 一行里库号未变，但内容变了：`qxcore` 多了 @ref QxCore::QxTranslator，
+`qxapp` 多了 @ref QxApp::QxToast / @ref QxApp::QxToastManager /
+@ref QxApp::QxPropertyEditor / @ref QxApp::QxSettingsDialog。
+库版本号的推进留给该库自己需要对外声明的那一次，不与发布批次挂钩。
 
 ## 快速开始
 
