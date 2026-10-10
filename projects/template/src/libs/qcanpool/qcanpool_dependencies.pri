@@ -1,2 +1,0 @@
-QTC_LIB_NAME = qcanpool
-QTC_LIB_VERSION = 2.0.0

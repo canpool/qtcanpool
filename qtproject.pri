@@ -46,7 +46,7 @@ defineReplace(qtLibraryName) {
    return($$RET)
 }
 
-# eg: $$qtLibraryNameVersion(qcanpool, 1)
+# eg: $$qtLibraryNameVersion(qxcore, 1)
 defineReplace(qtLibraryNameVersion) {
    RET = $$qtLibraryTargetName($$1)
    win32 {

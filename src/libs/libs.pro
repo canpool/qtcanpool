@@ -1,7 +1,6 @@
 TEMPLATE  = subdirs
 
 SUBDIRS =   \
-    qcanpool \
     qxribbon \
     qxdock \
     qxwindow \

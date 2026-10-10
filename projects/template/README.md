@@ -4,8 +4,9 @@
 `find_package(QtCanpool)` 消费**已安装**的 SDK —— 不引用源码树，不做
 `add_subdirectory`，这正是下游工程的样子。
 
-> **新项目请用 CMake 模板。** 同目录的 `template.pro` / `config.pri` / `qtproject.pri` /
-> `src/` 是 3.0 之前的 qmake 版本，只作历史参考保留（qmake 自 3.0 起冻结，不再演进）。
+> **3.2 起本目录只有 CMake 模板。** 原先并排的 qmake 版本（`template.pro` / `config.pri` /
+> `qtproject.pri` / `src/`）连同它引用的 `qcanpool` 库一起删除——qmake 自 3.0 起冻结，
+> 而那个 qmake 应用实际未使用任何 QtCanpool API，留一份不能构建的参考只会误导。
 
 ## 1. 准备 SDK
 
@@ -36,7 +37,7 @@ Windows 下是 `;`。
 ## 3. 从这里开始改
 
 - `main.cpp`：把示例页换成自己的部件；完整接口见 `qxapp/qxappshell.h` 的头注释。
-- 需要自己的库时（qmake 模板的 app + lib 模式）：建子目录 + 自己的 `CMakeLists.txt`，
+- 需要自己的库时：建子目录 + 自己的 `CMakeLists.txt`，
   在根 `CMakeLists.txt` 里 `add_subdirectory`，然后 `target_link_libraries` 链接。
   只有在该库的**公开头**里暴露 QtCanpool 类型时才用 `PUBLIC`，否则用 `PRIVATE`。
 - 安装/发布规则：模板刻意不带 `install()`，保持最小。需要时给目标补
@@ -48,4 +49,4 @@ Windows 下是 `;`。
 | :--------------------------------------------- | :-------------------- |
 | `CMakeLists.txt`                               | **CMake 主构建**（当前推荐）   |
 | `main.cpp`                                     | `QxAppShell` 最小示例     |
-| `template.pro`、`config.pri`、`qtproject.pri`、`src/` | qmake legacy 参考，保留不动  |
+| `README.md`                                    | 本文件                   |

@@ -10,8 +10,9 @@
 # it knows nothing about the sources - no add_subdirectory, no relative paths,
 # only find_package. That is exactly what a downstream project looks like.
 #
-# The qmake files next to this one (template.pro, config.pri, qtproject.pri and
-# the src/ tree) are kept as a legacy reference only. New projects should start
+# This directory is the template and nothing else: a CMakeLists.txt, a main.cpp
+# and a README.md. The qmake version that used to sit next to it was removed in
+# 3.2 together with the qcanpool library it referenced. New projects should start
 # from this file; see README.md for the two commands that build and run it.
 
 cmake_minimum_required(VERSION 3.16)

@@ -5,8 +5,8 @@
 #
 # The replace function is then called in the pro file, such as:
 #
-# - reference qcanpool library:
-#   include($$qtcLibrarySource(qcanpool))
+# - reference qxcore library:
+#   include($$qtcLibrarySource(qxcore))
 #
 # - reference coreplugin plugin:
 #   include($$qtcPluginSource(coreplugin))

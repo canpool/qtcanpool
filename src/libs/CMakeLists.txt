@@ -1,6 +1,5 @@
 option(WITH_QXCORE "Build qxcore library" ON)
 option(WITH_QXTHEME "Build qxtheme library" ON)
-option(WITH_QCANPOOL "Build qcanpool library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
@@ -18,10 +17,6 @@ endif()
 # theme engine stays usable in applications that do not use the ribbon.
 if (WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxtheme)
-endif()
-
-if (WITH_QCANPOOL)
-  add_subdirectory(qcanpool)
 endif()
 
 if (WITH_QXRIBBON)

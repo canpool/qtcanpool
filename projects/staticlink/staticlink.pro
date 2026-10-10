@@ -22,7 +22,6 @@ include($$LIBSRC_DIR/qxwindow/qxwindow.pri)
 include($$LIBSRC_DIR/qxdock/qxdock.pri)
 
 include($$LIBSRC_DIR/qxribbon/qxribbon.pri)
-include($$LIBSRC_DIR/qcanpool/qcanpool.pri)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

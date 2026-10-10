@@ -19,7 +19,6 @@ qtcanpool 集成了一些第三方组件，这些组件具有自己的许可协�
 
 ### MulanPSL-2.0
 
-- src/libs/qcanpool
 - projects/template
 
 ### MulanPSL-2.0 + LGPL-2.1
