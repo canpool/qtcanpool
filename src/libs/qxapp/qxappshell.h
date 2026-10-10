@@ -6,6 +6,7 @@
 #define QXAPPSHELL_H
 
 #include "qxapp_global.h"
+#include "qxplugin/qxplugincontext.h"
 #include "qxtoast.h"
 #include "ribbonappwindow.h"
 
@@ -119,6 +120,17 @@ public:
         addDock(Qx::DockWidgetArea area, const QString &id, const QString &title, QWidget *widget);
     /*! The dock widget created with addDock() under \a id, or null. */
     QX_DOCK_PREPEND_NAMESPACE(DockWidget) * dock(const QString &id) const;
+
+    // Plugin context --------------------------------------------------------
+    /*!
+     * Returns the QxPluginContext adapter. Plugins reach the host only through
+     * this interface and never the QxAppShell class, so a K14 rename of this
+     * class changes nothing in any plugin.
+     *
+     * The adapter is created on first use and owned by the shell; hand the
+     * returned pointer to QxPluginManager::setContext().
+     */
+    QxPlugin::QxPluginContext *pluginContext() const;
 
     // Status bar ------------------------------------------------------------
     /*! Text of the permanent message line at the left of the status bar. */

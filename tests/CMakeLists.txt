@@ -79,6 +79,21 @@ add_qtc_test(tst_qxapp
         ${QXAPP_TEST_SOURCES}
 )
 
+# --------------------------------------------------------------- qxplugin --
+# The plugin runtime: contract, discovery, dependency resolution and failure
+# isolation. The host-adapter case links qxapp to drive a real QxAppShell as
+# the QxPluginContext, proving plugins never touch the window class.
+file(GLOB QXPLUGIN_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxplugin/auto/tst_*.cpp")
+add_qtc_test(tst_qxplugin
+    DEPENDS qxapp qxplugin
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxplugin/auto/main.cpp"
+        ${QXPLUGIN_TEST_SOURCES}
+)
+
 # ---------------------------------------------------------------- qxribbon --
 file(GLOB QXRIBBON_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
 add_qtc_test(tst_qxribbon

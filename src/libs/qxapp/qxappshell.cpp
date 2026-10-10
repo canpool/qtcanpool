@@ -25,6 +25,7 @@
 
 QX_CORE_USE_NAMESPACE
 QX_DOCK_USE_NAMESPACE
+QX_PLUGIN_USE_NAMESPACE
 
 QX_APP_BEGIN_NAMESPACE
 
@@ -85,14 +86,101 @@ public:
     mutable QX_CORE_PREPEND_NAMESPACE(QxSettings) *m_settings = Q_NULLPTR;
     mutable QxToastManager *m_toastManager = Q_NULLPTR;
     mutable QxWorkspaceManager *m_workspaceManager = Q_NULLPTR;
+    /*! The QxPluginContext adapter, created lazily by QxAppShell::pluginContext(). */
+    mutable QxPlugin::QxPluginContext *m_context = Q_NULLPTR;
     int m_currentIndex = -1;
     bool m_busy = false;
     bool m_autoSaveLayout = true;
     int m_progressMinimum = 0;
     int m_progressMaximum = 100;
+
+    /*! Frees the plugin context adapter; the shell owns it. */
+    ~QxAppShellPrivate();
 };
 
 QxAppShellPrivate::QxAppShellPrivate() = default;
+
+QxAppShellPrivate::~QxAppShellPrivate()
+{
+    delete m_context;
+}
+
+/*!
+ * The QxPluginContext adapter. It is a thin, single-owner bridge that forwards
+ * every QxPluginContext call onto the public QxAppShell API, so the host class
+ * never has to multiply-inherit a vtable-bearing interface (which would corrupt
+ * the QObject memory layout and crash on teardown).
+ *
+ * It is held by QxAppShellPrivate and surfaced through pluginContext().
+ */
+class QxAppShellContext : public QxPlugin::QxPluginContext
+{
+public:
+    explicit QxAppShellContext(QxAppShell *shell)
+        : m_shell(shell)
+    {
+    }
+
+    void addPage(const QString &id, const QIcon &icon, const QString &title, QWidget *page) override
+    {
+        m_shell->addPage(id, icon, title, page);
+    }
+
+    void setCurrentPage(const QString &id) override
+    {
+        m_shell->setCurrentPage(id);
+    }
+
+    QString currentPageId() const override
+    {
+        return m_shell->currentPageId();
+    }
+
+    QWidget *addDock(QxPlugin::QxPluginContext::DockArea area, const QString &id, const QString &title,
+                     QWidget *widget) override
+    {
+        // The context area bits mirror Qx::DockWidgetArea, so the cast is exact.
+        return m_shell->addDock(static_cast<Qx::DockWidgetArea>(area), id, title, widget);
+    }
+
+    void setStatusMessage(const QString &message) override
+    {
+        m_shell->setStatusMessage(message);
+    }
+
+    void setBusy(bool busy) override
+    {
+        m_shell->setBusy(busy);
+    }
+
+    void setProgressRange(int minimum, int maximum) override
+    {
+        m_shell->setProgressRange(minimum, maximum);
+    }
+
+    void setProgress(int value) override
+    {
+        m_shell->setProgress(value);
+    }
+
+    void clearProgress() override
+    {
+        m_shell->clearProgress();
+    }
+
+    void showToast(const QString &text, QxPlugin::QxPluginContext::ToastLevel level, int timeoutMs) override
+    {
+        // The context levels mirror QxToast::Level in order, so the cast is exact.
+        m_shell->showToast(text, static_cast<QxToast::Level>(level), timeoutMs);
+    }
+
+    QX_CORE_PREPEND_NAMESPACE(QxSettings) * settings() const override
+    {
+        return m_shell->settings();
+    }
+private:
+    QxAppShell *m_shell;
+};
 
 void QxAppShellPrivate::init()
 {
@@ -229,6 +317,17 @@ QxAppShell::QxAppShell(QWidget *parent)
 QxAppShell::~QxAppShell()
 {
     QX_FINI_PRIVATE();
+}
+
+QxPlugin::QxPluginContext *QxAppShell::pluginContext() const
+{
+    Q_D(const QxAppShell);
+    if (!d->m_context) {
+        // The adapter lives as long as the shell; const_cast is safe because the
+        // shell is the owner and the adapter only reads through the public API.
+        d->m_context = new QxAppShellContext(const_cast<QxAppShell *>(this));
+    }
+    return d->m_context;
 }
 
 QxNavigationBar *QxAppShell::navigationBar() const

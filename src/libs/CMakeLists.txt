@@ -1,4 +1,5 @@
 option(WITH_QXCORE "Build qxcore library" ON)
+option(WITH_QXPLUGIN "Build qxplugin library" ON)
 option(WITH_QXTHEME "Build qxtheme library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
@@ -9,6 +10,14 @@ option(WITH_QXAPP "Build qxapp library" ON)
 # other library may build on top of it.
 if (WITH_QXCORE)
   add_subdirectory(qxcore)
+endif()
+
+# qxplugin is the plugin runtime: the contract (QxPlugin, QxPluginContext) and
+# the loader (QxPluginManager). It builds on qxcore for the settings object the
+# host context exposes, and on nothing above it, so a plugin links only qxplugin
+# and never the application framework.
+if (WITH_QXPLUGIN AND WITH_QXCORE)
+  add_subdirectory(qxplugin)
 endif()
 
 # qxtheme builds on qxcore (settings) and needs Qt Widgets (palette, style
