@@ -319,6 +319,7 @@
 | **K17** | 静态构建（WASM）下的插件 | ✅ **不支持运行时插件发现**（2026-10-10，D1 实测后定）：`QTC_STATIC_BUILD=ON` 时 `add_qtc_plugin()` 产出的是**没人导入的静态库**（要进应用只能由应用写 `Q_IMPORT_PLUGIN` 清单，与「宿主不认识模块」正面冲突），实测 wasm 产物里 `output` 是 `liboutput.a`、`IdeShellDemo.wasm` 里没有模块元数据串。静态构建里组合模块用**编译期** `registerStaticPlugin()`；WASM demo 演示框架本身，不演示插件 | WASM 在线 demo 不含插件场景；`IdeShellDemo` 在静态配置下不构建；判据与实测见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) D1 |
 | **K18** | 4.0 的分支模型       | ✅ **`master` 作主线**（2026-10-10 定）：4.0 全部提交进 `master`，`release-3.x` 转为 3.x 维护分支，**不再新建 `release-4.x`** | `pages.yml` 的 `deploy` 须放开到 `master`，否则文档站停更；细则见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K18 |
 | **K19** | 对象池的归属（`qxplugin` / `qxcore`） | ✅ **留在 `qxplugin`**（2026-10-11 定）：机制虽通用（只用 QtCore 的 `QObject`/`QPointer`/`QString`），但「每个应用无论如何都要用的地基」才是 `qxcore` 的承诺，而池只在两端**不能链接**时才是必需品；Qt Creator 的对应物（`ExtensionSystem::PluginManager::addObject()`）同样住在**插件框架层**而非 `src/libs/utils/` | 依赖图在两种落点下**完全相同**（`qxplugin` 本来就依赖 `qxcore`），故选的是归属而非构建；三条翻转条件与反方论据见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K19 |
+| **K20** | 全仓行尾（CRLF / LF 混用） | ✅ **4.0 统一为 LF**（2026-10-11 定）：根 `.gitattributes` 写 `* text=auto eol=lf` + 图像 `binary`，一次性 renormalize（`master` 215 个文件、`release-3.x` 288 个），并附 `.git-blame-ignore-revs`。理由是**没有 `.gitattributes` 时 git 不会改写已入库的 CRLF blob**——实测 `autocrlf=input` 只在文件**首次入库**时归一化，此后的编辑必须逐文件手工维持行尾，插进去的 LF 行会被**原样提交成混行尾**；而 4.0 是唯一"反正已经全破"的自然节点 | 消除一项持续的手工纪律与已反复发生的出错来源；下游消费者（经 CMake 取库）完全无感；`release-3.x` 同步落同一笔以免回移时全文件冲突；细则见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K20 |
 
 ---
 
@@ -368,10 +369,12 @@
 15. 存在一个**由模块拼装**、可运行的 IDE 式样板应用；
 16. 插件接口有版本化约定与迁移说明；
 17. **全树 qmake 文件归零**（`git ls-files '*.pro' '*.pri'` 无输出，K13）；
-18. ✅ **K14 已落案**（2026-10-11）：**保留 `QxAppShell`**，不改名，判据与翻转条件写进设计文档。
+18. ✅ **K14 已落案**（2026-10-11）：**保留 `QxAppShell`**，不改名，判据与翻转条件写进设计文档；
+19. ✅ **全仓行尾统一为 LF**（2026-10-11，K20）：`.gitattributes` + 一次性 renormalize，
+     `master` 与 `release-3.x` 同步落笔（旧文件里逐文件维持 CRLF/LF 的纪律到此结束）。
 
-> 17 / 18 是 2026-10-10 制订计划时补的；完整的 DoD（含外部插件验收工程与 CI 门禁）
-> 见 [`design/4.0-TASKS.md` 第五节](./design/4.0-TASKS.md)。
+> 17 / 18 是 2026-10-10 制订计划时补的，19 是 2026-10-11 补的；完整的 DoD（含外部插件
+> 验收工程与 CI 门禁）见 [`design/4.0-TASKS.md` 第五节](./design/4.0-TASKS.md)。
 
 ---
 
