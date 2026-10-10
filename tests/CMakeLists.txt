@@ -166,6 +166,22 @@ add_qtc_test(tst_qlineedit
     SOURCES "${QTCANPOOL_TESTS_DIR}/helloworld/qlineedit/tst_qlineedit.cpp"
 )
 
+# --------------------------------------------------------------- ideshell --
+# The IDE-style sample application (plan 4.0, task D1) and the carrier of
+# acceptance criterion #15. The demo is run rather than linked - its whole claim
+# is that an application can be assembled from modules it does not know, and a
+# link here would compile that claim away. It needs the modules on disk, hence
+# the dependencies; with -DWITH_DEMOS=OFF there is no demo and no test.
+if (TARGET IdeShellDemo)
+  add_qtc_test(tst_ideshelldemo
+      DEPENDS Qt5::Core
+      DEFINES
+          DEMO_IDESHELL_EXECUTABLE="$<TARGET_FILE:IdeShellDemo>"
+      SOURCES "${QTCANPOOL_TESTS_DIR}/ideshell/auto/tst_ideshelldemo.cpp"
+  )
+  add_dependencies(tst_ideshelldemo IdeShellDemo output notebook filetree)
+endif()
+
 # ------------------------------------------------------- demo screenshots --
 # Visual regression for the demos (roadmap task B4).
 #
