@@ -311,8 +311,11 @@
 | **K12** | 3.2 / 3.3 的拆分     | ✅ **3.2 = i18n + Toast + 属性编辑器内核 + 设置对话框 + `qcanpool` 删除**（已确认 2026-10-10）；工作区预设、状态栏进度留 3.3 | 版本节奏与范围；M6 的 DoD 拆成两批            |
 | **K13** | qmake 何去何从       | ✅ **4.0 一并删除**（已确认 2026-10-10）→ **已完成**：全树 `.pro`/`.pri` **归零**（原 88 个）。分四批删除——有 CMake 对应物的 47 个、只在 qmake 里的 3 个 demo（41 文件）、`examples/` CMake 化后的 30 个、`projects/staticlink`；其中 22 个示例由 A2 用 CMake 重建，目标名沿用原 `TARGET`。理由是它已由"冻结"变成**损坏**（`qxapp-lib.pri` 缺 8 个源文件，含 `QxAppShell` 本体，且 CI 从未构建过 qmake） | 构建方式收敛为 CMake 一种；K2 的"冻结"承诺到此结束 |
 | **K14** | 宿主命名 / 插件上下文 | 🔽 **已降级为"可延后"**（2026-10-10，B1/B5 落地后）：采纳「先引入薄宿主上下文」的做法，插件只面向 `QxPluginContext` 编程，宿主改名**不再波及任何插件**。候选名仍为保留 `QxAppShell` / `QxRibbonMainWindow` / `QxAppWindow` / `QxWorkbench`，**尚未定案** | 原名"阻塞 B1"已解除；改名仍要一次性替换 `QxAppShell` 的引用（含 demo 与测试），但不再是插件契约问题 |
-| **K15** | 插件加载时机         | 建议**启动时全量加载**（首版不做真正延迟加载）；K16 见 [`4.0-TASKS.md`](./design/4.0-TASKS.md) | 启动时间与依赖图的确定性 |
+| **K15** | 插件加载时机         | 建议**启动时全量加载**（首版不做真正延迟加载） | 启动时间与依赖图的确定性 |
+| **K16** | `src/modules` 的定位 | ✅ **只做样板与时兴能力的收容所**，正式、稳定的能力进 `src/libs` | 避免"两处都能放"的漂移 |
 | **K17** | 静态构建（WASM）下的插件 | ✅ **不支持运行时插件发现**（2026-10-10，D1 实测后定）：`QTC_STATIC_BUILD=ON` 时 `add_qtc_plugin()` 产出的是**没人导入的静态库**（要进应用只能由应用写 `Q_IMPORT_PLUGIN` 清单，与「宿主不认识模块」正面冲突），实测 wasm 产物里 `output` 是 `liboutput.a`、`IdeShellDemo.wasm` 里没有模块元数据串。静态构建里组合模块用**编译期** `registerStaticPlugin()`；WASM demo 演示框架本身，不演示插件 | WASM 在线 demo 不含插件场景；`IdeShellDemo` 在静态配置下不构建；判据与实测见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) D1 |
+| **K18** | 4.0 的分支模型       | ✅ **`master` 作主线**（2026-10-10 定）：4.0 全部提交进 `master`，`release-3.x` 转为 3.x 维护分支，**不再新建 `release-4.x`** | `pages.yml` 的 `deploy` 须放开到 `master`，否则文档站停更；细则见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K18 |
+| **K19** | 对象池的归属（`qxplugin` / `qxcore`） | ✅ **留在 `qxplugin`**（2026-10-11 定）：机制虽通用（只用 QtCore 的 `QObject`/`QPointer`/`QString`），但「每个应用无论如何都要用的地基」才是 `qxcore` 的承诺，而池只在两端**不能链接**时才是必需品；Qt Creator 的对应物（`ExtensionSystem::PluginManager::addObject()`）同样住在**插件框架层**而非 `src/libs/utils/` | 依赖图在两种落点下**完全相同**（`qxplugin` 本来就依赖 `qxcore`），故选的是归属而非构建；三条翻转条件与反方论据见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K19 |
 
 ---
 
