@@ -158,8 +158,18 @@ jobs:
             --output-file coverage.filtered.info --ignore-errors unused
           # Deliberately not a gate yet (decision K8): the report is published so
           # that a baseline exists, and a threshold can be argued about later
-          # with real numbers instead of guesses.
+          # with real numbers instead of guesses. That argument needs the number
+          # in front of whoever is having it, so the listing also goes into the
+          # step summary - an artifact is one download away, and a number nobody
+          # downloads is a number nobody compares between versions.
           lcov --list coverage.filtered.info
+          {
+            echo "## coverage - reported, not gated (K8)"
+            echo
+            echo '```'
+            lcov --list coverage.filtered.info
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload coverage report
         # Always: the report is information, not a gate (K8), so a failing test
@@ -245,6 +255,7 @@ jobs:
           FILES=""
           BASE=""
           CONTEXT=""
+          LINE_FILTER=""
           NOTHING="src/libs has no translation unit to analyse"
           if [ -n "${BASE_REF:-}" ]; then
             BASE=$(git merge-base "origin/${BASE_REF}" HEAD 2>/dev/null || true)
@@ -262,21 +273,39 @@ jobs:
             if printf '%s\n' "${CHANGED}" | grep -qE '\.h$'; then
               # A header change can reach every translation unit, so a scoped run
               # would report a fraction of what it changed. Fall back to the
-              # whole tree rather than quietly under-report.
+              # whole tree rather than quietly under-report - and note that the
+              # line filter below is deliberately *not* applied here: a finding
+              # caused by a header shows up on a line of some .cpp that the
+              # change never touched, and filtering those out would hide exactly
+              # the fallout the fallback exists to catch.
               SCOPE="whole tree (${CONTEXT} changes a header)"
               FILES=$(git ls-files src/libs | grep -E '\.cpp$' || true)
             else
               SCOPE="changed in ${CONTEXT}"
               FILES=$(printf '%s\n' "${CHANGED}" | grep -E '\.cpp$' || true)
+              # Report what the change *introduces*, not everything the files it
+              # touched were already guilty of: src/libs carries hundreds of
+              # bugprone/performance findings, so a per-file scope drowns the
+              # handful that matter. Filtering by line is what "introduced here"
+              # actually means. See scripts/tidy_line_filter.py.
+              LINE_FILTER=$(python3 scripts/tidy_line_filter.py "${BASE}" HEAD --path src/libs || true)
+              # Two ways for the scoped branch to end up with nothing to report,
+              # and they get different reasons: no translation unit changed at
+              # all, or one did but without a single new line under src/libs
+              # (clang-tidy reads an empty filter as "filter everything out", so
+              # that run would cost minutes to say nothing - the guard below
+              # lives on both conditions).
               if [ -z "${FILES}" ]; then
                 NOTHING="${CONTEXT} changed no translation unit in src/libs"
+              elif [ "${LINE_FILTER}" = "[]" ]; then
+                NOTHING="${CONTEXT} touched no line under src/libs"
               fi
             fi
           else
             FILES=$(git ls-files src/libs | grep -E '\.cpp$' || true)
           fi
 
-          if [ -z "${FILES}" ]; then
+          if [ -z "${FILES}" ] || [ "${LINE_FILTER}" = "[]" ]; then
             echo "Nothing to analyse: ${NOTHING}."
             {
               echo "## clang-tidy — report only (K8)"
@@ -291,20 +320,26 @@ jobs:
 
           # One worker per file, one log per file. clang-tidy writes a diagnostic
           # with several write() calls, so several workers sharing one stream
-          # interleave them into unreadable lines.
+          # interleave them into unreadable lines. The line filter (empty when
+          # the whole tree is in scope) arrives as the third argument.
           JOBS=$(nproc)
           WORK=$(mktemp -d)
           cat > "${WORK}/tidy-one" <<'SH'
           #!/bin/sh
-          clang-tidy -p build-tidy --quiet \
+          FILTER_OPT=""
+          if [ -n "$3" ]; then
+            FILTER_OPT="-line-filter=$3"
+          fi
+          # shellcheck disable=SC2086 # the empty case must vanish, not pass ""
+          clang-tidy -p build-tidy --quiet $FILTER_OPT \
             -checks='-*,bugprone-*,performance-*' "$1" > "$2" 2>&1 || true
           SH
           chmod +x "${WORK}/tidy-one"
 
           START=$(date +%s)
           while IFS= read -r f; do
-            printf '%s\0%s\0' "$f" "${WORK}/$(echo "$f" | tr '/' '_').log"
-          done < tidy-files.txt | xargs -0 -P "${JOBS}" -n 2 "${WORK}/tidy-one" || true
+            printf '%s\0%s\0%s\0' "$f" "${WORK}/$(echo "$f" | tr '/' '_').log" "${LINE_FILTER}"
+          done < tidy-files.txt | xargs -0 -P "${JOBS}" -n 3 "${WORK}/tidy-one" || true
           ELAPSED=$(( $(date +%s) - START ))
 
           cat "${WORK}"/*.log > clang-tidy.log
@@ -318,6 +353,10 @@ jobs:
             echo "## clang-tidy — report only (K8)"
             echo
             echo "- scope: ${SCOPE}"
+            if [ -n "${LINE_FILTER}" ]; then
+              echo "- findings are limited to the lines this change touched, so a"
+              echo "  clean run means \"introduced nothing new\", not \"no findings\""
+            fi
             echo "- files analysed: $(wc -l < tidy-files.txt)"
             echo "- findings: ${FINDINGS}"
             echo "- wall clock: ${ELAPSED}s across ${JOBS} parallel jobs"

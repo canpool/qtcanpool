@@ -69,6 +69,7 @@ __pycache__/
 # Coverage and static analysis output (CI uploads these as artifacts)
 coverage*.info
 clang-tidy.log
+tidy-files.txt
 
 # AI assistant workspace (local only)
 .workbuddy/
