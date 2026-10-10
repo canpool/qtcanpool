@@ -96,3 +96,43 @@ add_qtc_test(tst_qlineedit
     DEPENDS Qt5::Widgets
     SOURCES "${QTCANPOOL_TESTS_DIR}/helloworld/qlineedit/tst_qlineedit.cpp"
 )
+
+# ------------------------------------------------------- demo screenshots --
+# Visual regression for the demos (roadmap task B4).
+#
+# The demo renders itself offscreen through its own --screenshot switch, which
+# keeps the window driving out of the test, and the capture is compared with a
+# golden image. The golden is per platform (tests/demo/golden/<CMAKE_SYSTEM_NAME>/)
+# because a screenshot is the one artefact here that legitimately differs between
+# machines - same code, a different font rasteriser, different pixels - and the
+# comparison is opt-in (QTCANPOOL_VISUAL_BASELINE=1) because it is only
+# meaningful between the machine that produced the golden and the same machine
+# later; CI, with its own fonts, must never judge one.
+#
+# Registered with the label "visual" so it can be filtered out of a run.
+# NOTE: no ENVIRONMENT here - add_qtc_test() bakes the configure-time PATH
+# (MinGW runtime + Qt DLLs) into that property, and set_tests_properties()
+# would replace it, not extend it. Headlessness does not need help either:
+# the test preset and the CI jobs both export QT_QPA_PLATFORM=offscreen.
+if (TARGET RibbonDemo)
+  set(DEMO_SCREENSHOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/screenshots")
+  file(MAKE_DIRECTORY "${DEMO_SCREENSHOT_DIR}")
+  set(DEMO_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/ribbondemo.png")
+  set(DEMO_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/ribbondemo.png")
+
+  add_qtc_test(tst_demoscreenshot
+      DEPENDS Qt5::Gui
+      DEFINES
+          DEMO_RIBBON_EXECUTABLE="$<TARGET_FILE:RibbonDemo>"
+          DEMO_SCREENSHOT_PATH="${DEMO_SCREENSHOT}"
+          DEMO_GOLDEN_PATH="${DEMO_GOLDEN}"
+      SOURCES "${QTCANPOOL_TESTS_DIR}/demo/auto/tst_demoscreenshot.cpp"
+  )
+  # Running the test is what builds it, and the test launches the demo: without
+  # this dependency the demo may simply not exist yet.
+  add_dependencies(tst_demoscreenshot RibbonDemo)
+  set_tests_properties(tst_demoscreenshot PROPERTIES
+      LABELS visual
+      TIMEOUT 300
+  )
+endif()
