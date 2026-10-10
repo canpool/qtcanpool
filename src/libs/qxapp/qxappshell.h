@@ -130,7 +130,7 @@ public:
      * The adapter is created on first use and owned by the shell; hand the
      * returned pointer to QxPluginManager::setContext().
      */
-    QxPlugin::QxPluginContext *pluginContext() const;
+    ::QxPlugin::QxPluginContext *pluginContext() const;
 
     // Status bar ------------------------------------------------------------
     /*! Text of the permanent message line at the left of the status bar. */

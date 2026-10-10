@@ -48,17 +48,17 @@ public:
     /*! Fills the list from the manager and the switches from the settings. */
     void rebuild();
     /*! Points the detail pane and the diagnostics area at \a spec. */
-    void showSpec(QxPlugin::QxPluginSpec *spec);
+    void showSpec(::QxPlugin::QxPluginSpec *spec);
 
-    QxPlugin::QxPluginSpec *specById(const QString &id) const;
+    ::QxPlugin::QxPluginSpec *specById(const QString &id) const;
     /*! What the plugin \a id would do if the settings were applied as they are. */
-    bool savedState(QxPlugin::QxPluginSpec *spec) const;
+    bool savedState(::QxPlugin::QxPluginSpec *spec) const;
     bool isModified() const;
     void updateButtons();
     /*! Records a switch the user just flipped. */
     void noteSwitch(QTreeWidgetItem *item);
 
-    QPointer<QxPlugin::QxPluginManager> m_manager;
+    QPointer<::QxPlugin::QxPluginManager> m_manager;
     QPointer<QX_CORE_PREPEND_NAMESPACE(QxSettings)> m_settings;
 
     QTreeWidget *m_tree = Q_NULLPTR;
@@ -78,7 +78,7 @@ public:
     QLabel *m_diagnostics = Q_NULLPTR;
 
     /*! The specs as the list shows them, row for row. */
-    QList<QxPlugin::QxPluginSpec *> m_specs;
+    QList<::QxPlugin::QxPluginSpec *> m_specs;
     /*! The switch of every displayed plugin, by id. */
     QHash<QString, bool> m_switch;
     /*! What the settings held when the dialog was loaded. */

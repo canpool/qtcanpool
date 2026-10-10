@@ -87,7 +87,7 @@ public:
     mutable QxToastManager *m_toastManager = Q_NULLPTR;
     mutable QxWorkspaceManager *m_workspaceManager = Q_NULLPTR;
     /*! The QxPluginContext adapter, created lazily by QxAppShell::pluginContext(). */
-    mutable QxPlugin::QxPluginContext *m_context = Q_NULLPTR;
+    mutable ::QxPlugin::QxPluginContext *m_context = Q_NULLPTR;
     int m_currentIndex = -1;
     bool m_busy = false;
     bool m_autoSaveLayout = true;
@@ -113,7 +113,7 @@ QxAppShellPrivate::~QxAppShellPrivate()
  *
  * It is held by QxAppShellPrivate and surfaced through pluginContext().
  */
-class QxAppShellContext : public QxPlugin::QxPluginContext
+class QxAppShellContext : public ::QxPlugin::QxPluginContext
 {
 public:
     explicit QxAppShellContext(QxAppShell *shell)
@@ -136,7 +136,7 @@ public:
         return m_shell->currentPageId();
     }
 
-    QWidget *addDock(QxPlugin::QxPluginContext::DockArea area, const QString &id, const QString &title,
+    QWidget *addDock(::QxPlugin::QxPluginContext::DockArea area, const QString &id, const QString &title,
                      QWidget *widget) override
     {
         // The context area bits mirror Qx::DockWidgetArea, so the cast is exact.
@@ -168,7 +168,7 @@ public:
         m_shell->clearProgress();
     }
 
-    void showToast(const QString &text, QxPlugin::QxPluginContext::ToastLevel level, int timeoutMs) override
+    void showToast(const QString &text, ::QxPlugin::QxPluginContext::ToastLevel level, int timeoutMs) override
     {
         // The context levels mirror QxToast::Level in order, so the cast is exact.
         m_shell->showToast(text, static_cast<QxToast::Level>(level), timeoutMs);
@@ -319,7 +319,7 @@ QxAppShell::~QxAppShell()
     QX_FINI_PRIVATE();
 }
 
-QxPlugin::QxPluginContext *QxAppShell::pluginContext() const
+::QxPlugin::QxPluginContext *QxAppShell::pluginContext() const
 {
     Q_D(const QxAppShell);
     if (!d->m_context) {

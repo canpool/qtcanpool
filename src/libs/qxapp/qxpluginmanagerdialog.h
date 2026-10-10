@@ -72,12 +72,12 @@ public:
     /*! Stores the ids that must start; an empty list takes the key out again. */
     static void setEnabledPlugins(QX_CORE_PREPEND_NAMESPACE(QxSettings) * settings, const QStringList &ids);
 
-    explicit QxPluginManagerDialog(QxPlugin::QxPluginManager *manager,
+    explicit QxPluginManagerDialog(::QxPlugin::QxPluginManager *manager,
                                    QX_CORE_PREPEND_NAMESPACE(QxSettings) *settings = Q_NULLPTR,
                                    QWidget *parent = Q_NULLPTR);
     ~QxPluginManagerDialog() override;
 
-    QxPlugin::QxPluginManager *manager() const;
+    ::QxPlugin::QxPluginManager *manager() const;
 
     // The list --------------------------------------------------------------
     /*! Row of the plugin \a id, or -1 when the list does not hold it. */
