@@ -135,6 +135,36 @@ public:
     void setBusy(bool busy);
     bool isBusy() const;
 
+    /*!
+     * Range the progress runs in, 0 to 100 by default. The range is remembered
+     * and applied the next time a progress is shown, so changing it while the
+     * busy indicator is up does not turn that indicator into a bar at zero.
+     */
+    void setProgressRange(int minimum, int maximum);
+    int progressMinimum() const;
+    int progressMaximum() const;
+    /*!
+     * Shows how far the work has got, which also shows the indicator - setting a
+     * progress means wanting it seen. \a value is clamped to the range.
+     *
+     * @code
+     * shell.setStatusMessage(tr("Copying..."));
+     * shell.setProgressRange(0, files.count());
+     * for (...) { copy(); shell.setProgress(++done); }
+     * shell.clearProgress();
+     * @endcode
+     */
+    void setProgress(int value);
+    int progress() const;
+    /*! Hides the indicator and puts the progress back at the minimum. */
+    void clearProgress();
+    /*!
+     * Whether the indicator is up, in either of its two modes. The question is
+     * about the indicator, not about the window: a hidden window leaves the
+     * answer where the last call put it.
+     */
+    bool isProgressVisible() const;
+
     // Notifications ---------------------------------------------------------
     /*!
      * The stack of toasts that shows up over the shell, created on first use

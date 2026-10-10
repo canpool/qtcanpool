@@ -88,6 +88,8 @@ public:
     int m_currentIndex = -1;
     bool m_busy = false;
     bool m_autoSaveLayout = true;
+    int m_progressMinimum = 0;
+    int m_progressMaximum = 100;
 };
 
 QxAppShellPrivate::QxAppShellPrivate() = default;
@@ -418,6 +420,12 @@ void QxAppShell::setBusy(bool busy)
         return;
     }
     d->m_busy = busy;
+    if (busy) {
+        // A marquee: the bar has no percentage to show, and QProgressBar reads
+        // a range of its own minimum as "unknown".
+        d->m_progress->setRange(0, 0);
+        d->m_progress->setTextVisible(false);
+    }
     d->m_progress->setVisible(busy);
 }
 
@@ -425,6 +433,68 @@ bool QxAppShell::isBusy() const
 {
     Q_D(const QxAppShell);
     return d->m_busy;
+}
+
+void QxAppShell::setProgressRange(int minimum, int maximum)
+{
+    Q_D(QxAppShell);
+    if (maximum <= minimum) {
+        // A range of zero width is the busy indicator's own signal, not a range.
+        qWarning("QxAppShell: a progress range has to run to a maximum above %d", minimum);
+        return;
+    }
+    d->m_progressMinimum = minimum;
+    d->m_progressMaximum = maximum;
+    if (!d->m_busy) {
+        d->m_progress->setRange(minimum, maximum);
+    }
+}
+
+int QxAppShell::progressMinimum() const
+{
+    Q_D(const QxAppShell);
+    return d->m_progressMinimum;
+}
+
+int QxAppShell::progressMaximum() const
+{
+    Q_D(const QxAppShell);
+    return d->m_progressMaximum;
+}
+
+void QxAppShell::setProgress(int value)
+{
+    Q_D(QxAppShell);
+    // The indicator is shared with the busy marquee, so showing a progress is
+    // also saying the work is no longer of unknown length.
+    d->m_busy = false;
+    d->m_progress->setRange(d->m_progressMinimum, d->m_progressMaximum);
+    d->m_progress->setTextVisible(true);
+    // Clamped here rather than left to QProgressBar, which draws a clamped bar
+    // but keeps the value it was handed - so progress() would report a number
+    // nobody can see.
+    d->m_progress->setValue(qBound(d->m_progressMinimum, value, d->m_progressMaximum));
+    d->m_progress->setVisible(true);
+}
+
+int QxAppShell::progress() const
+{
+    Q_D(const QxAppShell);
+    return d->m_progress->value();
+}
+
+void QxAppShell::clearProgress()
+{
+    Q_D(QxAppShell);
+    d->m_busy = false;
+    d->m_progress->setValue(d->m_progressMinimum);
+    d->m_progress->setVisible(false);
+}
+
+bool QxAppShell::isProgressVisible() const
+{
+    Q_D(const QxAppShell);
+    return d->m_progress->isVisibleTo(d->m_progress->parentWidget());
 }
 
 QxToastManager *QxAppShell::toastManager() const

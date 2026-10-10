@@ -288,6 +288,8 @@ private slots:
     void removePage();
     void docks();
     void statusBar();
+    void progress();
+    void busyAndProgressShareOneIndicator();
     void persistence();
     void autoSaveOnClose();
 private:
@@ -528,6 +530,73 @@ void tst_QxAppShell::statusBar()
 
     // The message survives a busy round trip: they are different widgets.
     QCOMPARE(shell.statusMessage(), QStringLiteral("Loading..."));
+}
+
+void tst_QxAppShell::progress()
+{
+    QxAppShell shell;
+
+    QCOMPARE(shell.progressMinimum(), 0);
+    QCOMPARE(shell.progressMaximum(), 100);
+    QCOMPARE(shell.isProgressVisible(), false);
+
+    // Setting a progress means wanting it seen, so there is no separate call
+    // for that.
+    shell.setProgress(40);
+    QCOMPARE(shell.progress(), 40);
+    QCOMPARE(shell.isProgressVisible(), true);
+
+    // Out of range is clamped, not refused: a caller counting files should not
+    // have to guard the last one.
+    shell.setProgress(1000);
+    QCOMPARE(shell.progress(), 100);
+    shell.setProgress(-5);
+    QCOMPARE(shell.progress(), 0);
+
+    shell.setProgressRange(0, 1000);
+    QCOMPARE(shell.progressMinimum(), 0);
+    QCOMPARE(shell.progressMaximum(), 1000);
+    shell.setProgress(250);
+    QCOMPARE(shell.progress(), 250);
+
+    // A range with no room in it is the busy indicator's own signal.
+    shell.setProgressRange(0, 0);
+    QCOMPARE(shell.progressMaximum(), 1000);
+
+    shell.clearProgress();
+    QCOMPARE(shell.isProgressVisible(), false);
+    QCOMPARE(shell.progress(), 0);
+}
+
+void tst_QxAppShell::busyAndProgressShareOneIndicator()
+{
+    QxAppShell shell;
+
+    shell.setBusy(true);
+    QCOMPARE(shell.isBusy(), true);
+    QCOMPARE(shell.isProgressVisible(), true);
+
+    // A percentage says more than "working", so it takes the indicator over.
+    shell.setProgress(30);
+    QCOMPARE(shell.isBusy(), false);
+    QCOMPARE(shell.progress(), 30);
+    QCOMPARE(shell.isProgressVisible(), true);
+
+    // Going busy takes it back; the last call is the one worth looking at.
+    shell.setBusy(true);
+    QCOMPARE(shell.isBusy(), true);
+    QCOMPARE(shell.isProgressVisible(), true);
+    shell.setBusy(false);
+    QCOMPARE(shell.isBusy(), false);
+    QCOMPARE(shell.isProgressVisible(), false);
+
+    // The message line is its own widget: "what" and "how far" are not the same
+    // answer, and both are on screen at once.
+    shell.setStatusMessage(QStringLiteral("Copying..."));
+    shell.setProgress(10);
+    QCOMPARE(shell.statusMessage(), QStringLiteral("Copying..."));
+    shell.clearProgress();
+    QCOMPARE(shell.statusMessage(), QStringLiteral("Copying..."));
 }
 
 void tst_QxAppShell::persistence()
