@@ -83,3 +83,100 @@ jobs:
             'tests/**/*.h' 'tests/**/*.cpp' \
             'projects/**/*.h' 'projects/**/*.cpp')
           clang-format --style=file --dry-run --Werror $FILES
+
+  quality:
+    # Coverage, sanitizers and clang-tidy. Each of them needs a full configure
+    # and a compiler, so they share one job and one Qt install rather than
+    # paying for three separate ones. Linux-only on purpose: the tooling is
+    # most uniform there, and these checks are about the code, not the platform.
+    name: quality / ${{ matrix.os }} / Qt ${{ matrix.qt }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, qt: '6.8.1' }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt }}
+          cache: true
+
+      - name: Install analysis tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lcov clang-tidy ninja-build
+
+      - name: Coverage
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          cmake -S . -B build-coverage -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DWITH_COVERAGE=ON \
+            -DWITH_DEMOS=OFF \
+            -DWITH_TESTS=ON
+          cmake --build build-coverage --parallel
+          ctest --test-dir build-coverage --output-on-failure --timeout 120
+          lcov --capture --directory build-coverage --output-file coverage.info \
+            --ignore-errors mismatch,gcov,source
+          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/Qt/*' \
+            --output-file coverage.filtered.info --ignore-errors unused
+          # Deliberately not a gate yet (decision K8): the report is published so
+          # that a baseline exists, and a threshold can be argued about later
+          # with real numbers instead of guesses.
+          lcov --list coverage.filtered.info
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.filtered.info
+
+      - name: Sanitizers (ASan + UBSan)
+        env:
+          QT_QPA_PLATFORM: offscreen
+          # Qt keeps a few deliberate allocations alive until exit, which leak
+          # detection reports as noise. The memory-error checks - the ones that
+          # catch real bugs - stay on.
+          ASAN_OPTIONS: detect_leaks=0
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: |
+          cmake -S . -B build-sanitize -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DWITH_SANITIZE=ON \
+            -DSANITIZE_FLAGS=address,undefined \
+            -DWITH_DEMOS=OFF \
+            -DWITH_TESTS=ON
+          cmake --build build-sanitize --parallel
+          ctest --test-dir build-sanitize --output-on-failure --timeout 300
+
+      - name: clang-tidy
+        # Reporting only for now. The tree has never been analysed, so the first
+        # run is guaranteed to find things; gating on it before they are triaged
+        # would just train everyone to ignore a red job. The checks are limited
+        # to the AST-matcher families, which stay fast enough to run on the
+        # whole tree - clang-analyzer can join once the noise is down.
+        continue-on-error: true
+        run: |
+          cmake -S . -B build-tidy -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DWITH_DEMOS=OFF \
+            -DWITH_TESTS=OFF
+          clang-tidy -p build-tidy --quiet \
+            -checks='-*,bugprone-*,performance-*' \
+            $(git ls-files 'src/libs/**/*.cpp') \
+            2>&1 | tee clang-tidy.log
+          echo "===== findings ====="
+          grep -cE 'warning:|error:' clang-tidy.log || echo 0
+
+      - name: Upload clang-tidy log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clang-tidy-log
+          path: clang-tidy.log
