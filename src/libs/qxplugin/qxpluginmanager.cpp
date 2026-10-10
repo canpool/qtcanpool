@@ -449,7 +449,8 @@ void QxPluginManager::loadPlugins()
         emit pluginInitialized(s);
     }
 
-    // cross-plugin wiring, in the same order everyone was initialized in
+    // let initialized plugins finish setup now the whole set is up, in the order
+    // they were initialized in (they cannot reach each other - the host wires)
     for (QxPluginSpec *s : std::as_const(d->orderedSpecs)) {
         if (s->state() == QxPluginState::Initialized && s->plugin())
             s->plugin()->extensionsInitialized();

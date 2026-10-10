@@ -20,11 +20,15 @@ class QxPluginContext;
  * Q_PLUGIN_METADATA(IID QX_PLUGIN_IID FILE "<name>.json") and is loaded by
  * QxPluginManager. The host calls initialize() once every required dependency
  * is up, hands it a QxPluginContext, and expects false (with a reason) when the
- * plugin cannot start; extensionsInitialized() is the place for cross-plugin
- * wiring once everyone is up; shutdown() runs in reverse when the host goes down.
+ * plugin cannot start; extensionsInitialized() runs once the whole set is up;
+ * shutdown() runs in reverse when the host goes down.
  *
- * Plugins program against QxPluginContext, never against the window class, so
- * renaming the host - a K14 concern - never reaches a single plugin.
+ * QxPluginContext is a plugin's only handle: host capabilities are reached
+ * through it and nothing else. A plugin has no handle to the manager or to its
+ * peers - wiring plugins together is the host's job, because the host is what
+ * owns the manager. Plugins program against QxPluginContext, never against the
+ * window class, so renaming the host - a K14 concern - never reaches a single
+ * plugin.
  *
  * @code
  * class MyPlugin : public QxPlugin
@@ -53,7 +57,13 @@ public:
      */
     virtual bool initialize(QxPluginContext *context, QString *errorString) = 0;
 
-    /*! Called once every plugin is initialized; wire to peers here. Empty by default. */
+    /*!
+     * Called once every plugin is initialized, in dependency order: the place
+     * to finish setup that had to wait for the whole set. The plugin still has
+     * no handle to its peers or to the manager, so it cannot wire itself to
+     * anything here - cross-plugin wiring belongs to the host, which owns the
+     * manager. Empty by default.
+     */
     virtual void extensionsInitialized();
 
     /*! Called in reverse initialization order on shutdown. Must not fail. */
