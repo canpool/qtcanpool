@@ -227,6 +227,26 @@ target_link_libraries(myapp PRIVATE QtCanpool::qxapp)
 此外还提供 [vcpkg / Conan 骨架](https://github.com/canpool/qtcanpool/tree/release-3.x/ports)
 （未经 CI 验证，供社区贡献）。
 
+## 新建工程
+
+生成一个新工程用 `scripts/new-project`，它会产出一个自包含的 CMake 工程
+（`QxAppShell` 窗口 + 一个页面 + 图标资源 + `.gitignore`）：
+
+```bash
+python scripts/new-project myapp --build \
+  --sdk <QtCanpool 安装目录> --qt <Qt 安装目录>
+```
+
+不要 `--build` 时只生成，并打印出随后要执行的配置/编译命令（与 `--build` 实际执行的是同一组命令）。
+路径也可以预先用环境变量给出：`QTCANPOOL_SDK`、`QTCANPOOL_QT_PREFIX`；Windows 上 CMake 默认选择
+Visual Studio 生成器，若未安装 MSVC 需用 `-G Ninja`（或 `-G "MinGW Makefiles"`）显式指定生成器。
+
+生成的工程只依赖**已安装的** SDK：`find_package(QtCanpool REQUIRED)` 加一条
+`QtCanpool::qxapp` 链接，不引用本仓库源码。
+
+不装 SDK 而想先看看写法，读 [`projects/template`](https://github.com/canpool/qtcanpool/tree/release-3.x/projects/template)
+（CMake 版；同目录的 `.pro`/`.pri`/`src/` 是 qmake 时代的历史参考，保留但不再演进）。
+
 ## 关于 qmake
 
 根目录仍保留 `qtcanpool.pro` 等 qmake 工程文件，但**自 3.0 起已冻结为只读**：

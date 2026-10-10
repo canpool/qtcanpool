@@ -132,7 +132,7 @@
 #### 方向 C：工程模板与脚手架（P1）
 
 - **C1 `projects/template` CMake 化**：给出 3.x 的最小应用模板（`find_package(QtCanpool)` + `QxAppShell` + `main.cpp`），保留 qmake 版本作为 legacy 参考。
-- **C2 脚手架脚本**：`scripts/new-project.sh`（或 `.py`）一键生成"应用骨架"，输入项目名即产出可编译工程。
+- **C2 脚手架脚本**：`scripts/new-project`（Python 3）一键生成"应用骨架"，输入项目名即产出可编译工程。
 - **C3 CMake Presets**：`CMakePresets.json` 固化本仓的常用配置（Qt6 MinGW/msvc、Qt5.15、WASM、覆盖率、消毒器），降低本机与 CI 的配置漂移。
 
 ### 阶段二（3.2）：应用框架可用化
@@ -187,9 +187,12 @@
 >   - ✅ **C3** `CMakePresets.json`（6 个配置预设，环境变量可覆盖默认路径）
 >   - ✅ **C1** `projects/template` CMake 化（`find_package(QtCanpool)` + `QxAppShell` 最小应用；
 >     已在本地「安装 SDK → 配置 → 编译 → 运行」全链路验证）
->   - ⏳ 剩余：C2（脚手架）、A1/A2/A4（legacy 存废）、B4（可选）
-> - ⚠️ **B2 已产生第一笔实际收益**：`quality` 作业首次上线即被 UBSan 抓到一处真实 UB
->   （`~DockContainer` 从基类析构回调派生类，`dockcontainer.cpp:950`），已修。详见
+>   - ✅ **C2** `scripts/new-project` 脚手架（一条命令生成 + 编译可运行的 `QxAppShell` 应用；
+>     不新增第二套模板工程，K9）
+>   - ⏳ 剩余：A1/A2/A4（legacy 存废）、B4（可选）
+> - ⚠️ **B2 已产生第一笔实际收益**：`quality` 作业首次上线即被 UBSan 逐条抓出**两处既存缺陷**
+>   （`~DockContainer` 从基类析构回调派生类；`DockSideBar::insertDockWidget` 对空焦点控制器
+>   发起成员调用，默认配置下即可命中），均已修复。详见
 >   [`design/3.1-TASKS.md`](./design/3.1-TASKS.md) 执行记录。
 > - ⏸ M6 / M7 待 M5 完成后再细化
 
@@ -224,13 +227,13 @@
 
 ### M5 · 3.1「偿还欠账」
 
-1. `src/libs` 中**物理上只有一套 Ribbon 实现**（legacy ribbon 已移除）——3.0 DoD #1 真正达成；
-2. `fancy*` 等遗留头**全部**按存废表处置完毕（迁移或下线），无"标了 deprecated 却永不处理"的悬案；
-3. CI 产出**覆盖率报告**与 **clang-tidy 结果**，并有至少一条 **ASan/UBSan** 构建腿；
-4. `qxwindow` 有自动化测试且纳入 CI；
-5. `scripts/new-project`（或等价脚手架）能一条命令生成并编译出可运行的 `QxAppShell` 应用；
-6. `CMakePresets.json` 覆盖本仓常用配置（Qt6 MinGW/MSVC、Qt5.15、WASM、覆盖率）；
-7. 文档站点同步更新（迁移表、构建指南、新增的质量门禁说明）。
+1. ✅ `src/libs` 中**物理上只有一套 Ribbon 实现**（legacy ribbon 已移除）——3.0 DoD #1 真正达成；
+2. ⏳ `fancy*` 等遗留头**全部**按存废表处置完毕（迁移或下线），无"标了 deprecated 却永不处理"的悬案；
+3. ✅ CI 产出**覆盖率报告**与 **clang-tidy 结果**，并有至少一条 **ASan/UBSan** 构建腿（首跑即抓到一处真实 UB）；
+4. ✅ `qxwindow` 有自动化测试且纳入 CI；
+5. ✅ `scripts/new-project` 能一条命令生成并编译出可运行的 `QxAppShell` 应用（CI 同腿实测）；
+6. ✅ `CMakePresets.json` 覆盖本仓常用配置（Qt6、Qt5.15、WASM、覆盖率、消毒器）；
+7. ⏳ 文档站点同步更新（迁移表、构建指南、新增的质量门禁说明）——构建指南已更新，迁移表待 A1/A2 定案后收口。
 
 ### M6 · 3.2「能力增量」
 
