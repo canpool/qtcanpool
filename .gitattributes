@@ -1,1 +1,14 @@
+# Line endings are normalized to LF: in the repository, in every working tree,
+# on every platform. The project used to carry a CRLF/LF mix inherited from its
+# Windows + qmake years; 4.0 unified it (see doc/ROADMAP-3.x.md, decision K20).
+* text=auto eol=lf
+
+# Shell scripts run on POSIX hosts, including CI.
 *.sh text eol=lf
+
+# Binary assets. Declared explicitly so they are never inspected as text.
+*.gif binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.png binary
