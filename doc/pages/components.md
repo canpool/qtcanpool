@@ -116,6 +116,42 @@ themes->setTheme(DarkOfficePlus);
 | @ref QxApp::QxSplashScreen | 带进度与消息的启动屏 |
 | `QxToolButton` / `QxExtensionButton` / `QxMenuButton` / `QxMenuAccessButton` | 工具按钮与菜单按钮（3.1 自 `qcanpool` 迁入） |
 | `QxTabBar` / `QxTabWidget` / `QxNavBar` | 轻量 Tab 与导航（3.1 自 `qcanpool` 迁入） |
+| @ref QxApp::QxToast | 应用内提示条：带级别、自动消失、悬停暂停（3.2） |
+| @ref QxApp::QxToastManager | 同一宿主窗口的 toast 堆叠、超时与淘汰（3.2） |
+
+### Toast 应用内通知（3.2）
+
+`QxToast` 是贴在宿主窗口上的一条短提示，`QxToastManager` 管它的堆叠与淘汰；
+`QxAppShell` 自带一个 manager，`showToast()` 开箱可用。
+
+```cpp
+#include "qxapp/qxtoast.h"
+#include "qxapp/qxtoastmanager.h"
+
+using namespace QxApp;
+
+// 对外壳说一句就够了
+shell.showToast(tr("文档已保存"), QxToast::Success);
+
+// 或者自己管一个栈：位置、同屏上限、超时
+QxToastManager *toasts = new QxToastManager(&shell);
+toasts->setPosition(QxToastManager::BottomRight);
+toasts->setMaxVisible(3);
+toasts->show(tr("设备没有回应"), QxToast::Error, 10000);
+```
+
+要点：
+
+- **不依赖窗口管理器**：toast 是宿主窗口的**子控件**，不是 `Qt::ToolTip` 顶层窗口——
+  因此不置顶、不抢焦点，且在 offscreen 与 WebAssembly 下行为一致。
+- **级别 → 配色走调色板**：底板取 `QPalette::ToolTipBase`、文字取 `QPalette::ToolTipText`、
+  强调色取 `QPalette::Highlight` 的饱和度与亮度而只挪动色相（绿/琥珀/红），
+  不写死任何颜色，随主题联动。
+- **超时与悬停**：每条一个时钟；悬停时暂停计时，移开后接着走剩下的时间，
+  而不是重新计一遍。
+- **同屏上限**：超过 `maxVisible()` 时最旧的一条被淘汰，一批消息留下最后几条。
+- **队列与动画分离**：`show()` 立即入栈、每次淘汰立即出栈，动画在记账之后跑，
+  所以 `count()` / `toasts()` 报的就是屏幕上真实的状态。
 
 ## qcanpool — legacy 兼容层（3.2 删除）
 
