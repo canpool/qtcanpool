@@ -45,9 +45,9 @@ class QX_PLUGIN_EXPORT QxPluginContext
 {
 public:
     /*!
-     * \a pool is the host's object pool - QxAppShell hands over its own - and
-     * stays the host's property. A host that offers no pool passes nothing, and
-     * every pool call below then does nothing.
+     * \a pool is the host's object pool and stays the host's property. A host
+     * that offers no pool passes nothing, and every pool call below then does
+     * nothing.
      */
     explicit QxPluginContext(QxObjectPool *pool = Q_NULLPTR);
     virtual ~QxPluginContext();

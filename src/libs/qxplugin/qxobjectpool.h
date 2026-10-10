@@ -43,8 +43,8 @@ QX_PLUGIN_BEGIN_NAMESPACE
  * cannot leave a dangling pointer behind, and never has to remember to clean up.
  * Deleting the object is still the business of whoever created it.
  *
- * A host reaches this through QxPluginContext; QxAppShell hands over its own
- * pool, and it is the context - not the manager - that a plugin sees.
+ * A host reaches this through QxPluginContext, which hands over the host's own
+ * pool; it is the context - not the manager - that a plugin sees.
  */
 class QX_PLUGIN_EXPORT QxObjectPool : public QObject
 {
