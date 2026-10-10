@@ -124,8 +124,8 @@ public:
     // Plugin context --------------------------------------------------------
     /*!
      * Returns the QxPluginContext adapter. Plugins reach the host only through
-     * this interface and never the QxAppShell class, so a K14 rename of this
-     * class changes nothing in any plugin.
+     * this interface and never the QxAppShell class, so the host's name never
+     * appears in a plugin.
      *
      * The adapter is created on first use and owned by the shell; hand the
      * returned pointer to QxPluginManager::setContext().
