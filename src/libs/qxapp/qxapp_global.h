@@ -76,8 +76,8 @@
 #endif   // QX_APP_LIBRARY_STATIC
 
 #define QX_APP_VERSION_MAJOR 0
-#define QX_APP_VERSION_MINOR 0
-#define QX_APP_VERSION_PATCH 1
+#define QX_APP_VERSION_MINOR 1
+#define QX_APP_VERSION_PATCH 0
 /*
    QX_APP_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_APP_VERSION >= QT_VERSION_CHECK(0, 5, 3))
