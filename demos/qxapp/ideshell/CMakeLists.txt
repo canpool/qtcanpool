@@ -25,6 +25,15 @@ if (QTC_STATIC_BUILD)
 endif()
 
 add_qtc_executable(IdeShellDemo
+  # add_qtc_executable defaults to IDE_LIBEXEC_PATH, which is right for a helper
+  # tool and wrong for an application: RELATIVE_PLUGIN_PATH - the name that tells
+  # the shell where its plugins are - is measured from IDE_BIN_PATH. Leave this
+  # line out and the shell looks for its plugins one directory level short of
+  # where they are, finds nothing, and still starts (which is the point of the
+  # failure isolation, and why only a test catches it). Fix the destination, not
+  # the path: on Linux IDE_LIBEXEC_PATH is libexec/qtproject against bin, and on
+  # macOS it is <name>.app/Contents/Resources/libexec against <name>.app/Contents/MacOS.
+  DESTINATION "${IDE_BIN_PATH}"
   DEPENDS
     qxapp
     qxribbon

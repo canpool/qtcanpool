@@ -241,8 +241,9 @@ dialog.exec();
 ## 在仓库外构建插件
 
 一个只依赖 `QtCanpool::qxplugin` 的外部 CMake 工程即可产出插件：`add_qtc_plugin()` 随安装的
-`QtCanpool` 包一起导出，用法与仓库内的模块完全一致。外部工程的**骨架**（`find_package(QtCanpool)`
-+ 目标定义，不需要知道构建树）可参考 `projects/consume` 与 `projects/template`——那两个是**应用**，
+`QtCanpool` 包一起导出，用法与仓库内的模块完全一致。外部工程的**骨架**见仓库里的
+[`projects/plugin`](https://github.com/canpool/qtcanpool/tree/master/projects/plugin)——它同时给出
+插件与一个最小宿主，CI 会真跑一遍；`projects/consume` 与 `projects/template` 则是**应用**骨架，
 把 `add_executable` 换成下面的 `add_qtc_plugin` 即得到插件工程：
 
 ```cmake
@@ -259,6 +260,12 @@ add_qtc_plugin(myplugin
 
 把生成的库放进宿主扫描的插件目录（`RELATIVE_PLUGIN_PATH` 指向的位置）即可被 @ref QxPlugin::QxPluginManager
 认出，**不写一句注册代码**。
+
+> ⚠️ `RELATIVE_PLUGIN_PATH` 是**相对 `IDE_BIN_PATH`**（Linux 上就是 `bin/`）算的，所以它只对
+> **放在那里的可执行文件**成立。而 `add_qtc_executable()` 默认落到 `IDE_LIBEXEC_PATH`
+> （Linux 是 `libexec/qtproject/`）——两者不是一回事，用默认值算插件目录会**差一层**，
+> 且宿主照样启动、只是插件全都没被发现。真要按 `RELATIVE_PLUGIN_PATH` 找插件，就给宿主显式
+> 写 `DESTINATION "${IDE_BIN_PATH}"`（`IdeShellDemo` 就是这么做的）。
 
 ## 参考
 

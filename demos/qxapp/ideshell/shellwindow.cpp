@@ -167,6 +167,10 @@ QString ShellWindow::pluginDirectory()
     // app bundle's MacOS/ and PlugIns/ on macOS. It is a compile definition on
     // every target for exactly this reason - guessing the layout at run time
     // would be guessing wrong somewhere.
+    //
+    // It is relative to IDE_BIN_PATH, so it is only the right answer for an
+    // executable that lives there; that is what the DESTINATION in this demo's
+    // CMakeLists.txt holds up.
     return QDir::cleanPath(QCoreApplication::applicationDirPath() + QLatin1Char('/') +
                            QString::fromLatin1(RELATIVE_PLUGIN_PATH));
 }
