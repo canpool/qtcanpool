@@ -72,7 +72,7 @@
 #endif   // QX_PLUGIN_LIBRARY_STATIC
 
 #define QX_PLUGIN_VERSION_MAJOR 0
-#define QX_PLUGIN_VERSION_MINOR 1
+#define QX_PLUGIN_VERSION_MINOR 2
 #define QX_PLUGIN_VERSION_PATCH 0
 /*
    QX_PLUGIN_VERSION is (major << 16) + (minor << 8) + patch.

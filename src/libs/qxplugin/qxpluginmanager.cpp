@@ -52,6 +52,7 @@ public:
     };
     QStringList pluginPaths;
     QSet<QString> disabledPlugins;
+    QSet<QString> enabledPlugins;
     int requiredInterfaceVersion = 1;
     QVersionNumber hostVersion;
     bool hostVersionSet = false;
@@ -167,10 +168,13 @@ void QxPluginManagerPrivate::resolve()
         if (s->state() == QxPluginState::Disabled)
             continue;
         if (disabledPlugins.contains(s->id())) {
-            s->setState(QxPluginState::Disabled);   // skip, no error
+            s->setState(QxPluginState::Disabled);   // forced off, no error
             continue;
         }
-        if (!s->isEnabledByDefault()) {
+        // A plugin that is off by default only stays off until someone asks for
+        // it by name. The forced-off check above still wins, so an id in both
+        // lists stays off.
+        if (!s->isEnabledByDefault() && !enabledPlugins.contains(s->id())) {
             s->setState(QxPluginState::Disabled);   // skip, no error
             continue;
         }
@@ -332,6 +336,18 @@ QStringList QxPluginManager::disabledPlugins() const
     return QStringList(d->disabledPlugins.begin(), d->disabledPlugins.end());
 }
 
+void QxPluginManager::setEnabledPlugins(const QStringList &ids)
+{
+    Q_D(QxPluginManager);
+    d->enabledPlugins = QSet<QString>(ids.begin(), ids.end());
+}
+
+QStringList QxPluginManager::enabledPlugins() const
+{
+    Q_D(const QxPluginManager);
+    return QStringList(d->enabledPlugins.begin(), d->enabledPlugins.end());
+}
+
 void QxPluginManager::setRequiredInterfaceVersion(int version)
 {
     Q_D(QxPluginManager);
@@ -486,6 +502,18 @@ QList<QxPluginSpec *> QxPluginManager::specs() const
 {
     Q_D(const QxPluginManager);
     return d->orderedSpecs;
+}
+
+QList<QxPluginSpec *> QxPluginManager::allSpecs() const
+{
+    Q_D(const QxPluginManager);
+    QList<QxPluginSpec *> specs;
+    specs.reserve(d->staticEntries.count() + d->dynamicEntries.count());
+    for (QxPluginManagerPrivate::Entry *e : d->staticEntries)
+        specs.append(e->spec);
+    for (QxPluginManagerPrivate::Entry *e : d->dynamicEntries)
+        specs.append(e->spec);
+    return specs;
 }
 
 QxPluginSpec *QxPluginManager::spec(const QString &id) const

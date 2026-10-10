@@ -46,8 +46,17 @@ public:
     void setPluginPaths(const QStringList &paths);
     QStringList pluginPaths() const;
 
+    /*! Ids that never start, whatever their metadata says. Wins over the enable list. */
     void setDisabledPlugins(const QStringList &ids);
     QStringList disabledPlugins() const;
+
+    /*!
+     * Ids to start even though their metadata says EnabledByDefault is false.
+     * Writing both lists is a contradiction the caller is expected to avoid; when
+     * it happens the disabled list wins and the plugin stays off.
+     */
+    void setEnabledPlugins(const QStringList &ids);
+    QStringList enabledPlugins() const;
 
     /*! Minimum interface version a plugin must report to be accepted (default 1). */
     void setRequiredInterfaceVersion(int version);
@@ -72,6 +81,14 @@ public:
 
     /*! All specs in dependency order (the order loadPlugins() would load them). */
     QList<QxPluginSpec *> specs() const;
+    /*!
+     * Every plugin the manager knows about, in discovery order (the static ones
+     * first, then the dynamic ones as they were found) - including the ones
+     * specs() leaves out: switched off, skipped by default, unresolved or failed.
+     * This is the list a manager UI shows, because a plugin that did not start is
+     * exactly the one someone opens that UI to look at.
+     */
+    QList<QxPluginSpec *> allSpecs() const;
     QxPluginSpec *spec(const QString &id) const;
     QxPlugin *plugin(const QString &id) const;
 

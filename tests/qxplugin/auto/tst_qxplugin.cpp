@@ -89,6 +89,7 @@ private slots:
     void circularDependency();
     void versionMismatch();
     void disabledByDefaultIsSkipped();
+    void enabledListOverridesDefaultOff();
     void initializeFailureCascadesAndIsolates();
     void interfaceTooOldIsRejected();
     void hostContextAdapter();
@@ -238,6 +239,61 @@ void tst_QxPlugin::disabledByDefaultIsSkipped()
     QVERIFY(a->error().isEmpty());
     QVERIFY(mgr.plugin(QStringLiteral("a")) == Q_NULLPTR);
     QCOMPARE(mgr.specs().size(), 0);
+}
+
+void tst_QxPlugin::enabledListOverridesDefaultOff()
+{
+    const auto registerOptIn = [](QxPluginManager &mgr) {
+        mgr.registerStaticPlugin(QStringLiteral("opt"),
+                                 metaData(QStringLiteral("opt"), QStringLiteral("1.0.0"), {}, false), []() {
+                                     return new FakePlugin;
+                                 });
+    };
+
+    // Off by default and nobody asked for it: skipped, and skipping is not a failure.
+    {
+        QxPluginManager mgr;
+        registerOptIn(mgr);
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("opt"))->state(), QxPluginState::Disabled);
+    }
+
+    // Named in the enable list: the metadata default is overridden and it starts.
+    {
+        QxPluginManager mgr;
+        mgr.setEnabledPlugins({QStringLiteral("opt")});
+        QCOMPARE(mgr.enabledPlugins(), QStringList({QStringLiteral("opt")}));
+        registerOptIn(mgr);
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("opt"))->state(), QxPluginState::Initialized);
+        QVERIFY(mgr.plugin(QStringLiteral("opt")) != Q_NULLPTR);
+    }
+
+    // In both lists: forced off wins, so the plugin stays off.
+    {
+        QxPluginManager mgr;
+        mgr.setEnabledPlugins({QStringLiteral("opt")});
+        mgr.setDisabledPlugins({QStringLiteral("opt")});
+        registerOptIn(mgr);
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("opt"))->state(), QxPluginState::Disabled);
+    }
+
+    // An enable list entry for an ordinary plugin changes nothing: it starts anyway.
+    {
+        QxPluginManager mgr;
+        mgr.setEnabledPlugins({QStringLiteral("plain")});
+        mgr.registerStaticPlugin(QStringLiteral("plain"), metaData(QStringLiteral("plain"), QStringLiteral("1.0.0")),
+                                 []() {
+                                     return new FakePlugin;
+                                 });
+        mgr.loadPlugins();
+        QVERIFY(!mgr.hasError());
+        QCOMPARE(mgr.spec(QStringLiteral("plain"))->state(), QxPluginState::Initialized);
+    }
 }
 
 void tst_QxPlugin::initializeFailureCascadesAndIsolates()
