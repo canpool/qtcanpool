@@ -37,7 +37,8 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | `qxwindow` | @ref QxWindow | 自定义窗口：无边框窗口、系统按钮代理、原生窗口上下文 | Qt Gui |
 | `qxribbon` | @ref QxRibbon | Ribbon 风格界面：菜单栏 / 页 / 分组 / 快捷工具栏 | `qxwindow`、Qt Widgets |
 | `qxdock` | @ref QxDock | 可停靠窗口：布局管理、标签化面板、浮动容器 | Qt Widgets |
-| `qxapp` | @ref QxApp | 应用框架：`RibbonAppWindow`、`QxAppShell`、`QxNavigationBar`、`QxSplashScreen`、应用内通知（`QxToast`）、设置界面（`QxPropertyEditor` / `QxSettingsDialog`） | `qxribbon`、`qxdock`、`qxtheme`、`qxcore` |
+| `qxplugin` | @ref QxPlugin | 插件体系：插件契约与元数据、加载顺序与失败隔离、宿主上下文（`QxPluginContext`）、对象池（`QxObjectPool`） | `qxcore`、Qt Widgets |
+| `qxapp` | @ref QxApp | 应用框架：`RibbonAppWindow`、`QxAppShell`、`QxNavigationBar`、`QxSplashScreen`、应用内通知（`QxToast`）、设置界面（`QxPropertyEditor` / `QxSettingsDialog`）、插件管理器界面（`QxPluginManagerDialog`） | `qxribbon`、`qxdock`、`qxtheme`、`qxcore`、`qxplugin` |
 | `qtcompat` | — | Qt 5 / Qt 6 跨版本兼容辅助头（header-only） | Qt Core |
 
 > **注意**：`qcanpool` 已于 **3.2 删除**。它在 3.1 已被清空（legacy Ribbon 系列物理移除、

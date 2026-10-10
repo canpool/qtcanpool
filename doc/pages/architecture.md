@@ -10,14 +10,17 @@
 qxapp      应用框架
            RibbonAppWindow / QxAppShell / QxNavigationBar / QxSplashScreen
            QxToast / QxToastManager / QxPropertyEditor / QxSettingsDialog
+           依赖 qxribbon · qxdock · qxtheme · qxcore · qxplugin（qxwindow 为私有依赖）
    │
-   ├── qxribbon   Ribbon 界面（页 / 分组 / 快捷工具栏）──► qxwindow
-   ├── qxdock     可停靠窗口（布局 / 标签化 / 浮动容器）
-   ├── qxtheme    主题引擎（调色板 + 样式表）      ──► qxcore
-   └── qxcore     基础设施（配置 / 日志 / 语言）    ──► 仅 Qt Core
+   ├── qxplugin  插件体系（契约 / 加载 / 依赖 / 隔离 / 对象池）──► qxcore
+   ├── qxribbon  Ribbon 界面（页 / 分组 / 快捷工具栏）         ──► qxwindow
+   ├── qxdock    可停靠窗口（布局 / 标签化 / 浮动容器）         ──► 仅 Qt
+   ├── qxwindow  单窗口 / 无边框窗口基座                      ──► 仅 Qt
+   ├── qxtheme   主题引擎（调色板 + 样式表）                   ──► qxcore
+   └── qxcore    基础设施（配置 / 日志 / 语言）                ──► 仅 Qt Core
 ```
 
-三点值得留意：
+四点值得留意：
 
 - `qxcore` 只依赖 Qt Core，因此任何库都可以用它，包括不涉及界面的模块——
   i18n（@ref QxCore::QxTranslator）正因此放在这一层，而不是放在 `qxapp`。
@@ -26,15 +29,25 @@ qxapp      应用框架
 - 设置界面被**切成两半**：@ref QxApp::QxPropertyEditor 只管值、不知道值从哪来，
   @ref QxApp::QxSettingsDialog 才知道读写的是 @ref QxCore::QxSettings。
   于是同一张表单可以脱离配置单独用（例如对象属性面板）。
+- **插件体系单独成层**（`qxplugin`）：它只依赖 `qxcore`（外加 Qt Widgets——`QxPluginContext`
+  用 `QWidget` 讲页面与停靠面板），而 `qxapp` 反过来依赖它。插件只面向
+  @ref QxPlugin::QxPluginContext 编程，永远不面向宿主窗口类，所以宿主改名不会波及任何插件。
+  插件之间靠 @ref QxPlugin::QxObjectPool 相遇（谁在池里，谁才可达），**不靠互相链接**。
+
+> ⚠️ `qxplugin → qxcore` 这条边**不是链接需要**：qxplugin 的 `.cpp` 不引用任何 `qxcore` 符号，
+> 它来自 @ref QxPlugin::QxPluginContext 的 `settings()` 返回类型 `QxCore::QxSettings *`
+> （出现在公开签名里，所以必须是 PUBLIC 依赖）。`qxcore` 一共三个类，qxplugin 只用到这一个。
+> 归属与是否切掉这条依赖的记录见
+> [`doc/design/4.0-TASKS.md`](https://github.com/canpool/qtcanpool/blob/master/doc/design/4.0-TASKS.md) 的 K19。
 
 ## 目录结构
 
 | 目录 | 说明 |
 | :--- | :--- |
 | `cmake/` | CMake 构建框架（`QtCanpoolAPI.cmake` 是核心，提供下面那套函数） |
-| `src/libs/` | 基础类库，每个库一个子目录，一个库一个命名空间 |
-| `src/modules/` | 实用代码，规模尚未达到独立库 |
-| `src/plugins/` | 基础插件 |
+| `src/libs/` | 基础类库，每个库一个子目录，一个库一个命名空间（当前 6 个，见上） |
+| `src/modules/` | 可拔插业务模块的**样板**与时兴能力的收容所（K16）。正式、稳定的能力进 `src/libs` |
+| `src/plugins/` | 框架**自己的**功能插件（分层规则见 `src/plugins/CMakeLists.txt`）；业务插件写在自己的工程里 |
 | `src/shared/` | 跨模块共享代码 |
 | `demos/` | 综合示例（CMake） |
 | `examples/` | 控件级示例（CMake，由 `WITH_EXAMPLES` 控制） |
@@ -55,6 +68,7 @@ qxapp      应用框架
 | qxwindow | `QxWindow` | `QX_WINDOW_` |
 | qxribbon | `QxRibbon` | `QX_RIBBON_` |
 | qxdock | `QxDock` | `QX_DOCK_` |
+| qxplugin | `QxPlugin` | `QX_PLUGIN_` |
 | qxapp | `QxApp` | `QX_APP_` |
 
 每个库提供四个宏：
