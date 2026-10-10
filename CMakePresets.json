@@ -80,7 +80,8 @@
       "environment": {
         "QTCANPOOL_WASM_QT": "C:/Qt/6.8.3/wasm_singlethread",
         "QTCANPOOL_HOST_QT": "C:/Qt/6.8.3/mingw_64",
-        "QTCANPOOL_EMSDK": "C:/emsdk"
+        "QTCANPOOL_EMSDK": "C:/emsdk",
+        "EMSDK": "C:/emsdk"
       },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{QTCANPOOL_WASM_QT}/lib/cmake/Qt6/qt.toolchain.cmake",
