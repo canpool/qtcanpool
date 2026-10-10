@@ -1,0 +1,11 @@
+{
+    "Name" : "acceptance",
+    "Version" : "1.0.0",
+    "CompatVersion" : "1.0.0",
+    "Vendor" : "QtCanpool",
+    "Copyright" : "(C) 2026 maminjie",
+    "License" : [ "MulanPSL-2.0" ],
+    "Category" : "Examples",
+    "Description" : "Acceptance plugin: built outside the source tree, against an installed SDK.",
+    "Url" : "https://canpool.github.io/qtcanpool/"
+}

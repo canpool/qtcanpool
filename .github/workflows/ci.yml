@@ -69,6 +69,21 @@ jobs:
             --build --sdk "$RUNNER_TEMP/sdk"
           test -x "$RUNNER_TEMP/scaffold/ci_scaffold/build/ci_scaffold"
 
+      - name: Check an out-of-tree plugin builds and loads
+        # Roadmap DoD #1. Building projects/plugin proves a plugin can be built
+        # from an installed SDK alone; then the acceptance host loads it for
+        # real, which is a different failure mode - an IID that does not match
+        # or metadata moc did not embed still compiles, loads and never casts.
+        # Reuses the prefix installed above.
+        if: matrix.os == 'ubuntu-latest' && matrix.qt == '6.8.1'
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          export CMAKE_PREFIX_PATH="$RUNNER_TEMP/sdk:$CMAKE_PREFIX_PATH"
+          cmake -S projects/plugin -B "$RUNNER_TEMP/plugin" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/plugin" --parallel
+          "$RUNNER_TEMP/plugin/qxpluginhost"
+
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
     # so any unformatted change now fails the build.
