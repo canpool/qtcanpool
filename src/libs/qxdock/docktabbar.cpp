@@ -10,6 +10,7 @@
 
 #include <QBoxLayout>
 #include <QWheelEvent>
+#include <QPointer>
 #include <QScrollBar>
 #include <QTimer>
 #include <QDebug>
@@ -24,11 +25,14 @@ public:
     DockTabBarPrivate();
     void init();
     void updateTabs();
+    void scrollTabIntoView(DockTab *tab);
 public:
     DockPanel *m_panel = nullptr;
     QWidget *m_tabsContainerWidget;
     QBoxLayout *m_tabsLayout;
     int m_currentIndex = -1;
+    QPointer<DockTab> m_pendingScrollTab;
+    bool m_scrollPending = false;
 };
 
 DockTabBarPrivate::DockTabBarPrivate()
@@ -57,6 +61,7 @@ void DockTabBarPrivate::init()
 void DockTabBarPrivate::updateTabs()
 {
     Q_Q(DockTabBar);
+    DockTab *currentTab = nullptr;
     // Set active tab and update all other tabs to be inactive
     for (int i = 0; i < q->count(); ++i) {
         auto tab = q->tab(i);
@@ -66,19 +71,55 @@ void DockTabBarPrivate::updateTabs()
         if (i == m_currentIndex) {
             tab->show();
             tab->setActive(true);
-            // Sometimes the synchronous calculation of the rectangular area fails
-            // Therefore we use QTimer::singleShot here to execute the call
-            // within the event loop - see #520
-            // FIXME: Execute the following code to finish the program unexpectedly
-            /*
-            QTimer::singleShot(0, q, [&, tab] {
-                q->ensureWidgetVisible(tab);
-            });
-            */
+            currentTab = tab;
         } else {
             tab->setActive(false);
         }
     }
+
+    if (currentTab) {
+        scrollTabIntoView(currentTab);
+    }
+}
+
+/**
+ * Makes sure the given tab is visible to the user.
+ *
+ * When the active tab is switched to a tab that sits outside of the scroll
+ * area, the tab bar has to scroll it back. The scroll is deferred to the next
+ * event loop pass because updateTabs() is usually reached from inside a layout
+ * pass, where the synchronous calculation of the rectangular area can still
+ * fail (see #520).
+ *
+ * The deferred call is guarded twice, and both guards are needed:
+ *   - the tab is held by a QPointer, because it can be closed (and thus
+ *     destroyed) before the timer fires;
+ *   - the tab bar is the context object of the timer, so a call queued by a tab
+ *     bar that is destroyed in the meantime is never delivered.
+ * The first attempt at this deferred the call with a lambda that captured the
+ * tab bar by reference, which left a dangling pointer behind and could
+ * terminate the program - the reason this block was commented out.
+ *
+ * Only one call is ever queued: repeated calls while a scroll is pending just
+ * move the target, so a burst of index changes does not pile up layout passes.
+ */
+void DockTabBarPrivate::scrollTabIntoView(DockTab *tab)
+{
+    Q_Q(DockTabBar);
+    m_pendingScrollTab = tab;
+    if (m_scrollPending) {
+        return;
+    }
+    m_scrollPending = true;
+
+    QTimer::singleShot(0, q, [this, q] {
+        m_scrollPending = false;
+        DockTab *target = m_pendingScrollTab;
+        m_pendingScrollTab = nullptr;
+        if (target) {
+            q->ensureWidgetVisible(target);
+        }
+    });
 }
 
 DockTabBar::DockTabBar(DockPanel *parent)
