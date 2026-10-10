@@ -72,6 +72,20 @@ add_qtc_test(tst_qxdock
         ${QXDOCK_TEST_SOURCES}
 )
 
+# -------------------------------------------------------------- qxwindow --
+# qxwindow is platform-heavy, so this suite sticks to the backend-independent
+# bookkeeping the shared WindowContext does. See the test file for the reasoning.
+file(GLOB QXWINDOW_TEST_SOURCES "${QTCANPOOL_TESTS_DIR}/qxwindow/auto/tst_*.cpp")
+add_qtc_test(tst_qxwindow
+    DEPENDS qxwindow
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxwindow/auto/main.cpp"
+        ${QXWINDOW_TEST_SOURCES}
+)
+
 # -------------------------------------------------------------- helloworld --
 # Minimal tests without a library dependency (QTEST_MAIN provides the entry point).
 add_qtc_test(tst_qstring
