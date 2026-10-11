@@ -88,18 +88,28 @@
     QT_STRINGIFY(QX_VERSION_JOIN(QX_RIBBON_VERSION_MAJOR, QX_RIBBON_VERSION_MINOR, QX_RIBBON_VERSION_PATCH))
 
 #ifndef QX_RIBBON_DISABLE_DEPRECATED_BEFORE
-#define QX_RIBBON_DISABLE_DEPRECATED_BEFORE QX_RIBBON_VERSION
+// Every API deprecated so far stays visible. Raising this is the only way an old
+// API disappears, and that is what makes the gate below usable: the default used
+// to be QX_RIBBON_VERSION (the version being built), so the gate answered false
+// for every deprecation that had already happened - (0,11,0) > (0,11,0) is false -
+// and flipped back to false again with every minor bump.
+#define QX_RIBBON_DISABLE_DEPRECATED_BEFORE QT_VERSION_CHECK(0, 0, 0)
 #endif
 
 /*
- QX_RIBBON_DEPRECATED_SINCE(major, minor) evaluates as true if the QxRibbon version is greater than
- the deprecation point specified.
+ QX_RIBBON_DEPRECATED_SINCE(major, minor) is true while an API deprecated in QxRibbon
+ major.minor is still part of the library, that is while its deprecation point is
+ newer than QX_RIBBON_DISABLE_DEPRECATED_BEFORE. It does not depend on the version
+ being built.
 
- Use it to specify from which version of QxRibbon a function or class has been deprecated
+ That makes it the buffer between "deprecated" and "gone" (K26): the declaration
+ is guarded by it, the warning itself comes from QT_DEPRECATED / QT_DEPRECATED_X,
+ and raising QX_RIBBON_DISABLE_DEPRECATED_BEFORE to the version that removes the API
+ is what compiles the declaration out.
 
  Example:
-     #if QX_RIBBON_DEPRECATED_SINCE(0,6)
-         QT_DEPRECATED void deprecatedFunction(); // function deprecated since QxRibbon 0.6
+     #if QX_RIBBON_DEPRECATED_SINCE(0,11)
+         QT_DEPRECATED void deprecatedFunction(); // deprecated in QxRibbon 0.11
      #endif
  */
 #ifdef QT_DEPRECATED

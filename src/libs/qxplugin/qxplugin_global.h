@@ -93,18 +93,28 @@
 #endif   // QX_PLUGIN_IID
 
 #ifndef QX_PLUGIN_DISABLE_DEPRECATED_BEFORE
-#define QX_PLUGIN_DISABLE_DEPRECATED_BEFORE QX_PLUGIN_VERSION
+// Every API deprecated so far stays visible. Raising this is the only way an old
+// API disappears, and that is what makes the gate below usable: the default used
+// to be QX_PLUGIN_VERSION (the version being built), so the gate answered false
+// for every deprecation that had already happened - (0,2,0) > (0,2,0) is false -
+// and flipped back to false again with every minor bump.
+#define QX_PLUGIN_DISABLE_DEPRECATED_BEFORE QT_VERSION_CHECK(0, 0, 0)
 #endif
 
 /*
- QX_PLUGIN_DEPRECATED_SINCE(major, minor) evaluates as true if the QxPlugin version is greater than
- the deprecation point specified.
+ QX_PLUGIN_DEPRECATED_SINCE(major, minor) is true while an API deprecated in QxPlugin
+ major.minor is still part of the library, that is while its deprecation point is
+ newer than QX_PLUGIN_DISABLE_DEPRECATED_BEFORE. It does not depend on the version
+ being built.
 
- Use it to specify from which version of QxPlugin a function or class has been deprecated
+ That makes it the buffer between "deprecated" and "gone" (K26): the declaration
+ is guarded by it, the warning itself comes from QT_DEPRECATED / QT_DEPRECATED_X,
+ and raising QX_PLUGIN_DISABLE_DEPRECATED_BEFORE to the version that removes the API
+ is what compiles the declaration out.
 
  Example:
-     #if QX_PLUGIN_DEPRECATED_SINCE(0,3)
-         QT_DEPRECATED void deprecatedFunction(); // function deprecated since QxPlugin 0.3
+     #if QX_PLUGIN_DEPRECATED_SINCE(0,2)
+         QT_DEPRECATED void deprecatedFunction(); // deprecated in QxPlugin 0.2
      #endif
  */
 #ifdef QT_DEPRECATED

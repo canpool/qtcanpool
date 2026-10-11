@@ -5,6 +5,15 @@ Cleanup
   which K1 set as the minimum; QWidget::screen() has been the way to reach the
   screen since then
 
+Bugfix
+- QX_RIBBON_DEPRECATED_SINCE(major, minor) never answered true for a deprecation
+  that had already happened: QX_RIBBON_DISABLE_DEPRECATED_BEFORE defaulted to
+  QX_RIBBON_VERSION, so the deprecation point was compared against the version
+  being built - (0,11,0) > (0,11,0) is false - and the answer flipped back to
+  false on every minor bump. The default is now a fixed floor, so an API stays
+  declared for as long as it is inside its removal buffer (K26), and raising the
+  cutoff is what compiles it out. tst_qxdeprecated covers all seven libraries
+
 0.11.0
 ---
 Deprecated

@@ -167,6 +167,25 @@ add_qtc_test(tst_qxwindow
         ${QXWINDOW_TEST_SOURCES}
 )
 
+# ------------------------------------------------------------- deprecated --
+# The QX_<LIB>_DEPRECATED_SINCE gate every library carries in its *_global.h. It
+# is header-only, so this suite links nothing but QtCore and reads all seven
+# headers; tst_qxdeprecated_cutoff.cpp sets a cutoff before including one of them,
+# which is why the opt-out case needs a translation unit of its own.
+file(GLOB QXDEPRECATED_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/deprecated/auto/tst_*.cpp")
+add_qtc_test(tst_qxdeprecated
+    DEPENDS Qt5::Core
+    # src/libs is the public include directory of every library, and it normally
+    # arrives through DEPENDS. This suite reads headers only, so it asks for the
+    # directory itself instead of linking a library it never calls into.
+    INCLUDES "${PROJECT_SOURCE_DIR}/src/libs" "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/deprecated/auto/main.cpp"
+        ${QXDEPRECATED_TEST_SOURCES}
+)
+
 # -------------------------------------------------------------- helloworld --
 # Minimal tests without a library dependency (QTEST_MAIN provides the entry point).
 add_qtc_test(tst_qstring

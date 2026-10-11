@@ -1,13 +1,10 @@
 Unreleased
 ---
-Nothing recorded yet.
-
-This file exists so that a change to `qxcore` has somewhere to go. Decision K24
-asks for the library-level log to be written as the change lands, under a heading
-like `Feature` / `Interface` / `Optimize` / `Bugfix` / `Deprecated` / `Cleanup` /
-`Test`, and for this section to be renamed to the new version when the version
-number moves.
-
-Released sections are deliberately **not** reconstructed here: K24's rule is
-"no retroactive", so the history before this point stays in the commit log rather
-than being rewritten as change log entries.
+Bugfix
+- QX_CORE_DEPRECATED_SINCE(major, minor) never answered true for a deprecation
+  that had already happened: QX_CORE_DISABLE_DEPRECATED_BEFORE defaulted to
+  QX_CORE_VERSION, so the deprecation point was compared against the version being
+  built - (0,1,0) > (0,1,0) is false - and the answer flipped back to false on
+  every minor bump. The default is now a fixed floor, so an API stays declared for
+  as long as it is inside its removal buffer (K26), and raising the cutoff is what
+  compiles it out. tst_qxdeprecated covers all seven libraries

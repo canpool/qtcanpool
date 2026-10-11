@@ -93,9 +93,30 @@
     QT_STRINGIFY(QX_VERSION_JOIN(QX_THEME_VERSION_MAJOR, QX_THEME_VERSION_MINOR, QX_THEME_VERSION_PATCH))
 
 #ifndef QX_THEME_DISABLE_DEPRECATED_BEFORE
-#define QX_THEME_DISABLE_DEPRECATED_BEFORE QX_THEME_VERSION
+// Every API deprecated so far stays visible. Raising this is the only way an old
+// API disappears, and that is what makes the gate below usable: the default used
+// to be QX_THEME_VERSION (the version being built), so the gate answered false
+// for every deprecation that had already happened - (0,1,0) > (0,1,0) is false -
+// and flipped back to false again with every minor bump.
+#define QX_THEME_DISABLE_DEPRECATED_BEFORE QT_VERSION_CHECK(0, 0, 0)
 #endif
 
+/*
+ QX_THEME_DEPRECATED_SINCE(major, minor) is true while an API deprecated in QxTheme
+ major.minor is still part of the library, that is while its deprecation point is
+ newer than QX_THEME_DISABLE_DEPRECATED_BEFORE. It does not depend on the version
+ being built.
+
+ That makes it the buffer between "deprecated" and "gone" (K26): the declaration
+ is guarded by it, the warning itself comes from QT_DEPRECATED / QT_DEPRECATED_X,
+ and raising QX_THEME_DISABLE_DEPRECATED_BEFORE to the version that removes the API
+ is what compiles the declaration out.
+
+ Example:
+     #if QX_THEME_DEPRECATED_SINCE(0,2)
+         QT_DEPRECATED void deprecatedFunction(); // deprecated in QxTheme 0.2
+     #endif
+ */
 #ifdef QT_DEPRECATED
 #define QX_THEME_DEPRECATED_SINCE(major, minor) (QT_VERSION_CHECK(major, minor, 0) > QX_THEME_DISABLE_DEPRECATED_BEFORE)
 #else
