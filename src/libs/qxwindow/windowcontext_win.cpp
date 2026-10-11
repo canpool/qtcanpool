@@ -1439,12 +1439,14 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
 
         bool isFixedSize = m_delegate->isHostSizeFixed(m_host);
         bool isTitleBar = isInTitleBarDraggableArea(qtScenePos);
-        // NOTE: always false - nothing in this library ever assigns to it, so every
-        // use below reduces to `isFixedSize`. The name is kept because it documents an
-        // intended extension point (let the host opt out of the resize cursor at the
-        // border); see doc/pages/limitations.md,
-        // "hit testing always overrides the border cursor".
-        bool dontOverrideCursor = false;
+        // There is no way for the host to opt out of the resize cursor at the border:
+        // a `dontOverrideCursor` flag used to sit here, but nothing ever assigned to
+        // it, so every use of it reduced to `isFixedSize` and the branch it guarded
+        // was unreachable. It was removed rather than wired up, because deciding
+        // where such a switch would come from is a public API question - see A5 -
+        // and a dead branch with a suggestive name misleads the next reader.
+        // See doc/pages/limitations.md, "hit testing always overrides the border
+        // cursor".
 
         WindowAgentBase::SystemButton sysButtonType = WindowAgentBase::Unknown;
         if (!isFixedSize && isInSystemButtons(qtScenePos, &sysButtonType)) {
@@ -1461,26 +1463,19 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
                 bool isLeft = nativeLocalPos.x <= kBorderSize;
                 bool isRight = (nativeLocalPos.x >= (clientWidth - kBorderSize));
                 if (isTop || isLeft || isRight) {
-                    if (dontOverrideCursor) {
-                        // The user doesn't want the window to be resized, so we tell
-                        // Windows we are in the client area so that the controls beneath
-                        // the mouse cursor can still be hovered or clicked.
-                        *result = (isTitleBar ? HTCAPTION : HTCLIENT);
-                    } else {
-                        if (isTop) {
-                            if (isLeft) {
-                                *result = HTTOPLEFT;
-                            } else if (isRight) {
-                                *result = HTTOPRIGHT;
-                            } else {
-                                *result = HTTOP;
-                            }
+                    if (isTop) {
+                        if (isLeft) {
+                            *result = HTTOPLEFT;
+                        } else if (isRight) {
+                            *result = HTTOPRIGHT;
                         } else {
-                            if (isLeft) {
-                                *result = HTLEFT;
-                            } else {
-                                *result = HTRIGHT;
-                            }
+                            *result = HTTOP;
+                        }
+                    } else {
+                        if (isLeft) {
+                            *result = HTLEFT;
+                        } else {
+                            *result = HTRIGHT;
                         }
                     }
                 }
@@ -1536,7 +1531,7 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
                 // outside the window, that is, the three transparent window resize area.
                 // Returning HTCLIENT will confuse Windows, we can't put our controls there
                 // anyway.
-                *result = ((isFixedSize || dontOverrideCursor) ? HTBORDER : originalHitTestResult);
+                *result = (isFixedSize ? HTBORDER : originalHitTestResult);
                 return true;
             }
             if (full) {
@@ -1556,7 +1551,7 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
                 // Return HTCLIENT instead of HTBORDER here, because the mouse is
                 // inside our homemade title bar now, return HTCLIENT to let our
                 // title bar can still capture mouse events.
-                *result = ((isFixedSize || dontOverrideCursor) ? (isTitleBar ? HTCAPTION : HTCLIENT) : HTTOP);
+                *result = (isFixedSize ? (isTitleBar ? HTCAPTION : HTCLIENT) : HTTOP);
                 return true;
             }
             if (isTitleBar) {
@@ -1581,13 +1576,6 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
                 const int scaledFrameSize = std::round(qreal(frameSize) * scaleFactor);
                 const bool isLeft = (nativeLocalPos.x < scaledFrameSize);
                 const bool isRight = (nativeLocalPos.x >= (clientWidth - scaledFrameSize));
-                if (dontOverrideCursor && (isTop || isBottom || isLeft || isRight)) {
-                    // Return HTCLIENT instead of HTBORDER here, because the mouse is
-                    // inside the window now, return HTCLIENT to let the controls
-                    // inside our window can still capture mouse events.
-                    *result = (isTitleBar ? HTCAPTION : HTCLIENT);
-                    return true;
-                }
                 if (isTop) {
                     if (isLeft) {
                         *result = HTTOPLEFT;

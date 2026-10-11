@@ -1,3 +1,13 @@
+Unreleased
+---
+Cleanup
+- Remove the never-assigned dontOverrideCursor flag from the hit test. It was
+  written as false and nothing in this library ever set it, so all four of its
+  uses already reduced to isFixedSize and the branch it guarded was unreachable.
+  Deleting it is an identity transform, so no behaviour changes and no real
+  machine check is needed. Wiring up an actual opt-out would be new public API
+  and is left to the API review; see the limitations page
+
 0.2.0
 ---
 Deprecated
