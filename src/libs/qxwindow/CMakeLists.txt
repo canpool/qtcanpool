@@ -10,6 +10,9 @@ endif()
 
 option(QX_WINDOW_CONFIG_NATIVE "Config native system window" ${_qx_window_native_default})
 option(QX_WINDOW_CONFIG_SYSTEM_BORDERS "Config system borders" YES)
+# WindowStyleAgent is deprecated (4.2, K26) and is to be removed, so the default
+# stays off. Nothing refers to it, and qxtheme's QxThemeManager already follows
+# the system colour scheme.
 option(QX_WINDOW_CONFIG_STYLE_AGENT "Config style agent" NO)
 option(QX_WINDOW_CONFIG_WIDGET_AGENT "Config widget agent" YES)
 

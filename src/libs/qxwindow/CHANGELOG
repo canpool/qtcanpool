@@ -1,3 +1,13 @@
+Unreleased
+---
+Deprecated
+- WindowStyleAgent: deprecated and to be removed. Nothing in the tree refers to
+  it, no page documents it, it is only built when QX_WINDOW_CONFIG_STYLE_AGENT is
+  on (off by default), and QxThemeManager in qxtheme already follows the system
+  colour scheme - more completely than this class does. HighContrast is the one
+  value QxThemeManager does not report; if that becomes a real need, revisit it
+  then.
+
 0.1.2
 ---
 - Port to Qt 5.12.12 6.8.1

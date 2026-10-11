@@ -234,6 +234,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 | 弃用 | 替代 | 说明 |
 | :--- | :--- | :--- |
 | `FramelessHelper`（`qxribbon/framelesshelper.h`） | Qt 6 上用 @ref QxApp::RibbonAppWindow；Qt 5 上就是它本身，没有替代 | 它是 `RibbonWindow` 的无边框后端。没有命名空间、也没有导出宏，所以下游本来就取不到它的符号；标记的意义在文档与源码两头对得上，见[已知限制](limitations.md) |
+| `WindowStyleAgent`（`qxwindow/style/`） | @ref QxTheme::QxThemeManager | 默认**不编译**（要 `QX_WINDOW_CONFIG_STYLE_AGENT=ON`），全仓无人引用，文档也没提过。它多报一个 `HighContrast`，`QxThemeManager` 不报——那是它唯一独有的东西，真需要时再单独决定 |
 
 ### `FramelessHelper` 删除之后，`RibbonWindow` 怎么办
 
