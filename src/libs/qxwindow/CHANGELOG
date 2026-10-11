@@ -1,6 +1,12 @@
 Unreleased
 ---
 Cleanup
+- Remove the never-assigned dontOverrideCursor flag from the hit test. It was
+  written as false and nothing in this library ever set it, so all four of its
+  uses already reduced to isFixedSize and the branch it guarded was unreachable.
+  Deleting it is an identity transform, so no behaviour changes and no real
+  machine check is needed. Wiring up an actual opt-out would be new public API
+  and is left to the API review; see the limitations page
 - Remove the Qt version branches below 5.15, which K1 set as the minimum: the
   hand-written WindowsRegistryKey class, now an alias for QWinRegistryKey from Qt's
   own private header, and the WindowMoveManipulator / WindowResizeManipulator
@@ -23,14 +29,19 @@ Test
   calls them rather than keeping its own copy, so the tested code is the code that
   runs. They were untestable before for two reasons at once: the file needs a
   native window to drive, and its symbols are not exported from a Windows DLL
-
-Cleanup
-- Remove the never-assigned dontOverrideCursor flag from the hit test. It was
-  written as false and nothing in this library ever set it, so all four of its
-  uses already reduced to isFixedSize and the branch it guarded was unreachable.
-  Deleting it is an identity transform, so no behaviour changes and no real
-  machine check is needed. Wiring up an actual opt-out would be new public API
-  and is left to the API review; see the limitations page
+- Cover the Win32 to Qt conversion helpers in windowkit_win_p.h with
+  tst_QxWindowWinKit. The whole header is Windows-only - it includes dwmapi.h -
+  so the cases sit behind Q_OS_WIN and CI's windows-latest leg is what runs
+  them; one case is registered everywhere so the suite keeps its shape. Two
+  things the tests pinned that nothing else would have caught:
+  margins2qmargins() returns QMargins(1,3,2,4) for MARGINS{1,2,3,4}, because
+  MARGINS declares left,right,top,bottom while QMargins declares
+  left,top,right,bottom, so the conversion has to move a value rather than copy
+  positionally; and the four SIZE ordering operators do not agree with each
+  other on equal areas - operator== compares fields while >, >=, < and <=
+  compare area, so for two different shapes of the same area "<" is true in
+  both directions and ">=" is false in both. Both are recorded as they are
+  rather than smoothed over
 
 0.2.0
 ---

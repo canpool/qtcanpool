@@ -150,9 +150,15 @@ add_qtc_test(tst_qxdock
 # -------------------------------------------------------------- qxwindow --
 # qxwindow is platform-heavy, so this suite sticks to the backend-independent
 # bookkeeping the shared WindowContext does. See the test file for the reasoning.
+#
+# The CorePrivate/GuiPrivate dependencies are for tst_QxWindowWinKit, which
+# includes windowkit_win_p.h under Q_OS_WIN. extend_qtc_target puts DEPENDS under
+# PRIVATE, so depending on qxwindow does not inherit the Qt private modules
+# qxwindow itself uses, and the include path for qsystemlibrary_p.h is missing
+# without these. Only the Windows leg compiles that file.
 file(GLOB QXWINDOW_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxwindow/auto/tst_*.cpp")
 add_qtc_test(tst_qxwindow
-    DEPENDS qxwindow
+    DEPENDS qxwindow Qt5::CorePrivate Qt5::GuiPrivate
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
