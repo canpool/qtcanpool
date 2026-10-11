@@ -1,3 +1,72 @@
+4.3.0
+---
+- qxribbon 0.11.0 -> 0.12.0. FramelessHelper and the window class on top of it,
+  RibbonWindow, are gone. Both were deprecated in 4.2 (K27 / K26) and the K26
+  buffer - a removal waits at least one release - has now run out.
+  FramelessHelper was the frameless backend qxribbon carried so that it needed no
+  dependency on qxwindow; only its Windows + Qt 5 path was complete, and
+  everywhere else a window first shown maximised could not be restored.
+  RibbonWindow was RibbonMainWindow plus that backend and nothing else, so the
+  two went together rather than leaving an empty shell behind. On every Qt
+  version the answer is QxApp::RibbonAppWindow, which frames the same
+  RibbonMainWindow through qxwindow's native path; on Qt 5 that costs a
+  dependency on qxapp, and qxwindow's native backend does build there - checked
+  before deleting, and the reason this did not wait for Qt 5 to be dropped.
+  Every sample moves to RibbonMainWindow. RibbonGalleryViewport also loses its
+  export macro: it lives in a private header, was privatized on purpose, and no
+  caller names it. See doc/pages/migration.md, section "4.3 已删除"
+- qxwindow 0.2.0 -> 0.3.0. WindowStyleAgent is gone (deprecated in 4.2 under
+  K26), and so is the QX_WINDOW_CONFIG_STYLE_AGENT option that compiled it.
+  HighContrast was the one value QxThemeManager does not report, and it had no
+  consumer anywhere in the tree - checked before deleting, and the reason the
+  class does not come back in a smaller "just HighContrast" form. The public
+  surface is now two classes, and it was walked end to end: the only consumer in
+  the tree is qxapp's RibbonAppWindow with six members, and the three members
+  that had no test at all - centralize(), raise() and showSystemMenu() - have
+  one now
+- qxcore 0.1.1 -> 0.1.2, qxtheme 0.1.0 -> 0.1.1, qxdock 0.2.0 -> 0.2.1,
+  qxplugin 0.2.0 -> 0.2.1, qxapp 0.1.0 -> 0.1.1. All five move by patch for the
+  same one-line reason: QX_<LIB>_DEPRECATED_SINCE never answered true for a
+  deprecation that had already happened, because
+  QX_<LIB>_DISABLE_DEPRECATED_BEFORE defaulted to the library's own version and
+  (0,11,0) > (0,11,0) is false. All seven libraries defined the macro and not
+  one used it, so the mechanism was dead and a deprecation silently lasted
+  forever. The default is now a fixed floor, and tst_qxdeprecated covers all
+  seven libraries
+- tests: qxdock had 8 exported classes that no test mentioned and qxribbon had
+  12; both are covered now, 32 and 52 cases. Two bugs surfaced while writing
+  them and are fixed: RibbonTheme::setTheme(RibbonTheme::CustomTheme)
+  dereferenced the widget argument, whose documented default is a null pointer,
+  and RibbonCtrlContainer built vertical centred its icon while one switched
+  vertical afterwards left-aligned it
+- qxwindow: the "frameless window cannot be maximised on first show" entry on
+  the limitations page is no longer something only a person can notice. A probe
+  reproduces it on a plain Qt window with no qtcanpool in it and is recorded as
+  an expected failure on Qt 6 + Windows - measured as reproducing on 6.8.3 and
+  passing on 5.15.2 - so the day the Qt plugin is fixed the case reports an
+  unexpected pass instead of staying quiet. A second case guards the half the
+  library controls: its own window must not ask Qt for a frameless window. That
+  one holds offscreen and runs on every CI leg; the probe needs a window manager
+  and skips there
+- Qt 5: still supported and still built, and this release deletes none of it,
+  but what a removal would mean is written down now. doc/pages/migration.md says
+  who a removal in 5.0.0 affects - the library's own usage does not change,
+  find_package and the QtCanpool:: targets are identical on Qt 6, while the
+  caller's own Qt 5 usage does - what to do with the two qtcompat helpers, and
+  that the thirty < 6.0 branches are mostly compile-time adaptations with a few
+  that follow semantic changes in Qt itself. There is no date: K32 sets three
+  trigger conditions instead
+- docs: doc/pages/limitations.md records that CI does not cover Qt 6.12 (K31).
+  That entry is deliberately marked as a boundary of the evidence rather than a
+  known bad behaviour, and it says when it can be deleted; every "on Qt 6" claim
+  on that page is evidence up to 6.8 only
+- examples: the samples were checked against this release rather than changed to
+  have something to show, because nothing in A1-A7 changed behaviour - A1
+  removes a constant-false branch, A2 is an extraction, A3/A4/A6/A7 are tests
+  and A5 is an assessment. One stale thing was found and fixed: a commented-out
+  setRibbonTheme(RibbonTheme::WpsdarkTheme) in examples/qxribbon/simple named an
+  enumerator that does not exist
+
 4.2.0
 ---
 - qxribbon 0.10.2 -> 0.11.0. FramelessHelper is deprecated (K27). It is the
