@@ -239,7 +239,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 | 弃用 | 替代 | 说明 |
 | :--- | :--- | :--- |
 | `FramelessHelper`（`qxribbon/framelesshelper.h`） | Qt 6 上用 @ref QxApp::RibbonAppWindow；Qt 5 上就是它本身，没有替代 | 它是 `RibbonWindow` 的无边框后端。没有命名空间、也没有导出宏，所以下游本来就取不到它的符号；标记的意义在文档与源码两头对得上，见[已知限制](limitations.md) |
-| `WindowStyleAgent`（`qxwindow/style/`） | @ref QxTheme::QxThemeManager | 默认**不编译**（要 `QX_WINDOW_CONFIG_STYLE_AGENT=ON`），全仓无人引用，文档也没提过。它多报一个 `HighContrast`，`QxThemeManager` 不报——那是它唯一独有的东西，真需要时再单独决定 |
 
 ### `FramelessHelper` 删除之后，`RibbonWindow` 怎么办
 
@@ -271,6 +270,15 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 
 **时机**：`FramelessHelper` 在 Qt 5 上是**可用**的那条路径（Windows 上走原生后端），所以它必须活到
 Qt 5 支持结束，`RibbonWindow` 同理。换言之 **Qt 5 的下线日就是这两者的下线日**，不需要单独判断一次。
+
+## 4.3 已删除（K26 的缓冲已走完）
+
+按 K26，弃用之后至少留一个版本才删。下面这些在 4.2 标弃用、**4.3 已经删掉**，
+旧名字不再是告警而是"找不到头文件/符号"：
+
+| 删除 | 替代 | 升级要做什么 |
+| :--- | :--- | :--- |
+| `WindowStyleAgent`（原 `qxwindow/style/`） | @ref QxTheme::QxThemeManager | 无。它默认**不编译**（要 `QX_WINDOW_CONFIG_STYLE_AGENT=ON`），全仓无人引用，`QX_WINDOW_CONFIG_STYLE_AGENT` 这个开关也一并去掉了。打开过开关的下游换成 `QxThemeManager`；它唯一多报的 `HighContrast` 一档没有等价物——真有需要时按新需求单独加，而不是恢复这个类 |
 
 ## 分步迁移清单
 

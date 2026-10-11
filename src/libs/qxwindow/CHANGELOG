@@ -1,5 +1,18 @@
 Unreleased
 ---
+Interface
+- WindowStyleAgent is removed (it was deprecated in 4.2, K26 / W2). It reported
+  the system colour scheme - {Unknown, Light, Dark, HighContrast} - with one
+  implementation per platform, while QxThemeManager in qxtheme already answers
+  the same question more completely and follows later changes as well. Nothing in
+  the tree referred to the class and it was only compiled with
+  QX_WINDOW_CONFIG_STYLE_AGENT, an option that goes away with it. HighContrast
+  was the one value QxThemeManager does not report and it has no consumer
+  anywhere in the tree - that was checked before deleting, and it is also why the
+  class does not come back in a smaller "just HighContrast" form: if it is ever
+  needed, it is a new requirement. Use QxTheme::QxThemeManager instead; see
+  doc/pages/migration.md, section "4.3 已删除"
+
 Cleanup
 - Remove the never-assigned dontOverrideCursor flag from the hit test. It was
   written as false and nothing in this library ever set it, so all four of its

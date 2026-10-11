@@ -378,14 +378,9 @@ static inline bool isWindowFrameBorderColorized()
     return true;
 }
 
-static inline bool isHighContrastModeEnabled()
-{
-    HIGHCONTRASTW hc{};
-    hc.cbSize = sizeof(hc);
-    ::SystemParametersInfoW(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, FALSE);
-    return (hc.dwFlags & HCF_HIGHCONTRASTON);
-}
-
+// isHighContrastModeEnabled() used to live here. Its only caller was
+// WindowStyleAgent, which is gone since 4.3 (A9 / K26); HighContrast had no
+// consumer anywhere in the tree, so the two went together.
 static inline bool isDarkThemeActive()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)

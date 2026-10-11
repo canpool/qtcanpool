@@ -86,7 +86,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 库级 CHANGELOG 回答动了什么」，两者分工不同。
 
 **4.2.0 前进了两个库**：`qxwindow` 到 **0.2.0**、`qxribbon` 到 **0.11.0**，两处都是**弃用**
-（`WindowStyleAgent` 按 K26、`FramelessHelper` 按 K27）。按附录 B，弃用是「接口契约发生了变化性调整」，
+（`WindowStyleAgent` 按 K26、`FramelessHelper` 按 K27；**前者已在 4.3 删除**）。按附录 B，弃用是「接口契约发生了变化性调整」，
 所以走 `minor` 而不是纯增量的 `patch`。`qxribbon` 同期还给 `RibbonStyleOption` 加了三个 setter，
 单算只是 patch，但同一期发生了弃用 ⇒ 取较高的 minor。
 `qxdock` 本周期唯一的头文件改动（`dockautohidecontainer.h`）**只是一段注释**（A13），
