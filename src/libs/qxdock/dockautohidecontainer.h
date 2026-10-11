@@ -46,6 +46,18 @@ public:
     void moveContentsToParent();
     void moveToNewSideBarArea(Qx::DockSideBarArea area, int tabIndex = -1);
 
+    // Unreferenced: nothing in this library calls it, and the one call site that
+    // ever existed - in DockWidget::toggleViewInternal() - was removed on
+    // purpose, because the side bar owns its tabs' visibility and showing a tab
+    // from there could bring it up while the window was still hidden.
+    //
+    // It is kept, for two reasons. It is exported, and removing an exported
+    // member needs the K26 buffer. And it is not the same as collapseView():
+    // toggleView(false) hides the side tab along with this container, while
+    // collapseView() deliberately leaves the tab in place. A caller that reaches
+    // an auto hide container through DockWidget::autoHideContainer() can still
+    // tell the two apart - they are not interchangeable, so do not treat
+    // "unreferenced" as "already superseded" (4.2, A13).
     void toggleView(bool enable);
     void collapseView(bool enable);
     void toggleCollapseState();
