@@ -1,5 +1,16 @@
 Unreleased
 ---
+Bugfix
+- RibbonTheme::setTheme(RibbonTheme::CustomTheme) dereferenced the widget pointer
+  it was handed, which made the documented way of calling it - the widget argument
+  defaults to nullptr - a crash on a null pointer. CustomTheme now clears the
+  application stylesheet when there is no widget, which is what loadTheme() has
+  always done for a nullptr (A7)
+- RibbonCtrlContainer built with Qt::Vertical centred its icon while one switched
+  to Qt::Vertical afterwards left-aligned it: init() set the alignment without
+  looking at the orientation, and only setOrientation() applied the rule. Both
+  paths now start from the same one (A7)
+
 Interface
 - FramelessHelper and RibbonWindow are removed (deprecated in 4.2, K27 / K26).
   FramelessHelper was the frameless backend RibbonWindow carried so that qxribbon

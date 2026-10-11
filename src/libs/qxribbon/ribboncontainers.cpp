@@ -54,7 +54,11 @@ void RibbonCtrlContainerPrivate::init()
 
     m_labelPixmap = new QLabel(q);
     m_labelPixmap->setObjectName(QLatin1String("logo"));
-    m_labelPixmap->setAlignment(Qt::AlignCenter);
+    // setOrientation() left-aligns the icon once the container is vertical, so the
+    // constructor has to start from the same rule - otherwise building a vertical
+    // container and switching an existing one to vertical leave the icon in two
+    // different places.
+    m_labelPixmap->setAlignment(m_orientation == Qt::Horizontal ? Qt::AlignCenter : Qt::AlignLeft);
     headerLayout->addWidget(m_labelPixmap);
 
     m_labelText = new QLabel(q);

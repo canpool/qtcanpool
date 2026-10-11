@@ -30,6 +30,7 @@ private slots:
     void setThemeAppliesTheBundledSheet();
     void setThemeIgnoresAnUnknownStyle();
     void customThemeClearsTheWidgetSheet();
+    void customThemeWithoutAWidgetClearsTheApplicationSheet();
 private:
     static QString writeCss();
 };
@@ -126,6 +127,19 @@ void tst_RibbonTheme::customThemeClearsTheWidgetSheet()
     RibbonTheme::setTheme(RibbonTheme::CustomTheme, &widget);
 
     QVERIFY(widget.styleSheet().isEmpty());
+}
+
+void tst_RibbonTheme::customThemeWithoutAWidgetClearsTheApplicationSheet()
+{
+    const QString saved = qApp->styleSheet();
+    qApp->setStyleSheet(QStringLiteral("QWidget { color: red; }"));
+
+    // The widget argument defaults to nullptr, and loadTheme() reads that as "apply it to
+    // QApplication". CustomTheme used to dereference the pointer instead.
+    RibbonTheme::setTheme(RibbonTheme::CustomTheme);
+
+    QVERIFY(qApp->styleSheet().isEmpty());
+    qApp->setStyleSheet(saved);
 }
 
 TEST_ADD(tst_RibbonTheme)

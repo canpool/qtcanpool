@@ -31,6 +31,7 @@ private slots:
     void replacingTheWidgetSwapsIt();
     void textAndIconRoundTrip();
     void iconSizeDefaultAndRoundTrip();
+    void constructorOrientationAgreesWithSetOrientation();
     void orientationDrivesTheHeaderAlignment();
     void visibilityTogglesReachTheHeader();
 };
@@ -92,6 +93,19 @@ void tst_RibbonCtrlContainer::iconSizeDefaultAndRoundTrip()
 
     container.setIconSize(QSize(32, 32));
     QCOMPARE(container.iconSize(), QSize(32, 32));
+}
+
+void tst_RibbonCtrlContainer::constructorOrientationAgreesWithSetOrientation()
+{
+    // Building the container vertical has to land in the same state as switching it
+    // vertical later: same orientation, same icon alignment.
+    RibbonCtrlContainer vertical(Qt::Vertical);
+    QCOMPARE(vertical.orientation(), Qt::Vertical);
+    QCOMPARE(header(&vertical, QStringLiteral("logo"))->alignment(), Qt::Alignment(Qt::AlignLeft));
+
+    RibbonCtrlContainer horizontal;
+    QCOMPARE(horizontal.orientation(), Qt::Horizontal);
+    QCOMPARE(header(&horizontal, QStringLiteral("logo"))->alignment(), Qt::Alignment(Qt::AlignCenter));
 }
 
 void tst_RibbonCtrlContainer::orientationDrivesTheHeaderAlignment()

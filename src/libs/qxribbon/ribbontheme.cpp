@@ -50,7 +50,15 @@ void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
         loadTheme(":/qxribbon/res/stylesheets/light_yellow.css", widget);
         break;
     case CustomTheme:
-        widget->setStyleSheet("");
+        // "No widget means the application" is what loadTheme() above promises, and what
+        // the nullptr default of the widget argument says. Dereferencing the pointer
+        // unconditionally turned the documented way of calling this - setTheme(CustomTheme)
+        // with no widget - into a crash on a null pointer.
+        if (widget) {
+            widget->setStyleSheet("");
+        } else {
+            qApp->setStyleSheet("");
+        }
         break;
     default:
         break;
