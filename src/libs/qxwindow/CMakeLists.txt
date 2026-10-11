@@ -26,6 +26,7 @@ add_qtc_library(qxwindow
     windowcontext.cpp windowcontext_p.h
     windowevent.cpp windowevent_p.h
     windowitemdelegate.cpp windowitemdelegate_p.h
+    windowgeometry_p.h
     windowkit_p.h
     windowsystem_p.h
 )

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  **/
 #include "windowcontext_p.h"
+#include "windowgeometry_p.h"
 #include "windowkit_p.h"
 #include "windowsystem_p.h"
 #include <QtCore/QDebug>
@@ -10,8 +11,12 @@
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-static constexpr const quint8 kDefaultResizeBorderThickness = 8;
-
+// The arithmetic itself lives in windowgeometry_p.h, where it can be tested with
+// nothing but a QSize. What is left here are the two conditions that are about
+// the window rather than the geometry: macOS deliberately has no resize cursor,
+// and a window that is not in the windowed state (full screen, hidden) is not
+// resized from its border either. Keeping the guards here keeps the observable
+// behaviour identical to the single-file version this was split out of.
 static Qt::CursorShape calculateCursorShape(const QWindow *window, const QPoint &pos)
 {
 #ifdef Q_OS_MACOS
@@ -20,31 +25,10 @@ static Qt::CursorShape calculateCursorShape(const QWindow *window, const QPoint 
     return Qt::ArrowCursor;
 #else
     Q_ASSERT(window);
-    if (!window) {
+    if (!window || window->visibility() != QWindow::Windowed) {
         return Qt::ArrowCursor;
     }
-    if (window->visibility() != QWindow::Windowed) {
-        return Qt::ArrowCursor;
-    }
-    const int x = pos.x();
-    const int y = pos.y();
-    const int w = window->width();
-    const int h = window->height();
-    if (((x < kDefaultResizeBorderThickness) && (y < kDefaultResizeBorderThickness)) ||
-        ((x >= (w - kDefaultResizeBorderThickness)) && (y >= (h - kDefaultResizeBorderThickness)))) {
-        return Qt::SizeFDiagCursor;
-    }
-    if (((x >= (w - kDefaultResizeBorderThickness)) && (y < kDefaultResizeBorderThickness)) ||
-        ((x < kDefaultResizeBorderThickness) && (y >= (h - kDefaultResizeBorderThickness)))) {
-        return Qt::SizeBDiagCursor;
-    }
-    if ((x < kDefaultResizeBorderThickness) || (x >= (w - kDefaultResizeBorderThickness))) {
-        return Qt::SizeHorCursor;
-    }
-    if ((y < kDefaultResizeBorderThickness) || (y >= (h - kDefaultResizeBorderThickness))) {
-        return Qt::SizeVerCursor;
-    }
-    return Qt::ArrowCursor;
+    return resizeCursorFor(window->size(), pos);
 #endif
 }
 
@@ -56,28 +40,10 @@ static inline Qt::Edges calculateWindowEdges(const QWindow *window, const QPoint
     return {};
 #else
     Q_ASSERT(window);
-    if (!window) {
+    if (!window || window->visibility() != QWindow::Windowed) {
         return {};
     }
-    if (window->visibility() != QWindow::Windowed) {
-        return {};
-    }
-    Qt::Edges edges = {};
-    const int x = pos.x();
-    const int y = pos.y();
-    if (x < kDefaultResizeBorderThickness) {
-        edges |= Qt::LeftEdge;
-    }
-    if (x >= (window->width() - kDefaultResizeBorderThickness)) {
-        edges |= Qt::RightEdge;
-    }
-    if (y < kDefaultResizeBorderThickness) {
-        edges |= Qt::TopEdge;
-    }
-    if (y >= (window->height() - kDefaultResizeBorderThickness)) {
-        edges |= Qt::BottomEdge;
-    }
-    return edges;
+    return resizeEdgesFor(window->size(), pos);
 #endif
 }
 

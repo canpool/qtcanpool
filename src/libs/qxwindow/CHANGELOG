@@ -14,6 +14,14 @@ Cleanup
   blocks that only listed WM_NCPOINTER* cases and are now removed; the remaining
   four sites became NOTE comments, each pointing at an entry in
   doc/pages/limitations.md. No behaviour change and no API change.
+- Move the resize border geometry out of windowcontext_qt.cpp into
+  windowgeometry_p.h, as plain functions over a QSize. It was two file-static
+  helpers taking a QWindow* only to read width(), height() and visibility(); the
+  first two are the whole calculation, so they are now reachable without a
+  window and the backend keeps a thin wrapper with the visibility guard. No
+  behaviour change and no API change - the point is that the arithmetic
+  (which edges a point resizes from, which cursor advertises them) is covered by
+  tests/qxwindow/auto/tst_qxwindowgeometry.cpp instead of being untested.
 
 0.1.2
 ---
