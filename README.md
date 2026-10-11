@@ -188,9 +188,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ![ribbondemo](./doc/pics/ribbondemo.png)
 
-**qxwindow demo**
-
-![qxwindowdemo](./doc/pics/qxwindowdemo.png)
+**ideshell** —— 插件化外壳示例：宿主不认识任何模块（构建目标 `IdeShellDemo`）。
 
 **appshell** —— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（<https://canpool.github.io/qtcanpool/demo/>），构建：`cmake --preset qt6 && cmake --build --preset qt6`。
 
@@ -205,7 +203,7 @@ MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成
 
 ## 快速体验
 
-下载源码，使用 Qt Creator 打开根目录 `CMakeLists.txt`，在目标中选择 `ribbondemo`、`dockdemo` 或 `AppShellDemo` 运行即可体验（命令行构建见上文「构建」一节）。
+下载源码，使用 Qt Creator 打开根目录 `CMakeLists.txt`，在目标中选择 `RibbonDemo`、`DockDemo`、`AppShellDemo` 或 `IdeShellDemo` 运行即可体验（命令行构建见上文「构建」一节）。
 
 ## 扩展
 
