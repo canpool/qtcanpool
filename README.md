@@ -125,8 +125,11 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 ## 路线图
 
 - [3.0 开发规划](./doc/ROADMAP-3.0.md)
-- [3.x / 4.0 开发规划](./doc/ROADMAP-3.x.md)
-- [4.0 任务清单（进行中）](./doc/design/4.0-TASKS.md)
+- [3.x 开发规划（历史）+ 决策索引与库版本规则](./doc/ROADMAP-3.x.md)
+- [4.0 任务清单](./doc/design/4.0-TASKS.md)
+- [4.1 任务清单](./doc/design/4.1-TASKS.md)
+- [4.2 任务清单](./doc/design/4.2-TASKS.md)
+- [**4.3 任务清单（当前）**](./doc/design/4.3-TASKS.md)
 - [2.x → 3.0 迁移指南](./doc/design/3.0-MIGRATION.md)
 - [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
 - [M2 任务清单](./doc/design/3.0-M2-TASKS.md)
@@ -143,9 +146,12 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 | :--- | :--- |
 | [master](https://gitee.com/icanpool/qtcanpool/tree/master/) | 主线分支（4.0 起为开发主线） |
 | [develop](https://gitee.com/icanpool/qtcanpool/tree/develop/) | 历史分支，开发已统一到 master |
-| [release-3.x](https://gitee.com/icanpool/qtcanpool/tree/release-3.x/) | 3.x 维护分支（4.0 起不再新建 release-4.x） |
+| [release-3.x](https://gitee.com/icanpool/qtcanpool/tree/release-3.x/) | 3.x 维护分支（4.0 起不再新建 release-4.x；已冻结） |
 
-- 版本发布以 tag 标记；若某版本存在需修复的缺陷，将以对应版本分支的形式进行维护
+- 版本发布以 tag 标记。**常态只维护最新的 4.x**（基于 `master`）；
+  若某个已发布的 tag 出现必须修复的缺陷，则**按需**从该 tag 拉临时分支修复并打新 tag，
+  修完即止、不作长期维护；到 5.0 发布时再拉 `release-4.x` 作为 4.x 的维护分支
+  （决策见 [`doc/design/4.3-TASKS.md`](doc/design/4.3-TASKS.md) K33）
 
 ## 开发规范
 

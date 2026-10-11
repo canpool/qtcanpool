@@ -3,8 +3,18 @@
 > 上承：[`ROADMAP-3.0.md`](./ROADMAP-3.0.md)（3.0「现代化收敛」，已发布 `3.0.0`）
 > 版本定位：**欠账清算与能力补齐（Pay Down & Fill In）**
 > 主题：**legacy 收敛收口 · 质量门禁补齐 · 应用框架可用化 · 插件体系落地**
-> 文档状态：**3.1.0 已发布**（2026-10-10）· **3.2.0 已发布**（2026-10-10），任务清单见 [`design/3.2-TASKS.md`](./design/3.2-TASKS.md)
+> 文档状态：**3.x 全部发布**（`3.0.0` → `3.3.0`）· **项目现已到 `4.2.0`**（2026-10-11）
 > 适用仓库：`https://github.com/canpool/qtcanpool` / `https://gitee.com/icanpool/qtcanpool`
+
+> 📌 **这份文件现在的身份**（2026-10-11 厘清）：**文件名留 3.x，是因为正文确实是 3.x 的规划**，
+> 它记录的是"3.x 当时怎么想的"——对 4.x 的读者是**历史**，不是待办。
+> 4.x 及以后的规划在各 [`design/`](./design/) 的任务清单里，决策 **K21–K34** 也只在那里。
+> 本文件继续承担两件**不随版本过期**的事：
+> ① §六 决策表作为**跨版本索引**（权威出处一律在 `design/*-TASKS.md`，本表不复制正文）；
+> ② **附录 B（库版本号推进规则，K11 细则）**——发版、`release.md`、`index.md` 的版本表都引它。
+>
+> ⚠️ §一 ~ §五 是 3.x 时期的历史正文，**不再随 4.x 更新**；要查"4.x 现在要做什么"，
+> 请直接看 [`design/4.3-TASKS.md`](./design/4.3-TASKS.md)。
 
 ---
 
@@ -305,9 +315,16 @@
 
 ---
 
-## 六、关键决策
+## 六、关键决策（跨版本索引）
 
-> K7–K12 均已定案。K5（legacy `fancy*` 存废表）出自 [`ROADMAP-3.0.md`](./ROADMAP-3.0.md)。
+> **这是索引，不是正文。** 决策的**权威出处一律在对应版本的
+> [`design/*-TASKS.md`](./design/)**：K1–K6 见 `ROADMAP-3.0.md`，K7–K12 见本文（3.x 时期），
+> K13–K20 见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md)，K21–K24 见
+> [`design/4.1-TASKS.md`](./design/4.1-TASKS.md)，K25–K28 见
+> [`design/4.2-TASKS.md`](./design/4.2-TASKS.md)，K29–K34 见
+> [`design/4.3-TASKS.md`](./design/4.3-TASKS.md)。
+> 下面 K13 之后的几行是 4.0 时期顺手记在这里的摘要，**已归位**，此处仅留指针。
+> K5（legacy `fancy*` 存废表）出自 [`ROADMAP-3.0.md`](./ROADMAP-3.0.md)。
 
 | #       | 决策             | 结论                                                     | 影响                                  |
 | :------ | :------------- | :------------------------------------------------------- | :---------------------------------- |
@@ -325,6 +342,7 @@
 | **K18** | 4.0 的分支模型       | ✅ **`master` 作主线**（2026-10-10 定）：4.0 全部提交进 `master`，`release-3.x` 转为 3.x 维护分支，**不再新建 `release-4.x`** | `pages.yml` 的 `deploy` 须放开到 `master`，否则文档站停更；细则见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K18 |
 | **K19** | 对象池的归属（`qxplugin` / `qxcore`） | ✅ **留在 `qxplugin`**（2026-10-11 定）：机制虽通用（只用 QtCore 的 `QObject`/`QPointer`/`QString`），但「每个应用无论如何都要用的地基」才是 `qxcore` 的承诺，而池只在两端**不能链接**时才是必需品；Qt Creator 的对应物（`ExtensionSystem::PluginManager::addObject()`）同样住在**插件框架层**而非 `src/libs/utils/` | 依赖图在两种落点下**完全相同**（`qxplugin` 本来就依赖 `qxcore`），故选的是归属而非构建；三条翻转条件与反方论据见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K19 |
 | **K20** | 全仓行尾（CRLF / LF 混用） | ✅ **4.0 统一为 LF**（2026-10-11 定）：根 `.gitattributes` 写 `* text=auto eol=lf` + 图像 `binary`，一次性 renormalize（`master` 215 个文件、`release-3.x` 288 个），并附 `.git-blame-ignore-revs`。理由是**没有 `.gitattributes` 时 git 不会改写已入库的 CRLF blob**——实测 `autocrlf=input` 只在文件**首次入库**时归一化，此后的编辑必须逐文件手工维持行尾，插进去的 LF 行会被**原样提交成混行尾**；而 4.0 是唯一"反正已经全破"的自然节点 | 消除一项持续的手工纪律与已反复发生的出错来源；下游消费者（经 CMake 取库）完全无感；`release-3.x` 同步落同一笔以免回移时全文件冲突；细则见 [`design/4.0-TASKS.md`](./design/4.0-TASKS.md) K20 |
+| **K29–K34** | **4.3 起的决策**（版本号 / Qt 5 去留 / 维护末期判据 / CI 基线 / 版本维护模型 / 4.x 主线） | ✅ 全文见 [`design/4.3-TASKS.md`](./design/4.3-TASKS.md) §三，**本表不重复** | 见该文件 K29–K34 |
 
 ---
 
@@ -416,6 +434,10 @@ examples/qcanpool (4 个示例)     同上                              ← 整�
 ---
 
 ## 附录 B：库版本号的推进规则（K11 细则）
+
+> 📌 **这份附录是活规则，不随版本过期。** 它定义"哪个库该前进号、怎么前进"，
+> 每次发版都要照它执行——`doc/pages/release.md`（发版唯一出处）与 `doc/pages/index.md`
+> 的版本对照表都引它。**即使本文正文已是 3.x 历史，这份规则仍然是当前有效的。**
 
 > K11 定的是「各库保持独立演进号」；本附录定的是「什么时候往前推」。
 > 一句话：**跟着发布批次结算，但只动本期真改了 API 的库，且不追溯改写已发布的号。**
