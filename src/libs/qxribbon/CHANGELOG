@@ -1,7 +1,10 @@
-Unreleased
+0.10.2
 ---
 Bugfix
 - RibbonMainWindow: keep the window at least as wide as the ribbon bar needs
+- RibbonGridContainer: make enterEvent an override on Qt 6, where its parameter
+  is QEnterEvent *; the Qt 5 signature hid the virtual there and the handler
+  never ran, which left a menu with two entries looking current
 
 0.10.1
 ---
