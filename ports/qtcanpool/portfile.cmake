@@ -10,7 +10,8 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO canpool/qtcanpool
     REF "${VERSION}" # the project tags plain versions (2.3.0, 3.0.0, ...)
-    SHA512 0 # TODO: real archive hash, fill in after tagging 3.0.0
+    SHA512 0 # NOTE: placeholder until the matching release tag is pushed; this port is a community
+            # starting point and is not validated in CI (building qtbase from source is out of budget).
     HEAD_REF master
 )
 

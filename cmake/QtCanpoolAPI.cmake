@@ -1101,7 +1101,9 @@ function(qtc_add_resources target resourceName)
         set(file "${CMAKE_CURRENT_SOURCE_DIR}/${file}")
     endif()
 
-    ### FIXME: escape file paths to be XML conform
+    # NOTE: file paths are written verbatim and are NOT XML-escaped; a resource whose path contains
+    # & < > " would produce an invalid .qrc. See doc/pages/limitations.md,
+    # "qx_add_resources does not escape file paths".
     # <file ...>...</file>
     string(APPEND qrcContents "    <file alias=\"${file_resource_path}\">")
     string(APPEND qrcContents "${file}</file>\n")
