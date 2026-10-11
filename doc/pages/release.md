@@ -52,6 +52,18 @@ git diff --name-only <上次tag>..HEAD -- 'src/libs/**/*.h'
 （4.2 的 A13 就是一例：`src/libs/qxdock/dockautohidecontainer.h` 只加了一段注释，
 `qxdock` 因此不动号。）
 
+⚠️ **按库逐个核时，不要写 `<lib>/**/*.h`**：`src/libs/qxdock/**/*.h` **什么都列不出来**。
+git 的 `**` 至少要吃掉一层目录名，所以紧贴库目录、没有子目录的 `src/libs/qxdock/*.h`
+**匹配不到**。（上面那条全树命令是安全的：那里的 `**` 吃掉的正是库名那一层。）
+逐库核要用**目录 pathspec** 再过滤：
+
+```bash
+git diff --name-only <上次tag>..HEAD -- src/libs/qxdock/ | grep '\.h$'
+```
+
+4.2 的 A12 就是被这条咬到的：当时据 `qxdock/**/*.h` 为空判成"qxdock 没动 `.h`"，
+实际它**有**一处 `.h` 改动（A13 那段注释）——结论侥幸相同（都不进号），**依据却是错的**。
+
 **改号要改两处**：
 
 | 位置 | 内容 |
