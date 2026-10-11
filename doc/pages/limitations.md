@@ -9,9 +9,13 @@
 
 > 这里**不是缺陷列表**。真正的缺陷在 issue 里，修不动的、或者修了不划算的才在这里。
 
+**条目名**：标题后面圆括号里的英文名，就是源码注释里引用本页时用的那个字符串
+（形如 `// See doc/pages/limitations.md, "..."`）。两边必须**逐字一致**，
+否则在页面上 `grep` 不到——改标题时顺手改引用。
+
 ---
 
-## RibbonBar 的 resize 是延迟的
+## RibbonBar 的 resize 是延迟的（RibbonBar resize is deferred）
 
 **现象**：切换 Ribbon 样式时，新的几何到下个事件循环轮次才生效。
 
@@ -30,7 +34,7 @@
 
 ---
 
-## LayoutRequest 可能带来多余的 resize 轮次
+## LayoutRequest 可能带来多余的 resize 轮次（LayoutRequest can add resize passes）
 
 **现象**：`RibbonBar` 收到 `QEvent::LayoutRequest` 时会重跑一次 ribbon resize，
 所以一次操作可能触发不止一轮 resize。
@@ -57,7 +61,7 @@
 
 ---
 
-## WpsLiteStyle 下按钮组短暂重叠
+## WpsLiteStyle 下按钮组短暂重叠（WpsLiteStyle button group overlap）
 
 **现象**：`WpsLiteStyle` 下，右侧按钮组与窗口按钮组会有一瞬间重叠。
 
@@ -73,7 +77,7 @@
 
 ---
 
-## 定制数据没有草稿态
+## 定制数据没有草稿态（customization has no draft state）
 
 **现象**：`RibbonCustomizeDialog::apply()` 会把改动立刻写进 ribbon，但**不写文件**。
 "应用后直接关掉对话框、不保存"会丢掉这次改动；更麻烦的是：
@@ -90,7 +94,7 @@
 
 ---
 
-## Linux 上的无边框窗口
+## Linux 上的无边框窗口（frameless windows on Linux）
 
 **现象**：Linux 上用无边框窗口，最大化之后拖标题栏还原不正常。
 
@@ -117,7 +121,7 @@ Linux 的默认改成系统边框，结论是**不改**。
 
 ---
 
-## Qt 6.5 及以上的无边框依赖一个动态属性
+## Qt 6.5 及以上的无边框依赖一个动态属性（frameless windows on Qt 6.5 and later）
 
 **现象**：Qt 6.0 起，自定义窗口边距改走 Qt 的**私有平台类**（`QWindowsWindow::setCustomMargins()`）；
 到 Qt 6.5，那批平台私有头已经不再随 Qt 一起安装（`QtGui/<ver>/QtGui/private/` 里没有 `qwindowswindow_p.h`），
@@ -134,7 +138,7 @@ Linux 的默认改成系统边框，结论是**不改**。
 
 ---
 
-## Windows + Qt 6 上，无边框窗口不能"启动即最大化"
+## Windows + Qt 6 上，无边框窗口不能"启动即最大化"（a frameless window on Windows, Qt 6, maximised on first show）
 
 **现象**：Windows 上无边框窗口如果**第一次显示就是最大化**——在事件循环之前调 `showMaximized()`，
 最典型的是在构造函数里——之后拖标题栏"还原"只会让窗口**平移**、尺寸仍是满屏；再拖边框，要么
