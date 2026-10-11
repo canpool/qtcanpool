@@ -193,9 +193,10 @@ endif()
 #
 # The demo renders itself offscreen through its own --screenshot switch, which
 # keeps the window driving out of the test, and the capture is compared with a
-# golden image. The golden is per platform (tests/demo/golden/<CMAKE_SYSTEM_NAME>/)
-# because a screenshot is the one artefact here that legitimately differs between
-# machines - same code, a different font rasteriser, different pixels - and the
+# golden image. The golden is per platform *and* per Qt major version
+# (tests/demo/golden/<CMAKE_SYSTEM_NAME>/Qt<N>/), because a screenshot is the one
+# artefact here that legitimately differs between machines - same code, a
+# different font rasteriser, different pixels - and the
 # comparison is opt-in (QTCANPOOL_VISUAL_BASELINE=1) because it is only
 # meaningful between the machine that produced the golden and the same machine
 # later; CI, with its own fonts, must never judge one.
@@ -209,7 +210,18 @@ if (TARGET RibbonDemo)
   set(DEMO_SCREENSHOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/screenshots")
   file(MAKE_DIRECTORY "${DEMO_SCREENSHOT_DIR}")
   set(DEMO_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/ribbondemo.png")
-  set(DEMO_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/ribbondemo.png")
+  # One golden cannot serve both Qt majors: the same demo measures 1280x800 on
+  # Qt 6 and 1333x833 on Qt 5, so a Qt 5 capture fails the size check before a
+  # single pixel is compared (task C2). Splitting by Qt major also gives the
+  # honest answer for a major that has no golden at all - "no golden for this
+  # platform", a skip - instead of a failure that reads like a regression.
+  # Qt5_VERSION is the shim's variable and is set for both, see cmake/FindQt5.cmake.
+  if (Qt5_VERSION VERSION_LESS 6.0.0)
+      set(DEMO_GOLDEN_QT "Qt5")
+  else()
+      set(DEMO_GOLDEN_QT "Qt6")
+  endif()
+  set(DEMO_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/ribbondemo.png")
 
   add_qtc_test(tst_demoscreenshot
       DEPENDS Qt5::Gui
