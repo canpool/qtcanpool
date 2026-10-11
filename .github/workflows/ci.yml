@@ -87,6 +87,10 @@ jobs:
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
     # so any unformatted change now fails the build.
+    #
+    # This job also carries the other check that needs no toolchain - see below.
+    # Keeping the gate job's name is deliberate: it is what queued here first and
+    # what is named elsewhere, and the checks below are static either way.
     name: clang-format
     runs-on: ubuntu-latest
     steps:
@@ -109,6 +113,22 @@ jobs:
             'tests/**/*.h' 'tests/**/*.cpp' \
             'projects/**/*.h' 'projects/**/*.cpp')
           clang-format --style=file --dry-run --Werror $FILES
+
+      - name: Check the template matches the scaffolding script
+        # Decision K9 makes scripts/new-project the only definition of a new
+        # project and projects/template the render of it that stays in the tree
+        # to be read. Two copies of one thing drift, and these did - when 4.2
+        # started the template had no resources/ at all and its main.cpp had six
+        # differences from the script's - which is exactly the kind of
+        # divergence nobody notices, because each copy still looks plausible on
+        # its own. check-template-sync.py runs the generator itself and diffs
+        # the result, so a bug in the generator is caught here too and not only
+        # a stale copy.
+        #
+        # It needs neither Qt nor an SDK, so it sits here with formatting rather
+        # than behind the SDK checks in build: those are reachable only after a
+        # full build, and this one should say so in seconds.
+        run: python3 scripts/check-template-sync.py
 
   quality:
     # Coverage and sanitizers. Both need a full configure and a compiler, so
