@@ -1,3 +1,50 @@
+4.2.0
+---
+- qxribbon 0.10.2 -> 0.11.0. FramelessHelper is deprecated (K27). It is the
+  frameless backend of RibbonWindow and only really works on Windows with Qt 5;
+  everywhere else - every Qt 6 platform included - it takes the incomplete half
+  of the path, where a window first shown maximised cannot be restored. Use
+  QxApp::RibbonAppWindow instead, which goes through qxwindow. Removal waits at
+  least one more release under the K26 buffer; RibbonWindow itself is unchanged.
+  RibbonStyleOption also gained setBaseHeight(), setTitleBarHeight() and
+  setTabBarHeight(), so the ribbon size layout can be tuned without subclassing
+- qxwindow 0.1.2 -> 0.2.0. WindowStyleAgent is deprecated (K26 / W2): nothing in
+  the tree refers to it, no page documents it, it is not even compiled unless
+  QX_WINDOW_CONFIG_STYLE_AGENT is on, and QxThemeManager in qxtheme already
+  follows the system colour scheme more completely than this class does. The
+  resize border geometry also moved out of windowcontext_qt.cpp into
+  windowgeometry_p.h as plain functions over a QSize, so that arithmetic is
+  covered by tests for the first time
+- qxdock stays at 0.2.0. The 0.2.0 "perspective and group" surface - DockGroup,
+  DockGroupManager and DockSubWindow - had neither a dedicated example nor any
+  test until now; both were added (tst_DockGroup, examples/qxdock/dockgroup).
+  Its single header change this cycle, dockautohidecontainer.h, is only the
+  comment A13 added, which is not an API change under appendix B, so the number
+  does not move; what changed is recorded in the library's own Unreleased
+  section instead (K24)
+- qxcore, qxtheme, qxplugin and qxapp do not move (0.1.1 / 0.1.0 / 0.2.0 /
+  0.1.0): no public header of theirs changed at all this cycle. These four had
+  no library-level changelog before; they do now (K24, non-retroactive)
+- debt: every TODO and FIXME in src/libs and in the rest of the tracked tree is
+  settled through one of K21's three exits - fixed with a regression test,
+  rewritten as a NOTE pointing at an entry in doc/pages/limitations.md, or
+  deleted with the reason written down
+- examples: all 22 targets under examples/ now carry a one-line README, and
+  Example_Dock_Group is new
+- docs: doc/pages/release.md is new (K28) and holds every step of cutting a
+  release in one page; the component dependencies and class names in index.md,
+  architecture.md and components.md were corrected to match the code
+- build and CI: projects/template is now rendered by scripts/new-project and
+  compared byte for byte in CI; thirdparty/ and the redundant
+  scripts/project.py are gone; the AUTOMOC workaround qtc_autogen_rescan() was
+  re-verified on CMake 4.2.1 against both Qt 5 and Qt 6 and is still required
+  (C3); the screenshot golden is now kept per Qt major version, because Qt 5 and
+  Qt 6 do not produce the same window size and a shared golden made Qt 5 fail
+  every time (C2)
+- X11: qxdock's linux/ subtree does get compiled on the Ubuntu CI legs, but
+  every test runs offscreen, so is_platform_x11() short-circuits each request:
+  the xcb interaction layer has still never executed on CI (A15)
+
 4.1.1
 ---
 - qxribbon: make RibbonGridContainer's enter event an override again on Qt 6.
