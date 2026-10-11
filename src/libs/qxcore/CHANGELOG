@@ -1,0 +1,13 @@
+Unreleased
+---
+Nothing recorded yet.
+
+This file exists so that a change to `qxcore` has somewhere to go. Decision K24
+asks for the library-level log to be written as the change lands, under a heading
+like `Feature` / `Interface` / `Optimize` / `Bugfix` / `Deprecated` / `Cleanup` /
+`Test`, and for this section to be renamed to the new version when the version
+number moves.
+
+Released sections are deliberately **not** reconstructed here: K24's rule is
+"no retroactive", so the history before this point stays in the commit log rather
+than being rewritten as change log entries.
