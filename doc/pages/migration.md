@@ -288,6 +288,70 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 | `WindowStyleAgent`（原 `qxwindow/style/`） | @ref QxTheme::QxThemeManager | 无。它默认**不编译**（要 `QX_WINDOW_CONFIG_STYLE_AGENT=ON`），全仓无人引用，`QX_WINDOW_CONFIG_STYLE_AGENT` 这个开关也一并去掉了。打开过开关的下游换成 `QxThemeManager`；它唯一多报的 `HighContrast` 一档没有等价物——真有需要时按新需求单独加，而不是恢复这个类 |
 | `FramelessHelper`（原 `qxribbon/framelesshelper.h`）+ `RibbonWindow`（原 `qxribbon/ribbonwindow.h`） | 要无边框：@ref QxApp::RibbonAppWindow；不要无边框：`QxRibbon::RibbonMainWindow` | 基类换成 `RibbonMainWindow` 即可（两者只差"有无边框"，其余都在基类里）。要无边框就换 `RibbonAppWindow`——它在 Qt 5 与 Qt 6 上都成立，代价是多链 `qxapp`。为什么这两个一起删、以及为什么没等到 Qt 5 下线，见上一节 |
 
+## 5.0.0 将移除 Qt 5 支持（4.x 全程保留，现在可以做的准备）
+
+> **这一节不是 4.3 的变更。** 4.x **全程保留 Qt 5 支持**（决策 K30），本版**没有删任何 Qt 5 代码**。
+> 这里写的是"将来会断在哪、现在能怎么准备"，免得 5.0.0 发布时你才第一次看到。
+
+### 会影响谁
+
+| 你现在 | 5.0.0 之后 |
+| :--- | :--- |
+| 用 Qt 5.15 构建本库或自己的应用 | 必须切到 **Qt ≥ 6.0**（本库主推、也是 CI 基线的，是 6.8 LTS） |
+| 只 include 本库公开头、链接 `QtCanpool::*` | **不受影响**——目标名与头文件路径都不变，变的是你 configure 时指向的 Qt |
+| include 了 `qtcompat/qtcompat.h` | 见下一节 |
+| 还在用 qmake | 4.0 起就没有 qmake 了，见上文「构建迁移」 |
+
+**本库的用法不用改**：`find_package(QtCanpool)` + `target_link_libraries(app PRIVATE QtCanpool::qxribbon)`
+这种写法在 Qt 6 下**逐字不变**。要动的是**你自己代码里的 Qt 5 用法**
+（`QRegExp`、`QMouseEvent::globalPos()`、`QString::SplitBehavior` 那一类）。
+
+### `qtcompat` 的去留
+
+`qtcompat` 是**只为跨 Qt 5 / 6 而存在**的 header-only 兼容头，目前两个函数：
+
+| `QtCanpoolCompat::` | 在 Qt 6 下的等价写法 |
+| :--- | :--- |
+| `globalMousePos(event)` | `event->globalPosition().toPoint()` |
+| `hoverPos(event)` | `event->position().toPoint()` |
+
+5.0.0 之后这两个函数没有存在理由。**现在就可以换成右边那一列**——
+它在任何 Qt 6 上都能编译，换完你代码里就少一处将来要动的地方。
+
+### 移除之后，本库的行为会变吗
+
+**在 Qt 6 上不会变**：移除的是 Qt 5 那一半分支，Qt 6 这一半原样留下。
+
+4.3 已经把全仓 Qt 版本分支**分类过一遍**（决策 K35）：88 行里 **30 处**是 `< 6.0` 分支，
+也就是"支持 Qt 5 的真实成本"。它们的性质要说准：
+
+- **大多数是编译期的 API 适配**——`globalPos()` → `globalPosition()`、
+  `QHoverEvent::pos()` → `position()`、`nativeEventFilter` 的签名、
+  `QEvent` → `QEnterEvent`、`QIcon::pixmap()` 的重载、`QLibraryInfo::location()` → `path()` 等；
+- **少数几处是顺着 Qt 自己的语义变化**：`QApplication::globalStrut()` 在 Qt 6 上不再参与
+  `sizeHint()`、`QExposeEvent::region()` 在 Qt 6 里被移除（本库改成一律按"有区域"处理）、
+  `QFontMetrics` 的 int 与 `QFontMetricsF` 的浮点版本在 `lineSpacing()` 上的取整差异。
+
+⇒ 后者**来自 Qt 的变化，不是本库在两版之间挑了不同的行为**。5.0.0 之后只剩 Qt 6 那一条路径，
+你在 Qt 6 上看到的一切都不会变。
+
+### 什么时候
+
+**不设日期。** K32 定的三条触发条件（① 版本分支的分类表完成 ② 分类结果全部落在"可收敛"或"纯版本分支"
+③ 至少一个 4.x 版本已在 Qt 6 上跑满）要**同时**满足，才宣布 Qt 5 进入"维护末期"，之后才谈移除。
+在此之前 Qt 5 这条腿照常维护。
+
+但请记住：**Qt 5.15 LTS 已完全 EOL**——标准支持 2023-05 结束，订阅用户的延长支持 2025-05 也到期，
+**不会再有任何上游修复**（本库 CI 里那条 ubuntu + 5.15.2 的腿，测的是一个已停止支持的 Qt）。
+
+### 现在能做的三件事（都不需要改本库）
+
+1. **给自己的 CI 加一条 Qt 6 腿**：本库 4.x 两版都支持，随时可切，不必等到 5.0.0。
+2. **把 `qtcompat` 的调用换成上表右边那一列。**
+3. **留意 `QX_<LIB>_DEPRECATED_SINCE`**：4.3 修好了这个闸门（此前它对"已经发生的弃用"恒返回假，
+   见本页上一节 / 决策 D11）。将来移除任何 API 都会先用它给足一个版本的告警期（K26）——
+   **看到 deprecated 告警就是迁移点**。
+
 ## 分步迁移清单
 
 1. 构建切换到 CMake，锁定 Qt ≥ 5.15（推荐 6.5 / 6.8）。
