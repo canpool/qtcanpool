@@ -197,9 +197,14 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 | 找不到 `*.pro` / `*.pri` | 按下文「构建迁移」一节改用 `find_package(QtCanpool)` |
 | `projects/staticlink` 消失 | 静态链接改用 CMake 的 `find_package` + 目标链接 |
 | `examples/` 下不再是 `.pro` | 新增根选项 `WITH_EXAMPLES`（默认 ON，与 `WITH_DEMOS` 并列） |
+| `thirdparty/` 目录消失 | 它放的是 5 个 `.pri`（qmake 用于链接第三方库的配置文件，随 K13 删除）；第三方接入改用 CMake 的 `find_package` 或自定义 Find/Config 模块 |
 
 > 少数只在 qmake 里存在、没有 CMake 对应物的示例被删除：`demos/helloworld`、`demos/qxwindow`、
 > `demos/thirdparty`；`examples/` 下的 22 个示例已补上 CMake 并恢复可构建。
+>
+> `thirdparty/` 的第三方接入示例（boost / ffmpeg / opencascade）同样依赖这些 `.pri`，
+> 其 `demos/thirdparty` 消费方在 4.0 删除；目录里残余的 README 在 **4.2 删除**——它们整篇讲的
+> 都是那些已不存在的 `.pri`，留着只能指向空气。
 
 ### 新增 `qxplugin` 库
 

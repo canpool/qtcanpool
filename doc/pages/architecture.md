@@ -56,7 +56,6 @@ qxapp      应用框架
 | `doc/` | 文档：设计文档、指南页面（`doc/pages/`）与文档站点构建（`doc/CMakeLists.txt`） |
 | `projects/` | 项目模板，可在此持续添加自己的项目 |
 | `scripts/` | 辅助脚本 |
-| `thirdparty/` | 第三方库使用案例 |
 
 ## 命名空间
 

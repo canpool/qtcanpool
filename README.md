@@ -75,7 +75,6 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 | | `plugins` | 框架自身功能插件（预留，当前只有分层骨架） |
 | | `shared` | 共享的实用代码 |
 | `tests` | | 单元测试（CTest） |
-| `thirdparty` | | 第三方库使用案例 |
 
 ## 环境要求
 
