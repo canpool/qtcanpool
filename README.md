@@ -69,7 +69,7 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 | `doc` | | 文档：Doxygen 站点源码（`Doxyfile.in`、`pages/` 指南、`qtcanpool-doxygen.css`）与设计文档 |
 | `examples` | | 控件级示例（`WITH_EXAMPLES`，默认随构建编译） |
 | `projects` | | 项目示例：`template` 最小应用模板、`consume` SDK 消费验证 |
-| `scripts` | | 辅助脚本：`new-project` 生成新工程骨架、`push` 推送双远程、`project.py` 工程工具 |
+| `scripts` | | 辅助脚本：`new-project` 生成新工程骨架、`push` 推送双远程 |
 | `src` | `libs` | 基础类库 |
 | | `modules` | 插件样板模块：`output` / `notebook` / `filetree`（K16 样板定位） |
 | | `plugins` | 框架自身功能插件（预留，当前只有分层骨架） |
