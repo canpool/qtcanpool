@@ -216,11 +216,11 @@ void MainWindow::createPageHome()
     groupStyle->addSmallAction(actWindowFlagNormalButton);
     connect(actWindowFlagNormalButton, &QAction::triggered, this, &MainWindow::onActionWindowFlagNormalButtonTriggered);
 #if defined(QXRIBBON_USE_APPWINDOW) || !defined(Q_OS_WINDOWS)
-    // FIXME: 在使用 FRAMELESS_USE_NATIVE
-    // 方案时，先单击按钮禁止最大化，再单击按钮允许最大化后，窗口最大化后显示位置异常， 且鼠标不能再改变窗口大小，这是
-    // FramelessWidgetDataNativeWin 的缺陷
     actWindowFlagNormalButton->setEnabled(true);
 #else
+    // NOTE: RibbonWindow's native frameless backend (FramelessWidgetDataNativeWin) leaves the
+    // window misplaced and unresizable after a maximize/unmaximize toggle on Windows, so this
+    // button stays disabled there. RibbonWindow is deprecated since 4.2 (K27); Qt 6 uses RibbonAppWindow.
     actWindowFlagNormalButton->setEnabled(false);
 #endif
 
@@ -329,7 +329,9 @@ void MainWindow::createPageHome()
             this->showNormal();
         }
 #if !defined(QXRIBBON_USE_APPWINDOW)
-        // FIXME: 全屏显示时，如果切换有边框和无边框会影响全屏显示，所以当全屏显示时，暂时先禁止有无边框切换
+        // NOTE: toggling frameless while full-screen corrupts the full-screen layout, so the
+        // checkbox is disabled during full screen. Same family of quirks as
+        // "a frameless window on Windows, Qt 6, maximised on first show" (see doc/pages/limitations.md).
         framelessCB->setDisabled(checked);
 #endif
     });
@@ -1038,7 +1040,10 @@ void MainWindow::createRightButtonGroup()
 void MainWindow::createApplicationButton()
 {
 #if QXRIBBON_TEST_CUSTOMIZE_APPBTN
-    // FIXME: 当前按钮在单击后会出现下沉效果
+    // NOTE: a custom QToolButton used as the application button sinks on press - that is QToolButton's
+    // standard pressed look. RibbonApplicationButton avoids it, but qxribbon's stylesheet does not reach
+    // a caller-supplied QToolButton. See doc/pages/limitations.md, "custom QToolButton application button
+    // sinks on press".
     QToolButton *appBtn = new QToolButton(this);
     appBtn->setAutoRaise(true);
     appBtn->setFocusPolicy(Qt::NoFocus);
@@ -1145,7 +1150,8 @@ void MainWindow::applyStyleSheet(const QString &styleSheet)
 {
     this->setStyleSheet(styleSheet);
     setRibbonTheme(UserCustomTheme);
-    // TODO: update theme action state
+    // NOTE: the theme menu does not reflect the custom theme - there is no "Custom" entry in it, and
+    // adding one only to track this state is not worth it for a demo. Known imperfection, not a bug.
 }
 
 void MainWindow::onShowContextPage(bool on)

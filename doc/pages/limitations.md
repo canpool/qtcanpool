@@ -174,6 +174,11 @@ Qt 5 上照旧可用；它的 `FramelessHelper` 使用处在源码里用 `QT_WAR
 那样的原生做法。真要动，位置是 `src/libs/qxribbon/framelesshelper.cpp` 里
 `FramelessWidgetDataQt::handleMouseMoveEvent()` 的还原分支。
 
+**demo 里的对应规避（同一家族）**：`demos/qxapp/ribbondemo` 在 `RibbonWindow` 路径下，
+全屏时也会禁用"有无边框"切换复选框——同样是这条路径上"无边框与最大化/全屏状态切换"的怪异，
+只是触发点是**全屏**而不是"启动即最大化"。那条代码用本页英文名引用了本条（见 `mainwindow.cpp`
+的 `show full screen` 复选框处理）。
+
 ---
 
 > 下面五条来自 **A1**（`doc/design/4.2-TASKS.md`）：`qxwindow` 里从上游继承下来的 8 处
@@ -277,3 +282,38 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 **要改变它需要什么**：在 `WindowMoveManipulator` 里保存"最大化之前的几何"，在第一次移动时先
 退出最大化、再按位移走。注意这与本页"Windows + Qt 6 上，无边框窗口不能'启动即最大化'"那条相邻
 ——那边是 Qt 平台插件的状态不同步，这里是这一层没有还原几何，两者要放在一起验证。
+
+---
+
+## 自定义 QToolButton 应用按钮按下会下沉（custom QToolButton application button sinks on press）
+
+**现象**：用调用方自己提供的 `QToolButton` 当 ribbon 应用按钮时，单击（按下）按钮内容会下沉，
+与 ribbon 自带的 `RibbonApplicationButton` 观感不同。
+
+**成因**：这是 `QToolButton` 的**标准按下视觉**（按下时下压内边距），不是 bug。`RibbonApplicationButton`
+是 qxribbon 自己的类，ribbon 样式表覆盖了它的按下观感；但样式表**覆盖不到调用方提供的任意 `QToolButton`**，
+所以这个标准视觉就露出来了。`demos/qxapp/ribbondemo` 在 `QXRIBBON_TEST_CUSTOMIZE_APPBTN` 开时
+就用 `QToolButton` 当应用按钮，因此看得到这个下沉（`mainwindow.cpp` 里用本页英文名引用了本条）。
+
+**为什么保持现状**：要消除，调用方得自己给 `QToolButton` 设样式（例如 `padding: 0` 或针对 `:pressed`
+的重写）。这是"用自己的控件"必然带来的代价，库不该替调用方的控件定样式。
+
+**要改变它需要什么**：调用方给应用按钮 `QToolButton` 设一条针对 `:pressed` 的样式；或改用
+`RibbonApplicationButton`（它已经没有这个下沉）。
+
+---
+
+## qx_add_resources 不对文件路径做 XML 转义（qx_add_resources does not escape file paths）
+
+**现象**：用 `qx_add_resources()`（以及本库其它生成 `.qrc` 的宏）时，资源文件的路径会被**原样**写进
+生成的 `.qrc`；若路径里含有 `&` `<` `>` `"`，生成的 `.qrc` 不是合法的 XML。
+
+**成因**：生成 `.qrc` 时只做了字符串拼接，没有对路径做 XML 转义。绝大多数资源路径是相对或绝对路径、
+不含这些字符，所以平时碰不到；但 `&` 在 Windows 文件名里合法、`<` `>` `"` 在 Linux 文件名里合法，
+理论上可以出现（`cmake/QtCanpoolAPI.cmake` 里用本页英文名引用了本条）。
+
+**为什么保持现状**：现有资源路径都不含这些字符，没有已知触发；做转义要改构建 API 的行为，且要确保
+不破坏现有资源。属于"知道但不打算现在改"。
+
+**要改变它需要什么**：在生成 `.qrc` 时对路径做 XML 转义（转 `&amp;` `&lt;` `&gt;` `&quot;`）。
+改完要在 CI 里用一条含特殊字符的资源路径验证生成的 `.qrc` 可解析。
