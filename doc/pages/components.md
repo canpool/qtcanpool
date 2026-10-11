@@ -127,6 +127,7 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组 |
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单 |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口 |
+| `RibbonWindow` | 继承 `RibbonMainWindow`，**自带**无边框实现（`FramelessHelper`）。Qt 6 上请改用 @ref QxApp::RibbonAppWindow——同一个基类，无边框走 qxwindow |
 | `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
 | `RibbonTheme` | widget 级样式表加载器（6 套内置样式表）。新代码请优先使用 @ref QxTheme::QxThemeManager |
 | `RibbonGallery` / `RibbonCustomizeDialog` 等 | 选项板、自定义对话框等配套控件 |

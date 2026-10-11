@@ -1,3 +1,14 @@
+Unreleased
+---
+Deprecated
+- FramelessHelper: it is the frameless backend of RibbonWindow, and on Windows
+  with Qt 5 it is the working path; everywhere else - including every Qt 6
+  platform - the path it implements is the incomplete half, where a window
+  shown maximised for the first time cannot be restored. It is marked with
+  QT_DEPRECATED_X and points at QxApp::RibbonAppWindow, which goes through
+  qxwindow. RibbonWindow itself is unchanged and still uses it. Removal needs
+  at least one release of warning first (K26).
+
 0.10.2
 ---
 Bugfix

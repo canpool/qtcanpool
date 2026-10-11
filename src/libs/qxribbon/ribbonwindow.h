@@ -35,6 +35,17 @@ class RibbonBar;
  *
  * 常用方法：在 RibbonWindow 继承类中自定义 Theme 枚举类型，如: RibbonThemeCustom, 然后首个类型值定义为 CustomTheme + 1
  *
+ *
+ * NOTE (4.2, K27): the frameless window this class provides is the self-contained
+ * one in this library - @ref FramelessHelper - and that is why qxribbon needs no
+ * dependency on qxwindow. On Qt 6 use @ref QxApp::RibbonAppWindow instead: it is
+ * a sibling of this class (the same @ref RibbonMainWindow base, framed by
+ * qxwindow) and its frameless path is the complete one. FramelessHelper's Qt 6
+ * path is the incomplete half - see doc/pages/limitations.md, "a frameless
+ * window on Windows, Qt 6, maximised on first show". RibbonWindow itself keeps
+ * working, and on Qt 5 it remains the window to use; what happens to it once
+ * FramelessHelper goes is written up in doc/pages/migration.md, "4.2 起弃用".
+ *
  */
 class QX_RIBBON_EXPORT RibbonWindow : public RibbonMainWindow
 {

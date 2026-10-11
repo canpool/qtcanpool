@@ -226,6 +226,46 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 > ⚠️ **行为变化：optional 依赖现在是真排序**。4.0 之前它只被登记、不建边（等同"没声明"）；现在能解析时
 > 它把供给方排到前面——这样消费方查得到对方已发布的东西；不能解析时静默跳过，且**不连带**消费方。
 
+## 4.2 起弃用（升级提示）
+
+这一节只记**已经标记弃用、但还没有删除**的东西。按 K26，删除要等至少一个版本，且必须先有替代路径
+——所以下面每一条都带"换到哪里"。
+
+| 弃用 | 替代 | 说明 |
+| :--- | :--- | :--- |
+| `FramelessHelper`（`qxribbon/framelesshelper.h`） | Qt 6 上用 @ref QxApp::RibbonAppWindow；Qt 5 上就是它本身，没有替代 | 它是 `RibbonWindow` 的无边框后端。没有命名空间、也没有导出宏，所以下游本来就取不到它的符号；标记的意义在文档与源码两头对得上，见[已知限制](limitations.md) |
+
+### `FramelessHelper` 删除之后，`RibbonWindow` 怎么办
+
+这不是一个能拖到删代码那天再想的问题，因为 `RibbonWindow` 与 `FramelessHelper` 是**同一件事**。
+三者的真实差异（对着头文件核过）：
+
+| 类 | 基类 | 比基类多出来的东西 |
+| :--- | :--- | :--- |
+| `RibbonMainWindow` | `QMainWindow` | `ribbonBar()` / `resizeRibbon()` / 主题（`setRibbonTheme`、`loadTheme`）/ `windowStateChanged` |
+| `RibbonWindow` | `RibbonMainWindow` | **只有无边框**：`isFrameless` / `setFrameless`，实现是 `FramelessHelper` + `WindowButtonGroup` |
+| `RibbonAppWindow`（`qxapp`） | `RibbonMainWindow` | **只有无边框**：实现是 qxwindow 的 `WindowAgentWidget` |
+
+⇒ 后两者是**兄弟不是父子**：同一个 `RibbonMainWindow` 基类，换的只是无边框后端。
+**`RibbonWindow` 去掉无边框之后就等于 `RibbonMainWindow`**——主题与 `ribbonBar()` 全在基类里，
+它自己一点都没多。
+
+**为什么当初要在 `qxribbon` 里自带一份无边框实现**，而不是直接用 `qxwindow`：为了让 `qxribbon`
+保持自包含——它只链 Qt、不依赖 `qxwindow`，这条分层至今没破（见[架构与约定](architecture.md)）。
+而"更好的无边框实现"也不能靠让 `qxribbon` 依赖 `qxwindow` 来落地，所以 `qxapp` 里才有了
+`RibbonAppWindow`：它把依赖留在 `qxapp`，`qxribbon` 那一侧不受影响。
+
+**所以答案是：这两者一起走。** 三种做法与各自代价：
+
+| 做法 | 内容 | 代价 |
+| :--- | :--- | :--- |
+| **A（推荐）** | 删 `FramelessHelper` 时**一并删 `RibbonWindow`**，迁移写成"基类换成 `RibbonMainWindow`；要无边框就用 `qxapp` 的 `RibbonAppWindow`" | 破坏性，但是机械替换；`RibbonWindow` 的用户本来就是"要无边框的人"，他们真正该去的是 `RibbonAppWindow` |
+| B | 保留 `RibbonWindow`、去掉无边框（`setFrameless` 消失，它退化成 `RibbonMainWindow` 的同义词） | 留下一个什么都没多的空壳类，只会让人误以为它还有用 |
+| C | 给 `RibbonWindow` 换后端：让 `qxribbon` 依赖 `qxwindow`，或由 `qxapp` 往 `qxribbon` 注入一个后端 | 前者破坏上面那条分层；后者等于把 `RibbonAppWindow` 再实现一遍 |
+
+**时机**：`FramelessHelper` 在 Qt 5 上是**可用**的那条路径（Windows 上走原生后端），所以它必须活到
+Qt 5 支持结束，`RibbonWindow` 同理。换言之 **Qt 5 的下线日就是这两者的下线日**，不需要单独判断一次。
+
 ## 分步迁移清单
 
 1. 构建切换到 CMake，锁定 Qt ≥ 5.15（推荐 6.5 / 6.8）。

@@ -149,6 +149,12 @@ Linux 的默认改成系统边框，结论是**不改**。
 拖标题栏能正确还原、拖边框逐像素跟手）。而 Qt 6 上本来就该走 `RibbonAppWindow`——
 `FramelessHelper` 是 Qt 5 的路径。要让 Qt 平台插件里的状态同步正确，不是本库能做的事。
 
+**（4.2）这一条已经补上代码层面的结论**：`FramelessHelper`——即 `RibbonWindow` 的无边框后端，
+也是本库唯一直接使用它的地方——已在 4.2 标记 `QT_DEPRECATED_X`，消息指向
+@ref QxApp::RibbonAppWindow。按 K26，删除要等至少一个版本之后。`RibbonWindow` 本身没有改动，
+Qt 5 上照旧可用；它的 `FramelessHelper` 使用处在源码里用 `QT_WARNING_DISABLE_DEPRECATED` 局部
+屏蔽了自己的告警（那里是**有意**使用一个已弃用的类，见 [迁移指南](migration.md)）。
+
 **要改变它需要什么**：在 `FramelessHelper` 里自己记住"最大化之前的几何"，并在还原时显式让系统
 退出最大化（`ShowWindow(SW_RESTORE)`），也就是把这半条路径从"Qt 侧模拟"改成 `WindowAgentWidget`
 那样的原生做法。真要动，位置是 `src/libs/qxribbon/framelesshelper.cpp` 里

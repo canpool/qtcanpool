@@ -10,6 +10,14 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
+// RibbonWindow is the one deliberate user of the deprecated FramelessHelper
+// (see its header and K27): on Qt 5 that class is the working frameless path,
+// and this is what keeps it alive. The deprecation is aimed at new code and at
+// Qt 6, where RibbonAppWindow is the answer, so the warning is silenced here
+// rather than made somebody else's problem at every build.
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
+
 class RibbonWindowPrivate
 {
     QX_DECLARE_PUBLIC(RibbonWindow)
@@ -90,6 +98,8 @@ void RibbonWindowPrivate::setFrameless(bool frameless)
         q->show();
     }
 }
+
+QT_WARNING_POP
 
 void RibbonWindowPrivate::init()
 {
