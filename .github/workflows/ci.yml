@@ -312,6 +312,9 @@ jobs:
               echo
               echo "Nothing to analyse: ${NOTHING}."
             } >> "${GITHUB_STEP_SUMMARY}"
+            # Same reason as the digest below: a machine has to be able to tell
+            # "nothing was in scope" apart from "the analysis produced nothing".
+            echo "::notice title=clang-tidy digest::nothing to analyse: ${NOTHING}"
             exit 0
           fi
 
@@ -402,6 +405,27 @@ jobs:
             echo
             echo "The full log is attached to this run as the \`clang-tidy-log\` artifact."
           } >> "${GITHUB_STEP_SUMMARY}"
+
+          # An annotation is the only part of this job a machine can read without
+          # logging in. The step summary needs a browser session (the check-runs
+          # API leaves output.summary empty) and so does the log, so neither can
+          # answer the question this job exists to answer: did the scoped run
+          # really report the lines it was supposed to, or did it find nothing
+          # because the filter matched nothing? Annotations come back from the
+          # check-runs API anonymously, so the digest goes out as one. Newlines
+          # and percent signs need the workflow-command escapes.
+          ANNOTATION="scope=${SCOPE}%0Afiles analysed=$(wc -l < tidy-files.txt)%0Afindings=${FINDINGS}"
+          if [ -n "${LINE_FILTER}" ]; then
+            ANNOTATION="${ANNOTATION}%0A(filtered to the lines this change touched)"
+          fi
+          if [ "${FINDINGS}" -gt 0 ]; then
+            # head/paste would not do: paste -d takes a list of *characters* to
+            # cycle through, so -d'%0A' separates with "%", then "0", then "A".
+            # awk joins with the whole escape instead.
+            ANNOTATION="${ANNOTATION}%0A%0A$(grep -E ': (warning|error):' clang-tidy.log \
+              | head -20 | sed 's/%/%25/g' | awk 'NR > 1 { printf "%%0A" } { printf "%s", $0 }')"
+          fi
+          echo "::notice title=clang-tidy digest::${ANNOTATION}"
 
       - name: Upload clang-tidy log
         if: always()
