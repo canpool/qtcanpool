@@ -12,6 +12,14 @@
 # script is the single place that defines what a new project looks like, so the
 # two cannot drift into a "which template is current" mess.
 #
+# That is enforced now rather than asserted: projects/template is this script's
+# output for the name "qxtemplate" (its README.md excepted - that one is a guide
+# written for the repository rather than a rendered project), and
+# scripts/check-template-sync.py fails when the two differ. When a change is
+# made here, regenerate the template with
+#   python3 scripts/check-template-sync.py --update
+# or the scaffold job in CI will say so.
+#
 # Usage:
 #   python scripts/new-project demo
 #   ./scripts/new-project demo                       # the file is executable
@@ -61,6 +69,11 @@ CMAKE_LISTS = """\
 ## SPDX-License-Identifier: MulanPSL-2.0
 ##
 
+# A QtCanpool application, deliberately standalone: it knows nothing about the
+# QtCanpool sources - no add_subdirectory, no relative paths - and consumes an
+# *installed* SDK through find_package, which is what a downstream project
+# looks like.
+
 cmake_minimum_required(VERSION 3.16)
 
 project(@NAME@
@@ -90,6 +103,10 @@ add_executable(@NAME@ WIN32
 # QtCanpool::qxapp re-exports the ribbon, the dock system, the window agent, the
 # theme engine and their Qt dependencies, so one link line is enough.
 target_link_libraries(@NAME@ PRIVATE QtCanpool::qxapp)
+
+# A library of your own goes the same way: give it a subdirectory with its own
+# CMakeLists.txt, add_subdirectory() it here, then link it. Use PUBLIC there
+# only if it exposes QtCanpool types in its public headers.
 """
 
 MAIN_CPP = """\
@@ -135,7 +152,8 @@ QX_APP_USE_NAMESPACE
 QX_CORE_USE_NAMESPACE
 QX_RIBBON_USE_NAMESPACE
 
-namespace {
+namespace
+{
 const auto kApplicationName = QStringLiteral("@NAME@");
 const auto kLogoPath = QStringLiteral(":/@NAME@/images/logo.png");
 

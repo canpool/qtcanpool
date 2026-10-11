@@ -1,0 +1,14 @@
+# Build trees
+build/
+build-*/
+out/
+
+# Qt Creator / qmake leftovers
+*.user
+*.user.*
+CMakeLists.txt.user*
+.qmake.stash
+Makefile*
+
+# Compilation database
+compile_commands.json

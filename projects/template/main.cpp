@@ -3,12 +3,9 @@
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
 
-// A minimal QtCanpool application.
-//
-// QxAppShell already provides what every application otherwise rebuilds by
-// hand: the ribbon window, the navigation rail, the page stack, a dock area
-// around it and a status bar. Replace the page below with your own widget and
-// add more pages/docks - see qxapp/qxappshell.h for the full API.
+// The application entry point. QxAppShell already provides the ribbon window,
+// the navigation rail, the page stack and the dock area around it; replace the
+// page below with your own widget and add more with addPage()/addDock().
 //
 // The three things an application is asked for on day one are wired here, so
 // they can be seen working before they are replaced:
@@ -17,8 +14,8 @@
 //   * notify           - QxAppShell::showToast()
 //   * open settings    - QxSettingsDialog, fed by QxProperty descriptors
 //
-// Note that only public headers are included. There is no relative include into
-// the QtCanpool source tree, which is the whole point of consuming the SDK.
+// Public headers only: the project links an installed SDK and never reaches
+// into the QtCanpool source tree.
 
 #include "qxapp/qxappshell.h"
 #include "qxapp/qxproperty.h"
@@ -45,7 +42,10 @@ QX_RIBBON_USE_NAMESPACE
 
 namespace
 {
-/*! Where the two settings below are stored; a key is a path, not a label. */
+const auto kApplicationName = QStringLiteral("qxtemplate");
+const auto kLogoPath = QStringLiteral(":/qxtemplate/images/logo.png");
+
+// Where the two settings below are stored; a key is a path, not a label.
 const auto kLanguageKey = QStringLiteral("ui/language");
 const auto kNotificationsKey = QStringLiteral("ui/notifications");
 }   // namespace
@@ -59,10 +59,13 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     QCoreApplication::setOrganizationName(QStringLiteral("qtcanpool"));
-    QCoreApplication::setApplicationName(QStringLiteral("qxtemplate"));
+    QCoreApplication::setApplicationName(kApplicationName);
+    QApplication::setWindowIcon(QIcon(kLogoPath));
 
     QxAppShell shell;
-    shell.addPage(QStringLiteral("home"), QIcon(), QObject::tr("Home"), new QLabel(QObject::tr("Hello, QtCanpool!")));
+    shell.setWindowTitle(kApplicationName);
+    shell.addPage(QStringLiteral("home"), QIcon(kLogoPath), QObject::tr("Home"),
+                  new QLabel(QObject::tr("Hello from qxtemplate!")));
     shell.setStatusMessage(QObject::tr("Ready"));
 
     QxSettings *settings = shell.settings();
@@ -127,7 +130,7 @@ int main(int argc, char *argv[])
 
     // Notifications: the setting decides whether they appear at all.
     if (settings->value(kNotificationsKey, true).toBool()) {
-        shell.showToast(QObject::tr("Welcome to QtCanpool!"));
+        shell.showToast(QObject::tr("Welcome to qxtemplate!"));
     }
 
     return app.exec();
