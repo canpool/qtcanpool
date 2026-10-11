@@ -59,6 +59,10 @@ compile_commands.json
 bak
 build
 
+# Example runtime perspective folders (written when examples run from the source tree)
+persist/
+perspectives/
+
 # aqtinstall (written to the CWD when installing Qt for WebAssembly)
 aqtinstall.log
 

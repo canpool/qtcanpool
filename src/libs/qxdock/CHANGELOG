@@ -5,6 +5,10 @@ Bugfix
   it, which unpinned the widget again and left an empty panel in the root
   splitter
 
+Test
+- cover DockGroup, DockGroupManager and DockSubWindow with tst_DockGroup
+  (structural API, group-name validation, and perspective save/load round-trip)
+
 0.2.0
 ---
 - Annotate and perfect components

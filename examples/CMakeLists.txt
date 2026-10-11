@@ -71,6 +71,7 @@ add_qtc_example(Example_RibbonQuickAccessBar qxribbon qxribbon/ribbonquickaccess
 add_qtc_example(Example_Dock_AutoHide qxdock qxdock/autohide qxdock/shared/main.cpp)
 add_qtc_example(Example_Dock_CentralWidget qxdock qxdock/centralwidget qxdock/shared/main.cpp)
 add_qtc_example(Example_Dock_DockInDock qxdock qxdock/dockindock qxdock/shared/main.cpp)
+add_qtc_example(Example_Dock_Group qxdock qxdock/dockgroup qxdock/shared/main.cpp)
 add_qtc_example(Example_Dock_HideShow qxdock qxdock/hideshow qxdock/shared/main.cpp)
 add_qtc_example(Example_Dock_SideBar qxdock qxdock/sidebar qxdock/shared/main.cpp)
 add_qtc_example(Example_Dock_ConfigFlags qxdock qxdock/configflags shared/main.cpp)
