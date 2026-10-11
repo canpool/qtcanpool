@@ -284,8 +284,12 @@ Visual Studio 生成器，若未安装 MSVC 需用 `-G Ninja`（或 `-G "MinGW M
 生成的工程只依赖**已安装的** SDK：`find_package(QtCanpool REQUIRED)` 加一条
 `QtCanpool::qxapp` 链接，不引用本仓库源码。
 
-不装 SDK 而想先看看写法，读 [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)
-（CMake 版）。
+不装 SDK 而想先看看写法，读
+[`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)：
+它就是 `scripts/new-project` 用工程名 `qxtemplate` 渲染出来的结果，与上面这条命令生成的内容
+**逐字节相同**（只有 `README.md` 例外——那份是写给仓库读者的指南，不是渲染出的工程说明书）。
+改动请一律落在 `scripts/new-project`，然后 `python scripts/check-template-sync.py --update`
+重新渲染模板；二者若不一致，CI 的比对门禁会变红。
 
 ## 关于 qmake
 

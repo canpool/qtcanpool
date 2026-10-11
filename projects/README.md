@@ -1,8 +1,10 @@
 ### 工程说明
 
-- `template/` —— **新项目模板**。`CMakeLists.txt` + `main.cpp` + `README.md`，基于
-  `QxAppShell`，通过 `find_package(QtCanpool)` 消费已安装的 SDK（原先并排的 qmake 版本
-  已于 3.2 删除）。用法见 `template/README.md`。
+- `template/` —— **新项目模板**，同时是 `scripts/new-project` 的渲染输出：基于 `QxAppShell`
+  的 `CMakeLists.txt` + `main.cpp` + `resources/`（图标资源）+ `.gitignore`，通过
+  `find_package(QtCanpool)` 消费已安装的 SDK（原先并排的 qmake 版本已于 3.2 删除）。
+  生成器是这项定义的唯一出处（决策 K9），这份目录由它写出，`scripts/check-template-sync.py`
+  逐字节比对二者并在 CI 里作为门禁。用法见 `template/README.md`。
 - `consume/` —— 下游 SDK 消费验证工程：只依赖安装前缀，被 CI 用于验证「安装 → 消费」
   全链路。见 `consume/README.md`。
 - `plugin/` —— **外部插件验收工程**（路线图 DoD #1）：不碰源码树，只用 `find_package(QtCanpool)`
