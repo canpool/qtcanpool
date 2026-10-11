@@ -121,3 +121,35 @@ Linux 的默认改成系统边框，结论是**不改**。
 **还没做的验证**：在一台装有 **Qt 6.5.3** 的机器上跑一次真实窗口（issue `#I8SPBC` / `#I8SPC8`
 记录的就是这个待验证点）。离屏截图测试测不到窗口边距，所以这件事只能在真机上看。
 目前没有已知故障，这一条记的是"证据的边界"，不是"已知的坏行为"。
+
+---
+
+## Windows + Qt 6 上，无边框窗口不能"启动即最大化"
+
+**现象**：Windows 上无边框窗口如果**第一次显示就是最大化**——在事件循环之前调 `showMaximized()`，
+最典型的是在构造函数里——之后拖标题栏"还原"只会让窗口**平移**、尺寸仍是满屏；再拖边框，要么
+拖不动，要么在最大化的尺寸上来回弹。Qt 6.8.3 复现，Qt 5.15.2 正常。
+
+**成因**：这是 **Qt 6 在 Windows 平台插件里的回归，与本库无关**。一个最小的纯 Qt 程序就能复现
+（一个 `QWidget` 加 `Qt::FramelessWindowHint`，不含 qtcanpool）：调 `showNormal()` 之后，Qt 自己
+记账的 `windowState()` 变成 `WindowNoState`，而原生窗口的 `WS_MAXIMIZE` 还在
+（`GetWindowLongPtrW(GWL_STYLE)` 仍带这一位）；同一次调用还把 `normalGeometry()` 改写成
+**最大化之后的矩形**，所以"还原"出来仍然是满屏。有边框窗口没有这个现象，Qt 5 与 Qt 6 都正常。
+
+触发要三个条件同时成立：**无边框 + 第一次 `show` 就是最大化 + Windows**。
+
+**避开方式**：Windows + Qt 6 上要"启动即最大化"，二选一——① 先 `show()`，再 `showMaximized()`；
+② 让第一次 `show()` 用普通尺寸，再 `QTimer::singleShot(0, &w, &QWidget::showMaximized)`。
+本库自己的两条无边框路径里，只有 `RibbonWindow` 会踩到，`RibbonAppWindow` 不受影响。
+
+**为什么保持现状**：本库有两条无边框路径，只有一条中招。`RibbonWindow` 走 Qt 自带的
+`Qt::FramelessWindowHint`（Qt 侧模拟），会中招；`RibbonAppWindow` 用的是 qxwindow 的
+`WindowAgentWidget`，它保留 `WS_THICKFRAME | WS_CAPTION` 并用 `WM_NCCALCSIZE` 把整窗变成客户区，
+最大化与还原仍归系统管，所以**实测不受影响**（`demos/qxapp/ribbondemo` 正是启动即最大化，
+拖标题栏能正确还原、拖边框逐像素跟手）。而 Qt 6 上本来就该走 `RibbonAppWindow`——
+`FramelessHelper` 是 Qt 5 的路径。要让 Qt 平台插件里的状态同步正确，不是本库能做的事。
+
+**要改变它需要什么**：在 `FramelessHelper` 里自己记住"最大化之前的几何"，并在还原时显式让系统
+退出最大化（`ShowWindow(SW_RESTORE)`），也就是把这半条路径从"Qt 侧模拟"改成 `WindowAgentWidget`
+那样的原生做法。真要动，位置是 `src/libs/qxribbon/framelesshelper.cpp` 里
+`FramelessWidgetDataQt::handleMouseMoveEvent()` 的还原分支。

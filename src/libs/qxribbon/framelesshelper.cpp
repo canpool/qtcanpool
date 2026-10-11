@@ -639,6 +639,17 @@ bool FramelessWidgetDataQt::handleMouseMoveEvent(QMouseEvent *event)
                 // doc/design/4.1-TASKS.md and doc/pages/limitations.md,
                 // "frameless windows on Linux".
 
+                // NOTE: on Windows with Qt 6 the restore below does not work when the
+                // window was maximised on its *first* show - showMaximized() called
+                // from a constructor, say. Qt clears its own window state while the
+                // native WS_MAXIMIZE stays set, and normalGeometry() has been
+                // rewritten to the maximised rect by then, so the window only moves
+                // and keeps its full-screen size. A bare frameless QWidget reproduces
+                // it and Qt 5 is unaffected, so it is Qt 6 rather than this file -
+                // see doc/pages/limitations.md, "a frameless window on Windows, Qt 6,
+                // maximised on first show". RibbonAppWindow, whose frameless window
+                // comes from qxwindow instead, is not affected.
+
                 // 先求出窗口到鼠标的相对位置
                 QRect normalGeometry = m_pWidget->normalGeometry();
                 m_pWidget->showNormal();
