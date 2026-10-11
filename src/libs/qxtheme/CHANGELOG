@@ -1,4 +1,4 @@
-Unreleased
+0.1.1
 ---
 Bugfix
 - QX_THEME_DEPRECATED_SINCE(major, minor) never answered true for a deprecation

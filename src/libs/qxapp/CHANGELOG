@@ -1,4 +1,4 @@
-Unreleased
+0.1.1
 ---
 Cleanup
 - Remove the Qt version branches below 5.15, which K1 set as the minimum: the

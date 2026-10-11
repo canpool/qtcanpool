@@ -1,4 +1,4 @@
-Unreleased
+0.1.2
 ---
 Bugfix
 - QX_CORE_DEPRECATED_SINCE(major, minor) never answered true for a deprecation

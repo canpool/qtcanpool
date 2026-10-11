@@ -76,7 +76,7 @@
 #endif   // QX_WINDOW_LIBRARY_STATIC
 
 #define QX_WINDOW_VERSION_MAJOR 0
-#define QX_WINDOW_VERSION_MINOR 2
+#define QX_WINDOW_VERSION_MINOR 3
 #define QX_WINDOW_VERSION_PATCH 0
 /*
    QX_WINDOW_VERSION is (major << 16) + (minor << 8) + patch.

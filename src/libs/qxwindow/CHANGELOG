@@ -1,4 +1,4 @@
-Unreleased
+0.3.0
 ---
 Interface
 - WindowStyleAgent is removed (it was deprecated in 4.2, K26 / W2). It reported
