@@ -261,7 +261,8 @@ void tst_QxWindowGeometry::borderIsAStripOfAKnownSize()
  *  - The window has to come up, which a headless platform may refuse.
  *
  * Where the Qt backend is in charge and the window is mapped - the ubuntu CI legs,
- * for instance - the case runs for real.
+ * for instance - the case runs for real. And where it cannot be excused, it fails
+ * rather than skips: see the comment on the mapping check below.
  */
 void tst_QxWindowGeometry::windowFollowsTheBorder()
 {
@@ -274,7 +275,18 @@ void tst_QxWindowGeometry::windowFollowsTheBorder()
     // setup() asks for a native window, so the handle exists before the window is
     // shown - and before the backend has had a chance to set the flag below.
     QVERIFY(window.windowHandle());
-    if (!(window.windowFlags() & Qt::FramelessWindowHint)) {
+
+    // The only acceptable reason to skip the rest is that this platform may put a
+    // native backend in charge, which is a property of the platform, not of the
+    // run. On a platform that has only the Qt backend, a skip would silently take
+    // away the only coverage this case has, so there the checks below are failures.
+#if defined(Q_OS_WINDOWS) || defined(Q_OS_MACOS)
+    const bool theBackendMayBeNative = true;
+#else
+    const bool theBackendMayBeNative = false;
+#endif
+
+    if (theBackendMayBeNative && !(window.windowFlags() & Qt::FramelessWindowHint)) {
         QSKIP("the native backend is in charge here, so the shared filter this case drives is not installed");
     }
 
@@ -284,11 +296,9 @@ void tst_QxWindowGeometry::windowFollowsTheBorder()
 
     // The geometry only applies once the window is in the windowed state.
     window.show();
-    if (!QTest::qWaitForWindowExposed(&window)) {
-        QSKIP("the window was never mapped, so there is nothing to move the mouse over");
-    }
-    if (window.windowHandle()->visibility() != QWindow::Windowed) {
-        QSKIP("the window did not reach the windowed state");
+    if (!QTest::qWaitForWindowExposed(&window) || window.windowHandle()->visibility() != QWindow::Windowed) {
+        QVERIFY2(theBackendMayBeNative, "the window did not come up although the Qt backend is the only one here");
+        QSKIP("the window could not be mapped here");
     }
 
     auto moveTo = [&window](const QPoint &pos) {
