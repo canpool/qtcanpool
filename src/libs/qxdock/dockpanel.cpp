@@ -854,9 +854,21 @@ void DockPanel::insertDockWidget(int index, DockWidget *w, bool activate)
         // added to keep the close state consistent
         w->setClosedState(false);
     }
-    // If this dock area is hidden, then we need to make it visible again
-    // by calling DockWidget->toggleViewInternal(true);
-    if (!this->isVisible() && d->m_contentsLayout->count() > 0 && !dockWindow()->isRestoringState()) {
+    // If this dock area is hidden because all of its dock widgets were closed,
+    // then we need to make it visible again by calling
+    // DockWidget->toggleViewInternal(true).
+    //
+    // An auto hide panel is not in that state - it is hidden by design, which is
+    // what auto hide means. Toggling this one open is read by
+    // DockWidgetPrivate::showDockWidget() as "the widget is pinned and there is
+    // nothing else open, so unpin it", and that immediately undoes the auto hide
+    // container we are in the middle of filling: the container is deleted, the
+    // widget is docked like any other one, and the panel it had created stays
+    // behind empty in the root splitter. It only takes a window whose only dock
+    // widgets are auto hidden to get there. The panel is created and its auto
+    // hide container assigned before the first widget goes in (see
+    // DockAutoHideContainer's constructor), so isAutoHide() is already true.
+    if (!this->isVisible() && !isAutoHide() && d->m_contentsLayout->count() > 0 && !dockWindow()->isRestoringState()) {
         // Notes: If d->m_contentsLayout->count() > 1 is required, it will appear
         // that the toggleViewAction is not checked when there is only one dock widget
         w->toggleViewInternal(true);

@@ -1,3 +1,10 @@
+Unreleased
+---
+Bugfix
+- DockPanel: do not reopen an auto hide panel while a widget is inserted into
+  it, which unpinned the widget again and left an empty panel in the root
+  splitter
+
 0.2.0
 ---
 - Annotate and perfect components
