@@ -16,6 +16,7 @@ class tst_DockAutoHideContainer : public QObject
     Q_OBJECT
 private slots:
     void autoHideStaysPinnedOnAnEmptyWindow();
+    void sizeObeysTheContentRectAndItsMargin();
 };
 
 /*!
@@ -58,6 +59,48 @@ void tst_DockAutoHideContainer::autoHideStaysPinnedOnAnEmptyWindow()
     QCOMPARE(widget->isAutoHide(), true);
     QCOMPARE(int(widget->autoHideArea()), int(Qx::DockSideBarLeft));
     QCOMPARE(window.autoHideWidgets().count(), 1);
+}
+
+/*!
+ * An auto hide container is sized from two limits that are computed rather than
+ * stored, and neither is reachable from outside - DockResizeHandle exposes setters
+ * for its minimum and maximum and no getters, and DockAutoHideContainer::updateSize()
+ * is protected. So they are asserted through the one public door, setSize().
+ *
+ * The upper limit is the dock container's content rect minus the resize margin
+ * (30), which is what keeps a sliver of the dock area visible; the same number is
+ * what DockAutoHideContainerPrivate::updateResizeHandleSizeLimitMax() hands to the
+ * resize handle, so this pins both at once. It is asserted as a relationship and
+ * not as an absolute number on purpose: before the first layout the content rect
+ * is not the window's size yet, and it is the relationship that carries the meaning.
+ *
+ * The lower limit is *not* applied here. Dragging is kept above 64 by the resize
+ * handle, but setSize() writes the container's size directly, so a caller that
+ * asks for 1 gets 1. That asymmetry is the point of the second half.
+ */
+void tst_DockAutoHideContainer::sizeObeysTheContentRectAndItsMargin()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow window;
+    window.resize(800, 600);
+
+    DockWidget *widget = new DockWidget("widget");
+    QPointer<DockAutoHideContainer> container = window.addAutoHideDockWidget(Qx::DockSideBarLeft, widget);
+    QVERIFY(!container.isNull());
+
+    const int contentWidth = window.contentRect().width();
+    QVERIFY2(contentWidth > 30, "the content rect must be wide enough for the margin to leave room");
+
+    // Asking for more than the content rect allows is clamped to it minus the
+    // margin, rather than obeyed.
+    container->setSize(100000);
+    QCOMPARE(container->width(), contentWidth - 30);
+
+    // Asking for less than the resize handle's minimum is obeyed anyway: the
+    // minimum guards a drag, not this call.
+    container->setSize(1);
+    QCOMPARE(container->width(), 1);
 }
 
 TEST_ADD(tst_DockAutoHideContainer)

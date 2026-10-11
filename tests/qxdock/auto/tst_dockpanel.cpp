@@ -1,5 +1,7 @@
 #include "tst_global.h"
 
+#include "qxdock/dockautohidecontainer.h"
+#include "qxdock/dockmanager.h"
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
@@ -14,6 +16,7 @@ private slots:
     void dockWidget();
     void splitter();
     void centralWidget();
+    void topLevelArea();
 };
 
 void tst_DockPanel::dockWidget()
@@ -177,6 +180,63 @@ void tst_DockPanel::centralWidget()
     QCOMPARE(p1->isTopLevelArea(), true);
 }
 
-TEST_ADD(tst_DockPanel)
+/*!
+ * isTopLevelArea() is named after the place such a panel usually has, but what it
+ * answers is narrower and worth spelling out: "am I the only visible dock panel in
+ * my container". DockContainer::topLevelDockPanel() returns null unless exactly
+ * one panel passes the isHidden() test, and DockPanel::isTopLevelArea() compares
+ * itself against that. (An older note had it as rootSplitter() == this, which the
+ * code never said; the mistake is what this case exists to keep from coming back.)
+ *
+ * Two consequences the name does not suggest, both asserted below: the answer can
+ * change without the panel itself changing - hiding a neighbour is enough - and a
+ * container with no registered panel has no top level area even when a panel is
+ * on screen, which is exactly the situation of an auto hide panel.
+ */
+void tst_DockPanel::topLevelArea()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
 
+    {
+        DockWindow wd;
+
+        DockWidget *dw1 = new DockWidget("dw1");
+        DockWidget *dw2 = new DockWidget("dw2");
+
+        DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+        DockPanel *p2 = wd.addDockWidget(Qx::RightDockWidgetArea, dw2);
+
+        // Two visible panels: neither one is "the one and only", so neither is top
+        // level, however central its position looks.
+        QCOMPARE(wd.openedDockPanels().count(), 2);
+        QCOMPARE(p1->isTopLevelArea(), false);
+        QCOMPARE(p2->isTopLevelArea(), false);
+
+        // Hiding the second panel's only widget leaves one visible panel, and the
+        // survivor answers true from then on. p2 is deliberately not touched again:
+        // hiding the last widget of a panel is allowed to remove the panel.
+        dw2->toggleView(false);
+        QCOMPARE(wd.openedDockPanels().count(), 1);
+        QCOMPARE(wd.openedDockPanels().constFirst(), p1);
+        QCOMPARE(p1->isTopLevelArea(), true);
+    }
+
+    {
+        // The auto hide container's panel is created directly and never goes
+        // through DockContainer::addDockPanel(), so it is not in the container's
+        // panel list at all - the window reports no dock panel while that panel is
+        // on screen. With nothing to compare against, the panel is not top level.
+        DockWindow wd;
+
+        DockWidget *dw = new DockWidget("dw");
+        DockAutoHideContainer *container = wd.addAutoHideDockWidget(Qx::DockSideBarLeft, dw);
+        QVERIFY(container != Q_NULLPTR);
+
+        QCOMPARE(wd.dockPanelCount(), 0);
+        QVERIFY(dw->dockPanel() != Q_NULLPTR);
+        QCOMPARE(dw->dockPanel()->isTopLevelArea(), false);
+    }
+}
+
+TEST_ADD(tst_DockPanel)
 #include "tst_dockpanel.moc"
