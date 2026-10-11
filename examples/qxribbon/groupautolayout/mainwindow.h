@@ -1,13 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "qxribbon/ribbonwindow.h"
+#include "qxribbon/ribbonmainwindow.h"
 
 QX_RIBBON_BEGIN_NAMESPACE
 class RibbonGroup;
 QX_RIBBON_END_NAMESPACE
 
-class MainWindow : public QxRibbon::RibbonWindow
+class MainWindow : public QxRibbon::RibbonMainWindow
 {
     Q_OBJECT
 public:

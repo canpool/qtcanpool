@@ -6,8 +6,8 @@
 QX_APP_USE_NAMESPACE
 #define MyRibbonWindow RibbonAppWindow
 #else
-#include "qxribbon/ribbonwindow.h"
-#define MyRibbonWindow RibbonWindow
+#include "qxribbon/ribbonmainwindow.h"
+#define MyRibbonWindow RibbonMainWindow
 #endif
 
 class QTextEdit;

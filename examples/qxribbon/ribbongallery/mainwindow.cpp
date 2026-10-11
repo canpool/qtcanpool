@@ -13,7 +13,7 @@
 QX_RIBBON_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *parent)
-    : RibbonWindow(parent)
+    : RibbonMainWindow(parent)
 {
     QIcon icon(":/logo");
 

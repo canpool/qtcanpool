@@ -1,5 +1,19 @@
 Unreleased
 ---
+Interface
+- FramelessHelper and RibbonWindow are removed (deprecated in 4.2, K27 / K26).
+  FramelessHelper was the frameless backend RibbonWindow carried so that qxribbon
+  needs no dependency on qxwindow: Qt::FramelessWindowHint plus simulated hit
+  testing, move and resize, with a native path on Windows under Qt 5. Its Qt 6
+  path - and, outside Windows, every path - is the incomplete half, where a window
+  shown maximised for the first time cannot be restored; see the limitations page.
+  RibbonWindow is RibbonMainWindow plus that backend and nothing else, so the two
+  went together rather than leaving an empty shell behind. On every Qt version the
+  answer is QxApp::RibbonAppWindow, which frames the same RibbonMainWindow through
+  qxwindow; on Qt 5 that costs a dependency on qxapp, and qxwindow's native
+  backend does build there. Every sample moves to RibbonMainWindow. See
+  doc/pages/migration.md, section "4.3 已删除"
+
 Cleanup
 - Remove the Qt version branch below 5.15 in FramelessWidgetDataNativeWin::devicePixelRatio,
   which K1 set as the minimum; QWidget::screen() has been the way to reach the

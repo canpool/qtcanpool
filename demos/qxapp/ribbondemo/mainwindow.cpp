@@ -99,10 +99,6 @@ MainWindow::MainWindow(QWidget *par)
     if (r) {
         r->click();
     }
-    QCheckBox *framelessCB = findChild<QCheckBox *>("use frameless");
-    if (framelessCB) {
-        framelessCB->click();
-    }
 #endif
 
     QxRibbonCustomizeApplyFromXmlFile(m_customizeXml, ribbonBar(), m_actMgr);
@@ -215,14 +211,11 @@ void MainWindow::createPageHome()
     actWindowFlagNormalButton->setChecked(true);
     groupStyle->addSmallAction(actWindowFlagNormalButton);
     connect(actWindowFlagNormalButton, &QAction::triggered, this, &MainWindow::onActionWindowFlagNormalButtonTriggered);
-#if defined(QXRIBBON_USE_APPWINDOW) || !defined(Q_OS_WINDOWS)
+    // NOTE: this used to be disabled on Windows unless the window came from qxapp: the frameless
+    // backend qxribbon carried itself left the window misplaced and unresizable after a
+    // maximize/unmaximize toggle. Both that backend and the window class on top of it went away in
+    // 4.3, so nothing is left to guard against here.
     actWindowFlagNormalButton->setEnabled(true);
-#else
-    // NOTE: RibbonWindow's native frameless backend (FramelessWidgetDataNativeWin) leaves the
-    // window misplaced and unresizable after a maximize/unmaximize toggle on Windows, so this
-    // button stays disabled there. RibbonWindow is deprecated since 4.2 (K27); Qt 6 uses RibbonAppWindow.
-    actWindowFlagNormalButton->setEnabled(false);
-#endif
 
     QButtonGroup *g = new QButtonGroup(page);
 
@@ -267,19 +260,6 @@ void MainWindow::createPageHome()
 
     QCheckBox *cb = nullptr;
 
-#if !defined(QXRIBBON_USE_APPWINDOW)
-    cb = new QCheckBox();
-    cb->setObjectName(QStringLiteral("use frameless"));
-    cb->setText(tr("use frameless"));
-    cb->setWindowTitle(cb->text());
-    cb->setChecked(isFrameless());
-    groupStyle->addSmallWidget(cb);
-    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-        this->setFrameless(checked);
-    });
-    QCheckBox *framelessCB = cb;
-#endif
-
     cb = new QCheckBox();
     cb->setObjectName(QStringLiteral("left QAB in wps style"));
     cb->setText(tr("left QAB in wps style"));
@@ -318,22 +298,12 @@ void MainWindow::createPageHome()
     cb->setWindowTitle(cb->text());
     cb->setChecked(false);
     groupStyle->addSmallWidget(cb);
-#if !defined(QXRIBBON_USE_APPWINDOW)
-    connect(cb, &QCheckBox::clicked, this, [this, framelessCB](bool checked) {
-#else
     connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-#endif
         if (checked) {
             this->showFullScreen();
         } else {
             this->showNormal();
         }
-#if !defined(QXRIBBON_USE_APPWINDOW)
-        // NOTE: toggling frameless while full-screen corrupts the full-screen layout, so the
-        // checkbox is disabled during full screen. Same family of quirks as
-        // "a frameless window on Windows, Qt 6, maximised on first show" (see doc/pages/limitations.md).
-        framelessCB->setDisabled(checked);
-#endif
     });
     connect(this, &MainWindow::windowStateChanged, cb, [cb](Qt::WindowStates s) {
         cb->setChecked(s.testFlag(Qt::WindowFullScreen));

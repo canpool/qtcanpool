@@ -4,7 +4,7 @@
  **/
 #include "ribboncustomizedata.h"
 #include "ribbonbar.h"
-#include "ribbonwindow.h"
+#include "ribbonmainwindow.h"
 
 #include <QDebug>
 #include <QObject>

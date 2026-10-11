@@ -22,7 +22,7 @@ class RibbonButtonGroup;
 class RibbonQuickAccessBar;
 
 /**
- * @brief RibbonBar 继承 QMenuBar, 在 RibbonWindow 中直接替换了原来的 QMenuBar
+ * @brief RibbonBar 继承 QMenuBar, 在 RibbonMainWindow 中直接替换了原来的 QMenuBar
  *
  * 通过 setRibbonStyle 函数设置 ribbon 的风格:
  *
@@ -79,7 +79,7 @@ class RibbonQuickAccessBar;
  * void setupRibbonUi()
  * {
  *     ......
- *     // ribbonwindow 为 RibbonWindow
+ *     // ribbonwindow 为 RibbonMainWindow
  *     RibbonBar *ribbon = ribbonwindow->ribbonBar();
  *     ribbon->setRibbonStyle(RibbonBar::WpsLiteStyle);
  *     // 添加一个 Main 标签页

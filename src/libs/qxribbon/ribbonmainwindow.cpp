@@ -55,8 +55,9 @@ void RibbonMainWindowPrivate::setMenuWidget(QWidget *menuBar)
  * changes: the window is then left narrower than its own minimum, and from that
  * state it cannot be resized normally any more. The system clamps the first
  * interactive resize to the tracking size, so the window jumps instead of following
- * the mouse, and RibbonWindow, whose FramelessWidgetDataQt::resizeWidget() clamps
- * against minimumWidth(), pins it in place and stops resizing altogether.
+ * the mouse, and the frameless helper of the window class that used to sit on top
+ * of this one - removed in 4.3, see the migration page - pinned it in place and
+ * stopped resizing altogether.
  *
  * So both sides are done here: the new minimum is published, and the window is grown
  * to satisfy it. The second step terminates because it leaves width() == need, which

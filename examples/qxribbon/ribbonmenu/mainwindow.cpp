@@ -22,7 +22,7 @@ struct colorPreviewRect {
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    : RibbonWindow(parent)
+    : RibbonMainWindow(parent)
 {
     QIcon icon(":/logo");
 

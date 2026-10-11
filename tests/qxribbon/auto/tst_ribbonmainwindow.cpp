@@ -15,8 +15,9 @@ QX_RIBBON_USE_NAMESPACE
  * The ribbon bar tells the window how narrow it may become, and getting that wrong does
  * not surface as a wrong number in a getter: it surfaces as a window that cannot be
  * resized. Windows turns the minimum width of the window into the minimum tracking size
- * of the native window, and RibbonWindow - whose FramelessWidgetDataQt::resizeWidget()
- * clamps the interactive resize against minimumWidth() - reads the value directly, so a
+ * of the native window, and the frameless window that used to sit on top of this class -
+ * removed in 4.3, see the migration page - clamped the interactive resize against
+ * minimumWidth(), so a
  * window that is left narrower than its own minimum is clamped by the system on the next
  * drag: it jumps instead of following the mouse, and once the minimum has grown past the
  * current width it stops resizing altogether.

@@ -4,7 +4,6 @@ add_qtc_library(qxribbon
   PUBLIC_DEPENDS Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES
     qxribbon_global.h
-    framelesshelper.cpp framelesshelper.h
     res.qrc
     ribbonactionsmanager.cpp ribbonactionsmanager.h ribbonactionsmanager_p.h
     ribbonapplicationbutton.cpp ribbonapplicationbutton.h
@@ -32,12 +31,6 @@ add_qtc_library(qxribbon
     ribbontabbar.cpp ribbontabbar.h
     ribbontheme.cpp ribbontheme.h
     ribbonutils.cpp ribbonutils.h
-    ribbonwindow.cpp ribbonwindow.h
     windowbuttongroup.cpp windowbuttongroup.h windowbuttongroup_p.h
 )
 
-if (WIN32)
-    if (Qt5_VERSION VERSION_LESS 6.0.0)
-        extend_qtc_library(qxribbon DEFINES FRAMELESS_USE_NATIVE)
-    endif()
-endif()

@@ -7,7 +7,7 @@
 #include "ribbonactionsmanager_p.h"
 #include "ribbonbar.h"
 #include "ribboncustomizedata.h"
-#include "ribbonwindow.h"
+#include "ribbonmainwindow.h"
 #include "ribbongroup.h"
 #include "ribbongroup_p.h"
 #include "ribbongrouplayout.h"
@@ -801,7 +801,7 @@ bool RibbonCustomizeWidget::apply()
  * @note 由于QXmlStreamWriter在QString作为io时，是不支持编码的，而此又无法保证自定义过程不出现中文字符，
  * 因此，QXmlStreamWriter不应该通过QString进行构造，如果需要用到string，也需要通过QByteArray构造，如：
  * @code
- * RibbonCustomizeDialog dlg(this);//this为RibbonWindow的窗口
+ * RibbonCustomizeDialog dlg(this);//this为RibbonMainWindow的窗口
  * dlg.setupActionsManager(m_actMgr);
  * if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
  *    dlg.apply();
