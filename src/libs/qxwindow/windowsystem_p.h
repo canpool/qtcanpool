@@ -40,7 +40,11 @@ protected:
         switch (event->type()) {
         case QEvent::MouseMove: {
             Qt::WindowStates states = target->windowStates();
-            // FIXME: don't know the normal size of target, so disable move when maximized
+            // NOTE: moving a maximised or full-screen window is not attempted at all
+            // because the target's restored (normal) size is not available at this
+            // level. Restoring first and then following the mouse - what a native
+            // title bar does - would be new behaviour, not a bug fix.
+            // See doc/pages/limitations.md, "no move while maximised".
             if (states.testFlag(Qt::WindowMaximized) || states.testFlag(Qt::WindowFullScreen)) {
                 return false;
             }

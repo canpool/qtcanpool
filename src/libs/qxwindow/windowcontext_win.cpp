@@ -1109,12 +1109,11 @@ static void emulateClientAreaMessage(HWND hWnd, UINT message, WPARAM wParam, LPA
     case WM_NCXBUTTONDBLCLK:
         SEND_MESSAGE(hWnd, WM_XBUTTONDBLCLK, wParamNew, lParamNew);
         break;
-#if 0   // ### TODO: How to handle touch events?
-        case WM_NCPOINTERUPDATE:
-        case WM_NCPOINTERDOWN:
-        case WM_NCPOINTERUP:
-            break;
-#endif
+    // Non-client pointer messages (WM_NCPOINTER*) are deliberately absent from this
+    // table: pointer input is delivered to the client area directly, so there is
+    // nothing to re-send here. Touch input on the non-client area is therefore not
+    // handled at all. See doc/pages/limitations.md,
+    // "non-client touch and pointer input".
     case WM_NCMOUSEHOVER:
         SEND_MESSAGE(hWnd, WM_MOUSEHOVER, wParamNew, lParamNew);
         break;
@@ -1197,11 +1196,8 @@ bool WindowContextWin::snapLayoutHandler(HWND hWnd, UINT message, WPARAM wParam,
     case WM_NCXBUTTONDOWN:
     case WM_NCXBUTTONUP:
     case WM_NCXBUTTONDBLCLK:
-#if 0   // ### TODO: How to handle touch events?
-    case WM_NCPOINTERUPDATE:
-    case WM_NCPOINTERDOWN:
-    case WM_NCPOINTERUP:
-#endif
+    // WM_NCPOINTER* is not part of this group either - see the note in
+    // emulateClientAreaMessage() above.
     case WM_NCMOUSEHOVER: {
         const WindowPart currentWindowPart = lastHitTestResult;
         if (message == WM_NCMOUSEMOVE) {
@@ -1271,10 +1267,14 @@ bool WindowContextWin::snapLayoutHandler(HWND hWnd, UINT message, WPARAM wParam,
         if (currentWindowPart == WindowPart::ChromeButton) {
             emulateClientAreaMessage(hWnd, message, wParam, lParam);
             if (message == WM_NCMOUSEMOVE) {
-                // ### FIXME FIXME FIXME
-                // ### FIXME: Calling DefWindowProc() here is really dangerous, investigate
-                // how to avoid doing this.
-                // ### FIXME FIXME FIXME
+                // NOTE: this hands a message we have already emulated into the client
+                // area to Windows' own default non-client processing, and returns its
+                // result verbatim. The upstream comment called it "really dangerous"
+                // and asked how to avoid it; nobody answered, and the chrome-button
+                // path has no regression test, so removing it would be an unverifiable
+                // behaviour change rather than a fix. Recorded, not fixed:
+                // See doc/pages/limitations.md,
+                // "DefWindowProc on WM_NCMOUSEMOVE during hit testing".
                 *result = ::DefWindowProcW(hWnd, WM_NCMOUSEMOVE, wParam, lParam);
             } else {
                 // According to MSDN, we should return non-zero for X button messages to
@@ -1439,7 +1439,12 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
 
         bool isFixedSize = m_delegate->isHostSizeFixed(m_host);
         bool isTitleBar = isInTitleBarDraggableArea(qtScenePos);
-        bool dontOverrideCursor = false;   // ### TODO
+        // NOTE: always false - nothing in this library ever assigns to it, so every
+        // use below reduces to `isFixedSize`. The name is kept because it documents an
+        // intended extension point (let the host opt out of the resize cursor at the
+        // border); see doc/pages/limitations.md,
+        // "hit testing always overrides the border cursor".
+        bool dontOverrideCursor = false;
 
         WindowAgentBase::SystemButton sysButtonType = WindowAgentBase::Unknown;
         if (!isFixedSize && isInSystemButtons(qtScenePos, &sysButtonType)) {
@@ -1626,7 +1631,11 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
     }
 
     case WM_WINDOWPOSCHANGING: {
-        // ### FIXME: How does this problem happen and why is it solved?
+        // NOTE: the trigger and the workaround below are both recorded - what is not
+        // understood is why the workaround works. The marker that used to stand here
+        // asked exactly that and it was never answered, so this is a limitation rather
+        // than an open question in the source. See doc/pages/limitations.md,
+        // "WM_WINDOWPOSCHANGING with SWP_NOCOPYBITS".
         // When toggling the "Show theme color in title bar and window border" setting in
         // Windows Settings, or calling `DrawMenuBar()`, Windows sends a message of
         // WM_WINDOWPOSCHANGING with flags 0x37. If we do not process this message,

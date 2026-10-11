@@ -8,6 +8,13 @@ Deprecated
   value QxThemeManager does not report; if that becomes a real need, revisit it
   then.
 
+Cleanup
+- Settle the eight TODO/FIXME comments inherited from upstream (seven in
+  windowcontext_win.cpp, one in windowsystem_p.h). Two of them were dead `#if 0`
+  blocks that only listed WM_NCPOINTER* cases and are now removed; the remaining
+  four sites became NOTE comments, each pointing at an entry in
+  doc/pages/limitations.md. No behaviour change and no API change.
+
 0.1.2
 ---
 - Port to Qt 5.12.12 6.8.1

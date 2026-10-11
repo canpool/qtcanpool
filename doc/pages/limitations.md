@@ -173,3 +173,107 @@ Qt 5 上照旧可用；它的 `FramelessHelper` 使用处在源码里用 `QT_WAR
 退出最大化（`ShowWindow(SW_RESTORE)`），也就是把这半条路径从"Qt 侧模拟"改成 `WindowAgentWidget`
 那样的原生做法。真要动，位置是 `src/libs/qxribbon/framelesshelper.cpp` 里
 `FramelessWidgetDataQt::handleMouseMoveEvent()` 的还原分支。
+
+---
+
+> 下面五条来自 **A1**（`doc/design/4.2-TASKS.md`）：`qxwindow` 里从上游继承下来的 8 处
+> `TODO`/`FIXME` 注释（连 `### FIXME FIXME FIXME` 这种写法都是上游的），4.1 曾把它们列为非目标，
+> 于是长期"没有归宿"。4.2 逐条判定：**两处是死代码、直接删掉**（第一条），
+> **其余四处改写成 `NOTE:` 并落到本页**。它们描述的都是 Windows 原生窗口路径，离屏测试覆盖不到。
+
+---
+
+## 非客户区的触摸与指针输入不做处理（non-client touch and pointer input）
+
+**现象**：在无边框窗口的非客户区（`RibbonBar` 自己画的标题行、边框）上，触摸与笔输入的非客户
+消息（`WM_NCPOINTERUPDATE` / `WM_NCPOINTERDOWN` / `WM_NCPOINTERUP`）**完全不处理**：既不会像
+鼠标那样被重定向到客户区，也不会被 Windows 自己的非客户区逻辑接走。
+
+**成因**：`WindowContextWin` 里有一张"把非客户鼠标消息重定向成客户鼠标消息"的表
+（`emulateClientAreaMessage()`），触摸/笔消息从来没有进过这张表。上游留下的是两段 `#if 0` 的空壳
+（三个 `case` 全是 `break`），**与"不处理"完全等价**，4.2 把它删掉了。
+
+**为什么保持现状**：无边框窗口的交互整体建立在鼠标消息语义上（拖动、命中测试、窗口按钮的
+hover / 按下都依赖 `WM_NC*` 鼠标消息）；把 pointer 消息接进来需要另一套状态机，属于**加功能**
+而不是修问题。
+
+**要改变它需要什么**：把 `WM_NCPOINTER*` 接到与对应鼠标消息同一个分支（上游那两段 `#if 0`
+就是这个意思），并补一台**真机触摸设备**上的验证——这条路径离屏测试测不到。
+
+---
+
+## 命中测试里对 WM_NCMOUSEMOVE 调用了 DefWindowProc（DefWindowProc on WM_NCMOUSEMOVE during hit testing）
+
+**现象**：鼠标停在窗口按钮（chrome button）上移动时，本库处理完这条非客户消息之后，还会把它
+原样交给 `DefWindowProcW()`，并把它的返回值当作自己的返回值交给 Windows。
+
+**成因**：从上游继承而来，原注释用三行 `### FIXME FIXME FIXME` 写着
+"Calling DefWindowProc() here is really dangerous, investigate how to avoid doing this"。
+可以确定的是：这条消息**已经被本库重定向成客户区的鼠标移动**，所以这次调用是在"已经处理过一次"
+的基础上，再跑一遍 Windows 自己的非客户区默认处理，而其结果被逐字返回。
+
+**为什么保持现状**：**没有人回答过"能不能避免"**，而这条路径**没有回归测试**——窗口按钮的
+hover、按下、拖动在离屏测试里都测不到。在没有真机验证的前提下删掉这一句，属于"改一个看不见的
+行为"，风险大于收益。按 K21，原注释从"待办（`FIXME`）"降级为"已知（`NOTE`）"。
+
+**要改变它需要什么**：在真机上分别记录"调用 / 不调用"两版时窗口按钮的 hover 与拖动行为
+（事件日志），确认这一句是否多余；确认多余之后再删，并且要给窗口按钮补一条能跑在离屏环境里的
+回归用例——否则下一次改动仍然无法验证。
+
+---
+
+## 可缩放窗口的边框一定会接管光标（hit testing always overrides the border cursor）
+
+**现象**：只要窗口**可缩放**，鼠标进入边框区域时一定会变成缩放光标；调用方**没有任何办法**
+让命中测试返回普通光标（例如希望边框只用于阴影、拖动只走标题栏）。
+
+**成因**：命中测试里有一个 `dontOverrideCursor` 标志，字面意思就是"不要覆盖光标"，
+但它**没有任何来源**——`WindowContextWin::windowProc()` 里写下 `bool dontOverrideCursor = false;`
+之后，全文件再没给它赋过值。于是它的四处使用全部退化为 `isFixedSize`
+（`(isFixedSize || dontOverrideCursor) ? … : …` 等价于 `isFixedSize ? … : …`），
+"不要覆盖光标"那条分支**永远走不到**。这是上游遗留的空壳，4.2 把它记下来，而不是顺手给它接线。
+
+**为什么保持现状**：给它接线要先决定"它从哪里来"——大概率是一个新的 `WindowAgent` 开关，
+也就是**新的公开 API**。4.2 对公开 API 的口径是只加不改（K26），而这类"要不要开这个口子"
+属于 A5（公开 API 面评估）要一起看的，单塞一笔进去不合适。
+
+**要改变它需要什么**：二选一——① 给 `WindowAgent` 加一个"边框不接管光标"的开关并接到这里；
+② 承认它没有意义，**删掉这个空壳、把四处使用简化成 `isFixedSize`**（行为不变，只是去掉误导；
+这也是 4.2 没有选的那条，因为要一并确认边框拖动仍然正常）。两条都要在真机上过一遍。
+
+---
+
+## WM_WINDOWPOSCHANGING 的 SWP_NOCOPYBITS 绕法（WM_WINDOWPOSCHANGING with SWP_NOCOPYBITS）
+
+**现象**：在 Windows 设置里切换"在标题栏和窗口边框上显示主题色"、或者调用 `DrawMenuBar()` 时，
+Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不处理它**，客户区会整体向
+左平移；不重绘的话看着很不对劲。
+
+**成因**：**不明**。本库的处理是往 `flags` 里补一个 `SWP_NOCOPYBITS`，补上之后现象消失。
+至于"为什么会发生"以及"为什么这样能解决"，上游原注释的原话是
+"I don't know what caused the problem, or why this would solve it"。
+
+**为什么保持现状**：触发动作与修法都是上游**记录过的**（`kBadWindowPosFlag` 就是那五个 flag 的
+或），唯一缺的是**解释**。按 K21，这种"修好了但说不清原因"的条目写进本页、注释降级为 `NOTE`，
+而不是留一条 `FIXME` 在源码里当待办——它**没有待办**，绕法已经生效。
+
+**要改变它需要什么**：搞清 `SWP_NOCOPYBITS` 在这里究竟避免了哪一次位块传送
+（大概需要 Windows 窗口管理器侧的资料，或者 `Spy++` / 抓帧级别的观察）。在弄清之前**不动它**。
+
+---
+
+## 最大化或全屏时不能拖动窗口（no move while maximised）
+
+**现象**：`WindowMoveManipulator`（这一层用来实现"拖动窗口"的小对象）在窗口处于最大化或全屏时
+**直接放弃**：拖标题栏没有任何反应。
+
+**成因**：这里拿不到窗口"还原后的尺寸"。它的做法是记住按下时的窗口位置与鼠标位置，之后按位移
+`setPosition()`；而最大化状态下窗口的"正常几何"不是它当前的几何，照算会得到一个错误的位置。
+上游的处理就是干脆不动，本库沿用。
+
+**为什么保持现状**：正经做法是"先还原、再跟随"（Windows 原生标题栏就是这样），那是**新行为**
+而不是修 bug；而且它需要"还原后的几何"这个当前在这一层拿不到的量。
+
+**要改变它需要什么**：在 `WindowMoveManipulator` 里保存"最大化之前的几何"，在第一次移动时先
+退出最大化、再按位移走。注意这与本页"Windows + Qt 6 上，无边框窗口不能'启动即最大化'"那条相邻
+——那边是 Qt 平台插件的状态不同步，这里是这一层没有还原几何，两者要放在一起验证。
