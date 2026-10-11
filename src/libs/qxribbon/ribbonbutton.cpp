@@ -739,7 +739,9 @@ void RibbonButton::changeEvent(QEvent *e)
     Q_D(RibbonButton);
     if (e) {
         if (e->type() == QEvent::FontChange) {
-            // todo 说明字体改变，需要重新计算和字体相关的信息
+            // Recompute the font-dependent geometry. The cached size hint needs
+            // no invalidation of its own: sizeHint() recomputes it on every
+            // call, so it cannot go stale from here.
             QStyleOptionToolButton opt;
             initStyleOption(&opt);
             d->calcIconAndTextRect(opt);

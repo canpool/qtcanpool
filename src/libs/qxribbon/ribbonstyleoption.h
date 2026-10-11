@@ -23,7 +23,8 @@ class RibbonStyleOptionPrivate;
  *
  * @note 此类定义了 ribbonbar 和 group 的高度信息，并通过字体提前计算好一些布局信息
  *
- * @todo 后续开发通过配置文件定义 ribbon 的尺寸布局
+ * @note 尺寸布局是可替换的：本类的方法都是 virtual，子类化之后交给
+ * RibbonFactory::setRibbonStyleOption 即可（配置文件的读写属于调用方，不在这层）
  */
 class QX_RIBBON_EXPORT RibbonStyleOption
 {

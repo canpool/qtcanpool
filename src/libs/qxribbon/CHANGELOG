@@ -9,6 +9,15 @@ Deprecated
   qxwindow. RibbonWindow itself is unchanged and still uses it. Removal needs
   at least one release of warning first (K26).
 
+Cleanup
+- RibbonButton: drop the stale "todo" in the FontChange handler - it asked for
+  exactly what the next three lines already do, and sizeHint() recomputes its
+  cached value on every call
+- RibbonStyleOption: drop the "@todo define the ribbon layout in a config file";
+  the extension point it described already exists - the class is virtual and
+  RibbonFactory::setRibbonStyleOption() takes a subclass - and a config file is a
+  caller-side policy rather than a gap here
+
 0.10.2
 ---
 Bugfix
