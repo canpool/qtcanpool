@@ -14,6 +14,14 @@ Interface
   backend does build there. Every sample moves to RibbonMainWindow. See
   doc/pages/migration.md, section "4.3 已删除"
 
+Interface
+- RibbonGalleryViewport loses QX_RIBBON_EXPORT. It lives in ribbongallery_p.h and
+  was privatized on purpose; only the export macro still claimed otherwise. Every
+  .h in a library's SOURCES is installed, private ones included, so the header
+  was reachable on disk without the class ever being public API - a caller that
+  wants its own gallery popup overrides RibbonGallery::showMoreTrigger() and
+  never names this class. It is the only exported class in a _p.h in the tree
+
 Cleanup
 - Remove the Qt version branch below 5.15 in FramelessWidgetDataNativeWin::devicePixelRatio,
   which K1 set as the minimum; QWidget::screen() has been the way to reach the

@@ -12,8 +12,18 @@ class QLabel;
 QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonGalleryViewportPrivate;
-/* RibbonGalleryViewport */
-class QX_RIBBON_EXPORT RibbonGalleryViewport : public QWidget
+/*
+ * RibbonGalleryViewport, the popup RibbonGallery shows for "show more".
+ *
+ * It was privatized on purpose (it belongs to RibbonGallery, which hands out
+ * nothing but the widget it manages), and it carries no export macro for that
+ * reason - the declaration has to match the status, not the accident of this
+ * header being installed. Every .h listed in a library's SOURCES is installed,
+ * _p.h included, so being reachable on disk is not a promise: a caller that
+ * wants its own popup overrides RibbonGallery::showMoreTrigger() instead and
+ * never names this class.
+ */
+class RibbonGalleryViewport : public QWidget
 {
     Q_OBJECT
 public:
