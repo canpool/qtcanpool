@@ -151,6 +151,15 @@ endfunction()
 # still regenerates only what actually changed, so the price is one scan per
 # configure, not a rebuild.
 #
+# Re-verified on CMake 4.2.1 against both Qt 6.8.3 and Qt 5.15.2 (4.2, task C3):
+# the bug is still there, so this stays. It looks fixed now - CMake has since grown
+# a <target>_autogen_timestamp_deps target, and the timestamp rule depends on
+# compiler_depend.ts, which really does list the target's sources. It is not:
+# adding a source to an already-built target still leaves the autogen step
+# "up to date" (no "Automatic MOC" line in the build log) and the compile then
+# dies on the missing .moc. Removing this function reproduced exactly that on both
+# Qt legs - same message, both times; putting it back made the same tree build.
+#
 # The path below is CMake's layout, not ours, so it is probed rather than
 # assumed: if a future CMake moves the timestamp, the EXISTS guard turns this
 # into a no-op instead of an error. Note that a *function* sees the
