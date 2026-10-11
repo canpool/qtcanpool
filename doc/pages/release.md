@@ -1,0 +1,160 @@
+# 发布流程
+
+这一页是**「发一次版本要做的全部动作」的唯一出处**。
+[`doc/ROADMAP-3.x.md`](https://github.com/canpool/qtcanpool/blob/master/doc/ROADMAP-3.x.md) 的附录 B
+与各 `doc/design/*-TASKS.md` 里的发布小节是**当时的执行记录**；规则若与本页不一致，以本页为准。
+
+发布分四件事：**过闸门 → 定版本号 → 写三本账 → 推 tag 与 Release**。
+前两件决定"能不能发"，后两件决定"发得对不对"。
+
+---
+
+## 一、发布前的两道闸门
+
+### 1. CI 全绿
+
+推送要发布的那个提交，等 `ci.yml`（`build` × 4、`format`、`quality`、`tidy`）与
+`pages.yml`（`docs`、`wasm`、`deploy`）全部 `success`。
+
+⚠️ **不要看「最近一次 CI 绿了」就发**——要看**那一个提交**的检查项。发布期间别的工作合并进来，
+绿的是别人的提交。
+
+### 2. tag 显式钉在验证过的那个提交上
+
+```bash
+git tag -a 4.2.0 -m "release 4.2.0" <验证过的 SHA>
+```
+
+**显式给出 SHA**，不要依赖"当前 HEAD"。历史上发布期间仍有提交落到 `master`（4.1 的 A1 就在
+tag 之后落的），用 HEAD 会把 tag 指向一个**没跑过 CI**的提交。
+
+---
+
+## 二、先定版本号
+
+每个库有**独立的演进号**（决策 K11）。规则三条：
+
+1. **0.x 的语义**：`minor + 1` = 接口契约发生了变化性调整；`patch + 1` = 纯增量或修复。
+   全部库都还在 0.x，**不承诺二进制兼容**。
+2. **每次项目发版结算一次**：本期**有 API 改动**的库才前进号；一行 API 都没动的库**保持原号**。
+   **只动构建接线、头文件清单、注释的行为不算 API 改动。**
+   版本号本身就是「这个库本期有没有动」的声明——不是为了对齐而对齐。
+3. **不追溯**：只在新发布时前进。已发布 tag 里是多少就是多少，不在事后回补。
+
+**怎么判定"动了没有"**（唯一可靠的依据，别靠印象）：
+
+```bash
+git diff --name-only <上次tag>..HEAD -- 'src/libs/**/*.h'
+```
+
+**改号要改两处**：
+
+| 位置 | 内容 |
+| :--- | :--- |
+| `<lib>/CMakeLists.txt` | `VERSION` |
+| `<lib>/<lib>_global.h` | `QX_<LIB>_VERSION_{MAJOR,MINOR,PATCH}` 三个宏 |
+
+⚠️ 这个号有**两个镜像**，历史上漏改过两次（`qxapp_global.h` 停在 0.0.1、`qxdock_global.h` 停在 0.1.0），
+两处必须同时改。qmake 侧原有的两处 `.pri` 已随决策 K13 删除，不要再去找。
+
+**项目版本另有三处**：`cmake/QtCanpoolBranding.cmake`、`ports/qtcanpool/vcpkg.json`、`conanfile.py`。
+文档站页脚取自 `QTPROJECT_DISPLAY_VERSION`（来自 branding 文件），不必单独改。
+
+---
+
+## 三、发版要写三本账
+
+| 账本 | 视角 | 什么时候写 | 回答什么 |
+| :--- | :--- | :--- | :--- |
+| 根 `CHANGELOG` | 项目 | **发版时一次性写**（与项目版本号同一笔提交） | 这一版用户要改什么 |
+| 库级 `src/libs/<lib>/CHANGELOG` | 库 | **跟着改动走**（决策 K24） | 这个库动了什么 |
+| [`doc/pages/index.md`](index.md) 的版本对照表 | 项目 × 库 | 发版时补一行 | 这一版各库是什么号 |
+
+**库级 `CHANGELOG` 的三条记法**（K24）：
+
+1. **落地时就写**：改动随提交写进该库 `CHANGELOG` 顶端的 `Unreleased` 分节，沿用该文件原有的
+   `Feature` / `Interface` / `Optimize` / `Bugfix` 体例；
+2. **落号时改名**：该库版本号前进时，把 `Unreleased` **改名成新版本号**，且与改版本号**同一笔提交**；
+3. **不追溯**：已发布的段一个字不动。`qxcore` / `qxtheme` / `qxplugin` / `qxapp` 目前没有该文件，
+   **首次有改动时才建**。
+
+⚠️ 根 `CHANGELOG` 里**必须写明哪个库动了号、为什么**；**没有库动号也要写出来**——
+留白会被读成"有人忘了"。
+
+---
+
+## 四、推送
+
+### 三必需
+
+`~/.gitconfig` 是个人全局配置，**不擅改**；用环境变量在单条命令里给：
+
+```bash
+export GIT_TERMINAL_PROMPT=0 GIT_CONFIG_NOSYSTEM=1 \
+       GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=manager
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY
+bash scripts/push.sh master
+```
+
+三个坑各自对应上面的一项：
+
+| 症状 | 原因 | 对策 |
+| :--- | :--- | :--- |
+| push 无输出、挂死 | 沙箱拦住了凭据 GUI | 在**放开沙箱**的前提下执行 |
+| `502 CONNECT tunnel failed` | 代理拦截 github | `unset http(s)_proxy` |
+| 挂死、退出码 124 | 系统级 `helper-selector` 弹了 UI | `GIT_CONFIG_NOSYSTEM=1` |
+
+`github.com:443` 会**间歇性**连不上（`Could not connect to server`），隔约 35–40 秒重试即可，
+常需 5–8 次。⚠️ 重试循环里**不要用 `cmd | tail` 判断成功**——拿到的会是 `tail` 的退出码；
+用 `cmd > log 2>&1; rc=$?`。
+
+### tag 要单独推
+
+**`scripts/push.sh` 只推分支、不管 tag。** tag 要手动推，并且**逐段核对**：
+
+```bash
+git push github 4.2.0
+git push origin 4.2.0
+git ls-remote --tags github 4.2.0
+git ls-remote --tags origin 4.2.0
+```
+
+⚠️ **分支推得通 ≠ tag 推得通**：同一时刻 tag 可能连续失败（历史上出现过第 4 次才成功、也有一次就过的，
+是运气不是修好）。两端都要核对，且核对的是 **tag 对象**的 SHA，不只是它指向的提交。
+
+---
+
+## 五、GitHub Release
+
+- **标题统一 `QtCanpool <ver>`**——建 Release 时**显式传 `name`**，不要用默认标题（那只是裸版本号）；
+- **正文一律英文**：不要把中文 `CHANGELOG` 原文贴上去，要么取条目**改写为英文**，要么另写一份英文摘要；
+- 附注 tag 消息 `release <ver>` 保持英文。
+
+---
+
+## 六、本机没有 `gh` 时
+
+CI 状态与 Release 都走 GitHub API。仓库里有两个**不入库**的辅助脚本（在 `build/` 下，被 `.gitignore`
+挡住，所以克隆下来是没有的）：
+
+| 脚本 | 用途 | 要点 |
+| :--- | :--- | :--- |
+| `build/poll_ci.py <sha>` | 轮询某个提交的 check-runs | 必须**解析 JSON**，不能 `grep '"id"'`（嵌套对象也有 `id`，会多数） |
+| `build/make_release.py <tag> <body.md>` | 建 Release | 要**显式传标题**；正文取自手写的英文 `.md` |
+
+两个坑：
+
+- **作业日志与 `GITHUB_STEP_SUMMARY` 需要登录才能读**（匿名访问 `/actions/jobs/<id>/logs` 回 `403`），
+  所以 CI 摘要里的内容（例如 clang-tidy 的路径清单）**在本地读不到**，要么在浏览器里看，要么在
+  workflow 里把它 `echo` 进日志并 `upload-artifact`；
+- 取作业日志的请求会 302 到 blob 存储，`urllib` 会把 `Authorization` 一起带过去并得到
+  `403 signature` 错误——需要在跨域重定向时**剥掉这个头**。
+
+---
+
+## 七、完成后
+
+1. 把「发布记录」写进本版的设计文档（`doc/design/<ver>-TASKS.md` 的执行记录）：闸门结果、tag 的
+   **提交与 tag 对象两个 SHA**、Release 标题、版本结算的结论；
+2. 确认工作区干净（`git status --short` 为空）；
+3. 两端 `git ls-remote master` 与本地 `git rev-parse master` 三者一致。

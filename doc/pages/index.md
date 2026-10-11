@@ -121,6 +121,7 @@ ctest --test-dir build -C Release --output-on-failure
 | [插件体系](plugins.md) | 插件开发指南：元数据、三种依赖、生命周期、对象池、失败隔离 |
 | [迁移指南](migration.md) | 2.x → 3.x / 4.0 迁移：命名空间、类与方法对照、构建迁移、插件条目 |
 | [已知限制](limitations.md) | 知道但不打算改的行为：现象、成因、为什么保持现状、要改变需要什么 |
+| [发布流程](release.md) | 发一次版本的全部动作：两道闸门、版本号结算、三本账、推送与 Release |
 
 ## 环境要求
 
