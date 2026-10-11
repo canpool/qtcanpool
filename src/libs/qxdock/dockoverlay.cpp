@@ -528,11 +528,7 @@ QPixmap DockOverlayCrossPrivate::createHighDpiDropIndicatorPixmap(const QSizeF &
         overlayColor.setAlpha(64);
     }
 
-#if QT_VERSION >= 0x050600
     double devicePixelRatio = q->window()->devicePixelRatioF();
-#else
-    double devicePixelRatio = q->window()->devicePixelRatio();
-#endif
     QSizeF pixmapSize = size * devicePixelRatio;
     QPixmap pm(pixmapSize.toSize());
     pm.fill(QColor(0, 0, 0, 0));
@@ -725,11 +721,7 @@ void DockOverlayCross::setupOverlayCross(DockOverlay::OverlayMode mode)
     areaWidgets.insert(Qx::LeftDockWidgetArea, d->createDropIndicatorWidget(Qx::LeftDockWidgetArea, mode));
     areaWidgets.insert(Qx::CenterDockWidgetArea, d->createDropIndicatorWidget(Qx::CenterDockWidgetArea, mode));
 
-#if QT_VERSION >= 0x050600
     d->m_lastDevicePixelRatio = devicePixelRatioF();
-#else
-    d->m_lastDevicePixelRatio = devicePixelRatio();
-#endif
     setAreaWidgets(areaWidgets);
     d->m_updateRequired = false;
 }
@@ -744,11 +736,7 @@ void DockOverlayCross::updateOverlayIcons()
     for (auto Widget : d->m_dropIndicatorWidgets) {
         d->updateDropIndicatorIcon(Widget);
     }
-#if QT_VERSION >= 0x050600
     d->m_lastDevicePixelRatio = devicePixelRatioF();
-#else
-    d->m_lastDevicePixelRatio = devicePixelRatio();
-#endif
 }
 
 void DockOverlayCross::reset()
@@ -801,11 +789,7 @@ void DockOverlayCross::setIconColors(const QString &colors)
                                                             {"Arrow", DockOverlayCross::ArrowColor},
                                                             {"Shadow", DockOverlayCross::ShadowColor}};
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
-    auto skipEmptyParts = QString::SkipEmptyParts;
-#else
     auto skipEmptyParts = Qt::SkipEmptyParts;
-#endif
     auto colorList = colors.split(' ', skipEmptyParts);
     for (const auto &colorListEntry : colorList) {
         auto componentColor = colorListEntry.split('=', skipEmptyParts);

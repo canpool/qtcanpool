@@ -1,5 +1,11 @@
 Unreleased
 ---
+Cleanup
+- Remove the Qt version branches below 5.15, which K1 set as the minimum: the
+  hand-written WindowsRegistryKey class, now an alias for QWinRegistryKey from Qt's
+  own private header, and the WindowMoveManipulator / WindowResizeManipulator
+  fallbacks in startSystemMove and startSystemResize
+
 Test
 - Make the resize border and corner hit test reachable. Which edge or corner a
   press lands on was inline in windowcontext_win.cpp's WM_NCHITTEST handling,

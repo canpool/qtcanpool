@@ -1,5 +1,11 @@
 Unreleased
 ---
+Cleanup
+- Remove the Qt version branches below 5.15, which K1 set as the minimum: the
+  hand-written qByteArrayToHex/toHexLower helpers that existed for Qt below 5.9, the
+  QPixmap::devicePixelRatio fallback, the QString::SkipEmptyParts fallback, the
+  QFlags::setFlag fallback and the QFontMetrics::width fallbacks in DockLabel
+
 Bugfix
 - DockPanel: do not reopen an auto hide panel while a widget is inserted into
   it, which unpinned the widget again and left an empty panel in the root

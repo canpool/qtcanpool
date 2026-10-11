@@ -42,15 +42,7 @@ static const bool Restore = false;
 
 template <class T> void setFlag(T &flags, typename T::enum_type flag, bool on = true)
 {
-#if QT_VERSION >= 0x050700
     flags.setFlag(flag, on);
-#else
-    if (on) {
-        flags |= flag;
-    } else {
-        flags &= ~flag;
-    }
-#endif
 }
 
 template <class QObjectPtr> void setToolTip(QObjectPtr obj, const QString &tip)

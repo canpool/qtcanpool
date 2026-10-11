@@ -141,9 +141,7 @@ private:
 
 static inline void startSystemMove(QWindow *window)
 {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
-    std::ignore = new WindowMoveManipulator(window);
-#elif defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX)
     if (window->startSystemMove()) {
         return;
     }
@@ -155,9 +153,7 @@ static inline void startSystemMove(QWindow *window)
 
 static inline void startSystemResize(QWindow *window, Qt::Edges edges)
 {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
-    std::ignore = new WindowResizeManipulator(window, edges);
-#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     if (window->startSystemResize(edges)) {
         return;
     }

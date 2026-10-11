@@ -23,33 +23,6 @@
 #include <QPointer>
 #include <QTextStream>
 
-#if QT_VERSION < 0x050900
-
-inline char toHexLower(uint value)
-{
-    return "0123456789abcdef"[value & 0xF];
-}
-
-QByteArray qByteArrayToHex(const QByteArray &src, char separator)
-{
-    if (src.size() == 0)
-        return QByteArray();
-
-    const int length = separator ? (src.size() * 3 - 1) : (src.size() * 2);
-    QByteArray hex(length, Qt::Uninitialized);
-    char *hexData = hex.data();
-    const uchar *data = reinterpret_cast<const uchar *>(src.data());
-    for (int i = 0, o = 0; i < src.size(); ++i) {
-        hexData[o++] = toHexLower(data[i] >> 4);
-        hexData[o++] = toHexLower(data[i] & 0xf);
-
-        if ((separator) && (o < length))
-            hexData[o++] = separator;
-    }
-    return hex;
-}
-#endif
-
 QX_DOCK_BEGIN_NAMESPACE
 
 static unsigned int s_zOrderCounter = 0;
@@ -1628,11 +1601,7 @@ void DockContainer::saveState(QXmlStreamWriter &s) const
     if (isFloating()) {
         DockFloatingContainer *floatingWidget = this->floatingWidget();
         QByteArray geometry = floatingWidget->saveGeometry();
-#if QT_VERSION < 0x050900
-        s.writeTextElement("Geometry", qByteArrayToHex(geometry, ' '));
-#else
         s.writeTextElement("Geometry", geometry.toHex(' '));
-#endif
     }
     d->saveChildNodesState(s, d->m_rootSplitter);
     d->saveAutoHideWidgetsState(s);

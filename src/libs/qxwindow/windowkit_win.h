@@ -12,11 +12,9 @@
 #include <QtCore/private/qwinregistry_p.h>
 #endif
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QStringView>
 #include <QPair>
 #include <QString>
-#endif
 
 #include "qxwindow_global.h"
 
@@ -136,32 +134,12 @@ inline bool IsWindows10Only_Real()
 //
 // Registry Helpers
 //
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-class WindowsRegistryKey
-{
-public:
-    WindowsRegistryKey(HKEY parentHandle, QStringView subKey, REGSAM permissions = KEY_READ, REGSAM access = 0);
 
-    ~WindowsRegistryKey();
-
-    inline bool isValid() const;
-
-    void close();
-    QString stringValue(QStringView subKey) const;
-    QPair<DWORD, bool> dwordValue(QStringView subKey) const;
-private:
-    HKEY m_key;
-
-    Q_DISABLE_COPY(WindowsRegistryKey)
-};
-
-inline bool WindowsRegistryKey::isValid() const
-{
-    return m_key != nullptr;
-}
-#else
+// QWinRegistryKey is Qt's own wrapper (qwinregistry_p.h, included above for Qt
+// 5.14 and later). The library used to carry its own WindowsRegistryKey for older
+// Qt and aliased this name to Qt's; that alias stays so the call sites below keep
+// reading the same way, but the hand-written version is gone - see 4.3 B2.
 using WindowsRegistryKey = QWinRegistryKey;
-#endif
 
 //
 // Version Helpers

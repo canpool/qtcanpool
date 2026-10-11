@@ -86,7 +86,7 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 
 **历史测试环境**（2.x 时期验证，3.0 不再保证）：
 
-- Qt 6.8.1 / 6.5.3 / 5.15.2 / 5.14.2 / 5.12.12 / 5.11.1（MinGW / MSVC，64bit）
+- Qt 6.8.1 / 6.5.3 / 5.15.2（MinGW / MSVC，64bit）；**最低支持 Qt 5.15**（决策 K1，4.3 起 5.14 及更早的兼容分支已删除）
 - 其它环境未测试，推荐使用 [Qt LTS](https://download.qt.io/official_releases/qt/) 版本
 
 ## 构建

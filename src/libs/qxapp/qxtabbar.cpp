@@ -19,9 +19,6 @@ QxTabBarPrivate::QxTabBarPrivate()
     : m_currentIndex(-1)
     , m_togglable(true)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    m_togglable = false;
-#endif
 }
 
 QxTabBarPrivate::~QxTabBarPrivate()
@@ -35,11 +32,7 @@ void QxTabBarPrivate::init()
     q->layout()->setContentsMargins(0, 0, 0, 0);
 
     m_group = new QActionGroup(q);
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    m_group->setExclusive(true);
-#else
     m_group->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
-#endif
     connect(m_group, &QActionGroup::triggered, this, &QxTabBarPrivate::onTriggered);
 
     connect(q, &QxTabBar::orientationChanged, this, &QxTabBarPrivate::onOrientationChanged);
@@ -271,9 +264,6 @@ int QxTabBar::currentIndex() const
 
 void QxTabBar::setTogglable(bool able)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    Q_UNUSED(able);
-#else
     Q_D(QxTabBar);
     if (d->m_togglable == able) {
         return;
@@ -281,7 +271,6 @@ void QxTabBar::setTogglable(bool able)
     d->m_togglable = able;
     d->m_group->setExclusionPolicy(able ? QActionGroup::ExclusionPolicy::ExclusiveOptional
                                         : QActionGroup::ExclusionPolicy::Exclusive);
-#endif
 }
 
 bool QxTabBar::isTogglable() const
