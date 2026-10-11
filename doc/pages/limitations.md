@@ -35,15 +35,25 @@
 **现象**：`RibbonBar` 收到 `QEvent::LayoutRequest` 时会重跑一次 ribbon resize，
 所以一次操作可能触发不止一轮 resize。
 
-**成因**：修的是"该更新时没更新"，代价是"不该更新时也可能更新"。而且**哪些情况会产生 LayoutRequest
-从来没有被列清过**，也没有梳理过哪些 `postEvent()` / `sendEvent()` 可以由它代替。
+**成因**：修的是"该更新时没更新"，代价是"不该更新时也可能更新"。
+**（4.2）触发来源已经列清**——逐个 `postEvent` 读代码核对，不是事件日志——一共三类：
+
+| # | 来源 | 位置 | 说明 |
+| :--- | :--- | :--- | :--- |
+| 1 | `RibbonGroup` **主动投递** | `ribbongroup.cpp:785` / `794` / `808` | `ActionAdded` / `ActionChanged` / `ActionRemoved` 三个分支各投一次，投给 `parentWidget()`（即 page）。源码注释写的是"group 的尺寸变了，要让 page 也调整"。**这是本库唯一的 `LayoutRequest` 生产者**，是有意设计 |
+| 2 | **Qt 自己投递** | 任意子部件的 `QWidget::updateGeometry()` → 投给它的 parent | `setLayout()`、`QLayout::invalidate()`、`addWidget` / `removeWidget`、`setSizePolicy`、样式与字体变化、子部件 show / hide、最小最大尺寸变化都会走到这里。本库既控制不了，也数不完 |
+| 3 | **三个消费者** | `RibbonBar::event`（`ribbonbar.cpp:1873`）、`RibbonPage::event`（`ribbonpage.cpp:767` → `updateItemGeometry()`）、`RibbonMainWindow::eventFilter`（`ribbonmainwindow.cpp:188` → `updateMinimumWidth()`） | 同一份事件有三个接收者。只有 `RibbonBar` 那处会"多跑一轮 resize"，而它**带 `m_layoutRequest` 闸门**（`ribbonbar.cpp:1902`，只在 corner widget 收到 `ShowToParent` / `MouseButtonRelease` 时置位），所以多花的轮次被限制在那一种情形里
 
 **为什么没继续做**：这是性能问题不是正确性问题，没有观察到的故障，也没有可测量的回归基线
-（离屏截图测试测的不是这个）。目前的抑制手段是 `m_layoutRequest` 开关——
-只有 corner widget 是 `QMdiArea` 时才置位，所以多花的轮次被限制在那一种情形里。
+（离屏截图测试测的不是这个）。
 
-**要改变它需要什么**：先把 LayoutRequest 的触发条件列清（这需要在一台真机上打事件日志），
-再决定能不能用它替换掉现有的 `postEvent()` 调用。
+**要改变它需要什么**：触发条件已列清（上表）。下一步是把本库自己的投递点逐个过一遍：
+除上表第 1 类之外，`qxribbon` 里还有 **7 处** `QApplication::postEvent(this, new QResizeEvent(size(), size()))`
+（`ribbonbar.cpp` 的 1152 / 1195 / 1382 / 1480 / 1502 / 1565 / 1821，即 `resizeRibbon()` 的延迟投递）、
+**2 处**同步 `sendEvent(this, &resizeEvent)`（1585 / 1620），以及 `ribbongallery.cpp:184` 的同类投递。
+要判断的是"能不能用 `LayoutRequest` 替掉其中某几个"，以及"替掉之后 resize 轮次是变多还是变少"。
+⚠️ 这一步需要一份**真机事件日志**来对照（离屏测的不是这个），而且 `resizeRibbon()` 的延迟正是上面
+「RibbonBar 的 resize 是延迟的」那一条的来源——动它要连着那一条一起看。
 
 ---
 
