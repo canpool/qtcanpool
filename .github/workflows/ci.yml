@@ -315,6 +315,19 @@ jobs:
             exit 0
           fi
 
+          # src/libs/qxapp/qxpropertyeditor.cpp defines its Q_OBJECT classes in the .cpp
+          # and includes its own .moc because of it, and AUTOMOC only puts that file in
+          # the target's autogen directory. Configure does not create it, so clang-tidy
+          # stops at the include and the whole translation unit reports nothing - which
+          # cannot be told apart from a clean run. Generating it is enough to fix that,
+          # and it is worth doing only when the file is in scope: a scoped push normally
+          # has nothing to do with qxapp, and the target pulls in the libraries it
+          # depends on, which is the difference between seconds and a build.
+          if printf '%s\n' "${FILES}" | grep -qxF "src/libs/qxapp/qxpropertyeditor.cpp"; then
+            echo "Generating the qxapp moc sources that qxpropertyeditor.cpp includes"
+            cmake --build build-tidy --target qxapp_autogen
+          fi
+
           printf '%s\n' "${FILES}" > tidy-files.txt
           echo "Analysing $(wc -l < tidy-files.txt) file(s): ${SCOPE}"
 
