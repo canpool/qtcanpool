@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  **/
 #include "windowcontext_p.h"
+#include "windowhitregion_p.h"
 #include "windowkit_p.h"
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
@@ -142,17 +143,29 @@ void WindowContext::setSystemButtonAreaCallback(const ScreenRectCallback &callba
 bool WindowContext::isInSystemButtons(const QPoint &pos, WindowAgentBase::SystemButton *button) const
 {
     *button = WindowAgentBase::Unknown;
+
+    // Collect the rectangles the delegate reports, then let windowhitregion_p.h do
+    // the containment test. Doing it here and testing it there would be two copies
+    // of the same rule, and the copy under test would be the one nobody runs.
+    QList<QRect> rects;
+    QList<bool> visible;
     for (int i = WindowAgentBase::WindowIcon; i <= WindowAgentBase::Close; ++i) {
         auto currentButton = m_systemButtons[i];
-        if (!currentButton || !m_delegate->isVisible(currentButton) || !m_delegate->isEnabled(currentButton)) {
+        if (!currentButton) {
+            rects.append(QRect());
+            visible.append(false);
             continue;
         }
-        if (m_delegate->mapGeometryToScene(currentButton).contains(pos)) {
-            *button = static_cast<WindowAgentBase::SystemButton>(i);
-            return true;
-        }
+        rects.append(m_delegate->mapGeometryToScene(currentButton));
+        visible.append(m_delegate->isVisible(currentButton) && m_delegate->isEnabled(currentButton));
     }
-    return false;
+
+    const int index = ::QxWindow::systemButtonAt(pos, rects, visible);
+    if (index < 0) {
+        return false;
+    }
+    *button = static_cast<WindowAgentBase::SystemButton>(WindowAgentBase::WindowIcon + index);
+    return true;
 }
 
 bool WindowContext::isInTitleBarDraggableArea(const QPoint &pos) const
@@ -178,39 +191,50 @@ bool WindowContext::isInTitleBarDraggableArea(const QPoint &pos) const
         return false;
     }
 
+    // The same rule lives in windowhitregion_p.h so it can be tested without a
+    // native window; this gathers what it needs from the delegate and items.
+    QList<QRect> buttonRects;
+    QList<bool> buttonVisible;
     for (int i = WindowAgentBase::WindowIcon; i <= WindowAgentBase::Close; ++i) {
         auto currentButton = m_systemButtons[i];
-        if (currentButton && m_delegate->isVisible(currentButton) && m_delegate->isEnabled(currentButton) &&
-            m_delegate->mapGeometryToScene(currentButton).contains(pos)) {
-            return false;
+        if (!currentButton) {
+            buttonRects.append(QRect());
+            buttonVisible.append(false);
+            continue;
         }
+        buttonRects.append(m_delegate->mapGeometryToScene(currentButton));
+        buttonVisible.append(m_delegate->isVisible(currentButton) && m_delegate->isEnabled(currentButton));
     }
 
+    QList<QRect> hitTestRects;
+    QList<bool> hitTestVisible;
     for (auto widget : m_hitTestVisibleItems) {
-        if (widget && m_delegate->isVisible(widget) && m_delegate->isEnabled(widget) &&
-            m_delegate->mapGeometryToScene(widget).contains(pos)) {
-            return false;
+        if (!widget) {
+            hitTestRects.append(QRect());
+            hitTestVisible.append(false);
+            continue;
         }
+        hitTestRects.append(m_delegate->mapGeometryToScene(widget));
+        hitTestVisible.append(m_delegate->isVisible(widget) && m_delegate->isEnabled(widget));
     }
+
+    QString childCaptionName;
     if (!m_captionClassNameList.isEmpty()) {
         if (auto widget = m_delegate->childAt(m_titleBar, pos)) {
-            if (!isCaptionClassName(widget->metaObject()->className())) {
-                return false;
-            }
+            childCaptionName = QString::fromLatin1(widget->metaObject()->className());
         }
     }
 
-    return true;
+    return ::QxWindow::isInTitleBarDraggableArea(pos, windowRect, titleBarRect, buttonRects, buttonVisible,
+                                                 hitTestRects, hitTestVisible, childCaptionName,
+                                                 m_captionClassNameList);
 }
 
 bool WindowContext::isCaptionClassName(const char *name) const
 {
-    foreach (const QString &cn, m_captionClassNameList) {
-        if (cn.compare(QLatin1String(name)) == 0) {
-            return true;
-        }
-    }
-    return false;
+    // The comparison itself lives in windowhitregion_p.h so that it can be tested
+    // without a native window; this is the member that carries the list.
+    return ::QxWindow::isCaptionClassName(name, m_captionClassNameList);
 }
 
 void WindowContext::addCaptionClassName(const QString &name)

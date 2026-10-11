@@ -1,5 +1,14 @@
 Unreleased
 ---
+Test
+- Cover the system button and title bar hit test with tst_QxWindowHitRegion. The
+  two questions windowcontext_win.cpp asks on every WM_NCHITTEST - is this point
+  in a system button, is it in the title bar's draggable area - now live in
+  windowhitregion_p.h as plain functions over rectangles, and windowcontext.cpp
+  calls them rather than keeping its own copy, so the tested code is the code that
+  runs. They were untestable before for two reasons at once: the file needs a
+  native window to drive, and its symbols are not exported from a Windows DLL
+
 Cleanup
 - Remove the never-assigned dontOverrideCursor flag from the hit test. It was
   written as false and nothing in this library ever set it, so all four of its
