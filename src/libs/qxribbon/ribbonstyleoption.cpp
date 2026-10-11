@@ -18,14 +18,17 @@ public:
     int baseHeight();
     int groupOtherHeight();
     void calc(int baseHeight);
+    void recalcRibbonHeights();
 public:
     int m_baseHeight = 17;
-    int m_tabBarHeight;
-    int m_titleBarHeight;
-    int m_ribbonBarHeightOfficeStyleThreeRow;
-    int m_ribbonBarHeightWpsLiteStyleThreeRow;
-    int m_ribbonBarHeightOfficeStyleTwoRow;
-    int m_ribbonBarHeightWpsLiteStyleTwoRow;
+    int m_titleBarHeight = 0;
+    int m_tabBarHeight = 0;
+    int m_ribbonBarHeightOfficeStyleThreeRow = 0;
+    int m_ribbonBarHeightWpsLiteStyleThreeRow = 0;
+    int m_ribbonBarHeightOfficeStyleTwoRow = 0;
+    int m_ribbonBarHeightWpsLiteStyleTwoRow = 0;
+    // true = title/tab 仍由 baseHeight 派生（recalc 时重算）；false = 已被 setter 显式覆盖
+    bool m_titleTabAuto = true;
 };
 
 RibbonStyleOptionPrivate::RibbonStyleOptionPrivate()
@@ -56,9 +59,15 @@ void RibbonStyleOptionPrivate::calc(int baseHeight)
 {
     m_baseHeight = baseHeight;
 
-    m_titleBarHeight = m_baseHeight * 1.65;
-    m_tabBarHeight = m_baseHeight * 1.5;
+    m_titleBarHeight = static_cast<int>(m_baseHeight * 1.65);
+    m_tabBarHeight = static_cast<int>(m_baseHeight * 1.5);
+    m_titleTabAuto = true;
 
+    recalcRibbonHeights();
+}
+
+void RibbonStyleOptionPrivate::recalcRibbonHeights()
+{
     m_ribbonBarHeightOfficeStyleThreeRow = m_titleBarHeight + m_tabBarHeight + m_tabBarHeight * 3 + groupOtherHeight();
     m_ribbonBarHeightWpsLiteStyleThreeRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
     m_ribbonBarHeightOfficeStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
@@ -105,10 +114,42 @@ int RibbonStyleOption::tabBarHeight() const
     return d->m_tabBarHeight;
 }
 
+void RibbonStyleOption::setBaseHeight(int height)
+{
+    Q_D(RibbonStyleOption);
+    if (height > 0) {
+        d->calc(height);
+    }
+}
+
+void RibbonStyleOption::setTitleBarHeight(int height)
+{
+    Q_D(RibbonStyleOption);
+    if (height > 0) {
+        d->m_titleBarHeight = height;
+        d->m_titleTabAuto = false;
+        d->recalcRibbonHeights();
+    }
+}
+
+void RibbonStyleOption::setTabBarHeight(int height)
+{
+    Q_D(RibbonStyleOption);
+    if (height > 0) {
+        d->m_tabBarHeight = height;
+        d->m_titleTabAuto = false;
+        d->recalcRibbonHeights();
+    }
+}
+
 void RibbonStyleOption::recalc()
 {
     Q_D(RibbonStyleOption);
-    d->calc(d->baseHeight());
+    if (d->m_titleTabAuto) {
+        d->calc(d->baseHeight());
+    } else {
+        d->recalcRibbonHeights();
+    }
 }
 
 QDebug operator<<(QDebug debug, const RibbonStyleOption &c)

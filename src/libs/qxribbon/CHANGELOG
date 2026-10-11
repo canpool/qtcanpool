@@ -9,6 +9,11 @@ Deprecated
   qxwindow. RibbonWindow itself is unchanged and still uses it. Removal needs
   at least one release of warning first (K26).
 
+Added
+- RibbonStyleOption: add setBaseHeight(), setTitleBarHeight() and setTabBarHeight()
+  so the ribbon size layout can be tuned without subclassing; recalc() keeps an
+  explicit title/tab and only recomputes the four derived ribbon-bar heights
+
 Cleanup
 - RibbonButton: drop the stale "todo" in the FontChange handler - it asked for
   exactly what the next three lines already do, and sizeHint() recomputes its

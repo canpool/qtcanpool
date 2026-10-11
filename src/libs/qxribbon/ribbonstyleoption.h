@@ -23,8 +23,12 @@ class RibbonStyleOptionPrivate;
  *
  * @note 此类定义了 ribbonbar 和 group 的高度信息，并通过字体提前计算好一些布局信息
  *
- * @note 尺寸布局是可替换的：本类的方法都是 virtual，子类化之后交给
- * RibbonFactory::setRibbonStyleOption 即可（配置文件的读写属于调用方，不在这层）
+ * @note 尺寸布局是可替换的：两种做法都行——
+ *   - 子类化本类、覆盖几个 virtual，再交给 RibbonFactory::setRibbonStyleOption；
+ *   - 或直接用本类，调用 setBaseHeight() / setTitleBarHeight() / setTabBarHeight()
+ *     微调尺寸（配置文件的读写属于调用方，不在这层——调用方把自己的配置映射到这些 setter 即可）。
+ *   这两种做法不冲突：setter 改的是基础高度，recalc() 据此重算四个 ribbonbar 高度；
+ *   显式 set 过 title/tab 之后，recalc() 会保留你设的值、只重算派生项。
  */
 class QX_RIBBON_EXPORT RibbonStyleOption
 {
@@ -36,6 +40,21 @@ public:
     virtual int titleBarHeight() const;
     virtual int tabBarHeight() const;
     virtual void recalc();
+public:
+    /**
+     * @brief 设定尺寸布局的主尺度（以字体行高为单位的基准高度）。
+     * 设为正数后，titleBar / tabBar 按固定比例（1.65 / 1.5）重新派生，四个 ribbonbar 高度跟随重算。
+     * 传 0 或不调用则维持构造时的字体派生值。
+     */
+    void setBaseHeight(int height);
+    /**
+     * @brief 直接覆盖标题栏高度（px）。覆盖后 recalc() 会保留此值、只重算四个 ribbonbar 高度。
+     */
+    void setTitleBarHeight(int height);
+    /**
+     * @brief 直接覆盖标签栏高度（px）。覆盖后 recalc() 会保留此值、只重算四个 ribbonbar 高度。
+     */
+    void setTabBarHeight(int height);
 private:
     QX_DECLARE_PRIVATE(RibbonStyleOption)
 };
