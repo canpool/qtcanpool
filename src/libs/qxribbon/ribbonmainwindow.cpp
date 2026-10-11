@@ -14,6 +14,7 @@ class RibbonMainWindowPrivate
 public:
     RibbonMainWindowPrivate();
     void setMenuWidget(QWidget *menuBar);
+    void updateMinimumWidth();
 public:
     RibbonBar *m_ribbonBar;
     int m_theme;
@@ -40,6 +41,45 @@ void RibbonMainWindowPrivate::setMenuWidget(QWidget *menuBar)
         m_ribbonBar->installEventFilter(q);
     } else {
         m_ribbonBar = Q_NULLPTR;
+    }
+}
+
+/**
+ * Keeps the window at least as wide as the ribbon bar needs it to be.
+ *
+ * The ribbon bar advertises that width through sizeHint(), and it is not a constant:
+ * it grows with the content (a new quick access entry, a hidden ribbon, a style
+ * change) and it is published as the minimum width of the window, which Windows
+ * turns into the minimum tracking size of the native window. Publishing the value
+ * alone is not enough, because the window is not resized by it when the content
+ * changes: the window is then left narrower than its own minimum, and from that
+ * state it cannot be resized normally any more. The system clamps the first
+ * interactive resize to the tracking size, so the window jumps instead of following
+ * the mouse, and RibbonWindow, whose FramelessWidgetDataQt::resizeWidget() clamps
+ * against minimumWidth(), pins it in place and stops resizing altogether.
+ *
+ * So both sides are done here: the new minimum is published, and the window is grown
+ * to satisfy it. The second step terminates because it leaves width() == need, which
+ * makes the test false for the resize it triggers in turn.
+ */
+void RibbonMainWindowPrivate::updateMinimumWidth()
+{
+    Q_Q(RibbonMainWindow);
+
+    if (!m_ribbonBar) {
+        return;
+    }
+
+    const int need = m_ribbonBar->sizeHint().width();
+
+    if (need != q->minimumWidth()) {
+        q->setMinimumWidth(need);
+    }
+
+    // A maximized window is the size of the screen and restoring it is the system's
+    // business; growing it here would fight the window manager.
+    if (need > q->width() && !q->isMaximized() && !q->isFullScreen()) {
+        q->resize(need, q->height());
     }
 }
 
@@ -125,10 +165,7 @@ bool RibbonMainWindow::event(QEvent *e)
             // smaller than the minimum width of the RibbonBar, but the Resize event of
             // the RibbonBar will not be sent. Therefore, the minimum width also needs
             // to be set here.
-            int w = d->m_ribbonBar->sizeHint().width();
-            if (w != minimumWidth()) {
-                setMinimumWidth(w);
-            }
+            d->updateMinimumWidth();
             if (d->m_ribbonBar->size().width() != this->size().width()) {
                 d->m_ribbonBar->setFixedWidth(this->size().width());
             }
@@ -144,11 +181,12 @@ bool RibbonMainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     Q_D(RibbonMainWindow);
     if (!isMaximized() && d->m_ribbonBar && d->m_ribbonBar == obj) {
-        if (event->type() == QEvent::Resize) {
-            int w = d->m_ribbonBar->sizeHint().width();
-            if (w != minimumWidth()) {
-                setMinimumWidth(w);
-            }
+        // LayoutRequest is how the RibbonBar announces that its content changed, and a
+        // changed content moves the minimum width without the window being resized at
+        // all - which is exactly the case that used to leave the two out of step. Both
+        // events have to go through the same path for that reason.
+        if (event->type() == QEvent::Resize || event->type() == QEvent::LayoutRequest) {
+            d->updateMinimumWidth();
         }
     }
     return QMainWindow::eventFilter(obj, event);
