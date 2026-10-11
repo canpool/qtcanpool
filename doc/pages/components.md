@@ -110,8 +110,9 @@ themes->setTheme(DarkOfficePlus);
 ## qxwindow — 自定义窗口
 
 无边框窗口代理，并提供原生窗口上下文（Windows / Linux / macOS 各一份实现）。
-它是 **Qt 6 上无边框窗口所走的路径**：`qxapp` 的 `RibbonAppWindow` 组合本库的
-`WindowAgentWidget`，而 `qxribbon` 自己**不依赖**本库（见 [架构与约定](architecture.md)）。
+它是**本库唯一的无边框窗口路径**（4.3 起也是全仓唯一的：`qxribbon` 自带的那份无边框实现
+已在 4.3 删除）：`qxapp` 的 `RibbonAppWindow` 组合本库的 `WindowAgentWidget`，
+而 `qxribbon` 自己**不依赖**本库（见 [架构与约定](architecture.md)）。
 
 | 类 | 说明 |
 | :--- | :--- |
@@ -127,7 +128,6 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组 |
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单 |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口 |
-| `RibbonWindow` | 继承 `RibbonMainWindow`，**自带**无边框实现（`FramelessHelper`）。Qt 6 上请改用 @ref QxApp::RibbonAppWindow——同一个基类，无边框走 qxwindow |
 | `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
 | `RibbonTheme` | widget 级样式表加载器（6 套内置样式表）。新代码请优先使用 @ref QxTheme::QxThemeManager |
 | `RibbonGallery` / `RibbonCustomizeDialog` 等 | 选项板、自定义对话框等配套控件 |

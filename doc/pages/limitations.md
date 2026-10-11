@@ -69,8 +69,7 @@
 所以"显示"没有办法等到"resize 完成"。曾经试过先隐藏按钮组、等 resize 完再显示——
 按钮组仍然在 resize 完成前就回来了。
 
-**出现位置**：`RibbonWindow::updateWindowFlags()` 与 `RibbonAppWindow::updateWindowFlags()`
-（同一段逻辑，两处都有）。
+**出现位置**：`RibbonAppWindow::updateWindowFlags()`。
 
 **要改变它需要什么**：同样落回"让 ribbon 的 resize 变同步"。这是外观问题、瞬时的、不丢状态，
 所以排在正确性问题之后。
@@ -120,8 +119,9 @@ Linux 的默认改成系统边框，结论是**不改**。
 
 **要改变它需要什么**：真正该修的是"最大化 → 拖拽还原"这条路径本身（它读的 `normalGeometry()`
 在 Unity 上不对、在 GNOME 上会闪），那是平台相关的窗口管理代码，不是把默认值翻过来。
-真要翻，位置只有一处：`src/libs/qxribbon/ribbonwindow.cpp` 里 `RibbonWindowPrivate` 的
-`m_frameless(true)`（第 30 行）。
+真要翻，位置已经不在 `qxribbon` 里了：4.3 起这个库不再自带无边框实现（`RibbonWindow` 与它的
+后端 `FramelessHelper` 一并删掉，见[迁移指南](migration.md)），Linux 上要无边框只能走 `qxapp` 的
+`RibbonAppWindow`。
 
 ---
 
@@ -148,9 +148,11 @@ Linux 的默认改成系统边框，结论是**不改**。
 
 ## Windows + Qt 6 上，无边框窗口不能"启动即最大化"（a frameless window on Windows, Qt 6, maximised on first show）
 
-> **（4.3 A1）维持现状**：成因在 Qt 6 的 Windows 平台插件里（纯 Qt 程序即可复现），本库改不了；
-> 而本库两条无边框路径里只有 `RibbonWindow` 中招，Qt 6 上本就该走的 `RibbonAppWindow` 实测不受影响。
-> 4.2 已把 `FramelessHelper` 标记弃用并指向 `RibbonAppWindow`，等于给这条路装了出口。
+> **（4.3 A1）维持现状**：成因在 Qt 6 的 Windows 平台插件里（纯 Qt 程序即可复现），本库改不了。
+> **（4.3 A10）本条的性质变了**：`FramelessHelper` 与 `RibbonWindow` 已在 4.3 删掉，
+> 本库**不再有会踩到它的无边框路径**——只剩 `RibbonAppWindow`，它走 qxwindow 的原生路径，
+> 实测不受影响。本条之所以留着，是因为成因在 Qt 自己的平台插件里：**任何**用
+> `Qt::FramelessWindowHint` 的程序都会踩，而且它正是本库要走原生路径的理由。
 
 **现象**：Windows 上无边框窗口如果**第一次显示就是最大化**——在事件循环之前调 `showMaximized()`，
 最典型的是在构造函数里——之后拖标题栏"还原"只会让窗口**平移**、尺寸仍是满屏；再拖边框，要么
@@ -166,30 +168,19 @@ Linux 的默认改成系统边框，结论是**不改**。
 
 **避开方式**：Windows + Qt 6 上要"启动即最大化"，二选一——① 先 `show()`，再 `showMaximized()`；
 ② 让第一次 `show()` 用普通尺寸，再 `QTimer::singleShot(0, &w, &QWidget::showMaximized)`。
-本库自己的两条无边框路径里，只有 `RibbonWindow` 会踩到，`RibbonAppWindow` 不受影响。
+本库现有的无边框窗口（`QxApp::RibbonAppWindow`）不受影响。
 
-**为什么保持现状**：本库有两条无边框路径，只有一条中招。`RibbonWindow` 走 Qt 自带的
-`Qt::FramelessWindowHint`（Qt 侧模拟），会中招；`RibbonAppWindow` 用的是 qxwindow 的
-`WindowAgentWidget`，它保留 `WS_THICKFRAME | WS_CAPTION` 并用 `WM_NCCALCSIZE` 把整窗变成客户区，
-最大化与还原仍归系统管，所以**实测不受影响**（`demos/qxapp/ribbondemo` 正是启动即最大化，
-拖标题栏能正确还原、拖边框逐像素跟手）。而 Qt 6 上本来就该走 `RibbonAppWindow`——
-`FramelessHelper` 是 Qt 5 的路径。要让 Qt 平台插件里的状态同步正确，不是本库能做的事。
+**为什么保持现状**：这是 Qt 平台插件里的状态同步问题，本库无从改起。本库**曾经**有一条会中招的
+路径：`RibbonWindow` 走 Qt 自带的 `Qt::FramelessWindowHint`（Qt 侧模拟）；4.2 按 K27 把它标弃用，
+4.3 按 K26 把缓冲走完——连同它的后端 `FramelessHelper` 一起删掉（见[迁移指南](migration.md)）。
+`RibbonAppWindow` 用的是 qxwindow 的 `WindowAgentWidget`：保留 `WS_THICKFRAME | WS_CAPTION`、
+用 `WM_NCCALCSIZE` 把整窗变成客户区，最大化与还原仍归系统管，所以**实测不受影响**
+（`demos/qxapp/ribbondemo` 正是启动即最大化，拖标题栏能正确还原、拖边框逐像素跟手）。
 
-**（4.2）这一条已经补上代码层面的结论**：`FramelessHelper`——即 `RibbonWindow` 的无边框后端，
-也是本库唯一直接使用它的地方——已在 4.2 标记 `QT_DEPRECATED_X`，消息指向
-@ref QxApp::RibbonAppWindow。按 K26，删除要等至少一个版本之后。`RibbonWindow` 本身没有改动，
-Qt 5 上照旧可用；它的 `FramelessHelper` 使用处在源码里用 `QT_WARNING_DISABLE_DEPRECATED` 局部
-屏蔽了自己的告警（那里是**有意**使用一个已弃用的类，见 [迁移指南](migration.md)）。
-
-**要改变它需要什么**：在 `FramelessHelper` 里自己记住"最大化之前的几何"，并在还原时显式让系统
-退出最大化（`ShowWindow(SW_RESTORE)`），也就是把这半条路径从"Qt 侧模拟"改成 `WindowAgentWidget`
-那样的原生做法。真要动，位置是 `src/libs/qxribbon/framelesshelper.cpp` 里
-`FramelessWidgetDataQt::handleMouseMoveEvent()` 的还原分支。
-
-**demo 里的对应规避（同一家族）**：`demos/qxapp/ribbondemo` 在 `RibbonWindow` 路径下，
-全屏时也会禁用"有无边框"切换复选框——同样是这条路径上"无边框与最大化/全屏状态切换"的怪异，
-只是触发点是**全屏**而不是"启动即最大化"。那条代码用本页英文名引用了本条（见 `mainwindow.cpp`
-的 `show full screen` 复选框处理）。
+**要改变它需要什么**：不在本库——要修的是 Qt 的 Windows 平台插件，应用层只能按上面的"避开方式"
+绕开。本库当年放弃的那条修法是：在 `FramelessHelper` 里自己记住"最大化之前的几何"，并在还原时
+显式让系统退出最大化（`ShowWindow(SW_RESTORE)`），也就是把那条模拟路径改成 `WindowAgentWidget`
+那样的原生做法；它要在一套已被取代的模拟路径上重建原生状态同步，所以 4.2 的 K27 没选它。
 
 ---
 

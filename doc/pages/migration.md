@@ -68,7 +68,7 @@ w->ribbonBar()->setRibbonStyle(RibbonBar::OfficeStyle);
 | legacy（`QCanpool`） | qxribbon（`QxRibbon`） | 说明 |
 | :--- | :--- | :--- |
 | `RibbonBar : QWidget` | `RibbonBar : QMenuBar` | 基类变化 |
-| `RibbonWindow : QMainWindow` | `RibbonMainWindow` / `RibbonWindow` | 推荐以 `RibbonMainWindow` 为基类 |
+| `RibbonWindow : QMainWindow` | `RibbonMainWindow`（要无边框则 `QxApp::RibbonAppWindow`） | 以 `RibbonMainWindow` 为基类；`QxRibbon::RibbonWindow` 已于 4.3 删除 |
 | `RibbonContainer` 等四个容器 | `RibbonGridContainer` / `RibbonCtrlContainer` | **语义不同，需重写** |
 | `QuickAccessBar` | `RibbonQuickAccessBar` | 由 `RibbonBar::quickAccessBar()` 获取 |
 
@@ -236,9 +236,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 这一节只记**已经标记弃用、但还没有删除**的东西。按 K26，删除要等至少一个版本，且必须先有替代路径
 ——所以下面每一条都带"换到哪里"。
 
-| 弃用 | 替代 | 说明 |
-| :--- | :--- | :--- |
-| `FramelessHelper`（`qxribbon/framelesshelper.h`） | Qt 6 上用 @ref QxApp::RibbonAppWindow；Qt 5 上就是它本身，没有替代 | 它是 `RibbonWindow` 的无边框后端。没有命名空间、也没有导出宏，所以下游本来就取不到它的符号；标记的意义在文档与源码两头对得上，见[已知限制](limitations.md) |
+**目前这一节是空的**：4.2 标记的两项弃用（`FramelessHelper` 与 `WindowStyleAgent`）**都已在 4.3 删除**，
+见下一节。下面保留的是当时为什么那样决定的推理，因为 `RibbonWindow` 为什么一起走，光看删除结果看不出来。
 
 ### `FramelessHelper` 删除之后，`RibbonWindow` 怎么办
 
@@ -268,8 +267,16 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 | B | 保留 `RibbonWindow`、去掉无边框（`setFrameless` 消失，它退化成 `RibbonMainWindow` 的同义词） | 留下一个什么都没多的空壳类，只会让人误以为它还有用 |
 | C | 给 `RibbonWindow` 换后端：让 `qxribbon` 依赖 `qxwindow`，或由 `qxapp` 往 `qxribbon` 注入一个后端 | 前者破坏上面那条分层；后者等于把 `RibbonAppWindow` 再实现一遍 |
 
-**时机**：`FramelessHelper` 在 Qt 5 上是**可用**的那条路径（Windows 上走原生后端），所以它必须活到
-Qt 5 支持结束，`RibbonWindow` 同理。换言之 **Qt 5 的下线日就是这两者的下线日**，不需要单独判断一次。
+**（4.3 A10）最后选了 A，并且没有等到 Qt 5 下线。** 上面那段"时机"当时是这么写的：
+
+> `FramelessHelper` 在 Qt 5 上是**可用**的那条路径（Windows 上走原生后端），所以它必须活到
+> Qt 5 支持结束，`RibbonWindow` 同理。换言之 **Qt 5 的下线日就是这两者的下线日**。
+
+**这条被 4.3 推翻了**，推翻它的理由是具体核过的、不是改主意：`RibbonAppWindow` 并不是"Qt 6 才有"——
+它依赖的是 `qxwindow`，而 `qxwindow` 的 Windows 原生后端**在 Qt 5.15 下照样编译**（本机 qt5 构建里
+`windowcontext_win.cpp.obj` 就在）。也就是说 Qt 5 的用户换到 `RibbonAppWindow` 是**有路可走**的，
+代价是多链 `qxapp`；既然如此，"等 Qt 5 下线"就只是在等一个并不存在的 blocker，
+而 K26 的缓冲已经满了——继续留着就是"标了弃用却永不处理"。
 
 ## 4.3 已删除（K26 的缓冲已走完）
 
@@ -279,6 +286,7 @@ Qt 5 支持结束，`RibbonWindow` 同理。换言之 **Qt 5 的下线日就是�
 | 删除 | 替代 | 升级要做什么 |
 | :--- | :--- | :--- |
 | `WindowStyleAgent`（原 `qxwindow/style/`） | @ref QxTheme::QxThemeManager | 无。它默认**不编译**（要 `QX_WINDOW_CONFIG_STYLE_AGENT=ON`），全仓无人引用，`QX_WINDOW_CONFIG_STYLE_AGENT` 这个开关也一并去掉了。打开过开关的下游换成 `QxThemeManager`；它唯一多报的 `HighContrast` 一档没有等价物——真有需要时按新需求单独加，而不是恢复这个类 |
+| `FramelessHelper`（原 `qxribbon/framelesshelper.h`）+ `RibbonWindow`（原 `qxribbon/ribbonwindow.h`） | 要无边框：@ref QxApp::RibbonAppWindow；不要无边框：`QxRibbon::RibbonMainWindow` | 基类换成 `RibbonMainWindow` 即可（两者只差"有无边框"，其余都在基类里）。要无边框就换 `RibbonAppWindow`——它在 Qt 5 与 Qt 6 上都成立，代价是多链 `qxapp`。为什么这两个一起删、以及为什么没等到 Qt 5 下线，见上一节 |
 
 ## 分步迁移清单
 
