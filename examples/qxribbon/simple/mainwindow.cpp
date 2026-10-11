@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     RibbonGalleryGroup *galleryGrp = gallery->addGalleryGroup();
     galleryGrp->addItem(tr("item1"), icon);
 
-    // setRibbonTheme(RibbonTheme::WpsdarkTheme);
+    // setRibbonTheme(RibbonTheme::DarkWpsTheme);   // see RibbonTheme::ThemeStyle
 
     resize(800, 400);
 }
