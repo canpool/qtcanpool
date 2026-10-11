@@ -13,7 +13,7 @@ qxapp      应用框架
            依赖 qxribbon · qxdock · qxtheme · qxcore · qxplugin（qxwindow 为私有依赖）
    │
    ├── qxplugin  插件体系（契约 / 加载 / 依赖 / 隔离 / 对象池）──► qxcore
-   ├── qxribbon  Ribbon 界面（页 / 分组 / 快捷工具栏）         ──► qxwindow
+   ├── qxribbon  Ribbon 界面（页 / 分组 / 快捷工具栏）         ──► 仅 Qt
    ├── qxdock    可停靠窗口（布局 / 标签化 / 浮动容器）         ──► 仅 Qt
    ├── qxwindow  单窗口 / 无边框窗口基座                      ──► 仅 Qt
    ├── qxtheme   主题引擎（调色板 + 样式表）                   ──► qxcore

@@ -109,13 +109,14 @@ themes->setTheme(DarkOfficePlus);
 
 ## qxwindow — 自定义窗口
 
-无边框窗口与系统按钮代理，是 Ribbon 界面的底座。
+无边框窗口代理，并提供原生窗口上下文（Windows / Linux / macOS 各一份实现）。
+它是 **Qt 6 上无边框窗口所走的路径**：`qxapp` 的 `RibbonAppWindow` 组合本库的
+`WindowAgentWidget`，而 `qxribbon` 自己**不依赖**本库（见 [架构与约定](architecture.md)）。
 
 | 类 | 说明 |
 | :--- | :--- |
-| `WindowAgent` / `WindowAgentBase` | 无边框窗口代理：拖动、缩放、系统按钮命中测试 |
-| `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
-| `WindowContext` | 原生窗口上下文（Windows / Linux / macOS 各一份实现） |
+| `WindowAgentBase` | 代理基类：窗口属性键值、系统菜单、居中、抬升，以及 `SystemButton` 枚举 |
+| `WindowAgentWidget` | QWidget 版代理：`setup()`、标题栏 / 系统按钮部件、命中测试可见性、自定义标题类名 |
 
 `QWK` 时代的名字已全部并入 `QxWindow` 命名空间。
 
@@ -126,6 +127,7 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组 |
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单 |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口 |
+| `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
 | `RibbonTheme` | widget 级样式表加载器（6 套内置样式表）。新代码请优先使用 @ref QxTheme::QxThemeManager |
 | `RibbonGallery` / `RibbonCustomizeDialog` 等 | 选项板、自定义对话框等配套控件 |
 
@@ -136,10 +138,10 @@ themes->setTheme(DarkOfficePlus);
 
 | 类 | 说明 |
 | :--- | :--- |
-| `DockWindow` | 停靠区管理：`DockWidgetArea`、中央部件、状态保存与恢复 |
+| `DockWindow` | 停靠区管理：`Qx::DockWidgetArea`、中央部件、状态保存与恢复 |
 | `DockWidget` | 单个停靠面板（可移动、可浮动、可关闭） |
-| `DockPanel` / `DockContainerWidget` / `DockAreaWidget` | 面板、容器与区域实现 |
-| `DockFloatingWindow` | 浮动窗口 |
+| `DockPanel` / `DockContainer` / `DockSplitter` | 面板、容器与分割条 |
+| `DockFloatingContainer` | 浮动窗口容器（纯虚接口为 `DockFloatingWidget`） |
 
 `DockWindow` 要求**中央部件第一个加入**：@ref QxApp::QxAppShell 在构造时就把页面栈装为中央部件，
 其余停靠面板再围绕它排布。
