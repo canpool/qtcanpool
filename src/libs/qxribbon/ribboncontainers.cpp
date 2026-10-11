@@ -319,7 +319,13 @@ int RibbonGridContainer::columnCount() const
     return d->m_columnCount;
 }
 
+// The declaration is guarded in the header for the same reason: Qt 6 hands this handler
+// a QEnterEvent where Qt 5 handed it a QEvent. See ribboncontainers.h.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void RibbonGridContainer::enterEvent(QEnterEvent *event)
+#else
 void RibbonGridContainer::enterEvent(QEvent *event)
+#endif
 {
     Q_UNUSED(event);
     Q_D(RibbonGridContainer);

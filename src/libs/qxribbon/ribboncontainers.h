@@ -73,8 +73,18 @@ public:
     void setColumnCount(int count);
     int columnCount() const;
 protected:
-    virtual void enterEvent(QEvent *event);
-    virtual void leaveEvent(QEvent *event);
+    // Qt 6 changed the parameter of this virtual from QEvent to QEnterEvent. Declaring
+    // it with the Qt 5 type on Qt 6 does not override QWidget's virtual, it hides it -
+    // and unlike a plain warning, the consequence is silent: the handler simply never
+    // runs and the menu it belongs to keeps two entries looking current. The override
+    // specifier is what turns that mismatch into a compile error; clang is the only
+    // compiler that would otherwise have said anything at all.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void enterEvent(QEnterEvent *event) Q_DECL_OVERRIDE;
+#else
+    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+#endif
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
 private:
     QX_DECLARE_PRIVATE(RibbonGridContainer)
 };
