@@ -1,4 +1,4 @@
-Unreleased
+0.11.0
 ---
 Deprecated
 - FramelessHelper: it is the frameless backend of RibbonWindow, and on Windows

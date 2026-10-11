@@ -1,4 +1,4 @@
-Unreleased
+0.2.0
 ---
 Deprecated
 - WindowStyleAgent: deprecated and to be removed. Nothing in the tree refers to
