@@ -1,0 +1,1 @@
+演示用 QxRibbon::colorIcon() 把任意颜色生成为图标，并挂在普通 QToolBar 上（不依赖 Ribbon 窗口）。

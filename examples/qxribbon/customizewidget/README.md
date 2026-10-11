@@ -1,0 +1,1 @@
+演示 RibbonCustomizeDialog 配合 RibbonActionsManager 按标签管理 action，并把定制结果保存与读取为 XML 文件。

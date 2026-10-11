@@ -1,0 +1,1 @@
+演示 RibbonCustomizeDialog 作为无模式（modeless）对话框直接嵌入为窗口的中心部件。

@@ -1,0 +1,1 @@
+qxapp 应用外壳的最小空 Ribbon 起点：用 RibbonAppWindow 起一个只含空 page 的窗口，作为接入自己功能的雏形。
