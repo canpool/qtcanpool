@@ -1,3 +1,35 @@
+4.1.1
+---
+- qxribbon: make RibbonGridContainer's enter event an override again on Qt 6.
+  Qt changed the parameter of that virtual from QEvent to QEnterEvent, so the
+  Qt 5 signature did not override anything there - it hid the virtual, and the
+  handler silently never ran, which left a ribbon menu with two entries looking
+  current. The declaration is guarded by the Qt version now and both variants
+  carry an override specifier, so the same mistake fails to compile instead.
+  This is the one library change of the batch, and qxribbon follows it:
+  0.10.1 -> 0.10.2
+- qxdock: keep a widget auto hidden when it is added to a window that has
+  nothing else open. The panel being filled was toggled open before it had ever
+  been shown, and the dock widget read that as "this is pinned and there is
+  nothing else open, so unpin it": the auto hide container was deleted on the
+  spot, the widget came back as an ordinary docked one, and the panel created
+  for the container was left behind in the root splitter. The leftover also put
+  contentRect() on the splitter's never laid out default of 640x480 before the
+  first layout, which the auto hide resize limit and the choice of side bar
+  both read. Only the .cpp changed, so no library moved for it
+- ci: generate the moc that qxpropertyeditor.cpp includes before clang-tidy
+  looks at it, when that file is part of the change. The file defines its
+  Q_OBJECT classes in the .cpp and includes its own .moc, so the analysis used
+  to stop at that include and report nothing - which cannot be told apart from
+  a clean run
+- docs: add the seventh known limitation, the frameless window on Windows and
+  Qt 6 that cannot be maximised on its first show, with a NOTE at the restore
+  branch of framelesshelper.cpp pointing at it
+- libs: only qxribbon moved (0.10.2) - ribboncontainers.h is the one public
+  header this batch touched. The other six stand still, and the qxdock fix
+  above lives in that library's Unreleased section because its interface did
+  not change
+
 4.1.0
 ---
 - qxdock: scroll the active tab back into view. The code that did it sat
