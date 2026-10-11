@@ -55,6 +55,13 @@ private:
 
     Q_SLOT void captionClassNamesMatchExactly();
     Q_SLOT void captionClassNamesAreFalseForAnEmptyList();
+
+    Q_SLOT void edgeEdgesOfAColourlessWindow();
+    Q_SLOT void edgeCornersWinOverEdges();
+    Q_SLOT void edgeLeftAndRightStripsAreWidened();
+    Q_SLOT void edgeTitleBarIsCaptionOnlyAwayFromTheBorders();
+    Q_SLOT void edgeFixedSizeReportsBorderInsteadOfAnEdge();
+    Q_SLOT void edgeFixedSizeStillFindsTheTitleBar();
 };
 
 namespace
@@ -290,6 +297,103 @@ void tst_QxWindowHitRegion::captionClassNamesAreFalseForAnEmptyList()
 {
     // An empty list is "no rule", and a name is never a caption by accident.
     QVERIFY(!isCaptionClassName("QLabel", {}));
+}
+
+/*!
+ * The edge arithmetic, which is what windowcontext_win.cpp is mostly for.
+ *
+ * The frame size in every case is 8 - getResizeBorderThickness() reports that on
+ * a standard Windows setup - against a 400x300 client area. The top and bottom
+ * strips are 8px, the left and right 16px: the sideways strips are doubled so
+ * that the corners are easy to grab, and the comment in windowcontext_win.cpp says
+ * exactly that. It is the edges a corner is found from that get wider, not the
+ * corner test itself.
+ */
+namespace
+{
+constexpr int kFrame = 8;
+const QSize kClient(400, 300);
+
+HitTestRegion regionAt(const QPoint &pos, bool titleBar = false, bool fixed = false, int frame = kFrame)
+{
+    return hitTestRegionFor(kClient, pos, frame, titleBar, fixed);
+}
+}   // namespace
+
+void tst_QxWindowHitRegion::edgeEdgesOfAColourlessWindow()
+{
+    QCOMPARE(regionAt(QPoint(200, 150)), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(0, 150)), HitTestRegion::Left);
+    QCOMPARE(regionAt(QPoint(399, 150)), HitTestRegion::Right);
+    QCOMPARE(regionAt(QPoint(200, 0)), HitTestRegion::Top);
+    QCOMPARE(regionAt(QPoint(200, 299)), HitTestRegion::Bottom);
+
+    // The left strip is doubled (16px) while the top is not (8px), so y=100 is far
+    // from any horizontal edge and only the left strip can match there.
+    QCOMPARE(regionAt(QPoint(3, 100)), HitTestRegion::Left);
+    QCOMPARE(regionAt(QPoint(15, 100)), HitTestRegion::Left);
+    QCOMPARE(regionAt(QPoint(16, 100)), HitTestRegion::Client);
+}
+
+void tst_QxWindowHitRegion::edgeCornersWinOverEdges()
+{
+    QCOMPARE(regionAt(QPoint(0, 0)), HitTestRegion::TopLeft);
+    QCOMPARE(regionAt(QPoint(399, 0)), HitTestRegion::TopRight);
+    QCOMPARE(regionAt(QPoint(0, 299)), HitTestRegion::BottomLeft);
+    QCOMPARE(regionAt(QPoint(399, 299)), HitTestRegion::BottomRight);
+
+    // A corner must report a corner, not whichever edge happened to be tested
+    // first - this is the order the original chain checks them in.
+    QCOMPARE(regionAt(QPoint(2, 2)), HitTestRegion::TopLeft);
+}
+
+void tst_QxWindowHitRegion::edgeLeftAndRightStripsAreWidened()
+{
+    // The top strip is the plain frame size, 8px: y=7 is on the top edge and y=8
+    // is not.
+    QCOMPARE(regionAt(QPoint(200, 7)), HitTestRegion::Top);
+    QCOMPARE(regionAt(QPoint(200, 8)), HitTestRegion::Client);
+
+    // The left and right strips are twice that, 16px, which is what makes the
+    // corners easy to grab - so x=15 is still on the left edge.
+    QCOMPARE(regionAt(QPoint(15, 100)), HitTestRegion::Left);
+    QCOMPARE(regionAt(QPoint(16, 100)), HitTestRegion::Client);
+
+    // The bottom strip is plain too, starting at 300-8 = 292.
+    QCOMPARE(regionAt(QPoint(200, 291)), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(200, 292)), HitTestRegion::Bottom);
+}
+
+void tst_QxWindowHitRegion::edgeTitleBarIsCaptionOnlyAwayFromTheBorders()
+{
+    // In the middle of a title bar: Caption, which is what makes a press drag the
+    // window rather than reach whatever is underneath.
+    QCOMPARE(regionAt(QPoint(200, 10), true), HitTestRegion::Caption);
+    // Not on the title bar: Client.
+    QCOMPARE(regionAt(QPoint(200, 10), false), HitTestRegion::Client);
+    // A border outranks the title bar even where both apply - otherwise a press on
+    // the corner would drag instead of resizing.
+    QCOMPARE(regionAt(QPoint(0, 0), true), HitTestRegion::TopLeft);
+}
+
+void tst_QxWindowHitRegion::edgeFixedSizeReportsBorderInsteadOfAnEdge()
+{
+    // A fixed-size window keeps its edges, but they are Border: the backend
+    // answers HTBORDER there, so dragging the edge cannot resize it.
+    QCOMPARE(regionAt(QPoint(0, 150), false, true), HitTestRegion::Border);
+    QCOMPARE(regionAt(QPoint(200, 0), false, true), HitTestRegion::Border);
+    QCOMPARE(regionAt(QPoint(399, 299), false, true), HitTestRegion::Border);
+
+    // Corners collapse into Border too, since the window never resizes.
+    QCOMPARE(regionAt(QPoint(0, 0), false, true), HitTestRegion::Border);
+}
+
+void tst_QxWindowHitRegion::edgeFixedSizeStillFindsTheTitleBar()
+{
+    // The title bar is not a border, so a fixed-size window still reports Caption
+    // there - a fixed-size window can be dragged by its title bar.
+    QCOMPARE(regionAt(QPoint(200, 10), true, true), HitTestRegion::Caption);
+    QCOMPARE(regionAt(QPoint(200, 10), false, true), HitTestRegion::Client);
 }
 
 TEST_ADD(tst_QxWindowHitRegion)

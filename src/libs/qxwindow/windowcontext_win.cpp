@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  **/
 #include "windowcontext_p.h"
+#include "windowhitregion_p.h"
 #include <QtCore/QDateTime>
 #include <QtCore/QHash>
 #include <QtCore/QScopeGuard>
@@ -1570,43 +1571,38 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
                 return true;
             }
             if (!isFixedSize) {
-                const bool isBottom = (nativeLocalPos.y >= (clientHeight - frameSize));
-                // Make the border a little wider to let the user easy to resize on corners.
-                const auto scaleFactor = ((isTop || isBottom) ? qreal(2) : qreal(1));
-                const int scaledFrameSize = std::round(qreal(frameSize) * scaleFactor);
-                const bool isLeft = (nativeLocalPos.x < scaledFrameSize);
-                const bool isRight = (nativeLocalPos.x >= (clientWidth - scaledFrameSize));
-                if (isTop) {
-                    if (isLeft) {
-                        *result = HTTOPLEFT;
-                        return true;
-                    }
-                    if (isRight) {
-                        *result = HTTOPRIGHT;
-                        return true;
-                    }
+                // Which edge or corner this is, and whether the title bar answers
+                // for the rest, is decided by hitTestRegionFor(); the geometry is
+                // kept there so it can be tested without a native window.
+                const auto region = ::QxWindow::hitTestRegionFor(
+                    QSize(clientWidth, clientHeight), point2qpoint(nativeLocalPos), frameSize, isTitleBar, false);
+                switch (region) {
+                case HitTestRegion::TopLeft:
+                    *result = HTTOPLEFT;
+                    return true;
+                case HitTestRegion::TopRight:
+                    *result = HTTOPRIGHT;
+                    return true;
+                case HitTestRegion::Top:
                     *result = HTTOP;
                     return true;
-                }
-                if (isBottom) {
-                    if (isLeft) {
-                        *result = HTBOTTOMLEFT;
-                        return true;
-                    }
-                    if (isRight) {
-                        *result = HTBOTTOMRIGHT;
-                        return true;
-                    }
+                case HitTestRegion::BottomLeft:
+                    *result = HTBOTTOMLEFT;
+                    return true;
+                case HitTestRegion::BottomRight:
+                    *result = HTBOTTOMRIGHT;
+                    return true;
+                case HitTestRegion::Bottom:
                     *result = HTBOTTOM;
                     return true;
-                }
-                if (isLeft) {
+                case HitTestRegion::Left:
                     *result = HTLEFT;
                     return true;
-                }
-                if (isRight) {
+                case HitTestRegion::Right:
                     *result = HTRIGHT;
                     return true;
+                default:
+                    break;
                 }
             }
             if (isTitleBar) {

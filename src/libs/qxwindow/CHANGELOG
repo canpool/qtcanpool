@@ -1,6 +1,15 @@
 Unreleased
 ---
 Test
+- Make the resize border and corner hit test reachable. Which edge or corner a
+  press lands on was inline in windowcontext_win.cpp's WM_NCHITTEST handling,
+  which is 2000 lines behind a native window; hitTestRegionFor() in
+  windowhitregion_p.h is that arithmetic, and the backend calls it rather than
+  keeping its own copy. tst_QxWindowHitRegion covers the edges, the corners, the
+  widened left and right strips, and what a fixed-size window answers instead.
+  The comment on that widened strip was wrong about which strips it applies to,
+  and the tests are what showed it: the top and bottom tests use the plain frame
+  size, only left and right are doubled
 - Cover the system button and title bar hit test with tst_QxWindowHitRegion. The
   two questions windowcontext_win.cpp asks on every WM_NCHITTEST - is this point
   in a system button, is it in the title bar's draggable area - now live in

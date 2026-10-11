@@ -18,10 +18,36 @@
 
 #include <QtCore/QPoint>
 #include <QtCore/QRect>
+#include <QtCore/QSize>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
 QX_WINDOW_BEGIN_NAMESPACE
+
+/*!
+ * Which part of the window a press lands on, in the terms the hit test thinks in.
+ *
+ * This mirrors the Win32 HT* codes the native backend has to return, but it is a
+ * separate enum so the decision can be made and tested without windows.h - the
+ * backend maps one to the other at the point it writes *result. Keeping the
+ * arithmetic here rather than inline in windowcontext_win.cpp is what makes the
+ * corner cases reachable: that file is 2000 lines of WM_* handling, and the strip
+ * arithmetic inside it was previously only reachable by driving a real window.
+ */
+enum class HitTestRegion {
+    None,      //!< Not anywhere interesting; the caller decides what to do.
+    Client,    //!< The client area.
+    Caption,   //!< The title bar: a press here should drag the window.
+    Top,
+    Bottom,
+    Left,
+    Right,
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+    Border,   //!< A fixed-size window's border, which never resizes.
+};
 
 /*!
  * The title bar / system button bookkeeping that WindowContext does, written as
@@ -123,6 +149,78 @@ inline bool isInTitleBarDraggableArea(const QPoint &pos, const QRect &windowRect
         return false;
     }
     return true;
+}
+
+/*!
+ * Which part of the window a press at \a pos lands on, given the resize strip
+ * \a frameSize the window manager reported.
+ *
+ * \a isTop is reported separately because the strip along the top edge is doubled
+ * while the left, right and bottom ones are not - that asymmetry is the original
+ * behaviour and is kept on purpose, so a corner reports the same answer whichever
+ * edge the caller tested first.
+ *
+ * \a isTitleBar decides the answer for everything that is not on a border: inside
+ * the draggable title bar it is Caption, otherwise Client. \a isFixedSize turns
+ * every border into Border, which is what stops a fixed-size window from being
+ * resized by dragging its edge.
+ */
+inline HitTestRegion hitTestRegionFor(const QSize &clientSize, const QPoint &pos, int frameSize, bool isTitleBar,
+                                      bool isFixedSize)
+{
+    if (isFixedSize) {
+        // A fixed-size window still reports the edges, but as Border, so the caller
+        // returns HTBORDER rather than a resize code.
+        const bool onTop = (pos.y() < frameSize);
+        const bool onBottom = (pos.y() >= (clientSize.height() - frameSize));
+        const bool onLeft = (pos.x() < frameSize);
+        const bool onRight = (pos.x() >= (clientSize.width() - frameSize));
+        if (onTop || onBottom || onLeft || onRight) {
+            return HitTestRegion::Border;
+        }
+        return isTitleBar ? HitTestRegion::Caption : HitTestRegion::Client;
+    }
+
+    // Whether the point is on the top or bottom edge at all. Both use the plain
+    // frame size: the doubled one below applies to the left and right edges only,
+    // which is the original behaviour - the comment in windowcontext_win.cpp called
+    // it "make the border a little wider on corners", and it widens the edges a
+    // corner is found from, not the corner test itself.
+    const bool isTop = (pos.y() < frameSize);
+    const bool isBottom = (pos.y() >= (clientSize.height() - frameSize));
+    // Left and right are measured against twice the frame, so that the corners are
+    // easier to grab: at the very corner both the top edge and the widened left
+    // edge match.
+    const int scaledFrameSize = frameSize * 2;
+    const bool isLeft = (pos.x() < scaledFrameSize);
+    const bool isRight = (pos.x() >= (clientSize.width() - scaledFrameSize));
+
+    // Corners first, so that a corner reports a corner code rather than an edge one.
+    if (isTop) {
+        if (isLeft) {
+            return HitTestRegion::TopLeft;
+        }
+        if (isRight) {
+            return HitTestRegion::TopRight;
+        }
+        return HitTestRegion::Top;
+    }
+    if (isBottom) {
+        if (isLeft) {
+            return HitTestRegion::BottomLeft;
+        }
+        if (isRight) {
+            return HitTestRegion::BottomRight;
+        }
+        return HitTestRegion::Bottom;
+    }
+    if (isLeft) {
+        return HitTestRegion::Left;
+    }
+    if (isRight) {
+        return HitTestRegion::Right;
+    }
+    return isTitleBar ? HitTestRegion::Caption : HitTestRegion::Client;
 }
 
 QX_WINDOW_END_NAMESPACE
