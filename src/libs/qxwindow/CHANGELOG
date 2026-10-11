@@ -42,6 +42,14 @@ Test
   compare area, so for two different shapes of the same area "<" is true in
   both directions and ">=" is false in both. Both are recorded as they are
   rather than smoothed over
+- Cover getMouseEventScenePos and getMouseEventGlobalPos with tst_QxWindowKit.
+  These two exist only because Qt 6 renamed windowPos() to scenePosition() and
+  screenPos() to globalPosition(), and both branches compile and both return a
+  plausible point, so a test on one Qt major says nothing about the other. The
+  cases build an event whose local, scene/window and screen/global values all
+  differ, which is what makes reading the wrong field fail. They also pin that
+  QPointF::toPoint() rounds rather than truncates, including for negatives where
+  the two differ
 
 0.2.0
 ---
