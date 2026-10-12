@@ -12,11 +12,17 @@
 QX_WINDOW_BEGIN_NAMESPACE
 
 // The arithmetic itself lives in windowgeometry_p.h, where it can be tested with
-// nothing but a QSize. What is left here are the two conditions that are about
-// the window rather than the geometry: macOS deliberately has no resize cursor,
-// and a window that is not in the windowed state (full screen, hidden) is not
-// resized from its border either. Keeping the guards here keeps the observable
-// behaviour identical to the single-file version this was split out of.
+// nothing but a QSize. What is left here is about the window rather than the
+// geometry: macOS has no resize cursor at all, and elsewhere a window that is not
+// in the windowed state (full screen, hidden) is not resized from its border. The
+// latter is one rule, so it is asked once.
+// (QWK_USED: on macOS nothing calls it.)
+QWK_USED static inline bool hasResizeHandles(const QWindow *window)
+{
+    Q_ASSERT(window);
+    return window && window->visibility() == QWindow::Windowed;
+}
+
 static Qt::CursorShape calculateCursorShape(const QWindow *window, const QPoint &pos)
 {
 #ifdef Q_OS_MACOS
@@ -24,8 +30,7 @@ static Qt::CursorShape calculateCursorShape(const QWindow *window, const QPoint 
     Q_UNUSED(pos);
     return Qt::ArrowCursor;
 #else
-    Q_ASSERT(window);
-    if (!window || window->visibility() != QWindow::Windowed) {
+    if (!hasResizeHandles(window)) {
         return Qt::ArrowCursor;
     }
     return resizeCursorFor(window->size(), pos);
@@ -39,8 +44,7 @@ static inline Qt::Edges calculateWindowEdges(const QWindow *window, const QPoint
     Q_UNUSED(pos);
     return {};
 #else
-    Q_ASSERT(window);
-    if (!window || window->visibility() != QWindow::Windowed) {
+    if (!hasResizeHandles(window)) {
         return {};
     }
     return resizeEdgesFor(window->size(), pos);
