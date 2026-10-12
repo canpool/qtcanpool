@@ -74,8 +74,20 @@ git diff --name-only <上次tag>..HEAD -- src/libs/qxdock/ | grep '\.h$'
 ⚠️ 这个号有**两个镜像**，历史上漏改过两次（`qxapp_global.h` 停在 0.0.1、`qxdock_global.h` 停在 0.1.0），
 两处必须同时改。qmake 侧原有的两处 `.pri` 已随决策 K13 删除，不要再去找。
 
-**项目版本另有三处**：`cmake/QtCanpoolBranding.cmake`、`ports/qtcanpool/vcpkg.json`、`conanfile.py`。
+**项目版本另有三处**：`cmake/QtCanpoolBranding.cmake`、`ports/qtcanpool/vcpkg.json`、`conanfile.py`
+（仓库已无 `qtproject.pri` 之类的第 4 处，不要去找）。三处必须**在「发布、打 tag」的那一刻一同前进、值保持相等**：
+
+- `cmake/QtCanpoolBranding.cmake` 的三个字段 `VERSION` / `COMPAT_VERSION` / `DISPLAY_VERSION` 同时改、三者相等；
+- `ports/qtcanpool/vcpkg.json` 的 `version`；
+- `conanfile.py` 的 `version`。
+
 文档站页脚取自 `QTPROJECT_DISPLAY_VERSION`（来自 branding 文件），不必单独改。
+
+⚠️ **`COMPAT_VERSION` 始终等于项目版本**（本仓家规：每发一版三处齐升；git 历史从 3.0 到 4.3 每笔发布都如此）。它只声明「用本项目源码编出来的插件要求的最低 IDE 版本」，并不影响「4.4 的 IDE 照常加载 4.3 编的插件」——向后兼容由「不碰公开 `.h`」保证，不靠这个常量。
+
+⚠️ **时机：版本号在「新版本开发刚开始」那一刻前进，与 Qt Creator 的惯例一致。** Qt Creator 在上一版发布后、下一版开发启动的首个提交就把 `QTCREATOR_VERSION` 提到下一版号；开发期源码就 carrying 下一版号，发布时只打 `git tag -a <ver> <SHA>`、版本号不再改。qtcanpool 作为 Qt Creator 分叉沿用同一规则：
+**开始 4.4 开发时就把三处 `4.3.0 → 4.4.0`**，整个 4.4 开发期源码都是 `4.4.0`；发布 4.4.0 时只打 tag，版本号不动。
+（注：本仓 4.3.0 实际是在发布提交里才升的——与上游不一致；自 4.4 起改为「开发刚开始就升」，与 Qt Creator 对齐。）
 
 ---
 
@@ -83,7 +95,7 @@ git diff --name-only <上次tag>..HEAD -- src/libs/qxdock/ | grep '\.h$'
 
 | 账本 | 视角 | 什么时候写 | 回答什么 |
 | :--- | :--- | :--- | :--- |
-| 根 `CHANGELOG` | 项目 | **发版时一次性写**（与项目版本号同一笔提交） | 这一版用户要改什么 |
+| 根 `CHANGELOG` | 项目 | **发版时一次性写**（打 tag 那笔提交；版本号已在开发起点前进，不在这一笔） | 这一版用户要改什么 |
 | 库级 `src/libs/<lib>/CHANGELOG` | 库 | **跟着改动走**（决策 K24） | 这个库动了什么 |
 | [`doc/pages/index.md`](index.md) 的版本对照表 | 项目 × 库 | 发版时补一行 | 这一版各库是什么号 |
 
