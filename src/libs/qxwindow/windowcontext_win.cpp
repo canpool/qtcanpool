@@ -342,7 +342,11 @@ static inline WindowContextWin::WindowPart getHitWindowPart(int hitTestResult)
     return WindowContextWin::Outside;
 }
 
-static bool isValidWindow(HWND hWnd, bool checkVisible, bool checkTopLevel)
+// The single caller asks for a top-level window and does not care whether it is
+// visible yet, so the two switches this used to take are folded into the one
+// shape that is actually asked for: `checkVisible` was never passed as true and
+// `checkTopLevel` never as false.
+static bool isValidWindow(HWND hWnd)
 {
     if (!::IsWindow(hWnd)) {
         return false;
@@ -362,15 +366,8 @@ static bool isValidWindow(HWND hWnd, bool checkVisible, bool checkTopLevel)
     if ((rect.left >= rect.right) || (rect.top >= rect.bottom)) {
         return false;
     }
-    if (checkVisible) {
-        if (!::IsWindowVisible(hWnd)) {
-            return false;
-        }
-    }
-    if (checkTopLevel) {
-        if (::GetAncestor(hWnd, GA_ROOT) != hWnd) {
-            return false;
-        }
+    if (::GetAncestor(hWnd, GA_ROOT) != hWnd) {
+        return false;
     }
     return true;
 }
@@ -786,7 +783,7 @@ bool WindowContextWin::windowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
         break;
     }
 
-    if (!isValidWindow(hWnd, false, true)) {
+    if (!isValidWindow(hWnd)) {
         return false;
     }
 
@@ -1129,14 +1126,14 @@ static void emulateClientAreaMessage(HWND hWnd, UINT message, WPARAM wParam, LPA
 #undef SEND_MESSAGE
 }
 
-static inline void requestForMouseLeaveMessage(HWND hWnd, bool nonClient)
+// Both callers ask to be told when the pointer leaves the client area, so the
+// `nonClient` switch that used to add TME_NONCLIENT is gone: it was never
+// passed as true, which means the non-client tracking path never ran.
+static inline void requestForMouseLeaveMessage(HWND hWnd)
 {
     TRACKMOUSEEVENT tme{};
     tme.cbSize = sizeof(tme);
     tme.dwFlags = TME_LEAVE;
-    if (nonClient) {
-        tme.dwFlags |= TME_NONCLIENT;
-    }
     tme.hwndTrack = hWnd;
     tme.dwHoverTime = HOVER_DEFAULT;
     ::TrackMouseEvent(&tme);
@@ -1179,7 +1176,7 @@ bool WindowContextWin::snapLayoutHandler(HWND hWnd, UINT message, WPARAM wParam,
         // WM_MOUSELEAVE.
         if (lastHitTestResult != WindowPart::ChromeButton && mouseLeaveBlocked) {
             mouseLeaveBlocked = false;
-            requestForMouseLeaveMessage(hWnd, false);
+            requestForMouseLeaveMessage(hWnd);
         }
         break;
     }
@@ -1298,7 +1295,7 @@ bool WindowContextWin::snapLayoutHandler(HWND hWnd, UINT message, WPARAM wParam,
             // in advance.
             if (mouseLeaveBlocked) {
                 mouseLeaveBlocked = false;
-                requestForMouseLeaveMessage(hWnd, false);
+                requestForMouseLeaveMessage(hWnd);
             }
         } else {
             if (mouseLeaveBlocked) {
