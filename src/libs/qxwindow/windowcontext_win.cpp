@@ -1673,6 +1673,81 @@ bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
     }
 }
 
+static void reserveAutoHideTaskbarSpace(HWND hWnd, RECT *clientRect, const bool maximizedOrFullscreen)
+{
+    // Attempt to detect if there's an autohide taskbar, and if
+    // there is, reduce our size a bit on the side with the taskbar,
+    // so the user can still mouse-over the taskbar to reveal it.
+    // Make sure to use MONITOR_DEFAULTTONEAREST, so that this will
+    // still find the right monitor even when we're restoring from
+    // minimized.
+    if (maximizedOrFullscreen) {
+        APPBARDATA abd{};
+        abd.cbSize = sizeof(abd);
+        const UINT taskbarState = ::SHAppBarMessage(ABM_GETSTATE, &abd);
+        // First, check if we have an auto-hide taskbar at all:
+        if (taskbarState & ABS_AUTOHIDE) {
+            bool top = false, bottom = false, left = false, right = false;
+            // Due to ABM_GETAUTOHIDEBAREX was introduced in Windows 8.1,
+            // we have to use another way to judge this if we are running
+            // on Windows 7 or Windows 8.
+            if (isWin8Point1OrGreater()) {
+                const RECT monitorRect = getMonitorForWindow(hWnd).rcMonitor;
+                // This helper can be used to determine if there's an
+                // auto-hide taskbar on the given edge of the monitor
+                // we're currently on.
+                const auto hasAutohideTaskbar = [monitorRect](const UINT edge) -> bool {
+                    APPBARDATA abd2{};
+                    abd2.cbSize = sizeof(abd2);
+                    abd2.uEdge = edge;
+                    abd2.rc = monitorRect;
+                    const auto hTaskbar = reinterpret_cast<HWND>(::SHAppBarMessage(ABM_GETAUTOHIDEBAREX, &abd2));
+                    return (hTaskbar != nullptr);
+                };
+                top = hasAutohideTaskbar(ABE_TOP);
+                bottom = hasAutohideTaskbar(ABE_BOTTOM);
+                left = hasAutohideTaskbar(ABE_LEFT);
+                right = hasAutohideTaskbar(ABE_RIGHT);
+            } else {
+                int edge = -1;
+                APPBARDATA abd2{};
+                abd2.cbSize = sizeof(abd2);
+                abd2.hWnd = ::FindWindowW(L"Shell_TrayWnd", nullptr);
+                HMONITOR windowMonitor = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+                HMONITOR taskbarMonitor = ::MonitorFromWindow(abd2.hWnd, MONITOR_DEFAULTTOPRIMARY);
+                if (taskbarMonitor == windowMonitor) {
+                    ::SHAppBarMessage(ABM_GETTASKBARPOS, &abd2);
+                    edge = int(abd2.uEdge);
+                }
+                top = (edge == ABE_TOP);
+                bottom = (edge == ABE_BOTTOM);
+                left = (edge == ABE_LEFT);
+                right = (edge == ABE_RIGHT);
+            }
+            // If there's a taskbar on any side of the monitor, reduce
+            // our size a little bit on that edge.
+            // Note to future code archeologists:
+            // This doesn't seem to work for fullscreen on the primary
+            // display. However, testing a bunch of other apps with
+            // fullscreen modes and an auto-hiding taskbar has
+            // shown that _none_ of them reveal the taskbar from
+            // fullscreen mode. This includes Edge, Firefox, Chrome,
+            // Sublime Text, PowerPoint - none seemed to support this.
+            // This does however work fine for maximized.
+            if (top) {
+                // Peculiarly, when we're fullscreen,
+                clientRect->top += kAutoHideTaskBarThickness;
+            } else if (bottom) {
+                clientRect->bottom -= kAutoHideTaskBarThickness;
+            } else if (left) {
+                clientRect->left += kAutoHideTaskBarThickness;
+            } else if (right) {
+                clientRect->right -= kAutoHideTaskBarThickness;
+            }
+        }
+    }
+}
+
 bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *result)
 {
     Q_UNUSED(message)
@@ -1819,77 +1894,7 @@ bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM 
             clientRect->right -= frameSize;
         }
     }
-    // Attempt to detect if there's an autohide taskbar, and if
-    // there is, reduce our size a bit on the side with the taskbar,
-    // so the user can still mouse-over the taskbar to reveal it.
-    // Make sure to use MONITOR_DEFAULTTONEAREST, so that this will
-    // still find the right monitor even when we're restoring from
-    // minimized.
-    if (max || full) {
-        APPBARDATA abd{};
-        abd.cbSize = sizeof(abd);
-        const UINT taskbarState = ::SHAppBarMessage(ABM_GETSTATE, &abd);
-        // First, check if we have an auto-hide taskbar at all:
-        if (taskbarState & ABS_AUTOHIDE) {
-            bool top = false, bottom = false, left = false, right = false;
-            // Due to ABM_GETAUTOHIDEBAREX was introduced in Windows 8.1,
-            // we have to use another way to judge this if we are running
-            // on Windows 7 or Windows 8.
-            if (isWin8Point1OrGreater()) {
-                const RECT monitorRect = getMonitorForWindow(hWnd).rcMonitor;
-                // This helper can be used to determine if there's an
-                // auto-hide taskbar on the given edge of the monitor
-                // we're currently on.
-                const auto hasAutohideTaskbar = [monitorRect](const UINT edge) -> bool {
-                    APPBARDATA abd2{};
-                    abd2.cbSize = sizeof(abd2);
-                    abd2.uEdge = edge;
-                    abd2.rc = monitorRect;
-                    const auto hTaskbar = reinterpret_cast<HWND>(::SHAppBarMessage(ABM_GETAUTOHIDEBAREX, &abd2));
-                    return (hTaskbar != nullptr);
-                };
-                top = hasAutohideTaskbar(ABE_TOP);
-                bottom = hasAutohideTaskbar(ABE_BOTTOM);
-                left = hasAutohideTaskbar(ABE_LEFT);
-                right = hasAutohideTaskbar(ABE_RIGHT);
-            } else {
-                int edge = -1;
-                APPBARDATA abd2{};
-                abd2.cbSize = sizeof(abd2);
-                abd2.hWnd = ::FindWindowW(L"Shell_TrayWnd", nullptr);
-                HMONITOR windowMonitor = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-                HMONITOR taskbarMonitor = ::MonitorFromWindow(abd2.hWnd, MONITOR_DEFAULTTOPRIMARY);
-                if (taskbarMonitor == windowMonitor) {
-                    ::SHAppBarMessage(ABM_GETTASKBARPOS, &abd2);
-                    edge = int(abd2.uEdge);
-                }
-                top = (edge == ABE_TOP);
-                bottom = (edge == ABE_BOTTOM);
-                left = (edge == ABE_LEFT);
-                right = (edge == ABE_RIGHT);
-            }
-            // If there's a taskbar on any side of the monitor, reduce
-            // our size a little bit on that edge.
-            // Note to future code archeologists:
-            // This doesn't seem to work for fullscreen on the primary
-            // display. However, testing a bunch of other apps with
-            // fullscreen modes and an auto-hiding taskbar has
-            // shown that _none_ of them reveal the taskbar from
-            // fullscreen mode. This includes Edge, Firefox, Chrome,
-            // Sublime Text, PowerPoint - none seemed to support this.
-            // This does however work fine for maximized.
-            if (top) {
-                // Peculiarly, when we're fullscreen,
-                clientRect->top += kAutoHideTaskBarThickness;
-            } else if (bottom) {
-                clientRect->bottom -= kAutoHideTaskBarThickness;
-            } else if (left) {
-                clientRect->left += kAutoHideTaskBarThickness;
-            } else if (right) {
-                clientRect->right -= kAutoHideTaskBarThickness;
-            }
-        }
-    }
+    reserveAutoHideTaskbarSpace(hWnd, clientRect, max || full);
     // We should call this function only before the function returns.
     syncPaintEventWithDwm();
     // By returning WVR_REDRAW we can make the window resizing look
