@@ -184,6 +184,11 @@ public:
 
     bool customWindowHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *result);
 
+    // WM_NCHITTEST alone was three quarters of customWindowHandler: it answers for
+    // both the system border and the homemade one, and each answer depends on the
+    // window state, so it lives in its own function.
+    bool hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result);
+
     bool nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *result);
 protected:
     WId windowId = 0;

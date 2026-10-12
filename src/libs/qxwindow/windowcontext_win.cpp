@@ -1342,277 +1342,11 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
         break;
     }
 
-    case WM_NCHITTEST: {
-        // 原生Win32窗口只有顶边是在窗口内部resize的，其余三边都是在窗口
-        // 外部进行resize的，其原理是，WS_THICKFRAME这个窗口样式会在窗
-        // 口的左、右和底边添加三个透明的resize区域，这三个区域在正常状态
-        // 下是完全不可见的，它们由DWM负责绘制和控制。这些区域的宽度等于
-        // (SM_CXSIZEFRAME + SM_CXPADDEDBORDER)，高度等于
-        // (SM_CYSIZEFRAME + SM_CXPADDEDBORDER)，在100%缩放时，均等
-        // 于8像素。它们属于窗口区域的一部分，但不属于客户区，而是属于非客
-        // 户区，因此GetWindowRect获取的区域中是包含这三个resize区域的，
-        // 而GetClientRect获取的区域是不包含它们的。当把
-        // DWMWA_EXTENDED_FRAME_BOUNDS作为参数调用
-        // DwmGetWindowAttribute时，也能获取到一个窗口大小，这个大小介
-        // 于前面两者之间，暂时不知道这个数据的意义及其作用。我们在
-        // WM_NCCALCSIZE消息的处理中，已经把整个窗口都设置为客户区了，也
-        // 就是说，我们的窗口已经没有非客户区了，因此那三个透明的resize区
-        // 域，此刻也已经成为窗口客户区的一部分了，从而变得不透明了。所以
-        // 现在的resize，看起来像是在窗口内部resize，是因为原本透明的地方
-        // 现在变得不透明了，实际上，单纯从范围上来看，现在我们resize的地方，
-        // 就是普通窗口的边框外部，那三个透明区域的范围。
-        // 因此，如果我们把边框完全去掉（就是我们正在做的事情），resize就
-        // 会看起来是在内部进行，这个问题通过常规方法非常难以解决。我测试过
-        // QQ和钉钉的窗口，它们的窗口就是在外部resize，但实际上它们是通过
-        // 把窗口实际的内容，嵌入到一个完全透明的但尺寸要大一圈的窗口中实现
-        // 的，虽然看起来效果还不错，但对于此项目而言，代码和窗口结构过于复
-        // 杂，因此我没有采用此方案。然而，对于具体的软件项目而言，其做法也
-        // 不失为一个优秀的解决方案，毕竟其在大多数条件下的表现都还可以。
-        //
-        // 和1.x的做法不同，现在的2.x选择了保留窗口三边，去除整个窗口顶部，
-        // 好处是保留了系统的原生边框，外观较好，且与系统结合紧密，而且resize
-        // 的表现也有很大改善，缺点是需要自行绘制顶部边框线。原本以为只能像
-        // Windows Terminal那样在WM_PAINT里搞黑魔法，但后来发现，其实只
-        // 要颜色相近，我们自行绘制一根实线也几乎能以假乱真，而且这样也不会
-        // 破坏Qt自己的绘制系统，能做到不依赖黑魔法就能实现像Windows Terminal
-        // 那样外观和功能都比较完美的自定义边框。
-
-        // A normal Win32 window can be resized outside of it. Here is the
-        // reason: the WS_THICKFRAME window style will cause a window has three
-        // transparent areas beside the window's left, right and bottom
-        // edge. Their width or height is eight pixels if the window is not
-        // scaled. In most cases, they are totally invisible. It's DWM's
-        // responsibility to draw and control them. They exist to let the
-        // user resize the window, visually outside of it. They are in the
-        // window area, but not the client area, so they are in the
-        // non-client area actually. But we have turned the whole window
-        // area into client area in WM_NCCALCSIZE, so the three transparent
-        // resize areas also become a part of the client area and thus they
-        // become visible. When we resize the window, it looks like we are
-        // resizing inside of it, however, that's because the transparent
-        // resize areas are visible now, we ARE resizing outside of the
-        // window actually. But I don't know how to make them become
-        // transparent again without breaking the frame shadow drawn by DWM.
-        // If you really want to solve it, you can try to embed your window
-        // into a larger transparent window and draw the frame shadow
-        // yourself. As what we have said in WM_NCCALCSIZE, you can only
-        // remove the top area of the window, this will let us be able to
-        // resize outside of the window and don't need much process in this
-        // message, it looks like a perfect plan, however, the top border is
-        // missing due to the whole top area is removed, and it's very hard
-        // to bring it back because we have to use a trick in WM_PAINT
-        // (learned from Windows Terminal), but no matter what we do in
-        // WM_PAINT, it will always break the backing store mechanism of Qt,
-        // so actually we can't do it. And it's very difficult to do such
-        // things in NativeEventFilters as well. What's worse, if we really
-        // do this, the four window borders will become white and they look
-        // horrible in dark mode. This solution only supports Windows 10
-        // because the border width on Win10 is only one pixel, however it's
-        // eight pixels on Windows 7 so preserving the three window borders
-        // looks terrible on old systems.
-        //
-        // Unlike the 1.x code, we choose to preserve the three edges of the
-        // window in 2.x, and get rid of the whole top part of the window.
-        // There are quite some advantages such as the appearance looks much
-        // better and due to we have the original system window frame, our
-        // window can behave just like a normal Win32 window even if we now
-        // doesn't have a title bar at all. Most importantly, the flicker and
-        // jitter during window resizing is totally gone now. The disadvantage
-        // is we have to draw a top frame border ourselves. Previously I thought
-        // we have to do the black magic in WM_PAINT just like what Windows
-        // Terminal does, however, later I found that if we choose a proper
-        // color, our homemade top border can almost have exactly the same
-        // appearance with the system's one.
-        [[maybe_unused]] const auto &hitTestRecorder = qScopeGuard([this, result]() {
-            lastHitTestResult = getHitWindowPart(int(*result));   //
-        });
-
-        POINT nativeGlobalPos{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-        POINT nativeLocalPos = nativeGlobalPos;
-        ::ScreenToClient(hWnd, &nativeLocalPos);
-
-        RECT clientRect{0, 0, 0, 0};
-        ::GetClientRect(hWnd, &clientRect);
-        auto clientWidth = RECT_WIDTH(clientRect);
-        auto clientHeight = RECT_HEIGHT(clientRect);
-
-        QPoint qtScenePos = QHighDpi::fromNativeLocalPosition(point2qpoint(nativeLocalPos), m_windowHandle);
-
-        bool isFixedSize = m_delegate->isHostSizeFixed(m_host);
-        bool isTitleBar = isInTitleBarDraggableArea(qtScenePos);
-        // There is no way for the host to opt out of the resize cursor at the border:
-        // a `dontOverrideCursor` flag used to sit here, but nothing ever assigned to
-        // it, so every use of it reduced to `isFixedSize` and the branch it guarded
-        // was unreachable. It was removed rather than wired up, because deciding
-        // where such a switch would come from is a public API question - see A5 -
-        // and a dead branch with a suggestive name misleads the next reader.
-        // See doc/pages/limitations.md, "hit testing always overrides the border
-        // cursor".
-
-        WindowAgentBase::SystemButton sysButtonType = WindowAgentBase::Unknown;
-        if (!isFixedSize && isInSystemButtons(qtScenePos, &sysButtonType)) {
-            // Firstly, we set the hit test result to a default value to be able to detect
-            // whether we have changed it or not afterwards.
-            *result = HTNOWHERE;
-            // Even if the mouse is inside the chrome button area now, we should still allow
-            // the user to be able to resize the window with the top or right window border,
-            // this is also the normal behavior of a native Win32 window (but only when the
-            // window is not maximized/fullscreen/minimized, of course).
-            if (isWindowNoState(hWnd)) {
-                static constexpr const quint8 kBorderSize = 2;
-                bool isTop = (nativeLocalPos.y <= kBorderSize);
-                bool isLeft = nativeLocalPos.x <= kBorderSize;
-                bool isRight = (nativeLocalPos.x >= (clientWidth - kBorderSize));
-                if (isTop || isLeft || isRight) {
-                    if (isTop) {
-                        if (isLeft) {
-                            *result = HTTOPLEFT;
-                        } else if (isRight) {
-                            *result = HTTOPRIGHT;
-                        } else {
-                            *result = HTTOP;
-                        }
-                    } else {
-                        if (isLeft) {
-                            *result = HTLEFT;
-                        } else {
-                            *result = HTRIGHT;
-                        }
-                    }
-                }
-            }
-            if (*result == HTNOWHERE) {
-                // OK, we are now really inside one of the chrome buttons, tell Windows the
-                // exact role of our button. The Snap Layout feature introduced in Windows
-                // 11 won't work without this.
-                switch (sysButtonType) {
-                case WindowAgentBase::WindowIcon:
-                    *result = HTSYSMENU;
-                    break;
-                case WindowAgentBase::Help:
-                    *result = HTHELP;
-                    break;
-                case WindowAgentBase::Minimize:
-                    *result = HTREDUCE;
-                    break;
-                case WindowAgentBase::Maximize:
-                    *result = HTZOOM;
-                    break;
-                case WindowAgentBase::Close:
-                    *result = HTCLOSE;
-                    break;
-                default:
-                    // unreachable
-                    break;
-                }
-            }
-            if (*result == HTNOWHERE) {
-                // OK, it seems we are not inside the window resize area, nor inside the
-                // chrome buttons, tell Windows we are in the client area to let Qt handle
-                // this event.
-                *result = HTCLIENT;
-            }
-            return true;
-        }
-        // OK, we are not inside any chrome buttons, try to find out which part of the
-        // window are we hitting.
-
-        bool max = IsMaximized(hWnd);
-        bool full = isFullScreen(hWnd);
-        int frameSize = getResizeBorderThickness(hWnd);
-        bool isTop = (nativeLocalPos.y < frameSize);
-
-        if (isSystemBorderEnabled()) {
-            // This will handle the left, right and bottom parts of the frame
-            // because we didn't change them.
-            LRESULT originalHitTestResult = ::DefWindowProcW(hWnd, WM_NCHITTEST, 0, lParam);
-            if (originalHitTestResult != HTCLIENT) {
-                // Even if the window is not resizable, we still can't return HTCLIENT here
-                // because when we enter this code path, it means the mouse cursor is
-                // outside the window, that is, the three transparent window resize area.
-                // Returning HTCLIENT will confuse Windows, we can't put our controls there
-                // anyway.
-                *result = (isFixedSize ? HTBORDER : originalHitTestResult);
-                return true;
-            }
-            if (full) {
-                *result = HTCLIENT;
-                return true;
-            }
-            if (max) {
-                *result = (isTitleBar ? HTCAPTION : HTCLIENT);
-                return true;
-            }
-            // At this point, we know that the cursor is inside the client area,
-            // so it has to be either the little border at the top of our custom
-            // title bar or the drag bar. Apparently, it must be the drag bar or
-            // the little border at the top which the user can use to move or
-            // resize the window.
-            if (isTop) {
-                // Return HTCLIENT instead of HTBORDER here, because the mouse is
-                // inside our homemade title bar now, return HTCLIENT to let our
-                // title bar can still capture mouse events.
-                *result = (isFixedSize ? (isTitleBar ? HTCAPTION : HTCLIENT) : HTTOP);
-                return true;
-            }
-            if (isTitleBar) {
-                *result = HTCAPTION;
-                return true;
-            }
-            *result = HTCLIENT;
-            return true;
-        } else {
-            if (full) {
-                *result = HTCLIENT;
-                return true;
-            }
-            if (max) {
-                *result = (isTitleBar ? HTCAPTION : HTCLIENT);
-                return true;
-            }
-            if (!isFixedSize) {
-                // Which edge or corner this is, and whether the title bar answers
-                // for the rest, is decided by hitTestRegionFor(); the geometry is
-                // kept there so it can be tested without a native window.
-                const auto region = ::QxWindow::hitTestRegionFor(
-                    QSize(clientWidth, clientHeight), point2qpoint(nativeLocalPos), frameSize, isTitleBar, false);
-                switch (region) {
-                case HitTestRegion::TopLeft:
-                    *result = HTTOPLEFT;
-                    return true;
-                case HitTestRegion::TopRight:
-                    *result = HTTOPRIGHT;
-                    return true;
-                case HitTestRegion::Top:
-                    *result = HTTOP;
-                    return true;
-                case HitTestRegion::BottomLeft:
-                    *result = HTBOTTOMLEFT;
-                    return true;
-                case HitTestRegion::BottomRight:
-                    *result = HTBOTTOMRIGHT;
-                    return true;
-                case HitTestRegion::Bottom:
-                    *result = HTBOTTOM;
-                    return true;
-                case HitTestRegion::Left:
-                    *result = HTLEFT;
-                    return true;
-                case HitTestRegion::Right:
-                    *result = HTRIGHT;
-                    return true;
-                default:
-                    break;
-                }
-            }
-            if (isTitleBar) {
-                *result = HTCAPTION;
-                return true;
-            }
-            *result = HTCLIENT;
-            return true;
-        }
-    }
+    case WM_NCHITTEST:
+        // Hit testing decides what a press on the frame means - resize, drag, or a
+        // click on the widget underneath. The answer is long enough that it has
+        // been moved into its own function.
+        return hitTestHandler(hWnd, lParam, result);
 
     case WM_WINDOWPOSCHANGING: {
         // NOTE: the trigger and the workaround below are both recorded - what is not
@@ -1696,6 +1430,278 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
         }
     }
     return false;
+}
+bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
+{
+    // 原生Win32窗口只有顶边是在窗口内部resize的，其余三边都是在窗口
+    // 外部进行resize的，其原理是，WS_THICKFRAME这个窗口样式会在窗
+    // 口的左、右和底边添加三个透明的resize区域，这三个区域在正常状态
+    // 下是完全不可见的，它们由DWM负责绘制和控制。这些区域的宽度等于
+    // (SM_CXSIZEFRAME + SM_CXPADDEDBORDER)，高度等于
+    // (SM_CYSIZEFRAME + SM_CXPADDEDBORDER)，在100%缩放时，均等
+    // 于8像素。它们属于窗口区域的一部分，但不属于客户区，而是属于非客
+    // 户区，因此GetWindowRect获取的区域中是包含这三个resize区域的，
+    // 而GetClientRect获取的区域是不包含它们的。当把
+    // DWMWA_EXTENDED_FRAME_BOUNDS作为参数调用
+    // DwmGetWindowAttribute时，也能获取到一个窗口大小，这个大小介
+    // 于前面两者之间，暂时不知道这个数据的意义及其作用。我们在
+    // WM_NCCALCSIZE消息的处理中，已经把整个窗口都设置为客户区了，也
+    // 就是说，我们的窗口已经没有非客户区了，因此那三个透明的resize区
+    // 域，此刻也已经成为窗口客户区的一部分了，从而变得不透明了。所以
+    // 现在的resize，看起来像是在窗口内部resize，是因为原本透明的地方
+    // 现在变得不透明了，实际上，单纯从范围上来看，现在我们resize的地方，
+    // 就是普通窗口的边框外部，那三个透明区域的范围。
+    // 因此，如果我们把边框完全去掉（就是我们正在做的事情），resize就
+    // 会看起来是在内部进行，这个问题通过常规方法非常难以解决。我测试过
+    // QQ和钉钉的窗口，它们的窗口就是在外部resize，但实际上它们是通过
+    // 把窗口实际的内容，嵌入到一个完全透明的但尺寸要大一圈的窗口中实现
+    // 的，虽然看起来效果还不错，但对于此项目而言，代码和窗口结构过于复
+    // 杂，因此我没有采用此方案。然而，对于具体的软件项目而言，其做法也
+    // 不失为一个优秀的解决方案，毕竟其在大多数条件下的表现都还可以。
+    //
+    // 和1.x的做法不同，现在的2.x选择了保留窗口三边，去除整个窗口顶部，
+    // 好处是保留了系统的原生边框，外观较好，且与系统结合紧密，而且resize
+    // 的表现也有很大改善，缺点是需要自行绘制顶部边框线。原本以为只能像
+    // Windows Terminal那样在WM_PAINT里搞黑魔法，但后来发现，其实只
+    // 要颜色相近，我们自行绘制一根实线也几乎能以假乱真，而且这样也不会
+    // 破坏Qt自己的绘制系统，能做到不依赖黑魔法就能实现像Windows Terminal
+    // 那样外观和功能都比较完美的自定义边框。
+
+    // A normal Win32 window can be resized outside of it. Here is the
+    // reason: the WS_THICKFRAME window style will cause a window has three
+    // transparent areas beside the window's left, right and bottom
+    // edge. Their width or height is eight pixels if the window is not
+    // scaled. In most cases, they are totally invisible. It's DWM's
+    // responsibility to draw and control them. They exist to let the
+    // user resize the window, visually outside of it. They are in the
+    // window area, but not the client area, so they are in the
+    // non-client area actually. But we have turned the whole window
+    // area into client area in WM_NCCALCSIZE, so the three transparent
+    // resize areas also become a part of the client area and thus they
+    // become visible. When we resize the window, it looks like we are
+    // resizing inside of it, however, that's because the transparent
+    // resize areas are visible now, we ARE resizing outside of the
+    // window actually. But I don't know how to make them become
+    // transparent again without breaking the frame shadow drawn by DWM.
+    // If you really want to solve it, you can try to embed your window
+    // into a larger transparent window and draw the frame shadow
+    // yourself. As what we have said in WM_NCCALCSIZE, you can only
+    // remove the top area of the window, this will let us be able to
+    // resize outside of the window and don't need much process in this
+    // message, it looks like a perfect plan, however, the top border is
+    // missing due to the whole top area is removed, and it's very hard
+    // to bring it back because we have to use a trick in WM_PAINT
+    // (learned from Windows Terminal), but no matter what we do in
+    // WM_PAINT, it will always break the backing store mechanism of Qt,
+    // so actually we can't do it. And it's very difficult to do such
+    // things in NativeEventFilters as well. What's worse, if we really
+    // do this, the four window borders will become white and they look
+    // horrible in dark mode. This solution only supports Windows 10
+    // because the border width on Win10 is only one pixel, however it's
+    // eight pixels on Windows 7 so preserving the three window borders
+    // looks terrible on old systems.
+    //
+    // Unlike the 1.x code, we choose to preserve the three edges of the
+    // window in 2.x, and get rid of the whole top part of the window.
+    // There are quite some advantages such as the appearance looks much
+    // better and due to we have the original system window frame, our
+    // window can behave just like a normal Win32 window even if we now
+    // doesn't have a title bar at all. Most importantly, the flicker and
+    // jitter during window resizing is totally gone now. The disadvantage
+    // is we have to draw a top frame border ourselves. Previously I thought
+    // we have to do the black magic in WM_PAINT just like what Windows
+    // Terminal does, however, later I found that if we choose a proper
+    // color, our homemade top border can almost have exactly the same
+    // appearance with the system's one.
+    [[maybe_unused]] const auto &hitTestRecorder = qScopeGuard([this, result]() {
+        lastHitTestResult = getHitWindowPart(int(*result));   //
+    });
+
+    POINT nativeGlobalPos{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+    POINT nativeLocalPos = nativeGlobalPos;
+    ::ScreenToClient(hWnd, &nativeLocalPos);
+
+    RECT clientRect{0, 0, 0, 0};
+    ::GetClientRect(hWnd, &clientRect);
+    auto clientWidth = RECT_WIDTH(clientRect);
+    auto clientHeight = RECT_HEIGHT(clientRect);
+
+    QPoint qtScenePos = QHighDpi::fromNativeLocalPosition(point2qpoint(nativeLocalPos), m_windowHandle);
+
+    bool isFixedSize = m_delegate->isHostSizeFixed(m_host);
+    bool isTitleBar = isInTitleBarDraggableArea(qtScenePos);
+    // There is no way for the host to opt out of the resize cursor at the border:
+    // a `dontOverrideCursor` flag used to sit here, but nothing ever assigned to
+    // it, so every use of it reduced to `isFixedSize` and the branch it guarded
+    // was unreachable. It was removed rather than wired up, because deciding
+    // where such a switch would come from is a public API question - see A5 -
+    // and a dead branch with a suggestive name misleads the next reader.
+    // See doc/pages/limitations.md, "hit testing always overrides the border
+    // cursor".
+
+    WindowAgentBase::SystemButton sysButtonType = WindowAgentBase::Unknown;
+    if (!isFixedSize && isInSystemButtons(qtScenePos, &sysButtonType)) {
+        // Firstly, we set the hit test result to a default value to be able to detect
+        // whether we have changed it or not afterwards.
+        *result = HTNOWHERE;
+        // Even if the mouse is inside the chrome button area now, we should still allow
+        // the user to be able to resize the window with the top or right window border,
+        // this is also the normal behavior of a native Win32 window (but only when the
+        // window is not maximized/fullscreen/minimized, of course).
+        if (isWindowNoState(hWnd)) {
+            static constexpr const quint8 kBorderSize = 2;
+            bool isTop = (nativeLocalPos.y <= kBorderSize);
+            bool isLeft = nativeLocalPos.x <= kBorderSize;
+            bool isRight = (nativeLocalPos.x >= (clientWidth - kBorderSize));
+            if (isTop || isLeft || isRight) {
+                if (isTop) {
+                    if (isLeft) {
+                        *result = HTTOPLEFT;
+                    } else if (isRight) {
+                        *result = HTTOPRIGHT;
+                    } else {
+                        *result = HTTOP;
+                    }
+                } else {
+                    if (isLeft) {
+                        *result = HTLEFT;
+                    } else {
+                        *result = HTRIGHT;
+                    }
+                }
+            }
+        }
+        if (*result == HTNOWHERE) {
+            // OK, we are now really inside one of the chrome buttons, tell Windows the
+            // exact role of our button. The Snap Layout feature introduced in Windows
+            // 11 won't work without this.
+            switch (sysButtonType) {
+            case WindowAgentBase::WindowIcon:
+                *result = HTSYSMENU;
+                break;
+            case WindowAgentBase::Help:
+                *result = HTHELP;
+                break;
+            case WindowAgentBase::Minimize:
+                *result = HTREDUCE;
+                break;
+            case WindowAgentBase::Maximize:
+                *result = HTZOOM;
+                break;
+            case WindowAgentBase::Close:
+                *result = HTCLOSE;
+                break;
+            default:
+                // unreachable
+                break;
+            }
+        }
+        if (*result == HTNOWHERE) {
+            // OK, it seems we are not inside the window resize area, nor inside the
+            // chrome buttons, tell Windows we are in the client area to let Qt handle
+            // this event.
+            *result = HTCLIENT;
+        }
+        return true;
+    }
+    // OK, we are not inside any chrome buttons, try to find out which part of the
+    // window are we hitting.
+
+    bool max = IsMaximized(hWnd);
+    bool full = isFullScreen(hWnd);
+    int frameSize = getResizeBorderThickness(hWnd);
+    bool isTop = (nativeLocalPos.y < frameSize);
+
+    if (isSystemBorderEnabled()) {
+        // This will handle the left, right and bottom parts of the frame
+        // because we didn't change them.
+        LRESULT originalHitTestResult = ::DefWindowProcW(hWnd, WM_NCHITTEST, 0, lParam);
+        if (originalHitTestResult != HTCLIENT) {
+            // Even if the window is not resizable, we still can't return HTCLIENT here
+            // because when we enter this code path, it means the mouse cursor is
+            // outside the window, that is, the three transparent window resize area.
+            // Returning HTCLIENT will confuse Windows, we can't put our controls there
+            // anyway.
+            *result = (isFixedSize ? HTBORDER : originalHitTestResult);
+            return true;
+        }
+        if (full) {
+            *result = HTCLIENT;
+            return true;
+        }
+        if (max) {
+            *result = (isTitleBar ? HTCAPTION : HTCLIENT);
+            return true;
+        }
+        // At this point, we know that the cursor is inside the client area,
+        // so it has to be either the little border at the top of our custom
+        // title bar or the drag bar. Apparently, it must be the drag bar or
+        // the little border at the top which the user can use to move or
+        // resize the window.
+        if (isTop) {
+            // Return HTCLIENT instead of HTBORDER here, because the mouse is
+            // inside our homemade title bar now, return HTCLIENT to let our
+            // title bar can still capture mouse events.
+            *result = (isFixedSize ? (isTitleBar ? HTCAPTION : HTCLIENT) : HTTOP);
+            return true;
+        }
+        if (isTitleBar) {
+            *result = HTCAPTION;
+            return true;
+        }
+        *result = HTCLIENT;
+        return true;
+    } else {
+        if (full) {
+            *result = HTCLIENT;
+            return true;
+        }
+        if (max) {
+            *result = (isTitleBar ? HTCAPTION : HTCLIENT);
+            return true;
+        }
+        if (!isFixedSize) {
+            // Which edge or corner this is, and whether the title bar answers
+            // for the rest, is decided by hitTestRegionFor(); the geometry is
+            // kept there so it can be tested without a native window.
+            const auto region = ::QxWindow::hitTestRegionFor(
+                QSize(clientWidth, clientHeight), point2qpoint(nativeLocalPos), frameSize, isTitleBar, false);
+            switch (region) {
+            case HitTestRegion::TopLeft:
+                *result = HTTOPLEFT;
+                return true;
+            case HitTestRegion::TopRight:
+                *result = HTTOPRIGHT;
+                return true;
+            case HitTestRegion::Top:
+                *result = HTTOP;
+                return true;
+            case HitTestRegion::BottomLeft:
+                *result = HTBOTTOMLEFT;
+                return true;
+            case HitTestRegion::BottomRight:
+                *result = HTBOTTOMRIGHT;
+                return true;
+            case HitTestRegion::Bottom:
+                *result = HTBOTTOM;
+                return true;
+            case HitTestRegion::Left:
+                *result = HTLEFT;
+                return true;
+            case HitTestRegion::Right:
+                *result = HTRIGHT;
+                return true;
+            default:
+                break;
+            }
+        }
+        if (isTitleBar) {
+            *result = HTCAPTION;
+            return true;
+        }
+        *result = HTCLIENT;
+        return true;
+    }
 }
 
 bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *result)
