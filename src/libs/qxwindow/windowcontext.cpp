@@ -140,6 +140,26 @@ void WindowContext::setSystemButtonAreaCallback(const ScreenRectCallback &callba
 }
 #endif
 
+void WindowContext::appendItemGeometry(const QObject *item, QList<QRect> &rects, QList<bool> &visible) const
+{
+    if (!item) {
+        // The caller indexes the result by the position it asked about, so a missing
+        // item still needs a slot - it just gets one that can never be hit.
+        rects.append(QRect());
+        visible.append(false);
+        return;
+    }
+    rects.append(m_delegate->mapGeometryToScene(item));
+    visible.append(m_delegate->isVisible(item) && m_delegate->isEnabled(item));
+}
+
+void WindowContext::collectSystemButtonGeometry(QList<QRect> &rects, QList<bool> &visible) const
+{
+    for (int i = WindowAgentBase::WindowIcon; i <= WindowAgentBase::Close; ++i) {
+        appendItemGeometry(m_systemButtons[i], rects, visible);
+    }
+}
+
 bool WindowContext::isInSystemButtons(const QPoint &pos, WindowAgentBase::SystemButton *button) const
 {
     *button = WindowAgentBase::Unknown;
@@ -149,16 +169,7 @@ bool WindowContext::isInSystemButtons(const QPoint &pos, WindowAgentBase::System
     // of the same rule, and the copy under test would be the one nobody runs.
     QList<QRect> rects;
     QList<bool> visible;
-    for (int i = WindowAgentBase::WindowIcon; i <= WindowAgentBase::Close; ++i) {
-        auto currentButton = m_systemButtons[i];
-        if (!currentButton) {
-            rects.append(QRect());
-            visible.append(false);
-            continue;
-        }
-        rects.append(m_delegate->mapGeometryToScene(currentButton));
-        visible.append(m_delegate->isVisible(currentButton) && m_delegate->isEnabled(currentButton));
-    }
+    collectSystemButtonGeometry(rects, visible);
 
     const int index = ::QxWindow::systemButtonAt(pos, rects, visible);
     if (index < 0) {
@@ -195,27 +206,12 @@ bool WindowContext::isInTitleBarDraggableArea(const QPoint &pos) const
     // native window; this gathers what it needs from the delegate and items.
     QList<QRect> buttonRects;
     QList<bool> buttonVisible;
-    for (int i = WindowAgentBase::WindowIcon; i <= WindowAgentBase::Close; ++i) {
-        auto currentButton = m_systemButtons[i];
-        if (!currentButton) {
-            buttonRects.append(QRect());
-            buttonVisible.append(false);
-            continue;
-        }
-        buttonRects.append(m_delegate->mapGeometryToScene(currentButton));
-        buttonVisible.append(m_delegate->isVisible(currentButton) && m_delegate->isEnabled(currentButton));
-    }
+    collectSystemButtonGeometry(buttonRects, buttonVisible);
 
     QList<QRect> hitTestRects;
     QList<bool> hitTestVisible;
     for (auto widget : m_hitTestVisibleItems) {
-        if (!widget) {
-            hitTestRects.append(QRect());
-            hitTestVisible.append(false);
-            continue;
-        }
-        hitTestRects.append(m_delegate->mapGeometryToScene(widget));
-        hitTestVisible.append(m_delegate->isVisible(widget) && m_delegate->isEnabled(widget));
+        appendItemGeometry(widget, hitTestRects, hitTestVisible);
     }
 
     QString childCaptionName;

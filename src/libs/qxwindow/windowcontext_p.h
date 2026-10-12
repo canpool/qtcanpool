@@ -82,6 +82,14 @@ public:
 protected:
     virtual void winIdChanged() = 0;
     virtual bool windowAttributeChanged(const QString &key, const QVariant &attribute, const QVariant &oldAttribute);
+private:
+    // A hit test asks the same question of two different sets of items - the system
+    // buttons and whatever was declared hit-test visible - and both answer it the same
+    // way: an item that is not there occupies nothing and cannot be hit, an item that
+    // is there occupies its mapped geometry and can be hit only while it is visible
+    // and enabled. The rule is written once, here.
+    void appendItemGeometry(const QObject *item, QList<QRect> &rects, QList<bool> &visible) const;
+    void collectSystemButtonGeometry(QList<QRect> &rects, QList<bool> &visible) const;
 protected:
     QObject *m_host{};
     std::unique_ptr<WindowItemDelegate> m_delegate;
