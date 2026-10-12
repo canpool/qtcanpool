@@ -830,6 +830,23 @@ bool WindowContextWin::windowAttributeChanged(const QString &key, const QVariant
         auto margins = qmargins2margins(m_windowAttributes.value(QStringLiteral("extra-margins")).value<QMargins>());
         apis.pDwmExtendFrameIntoClientArea(hwnd, &margins);
     };
+    // Turning a backdrop on means extending the frame into the whole client area and
+    // asking DWM for the material; turning it off means asking for _DWMSBT_AUTO and
+    // giving the margins back. Every backdrop but `mica` - which carries its own
+    // pre-22H2 fallback - is exactly that, so the shape is written down once.
+    const auto &setBackdrop = [&apis, hwnd, &attribute, &restoreMargins](const _DWM_SYSTEMBACKDROP_TYPE enableType) {
+        if (attribute.toBool()) {
+            // We need to extend the window frame into the whole client area to be able
+            // to see the blurred window background.
+            apis.pDwmExtendFrameIntoClientArea(hwnd, &extendedMargins);
+            const _DWM_SYSTEMBACKDROP_TYPE backdropType = enableType;
+            apis.pDwmSetWindowAttribute(hwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+        } else {
+            const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_AUTO;
+            apis.pDwmSetWindowAttribute(hwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+            restoreMargins();
+        }
+    };
 
     if (key == QStringLiteral("extra-margins")) {
         auto margins = qmargins2margins(attribute.value<QMargins>());
@@ -895,19 +912,9 @@ bool WindowContextWin::windowAttributeChanged(const QString &key, const QVariant
         if (!isWin1122H2OrGreater()) {
             return false;
         }
-        if (attribute.toBool()) {
-            // We need to extend the window frame into the whole client area to be able
-            // to see the blurred window background.
-            apis.pDwmExtendFrameIntoClientArea(hwnd, &extendedMargins);
-            // Use official DWM API to enable Mica Alt, available since Windows 11 22H2
-            // (10.0.22621).
-            const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_TABBEDWINDOW;
-            apis.pDwmSetWindowAttribute(hwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-        } else {
-            const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_AUTO;
-            apis.pDwmSetWindowAttribute(hwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-            restoreMargins();
-        }
+        // Use official DWM API to enable Mica Alt, available since Windows 11 22H2
+        // (10.0.22621).
+        setBackdrop(_DWMSBT_TABBEDWINDOW);
         return true;
     }
 
@@ -915,82 +922,47 @@ bool WindowContextWin::windowAttributeChanged(const QString &key, const QVariant
         if (!isWin11OrGreater()) {
             return false;
         }
-        if (attribute.toBool()) {
-            // We need to extend the window frame into the whole client area to be able
-            // to see the blurred window background.
-            apis.pDwmExtendFrameIntoClientArea(hwnd, &extendedMargins);
-
-            const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_TRANSIENTWINDOW;
-            apis.pDwmSetWindowAttribute(hwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-
-            // PRIVATE API REFERENCE:
-            //     QColor gradientColor = {};
-            //     ACCENT_POLICY policy{};
-            //     policy.dwAccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND;
-            //     policy.dwAccentFlags = ACCENT_ENABLE_ACRYLIC_WITH_LUMINOSITY;
-            //     // This API expects the #AABBGGRR format.
-            //     policy.dwGradientColor =
-            //         DWORD(qRgba(gradientColor.blue(), gradientColor.green(),
-            //                     gradientColor.red(), gradientColor.alpha()));
-            //     WINDOWCOMPOSITIONATTRIBDATA wcad{};
-            //     wcad.Attrib = WCA_ACCENT_POLICY;
-            //     wcad.pvData = &policy;
-            //     wcad.cbData = sizeof(policy);
-            //     apis.pSetWindowCompositionAttribute(hwnd, &wcad);
-        } else {
-            const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_AUTO;
-            apis.pDwmSetWindowAttribute(hwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-
-            // PRIVATE API REFERENCE:
-            //     ACCENT_POLICY policy{};
-            //     policy.dwAccentState = ACCENT_DISABLED;
-            //     policy.dwAccentFlags = ACCENT_NONE;
-            //     WINDOWCOMPOSITIONATTRIBDATA wcad{};
-            //     wcad.Attrib = WCA_ACCENT_POLICY;
-            //     wcad.pvData = &policy;
-            //     wcad.cbData = sizeof(policy);
-            //     apis.pSetWindowCompositionAttribute(hwnd, &wcad);
-
-            restoreMargins();
-        }
+        // The private API reference this handler used to carry, without which the
+        // gradient colour below cannot be reconstructed:
+        //     enabled  -> policy.dwAccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+        //                 policy.dwAccentFlags = ACCENT_ENABLE_ACRYLIC_WITH_LUMINOSITY
+        //     disabled -> policy.dwAccentState = ACCENT_DISABLED,
+        //                 policy.dwAccentFlags = ACCENT_NONE
+        //     QColor gradientColor = {};
+        //     ACCENT_POLICY policy{};
+        //     // This API expects the #AABBGGRR format.
+        //     policy.dwGradientColor =
+        //         DWORD(qRgba(gradientColor.blue(), gradientColor.green(),
+        //                     gradientColor.red(), gradientColor.alpha()));
+        //     WINDOWCOMPOSITIONATTRIBDATA wcad{};
+        //     wcad.Attrib = WCA_ACCENT_POLICY;
+        //     wcad.pvData = &policy;
+        //     wcad.cbData = sizeof(policy);
+        //     apis.pSetWindowCompositionAttribute(hwnd, &wcad);
+        setBackdrop(_DWMSBT_TRANSIENTWINDOW);
         return true;
     }
 
     if (key == QStringLiteral("dwm-blur")) {
-        if (attribute.toBool()) {
+        const BOOL enable = attribute.toBool();
+        if (enable) {
             // We can't extend the window frame for this effect.
             restoreMargins();
-            if (isWin8OrGreater()) {
-                ACCENT_POLICY policy{};
-                policy.dwAccentState = ACCENT_ENABLE_BLURBEHIND;
-                policy.dwAccentFlags = ACCENT_NONE;
-                WINDOWCOMPOSITIONATTRIBDATA wcad{};
-                wcad.Attrib = WCA_ACCENT_POLICY;
-                wcad.pvData = &policy;
-                wcad.cbData = sizeof(policy);
-                apis.pSetWindowCompositionAttribute(hwnd, &wcad);
-            } else {
-                DWM_BLURBEHIND bb{};
-                bb.fEnable = TRUE;
-                bb.dwFlags = DWM_BB_ENABLE;
-                apis.pDwmEnableBlurBehindWindow(hwnd, &bb);
-            }
+        }
+        if (isWin8OrGreater()) {
+            ACCENT_POLICY policy{};
+            policy.dwAccentState = enable ? ACCENT_ENABLE_BLURBEHIND : ACCENT_DISABLED;
+            policy.dwAccentFlags = ACCENT_NONE;
+            WINDOWCOMPOSITIONATTRIBDATA wcad{};
+            wcad.Attrib = WCA_ACCENT_POLICY;
+            wcad.pvData = &policy;
+            wcad.cbData = sizeof(policy);
+            apis.pSetWindowCompositionAttribute(hwnd, &wcad);
         } else {
-            if (isWin8OrGreater()) {
-                ACCENT_POLICY policy{};
-                policy.dwAccentState = ACCENT_DISABLED;
-                policy.dwAccentFlags = ACCENT_NONE;
-                WINDOWCOMPOSITIONATTRIBDATA wcad{};
-                wcad.Attrib = WCA_ACCENT_POLICY;
-                wcad.pvData = &policy;
-                wcad.cbData = sizeof(policy);
-                apis.pSetWindowCompositionAttribute(hwnd, &wcad);
-            } else {
-                DWM_BLURBEHIND bb{};
-                bb.fEnable = FALSE;
-                bb.dwFlags = DWM_BB_ENABLE;
-                apis.pDwmEnableBlurBehindWindow(hwnd, &bb);
-            }
+            DWM_BLURBEHIND bb{};
+            bb.fEnable = enable;
+            bb.dwFlags = DWM_BB_ENABLE;
+            apis.pDwmEnableBlurBehindWindow(hwnd, &bb);
         }
         return true;
     }
