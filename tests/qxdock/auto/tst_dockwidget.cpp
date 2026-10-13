@@ -14,6 +14,7 @@ class tst_DockWidget : public QObject
     Q_OBJECT
 private slots:
     void feature();
+    void lockedFeatures();
     void autoHideSideTab();
 };
 
@@ -21,6 +22,35 @@ void tst_DockWidget::feature()
 {
     DockWidget dw("dock1");
     QCOMPARE(DockWidget::DefaultDockWidgetFeatures, dw.features());
+}
+
+/*
+ * DockWidget::features() answers with its own feature set minus whatever the
+ * dock window has locked globally, so a freshly built window has to report that
+ * nothing is locked yet. Otherwise every dock widget added to it answers
+ * features() with arbitrary bits removed, and the first
+ * lockDockWidgetFeaturesGlobally() call can be swallowed by its
+ * "already in that state" early return.
+ *
+ * tst_DockWidget::feature() above cannot see this: a dock widget that belongs
+ * to no window returns its own set unmasked.
+ */
+void tst_DockWidget::lockedFeatures()
+{
+    DockWindow wd;
+
+    DockWidget *dw = new DockWidget("dw1");
+    QVERIFY(wd.addDockWidget(Qx::LeftDockWidgetArea, dw));
+
+    QCOMPARE(wd.globallyLockedDockWidgetFeatures(), DockWidget::NoDockWidgetFeatures);
+    QCOMPARE(dw->features(), DockWidget::DefaultDockWidgetFeatures);
+
+    // Locking is what removes features, and it has to take effect from the
+    // first call on.
+    wd.lockDockWidgetFeaturesGlobally(DockWidget::DockWidgetMovable);
+    QCOMPARE(wd.globallyLockedDockWidgetFeatures(), DockWidget::DockWidgetMovable);
+    QVERIFY(!dw->features().testFlag(DockWidget::DockWidgetMovable));
+    QVERIFY(dw->features().testFlag(DockWidget::DockWidgetClosable));
 }
 
 /*

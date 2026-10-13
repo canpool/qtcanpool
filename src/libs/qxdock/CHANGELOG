@@ -1,3 +1,15 @@
+Unreleased
+---
+Bugfix
+- DockWindow left the features it has locked globally uninitialised. Nothing set
+  DockWindowPrivate::m_lockedDockWidgetFeatures, and DockWidget::features()
+  answers with the widget's own features minus that value, so every dock widget
+  that belonged to a window reported a feature set with arbitrary bits removed
+  until the application happened to call lockDockWidgetFeaturesGlobally() - whose
+  first call could in turn be swallowed by its "already in that state" early
+  return. The field now starts at NoDockWidgetFeatures, which is what the
+  accessor documents for a window that has never locked anything.
+
 0.2.1
 ---
 Cleanup

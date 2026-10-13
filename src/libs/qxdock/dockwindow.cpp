@@ -75,7 +75,7 @@ public:
     Qt::ToolButtonStyle m_toolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
     QSize m_toolBarIconSizeDocked = QSize(16, 16);
     QSize m_toolBarIconSizeFloating = QSize(24, 24);
-    DockWidget::DockWidgetFeatures m_lockedDockWidgetFeatures;
+    DockWidget::DockWidgetFeatures m_lockedDockWidgetFeatures = DockWidget::NoDockWidgetFeatures;
     bool m_restoringState = false;
 };
 
