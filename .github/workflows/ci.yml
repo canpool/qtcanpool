@@ -134,6 +134,13 @@ jobs:
           QT_QPA_PLATFORM: windows
         run: |
           set -u
+          # GitHub runs a `run:` block as `bash -e -o pipefail`, and -e is wrong
+          # for this one: every command below probes something and its non-zero
+          # status is an answer, not a failure. `grep -c` is the clearest case -
+          # it exits 1 when it counts no matches, which here is the good result -
+          # and under -e the assignment would abort the script silently, before
+          # the digest was printed. The exit code is decided at the end instead.
+          set +e
 
           # The binary rather than ctest, for the one thing this job exists to
           # say: how many cases actually ran. A fully skipped suite still exits
