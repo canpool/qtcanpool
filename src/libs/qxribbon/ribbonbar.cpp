@@ -179,7 +179,7 @@ void RibbonBarPrivate::init()
     m_tabBarBaseLine->setVisible(false);
 
     m_stack = new RibbonStackedWidget(q);
-    m_tabBar->setObjectName(QStringLiteral("qx_RibbonStackedWidget"));
+    m_stack->setObjectName(QStringLiteral("qx_RibbonStackedWidget"));
     connect(m_stack, &RibbonStackedWidget::aboutToHide, this, &RibbonBarPrivate::onStackWidgetHided);
     m_stack->installEventFilter(q);
     setMinimizedFlag(false);

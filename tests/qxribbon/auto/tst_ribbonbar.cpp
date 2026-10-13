@@ -5,6 +5,7 @@
 #include "qxribbon/ribbonpagecontext.h"
 
 #include <QAbstractButton>
+#include <QWidget>
 
 QX_RIBBON_USE_NAMESPACE
 
@@ -17,6 +18,7 @@ private slots:
     void pageContext();
     void clear();
     void style();
+    void objectNames();
 };
 
 void tst_RibbonBar::applicationButton()
@@ -240,6 +242,27 @@ void tst_RibbonBar::style()
     QCOMPARE(RibbonBar::WpsLiteStyleTwoRow, rb.currentRibbonStyle());
     QCOMPARE(false, rb.isOfficeStyle());
     QCOMPARE(true, rb.isTwoRowStyle());
+}
+
+/*!
+ * The bar names its children with the qx_ prefix so a stylesheet can target
+ * them. The stacked widget used to be left out: the tab bar was named twice
+ * and the second name clobbered the first (see ribbonbar.cpp init()), so the
+ * tab bar also lost the name it had just been given.
+ */
+void tst_RibbonBar::objectNames()
+{
+    RibbonBar rb;
+
+    const auto has = [&rb](const char *name) {
+        return rb.findChild<QWidget *>(QString::fromLatin1(name)) != Q_NULLPTR;
+    };
+
+    QCOMPARE(has("qx_RibbonTabBar"), true);
+    QCOMPARE(has("qx_RibbonStackedWidget"), true);
+    QCOMPARE(has("qx_RibbonTabBarBaseLine"), true);
+    QCOMPARE(has("qx_RibbonQuickAccessBar"), true);
+    QCOMPARE(has("qx_RibbonApplicationButton"), true);
 }
 
 TEST_ADD(tst_RibbonBar)

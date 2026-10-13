@@ -1,3 +1,13 @@
+Unreleased
+---
+Bugfix
+- The ribbon bar named its tab bar twice, so the second name clobbered the first:
+  the tab bar ended up called "qx_RibbonStackedWidget" and the stacked widget had
+  no name at all. The stacked widget now carries that name and the tab bar keeps
+  "qx_RibbonTabBar". No shipped stylesheet refers to either name today, so nothing
+  visible changes - but the names are part of what a caller can target from its
+  own stylesheet, and the bar was answering wrongly for both.
+
 0.12.0
 ---
 Bugfix
