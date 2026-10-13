@@ -17,7 +17,6 @@ class QAbstractButton;
 QX_RIBBON_BEGIN_NAMESPACE
 class RibbonPage;
 class RibbonPageContext;
-class RibbonCustomizeWidget;
 class RibbonActionsManager;
 class RibbonQuickAccessBar;
 class RibbonButtonGroup;
