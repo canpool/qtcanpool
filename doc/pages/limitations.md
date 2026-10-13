@@ -17,16 +17,28 @@
 
 ## RibbonBar 的 resize 是延迟的（RibbonBar resize is deferred）
 
+> **（4.4 D1）已复核**：A 组重构改过 `ribbonbar.cpp`，但没有改到本条的行为。复核时发现原文
+> 看不出两个**同名** `resizeRibbon()` 各扮演什么角色（公开那个只排队、私有那个干活），已补写清楚；
+> 结论不变：仍维持现状。
+
 **现象**：切换 Ribbon 样式时，新的几何到下个事件循环轮次才生效。
 
-**成因**：`RibbonBar::resizeRibbon()` 用 `QApplication::postEvent()` 投递一个 `QResizeEvent`，
-而不是直接调 `resizeEvent()` 里的那段逻辑。直接调会坏的：WPS 样式下无边框/有边框切换之后，
-`m_applicationButton.isVisible()` 会突然返回 `false`，尺寸计算随之出错。
+**成因**：重名的一对函数是理解这条的入口。`RibbonBar::resizeRibbon()`（**公开**）只做一件事——
+用 `QApplication::postEvent()` 投递一个 `QResizeEvent`；真正干活的 `RibbonBarPrivate::resizeRibbon()`
+是**私有**的，由 `resizeEvent()` 到达之后调用。之所以"排队"而不是"直接干"：直接在 `resizeEvent()`
+里做会坏的——WPS 样式下无边框/有边框切换之后，`m_applicationButton.isVisible()` 会突然返回 `false`，
+尺寸计算随之出错。
 
 **代价**：延迟是可以观察到的。WPS 样式 + 最小模式下切到 OFFICE 样式时，
 `setFixedHeight(d->m_tabBar->geometry().bottom())` 会在 tab bar 被 resize 之前读到旧的 bottom，
 高度于是停在 WPS 的值，tab bar 所在的水平区域显示不出来。
-`RibbonBar::setRibbonStyle()` 里为此**直接**调 `d->resizeRibbon()` 绕过队列——那里需要立刻拿到新几何。
+`RibbonBar::setRibbonStyle()` 里为此**直接**调 `d->resizeRibbon()`——那是**私有**那个，同步干活、
+绕过队列，因为那里需要立刻拿到新几何。
+
+**排队只有一个入口**：所有会改变 bar 内容的入口都经 `RibbonBar::resizeRibbon()` 请求重排
+（6 个内容入口 + `setQuickAccessBarPosition` / `setTabBarPosition`），所以上面那个"为什么排队"
+的理由只有一处住所。同文件另有两处**同步** `sendEvent(this, &resizeEvent)`，那是"必须立刻重排"
+的相反意图，不在本条内。
 
 **要改变它需要什么**：把这条链路变成"同步且不重入"，即让 resize 立刻完成而不会在样式切换的中途
 读到半旧的状态。目前没有已知的写法能同时满足这两点；改的时候注意 `RibbonBar::event()` 里的
@@ -35,6 +47,11 @@
 ---
 
 ## LayoutRequest 可能带来多余的 resize 轮次（LayoutRequest can add resize passes）
+
+> **（4.4 D1）已复核并刷新引用**：A 组重构动过 `ribbonbar.cpp` / `ribbonpage.cpp`，本条原先那批
+> 行号因此整体错位（20~40 行），现已按当前代码逐条更正；顺手把散在 6 个内容入口里逐字重复的
+> `postEvent(this, new QResizeEvent(size(), size()))` 并回 `RibbonBar::resizeRibbon()`（恒等变换）。
+> 结论不变：仍维持现状。
 
 **现象**：`RibbonBar` 收到 `QEvent::LayoutRequest` 时会重跑一次 ribbon resize，
 所以一次操作可能触发不止一轮 resize。
@@ -46,15 +63,15 @@
 | :--- | :--- | :--- | :--- |
 | 1 | `RibbonGroup` **主动投递** | `ribbongroup.cpp:785` / `794` / `808` | `ActionAdded` / `ActionChanged` / `ActionRemoved` 三个分支各投一次，投给 `parentWidget()`（即 page）。源码注释写的是"group 的尺寸变了，要让 page 也调整"。**这是本库唯一的 `LayoutRequest` 生产者**，是有意设计 |
 | 2 | **Qt 自己投递** | 任意子部件的 `QWidget::updateGeometry()` → 投给它的 parent | `setLayout()`、`QLayout::invalidate()`、`addWidget` / `removeWidget`、`setSizePolicy`、样式与字体变化、子部件 show / hide、最小最大尺寸变化都会走到这里。本库既控制不了，也数不完 |
-| 3 | **三个消费者** | `RibbonBar::event`（`ribbonbar.cpp:1873`）、`RibbonPage::event`（`ribbonpage.cpp:767` → `updateItemGeometry()`）、`RibbonMainWindow::eventFilter`（`ribbonmainwindow.cpp:188` → `updateMinimumWidth()`） | 同一份事件有三个接收者。只有 `RibbonBar` 那处会"多跑一轮 resize"，而它**带 `m_layoutRequest` 闸门**（`ribbonbar.cpp:1902`，只在 corner widget 收到 `ShowToParent` / `MouseButtonRelease` 时置位），所以多花的轮次被限制在那一种情形里
+| 3 | **三个消费者** | `RibbonBar::event`（`ribbonbar.cpp:1834`）、`RibbonPage::event`（`ribbonpage.cpp:757` → `updateItemGeometry()`）、`RibbonMainWindow::eventFilter`（`ribbonmainwindow.cpp:189` → `updateMinimumWidth()`） | 同一份事件有三个接收者。只有 `RibbonBar` 那处会"多跑一轮 resize"，而它**带 `m_layoutRequest` 闸门**（读在 `ribbonbar.cpp:1847`，只在 corner widget 收到 `ShowToParent` / `MouseButtonRelease` 时于 `:1867` 置位），所以多花的轮次被限制在那一种情形里
 
 **为什么没继续做**：这是性能问题不是正确性问题，没有观察到的故障，也没有可测量的回归基线
 （离屏截图测试测的不是这个）。
 
-**要改变它需要什么**：触发条件已列清（上表）。下一步是把本库自己的投递点逐个过一遍：
-除上表第 1 类之外，`qxribbon` 里还有 **7 处** `QApplication::postEvent(this, new QResizeEvent(size(), size()))`
-（`ribbonbar.cpp` 的 1152 / 1195 / 1382 / 1480 / 1502 / 1565 / 1821，即 `resizeRibbon()` 的延迟投递）、
-**2 处**同步 `sendEvent(this, &resizeEvent)`（1585 / 1620），以及 `ribbongallery.cpp:184` 的同类投递。
+**要改变它需要什么**：触发条件已列清（上表）。除上表第 1 类之外，本库自己的投递点只剩两处：
+`RibbonBar::resizeRibbon()` 的**一处**排队投递（唯一的排队点；6 个内容入口 +
+`setQuickAccessBarPosition` / `setTabBarPosition` 都经它请求），以及 **2 处**同步
+`sendEvent(this, &resizeEvent)`（`ribbonbar.cpp:1546` / `1581`），外加 `ribbongallery.cpp:184` 的同类投递。
 要判断的是"能不能用 `LayoutRequest` 替掉其中某几个"，以及"替掉之后 resize 轮次是变多还是变少"。
 ⚠️ 这一步需要一份**真机事件日志**来对照（离屏测的不是这个），而且 `resizeRibbon()` 的延迟正是上面
 「RibbonBar 的 resize 是延迟的」那一条的来源——动它要连着那一条一起看。
@@ -62,6 +79,9 @@
 ---
 
 ## WpsLiteStyle 下按钮组短暂重叠（WpsLiteStyle button group overlap）
+
+> **（4.4 D1）已复核**：落点 `RibbonAppWindow::updateWindowFlags()` 仍在，成因未变
+> （它依赖上面「RibbonBar 的 resize 是延迟的」那一条）。结论不变：仍维持现状。
 
 **现象**：`WpsLiteStyle` 下，右侧按钮组与窗口按钮组会有一瞬间重叠。
 
@@ -77,6 +97,10 @@
 ---
 
 ## 定制数据没有草稿态（customization has no draft state）
+
+> **（4.4 D1）已复核**：`apply()` 的两处说明（代码里的 `NOTE` 与本条）逐句核对一致；
+> 它要变就是 API 层面的决定（加草稿态或摘掉 `apply()`），而 4.4 承诺不破坏 API。
+> 结论不变：仍维持现状。
 
 **现象**：`RibbonCustomizeDialog::apply()` 会把改动立刻写进 ribbon，但**不写文件**。
 "应用后直接关掉对话框、不保存"会丢掉这次改动；更麻烦的是：
@@ -328,6 +352,10 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 ---
 
 ## 自定义 QToolButton 应用按钮按下会下沉（custom QToolButton application button sinks on press）
+
+> **（4.4 D1）已复核**：demo 里的引用（`demos/qxapp/ribbondemo` 的 `QXRIBBON_TEST_CUSTOMIZE_APPBTN`
+> 分支）仍在，成因未变——是 `QToolButton` 的标准按下视觉，库不该替调用方的控件定样式。
+> 结论不变：仍维持现状。
 
 **现象**：用调用方自己提供的 `QToolButton` 当 ribbon 应用按钮时，单击（按下）按钮内容会下沉，
 与 ribbon 自带的 `RibbonApplicationButton` 观感不同。
