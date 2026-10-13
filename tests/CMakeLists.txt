@@ -167,6 +167,44 @@ add_qtc_test(tst_qxwindow
         ${QXWINDOW_TEST_SOURCES}
 )
 
+# ------------------------------------------------------- qxwindow (native) --
+# The Windows window procedure, reached through a real window. This is a target
+# of its own rather than a file in tst_qxwindow above, because it has to run
+# under QT_QPA_PLATFORM=windows while every other suite has to stay on offscreen.
+#
+# With the platform it does not want, every case skips, so an ordinary offscreen
+# pass reports it as a no-op instead of a failure - and the CI job that runs it
+# natively (a non-gating step, see ci.yml) is what actually exercises it. Only
+# WIN32: there is no window procedure anywhere else.
+#
+# QX_WINDOW_ENABLE_SYSTEM_BORDERS is passed on rather than re-derived: it tells
+# the cases which of the two frame shapes to expect, and the only authority on
+# that is the option the library itself was built with (see
+# src/libs/qxwindow/CMakeLists.txt). Guessing it from the Windows version instead
+# would let the two drift apart silently.
+if (WIN32)
+  set(QXWINDOW_NATIVE_TEST_DEFINES)
+  if (QX_WINDOW_CONFIG_SYSTEM_BORDERS)
+    list(APPEND QXWINDOW_NATIVE_TEST_DEFINES QX_WINDOW_ENABLE_SYSTEM_BORDERS)
+  endif()
+
+  file(GLOB QXWINDOW_NATIVE_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxwindow/native/tst_*.cpp")
+  add_qtc_test(tst_qxwindow_native
+      DEPENDS qxwindow
+      DEFINES ${QXWINDOW_NATIVE_TEST_DEFINES}
+      INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+      SOURCES
+          "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+          "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+          "${QTCANPOOL_TESTS_DIR}/qxwindow/native/main.cpp"
+          ${QXWINDOW_NATIVE_TEST_SOURCES}
+  )
+  set_tests_properties(tst_qxwindow_native PROPERTIES
+      LABELS native
+      TIMEOUT 120
+  )
+endif()
+
 # ------------------------------------------------------------- deprecated --
 # The QX_<LIB>_DEPRECATED_SINCE gate every library carries in its *_global.h. It
 # is header-only, so this suite links nothing but QtCore and reads all seven
