@@ -115,6 +115,9 @@ public:
     void resizeStackedWidget();
     void resizeRibbon();
 
+    void layoutTabBar(int x, int y, int allowedTabBarWidth, int tabH);
+    void placeCornerWidget(QWidget *corner, int x, int y, int centredHeight, int stretchedHeight);
+
     int minimumWidthInOfficeStyle() const;
     int minimumWidthInWpsLiteStyle() const;
 

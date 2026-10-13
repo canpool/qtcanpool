@@ -599,13 +599,7 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     // |cornerL|m_quickAccessBar|m_topLeftButtonGroup|~~~~~
     QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
     if (cornerL && cornerL->isVisible()) {
-        QSize cornerSize = cornerL->sizeHint();
-        if (cornerSize.height() < validTitleBarHeight) {
-            int detal = (validTitleBarHeight - cornerSize.height()) / 2;
-            cornerL->setGeometry(x, y + detal, cornerSize.width(), cornerSize.height());
-        } else {
-            cornerL->setGeometry(x, y, cornerSize.width(), validTitleBarHeight);
-        }
+        placeCornerWidget(cornerL, x, y, validTitleBarHeight, validTitleBarHeight);
         x = cornerL->geometry().right() + 5;
     }
     if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
@@ -641,14 +635,8 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     endX = q->width() - border.right();
     QWidget *cornerW = q->cornerWidget(Qt::TopRightCorner);
     if (cornerW && cornerW->isVisible()) {
-        QSize cornerSize = cornerW->sizeHint();
-        endX -= cornerSize.width();
-        if (cornerSize.height() < tabH) {
-            int detal = (tabH - cornerSize.height()) / 2;
-            cornerW->setGeometry(endX, y + detal, cornerSize.width(), cornerSize.height());
-        } else {
-            cornerW->setGeometry(endX, y, cornerSize.width(), otherH);
-        }
+        endX -= cornerW->sizeHint().width();
+        placeCornerWidget(cornerW, endX, y, tabH, otherH);
     }
     if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
@@ -660,20 +648,7 @@ void RibbonBarPrivate::resizeInOfficeStyle()
         endX -= wSize.width();
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
-    int allowedTabBarWidth = endX - x;
-    int minTabBarWidth = calcMinTabBarWidth();
-    if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
-        m_tabBar->setGeometry(x, y, qMin(minTabBarWidth, allowedTabBarWidth), tabH);
-    } else {   // RibbonBar::TBCenterPosition
-        if (minTabBarWidth < allowedTabBarWidth) {
-            // |~~~~~~~~~~~~~~~~~~ allowedTabBarWidth ~~~~~~~~~~~~~~|
-            // |~~ xOffset ~~|~~~~ mintabBarWidth ~~~~|~~ xOffset ~~|
-            int xOffset = (allowedTabBarWidth - minTabBarWidth) / 2;
-            m_tabBar->setGeometry(x + xOffset, y, minTabBarWidth, tabH);
-        } else {
-            m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
-        }
-    }
+    layoutTabBar(x, y, endX - x, tabH);
 
     resizeStackedWidget();
 }
@@ -698,14 +673,8 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     }
     QWidget *cornerR = q->cornerWidget(Qt::TopRightCorner);
     if (cornerR && cornerR->isVisible()) {
-        QSize cornerSize = cornerR->sizeHint();
-        endX -= cornerSize.width();
-        if (cornerSize.height() < validTitleBarHeight) {
-            int detal = (validTitleBarHeight - cornerSize.height()) / 2;
-            cornerR->setGeometry(endX, y + detal, cornerSize.width(), cornerSize.height());
-        } else {
-            cornerR->setGeometry(endX, y, cornerSize.width(), validTitleBarHeight);
-        }
+        endX -= cornerR->sizeHint().width();
+        placeCornerWidget(cornerR, endX, y, validTitleBarHeight, validTitleBarHeight);
     }
     if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
@@ -731,14 +700,8 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     // ~~~~|cornerL|<m_quickAccessBar>|m_bottomLeftButtonGroup|~~~~~
     QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
     if (cornerL && cornerL->isVisible()) {
-        QSize cornerSize = cornerL->sizeHint();
-        endX -= cornerSize.width();
-        if (cornerSize.height() < validTitleBarHeight) {
-            int detal = (validTitleBarHeight - cornerSize.height()) / 2;
-            cornerL->setGeometry(endX, y + detal, cornerSize.width(), cornerSize.height());
-        } else {
-            cornerL->setGeometry(endX, y, cornerSize.width(), validTitleBarHeight);
-        }
+        endX -= cornerL->sizeHint().width();
+        placeCornerWidget(cornerL, endX, y, validTitleBarHeight, validTitleBarHeight);
     }
 
     // tab 的y值需要重新计算
@@ -765,12 +728,36 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), tabH);
         x = m_topLeftButtonGroup->geometry().right() + 2;
     }
-    int allowedTabBarWidth = endX - x - dragAreaMinimumWidth;
     // 20200831
     // tabBarWidth的宽度原来为endX - x;，现需要根据实际进行调整
     // 为了把tabbar没有tab的部分不占用，这里的宽度需要根据tab的size来进行设置，让tabbar的长度刚刚好，这样能让出
     // mainwindow的空间，接受鼠标事件，从而实现拖动等操作，否则tabbar占用整个顶栏，鼠标无法点击到mainwindow
-    int minTabBarWidth = calcMinTabBarWidth();
+    layoutTabBar(x, y, endX - x - dragAreaMinimumWidth, tabH);
+
+    resizeStackedWidget();
+}
+
+/**
+ * @brief 把 corner widget 放进一条水平带：装得下就垂直居中，装不下就撑满
+ * @param centredHeight 居中参照的高度
+ * @param stretchedHeight 控件高于参照高度时采用的高度
+ */
+void RibbonBarPrivate::placeCornerWidget(QWidget *corner, int x, int y, int centredHeight, int stretchedHeight)
+{
+    const QSize cornerSize = corner->sizeHint();
+    if (cornerSize.height() < centredHeight) {
+        corner->setGeometry(x, y + (centredHeight - cornerSize.height()) / 2, cornerSize.width(), cornerSize.height());
+    } else {
+        corner->setGeometry(x, y, cornerSize.width(), stretchedHeight);
+    }
+}
+
+/**
+ * @brief 按 tab bar 位置（左对齐/居中）在剩余宽度里摆放 tab bar
+ */
+void RibbonBarPrivate::layoutTabBar(int x, int y, int allowedTabBarWidth, int tabH)
+{
+    const int minTabBarWidth = calcMinTabBarWidth();
     if (m_tabBarPosition == RibbonBar::TBLeftPosition) {
         m_tabBar->setGeometry(x, y, qMin(minTabBarWidth, allowedTabBarWidth), tabH);
     } else {   // RibbonBar::TBCenterPosition
@@ -783,8 +770,6 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
             m_tabBar->setGeometry(x, y, allowedTabBarWidth, tabH);
         }
     }
-
-    resizeStackedWidget();
 }
 
 void RibbonBarPrivate::resizeStackedWidget()
