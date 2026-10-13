@@ -414,17 +414,7 @@ void DockFloatingPreview::paintEvent(QPaintEvent *e)
     // If we do not have a window frame then we paint a QRubberBand like
     // frameless window
     if (!DockManager::testConfigFlag(DockManager::DragPreviewHasWindowFrame)) {
-        QColor color = palette().color(QPalette::Active, QPalette::Highlight);
-        QPen pen = painter.pen();
-        pen.setColor(color.darker(120));
-        pen.setStyle(Qt::SolidLine);
-        pen.setWidth(1);
-        pen.setCosmetic(true);
-        painter.setPen(pen);
-        color = color.lighter(130);
-        color.setAlpha(64);
-        painter.setBrush(color);
-        painter.drawRect(rect().adjusted(0, 0, -1, -1));
+        internal::drawHighlightFrame(painter, rect(), palette());
     }
 }
 

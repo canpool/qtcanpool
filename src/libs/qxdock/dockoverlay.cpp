@@ -311,17 +311,7 @@ void DockOverlay::paintEvent(QPaintEvent *e)
     }
 
     QPainter painter(this);
-    QColor color = palette().color(QPalette::Active, QPalette::Highlight);
-    QPen pen = painter.pen();
-    pen.setColor(color.darker(120));
-    pen.setStyle(Qt::SolidLine);
-    pen.setWidth(1);
-    pen.setCosmetic(true);
-    painter.setPen(pen);
-    color = color.lighter(130);
-    color.setAlpha(64);
-    painter.setBrush(color);
-    painter.drawRect(r.adjusted(0, 0, -1, -1));
+    internal::drawHighlightFrame(painter, r, palette());
 
     d->m_dropAreaRect = r;
 }

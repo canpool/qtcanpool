@@ -24,6 +24,7 @@
 #define QX_DOCK_PRINT(s)
 #endif
 
+class QPainter;
 class QSplitter;
 
 QX_DOCK_BEGIN_NAMESPACE
@@ -129,6 +130,14 @@ enum RepolishChildOptions {
  * stylesheet if a property changes
  */
 void repolishStyle(QWidget *w, RepolishChildOptions options = RepolishIgnoreChildren);
+
+/**
+ * Paints the translucent highlight frame that marks an area a dock widget would
+ * occupy. The dock overlay draws it around the drop area it is offering and the
+ * drag preview draws it as the border of a frameless preview window, so the
+ * recipe lives in one place.
+ */
+void drawHighlightFrame(QPainter &painter, const QRect &rect, const QPalette &palette);
 
 #if QX_DOCK_X11
 // Utils to directly communicate with the X server

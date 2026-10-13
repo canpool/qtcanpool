@@ -49,6 +49,28 @@ QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity)
 }
 
 /**
+ * Paints the translucent highlight frame that marks an area a dock widget would
+ * occupy: a pen a little darker than the highlight for the outline, and a brush
+ * a little lighter and translucent for the fill. The dock overlay frames the
+ * drop area it offers with it and the drag preview frames a frameless preview
+ * window, so the whole recipe is stated once.
+ */
+void drawHighlightFrame(QPainter &painter, const QRect &rect, const QPalette &palette)
+{
+    QColor color = palette.color(QPalette::Active, QPalette::Highlight);
+    QPen pen = painter.pen();
+    pen.setColor(color.darker(120));
+    pen.setStyle(Qt::SolidLine);
+    pen.setWidth(1);
+    pen.setCosmetic(true);
+    painter.setPen(pen);
+    color = color.lighter(130);
+    color.setAlpha(64);
+    painter.setBrush(color);
+    painter.drawRect(rect.adjusted(0, 0, -1, -1));
+}
+
+/**
  * Helper function to set the icon of a certain button.
  * Use this function to set the icons for the dock area and dock widget buttons.
  * The function first uses the CustomIconId to get an icon from the
