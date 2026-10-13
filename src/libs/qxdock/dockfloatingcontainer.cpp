@@ -60,7 +60,6 @@ public:
     DockPanel *m_singlePanel = nullptr;
     QPoint m_dragStartMousePosition;
     Qx::DockDragState m_draggingState = Qx::DockDraggingInactive;
-    QPoint m_dragStartPos;
     bool m_hiding = false;
     bool m_autoHideChildren = true;
     unsigned int m_zOrderIndex = ++s_zOrderCounterFloating;
@@ -801,7 +800,6 @@ bool DockFloatingContainer::event(QEvent *e)
 #endif
         {
             QX_DOCK_PRINT("FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type());
-            d->m_dragStartPos = pos();
             d->setState(Qx::DockDraggingMousePressed);
         }
     } break;
@@ -932,7 +930,6 @@ bool DockFloatingContainer::nativeEvent(const QByteArray &eventType, void *messa
 
     case WM_NCLBUTTONDOWN:
         if (msg->wParam == HTCAPTION && d->isState(Qx::DockDraggingInactive)) {
-            d->m_dragStartPos = pos();
             d->setState(Qx::DockDraggingMousePressed);
         }
         break;

@@ -15,6 +15,17 @@ Bugfix
   for a caller to take it back, and showDockWidget() rebuilds it from the widget
   factory. Closing such a widget dereferenced a null pointer.
 
+Cleanup
+- Remove three private fields that were maintained but never read: the container's
+  cached visible panel count (visibleDockPanelCount() counts on demand), the flag
+  recording whether the pending auto hide timer meant show or hide (the timer
+  simulates a press on the tab either way, so the answer never reached anything),
+  and the floating container's drag start position (dragging is driven by the
+  mouse position captured when the drag starts).
+- The title bar's context menu asked whether the panel is auto hidden inside the
+  branch where that is already known to be false, so one of the two labels it
+  offered could never be shown. The menu still reads the same; the dead arm is gone.
+
 0.2.1
 ---
 Cleanup

@@ -114,8 +114,6 @@ public:
     QList<DockAutoHideContainer *> m_autoHideWidgets;
     DockSideTab *m_delayedAutoHideTab;
     QTimer m_delayedAutoHideTimer;
-    bool m_delayedAutoHideShow = false;
-    int m_visibleDockPanelCount = -1;
 };
 
 DockContainerPrivate::DockContainerPrivate()
@@ -254,7 +252,6 @@ void DockContainerPrivate::onDockAreaViewToggled(bool visible)
 {
     Q_Q(DockContainer);
     DockPanel *panel = qobject_cast<DockPanel *>(q->sender());
-    m_visibleDockPanelCount += visible ? 1 : -1;
     onVisibleDockAreaCountChanged();
     Q_EMIT q->dockAreaViewToggled(panel, visible);
 }
@@ -1543,7 +1540,6 @@ void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
         case QEvent::Enter:
             if (!autoHideTab->dockWidget()->isVisible()) {
                 d->m_delayedAutoHideTab = autoHideTab;
-                d->m_delayedAutoHideShow = true;
                 d->m_delayedAutoHideTimer.start();
             } else {
                 d->m_delayedAutoHideTimer.stop();
@@ -1557,7 +1553,6 @@ void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
         case QEvent::Leave:
             if (autoHideTab->dockWidget()->isVisible()) {
                 d->m_delayedAutoHideTab = autoHideTab;
-                d->m_delayedAutoHideShow = false;
                 d->m_delayedAutoHideTimer.start();
             } else {
                 d->m_delayedAutoHideTimer.stop();
@@ -1581,7 +1576,6 @@ void DockContainer::handleAutoHideWidgetEvent(QEvent *e, QWidget *w)
         case QEvent::Leave:
             if (autoHideContainer->isVisible()) {
                 d->m_delayedAutoHideTab = autoHideContainer->autoHideTab();
-                d->m_delayedAutoHideShow = false;
                 d->m_delayedAutoHideTimer.start();
             }
             break;
@@ -1615,7 +1609,6 @@ bool DockContainer::restoreState(DockStateReader &s, bool testing)
 
     QWidget *newRootSplitter{};
     if (!testing) {
-        d->m_visibleDockPanelCount = -1;   // invalidate the dock area count
         d->m_panels.clear();
         std::fill(std::begin(d->m_lastAddedPanelCache), std::end(d->m_lastAddedPanelCache), nullptr);
     }

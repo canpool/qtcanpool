@@ -441,6 +441,9 @@ void DockTitleBar::updateDockWidgetActionsButtons()
     if (actions.isEmpty()) {
         return;
     }
+    // The id below is inert for these buttons: TitleBarButton::event() reads m_id
+    // only when m_hideWhenDisabled is set, and these are built with it unset.
+    // DockTitleBarButton is part of the public API, so no id can be added for them.
     int insertIndex = indexOf(d->m_tabsMenuButton);
     for (auto a : actions) {
         auto btn = new TitleBarButton(true, false, Qx::TitleBarButtonTabsMenu, this);
@@ -814,7 +817,7 @@ void DockTitleBar::contextMenuEvent(QContextMenuEvent *e)
         action = menu.addAction(tr("Minimize"), this, SLOT(minimizeAutoHideContainer()));
         action = menu.addAction(tr("Close"), this, SLOT(onAutoHideCloseActionTriggered()));
     } else {
-        action = menu.addAction(isAutoHide ? tr("Close") : tr("Close Group"), this, SLOT(onCloseButtonClicked()));
+        action = menu.addAction(tr("Close Group"), this, SLOT(onCloseButtonClicked()));
     }
 
     action->setEnabled(d->m_panel->features().testFlag(DockWidget::DockWidgetClosable));
