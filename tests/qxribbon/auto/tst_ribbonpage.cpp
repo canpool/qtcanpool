@@ -5,6 +5,9 @@
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpagecontext.h"
 
+#include <QAction>
+#include <QToolButton>
+
 QX_RIBBON_USE_NAMESPACE
 
 class tst_RibbonPage : public QObject
@@ -13,6 +16,7 @@ class tst_RibbonPage : public QObject
 private slots:
     void page();
     void group();
+    void scroll();
     void clear();
 };
 
@@ -131,6 +135,85 @@ void tst_RibbonPage::group()
 
     QCOMPARE(false, page->removeGroup(-1));
     QCOMPARE(false, page->removeGroup(10));
+}
+
+void tst_RibbonPage::scroll()
+{
+    RibbonBar rb;
+
+    RibbonPage *page = rb.addPage(tr("page"));
+    // Content has to overflow the page by more than one page, otherwise a single
+    // step cannot be told apart from the clamp at either end.
+    for (int i = 0; i < 16; ++i) {
+        RibbonGroup *group = page->addGroup(QStringLiteral("group%1").arg(i));
+        group->addLargeAction(new QAction(QStringLiteral("action%1").arg(i), &rb));
+    }
+    page->resize(120, 80);
+
+    // The two scroll buttons belong to RibbonPagePrivate, whose class is not
+    // exported, so they are collected as plain QToolButtons and told apart by
+    // the arrow only they set.
+    QToolButton *left = nullptr;
+    QToolButton *right = nullptr;
+    int leftCount = 0;
+    int rightCount = 0;
+    for (QToolButton *button : page->findChildren<QToolButton *>()) {
+        if (button->arrowType() == Qt::LeftArrow) {
+            left = button;
+            ++leftCount;
+        } else if (button->arrowType() == Qt::RightArrow) {
+            right = button;
+            ++rightCount;
+        }
+    }
+    QCOMPARE(leftCount, 1);
+    QCOMPARE(rightCount, 1);
+
+    RibbonGroup *first = page->group(0);
+    RibbonGroup *last = page->group(page->groupCount() - 1);
+
+    // The content has to overflow by more than one page, otherwise a single
+    // step cannot be told apart from the clamp at either end.
+    QVERIFY2(
+        last->geometry().right() > 3 * page->width(),
+        qPrintable(
+            QStringLiteral("content spans %1 in a %2 wide page").arg(last->geometry().right()).arg(page->width())));
+
+    // At the left edge only the button that scrolls away from it is offered.
+    QVERIFY(!right->isHidden());
+    QVERIFY(left->isHidden());
+
+    const int origin = first->x();
+
+    // One right click moves the content left by exactly one page: the step is
+    // read off the behaviour rather than hard-coded, because its pixel size
+    // depends on the font.
+    right->click();
+    const int step = origin - first->x();
+    QVERIFY(step > 0);
+    right->click();
+    QCOMPARE(first->x(), origin - 2 * step);
+
+    // The right clamp holds: the left button appears and further clicks stop
+    // moving the content.
+    for (int i = 0; i < 40; ++i) {
+        right->click();
+    }
+    QVERIFY(!left->isHidden());
+    const int rightmost = first->x();
+    QVERIFY(rightmost <= origin - 2 * step);
+    right->click();
+    QCOMPARE(first->x(), rightmost);
+
+    // The left clamp holds too, and lands back on the margin rather than
+    // overshooting it by a page.
+    for (int i = 0; i < 40; ++i) {
+        left->click();
+    }
+    QCOMPARE(first->x(), origin);
+    QVERIFY(left->isHidden());
+    left->click();
+    QCOMPARE(first->x(), origin);
 }
 
 void tst_RibbonPage::clear()
