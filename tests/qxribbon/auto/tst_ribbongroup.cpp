@@ -7,6 +7,7 @@
 #include "qxribbon/ribbongallery.h"
 
 #include <QAction>
+#include <QLayout>
 #include <QMenu>
 #include <QWidget>
 #include <QWidgetAction>
@@ -22,6 +23,7 @@ private slots:
     void mode();
     void expanding();
     void height();
+    void layoutGeometry();
     void action();
     void menu();
     void widget();
@@ -140,6 +142,68 @@ void tst_RibbonGroup::height()
     QCOMPARE(grp.titleVisible(), false);
     QCOMPARE(grp.titleHeight(), 0);
     QCOMPARE(grp.largeHeight(), grpHeight);
+}
+
+/*!
+ * Characterisation of the layout engine (RibbonGroupLayout::updateGeomArray).
+ *
+ * The engine walks the items and assigns each one a (row, column) slot: a Large
+ * item takes a column of its own, two Medium items share one column and stack,
+ * and a Small item starts a fresh column when its rows are used up. None of that
+ * is observable through the class itself (RibbonGroupLayout is not exported), but
+ * the widget geometries it produces are - so the assertions below lock the shape
+ * (which items share a column, how they stack, that columns advance), not the
+ * exact pixels, which depend on the font.
+ *
+ * Both layout modes are checked: the engine's two-row handling of Medium has to
+ * stay equivalent to its three-row one.
+ */
+void tst_RibbonGroup::layoutGeometry()
+{
+    // title visibility is process-wide; pin it so the run order cannot matter
+    RibbonGroup::setTitleVisible(true);
+
+    RibbonBar rb;
+    RibbonPage *page = rb.addPage(tr("page"));
+    RibbonGroup *grp = page->addGroup(tr("group"));
+
+    RibbonButton *large = grp->addLargeAction(new QAction(tr("large")));
+    RibbonButton *mid1 = grp->addMediumAction(new QAction(tr("mid1")));
+    RibbonButton *mid2 = grp->addMediumAction(new QAction(tr("mid2")));
+    RibbonButton *small1 = grp->addSmallAction(new QAction(tr("small1")));
+
+    auto relayout = [grp]() {
+        grp->resize(800, 120);
+        grp->layout()->activate();
+    };
+
+    auto checkShape = [&](const char *mode) {
+        // Every item ends up somewhere inside the group.
+        for (RibbonButton *button : grp->ribbonButtons()) {
+            QVERIFY2(grp->rect().contains(button->geometry()),
+                     qPrintable(QStringLiteral("%1: a button fell outside the group").arg(mode)));
+        }
+        // A Large item fills the full large height.
+        QCOMPARE(large->height(), grp->largeHeight());
+        // The Large item owns its column, so the Mediums sit in a later one...
+        QVERIFY2(mid1->x() > large->x(), qPrintable(QStringLiteral("%1: Medium did not follow Large").arg(mode)));
+        // ... and share it, stacked one above the other.
+        QCOMPARE(mid1->x(), mid2->x());
+        QVERIFY2(mid2->y() > mid1->y(), qPrintable(QStringLiteral("%1: Mediums did not stack").arg(mode)));
+        // The Small item starts a new column.
+        QVERIFY2(small1->x() > mid1->x(), qPrintable(QStringLiteral("%1: Small did not advance").arg(mode)));
+    };
+
+    // Three-row mode (the default).
+    QCOMPARE(grp->groupLayoutMode(), RibbonGroup::ThreeRowMode);
+    relayout();
+    checkShape("three-row");
+
+    // Two-row mode must lay out the same sequence the same way.
+    rb.setRibbonStyle(RibbonBar::OfficeStyleTwoRow);
+    QCOMPARE(grp->groupLayoutMode(), RibbonGroup::TwoRowMode);
+    relayout();
+    checkShape("two-row");
 }
 
 void tst_RibbonGroup::action()
