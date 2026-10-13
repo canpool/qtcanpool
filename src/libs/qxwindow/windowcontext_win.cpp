@@ -31,7 +31,7 @@ QX_WINDOW_BEGIN_NAMESPACE
 // The thickness of an auto-hide taskbar in pixels.
 static constexpr const quint8 kAutoHideTaskBarThickness = 2;
 
-QWK_USED static constexpr const struct {
+QXWINDOW_USED static constexpr const struct {
     const uint32_t activeLight = MAKE_RGBA_COLOR(110, 110, 110, 255);     // #6E6E6E
     const uint32_t activeDark = MAKE_RGBA_COLOR(51, 51, 51, 255);         // #333333
     const uint32_t inactiveLight = MAKE_RGBA_COLOR(167, 167, 167, 255);   // #A7A7A7
@@ -969,7 +969,7 @@ bool WindowContextWin::windowAttributeChanged(const QString &key, const QVariant
     return false;
 }
 
-QWK_USED static constexpr const struct {
+QXWINDOW_USED static constexpr const struct {
     const WPARAM wParam = MAKEWPARAM(44500, 61897);
     const LPARAM lParam = MAKELPARAM(62662, 44982);   // Not used. Reserve for future use.
 } kMessageTag;

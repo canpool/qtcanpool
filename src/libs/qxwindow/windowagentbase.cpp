@@ -7,7 +7,7 @@
 #include "windowagentbase_p.h"
 #include "windowcontext_p.h"
 
-Q_LOGGING_CATEGORY(qWindowKitLog, "qwindowkit")
+Q_LOGGING_CATEGORY(qxWindowLog, "qxwindow")
 
 QX_WINDOW_BEGIN_NAMESPACE
 

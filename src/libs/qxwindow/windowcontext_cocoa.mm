@@ -29,7 +29,7 @@ Q_GLOBAL_STATIC(ProxyList2, g_proxyIndexes);
 
 QX_WINDOW_END_NAMESPACE
 
-struct QWK_NSWindowDelegate {
+struct QXWINDOW_NSWindowDelegate {
 public:
     enum NSEventType {
         WillEnterFullScreen,
@@ -39,7 +39,7 @@ public:
         DidResize,
     };
 
-    virtual ~QWK_NSWindowDelegate() = default;
+    virtual ~QXWINDOW_NSWindowDelegate() = default;
     virtual void windowEvent(NSEventType eventType) = 0;
 };
 
@@ -47,11 +47,11 @@ public:
 // Objective C++ Begin
 //
 
-@interface QWK_NSWindowObserver : NSObject {
+@interface QXWINDOW_NSWindowObserver : NSObject {
 }
 @end
 
-@implementation QWK_NSWindowObserver
+@implementation QXWINDOW_NSWindowObserver
 
 - (id)init {
     self = [super init];
@@ -88,40 +88,40 @@ public:
 - (void)windowWillEnterFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
     if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
-        reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
-            QWK_NSWindowDelegate::WillEnterFullScreen);
+        reinterpret_cast<QXWINDOW_NSWindowDelegate *>(proxy)->windowEvent(
+            QXWINDOW_NSWindowDelegate::WillEnterFullScreen);
     }
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
     if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
-        reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
-            QWK_NSWindowDelegate::DidEnterFullScreen);
+        reinterpret_cast<QXWINDOW_NSWindowDelegate *>(proxy)->windowEvent(
+            QXWINDOW_NSWindowDelegate::DidEnterFullScreen);
     }
 }
 
 - (void)windowWillExitFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
     if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
-        reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
-            QWK_NSWindowDelegate::WillExitFullScreen);
+        reinterpret_cast<QXWINDOW_NSWindowDelegate *>(proxy)->windowEvent(
+            QXWINDOW_NSWindowDelegate::WillExitFullScreen);
     }
 }
 
 - (void)windowDidExitFullScreen:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
     if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
-        reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
-            QWK_NSWindowDelegate::DidExitFullScreen);
+        reinterpret_cast<QXWINDOW_NSWindowDelegate *>(proxy)->windowEvent(
+            QXWINDOW_NSWindowDelegate::DidExitFullScreen);
     }
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
     auto nswindow = reinterpret_cast<NSWindow *>(notification.object);
     if (auto proxy = QX_WINDOW_PREPEND_NAMESPACE(g_proxyIndexes)->value(nswindow)) {
-        reinterpret_cast<QWK_NSWindowDelegate *>(proxy)->windowEvent(
-            QWK_NSWindowDelegate::DidResize);
+        reinterpret_cast<QXWINDOW_NSWindowDelegate *>(proxy)->windowEvent(
+            QXWINDOW_NSWindowDelegate::DidResize);
     }
 }
 
@@ -133,7 +133,7 @@ public:
 
 QX_WINDOW_BEGIN_NAMESPACE
 
-struct NSWindowProxy : public QWK_NSWindowDelegate {
+struct NSWindowProxy : public QXWINDOW_NSWindowDelegate {
     enum class BlurMode {
         Dark,
         Light,
@@ -363,7 +363,7 @@ struct NSWindowProxy : public QWK_NSWindowDelegate {
             method_setImplementation(method, reinterpret_cast<IMP>(sendEvent)));
 
         // Alloc
-        windowObserver = [[QWK_NSWindowObserver alloc] init];
+        windowObserver = [[QXWINDOW_NSWindowObserver alloc] init];
     }
 
     static void restoreImplementations() {
@@ -472,7 +472,7 @@ private:
     bool systemButtonVisible = true;
     ScreenRectCallback screenRectCallback;
 
-    static inline QWK_NSWindowObserver *windowObserver = nil;
+    static inline QXWINDOW_NSWindowObserver *windowObserver = nil;
 
     // NSEvent *lastMouseDownEvent = nil;
 

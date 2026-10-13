@@ -16,8 +16,8 @@ QX_WINDOW_BEGIN_NAMESPACE
 // geometry: macOS has no resize cursor at all, and elsewhere a window that is not
 // in the windowed state (full screen, hidden) is not resized from its border. The
 // latter is one rule, so it is asked once.
-// (QWK_USED: on macOS nothing calls it.)
-QWK_USED static inline bool hasResizeHandles(const QWindow *window)
+// (QXWINDOW_USED: on macOS nothing calls it.)
+QXWINDOW_USED static inline bool hasResizeHandles(const QWindow *window)
 {
     Q_ASSERT(window);
     return window && window->visibility() == QWindow::Windowed;

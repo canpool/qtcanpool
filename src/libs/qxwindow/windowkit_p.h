@@ -19,14 +19,14 @@
 #include <QtCore/QObject>
 #include <QtGui/QMouseEvent>
 
-Q_DECLARE_LOGGING_CATEGORY(qWindowKitLog)
+Q_DECLARE_LOGGING_CATEGORY(qxWindowLog)
 
-#define QWK_INFO     qCInfo(qWindowKitLog) << "INFO:"
-#define QWK_DEBUG    qCDebug(qWindowKitLog) << "DEBUG:"
-#define QWK_WARNING  qCWarning(qWindowKitLog) << "WARNING:"
-#define QWK_CRITICAL qCCritical(qWindowKitLog) << "CRITICAL:"
+#define QXWINDOW_INFO     qCInfo(qxWindowLog) << "INFO:"
+#define QXWINDOW_DEBUG    qCDebug(qxWindowLog) << "DEBUG:"
+#define QXWINDOW_WARNING  qCWarning(qxWindowLog) << "WARNING:"
+#define QXWINDOW_CRITICAL qCCritical(qxWindowLog) << "CRITICAL:"
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-#define QWK_FATAL qCFatal(qWindowKitLog) << "FATAL:"
+#define QXWINDOW_FATAL qCFatal(qxWindowLog) << "FATAL:"
 #endif
 
 #define MAKE_RGB_COLOR(r, g, b) ((quint32)(((r) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((b) & 0xFF))
@@ -35,13 +35,13 @@ Q_DECLARE_LOGGING_CATEGORY(qWindowKitLog)
     ((quint32)(((a) & 0xFF) << 24) | (((r) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((b) & 0xFF))
 
 #if defined(Q_CC_MSVC)
-#define QWK_NOINLINE __declspec(noinline)
-#define QWK_INLINE   __forceinline
-#define QWK_USED
+#define QXWINDOW_NOINLINE __declspec(noinline)
+#define QXWINDOW_INLINE   __forceinline
+#define QXWINDOW_USED
 #else
-#define QWK_NOINLINE __attribute__((noinline))
-#define QWK_INLINE   __attribute__((always_inline))
-#define QWK_USED     __attribute__((used))
+#define QXWINDOW_NOINLINE __attribute__((noinline))
+#define QXWINDOW_INLINE   __attribute__((always_inline))
+#define QXWINDOW_USED     __attribute__((used))
 #endif
 
 QX_WINDOW_BEGIN_NAMESPACE

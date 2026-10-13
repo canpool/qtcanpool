@@ -53,7 +53,7 @@ bool WindowAgentWidget::setup(QWidget *w)
 
     Q_D(WindowAgentWidget);
     if (d->m_hostWidget) {
-        QWK_WARNING << "This window agent has already agent other widget";
+        QXWINDOW_WARNING << "This window agent has already agent other widget";
         return false;
     }
 

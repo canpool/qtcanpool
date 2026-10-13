@@ -1,3 +1,13 @@
+Unreleased
+---
+Cleanup
+- Unify the internal prefix. The log category is now "qxwindow" (was
+  "qwindowkit") and the log / attribute macros in the private headers are
+  QXWINDOW_* (was QWK_*), with the cocoa delegate and observer types following.
+  Only the category name is observable - use QT_LOGGING_RULES=qxwindow.*=true
+  in place of qwindowkit.*. The macros were private to windowkit_p.h and are
+  unchanged in effect.
+
 0.3.0
 ---
 Interface
