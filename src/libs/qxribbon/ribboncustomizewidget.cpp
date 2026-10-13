@@ -1425,7 +1425,7 @@ void RibbonCustomizeWidget::onToolButtonDownClicked()
         }
         QString key = d->m_actionMgr->key(act);
         RibbonCustomizeData data = RibbonCustomizeData::makeChangeActionOrderCustomizeData(
-            d->itemObjectName(pageItem), d->itemObjectName(groupItem), key, d->m_actionMgr, -1);
+            d->itemObjectName(pageItem), d->itemObjectName(groupItem), key, d->m_actionMgr, 1);
         d->m_customizeDatas.append(data);
         int r = item->row();
         item = groupItem->takeChild(r);

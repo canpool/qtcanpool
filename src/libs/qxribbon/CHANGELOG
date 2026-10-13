@@ -1,6 +1,11 @@
 Unreleased
 ---
 Bugfix
+- RibbonCustomizeWidget recorded a "move down" on an action as a "move up": the
+  action branch handed -1 to makeChangeActionOrderCustomizeData(), and on that
+  function -1 means up while 1 means down - which is what the page and group
+  branches pass. apply() moves the action to idx + indexValue, so the recorded
+  change moved it the wrong way.
 - The ribbon bar named its tab bar twice, so the second name clobbered the first:
   the tab bar ended up called "qx_RibbonStackedWidget" and the stacked widget had
   no name at all. The stacked widget now carries that name and the tab bar keeps
