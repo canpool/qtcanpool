@@ -1338,85 +1338,54 @@ void RibbonCustomizeWidget::onTreeViewResultClicked(const QModelIndex &index)
 
 void RibbonCustomizeWidget::onToolButtonUpClicked()
 {
-    QStandardItem *item = selectedItem();
-
-    if ((Q_NULLPTR == item) || (0 == item->row())) {
-        return;
-    }
-    int level = itemLevel(item);
-
-    if (0 == level) {
-        // 移动page
-        RibbonCustomizeData data = RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), -1);
-        d->m_customizeDatas.append(data);
-        int r = item->row();
-        item = d->m_ribbonModel->takeItem(r);
-        d->m_ribbonModel->removeRow(r);
-        d->m_ribbonModel->insertRow(r - 1, item);
-    } else if (1 == level) {
-        QStandardItem *paritem = item->parent();
-        RibbonCustomizeData data = RibbonCustomizeData::makeChangeGroupOrderCustomizeData(d->itemObjectName(paritem),
-                                                                                          d->itemObjectName(item), -1);
-        d->m_customizeDatas.append(data);
-        int r = item->row();
-        item = paritem->takeChild(r);
-        paritem->removeRow(r);
-        paritem->insertRow(r - 1, item);
-    } else if (2 == level) {
-        QStandardItem *groupItem = item->parent();
-        QStandardItem *pageItem = groupItem->parent();
-        QAction *act = itemToAction(item);
-        if (!act) {
-            return;
-        }
-        QString key = d->m_actionMgr->key(act);
-        RibbonCustomizeData data = RibbonCustomizeData::makeChangeActionOrderCustomizeData(
-            d->itemObjectName(pageItem), d->itemObjectName(groupItem), key, d->m_actionMgr, -1);
-        d->m_customizeDatas.append(data);
-        int r = item->row();
-        item = groupItem->takeChild(r);
-        groupItem->removeRow(r);
-        groupItem->insertRow(r - 1, item);
-    }
+    moveSelectedItem(-1);
 }
 
 void RibbonCustomizeWidget::onToolButtonDownClicked()
 {
+    moveSelectedItem(1);
+}
+
+/**
+ * @brief 上移/下移选中的item
+ * @param delta -1表示上移，1表示下移
+ * @note 两个方向只差一个符号：记录的顺序变更值，以及在父节点里的目标行(row + delta)
+ */
+void RibbonCustomizeWidget::moveSelectedItem(int delta)
+{
     QStandardItem *item = selectedItem();
 
-    if (item == Q_NULLPTR) {
+    if (Q_NULLPTR == item) {
         return;
     }
-    int count = 0;
+    const int row = item->row();
+    const int count = item->parent() ? item->parent()->rowCount() : d->m_ribbonModel->rowCount();
 
-    if (item->parent()) {
-        count = item->parent()->rowCount();
-    } else {
-        count = d->m_ribbonModel->rowCount();
-    }
-    if ((Q_NULLPTR == item) || ((count - 1) == item->row())) {
+    // 第一个不能再上移，最后一个不能再下移
+    if (((delta < 0) && (0 == row)) || ((delta > 0) && ((row + 1) >= count))) {
         return;
     }
-    int level = itemLevel(item);
+    const int level = itemLevel(item);
 
     if (0 == level) {
         // 移动page
-        RibbonCustomizeData data = RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), 1);
+        RibbonCustomizeData data =
+            RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), delta);
         d->m_customizeDatas.append(data);
-        int r = item->row();
-        item = d->m_ribbonModel->takeItem(item->row());
-        d->m_ribbonModel->removeRow(r);
-        d->m_ribbonModel->insertRow(r + 1, item);
+        item = d->m_ribbonModel->takeItem(row);
+        d->m_ribbonModel->removeRow(row);
+        d->m_ribbonModel->insertRow(row + delta, item);
     } else if (1 == level) {
+        // 移动group
         QStandardItem *paritem = item->parent();
-        RibbonCustomizeData data = RibbonCustomizeData::makeChangeGroupOrderCustomizeData(d->itemObjectName(paritem),
-                                                                                          d->itemObjectName(item), 1);
+        RibbonCustomizeData data = RibbonCustomizeData::makeChangeGroupOrderCustomizeData(
+            d->itemObjectName(paritem), d->itemObjectName(item), delta);
         d->m_customizeDatas.append(data);
-        int r = item->row();
-        item = paritem->takeChild(r);
-        paritem->removeRow(r);
-        paritem->insertRow(r + 1, item);
+        item = paritem->takeChild(row);
+        paritem->removeRow(row);
+        paritem->insertRow(row + delta, item);
     } else if (2 == level) {
+        // 移动action
         QStandardItem *groupItem = item->parent();
         QStandardItem *pageItem = groupItem->parent();
         QAction *act = itemToAction(item);
@@ -1425,12 +1394,11 @@ void RibbonCustomizeWidget::onToolButtonDownClicked()
         }
         QString key = d->m_actionMgr->key(act);
         RibbonCustomizeData data = RibbonCustomizeData::makeChangeActionOrderCustomizeData(
-            d->itemObjectName(pageItem), d->itemObjectName(groupItem), key, d->m_actionMgr, 1);
+            d->itemObjectName(pageItem), d->itemObjectName(groupItem), key, d->m_actionMgr, delta);
         d->m_customizeDatas.append(data);
-        int r = item->row();
-        item = groupItem->takeChild(r);
-        groupItem->removeRow(r);
-        groupItem->insertRow(r + 1, item);
+        item = groupItem->takeChild(row);
+        groupItem->removeRow(row);
+        groupItem->insertRow(row + delta, item);
     }
 }
 

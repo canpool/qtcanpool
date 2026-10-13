@@ -114,6 +114,9 @@ protected:
     // 删除一个item
     void removeItem(QStandardItem *item);
 
+    // 上移/下移选中的item，delta为-1表示上移，1表示下移
+    void moveSelectedItem(int delta);
+
 private Q_SLOTS:
     void onComboBoxActionIndexCurrentIndexChanged(int index);
     void onRadioButtonGroupButtonClicked(QAbstractButton *b);
