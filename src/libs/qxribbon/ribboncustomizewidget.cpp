@@ -728,20 +728,6 @@ void RibbonCustomizeWidget::setupActionsManager(RibbonActionsManager *mgr)
     }
 }
 
-bool RibbonCustomizeWidget::isChanged() const
-{
-    return (d->m_customizeDatas.size() > 0);
-}
-
-/**
- * @brief 获取model
- * @return
- */
-const QStandardItemModel *RibbonCustomizeWidget::model() const
-{
-    return d->m_ribbonModel;
-}
-
 /**
  * @brief 根据当前的radiobutton选项来更新model
  */

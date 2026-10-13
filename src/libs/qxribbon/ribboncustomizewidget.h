@@ -11,7 +11,6 @@
 
 #include <QWidget>
 
-class QStandardItemModel;
 class QStandardItem;
 class QAbstractButton;
 class QXmlStreamWriter;
@@ -54,12 +53,6 @@ public:
 
     // 设置action管理器
     void setupActionsManager(RibbonActionsManager *mgr);
-
-    // 判断用户是否有改动内容
-    bool isChanged() const;
-
-    // 获取model
-    const QStandardItemModel *model() const;
 
     // 根据当前的radiobutton选项来更新model
     void updateModel();

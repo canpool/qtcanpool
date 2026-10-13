@@ -18,6 +18,13 @@ Bugfix
   the first layout pass compared and clamped an indeterminate value. Both now
   start at 0 - the value the first layout pass gives a page with no content.
 
+Cleanup
+- RibbonCustomizeWidget no longer declares isChanged() and model(). Nothing in
+  the tree called either one. The class is not exported, and the limitations page
+  records the dialog that hosts it as the whole interface, so both accessors were
+  answering for state the class keeps to itself: the ribbon tree view and the
+  item look-ups already reach the model directly.
+
 0.12.0
 ---
 Bugfix
