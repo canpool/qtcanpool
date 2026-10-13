@@ -60,6 +60,43 @@ public:
     }
 };
 
+/*!
+ * A plugin that writes down what it was told to do, so the order of the calls
+ * can be asserted rather than assumed. initialize(), extensionsInitialized()
+ * and shutdown() are three separate moments of the same life, and the library
+ * makes a claim about the order of each.
+ */
+class OrderPlugin : public QxPlugin
+{
+    Q_OBJECT
+public:
+    OrderPlugin(QStringList *log, const QString &name)
+        : QxPlugin(Q_NULLPTR)
+        , m_log(log)
+        , m_name(name)
+    {
+    }
+
+    bool initialize(QxPluginContext *, QString *) override
+    {
+        m_log->append(m_name + QStringLiteral("-init"));
+        return true;
+    }
+
+    void extensionsInitialized() override
+    {
+        m_log->append(m_name + QStringLiteral("-extend"));
+    }
+
+    void shutdown() override
+    {
+        m_log->append(m_name + QStringLiteral("-stop"));
+    }
+private:
+    QStringList *m_log;
+    QString m_name;
+};
+
 /*! Builds a plugin.json-shaped metadata object, exactly what add_qtc_plugin produces. */
 static QJsonObject metaData(const QString &name, const QString &version, const QStringList &deps = QStringList(),
                             bool enabledByDefault = true, const QString &compat = QString())
@@ -110,6 +147,9 @@ private slots:
     void hostContextAdapter();
     void pluginCannotReachTheManager();
     void shutdownReversesOrder();
+    void signalsReportTheRun();
+    void extensionsInitializedFollowsInitializationOrder();
+    void managerAccessorsRoundTrip();
 };
 
 void tst_QxPlugin::specReadsMetadata()
@@ -577,20 +617,123 @@ void tst_QxPlugin::pluginCannotReachTheManager()
 
 void tst_QxPlugin::shutdownReversesOrder()
 {
+    QStringList log;
     QxPluginManager mgr;
-    mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), []() {
-        return new FakePlugin;
+    mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), [&log]() {
+        return new OrderPlugin(&log, QStringLiteral("a"));
     });
     mgr.registerStaticPlugin(QStringLiteral("b"),
-                             metaData(QStringLiteral("b"), QStringLiteral("1.0.0"), {QStringLiteral("a")}), []() {
-                                 return new FakePlugin;
+                             metaData(QStringLiteral("b"), QStringLiteral("1.0.0"), {QStringLiteral("a")}), [&log]() {
+                                 return new OrderPlugin(&log, QStringLiteral("b"));
                              });
     mgr.loadPlugins();
     QVERIFY(!mgr.hasError());
 
+    log.clear();
     mgr.shutdown();
+
+    // The promise the name makes: teardown walks the initialization order
+    // backwards, so a plugin is torn down after everything that needed it.
+    QCOMPARE(log, QStringList({QStringLiteral("b-stop"), QStringLiteral("a-stop")}));
     QCOMPARE(mgr.spec(QStringLiteral("a"))->state(), QxPluginState::Stopped);
     QCOMPARE(mgr.spec(QStringLiteral("b"))->state(), QxPluginState::Stopped);
+}
+
+/*!
+ * pluginInitialized() and pluginFailed() are the only two things a manager UI
+ * can connect to, so what they report has to be worth reading: one call per
+ * plugin that started, one per plugin that did not, and the failure carries the
+ * same reason the spec holds. A plugin that was merely skipped by default did
+ * not fail and is not announced at all - "did not run" and "went wrong" are
+ * different answers, and only one of them deserves a notification.
+ */
+void tst_QxPlugin::signalsReportTheRun()
+{
+    QxPluginManager mgr;
+    mgr.registerStaticPlugin(QStringLiteral("ok"), metaData(QStringLiteral("ok"), QStringLiteral("1.0.0")), []() {
+        return new FakePlugin(true);
+    });
+    mgr.registerStaticPlugin(QStringLiteral("bad"), metaData(QStringLiteral("bad"), QStringLiteral("1.0.0")), []() {
+        return new FakePlugin(false);
+    });
+    mgr.registerStaticPlugin(QStringLiteral("opt"), metaData(QStringLiteral("opt"), QStringLiteral("1.0.0"), {}, false),
+                             []() {
+                                 return new FakePlugin(true);
+                             });
+
+    QSignalSpy initialized(&mgr, &QxPluginManager::pluginInitialized);
+    QSignalSpy failed(&mgr, &QxPluginManager::pluginFailed);
+
+    mgr.loadPlugins();
+
+    QCOMPARE(initialized.count(), 1);
+    QCOMPARE(failed.count(), 1);
+
+    QxPluginSpec *okSpec = mgr.spec(QStringLiteral("ok"));
+    QCOMPARE(initialized.first().at(0).value<QxPluginSpec *>(), okSpec);
+
+    QxPluginSpec *badSpec = mgr.spec(QStringLiteral("bad"));
+    QCOMPARE(failed.first().at(0).value<QxPluginSpec *>(), badSpec);
+    QCOMPARE(failed.first().at(1).toString(), badSpec->error());
+
+    // Skipped by default: disabled, but neither a failure nor an announcement.
+    QxPluginSpec *optSpec = mgr.spec(QStringLiteral("opt"));
+    QCOMPARE(optSpec->state(), QxPluginState::Disabled);
+    QVERIFY(optSpec->error().isEmpty());
+}
+
+/*!
+ * extensionsInitialized() is a second pass, not a per-plugin callback: the
+ * whole set is up before any of them is told to finish. That is what makes it
+ * the place to publish something that depends on every peer being initialized,
+ * so the order is part of the contract - and it is not a reverse-order
+ * guarantee, which is worth pinning precisely because Qt Creator's is.
+ */
+void tst_QxPlugin::extensionsInitializedFollowsInitializationOrder()
+{
+    QStringList log;
+    QxPluginManager mgr;
+    // Registered the wrong way round on purpose: only the dependency can put
+    // them in this order.
+    mgr.registerStaticPlugin(QStringLiteral("b"),
+                             metaData(QStringLiteral("b"), QStringLiteral("1.0.0"), {QStringLiteral("a")}), [&log]() {
+                                 return new OrderPlugin(&log, QStringLiteral("b"));
+                             });
+    mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), [&log]() {
+        return new OrderPlugin(&log, QStringLiteral("a"));
+    });
+
+    mgr.loadPlugins();
+    QVERIFY(!mgr.hasError());
+
+    // Both initialize before either extends.
+    QCOMPARE(log, QStringList({QStringLiteral("a-init"), QStringLiteral("b-init"), QStringLiteral("a-extend"),
+                               QStringLiteral("b-extend")}));
+}
+
+/*!
+ * The accessors that tell a caller what the manager is working with. They have
+ * no observable effect on loadPlugins() beyond what they configure, which is
+ * exactly why nothing was pinning them; the defaults matter to a caller that
+ * never sets them, and hasHostVersion() is how "accept anything" is told apart
+ * from "accept up to here".
+ */
+void tst_QxPlugin::managerAccessorsRoundTrip()
+{
+    QxPluginManager mgr;
+
+    QCOMPARE(mgr.requiredInterfaceVersion(), 1);
+    mgr.setRequiredInterfaceVersion(3);
+    QCOMPARE(mgr.requiredInterfaceVersion(), 3);
+
+    QCOMPARE(mgr.hasHostVersion(), false);
+    QCOMPARE(mgr.pluginPaths(), QStringList());
+    mgr.setPluginPaths({QStringLiteral("/tmp/nowhere")});
+    QCOMPARE(mgr.pluginPaths(), QStringList({QStringLiteral("/tmp/nowhere")}));
+
+    mgr.setHostVersion(QVersionNumber(4, 1, 0));
+    QCOMPARE(mgr.hasHostVersion(), true);
+    QCOMPARE(mgr.hostVersion(), QVersionNumber(4, 1, 0));
 }
 
 TEST_ADD(tst_QxPlugin)
