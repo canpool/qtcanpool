@@ -134,7 +134,6 @@ bool DockWindowPrivate::checkFormat(const QByteArray &state, int version)
 
 bool DockWindowPrivate::restoreStateFromXml(const QByteArray &state, int version, bool testing)
 {
-    Q_UNUSED(version);
     Q_Q(DockWindow);
 
     if (state.isEmpty()) {
