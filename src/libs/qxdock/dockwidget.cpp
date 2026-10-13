@@ -142,8 +142,13 @@ void DockWidgetPrivate::hideDockWidget()
             delete m_scrollArea;
             m_scrollArea = nullptr;
         }
-        m_widget->deleteLater();
-        m_widget = nullptr;
+        // The content can be gone already: takeWidget() is the documented way
+        // for a caller to take it back, and showDockWidget() rebuilds it from
+        // the factory, so this class runs with m_widget == nullptr.
+        if (m_widget) {
+            m_widget->deleteLater();
+            m_widget = nullptr;
+        }
     }
 }
 

@@ -9,6 +9,11 @@ Bugfix
   first call could in turn be swallowed by its "already in that state" early
   return. The field now starts at NoDockWidgetFeatures, which is what the
   accessor documents for a window that has never locked anything.
+- DockWidget crashed when a widget with DeleteContentOnClose was closed without
+  content. hideDockWidget() deleted the content unconditionally, while the class
+  elsewhere runs with no content on purpose: takeWidget() is the documented way
+  for a caller to take it back, and showDockWidget() rebuilds it from the widget
+  factory. Closing such a widget dereferenced a null pointer.
 
 0.2.1
 ---

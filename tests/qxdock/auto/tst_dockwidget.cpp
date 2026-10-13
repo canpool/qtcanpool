@@ -15,6 +15,7 @@ class tst_DockWidget : public QObject
 private slots:
     void feature();
     void lockedFeatures();
+    void deleteContentOnClose();
     void autoHideSideTab();
 };
 
@@ -51,6 +52,34 @@ void tst_DockWidget::lockedFeatures()
     QCOMPARE(wd.globallyLockedDockWidgetFeatures(), DockWidget::DockWidgetMovable);
     QVERIFY(!dw->features().testFlag(DockWidget::DockWidgetMovable));
     QVERIFY(dw->features().testFlag(DockWidget::DockWidgetClosable));
+}
+
+/*
+ * A dock widget with DeleteContentOnClose is expected to run without content:
+ * showDockWidget() rebuilds it from the widget factory, and takeWidget() is the
+ * documented way for a caller to take the content back. Closing one that has no
+ * content must therefore not try to delete the content it no longer has.
+ */
+void tst_DockWidget::deleteContentOnClose()
+{
+    DockWindow wd;
+
+    DockWidget *dw = new DockWidget("dw1");
+    dw->setFeature(DockWidget::DockWidgetDeleteOnClose, true);
+    dw->setFeature(DockWidget::DeleteContentOnClose, true);
+
+    QWidget *content = new QWidget;
+    dw->setWidget(content);
+    QVERIFY(wd.addDockWidget(Qx::LeftDockWidgetArea, dw));
+
+    QCOMPARE(dw->takeWidget(), content);
+    QCOMPARE(dw->widget(), nullptr);
+
+    dw->toggleView(false);
+    QCOMPARE(dw->isClosed(), true);
+    QCOMPARE(dw->widget(), nullptr);
+
+    delete content;
 }
 
 /*
