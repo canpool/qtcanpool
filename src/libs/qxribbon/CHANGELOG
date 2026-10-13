@@ -13,6 +13,11 @@ Bugfix
   visible changes - but the names are part of what a caller can target from its
   own stylesheet, and the bar was answering wrongly for both.
 
+Cleanup
+- RibbonCustomizeWidget::isChanged() and model() are gone. Nothing called
+  either one, and the class is not exported - RibbonCustomizeDialog owns it and
+  is the only way in - so there was no caller to have.
+
 0.12.0
 ---
 Bugfix
