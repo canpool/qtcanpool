@@ -104,9 +104,12 @@ public:
     void updateRibbonElementGeometry();
     void updateRibbonBarHeight();
 
+    void showPopupStack();
+
     void paintInOfficeStyle(QPainter &p);
     void paintInWpsLiteStyle(QPainter &p);
     void paintBackground(QPainter &painter);
+    QPoint paintPageContextTabs(QPainter &painter, bool extendToWindowTop);
     void paintWindowTitle(QPainter &painter, const QString &title, const QRect &titleRegion);
     void paintPageContextTab(QPainter &painter, const QString &title, QRect contextRect, const QColor &color);
 

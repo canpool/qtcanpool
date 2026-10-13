@@ -339,57 +339,36 @@ void RibbonBarPrivate::updateRibbonBarHeight()
     }
 }
 
+/**
+ * @brief 最小模式下弹出 stack：先把 tab bar 的 hover 状态收尾，再定位、聚焦并显示
+ */
+void RibbonBarPrivate::showPopupStack()
+{
+    if (m_stack->isVisible() || !m_stack->isPopup()) {
+        return;
+    }
+    // 在StackedWidget弹出前，先给tabbar一个QHoverEvent，让tabbar知道鼠标已经移开
+#if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
+    QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToGlobal(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()));
+#else
+    QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToParent(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()),
+                    m_tabBar->mapToGlobal(QCursor::pos()));
+#endif
+    QApplication::sendEvent(m_tabBar, &ehl);
+    // 弹出前都调整一下位置，避免移动后位置异常
+    resizeStackedWidget();
+    m_stack->setFocus();
+    m_stack->show();
+}
+
 void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
 {
     Q_Q(RibbonBar);
     paintBackground(p);
 
     //! 显示上下文标签
-    p.save();
-    QList<PageContextManagerData> pageContextDataList = m_currentShowingPageContextList;
-
-    QPoint pageContextPos(q->width(), -1);   // x表示左边界，y表示右边界
-    QMargins border = q->contentsMargins();
-    for (int i = 0; i < pageContextDataList.size(); ++i) {
-        QRect contextTitleRect;
-        QList<int> indexs = pageContextDataList[i].tabPageIndex;
-        QColor clr = pageContextDataList[i].pageContext->contextColor();
-        if (!indexs.isEmpty()) {
-            contextTitleRect = m_tabBar->tabRect(indexs.first());
-            QRect endRect = m_tabBar->tabRect(indexs.last());
-            contextTitleRect.setRight(endRect.right());
-            // contextTitleRect是相对于m_tabBar返回的矩形框，不是RibbonBar中的真实位置，所以需要移动到m_tabBar的起点坐标处
-            contextTitleRect.translate(m_tabBar->x(), m_tabBar->y());
-            contextTitleRect.setHeight(m_tabBar->height() - 1);   // 减1像素，避免tabbar基线覆盖
-            contextTitleRect -= m_tabBar->tabMargin() / 2;
-            contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
-            QRect tabBarRect(m_tabBar->pos(), m_tabBar->size());
-            if (tabBarRect.intersects(contextTitleRect)) {
-                QRect visibleRect = tabBarRect.intersected(contextTitleRect);
-                visibleRect.setTop(contextTitleRect.top());
-                paintPageContextTab(p, pageContextDataList[i].pageContext->contextTitle(), visibleRect, clr);
-            }
-            // 更新上下文标签的范围，用于控制标题栏的显示。如果pageContextPos.y()小于0，说明没有显示上下文标签
-            if (contextTitleRect.left() < pageContextPos.x()) {
-                pageContextPos.setX(contextTitleRect.left());
-            }
-            if (contextTitleRect.right() > pageContextPos.y()) {
-                pageContextPos.setY(contextTitleRect.right());
-            }
-        }
-#ifdef QX_DRAW_CONTEXT_PAGE_BORDER
-        if (indexs.contains(m_tabBar->currentIndex())) {
-            QPen pen;
-            pen.setColor(clr);
-            pen.setWidth(1);
-            p.setPen(pen);
-            p.setBrush(Qt::NoBrush);
-            p.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-            p.drawRect(m_stack->geometry());
-        }
-#endif
-    }
-    p.restore();
+    const QMargins border = q->contentsMargins();
+    const QPoint pageContextPos = paintPageContextTabs(p, true);
 
     //! 显示标题等
     QWidget *parWindow = q->parentWidget();
@@ -444,41 +423,8 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
     paintBackground(p);
 
     //! 显示上下文标签
-    p.save();
-    QList<PageContextManagerData> pageContextDataList = m_currentShowingPageContextList;
-
-    QMargins border = q->contentsMargins();
-    for (int i = 0; i < pageContextDataList.size(); ++i) {
-        QRect contextTitleRect;
-        QList<int> indexs = pageContextDataList[i].tabPageIndex;
-        QColor clr = pageContextDataList[i].pageContext->contextColor();
-        if (!indexs.isEmpty()) {
-            contextTitleRect = m_tabBar->tabRect(indexs.first());
-            QRect endRect = m_tabBar->tabRect(indexs.last());
-            contextTitleRect.setRight(endRect.right());
-            contextTitleRect.translate(m_tabBar->x(), m_tabBar->y());
-            contextTitleRect.setHeight(m_tabBar->height() - 1);
-            contextTitleRect -= m_tabBar->tabMargin() / 2;
-            contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
-            QRect tabBarRect(m_tabBar->pos(), m_tabBar->size());
-            if (tabBarRect.intersects(contextTitleRect)) {
-                QRect visibleRect = tabBarRect.intersected(contextTitleRect);
-                paintPageContextTab(p, QString(), visibleRect, clr);
-            }
-        }
-#ifdef QX_DRAW_CONTEXT_PAGE_BORDER
-        if (indexs.contains(m_tabBar->currentIndex())) {
-            QPen pen;
-            pen.setColor(clr);
-            pen.setWidth(1);
-            p.setPen(pen);
-            p.setBrush(Qt::NoBrush);
-            p.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-            p.drawRect(m_stack->geometry());
-        }
-#endif
-    }
-    p.restore();
+    const QMargins border = q->contentsMargins();
+    paintPageContextTabs(p, false);
 
     //! 显示标题等
     QWidget *parWindow = q->parentWidget();
@@ -526,6 +472,63 @@ void RibbonBarPrivate::paintBackground(QPainter &painter)
     const int lineY = m_tabBar->geometry().bottom();
     painter.drawLine(QPoint(border.left(), lineY), QPoint(q->width() - border.right() - 1, lineY));
     painter.restore();
+}
+
+/**
+ * @brief 绘制当前显示的上下文标签，返回它们覆盖的横向范围
+ *
+ * 返回值 x 是左边界、y 是右边界；y < 0 表示没有显示上下文标签（沿用调用方的约定）。
+ * 标签文字只在 office 样式下绘制，由 paintPageContextTab 内部判断，所以这里统一传标题。
+ *
+ * @param extendToWindowTop office 把每段的可见矩形上沿提到窗口顶部（标签条压在 tab bar 之上）；
+ *   wps 样式里 tab bar 本就在第一行，上沿一致，所以传 false 保持原样。
+ */
+QPoint RibbonBarPrivate::paintPageContextTabs(QPainter &painter, bool extendToWindowTop)
+{
+    Q_Q(RibbonBar);
+    painter.save();
+    const QMargins border = q->contentsMargins();
+    QPoint pageContextPos(q->width(), -1);   // x表示左边界，y表示右边界
+
+    for (const PageContextManagerData &data : std::as_const(m_currentShowingPageContextList)) {
+        const QList<int> indexes = data.tabPageIndex;
+        if (indexes.isEmpty()) {
+            continue;
+        }
+        const QColor color = data.pageContext->contextColor();
+        QRect contextTitleRect = m_tabBar->tabRect(indexes.first());
+        const QRect endRect = m_tabBar->tabRect(indexes.last());
+        contextTitleRect.setRight(endRect.right());
+        // contextTitleRect是相对于m_tabBar返回的矩形框，不是RibbonBar中的真实位置，所以需要移动到m_tabBar的起点坐标处
+        contextTitleRect.translate(m_tabBar->x(), m_tabBar->y());
+        contextTitleRect.setHeight(m_tabBar->height() - 1);   // 减1像素，避免tabbar基线覆盖
+        contextTitleRect -= m_tabBar->tabMargin() / 2;
+        contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
+        const QRect tabBarRect(m_tabBar->pos(), m_tabBar->size());
+        if (tabBarRect.intersects(contextTitleRect)) {
+            QRect visibleRect = tabBarRect.intersected(contextTitleRect);
+            if (extendToWindowTop) {
+                visibleRect.setTop(contextTitleRect.top());
+            }
+            paintPageContextTab(painter, data.pageContext->contextTitle(), visibleRect, color);
+        }
+        // 更新上下文标签的范围，用于控制标题栏的显示。如果pageContextPos.y()小于0，说明没有显示上下文标签
+        pageContextPos.setX(qMin(pageContextPos.x(), contextTitleRect.left()));
+        pageContextPos.setY(qMax(pageContextPos.y(), contextTitleRect.right()));
+#ifdef QX_DRAW_CONTEXT_PAGE_BORDER
+        if (indexes.contains(m_tabBar->currentIndex())) {
+            QPen pen;
+            pen.setColor(color);
+            pen.setWidth(1);
+            painter.setPen(pen);
+            painter.setBrush(Qt::NoBrush);
+            painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+            painter.drawRect(m_stack->geometry());
+        }
+#endif
+    }
+    painter.restore();
+    return pageContextPos;
 }
 
 void RibbonBarPrivate::paintWindowTitle(QPainter &painter, const QString &title, const QRect &titleRegion)
@@ -1009,22 +1012,9 @@ void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
         }
         if (m_minimized) {
             m_tabBar->clearFocus();
-            if (!m_stack->isVisible() && m_stack->isPopup()) {
-                // 在StackedWindget弹出前，先给tabbar一个QHoverEvent,让tabbar知道鼠标已经移开
-#if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
-                QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToGlobal(QCursor::pos()),
-                                m_tabBar->mapToGlobal(QCursor::pos()));
-#else
-                QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToParent(QCursor::pos()),
-                                m_tabBar->mapToGlobal(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()));
-#endif
-                QApplication::sendEvent(m_tabBar, &ehl);
-                resizeStackedWidget();
-                m_stack->setFocus();
-                m_stack->show();
-                // 在最小模式下，每次显示完StackedWindget后把tab的
-                // 的index设置为-1，这样每次点击都会触发onCurrentRibbonTabChanged
-            }
+            // 在最小模式下，每次显示完StackedWidget后把tab的index设置为-1，
+            // 这样每次点击都会触发onCurrentRibbonTabChanged
+            showPopupStack();
         }
     }
     Q_EMIT q->currentRibbonTabChanged(index);
@@ -1051,21 +1041,7 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
         return;   // sentry tab
     }
     if (m_minimized) {
-        if (!m_stack->isVisible() && m_stack->isPopup()) {
-            // 在StackedWindget弹出前，先给tabbar一个QHoverEvent,让tabbar知道鼠标已经移开
-#if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
-            QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToGlobal(QCursor::pos()),
-                            m_tabBar->mapToGlobal(QCursor::pos()));
-#else
-            QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToParent(QCursor::pos()),
-                            m_tabBar->mapToGlobal(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()));
-#endif
-            QApplication::sendEvent(m_tabBar, &ehl);
-            // 弹出前都调整一下位置，避免移动后位置异常
-            resizeStackedWidget();
-            m_stack->setFocus();
-            m_stack->show();
-        }
+        showPopupStack();
     }
 }
 
