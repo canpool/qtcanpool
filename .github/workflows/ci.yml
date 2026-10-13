@@ -84,6 +84,102 @@ jobs:
           cmake --build "$RUNNER_TEMP/plugin" --parallel
           "$RUNNER_TEMP/plugin/qxpluginhost"
 
+  native:
+    # The Windows window procedure, driven through a real window. Report only
+    # (K8): this is the first time any of windowcontext_win.cpp has been executed
+    # by CI at all, and it needs something a headless runner does not promise -
+    # a desktop the platform plugin can map a window on. If it turns out to be
+    # reliable, promoting it to a gate is a one-line change.
+    #
+    # A job of its own rather than one more step in `build` above, because
+    # everything above is a gate and this is not: a non-gating step sharing a job
+    # with a gate either holds the gate up or, once it has `continue-on-error`,
+    # makes "the job passed" mean two different things. That is the same lesson
+    # that moved clang-tidy out of `quality`, and continue-on-error is set on the
+    # job here for the same reason it is set on the step there - a failure in this
+    # job is never the workflow's answer.
+    name: qxwindow native (report only)
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.1'
+          cache: true
+
+      - name: Configure
+        # Demos off: this job builds one target, and configuring every demo to
+        # build one of them is paying for the whole tree. The demo-bound tests
+        # guard themselves with `if (TARGET ...)`, so nothing here goes missing.
+        run: >
+          cmake -S . -B build-native
+          -DCMAKE_BUILD_TYPE=Release
+          -DWITH_DEMOS=OFF
+          -DWITH_TESTS=ON
+
+      - name: Build
+        # One target rather than the tree: the test links qxwindow and nothing
+        # else, and the gating job above already builds everything.
+        run: cmake --build build-native --config Release --parallel --target tst_qxwindow_native
+
+      - name: Test the window procedure
+        shell: bash
+        env:
+          # The one place in CI that does not use offscreen, deliberately:
+          # offscreen installs no window procedure, so every case would skip and
+          # the job would pass having tested nothing.
+          QT_QPA_PLATFORM: windows
+        run: |
+          set -u
+
+          # The binary rather than ctest, for the one thing this job exists to
+          # say: how many cases actually ran. A fully skipped suite still exits
+          # zero, and ctest keeps a passing test's output out of its log, so
+          # through ctest "the platform plugin never loaded and everything
+          # skipped" and "the window procedure works" are the same green tick.
+          EXE=$(find build-native -name 'tst_qxwindow_native.exe' -type f | head -n 1)
+          if [ -z "${EXE}" ]; then
+            echo "::error::the test binary was not built"
+            exit 1
+          fi
+
+          # -o writes the report to a file rather than stdout because under the
+          # windows platform plugin this binary's stdout is empty: redirecting it
+          # produces a zero byte log, which is easy to mistake for a silent
+          # failure. The timeout is here because this class of test is the one
+          # that can hang inside a modal loop.
+          if timeout 120 "${EXE}" -o native-report.txt,txt; then
+            STATUS=0
+          else
+            STATUS=$?
+          fi
+
+          # An empty report is its own failure mode, and it is the quiet one: a
+          # binary that died before QtTest started writes nothing, grep then
+          # counts no skips, and the job below would read that as a clean pass.
+          if [ ! -s native-report.txt ]; then
+            echo "::error::the test wrote no report, so it did not start (exit ${STATUS})"
+            exit 1
+          fi
+
+          cat native-report.txt
+          SKIP=$(grep -cE '^SKIP ' native-report.txt)
+          PASSED=$(grep -cE '^(PASS|FAIL|XFAIL|XPASS) ' native-report.txt)
+          echo "::notice title=qxwindow native digest::${PASSED} result(s), ${SKIP} skipped, exit ${STATUS}"
+
+          # The failure mode this job is most likely to hit is not a bug in the
+          # library: it is the runner not giving the plugin a desktop, or the
+          # QT_QPA_PLATFORM above not reaching the process. Both look exactly like
+          # a pass, so the skip count is the number that has to be zero.
+          if [ "${SKIP}" -gt 0 ]; then
+            echo "::error::the native cases skipped, so this run exercised no window procedure"
+            exit 1
+          fi
+          exit "${STATUS}"
+
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
     # so any unformatted change now fails the build.
