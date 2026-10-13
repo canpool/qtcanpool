@@ -295,6 +295,15 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
     // 本列第一、二行占比
     RibbonGroup::RowProportion thisColumnRP0 = RibbonGroup::Auto;
     RibbonGroupItem *lastGeomItem = Q_NULLPTR;   // 记录最后一个设置位置的item
+
+    // 换列：x 自动递增到下个坐标，列数增加，行数归零，最大列宽归零
+    auto startNextColumn = [&]() {
+        x += (columnMaxWidth + spacing);
+        ++column;
+        row = 0;
+        columnMaxWidth = 0;
+    };
+
     for (int i = 0; i < itemCount; ++i) {
         RibbonGroupItem *item = m_items.at(i);
         if (item->isEmpty()) {
@@ -331,85 +340,48 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
             // ！！在Large，如果不是处于新列的第一行，就需要进行换列处理
             // 把large一直设置在下一列的开始
             if (row != 0) {
-                // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                x += (columnMaxWidth + spacing);
-                ++column;
-                row = 0;
-                columnMaxWidth = 0;
+                startNextColumn();
             }
             item->rowIndex = 0;
             item->columnIndex = column;
             item->willGeometry = QRect(x, margin.top(), hint.width(), largeHeight);
             columnMaxWidth = hint.width();
-            // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-            x += (columnMaxWidth + spacing);
-            ++column;
-            row = 0;
-            columnMaxWidth = 0;
+            startNextColumn();
         } break;
 
         case RibbonGroup::Medium: {
-            // 2行模式下Medium和small等价
-            if (2 == rowCount) {
-                if (0 == row) {
-                    item->rowIndex = 0;
-                    item->columnIndex = column;
-                    item->willGeometry = QRect(x, yMediumRow0, hint.width(), smallHeight);
-                    thisColumnRP0 = RibbonGroup::Medium;
-                    columnMaxWidth = hint.width();
-                    // 下个row为1，x不变
-                    row = 1;
-                } else {
-                    item->rowIndex = 1;
-                    item->columnIndex = column;
-                    item->willGeometry = QRect(x, yMediumRow1, hint.width(), smallHeight);
-                    // 和上个进行比较得到最长宽度
-                    columnMaxWidth = qMax(columnMaxWidth, hint.width());
-                    // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                    x += (columnMaxWidth + spacing);
-                    ++column;
-                    row = 0;
-                    columnMaxWidth = 0;
-                }
+            // 两行模式下 Medium 走不到 row==2（占完第二行即换列），所以下面的三行处理
+            // 已经覆盖两行模式，原先分开写的两份逻辑是等价的。
+            if (0 == row) {
+                item->rowIndex = 0;
+                item->columnIndex = column;
+                item->willGeometry = QRect(x, yMediumRow0, hint.width(), smallHeight);
+                thisColumnRP0 = RibbonGroup::Medium;
+                columnMaxWidth = hint.width();
+                // 下个row为1，x不变
+                row = 1;
+            } else if (1 == row) {
+                item->rowIndex = 1;
+                item->columnIndex = column;
+                item->willGeometry = QRect(x, yMediumRow1, hint.width(), smallHeight);
+                // 和上个进行比较得到最长宽度
+                columnMaxWidth = qMax(columnMaxWidth, hint.width());
+                startNextColumn();
             } else {
-                // 3行模式
-                if (0 == row) {
-                    item->rowIndex = 0;
-                    item->columnIndex = column;
-                    item->willGeometry = QRect(x, yMediumRow0, hint.width(), smallHeight);
-                    thisColumnRP0 = RibbonGroup::Medium;
-                    columnMaxWidth = hint.width();
-                    // 下个row为1，x不变
-                    row = 1;
-                } else if (1 == row) {
-                    item->rowIndex = 1;
-                    item->columnIndex = column;
-                    item->willGeometry = QRect(x, yMediumRow1, hint.width(), smallHeight);
-                    columnMaxWidth = qMax(columnMaxWidth, hint.width());
-                    // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                    x += (columnMaxWidth + spacing);
-                    ++column;
-                    row = 0;
-                    columnMaxWidth = 0;
-                } else {
-                    // 这种模式一般情况会发生在当前列前两行是Small，添加了一个Medium，这时需要先换列
-                    // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                    x += (columnMaxWidth + spacing);
-                    ++column;
-                    row = 0;
-                    columnMaxWidth = 0;
-                    // 换列后此时等价于0 == row
-                    item->rowIndex = 0;
-                    item->columnIndex = column;
-                    item->willGeometry = QRect(x, yMediumRow0, hint.width(), smallHeight);
-                    thisColumnRP0 = RibbonGroup::Medium;
-                    columnMaxWidth = hint.width();
-                    row = 1;
-                }
+                // 当前列前两行是Small，又来一个Medium：先换列，之后等价于0 == row
+                startNextColumn();
+                item->rowIndex = 0;
+                item->columnIndex = column;
+                item->willGeometry = QRect(x, yMediumRow0, hint.width(), smallHeight);
+                thisColumnRP0 = RibbonGroup::Medium;
+                columnMaxWidth = hint.width();
+                row = 1;
             }
         } break;
 
         case RibbonGroup::Small: {
+            // 三行模式且当前列第一行是Medium：这个Small按第二个Medium算（占 yMediumRow1，并换列）
+            const bool pairedWithMedium = (3 == rowCount) && (RibbonGroup::Medium == thisColumnRP0);
             if (0 == row) {
                 // 第一行
                 item->rowIndex = 0;
@@ -425,31 +397,17 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
                 item->columnIndex = column;
                 // 两行模式, ySmallRow1 == yMediumRow1，所以不需要关心第一行是 Medium 还是 Small
                 item->willGeometry = QRect(x, ySmallRow1, hint.width(), smallHeight);
-                if ((3 == rowCount) && (RibbonGroup::Medium == thisColumnRP0)) {
+                if (pairedWithMedium) {
                     // 三行模式，并且第一行是Medium
                     item->willGeometry = QRect(x, yMediumRow1, hint.width(), smallHeight);
                 }
                 // 和上个进行比较得到最长宽度
                 columnMaxWidth = qMax(columnMaxWidth, hint.width());
-                // 这里要看两行还是三行，确定是否要换列
-                if (2 == rowCount) {
-                    // 两行模式，换列
-                    // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                    x += (columnMaxWidth + spacing);
-                    ++column;
-                    row = 0;
-                    columnMaxWidth = 0;
+                // 两行模式在这里换列；三行模式则继续增加行数（第一行是 Medium 时改为换列）
+                if ((2 == rowCount) || pairedWithMedium) {
+                    startNextColumn();
                 } else {
-                    // 三行模式，继续增加行数，x不变
                     row = 2;
-                }
-                if ((3 == rowCount) && (RibbonGroup::Medium == thisColumnRP0)) {
-                    // 三行模式，并且第一行是Medium，按两个Medium计算，换列
-                    // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                    x += (columnMaxWidth + spacing);
-                    ++column;
-                    row = 0;
-                    columnMaxWidth = 0;
                 }
             } else {
                 // 第三行
@@ -457,11 +415,7 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
                 item->columnIndex = column;
                 item->willGeometry = QRect(x, ySmallRow2, hint.width(), smallHeight);
                 columnMaxWidth = qMax(columnMaxWidth, hint.width());
-                // 换列，x自动递增到下个坐标，列数增加，行数归零，最大列宽归零
-                x += (columnMaxWidth + spacing);
-                ++column;
-                row = 0;
-                columnMaxWidth = 0;
+                startNextColumn();
             }
         } break;
 
