@@ -32,6 +32,9 @@ private slots:
     void persistence();
     void followSystem();
     void systemThemePair();
+    void applyReinstallsWithoutAnnouncing();
+    void refreshSystemThemeIsANoOpWhileNotFollowing();
+    void settingsIsTheObjectSetSettingsTook();
 private:
     void resetSettings();
 
@@ -264,6 +267,83 @@ void tst_QxTheme::systemThemePair()
     reader.endGroup();
 
     manager->setFollowSystemTheme(false);
+}
+
+/*!
+ * apply() is the public way to re-install what the current theme says, without
+ * selecting anything: setSettings() calls it, and so may a caller that changed
+ * the application state behind the manager's back. Unlike setTheme() it must not
+ * announce a change - the theme did not change, it was re-applied.
+ */
+void tst_QxTheme::applyReinstallsWithoutAnnouncing()
+{
+    resetSettings();
+    QxThemeManager *manager = QxThemeManager::instance();
+
+    manager->setStyleSheet(DarkWps, QStringLiteral("QWidget { color: #f0f0f0; }"));
+    manager->setTheme(DarkWps);
+
+    // Something else overwrites what the manager installed.
+    qApp->setStyleSheet(QStringLiteral("QWidget { color: magenta; }"));
+    qApp->setPalette(lightPalette());
+    QVERIFY(qApp->styleSheet() != QStringLiteral("QWidget { color: #f0f0f0; }"));
+
+    QSignalSpy spy(manager, &QxThemeManager::themeChanged);
+    manager->apply();
+
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #f0f0f0; }"));
+    QCOMPARE(qApp->palette().color(QPalette::Window), darkPalette().color(QPalette::Window));
+    QCOMPARE(manager->theme(), DarkWps);
+    QCOMPARE(spy.count(), 0);
+}
+
+/*!
+ * refreshSystemTheme() is the manual hook for the platforms that do not report
+ * a colour scheme change. While following is off it has to be a no-op: an
+ * application that is not following the system must not be moved by it.
+ */
+void tst_QxTheme::refreshSystemThemeIsANoOpWhileNotFollowing()
+{
+    resetSettings();
+    QxThemeManager *manager = QxThemeManager::instance();
+
+    manager->setFollowSystemTheme(false);
+    manager->setTheme(LightClassic);
+    const Theme before = manager->theme();
+
+    QSignalSpy spy(manager, &QxThemeManager::themeChanged);
+    manager->refreshSystemTheme();
+
+    QCOMPARE(manager->theme(), before);
+    QCOMPARE(spy.count(), 0);
+
+    // With following on it is safe as well, and whatever it decides has to be
+    // one of the configured pair - never a theme from outside it.
+    manager->setFollowSystemTheme(true);
+    manager->refreshSystemTheme();
+    QVERIFY(manager->theme() == manager->systemLightTheme() || manager->theme() == manager->systemDarkTheme());
+}
+
+/*!
+ * settings() is how a caller reaches the persisted state. It has to hand back
+ * the very object setSettings() took rather than a fresh one, or a caller
+ * reading through it would see none of what the manager wrote.
+ */
+void tst_QxTheme::settingsIsTheObjectSetSettingsTook()
+{
+    resetSettings();
+    QxThemeManager *manager = QxThemeManager::instance();
+
+    QxSettings *expected = manager->settings();
+    QVERIFY(expected != Q_NULLPTR);
+    QCOMPARE(manager->settings(), expected);
+
+    // What the manager persists is visible through that object.
+    manager->setTheme(DarkOfficePlus);
+    QxSettings *reader = manager->settings();
+    reader->beginGroup(QStringLiteral("ui"));
+    QCOMPARE(reader->stringValue(QStringLiteral("theme")), QStringLiteral("dark-officeplus"));
+    reader->endGroup();
 }
 
 TEST_ADD(tst_QxTheme)
