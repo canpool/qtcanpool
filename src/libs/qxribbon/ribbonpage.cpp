@@ -407,50 +407,38 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
     }
 }
 
-void RibbonPagePrivate::onLeftScrollButtonClicked()
+/**
+ * @brief 按页横向滚动
+ *
+ * pages > 0 表示点击左侧按钮，内容向右移一页；pages < 0 表示点击右侧按钮。
+ *
+ * m_XBase 的合法区间是 [pageWidth - totalWidth, 0]：
+ *
+ *    |---- pageWidth ----|
+ *    |-------- totalWidth --------|
+ *    `-> m_XBase (0 为最右，pageWidth - totalWidth 为最左)
+ */
+void RibbonPagePrivate::scrollByPage(int pages)
 {
     int pageWidth = pageContentSize().width();
     int totalWidth = m_totalWidth;
 
     if (totalWidth > pageWidth) {
-        // 点击左侧，相当于向右滚动一页
-        //
-        //    |---- pageWidth ----|
-        //    |-------- totalWidth --------|
-        //    `-> m_xBase (max pos is 0)
-        //
-        int tmp = m_XBase + pageWidth;
-        if (tmp > 0) {
-            tmp = 0;
-        }
-        m_XBase = tmp;
+        m_XBase = qBound(pageWidth - totalWidth, m_XBase + pages * pageWidth, 0);
     } else {
         m_XBase = 0;
     }
     updateItemGeometry();
 }
 
+void RibbonPagePrivate::onLeftScrollButtonClicked()
+{
+    scrollByPage(1);
+}
+
 void RibbonPagePrivate::onRightScrollButtonClicked()
 {
-    int pageWidth = pageContentSize().width();
-    int totalWidth = m_totalWidth;
-
-    if (totalWidth > pageWidth) {
-        // 点击右侧，相当于向左滚动一页
-        //
-        //             |---- pageWidth ----|
-        //    |-------- totalWidth --------|
-        //    `-> m_xBase (min pos is pageWidth - totalWidth)
-        //
-        int tmp = m_XBase - pageWidth;
-        if (tmp < (pageWidth - totalWidth)) {
-            tmp = pageWidth - totalWidth;   // m_XBase 最小值
-        }
-        m_XBase = tmp;
-    } else {
-        m_XBase = 0;
-    }
-    updateItemGeometry();
+    scrollByPage(-1);
 }
 
 RibbonPage::RibbonPage(QWidget *parent)

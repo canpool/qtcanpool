@@ -84,6 +84,8 @@ public:
 
     void doWheelEvent(QWheelEvent *event);
 
+    void scrollByPage(int pages);
+
 public Q_SLOTS:
     void onLeftScrollButtonClicked();
     void onRightScrollButtonClicked();
