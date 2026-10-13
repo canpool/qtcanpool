@@ -24,6 +24,12 @@ Cleanup
   records the dialog that hosts it as the whole interface, so both accessors were
   answering for state the class keeps to itself: the ribbon tree view and the
   item look-ups already reach the model directly.
+- Six places posted the deferred resize by hand - a line-for-line copy of what
+  RibbonBar::resizeRibbon() already does - so the reason the resize is queued
+  rather than run in place was written down in one place and repeated in six.
+  They all call resizeRibbon() now, which makes it the single entry point for
+  "the ribbon changed shape, ask for a resize". No behaviour change: the posted
+  event is identical.
 
 0.12.0
 ---

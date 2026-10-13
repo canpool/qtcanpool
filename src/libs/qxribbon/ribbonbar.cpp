@@ -1110,7 +1110,7 @@ void RibbonBar::setApplicationButton(QAbstractButton *btn)
 {
     Q_D(RibbonBar);
     d->setApplicationButton(btn);
-    QApplication::postEvent(this, new QResizeEvent(size(), size()));
+    resizeRibbon();
 }
 
 RibbonPage *RibbonBar::addPage(const QString &title)
@@ -1153,7 +1153,7 @@ void RibbonBar::insertPage(int index, RibbonPage *page)
     d->m_stack->insertWidget(i, page);
 
     connect(page, &QWidget::windowTitleChanged, d, &RibbonBarPrivate::onPageWindowTitleChanged);
-    QApplication::postEvent(this, new QResizeEvent(size(), size()));
+    resizeRibbon();
 }
 
 /**
@@ -1340,7 +1340,7 @@ void RibbonBar::removePage(RibbonPage *page)
     }
     // 移除完后需要重绘
     repaint();
-    QApplication::postEvent(this, new QResizeEvent(size(), size()));
+    resizeRibbon();
 }
 
 void RibbonBar::clearPages()
@@ -1438,7 +1438,7 @@ void RibbonBar::showPageContext(RibbonPageContext *context)
     }
     d->m_currentShowingPageContextList.append(pageContextData);
     // 由于上下文都是在最后追加，不需要调用updateTabData();
-    QApplication::postEvent(this, new QResizeEvent(size(), size()));
+    resizeRibbon();
 }
 
 void RibbonBar::hidePageContext(RibbonPageContext *context)
@@ -1460,7 +1460,7 @@ void RibbonBar::hidePageContext(RibbonPageContext *context)
     }
     if (needResize) {
         d->updateTabData();
-        QApplication::postEvent(this, new QResizeEvent(size(), size()));
+        resizeRibbon();
     }
 }
 
@@ -1523,7 +1523,7 @@ void RibbonBar::destroyPageContext(RibbonPageContext *context)
         page->deleteLater();
     }
     context->deleteLater();
-    QApplication::postEvent(this, new QResizeEvent(size(), size()));
+    resizeRibbon();
 }
 
 void RibbonBar::minimize()
@@ -1779,6 +1779,10 @@ void RibbonBar::resizeRibbon()
     // event is therefore queued, which is also what makes the switch visible as
     // a single repaint rather than two. See doc/pages/limitations.md,
     // "RibbonBar resize is deferred".
+    //
+    // This is the only place that queues the resize: every site that changes the
+    // bar's content asks through here, so the reason above has one home instead
+    // of one per caller.
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
 }
 
