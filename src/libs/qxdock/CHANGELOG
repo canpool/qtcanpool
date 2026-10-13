@@ -33,6 +33,18 @@ Cleanup
 - The title bar's context menu asked whether the panel is auto hidden inside the
   branch where that is already known to be false, so one of the two labels it
   offered could never be shown. The menu still reads the same; the dead arm is gone.
+- DockAutoHideContainer kept its own copy of "which side bar areas are
+  horizontal" next to the one in DockUtils. The two differed only in their
+  default, which is unreachable because a container is only ever built for one
+  of the four sides - but that was enough for
+  DockAutoHideContainerPrivate::isHorizontal() and
+  DockAutoHideContainer::orientation() to be free to contradict each other about
+  the same area. The copy is gone and both consult DockUtils now.
+- DockSideTab::mouseMoveEvent() tested for DockDraggingTab with the code it was
+  supposed to run commented out, and the state is not reachable for a side tab
+  in the first place: startFloating() is the only writer of that drag state and
+  it only ever stores FloatingWidget. A side tab cannot be reordered, so the
+  branch is gone.
 
 0.2.1
 ---

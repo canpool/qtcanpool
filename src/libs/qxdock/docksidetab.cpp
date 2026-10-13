@@ -402,11 +402,9 @@ void DockSideTab::mouseMoveEvent(QMouseEvent *e)
     }
 
     // move tab
-    if (d->isDraggingState(Qx::DockDraggingTab)) {
-        // Moving the tab is always allowed because it does not mean moving the
-        // dock widget around
-        // d->moveTab(ev);
-    }
+    // A side tab cannot be reordered, so unlike DockTab this class has nothing
+    // to do for the DockDraggingTab state: startFloating() is the only writer
+    // of m_dragState and it only ever stores FloatingWidget.
 
     auto mappedPos = mapToParent(e->pos());
     bool mouseOutsideBar = (mappedPos.x() < 0) || (mappedPos.x() > parentWidget()->rect().right());

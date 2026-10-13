@@ -23,21 +23,6 @@ QX_DOCK_BEGIN_NAMESPACE
 
 static const int s_resizeMargin = 30;
 
-static bool isHorizontalArea(Qx::DockSideBarArea area)
-{
-    switch (area) {
-    case Qx::DockSideBarTop:
-    case Qx::DockSideBarBottom:
-        return true;
-    case Qx::DockSideBarLeft:
-    case Qx::DockSideBarRight:
-        return false;
-    default:
-        return true;
-    }
-
-    return true;
-}
 static Qt::Edge edgeFromSideBarArea(Qx::DockSideBarArea area)
 {
     switch (area) {
@@ -135,7 +120,12 @@ DockAutoHideContainerPrivate::DockAutoHideContainerPrivate()
 
 bool DockAutoHideContainerPrivate::isHorizontal() const
 {
-    return isHorizontalArea(m_sideTabBarArea);
+    // DockUtils owns the one answer to "which side bar areas are horizontal".
+    // This file used to carry a second copy of it that disagreed on the
+    // unreachable default (a container is only ever built for one of the four
+    // sides), which left isHorizontal() and DockAutoHideContainer::orientation()
+    // free to contradict each other.
+    return internal::isHorizontalSideBarArea(m_sideTabBarArea);
 }
 
 Qx::DockWidgetArea DockAutoHideContainerPrivate::getDockWidgetArea(Qx::DockSideBarArea area)
@@ -189,7 +179,8 @@ DockAutoHideContainer::DockAutoHideContainer(DockWidget *w, Qx::DockSideBarArea 
 
     setObjectName("autoHideDockContainer");
 
-    d->m_layout = new QBoxLayout(isHorizontalArea(area) ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+    d->m_layout =
+        new QBoxLayout(internal::isHorizontalSideBarArea(area) ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
     d->m_layout->setContentsMargins(0, 0, 0, 0);
     d->m_layout->setSpacing(0);
     setLayout(d->m_layout);
@@ -311,7 +302,8 @@ void DockAutoHideContainer::setSideBarArea(Qx::DockSideBarArea area)
 
     d->m_sideTabBarArea = area;
     d->m_layout->removeWidget(d->m_resizeHandle);
-    d->m_layout->setDirection(isHorizontalArea(area) ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+    d->m_layout->setDirection(internal::isHorizontalSideBarArea(area) ? QBoxLayout::TopToBottom
+                                                                      : QBoxLayout::LeftToRight);
     d->m_layout->insertWidget(resizeHandleLayoutPosition(area), d->m_resizeHandle);
     d->m_resizeHandle->setHandlePosition(edgeFromSideBarArea(area));
     internal::repolishStyle(this, internal::RepolishDirectChildren);
