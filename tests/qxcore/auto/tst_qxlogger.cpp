@@ -39,8 +39,11 @@ private slots:
     void fileOutput();
     void levelFilter();
     void rotation();
+    void rotationIsOffAtZeroSize();
     void consoleOnly();
+    void unopenableFileKeepsConsoleOutput();
     void writeWithCategory();
+    void writeTakesACategoryName();
     void shutdownRestoresHandler();
 };
 
@@ -136,6 +139,33 @@ void tst_QxLogger::rotation()
     QVERIFY(!QFile::exists(logFile + ".3"));
 }
 
+/*!
+ * Options::maxFileSize says a value of zero or less disables rotation. That is
+ * a promise a caller can rely on to keep one growing file instead of a set of
+ * numbered ones, so it is pinned: nothing is rotated away and nothing is lost.
+ */
+void tst_QxLogger::rotationIsOffAtZeroSize()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString logFile = dir.filePath("grow.log");
+    QxLogger::Options options;
+    options.fileName = logFile;
+    options.maxFileSize = 0;
+    options.toConsole = false;
+    QVERIFY(QxLogger::init(options));
+
+    for (int i = 0; i < 40; ++i) {
+        qWarning() << "growing line" << i << QString(60, QLatin1Char('x'));
+    }
+    QxLogger::flush();
+
+    QVERIFY(!QFile::exists(logFile + ".1"));
+    QCOMPARE(countLines(logFile), 40);
+    QVERIFY(QFileInfo(logFile).size() > 256);
+}
+
 void tst_QxLogger::consoleOnly()
 {
     QxLogger::Options options;
@@ -147,6 +177,31 @@ void tst_QxLogger::consoleOnly()
 
     qWarning() << "no file was configured";
     QxLogger::flush();   // must not crash without a file
+}
+
+/*!
+ * A log file that cannot be opened is not a failure of the logger. The message
+ * handler was installed before the file was touched, so messages are still
+ * captured - which is what the header means by "console output is still
+ * active" - and only fileName() reports that there is no file behind it.
+ */
+void tst_QxLogger::unopenableFileKeepsConsoleOutput()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    QxLogger::Options options;
+    options.fileName = dir.path();   // a directory: the open has to fail
+    options.toConsole = false;
+
+    QVERIFY(!QxLogger::init(options));
+    QVERIFY(QxLogger::isEnabled());
+    QCOMPARE(QxLogger::fileName(), QString());
+
+    // The handler is installed and has no file to write to: this must be a
+    // no-op rather than a crash.
+    qWarning() << "nowhere to go";
+    QxLogger::flush();
 }
 
 void tst_QxLogger::writeWithCategory()
@@ -168,6 +223,36 @@ void tst_QxLogger::writeWithCategory()
     QVERIFY(text.contains("[C]"));
     QVERIFY(text.contains("qxcore.test:"));
     QVERIFY(text.contains("categorized"));
+}
+
+/*!
+ * The other write() overload takes the category by name. It is what the
+ * installed handler calls, so it is reachable without a QLoggingCategory in
+ * hand - and the level filter has to apply to it exactly as it does to a
+ * message that went through qDebug() and friends.
+ */
+void tst_QxLogger::writeTakesACategoryName()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString logFile = dir.filePath("by-name.log");
+    QxLogger::Options options;
+    options.fileName = logFile;
+    options.level = QxLogger::Info;
+    options.toConsole = false;
+    QVERIFY(QxLogger::init(options));
+
+    QxLogger::write(QxLogger::Info, QStringLiteral("qxcore.by-name"), QStringLiteral("named"));
+    QxLogger::write(QxLogger::Debug, QStringLiteral("qxcore.by-name"), QStringLiteral("filtered out"));
+    QxLogger::flush();
+
+    const QString text = readAll(logFile);
+    QVERIFY(text.contains("[I]"));
+    QVERIFY(text.contains("qxcore.by-name:"));
+    QVERIFY(text.contains("named"));
+    QVERIFY(!text.contains("filtered out"));
+    QCOMPARE(countLines(logFile), 1);
 }
 
 void tst_QxLogger::shutdownRestoresHandler()

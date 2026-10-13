@@ -16,6 +16,8 @@ private slots:
     void removeAndClear();
     void persistence();
     void migration();
+    void versionKeyIsConfigurable();
+    void underlyingSettingsIsReachable();
 };
 
 void tst_QxSettings::defaults()
@@ -187,6 +189,66 @@ void tst_QxSettings::migration()
     // a "downgrade": the stored version stays where it is.
     QCOMPARE(settings.migrate(1), 0);
     QCOMPARE(settings.version(), 3);
+}
+
+/*!
+ * "version" is a name an application may already be using for something else,
+ * which is why setVersionKey() exists. Both version() and migrate() have to
+ * follow the configured key rather than the default one.
+ */
+void tst_QxSettings::versionKeyIsConfigurable()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString fileName = dir.filePath("custom-key.ini");
+    QxSettings settings(fileName, QSettings::IniFormat);
+    QCOMPARE(settings.versionKey(), QStringLiteral("version"));
+
+    settings.setVersionKey(QStringLiteral("layoutVersion"));
+    QCOMPARE(settings.versionKey(), QStringLiteral("layoutVersion"));
+    settings.setVersion(4);
+    QCOMPARE(settings.version(), 4);
+    settings.sync();
+
+    // Stored under the configured key, and the default one stays untouched -
+    // which is the whole point of letting the key be chosen.
+    QxSettings reader(fileName, QSettings::IniFormat);
+    QCOMPARE(reader.contains(QStringLiteral("layoutVersion")), true);
+    QCOMPARE(reader.contains(QStringLiteral("version")), false);
+
+    // migrate() reads and writes that same configured key.
+    QxSettings migrating(fileName, QSettings::IniFormat);
+    migrating.setVersionKey(QStringLiteral("layoutVersion"));
+    QCOMPARE(migrating.version(), 4);
+    int ran = 0;
+    migrating.addMigration(5, [&ran](QxSettings &) {
+        ++ran;
+    });
+    QCOMPARE(migrating.migrate(5), 1);
+    QCOMPARE(ran, 1);
+    QCOMPARE(migrating.version(), 5);
+}
+
+/*!
+ * settings() hands back the QSettings the object owns. It is there so a caller
+ * that needs something QxSettings does not wrap can still reach it, and the two
+ * views have to agree about what is stored in either direction.
+ */
+void tst_QxSettings::underlyingSettingsIsReachable()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    QxSettings settings(dir.filePath("underlying.ini"), QSettings::IniFormat);
+    QVERIFY(settings.settings() != Q_NULLPTR);
+    QCOMPARE(settings.fileName(), settings.settings()->fileName());
+
+    settings.setValue(QStringLiteral("k"), 3);
+    QCOMPARE(settings.settings()->value(QStringLiteral("k")).toInt(), 3);
+
+    settings.settings()->setValue(QStringLiteral("k"), 4);
+    QCOMPARE(settings.intValue(QStringLiteral("k")), 4);
 }
 
 TEST_ADD(tst_QxSettings)
