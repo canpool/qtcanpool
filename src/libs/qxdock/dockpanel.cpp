@@ -595,7 +595,11 @@ void DockPanel::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex)
 
     // If this is already an auto hide container, then move it to new location
     if (isAutoHide()) {
-        d->m_autoHideContainer->moveToNewSideBarArea(area, tabIndex);
+        // Same DockSideBarNone handling as DockWidget::setAutoHide(): a call
+        // that names no side leaves the panel on the side it is already on,
+        // instead of asking the container for a side bar it never built.
+        auto targetArea = (Qx::DockSideBarNone == area) ? d->m_autoHideContainer->sideBarArea() : area;
+        d->m_autoHideContainer->moveToNewSideBarArea(targetArea, tabIndex);
         return;
     }
 

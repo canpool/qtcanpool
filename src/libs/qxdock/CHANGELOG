@@ -14,6 +14,14 @@ Bugfix
   elsewhere runs with no content on purpose: takeWidget() is the documented way
   for a caller to take it back, and showDockWidget() rebuilds it from the widget
   factory. Closing such a widget dereferenced a null pointer.
+- Pinning an already pinned widget crashed. DockWidget::setAutoHide() and
+  DockPanel::setAutoHide() both take DockSideBarNone to mean "no particular
+  side was asked for", but only substituted a real side on the path that creates
+  the auto hide container. The path that moves an already pinned widget to
+  another side bar passed None on, and a container only ever builds a side bar
+  for the four sides, so the lookup came back null and was dereferenced. The
+  "Pin" entry of the tab context menu reaches it: it calls setAutoHide(true)
+  with the default area, and it is offered for a widget that is already pinned.
 
 Cleanup
 - Remove three private fields that were maintained but never read: the container's

@@ -975,7 +975,12 @@ void DockWidget::setAutoHide(bool enable, Qx::DockSideBarArea area, int tabIndex
     if (!enable) {
         panel->setAutoHide(false);
     } else if (isAutoHide()) {
-        autoHideContainer()->moveToNewSideBarArea(area);
+        // DockSideBarNone means "no particular side was asked for". For a
+        // widget that is already pinned the current side is the answer, and
+        // it has to be substituted here rather than passed on: a container
+        // only ever builds a side bar for the four sides, so None would come
+        // back as a null side bar to move the widget to.
+        autoHideContainer()->moveToNewSideBarArea(area == Qx::DockSideBarNone ? autoHideArea() : area);
     } else {
         auto location = (Qx::DockSideBarNone == area) ? panel->calculateSideBarArea() : area;
         dockContainer()->createAndSetupAutoHideContainer(location, this, tabIndex);

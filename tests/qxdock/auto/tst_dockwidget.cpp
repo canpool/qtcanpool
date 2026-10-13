@@ -2,6 +2,7 @@
 
 #include "qxdock/dockautohidecontainer.h"
 #include "qxdock/dockmanager.h"
+#include "qxdock/dockpanel.h"
 #include "qxdock/docksidebar.h"
 #include "qxdock/docksidetab.h"
 #include "qxdock/dockwidget.h"
@@ -17,6 +18,8 @@ private slots:
     void lockedFeatures();
     void deleteContentOnClose();
     void autoHideSideTab();
+    void repinAlreadyPinned();
+    void repinPanelAlreadyPinned();
 };
 
 void tst_DockWidget::feature()
@@ -129,6 +132,75 @@ void tst_DockWidget::autoHideSideTab()
 
     QCOMPARE(sideBar->count(), 1);
     QCOMPARE(container->autoHideTab(), tab);
+}
+
+/*
+ * Pinning an already pinned widget has to leave it where it is.
+ *
+ * The tab context menu offers "Pin" next to "Pin To...", and that entry calls
+ * DockWidget::setAutoHide(true) with no area, so the area argument keeps its
+ * default of DockSideBarNone. The "nothing changes" guard at the top of
+ * setAutoHide() compares that None against the area the widget is actually
+ * pinned to, finds them different, and lets the call through to the branch that
+ * moves the widget to another side bar - with None, which is not one of the
+ * four sides a container ever builds a side bar for.
+ */
+void tst_DockWidget::repinAlreadyPinned()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    QVERIFY(wd.addDockWidget(Qx::CenterDockWidgetArea, dw1));
+
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockAutoHideContainer *container = wd.addAutoHideDockWidget(Qx::DockSideBarLeft, dw2);
+    QVERIFY(container);
+    QCOMPARE(dw2->isAutoHide(), true);
+    QCOMPARE(dw2->autoHideArea(), Qx::DockSideBarLeft);
+    QCOMPARE(container->autoHideSideBar()->count(), 1);
+
+    dw2->setAutoHide(true);
+
+    QCOMPARE(dw2->isAutoHide(), true);
+    QCOMPARE(dw2->autoHideArea(), Qx::DockSideBarLeft);
+    QCOMPARE(dw2->autoHideContainer(), container);
+    QCOMPARE(container->autoHideSideBar()->count(), 1);
+}
+
+/*
+ * DockPanel::setAutoHide() is the panel level twin of the call above and is
+ * part of the exported API, so it has to answer DockSideBarNone the same way.
+ *
+ * The panel that a pinned widget lives in is the auto hide container's own
+ * panel, so it reports isAutoHide() as true and reaches the same "move to
+ * another side bar" branch.
+ */
+void tst_DockWidget::repinPanelAlreadyPinned()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    QVERIFY(wd.addDockWidget(Qx::CenterDockWidgetArea, dw1));
+
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockAutoHideContainer *container = wd.addAutoHideDockWidget(Qx::DockSideBarRight, dw2);
+    QVERIFY(container);
+
+    DockPanel *panel = dw2->dockPanel();
+    QVERIFY(panel);
+    QCOMPARE(panel->isAutoHide(), true);
+
+    panel->setAutoHide(true);
+
+    QCOMPARE(panel->isAutoHide(), true);
+    QCOMPARE(dw2->isAutoHide(), true);
+    QCOMPARE(dw2->autoHideArea(), Qx::DockSideBarRight);
+    QCOMPARE(dw2->autoHideContainer(), container);
+    QCOMPARE(container->autoHideSideBar()->count(), 1);
 }
 
 TEST_ADD(tst_DockWidget)
