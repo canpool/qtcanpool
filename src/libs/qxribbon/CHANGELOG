@@ -1,3 +1,11 @@
+Unreleased
+---
+Cleanup
+- Drop the Qt 5.7 branches in RibbonGridContainerPrivate::init() and
+  RibbonCustomizeWidget::initConnection(). Both guarded the QOverload spelling
+  of the connect() calls against the static_cast spelling, and the threshold is
+  below the 5.15 minimum, so the QOverload form is now used unconditionally.
+
 0.12.1
 ---
 Bugfix

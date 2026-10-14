@@ -1,3 +1,10 @@
+Unreleased
+---
+Cleanup
+- Drop the Qt 5.14 guard around the private qwinregistry_p.h include in
+  windowkit_win.h. The header exists since 5.14, below the 5.15 minimum, so it
+  is now included unconditionally.
+
 0.3.1
 ---
 Cleanup

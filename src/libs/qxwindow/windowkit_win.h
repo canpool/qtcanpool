@@ -8,9 +8,9 @@
 #include <QtCore/qglobal.h>
 #include <QtCore/qt_windows.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+// Qt's own registry key class, in a private header since Qt 5.14 - below the
+// minimum supported version, so it is included unconditionally.
 #include <QtCore/private/qwinregistry_p.h>
-#endif
 
 #include <QStringView>
 #include <QPair>

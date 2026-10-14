@@ -1,3 +1,13 @@
+Unreleased
+---
+Cleanup
+- Drop the Qt 5.12.2 branch in DockFloatingContainer::event(). The threshold
+  sits below the 5.15 minimum K1 set, so the "#if" side is the one that always
+  ran: the workaround for the wrong mouse button that
+  QEvent::NonClientAreaMouseButtonPress reports from 5.12.2 on is now
+  unconditional, and the "#else" side that checked for the left mouse button is
+  gone.
+
 0.2.2
 ---
 Bugfix

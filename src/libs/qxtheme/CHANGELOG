@@ -1,3 +1,11 @@
+Unreleased
+---
+Cleanup
+- Drop the Qt 5.12 guard around QPalette::PlaceholderText in buildPalette(),
+  which both the light and the dark scheme go through. The role exists since
+  5.12, below the 5.15 minimum, so the placeholder colour is now set
+  unconditionally.
+
 0.1.1
 ---
 Bugfix

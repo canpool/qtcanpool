@@ -680,17 +680,10 @@ RibbonCustomizeWidget::~RibbonCustomizeWidget()
 
 void RibbonCustomizeWidget::initConnection()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
     connect(ui->comboBoxActionIndex, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
             &RibbonCustomizeWidget::onComboBoxActionIndexCurrentIndexChanged);
     connect(ui->radioButtonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), this,
             &RibbonCustomizeWidget::onRadioButtonGroupButtonClicked);
-#else
-    connect(ui->comboBoxActionIndex, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
-            &RibbonCustomizeWidget::onComboBoxActionIndexCurrentIndexChanged);
-    connect(ui->radioButtonGroup, static_cast<void (QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
-            this, &RibbonCustomizeWidget::onRadioButtonGroupButtonClicked);
-#endif
     connect(ui->pushButtonNewPage, &QPushButton::clicked, this, &RibbonCustomizeWidget::onPushButtonNewPageClicked);
     connect(ui->pushButtonNewGroup, &QPushButton::clicked, this, &RibbonCustomizeWidget::onPushButtonNewGroupClicked);
     connect(ui->pushButtonRename, &QPushButton::clicked, this, &RibbonCustomizeWidget::onPushButtonRenameClicked);

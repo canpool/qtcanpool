@@ -53,9 +53,9 @@ QPalette buildPalette(const Scheme &s)
     p.setColor(QPalette::HighlightedText, s.highlightText);
     p.setColor(QPalette::Link, s.highlight);
     p.setColor(QPalette::LinkVisited, s.highlight.darker(120));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    // QPalette::PlaceholderText exists since Qt 5.12, below the minimum
+    // supported version, so it is set unconditionally.
     p.setColor(QPalette::PlaceholderText, s.textDisabled);
-#endif
 
     // Disabled group: the style sheets mostly do not cover it, so the palette
     // has to provide readable-but-muted text.

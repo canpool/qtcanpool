@@ -240,13 +240,8 @@ void RibbonGridContainerPrivate::init()
 
     m_buttonGroup = new QButtonGroup(q);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-    QObject::connect(m_buttonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked),
-#else
-    QObject::connect(m_buttonGroup,
-                     static_cast<void (QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
-#endif
-                     q, [q](QAbstractButton *) {
+    QObject::connect(m_buttonGroup, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), q,
+                     [q](QAbstractButton *) {
                          QWidget *parWidget = q->parentWidget();
                          while (parWidget) {
                              if (RibbonMenu *menu = qobject_cast<RibbonMenu *>(parWidget)) {

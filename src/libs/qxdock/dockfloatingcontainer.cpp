@@ -784,21 +784,13 @@ bool DockFloatingContainer::event(QEvent *e)
     Q_D(DockFloatingContainer);
     switch (d->m_draggingState) {
     case Qx::DockDraggingInactive: {
-        // Normally we would check here, if the left mouse button is pressed.
-        // But from QT version 5.12.2 on the mouse events from
-        // QEvent::NonClientAreaMouseButtonPress return the wrong mouse button
-        // The event always returns Qt::RightButton even if the left button
-        // is clicked.
-        // It is really great to work around the whole NonClientMouseArea
-        // bugs
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 2))
-        if (e->type() ==
-            QEvent::NonClientAreaMouseButtonPress /*&& QGuiApplication::mouseButtons().testFlag(Qt::LeftButton)*/)
-#else
-        if (e->type() == QEvent::NonClientAreaMouseButtonPress &&
-            QGuiApplication::mouseButtons().testFlag(Qt::LeftButton))
-#endif
-        {
+        // The left mouse button is deliberately not checked here: from Qt 5.12.2
+        // on, the mouse events from QEvent::NonClientAreaMouseButtonPress report
+        // the wrong mouse button - the event always returns Qt::RightButton even
+        // if the left button was clicked. The minimum supported Qt version is
+        // above that one, so the workaround is unconditional. It is really great
+        // to work around the whole NonClientMouseArea bugs.
+        if (e->type() == QEvent::NonClientAreaMouseButtonPress) {
             QX_DOCK_PRINT("FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type());
             d->setState(Qx::DockDraggingMousePressed);
         }
