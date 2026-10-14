@@ -14,8 +14,10 @@
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
+#include <QtCore/QMargins>
 #include <QtCore/QSettings>
 #include <QtGui/QIcon>
+#include <QtWidgets/QLayout>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QStackedWidget>
@@ -44,6 +46,7 @@ private slots:
     void removalShiftsSelection();
     void itemProperties();
     void outOfRangeIsHarmless();
+    void entriesFillTheRail();
 };
 
 void tst_QxNavigationBar::items()
@@ -178,6 +181,30 @@ void tst_QxNavigationBar::itemProperties()
 
     // The rail keeps its width; the window grows around it.
     QCOMPARE(bar.sizePolicy().horizontalPolicy(), QSizePolicy::Fixed);
+}
+
+void tst_QxNavigationBar::entriesFillTheRail()
+{
+    QxNavigationBar bar;
+    bar.addItem(QIcon(), QStringLiteral("Overview"));
+    bar.addItem(QIcon(), QStringLiteral("Editor"));
+    bar.addItem(QIcon(), QStringLiteral("Log"));
+
+    // The rail is as wide as its widest entry (QSizePolicy::Fixed), so the
+    // entries have to take that width themselves. A QToolButton defaults to a
+    // fixed width and would leave the shorter ones floating inside the rail.
+    bar.resize(200, 300);
+    bar.show();
+    QTest::qWait(30);
+
+    // The rail's own margins are the only thing between an entry and the rail
+    // edge; the widget's contentsRect does not mirror the layout's margins.
+    const QMargins margins = bar.layout()->contentsMargins();
+    const int innerWidth = bar.width() - margins.left() - margins.right();
+    QVERIFY(innerWidth > 0);
+    for (int i = 0; i < bar.count(); ++i) {
+        QCOMPARE(bar.button(i)->width(), innerWidth);
+    }
 }
 
 void tst_QxNavigationBar::outOfRangeIsHarmless()

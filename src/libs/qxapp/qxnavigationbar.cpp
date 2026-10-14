@@ -128,6 +128,10 @@ void QxNavigationBar::insertItem(int index, const QIcon &icon, const QString &te
     button->setIconSize(d->m_iconSize);
     button->setIcon(icon);
     button->setText(text);
+    // The rail is as wide as its widest entry, so every entry has to take that
+    // width: a QToolButton defaults to a fixed width and would otherwise leave
+    // the shorter entries floating in the middle of the rail.
+    button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     d->m_layout->insertWidget(index, button);
     d->m_buttons.insert(index, button);
