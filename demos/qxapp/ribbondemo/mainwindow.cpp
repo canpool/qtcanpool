@@ -1067,11 +1067,8 @@ QAction *MainWindow::createAction(const QString &text, const QString &iconurl, c
 
 QAction *MainWindow::createAction(const QString &text, const QString &iconurl)
 {
-    QAction *act = new QAction(this);
-    act->setText(text);
-    act->setIcon(QIcon(iconurl));
-    act->setObjectName(text);
-    return act;
+    // The object name is the text when the caller does not name the action itself.
+    return createAction(text, iconurl, text);
 }
 
 QAction *MainWindow::addThemeAction(QAction *action, int themeId)
