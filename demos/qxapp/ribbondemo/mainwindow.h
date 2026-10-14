@@ -66,7 +66,6 @@ public slots:
 
 private slots:
     void onMenuButtonPopupCheckableTest(bool b);
-    void onInstantPopupCheckableTest(bool b);
     void onDelayedPopupCheckableTest(bool b);
     void onMenuButtonPopupCheckabletriggered(bool b);
     void onInstantPopupCheckabletriggered(bool b);

@@ -42,8 +42,6 @@
 #include <QXmlStreamWriter>
 #include <QDialog>
 #include <QActionGroup>
-#include <QMdiArea>
-#include <QSplitter>
 #include <QTimer>
 
 #include "aboutdialog.h"
@@ -62,9 +60,6 @@ QX_RIBBON_USE_NAMESPACE
         m_edit->append(QString("%1 cost %2 ms(%3)").arg(STR).arg(___TMP_INT - __TMP_LASTTIMES).arg(___TMP_INT));       \
         __TMP_LASTTIMES = ___TMP_INT;                                                                                  \
     } while (0)
-
-#define QXRIBBON_TEST_MDIAREA          0
-#define QXRIBBON_TEST_CUSTOMIZE_APPBTN 1
 
 MainWindow::MainWindow(QWidget *par)
     : MyRibbonWindow(par)
@@ -121,18 +116,7 @@ void MainWindow::createCentralWidget()
     m_edit = new QTextEdit(this);
     m_edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_edit->setLineWrapMode(QTextEdit::NoWrap);
-#if QXRIBBON_TEST_MDIAREA
-    QMdiArea *area = new QMdiArea(this);
-    QTextEdit *te = new QTextEdit(this);
-    area->addSubWindow(te);
-    QSplitter *splitter = new QSplitter(this);
-    splitter->addWidget(m_edit);
-    splitter->addWidget(area);
-    splitter->setSizes({400, 200});
-    setCentralWidget(splitter);
-#else
     setCentralWidget(m_edit);
-#endif
 }
 
 void MainWindow::createStatusBar()
@@ -1009,7 +993,6 @@ void MainWindow::createRightButtonGroup()
 
 void MainWindow::createApplicationButton()
 {
-#if QXRIBBON_TEST_CUSTOMIZE_APPBTN
     // NOTE: a custom QToolButton used as the application button sinks on press - that is QToolButton's
     // standard pressed look. RibbonApplicationButton avoids it, but qxribbon's stylesheet does not reach
     // a caller-supplied QToolButton. See doc/pages/limitations.md, "custom QToolButton application button
@@ -1029,9 +1012,6 @@ void MainWindow::createApplicationButton()
     appMenu->addAction(createAction(tr("cut"), ":/icon/res/cut.svg"));
     appBtn->setMenu(appMenu);
     ribbonBar()->setApplicationButton(appBtn);
-#else
-    setApplicationButton(ribbonBar()->applicationButton());
-#endif
 }
 
 void MainWindow::addSomeOtherAction()
@@ -1309,11 +1289,6 @@ void MainWindow::onApplicationButtonClicked()
 void MainWindow::onMenuButtonPopupCheckableTest(bool b)
 {
     m_edit->append(QString("MenuButtonPopupCheckableTest : %1").arg(b));
-}
-
-void MainWindow::onInstantPopupCheckableTest(bool b)
-{
-    m_edit->append(QString("InstantPopupCheckableTest : %1").arg(b));
 }
 
 void MainWindow::onDelayedPopupCheckableTest(bool b)
