@@ -1,3 +1,16 @@
+Unreleased
+---
+Bugfix
+- QxNavigationBar did not stretch its entries across the rail. The bar pins
+  itself to QSizePolicy::Fixed horizontally, so the shell's layout gives it
+  the width of its widest entry, but the entries themselves were plain
+  QToolButtons with the default fixed width - a shorter entry therefore
+  floated in the middle of the rail instead of spanning it, which is what
+  the AppShell demo showed with three entries hinting 128, 104 and 68 pixels
+  inside a 132 pixel rail. The entries now expand horizontally, so each one
+  takes the rail's full inner width while the rail keeps its own width.
+  tst_QxNavigationBar covers it.
+
 0.1.1
 ---
 Cleanup
