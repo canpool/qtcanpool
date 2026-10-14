@@ -209,9 +209,15 @@ jobs:
 
       - name: Check formatting
         run: |
+          # A pathspec like 'dir/**/*.cpp' needs at least one directory between
+          # dir/ and the file - it does not match 'dir/file.cpp'. Every source
+          # under examples/ used to sit at least one level down, so the glob
+          # looked complete; examples/main.cpp is at the root of that tree and
+          # was silently unchecked. Hence the extra pair of patterns.
           FILES=$(git ls-files \
             'src/**/*.h' 'src/**/*.cpp' \
             'demos/**/*.h' 'demos/**/*.cpp' \
+            'examples/*.h' 'examples/*.cpp' \
             'examples/**/*.h' 'examples/**/*.cpp' \
             'tests/**/*.h' 'tests/**/*.cpp' \
             'projects/**/*.h' 'projects/**/*.cpp')
