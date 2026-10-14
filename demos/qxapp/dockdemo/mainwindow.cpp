@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
 
     m_dockWindow = new DockWindow();
-    DockWindow *dockwindow = m_dockWindow;
 
     QTextEdit *te = nullptr;
     QWidget *cw = nullptr;
@@ -37,77 +36,73 @@ MainWindow::MainWindow(QWidget *parent)
     w->setIcon(QIcon(":/res/tab.svg"));
     w->setWidget(te);
     viewMenu->addAction(w->toggleViewAction());
-    DockPanel *panel = dockwindow->addDockWidget(Qx::LeftDockWidgetArea, w);
+    DockPanel *panel = m_dockWindow->addDockWidget(Qx::LeftDockWidgetArea, w);
 
     w = new DockWidget(tr("dock2"));
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
+    m_dockWindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
     cw = new QWidget();
     w = new DockWidget(tr("looooooooooooooooongdock"));
     w->setWidget(cw, DockWidget::ForceScrollArea);
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
+    m_dockWindow->addDockWidget(Qx::RightDockWidgetArea, w, panel);
 
     w = new DockWidget(tr("dock4"));
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);   // tabified with dock1
+    m_dockWindow->addDockWidget(Qx::CenterDockWidgetArea, w, panel);   // tabified with dock1
 
     w = new DockWidget(tr("dock5"));
     viewMenu->addAction(w->toggleViewAction());
     // tabified with dock1, because of dock1 panel is Left area panel
-    dockwindow->addDockWidgetTab(Qx::LeftDockWidgetArea, w);
+    m_dockWindow->addDockWidgetTab(Qx::LeftDockWidgetArea, w);
 
     w = new DockWidget(tr("dock3"));
     viewMenu->addAction(w->toggleViewAction());
-    panel = dockwindow->addDockWidget(Qx::BottomDockWidgetArea, w);
+    panel = m_dockWindow->addDockWidget(Qx::BottomDockWidgetArea, w);
 
     cw = new QWidget();
     w = new DockWidget(tr("dock6"));
     w->setWidget(cw, DockWidget::ForceNoScrollArea);
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addDockWidgetTab(w, panel);   // tabified with dock3
+    m_dockWindow->addDockWidgetTab(w, panel);   // tabified with dock3
 
     cw = new QWidget();
     w = new DockWidget(tr("auto1"));
     w->setWidget(cw);
     viewMenu->addAction(w->toggleViewAction());
-    dockwindow->addAutoHideDockWidget(Qx::DockSideBarLeft, w);
+    m_dockWindow->addAutoHideDockWidget(Qx::DockSideBarLeft, w);
 
     // edit menu
     QMenu *editMenu = mb->addMenu(tr("Edit"));
-    editMenu->addAction(tr("saveState"), [=]() {
-        this->saveState();
+    editMenu->addAction(tr("saveState"), [this]() {
+        saveToSettings();
     });
-    editMenu->addAction(tr("restoreState"), [=]() {
-        this->restoreState();
+    editMenu->addAction(tr("restoreState"), [this]() {
+        restoreFromSettings();
     });
 
-    setCentralWidget(dockwindow);
+    setCentralWidget(m_dockWindow);
 
     QToolBar *tb = addToolBar(tr("tb1"));
     tb->setObjectName("tb1");
     QAction *a = tb->addAction("Lock Workspace");
     a->setCheckable(true);
     a->setChecked(false);
-    connect(a, &QAction::triggered, this, [=](bool checked) {
+    connect(a, &QAction::triggered, this, [this](bool checked) {
         if (checked) {
-            this->m_dockWindow->lockDockWidgetFeaturesGlobally();
+            m_dockWindow->lockDockWidgetFeaturesGlobally();
         } else {
-            this->m_dockWindow->lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures);
+            m_dockWindow->lockDockWidgetFeaturesGlobally(DockWidget::NoDockWidgetFeatures);
         }
     });
 
     resize(800, 600);
 
-    restoreState();
+    restoreFromSettings();
 }
 
-MainWindow::~MainWindow()
-{
-}
-
-void MainWindow::saveState()
+void MainWindow::saveToSettings()
 {
     QSettings settings("Settings.ini", QSettings::IniFormat);
     settings.setValue("mainWindow/Geometry", this->saveGeometry());
@@ -115,7 +110,7 @@ void MainWindow::saveState()
     settings.setValue("mainWindow/DockingState", m_dockWindow->saveState());
 }
 
-void MainWindow::restoreState()
+void MainWindow::restoreFromSettings()
 {
     QSettings settings("Settings.ini", QSettings::IniFormat);
     this->restoreGeometry(settings.value("mainWindow/Geometry").toByteArray());
@@ -125,6 +120,6 @@ void MainWindow::restoreState()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    saveState();
+    saveToSettings();
     QMainWindow::closeEvent(event);
 }
