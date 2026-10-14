@@ -187,6 +187,57 @@ jobs:
           fi
           exit "${STATUS}"
 
+  qt612:
+    # Qt 6.12 LTS, report only. 6.12.0 shipped on 2026-09-30 as the LTS that
+    # follows 6.8, and decision K31 reserved a 6.12 verification leg for 4.5 -
+    # but "add a leg" touches nothing under src/libs, so a patch release can
+    # carry it, and having it green before 4.5 starts means the feature work
+    # there does not walk into a pile of 6.12 deprecations first.
+    #
+    # Report only, and a job of its own rather than a fifth entry in `build`'s
+    # matrix. Local development is on 6.8.3, so nobody has compiled this tree
+    # against 6.12 yet and the first run may well be red; and this repository
+    # integrates by pushing to master, with no pull request standing in front
+    # of the gate, so a red gating leg would hold up every push until the
+    # fallout is triaged. Same reasoning that made `native` a job of its own:
+    # a non-gating job must not share a job with a gate.
+    #
+    # One Linux leg, not three: the point of this job is whether the tree
+    # compiles and the tests pass against 6.12 at all, which is a property of
+    # the code and not of the platform - and `build` already covers the three
+    # platforms on 6.8. Promoting it to a gate is a one-line change (drop
+    # continue-on-error, move the entry into the matrix) once it is green.
+    name: Qt 6.12 (report only)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.12.0'
+          cache: true
+
+      - name: Configure
+        # A build directory of its own: the gate's `build` must stay built
+        # against 6.8, because the SDK-consumption steps below it install from
+        # that directory and nobody has agreed to move them to 6.12.
+        run: >
+          cmake -S . -B build-qt612
+          -DCMAKE_BUILD_TYPE=Release
+          -DWITH_DEMOS=ON
+          -DWITH_TESTS=ON
+
+      - name: Build
+        run: cmake --build build-qt612 --config Release --parallel
+
+      - name: Test
+        env:
+          # Headless CI runner: use the offscreen platform to avoid GUI test failures.
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build-qt612 -C Release --output-on-failure --timeout 120
+
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
     # so any unformatted change now fails the build.
