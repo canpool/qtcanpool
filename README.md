@@ -109,7 +109,7 @@ ctest --test-dir build -C Release --output-on-failure
 - 各功能开关（`WITH_DEMOS`、`WITH_TESTS`、`WITH_DOCS` 等）可通过 `cmake -S . -B build -LH` 查看
 - `-DWITH_DOCS=ON` 会把文档站点目标 `docs` 一并加入主构建（只需 Doxygen）；只想要文档时用上面的 `cmake -S doc -B build-docs`
 - 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`
-- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）、`IdeShellDemo`（插件化外壳：宿主不认识任何模块）
+- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）、`QxWindowDemo`（无边框窗口：自绘标题栏 + 窗口材质）、`IdeShellDemo`（插件化外壳：宿主不认识任何模块）
 
 安装与下游消费：
 
@@ -198,6 +198,8 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 **appshell** —— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（<https://canpool.github.io/qtcanpool/demo/>），构建：`cmake --preset qt6 && cmake --build --preset qt6`。
 
+**qxwindow** —— 无边框窗口示例（构建目标 `QxWindowDemo`）：窗口代理 `setup` 装到窗口上，标题栏、菜单栏与四个系统按钮全部由示例自己搭，并演示整套窗口材质（Windows 的 DWM blur / acrylic / mica / mica alt，macOS 的毛玻璃）。
+
 ## 应用案例
 
 **MyCAD**
@@ -209,7 +211,7 @@ MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成
 
 ## 快速体验
 
-下载源码，使用 Qt Creator 打开根目录 `CMakeLists.txt`，在目标中选择 `RibbonDemo`、`DockDemo`、`AppShellDemo` 或 `IdeShellDemo` 运行即可体验（命令行构建见上文「构建」一节）。
+下载源码，使用 Qt Creator 打开根目录 `CMakeLists.txt`，在目标中选择 `RibbonDemo`、`DockDemo`、`AppShellDemo`、`QxWindowDemo` 或 `IdeShellDemo` 运行即可体验（命令行构建见上文「构建」一节）。
 
 ## 扩展
 

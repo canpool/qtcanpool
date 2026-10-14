@@ -230,8 +230,9 @@ cmake --build build --target docs
 | `ribbondemo` | `RibbonDemo` | Ribbon 界面：页、分组、快捷工具栏、应用按钮 |
 | `dockdemo` | `DockDemo` | 可停靠窗口：中央区域、浮动、标签化、布局保存 |
 | `appshell` | `AppShellDemo` | 应用外壳：导航轨 + 页面栈 + 停靠区 + 主题 + 启动屏 + 布局持久化 |
+| `qxwindow` | `QxWindowDemo` | 无边框窗口：自绘标题栏 + 四个系统按钮 + 整套窗口材质（DWM blur / acrylic / mica，macOS 毛玻璃） |
 
-`examples/` 下另有 22 个更细粒度的控件示例，同样由 CMake 构建，可用
+`examples/` 下另有 23 个更细粒度的控件示例，同样由 CMake 构建，可用
 `-DWITH_EXAMPLES=OFF` 关掉（默认随构建一起编译，但不安装）。
 
 ## 安装与消费
