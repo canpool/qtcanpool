@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/dark-style.css</file>
+        <file>res/light-style.css</file>
+        <file>res/window-bar/app-icon.png</file>
+        <file>res/window-bar/close.svg</file>
+        <file>res/window-bar/maximize.svg</file>
+        <file>res/window-bar/minimize.svg</file>
+        <file>res/window-bar/more-line.svg</file>
+        <file>res/window-bar/restore.svg</file>
+    </qresource>
+</RCC>

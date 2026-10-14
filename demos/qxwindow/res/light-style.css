@@ -1,0 +1,126 @@
+/* Title bar */
+
+QFrame#win-title-bar[bar-active=true] {
+    background-color: #195ABE;
+}
+
+QFrame#win-title-bar[bar-active=false] {
+    background-color: #195ABE;
+}
+
+
+/* Title label */
+
+QLabel#win-title-label {
+    color: #ECECEC;
+    background-color: transparent;
+}
+
+
+/* System buttons */
+
+QToolButton#icon-button,
+QToolButton#min-button,
+QToolButton#max-button,
+QToolButton#close-button {
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+QToolButton#icon-button:hover,
+QToolButton#icon-button:pressed,
+QToolButton#min-button:hover,
+QToolButton#min-button:pressed,
+QToolButton#max-button:hover,
+QToolButton#max-button:pressed {
+    background-color: rgba(0, 0, 0, 15%);
+}
+
+QToolButton#close-button:hover,
+QToolButton#close-button:pressed {
+    background-color: #E81123;
+}
+
+
+/* Menu bar */
+
+QMenuBar {
+    background-color: transparent;
+}
+
+QMenuBar>QToolButton#qt_menubar_ext_button {
+    qproperty-icon: url(":/res/window-bar/more-line.svg");
+}
+
+QMenuBar>QToolButton#qt_menubar_ext_button:hover,
+QMenuBar>QToolButton#qt_menubar_ext_button:pressed {
+    background-color: rgba(255, 255, 255, 10%);
+}
+
+QMenuBar::item {
+    color: #EEEEEE;
+    padding: 8px 12px;
+    background-color: transparent;
+}
+
+QMenuBar::item:selected {
+    background-color: rgba(255, 255, 255, 10%);
+}
+
+
+/* Menu */
+
+QMenu {
+    padding: 4px;
+    background: white;
+    border: 1px solid #E0E0E0;
+}
+
+QMenu::indicator {
+    left: 6px;
+    width: 20px;
+    height: 20px;
+}
+
+QMenu::icon {
+    left: 6px;
+}
+
+QMenu::item {
+    color: #333333;
+    padding: 6px 24px;
+    background: transparent;
+}
+
+QMenu::item:selected {
+    background-color: rgba(0, 0, 0, 10%);
+}
+
+QMenu::item:disabled {
+    color: #CCCCCC;
+}
+
+QMenu::separator {
+    height: 2px;
+    background-color: #CCCCCC;
+    margin: 6px 0;
+}
+
+
+/* Window */
+
+MainWindow {
+    background-color: #F3F3F3;
+}
+
+MainWindow[custom-style=true] {
+    background-color: transparent;
+}
+
+QLabel#clock-widget {
+    font-size: 75px;
+    font-weight: bold;
+    color: #333333;
+    background-color: transparent;
+}
