@@ -63,7 +63,6 @@ QX_RIBBON_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *par)
     : MyRibbonWindow(par)
-    , m_themeGroup(nullptr)
 {
     setWindowTitle(tr("ribbon mainwindow demo"));
     setWindowIcon(QIcon(":/icon/res/logo.svg"));

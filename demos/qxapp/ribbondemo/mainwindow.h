@@ -86,13 +86,13 @@ private slots:
     void onButtonGroupActionTriggered(QAction *act);
     void onApplicationButtonClicked();
 private:
-    RibbonPageContext *m_pageContext;
-    RibbonPageContext *m_pageContext2;
-    QTextEdit *m_edit;
-    QActionGroup *m_themeGroup;
-    RibbonActionsManager *m_actMgr;
-    int m_actionTagText;
-    int m_actionTagWithIcon;
+    RibbonPageContext *m_pageContext = nullptr;
+    RibbonPageContext *m_pageContext2 = nullptr;
+    QTextEdit *m_edit = nullptr;
+    QActionGroup *m_themeGroup = nullptr;
+    RibbonActionsManager *m_actMgr = nullptr;
+    int m_actionTagText = 0;
+    int m_actionTagWithIcon = 0;
     QString m_customizeXml;
 };
 
