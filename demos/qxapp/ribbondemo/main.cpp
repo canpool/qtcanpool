@@ -9,9 +9,6 @@
 #include <QStyleFactory>
 #include <QTimer>
 
-// Sends qDebug output to stdout, with the context of the call that produced it.
-void log_out_put(QtMsgType type, const QMessageLogContext &context, const QString &msg);
-
 /**
  * @brief Sends qDebug output to stdout.
  * @param type
@@ -20,31 +17,37 @@ void log_out_put(QtMsgType type, const QMessageLogContext &context, const QStrin
  */
 void log_out_put(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    QByteArray localMsg = msg.toLocal8Bit();
-
+    // The five kinds of message write the same line and differ only in the tag
+    // in brackets, so the tag is chosen first and the line is written once. A
+    // type outside the enum prints like debug, which is what the default arm of
+    // the switch this replaced did, and abort() stays where it was: after the
+    // line, and only for a fatal.
+    const char *tag = "Debug";
     switch (type) {
-    case QtDebugMsg:
-        fprintf(stdout, "[Debug] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
     case QtInfoMsg:
-        fprintf(stdout, "[Info] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        tag = "Info";
         break;
     case QtWarningMsg:
-        fprintf(stdout, "[Warning] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line,
-                context.function);
+        tag = "Warning";
         break;
     case QtCriticalMsg:
-        fprintf(stdout, "[Critical] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line,
-                context.function);
+        tag = "Critical";
         break;
     case QtFatalMsg:
-        fprintf(stdout, "[Fatal] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        abort();
+        tag = "Fatal";
         break;
+    case QtDebugMsg:
     default:
-        fprintf(stdout, "[Debug] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
     }
+
+    const QByteArray localMsg = msg.toLocal8Bit();
+    fprintf(stdout, "[%s] %s (%s:%u, %s)\n", tag, localMsg.constData(), context.file, context.line, context.function);
+
+    if (type == QtFatalMsg) {
+        abort();
+    }
+
 #ifndef QT_NO_DEBUG_OUTPUT
     fflush(stdout);
 #endif
