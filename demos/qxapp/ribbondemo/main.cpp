@@ -9,11 +9,11 @@
 #include <QStyleFactory>
 #include <QTimer>
 
-// 重定向qdebug的打印
+// Sends qDebug output to stdout, with the context of the call that produced it.
 void log_out_put(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 /**
- * @brief 重定向qdebug的打印
+ * @brief Sends qDebug output to stdout.
  * @param type
  * @param context
  * @param msg

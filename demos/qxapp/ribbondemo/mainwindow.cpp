@@ -171,7 +171,7 @@ void MainWindow::createRibbon()
 
 void MainWindow::createPageHome()
 {
-    // 通过addPage函数添加标签页
+    // The page is added through the bar's own addPage().
     RibbonPage *page = ribbonBar()->addPage(tr("&Home"));
     page->setObjectName(("pageHome"));
 
@@ -179,7 +179,7 @@ void MainWindow::createPageHome()
     //! group 1 start
     //!
 
-    // 使用addGroup函数来创建RibbonGroup，效果和new RibbonGroup再addGroup一样
+    // addGroup() builds the group; new RibbonGroup + addGroup() does the same thing.
     RibbonGroup *groupStyle = page->addGroup(("ribbon style"));
 
     QAction *actHideRibbon = createAction(tr("hide ribbon"), ":/icon/res/hideRibbon.svg", "actHideRibbon");
@@ -197,7 +197,7 @@ void MainWindow::createPageHome()
     actShowMinimumButton->setCheckable(true);
     groupStyle->addSmallAction(actShowMinimumButton);
     connect(actShowMinimumButton, &QAction::triggered, this, [this](bool b) {
-        this->ribbonBar()->showMinimumButton(b);   // 显示ribbon最小化按钮
+        this->ribbonBar()->showMinimumButton(b);   // show the ribbon's minimize button
     });
     actShowMinimumButton->trigger();
 
@@ -466,7 +466,7 @@ void MainWindow::createPageHome()
 
 void MainWindow::createPageOther()
 {
-    // 添加其他标签页 - 直接new RibbonPage添加
+    // Another page, built by hand and handed to the bar.
     RibbonPage *page = new RibbonPage();
     page->setPageName(tr("&Other"));
     page->setObjectName(("pageOther"));
@@ -480,7 +480,7 @@ void MainWindow::createPageOther()
     group1->setObjectName("PageOther-group1");
     page->addGroup(group1);
 
-    // 按钮组
+    // button group
     RibbonButtonGroup *btnGroup1 = new RibbonButtonGroup(group1);
     btnGroup1->addAction(createAction(tr("Copy"), ":/icon/res/copy.svg"));
     btnGroup1->addAction(createAction(tr("Cut"), ":/icon/res/cut.svg"));
@@ -687,7 +687,7 @@ void MainWindow::createPageCustom()
 }
 
 /**
- * @brief 构建应用页
+ * @brief Builds the "Apply" page.
  * @param page
  */
 void MainWindow::createPageApply()
@@ -735,7 +735,7 @@ void MainWindow::createPageApply()
 }
 
 /**
- * @brief 创建上下文标签
+ * @brief Creates the context pages.
  */
 void MainWindow::createPageContext1()
 {
@@ -796,7 +796,7 @@ void MainWindow::createPageContext1(RibbonPage *page)
             actionSetTextTest->setText(QStringLiteral(u"set text"));
         }
     });
-    // 隐藏group
+    // hide the group
     QAction *actionShowTest = createAction(tr("show beside group"), ":/icon/res/show.svg");
 
     actionShowTest->setCheckable(true);
@@ -1023,7 +1023,7 @@ void MainWindow::createApplicationButton()
     appBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     appBtn->setMinimumWidth(40);
     RibbonMenu *appMenu = new RibbonMenu(this);
-    // 菜单添加的Action可以来自QuickAccessBar或其它的Action，此处创建新的Action为了方便演示
+    // A menu can hold actions from anywhere; this one is made here to keep the demo self-contained.
     appMenu->addAction(createAction(tr("file"), ":/icon/res/file.svg"));
     appMenu->addAction(createAction(tr("save"), ":/icon/res/save.svg"));
     appMenu->addAction(createAction(tr("cut"), ":/icon/res/cut.svg"));
@@ -1037,7 +1037,7 @@ void MainWindow::createApplicationButton()
 void MainWindow::addSomeOtherAction()
 {
     RibbonBar *bar = this->ribbonBar();
-    // 添加其他的action，这些action并不在ribbon管理范围，主要用于RibbonCustomizeWidget自定义用
+    // Actions the ribbon does not manage: they are here for the customize widget to offer.
     QAction *acttext1 = new QAction(tr("text action1"), bar);
     QAction *acttext2 = new QAction(tr("text action2"), bar);
     QAction *acttext3 = new QAction(tr("text action3"), bar);
@@ -1049,9 +1049,9 @@ void MainWindow::addSomeOtherAction()
     m_actionTagText = RibbonActionsManager::UserDefineActionTag + 1;
     m_actionTagWithIcon = RibbonActionsManager::UserDefineActionTag + 2;
 
-    m_actMgr = new RibbonActionsManager(bar);   // 声明过程已经自动注册所有action
+    m_actMgr = new RibbonActionsManager(bar);   // constructing it registered every action that exists
 
-    // 以下注册特别的action
+    // The extra registrations.
     m_actMgr->registerAction(acttext1, RibbonActionsManager::CommonlyUsedActionTag);
     m_actMgr->registerAction(acttext3, RibbonActionsManager::CommonlyUsedActionTag);
     m_actMgr->registerAction(acttext5, RibbonActionsManager::CommonlyUsedActionTag);
@@ -1219,7 +1219,7 @@ void MainWindow::onActionUseQssTriggered()
 
 void MainWindow::onActionLoadCustomizeXmlFileTriggered()
 {
-    // 只能调用一次
+    // Only the first call does anything.
     static bool has_call = false;
     if (!has_call) {
         has_call = QxRibbonCustomizeApplyFromXmlFile("customize.xml", this->ribbonBar(), m_actMgr);
@@ -1240,12 +1240,12 @@ void MainWindow::onActionChangeThemeTriggered()
     QAction *action = qobject_cast<QAction *>(sender());
     if (action) {
         int theme = action->data().toInt();
-        // 暗色系
+        // dark themes
         if (theme == RibbonTheme::DarkWpsTheme || theme == MainWindow::Office2016BlueTheme ||
             theme == RibbonTheme::DarkOfficePlusTheme) {
             ribbonBar()->setPageContextCoverTab(false);
         } else {
-            // 亮色系
+            // light themes
             ribbonBar()->setPageContextCoverTab(true);
         }
         setRibbonTheme(theme);
@@ -1278,7 +1278,7 @@ void MainWindow::onActionFontSmallerTriggered()
 }
 
 /**
- * @brief 测试RibbonButtonGroup和标题对齐
+ * @brief Exercises RibbonButtonGroup and the title alignment.
  * @param act
  */
 void MainWindow::onButtonGroupActionTriggered(QAction *act)
@@ -1296,7 +1296,7 @@ void MainWindow::onButtonGroupActionTriggered(QAction *act)
 
 void MainWindow::onApplicationButtonClicked()
 {
-    // 使用QWidget且setWindowModality(Qt::ApplicationModal)未阻塞，所以用QDialog
+    // A QWidget with Qt::ApplicationModal does not block here, so the popup is a QDialog.
     QDialog w(this);
     w.setWindowFlags(Qt::Popup);
     w.resize(200, 100);
