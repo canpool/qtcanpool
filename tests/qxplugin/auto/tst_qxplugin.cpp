@@ -18,6 +18,22 @@
 QX_PLUGIN_USE_NAMESPACE
 QX_APP_USE_NAMESPACE
 
+// Needed by QSignalSpy on Qt 5, and by nothing else. The spy stores each signal
+// argument in a QVariant, so reading one back with value<QxPluginSpec *>() needs
+// the argument type to be a declared metatype - and QxPluginSpec is not a QObject,
+// so Qt 5 has nothing to infer it from and refuses to compile. Qt 6 does not need
+// this: moc generates a QMetaType interface for every parameter type it sees, so
+// the same line compiles there unregistered. Declared in the test rather than in
+// qxpluginspec.h because the test is what round-trips through QVariant; the header
+// is frozen for this release.
+//
+// Unqualified on purpose: Q_DECLARE_METATYPE registers the type under the spelling
+// it is handed, and Qt 5's QSignalSpy looks a signal argument up by the name moc
+// wrote into the meta-object - the signal is declared inside the namespace, so that
+// name is "QxPluginSpec*". Qualifying this would register "QxPlugin::QxPluginSpec*"
+// instead, which never matches, and the spy would silently stop reading arguments.
+Q_DECLARE_METATYPE(QxPluginSpec *)
+
 /*! A controllable plugin: refuses to initialize, or reports an old interface. */
 class FakePlugin : public QxPlugin
 {
@@ -660,6 +676,14 @@ void tst_QxPlugin::signalsReportTheRun()
                              []() {
                                  return new FakePlugin(true);
                              });
+
+    // Qt 5 only. Q_DECLARE_METATYPE registers the type lazily, on the first request
+    // for its metatype id, and the spies below are that first request - too late,
+    // because they resolve their arguments while being constructed. Ask for the id
+    // now. Qt 6 reads the type straight off the meta-object and needs none of this.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    qRegisterMetaType<QxPluginSpec *>();
+#endif
 
     QSignalSpy initialized(&mgr, &QxPluginManager::pluginInitialized);
     QSignalSpy failed(&mgr, &QxPluginManager::pluginFailed);
