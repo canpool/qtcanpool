@@ -17,6 +17,7 @@ private slots:
     void page();
     void group();
     void scroll();
+    void clampAfterWidening();
     void clear();
 };
 
@@ -214,6 +215,66 @@ void tst_RibbonPage::scroll()
     QVERIFY(left->isHidden());
     left->click();
     QCOMPARE(first->x(), origin);
+}
+
+void tst_RibbonPage::clampAfterWidening()
+{
+    RibbonBar rb;
+
+    RibbonPage *page = rb.addPage(tr("page"));
+    // Content has to overflow the page by more than one page, otherwise a
+    // single step cannot be told apart from the clamp at either end.
+    for (int i = 0; i < 16; ++i) {
+        RibbonGroup *group = page->addGroup(QStringLiteral("group%1").arg(i));
+        group->addLargeAction(new QAction(QStringLiteral("action%1").arg(i), &rb));
+    }
+    page->resize(120, 80);
+    // The page is not shown, so the resize is not what lays the items out -
+    // the refresh is asked for explicitly, exactly as a resize event does it.
+    page->updateItemGeometry();
+
+    RibbonGroup *last = page->group(page->groupCount() - 1);
+    QVERIFY2(
+        last->geometry().right() > 3 * page->width(),
+        qPrintable(
+            QStringLiteral("content spans %1 in a %2 wide page").arg(last->geometry().right()).arg(page->width())));
+
+    QToolButton *right = nullptr;
+    for (QToolButton *button : page->findChildren<QToolButton *>()) {
+        if (button->arrowType() == Qt::RightArrow) {
+            right = button;
+        }
+    }
+    QVERIFY(right);
+
+    // Scroll to the right end: the offset now sits on the lower bound of its
+    // legal range, which is derived from the page width at this size. The
+    // content then ends inside the page, and what is left of the page to the
+    // left of the first group shows that the page still overflows.
+    for (int i = 0; i < 40; ++i) {
+        right->click();
+    }
+    const int atTheEnd = last->geometry().right();
+    QVERIFY2(atTheEnd < page->width(),
+             qPrintable(QStringLiteral("content ends at %1 in a %2 wide page").arg(atTheEnd).arg(page->width())));
+    QVERIFY2(
+        page->group(0)->x() < 0,
+        qPrintable(
+            QStringLiteral("first group starts at %1 in a %2 wide page").arg(page->group(0)->x()).arg(page->width())));
+
+    // Widening the page raises the lower bound above the offset that is set.
+    // The page used to keep the stale offset, which left the content short of
+    // the right edge by exactly the width of the resize, while the buttons
+    // still reported the right end as reached - clicking one healed it, so the
+    // defect was a transient gap rather than broken state.
+    const int widenBy = 80;
+    page->resize(page->width() + widenBy, 80);
+    page->updateItemGeometry();
+    const int widened = last->geometry().right();
+    QVERIFY2(widened == atTheEnd + widenBy,
+             qPrintable(QStringLiteral("content ends at %1, %2 short of where the resize put the page edge")
+                            .arg(widened)
+                            .arg(atTheEnd + widenBy - widened)));
 }
 
 void tst_RibbonPage::clear()

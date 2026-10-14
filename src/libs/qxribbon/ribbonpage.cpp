@@ -246,6 +246,9 @@ void RibbonPagePrivate::updateItemGeometry()
         }
     }
     totalWidth = 0;   // total重新计算
+    // The offset the geometry below is laid out with, kept so that a clamp
+    // after the measurement can be applied as a translation of it.
+    const int xBaseBeforeMeasure = m_XBase;
     x += m_XBase;
 
     // 先按照sizeHint设置所有的尺寸
@@ -284,6 +287,31 @@ void RibbonPagePrivate::updateItemGeometry()
         totalWidth += w;
     }
     m_totalWidth = totalWidth;
+    // The legal range of m_XBase is [pageWidth - m_totalWidth, 0]. Only the
+    // "content no longer overflows" end of it is closed above: while the page
+    // overflows the lower bound is never re-applied, so an offset that was
+    // legal for a narrower page stays behind the bound once the page is
+    // widened. The content then stops short of the right edge and leaves a gap
+    // as wide as the resize, while the buttons still report "already at the
+    // right end" - clicking one heals it, which makes it a transient visual
+    // defect rather than corrupted state.
+    // Clamping has to use the width just measured: the size hint total above
+    // carries the contents margins and none of the expanding width, so
+    // clamping with it would land on the wrong pixel. Once the offset has
+    // moved, the geometry of this pass is simply shifted by the same amount
+    // instead of being measured a second time.
+    if (m_totalWidth > pageWidth) {
+        m_XBase = qBound(pageWidth - m_totalWidth, m_XBase, 0);
+    } else {
+        m_XBase = 0;
+    }
+    const int xShift = m_XBase - xBaseBeforeMeasure;
+    if (xShift != 0) {
+        for (RibbonPageItem &item : m_itemList) {
+            item.m_groupWillGeometry.translate(xShift, 0);
+            item.m_separatorWillGeometry.translate(xShift, 0);
+        }
+    }
     // 判断滚动按钮是否显示
     if (totalWidth > pageWidth) {
         // 超过总长度，需要显示滚动按钮

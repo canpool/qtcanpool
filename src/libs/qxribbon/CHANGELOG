@@ -7,6 +7,18 @@ Cleanup
   below the 5.15 minimum, so the QOverload form is now used unconditionally.
 
 Bugfix
+- RibbonPage scrolled to the right end and then widened left a gap as wide as
+  the resize between the last group and the right edge, with the scroll buttons
+  still reporting the right end as reached. The page clamps its horizontal
+  offset only when the content stops overflowing, so an offset that was legal
+  for the narrower page stayed behind the raised lower bound of its legal range
+  and the content stopped short of the viewport. The offset is now clamped
+  against the width the layout has just measured - the size hint total carries
+  the contents margins and none of the expanding width, so clamping with that
+  would land on the wrong pixel - and the geometry of the same pass is shifted
+  by the amount the offset moved instead of being measured twice. Clicking a
+  scroll button healed the gap before, which made it a transient visual defect
+  rather than corrupted state.
 - The window button group came up in the top-left corner, over the tab bar,
   and only moved to the top-right after the window was resized by hand. The
   ribbon lays itself out through resizeRibbon(), which queues a resize event,
