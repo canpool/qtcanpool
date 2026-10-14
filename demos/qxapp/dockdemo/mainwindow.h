@@ -14,7 +14,16 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr);
+    /*!
+     * @param screenshotMode keeps the arrangement out of the settings file, in
+     * both directions: nothing is restored on construction and nothing is
+     * saved on close. A screenshot has to show the demo's own layout rather
+     * than whatever arrangement the last interactive run happened to leave in
+     * Settings.ini, and it must not write one into the working directory
+     * either - the capture has to be the same on every machine for the golden
+     * to stay comparable.
+     */
+    MainWindow(QWidget *parent = nullptr, bool screenshotMode = false);
 
     /*!
      * The demo's arrangement goes in and out of a settings file, and the two
@@ -29,5 +38,6 @@ protected:
     virtual void closeEvent(QCloseEvent *event) override;
 private:
     DockWindow *m_dockWindow = nullptr;
+    bool m_screenshotMode = false;
 };
 #endif   // MAINWINDOW_H

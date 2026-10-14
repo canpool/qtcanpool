@@ -57,12 +57,15 @@ QX_RIBBON_USE_NAMESPACE
     do {                                                                                                               \
         int costNow = costTimer.elapsed();                                                                             \
         qDebug() << STR << " cost " << costNow - costLast << " ms (" << costNow << ")";                                \
-        m_edit->append(QString("%1 cost %2 ms(%3)").arg(STR).arg(costNow - costLast).arg(costNow));                    \
+        if (!m_screenshotMode) {                                                                                       \
+            m_edit->append(QString("%1 cost %2 ms(%3)").arg(STR).arg(costNow - costLast).arg(costNow));                \
+        }                                                                                                              \
         costLast = costNow;                                                                                            \
     } while (0)
 
-MainWindow::MainWindow(QWidget *par)
+MainWindow::MainWindow(QWidget *par, bool screenshotMode)
     : MyRibbonWindow(par)
+    , m_screenshotMode(screenshotMode)
 {
     setWindowTitle(tr("ribbon mainwindow demo"));
     setWindowIcon(QIcon(":/icon/res/logo.svg"));

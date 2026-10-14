@@ -14,8 +14,9 @@
 
 QX_DOCK_USE_NAMESPACE
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     : QMainWindow(parent)
+    , m_screenshotMode(screenshotMode)
 {
     QMenuBar *mb = menuBar();
     QMenu *viewMenu = mb->addMenu(tr("View"));
@@ -99,7 +100,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     resize(800, 600);
 
-    restoreFromSettings();
+    if (!m_screenshotMode) {
+        restoreFromSettings();
+    }
 }
 
 void MainWindow::saveToSettings()
@@ -120,6 +123,8 @@ void MainWindow::restoreFromSettings()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    saveToSettings();
+    if (!m_screenshotMode) {
+        saveToSettings();
+    }
     QMainWindow::closeEvent(event);
 }

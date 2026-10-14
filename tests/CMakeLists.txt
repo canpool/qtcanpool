@@ -290,9 +290,9 @@ endif()
 # ------------------------------------------------------- demo screenshots --
 # Visual regression for the demos (roadmap task B4).
 #
-# The demo renders itself offscreen through its own --screenshot switch, which
-# keeps the window driving out of the test, and the capture is compared with a
-# golden image. The golden is per platform *and* per Qt major version
+# The demos render themselves offscreen through their own --screenshot switch,
+# which keeps the window driving out of the test, and each capture is compared
+# with a golden image. The golden is per platform *and* per Qt major version
 # (tests/demo/golden/<CMAKE_SYSTEM_NAME>/Qt<N>/), because a screenshot is the one
 # artefact here that legitimately differs between machines - same code, a
 # different font rasteriser, different pixels - and the
@@ -305,34 +305,57 @@ endif()
 # (MinGW runtime + Qt DLLs) into that property, and set_tests_properties()
 # would replace it, not extend it. Headlessness does not need help either:
 # the test preset and the CI jobs both export QT_QPA_PLATFORM=offscreen.
+set(DEMO_SCREENSHOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/screenshots")
+file(MAKE_DIRECTORY "${DEMO_SCREENSHOT_DIR}")
+
+# Qt5_VERSION is the shim's variable and is set for both, see cmake/FindQt5.cmake.
+if (Qt5_VERSION VERSION_LESS 6.0.0)
+    set(DEMO_GOLDEN_QT "Qt5")
+else()
+    set(DEMO_GOLDEN_QT "Qt6")
+endif()
+
+set(DEMO_SCREENSHOT_DEFINES)
+set(DEMO_SCREENSHOT_TARGETS)
+
 if (TARGET RibbonDemo)
-  set(DEMO_SCREENSHOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/screenshots")
-  file(MAKE_DIRECTORY "${DEMO_SCREENSHOT_DIR}")
   set(DEMO_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/ribbondemo.png")
   # One golden cannot serve both Qt majors: the same demo measures 1280x800 on
   # Qt 6 and 1333x833 on Qt 5, so a Qt 5 capture fails the size check before a
   # single pixel is compared (task C2). Splitting by Qt major also gives the
   # honest answer for a major that has no golden at all - "no golden for this
   # platform", a skip - instead of a failure that reads like a regression.
-  # Qt5_VERSION is the shim's variable and is set for both, see cmake/FindQt5.cmake.
-  if (Qt5_VERSION VERSION_LESS 6.0.0)
-      set(DEMO_GOLDEN_QT "Qt5")
-  else()
-      set(DEMO_GOLDEN_QT "Qt6")
-  endif()
   set(DEMO_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/ribbondemo.png")
+  list(APPEND DEMO_SCREENSHOT_DEFINES
+      DEMO_RIBBON_EXECUTABLE="$<TARGET_FILE:RibbonDemo>"
+      DEMO_SCREENSHOT_PATH="${DEMO_SCREENSHOT}"
+      DEMO_GOLDEN_PATH="${DEMO_GOLDEN}"
+  )
+  list(APPEND DEMO_SCREENSHOT_TARGETS RibbonDemo)
+endif()
 
+if (TARGET DockDemo)
+  set(DEMO_DOCK_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/dockdemo.png")
+  set(DEMO_DOCK_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/dockdemo.png")
+  list(APPEND DEMO_SCREENSHOT_DEFINES
+      DEMO_DOCK_EXECUTABLE="$<TARGET_FILE:DockDemo>"
+      DEMO_DOCK_SCREENSHOT_PATH="${DEMO_DOCK_SCREENSHOT}"
+      DEMO_DOCK_GOLDEN_PATH="${DEMO_DOCK_GOLDEN}"
+  )
+  list(APPEND DEMO_SCREENSHOT_TARGETS DockDemo)
+endif()
+
+if (DEMO_SCREENSHOT_DEFINES)
   add_qtc_test(tst_demoscreenshot
       DEPENDS Qt5::Gui
-      DEFINES
-          DEMO_RIBBON_EXECUTABLE="$<TARGET_FILE:RibbonDemo>"
-          DEMO_SCREENSHOT_PATH="${DEMO_SCREENSHOT}"
-          DEMO_GOLDEN_PATH="${DEMO_GOLDEN}"
+      DEFINES ${DEMO_SCREENSHOT_DEFINES}
       SOURCES "${QTCANPOOL_TESTS_DIR}/demo/auto/tst_demoscreenshot.cpp"
   )
-  # Running the test is what builds it, and the test launches the demo: without
-  # this dependency the demo may simply not exist yet.
-  add_dependencies(tst_demoscreenshot RibbonDemo)
+  # Running the test is what builds it, and the test launches the demos: without
+  # these dependencies they may simply not exist yet.
+  foreach (demo ${DEMO_SCREENSHOT_TARGETS})
+    add_dependencies(tst_demoscreenshot ${demo})
+  endforeach()
   set_tests_properties(tst_demoscreenshot PROPERTIES
       LABELS visual
       TIMEOUT 300

@@ -4,9 +4,11 @@
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QGuiApplication>
 #include <QPixmap>
 #include <QStyle>
 #include <QStyleFactory>
+#include <QStyleHints>
 #include <QTimer>
 
 /**
@@ -103,11 +105,25 @@ int main(int argc, char *argv[])
 
     const QString screenshotFile = parser.value(screenshotOption);
 
+    if (!screenshotFile.isEmpty()) {
+        // A focused text edit blinks its cursor, and a capture that lands on the
+        // blink boundary shows it while the next one does not - 28 pixels of
+        // difference between two runs of the same code. The default flash time
+        // is 1000 ms, so a delay that is a multiple of it is a coin flip; zero
+        // stops the blinking and the caret stays where it is. Qt 5 had this on
+        // QGuiApplication itself; both versions reach it through the style
+        // hints.
+        QGuiApplication::styleHints()->setCursorFlashTime(0);
+    }
+
     QElapsedTimer cost;
 
     cost.start();
 
-    MainWindow w;
+    // The construction log carries elapsed milliseconds, so a screenshot asks
+    // the window to keep it out of the editor: the numbers still go to the log
+    // file, but the capture renders the same pixels on every run.
+    MainWindow w(nullptr, !screenshotFile.isEmpty());
 
     if (screenshotFile.isEmpty()) {
         w.showMaximized();

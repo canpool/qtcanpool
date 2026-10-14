@@ -33,7 +33,14 @@ public:
         UserCustomTheme,
     };
 public:
-    MainWindow(QWidget *par = nullptr);
+    /*!
+     * @param screenshotMode keeps the construction log out of the central
+     * editor. The log carries elapsed milliseconds, so its text - and with it
+     * the capture - changes from run to run; a screenshot has to render the
+     * same pixels every time for the golden to mean anything. The numbers are
+     * still printed, they just go to the log file instead of the window.
+     */
+    MainWindow(QWidget *par = nullptr, bool screenshotMode = false);
     void setRibbonTheme(int theme);
 private:
     void createCentralWidget();
@@ -94,6 +101,7 @@ private:
     int m_actionTagText = 0;
     int m_actionTagWithIcon = 0;
     QString m_customizeXml;
+    bool m_screenshotMode = false;
 };
 
 #endif   // MAINWINDOW_H
