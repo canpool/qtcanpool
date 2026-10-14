@@ -91,13 +91,17 @@ QSize WindowButtonGroupPrivate::sizeHint() const
     int width = 0;
     int height = groupHeight();
 
-    if (m_closeButton->isVisible()) {
+    // Which buttons count has to be read from the hidden flag, not from
+    // isVisible(): the group is sized while its window is still hidden (the
+    // ribbon lays itself out before the first show), and isVisible() is false
+    // for every button then, which would size the whole group to zero.
+    if (!m_closeButton->isHidden()) {
         width += CLS_BUTTON_WIDTH;
     }
-    if (m_maximizeButton->isVisible()) {
+    if (!m_maximizeButton->isHidden()) {
         width += MAX_BUTTON_WIDTH;
     }
-    if (m_minimizeButton->isVisible()) {
+    if (!m_minimizeButton->isHidden()) {
         width += MIN_BUTTON_WIDTH;
     }
     return QSize(width, height);

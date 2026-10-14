@@ -34,6 +34,16 @@ const int tabBarBaseLineHeight = 1;
 const int tabBarMinimumWidth = 100;
 const int dragAreaMinimumWidth = 20;
 
+// Whether a widget takes part in the ribbon layout. isVisible() would also
+// turn false while the top-level window is still hidden, so the very first
+// layout would skip such widgets and leave them at their default position
+// (e.g. the window button group ends up in the top-left corner and stays
+// there until the window happens to be resized).
+static bool takesPartInLayout(const QWidget *w)
+{
+    return w && !w->isHidden();
+}
+
 #define HELP_DRAW_RECT(p, rect)                                                                                        \
     do {                                                                                                               \
         p.save();                                                                                                      \
@@ -601,27 +611,27 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     x += m_iconRightBorderPosition + 1;
     // |cornerL|m_quickAccessBar|m_topLeftButtonGroup|~~~~~
     QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
-    if (cornerL && cornerL->isVisible()) {
+    if (takesPartInLayout(cornerL)) {
         placeCornerWidget(cornerL, x, y, validTitleBarHeight, validTitleBarHeight);
         x = cornerL->geometry().right() + 5;
     }
-    if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
+    if (takesPartInLayout(m_quickAccessBar)) {
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         m_quickAccessBar->setGeometry(x, y, quickAccessBarSize.width(), validTitleBarHeight);
         x += quickAccessBarSize.width() + 5;
     }
-    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topLeftButtonGroup)) {
         QSize wSize = m_topLeftButtonGroup->sizeHint();
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), validTitleBarHeight);
     }
     // ~~~~~~~~|m_topRightButtonGroup|m_windowButtonGroup|
     int endX = q->width() - border.right();
-    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_windowButtonGroup)) {
         QSize wSize = m_windowButtonGroup->sizeHint();
         endX -= wSize.width();
         m_windowButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
-    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topRightButtonGroup)) {
         QSize wSize = m_topRightButtonGroup->sizeHint();
         endX -= wSize.width();
         m_topRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
@@ -631,22 +641,22 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     x = border.left();
     y += validTitleBarHeight;
     // |m_applicationButton|~~~~~ m_tabBar ~~~~~|m_bottomLeftButtonGroup|m_bottomRightButtonGroup|cornerW|
-    if (m_applicationButton && m_applicationButton->isVisible()) {
+    if (takesPartInLayout(m_applicationButton)) {
         m_applicationButton->setGeometry(x, y, m_applicationButton->size().width(), otherH);
         x = m_applicationButton->geometry().right();
     }
     endX = q->width() - border.right();
     QWidget *cornerW = q->cornerWidget(Qt::TopRightCorner);
-    if (cornerW && cornerW->isVisible()) {
+    if (takesPartInLayout(cornerW)) {
         endX -= cornerW->sizeHint().width();
         placeCornerWidget(cornerW, endX, y, tabH, otherH);
     }
-    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomRightButtonGroup)) {
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
         m_bottomRightButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
     }
-    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomLeftButtonGroup)) {
         QSize wSize = m_bottomLeftButtonGroup->sizeHint();
         endX -= wSize.width();
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), otherH);
@@ -669,40 +679,40 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
 
     // ~~~~|m_bottomLeftButtonGroup|m_topRightButtonGroup|m_bottomRightButtonGroup|cornerR|m_windowButtonGroup|
     int endX = q->width() - border.right();
-    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_windowButtonGroup)) {
         QSize wSize = m_windowButtonGroup->sizeHint();
         endX -= wSize.width();
         m_windowButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
     QWidget *cornerR = q->cornerWidget(Qt::TopRightCorner);
-    if (cornerR && cornerR->isVisible()) {
+    if (takesPartInLayout(cornerR)) {
         endX -= cornerR->sizeHint().width();
         placeCornerWidget(cornerR, endX, y, validTitleBarHeight, validTitleBarHeight);
     }
-    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomRightButtonGroup)) {
         QSize wSize = m_bottomRightButtonGroup->sizeHint();
         endX -= wSize.width();
         m_bottomRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
-    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topRightButtonGroup)) {
         QSize wSize = m_topRightButtonGroup->sizeHint();
         endX -= wSize.width();
         m_topRightButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
-    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomLeftButtonGroup)) {
         QSize wSize = m_bottomLeftButtonGroup->sizeHint();
         endX -= wSize.width();
         m_bottomLeftButtonGroup->setGeometry(endX, y, wSize.width(), validTitleBarHeight);
     }
     // ~~~~|m_quickAccessBar|m_bottomLeftButtonGroup|~~~~~
-    if (m_quickAccessBarPosition == RibbonBar::QABRightPosition && m_quickAccessBar && m_quickAccessBar->isVisible()) {
+    if (m_quickAccessBarPosition == RibbonBar::QABRightPosition && takesPartInLayout(m_quickAccessBar)) {
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         endX -= quickAccessBarSize.width();
         m_quickAccessBar->setGeometry(endX, y, quickAccessBarSize.width(), validTitleBarHeight);
     }
     // ~~~~|cornerL|<m_quickAccessBar>|m_bottomLeftButtonGroup|~~~~~
     QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
-    if (cornerL && cornerL->isVisible()) {
+    if (takesPartInLayout(cornerL)) {
         endX -= cornerL->sizeHint().width();
         placeCornerWidget(cornerL, endX, y, validTitleBarHeight, validTitleBarHeight);
     }
@@ -717,16 +727,16 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
     y += validTitleBarHeight - tabH;
 
     // |m_applicationButton|<m_quickAccessBar>|m_topLeftButtonGroup|m_tabBar|~~~~~~
-    if (m_applicationButton && m_applicationButton->isVisible()) {
+    if (takesPartInLayout(m_applicationButton)) {
         m_applicationButton->setGeometry(x, y, m_applicationButton->size().width(), tabH);
         x = m_applicationButton->geometry().right() + 2;
     }
-    if (m_quickAccessBarPosition == RibbonBar::QABLeftPosition && m_quickAccessBar && m_quickAccessBar->isVisible()) {
+    if (m_quickAccessBarPosition == RibbonBar::QABLeftPosition && takesPartInLayout(m_quickAccessBar)) {
         QSize quickAccessBarSize = m_quickAccessBar->sizeHint();
         m_quickAccessBar->setGeometry(x, border.top(), quickAccessBarSize.width(), validTitleBarHeight);
         x = m_quickAccessBar->geometry().right() + 2;
     }
-    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topLeftButtonGroup)) {
         QSize wSize = m_topLeftButtonGroup->sizeHint();
         m_topLeftButtonGroup->setGeometry(x, y, wSize.width(), tabH);
         x = m_topLeftButtonGroup->geometry().right() + 2;
@@ -811,36 +821,36 @@ int RibbonBarPrivate::minimumWidthInOfficeStyle() const
     w1 += m_iconRightBorderPosition + 1;
     // |cornerL|m_quickAccessBar|m_topLeftButtonGroup|~~~~~~~~~|m_topRightButtonGroup|m_windowButtonGroup|
     QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
-    if (cornerL && cornerL->isVisible()) {
+    if (takesPartInLayout(cornerL)) {
         w1 += cornerL->sizeHint().width() + 5;
     }
-    if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
+    if (takesPartInLayout(m_quickAccessBar)) {
         w1 += m_quickAccessBar->sizeHint().width() + 5;
     }
-    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topLeftButtonGroup)) {
         w1 += m_topLeftButtonGroup->sizeHint().width();
     }
-    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_windowButtonGroup)) {
         w1 += m_windowButtonGroup->sizeHint().width();
     }
-    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topRightButtonGroup)) {
         w1 += m_topRightButtonGroup->sizeHint().width();
     }
     w1 += dragAreaMinimumWidth;
 
     // row-2
     // |m_applicationButton|~~~~~ m_tabBar ~~~~~|m_bottomLeftButtonGroup|m_bottomRightButtonGroup|cornerW|
-    if (m_applicationButton && m_applicationButton->isVisible()) {
+    if (takesPartInLayout(m_applicationButton)) {
         w2 += m_applicationButton->size().width();
     }
     QWidget *cornerW = q->cornerWidget(Qt::TopRightCorner);
-    if (cornerW && cornerW->isVisible()) {
+    if (takesPartInLayout(cornerW)) {
         w2 += cornerW->sizeHint().width();
     }
-    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomRightButtonGroup)) {
         w2 += m_bottomRightButtonGroup->sizeHint().width();
     }
-    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomLeftButtonGroup)) {
         w2 += m_bottomLeftButtonGroup->sizeHint().width();
     }
     w2 += tabBarMinimumWidth;
@@ -856,36 +866,36 @@ int RibbonBarPrivate::minimumWidthInWpsLiteStyle() const
     int w = 0;
 
     // ~~~~|m_bottomLeftButtonGroup|m_topRightButtonGroup|m_bottomRightButtonGroup|cornerR|m_windowButtonGroup|
-    if (m_windowButtonGroup && m_windowButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_windowButtonGroup)) {
         w += m_windowButtonGroup->sizeHint().width();
     }
     QWidget *cornerR = q->cornerWidget(Qt::TopRightCorner);
-    if (cornerR && cornerR->isVisible()) {
+    if (takesPartInLayout(cornerR)) {
         w += cornerR->sizeHint().width();
     }
-    if (m_bottomRightButtonGroup && m_bottomRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomRightButtonGroup)) {
         w += m_bottomRightButtonGroup->sizeHint().width();
     }
-    if (m_topRightButtonGroup && m_topRightButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topRightButtonGroup)) {
         w += m_topRightButtonGroup->sizeHint().width();
     }
-    if (m_bottomLeftButtonGroup && m_bottomLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_bottomLeftButtonGroup)) {
         w += m_bottomLeftButtonGroup->sizeHint().width();
     }
     // ~~~~|m_quickAccessBar|m_bottomLeftButtonGroup|~~~~~
-    if (m_quickAccessBar && m_quickAccessBar->isVisible()) {
+    if (takesPartInLayout(m_quickAccessBar)) {
         w += m_quickAccessBar->sizeHint().width();
     }
     // ~~~~|cornerL|<m_quickAccessBar>|m_bottomLeftButtonGroup|~~~~~
     QWidget *cornerL = q->cornerWidget(Qt::TopLeftCorner);
-    if (cornerL && cornerL->isVisible()) {
+    if (takesPartInLayout(cornerL)) {
         w += cornerL->sizeHint().width();
     }
     // |m_applicationButton|<m_quickAccessBar>|m_topLeftButtonGroup|m_tabBar|~~~~~~
-    if (m_applicationButton && m_applicationButton->isVisible()) {
+    if (takesPartInLayout(m_applicationButton)) {
         w += m_applicationButton->size().width();
     }
-    if (m_topLeftButtonGroup && m_topLeftButtonGroup->isVisible()) {
+    if (takesPartInLayout(m_topLeftButtonGroup)) {
         w += m_topLeftButtonGroup->sizeHint().width();
     }
     w += dragAreaMinimumWidth;

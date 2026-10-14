@@ -3,8 +3,11 @@
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonpage.h"
 #include "qxribbon/ribbonpagecontext.h"
+#include "qxribbon/windowbuttongroup.h"
 
 #include <QAbstractButton>
+#include <QCoreApplication>
+#include <QEventLoop>
 #include <QWidget>
 
 QX_RIBBON_USE_NAMESPACE
@@ -19,6 +22,7 @@ private slots:
     void clear();
     void style();
     void objectNames();
+    void windowButtonGroupIsPlacedBeforeTheWindowIsShown();
 };
 
 void tst_RibbonBar::applicationButton()
@@ -263,6 +267,39 @@ void tst_RibbonBar::objectNames()
     QCOMPARE(has("qx_RibbonTabBarBaseLine"), true);
     QCOMPARE(has("qx_RibbonQuickAccessBar"), true);
     QCOMPARE(has("qx_RibbonApplicationButton"), true);
+}
+
+/*!
+ * The ribbon lays itself out through resizeRibbon(), which queues a resize
+ * event. An application window is normally still hidden when that event is
+ * delivered - a start-up splash drives the event loop while the window is
+ * being built - and isVisible() is false for the whole window then. A layout
+ * that asks "visible?" instead of "hidden?" therefore skips the window button
+ * group and leaves it in the top-left corner, over the tab bar, until the
+ * window happens to be resized.
+ */
+void tst_RibbonBar::windowButtonGroupIsPlacedBeforeTheWindowIsShown()
+{
+    const int windowWidth = 800;
+
+    QWidget window;
+    window.resize(windowWidth, 400);
+
+    RibbonBar rb(&window);
+    rb.addPage(QStringLiteral("page"));
+    rb.resize(windowWidth, rb.height());
+
+    WindowButtonGroup group(&window,
+                            Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    rb.setWindowButtonGroup(&group);
+
+    // The deferred layout, delivered while the window is still hidden.
+    rb.resizeRibbon();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    const int groupWidth = group.sizeHint().width();
+    QVERIFY(groupWidth > 0);
+    QCOMPARE(group.geometry(), QRect(windowWidth - groupWidth, 0, groupWidth, rb.titleBarHeight()));
 }
 
 TEST_ADD(tst_RibbonBar)

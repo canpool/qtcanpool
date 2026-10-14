@@ -34,6 +34,7 @@ private slots:
     void signalIsDisabledByDefault();
     void updateWindowFlagsDecidesWhatIsVisible();
     void sizeHintFollowsTheVisibleButtons();
+    void sizeHintFollowsTheButtonsWhileTheHostIsHidden();
     void setWindowStatesChecksTheMaximizeButton();
     void widgetForMaximizeButtonIsTheOneInTheLayout();
     void enabledSignalsReachTheOwner();
@@ -85,6 +86,27 @@ void tst_WindowButtonGroup::sizeHintFollowsTheVisibleButtons()
 
     // The height comes from the ribbon style option, which is never zero.
     QVERIFY(group.sizeHint().height() > 0);
+}
+
+void tst_WindowButtonGroup::sizeHintFollowsTheButtonsWhileTheHostIsHidden()
+{
+    QWidget host;
+    WindowButtonGroup group(&host,
+                            Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+
+    // The host is never shown, so isVisible() is false for every button - but
+    // none of them is hidden. The ribbon sizes the group while the window is
+    // still hidden (that is the layout that runs before the first show), and a
+    // size hint of zero there would place a zero-width group on the title bar.
+    for (QWidget *b : group.findChildren<QWidget *>()) {
+        QVERIFY(!b->isVisible());
+        QVERIFY(!b->isHidden());
+    }
+    QCOMPARE(group.sizeHint().width(), 30 + 30 + 40);
+
+    // A button that really is hidden stops counting.
+    group.updateWindowFlags(Qt::WindowCloseButtonHint);
+    QCOMPARE(group.sizeHint().width(), 40);
 }
 
 void tst_WindowButtonGroup::setWindowStatesChecksTheMaximizeButton()
