@@ -103,3 +103,8 @@ add_qtc_example(Example_Dock_DeleteOnClose qxdock qxdock/deleteonclose none)
 
 # --------------------------------------------------------------------- qxapp --
 add_qtc_example(Example_RibbonAppEmpty qxapp qxapp/ribbonappempty sample)
+# 4.4.1: examples for the 11 classes that had no visual sample yet, grouped by family.
+add_qtc_example(Example_App_PropertyEditor qxapp qxapp/propertyeditor sample)
+add_qtc_example(Example_App_Buttons qxapp qxapp/buttons sample)
+add_qtc_example(Example_App_NavigationBar qxapp qxapp/navigationbar sample)
+add_qtc_example(Example_App_TabWidget qxapp qxapp/tabwidget sample)
