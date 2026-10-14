@@ -49,16 +49,16 @@
 QX_RIBBON_USE_NAMESPACE
 
 #define COST_START()                                                                                                   \
-    QElapsedTimer __TMP_COST;                                                                                          \
-    __TMP_COST.start();                                                                                                \
-    int __TMP_LASTTIMES = 0
+    QElapsedTimer costTimer;                                                                                           \
+    costTimer.start();                                                                                                 \
+    int costLast = 0
 
 #define COST_PRINT(STR)                                                                                                \
     do {                                                                                                               \
-        int ___TMP_INT = __TMP_COST.elapsed();                                                                         \
-        qDebug() << STR << " cost " << ___TMP_INT - __TMP_LASTTIMES << " ms (" << ___TMP_INT << ")";                   \
-        m_edit->append(QString("%1 cost %2 ms(%3)").arg(STR).arg(___TMP_INT - __TMP_LASTTIMES).arg(___TMP_INT));       \
-        __TMP_LASTTIMES = ___TMP_INT;                                                                                  \
+        int costNow = costTimer.elapsed();                                                                             \
+        qDebug() << STR << " cost " << costNow - costLast << " ms (" << costNow << ")";                                \
+        m_edit->append(QString("%1 cost %2 ms(%3)").arg(STR).arg(costNow - costLast).arg(costNow));                    \
+        costLast = costNow;                                                                                            \
     } while (0)
 
 MainWindow::MainWindow(QWidget *par)
