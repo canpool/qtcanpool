@@ -1,4 +1,4 @@
-Unreleased
+0.12.1
 ---
 Bugfix
 - RibbonCustomizeWidget recorded a "move down" on an action as a "move up": the

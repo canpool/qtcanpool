@@ -1,4 +1,4 @@
-Unreleased
+0.3.1
 ---
 Cleanup
 - Unify the internal prefix. The log category is now "qxwindow" (was

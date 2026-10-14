@@ -1,4 +1,4 @@
-Unreleased
+0.2.2
 ---
 Bugfix
 - DockWindow left the features it has locked globally uninitialised. Nothing set

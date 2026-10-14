@@ -1,3 +1,48 @@
+4.4.0
+---
+- qxwindow 0.3.0 -> 0.3.1. Internal cleanup only - no public API changed, so the
+  step is a patch. The frameless hit-test now asks the system buttons and the
+  hit-test-visible items the same question from one place, and the private log
+  macros are renamed QWK_* -> QXWINDOW_* with the category becoming "qxwindow"
+  (was "qwindowkit"): set QT_LOGGING_RULES=qxwindow.*=true in place of
+  qwindowkit.*. The window-context refactor is private to windowcontext_p.h and is
+  unchanged in effect
+- qxribbon 0.12.0 -> 0.12.1. Three bug fixes, none touching the exported surface,
+  so a patch. RibbonCustomizeWidget recorded a "move down" on an action as a
+  "move up" (the action branch handed -1 to makeChangeActionOrderCustomizeData,
+  where -1 means up); the ribbon bar named its tab bar twice so the stacked widget
+  was left unnamed; RibbonPage left two private fields uninitialised and a wheel
+  event or scroll-button click before the first layout compared an indeterminate
+  value. RibbonCustomizeWidget::isChanged() and model() are removed in this release
+  - the class carries no export macro, so per the project red line ("not exported =>
+  not API") that is not an API change and the version does not move on it
+- qxdock 0.2.1 -> 0.2.2. Three bug fixes, patch. DockWindow left its globally locked
+  features uninitialised, so every dock widget in a window reported a feature set
+  with arbitrary bits removed; hideDockWidget() deleted the content of a
+  DeleteContentOnClose widget that had been taken back on purpose and dereferenced a
+  null pointer; pinning an already-pinned widget crashed because
+  DockWidget::setAutoHide() / DockPanel::setAutoHide() only substituted a real side
+  on the path that creates the auto-hide container, not on the path that moves an
+  already-pinned widget (R7, R8, R12 in the 4.4 plan)
+- qxcore 0.1.2, qxtheme 0.1.1, qxplugin 0.2.1, qxapp 0.1.1: unchanged. None of the
+  four received a code change in 4.4 - every change in the tree was in tests,
+  demos, or docs - so their versions stay where 4.3.0 left them. The version number
+  is the library's statement of "did the interface move"; with no interface move it
+  does not move (K11)
+- tests: qxapp's seven leaf controls - QxTabBar, QxTabWidget, QxNavBar,
+  QxToolButton, QxMenuButton, QxMenuAccessButton, QxExtensionButton - had no unit
+  test at all and now have one each (tst_qxappwidgets), offscreen-only minimal
+  assertions. The four property/settings classes were already covered. This is the
+  curated half of the qxapp example gap; the visual samples land in 4.4.1
+- demos: the qxwindow demo is back. It went away with the qmake-only demos and was
+  rebuilt on the current API (setup() + setTitleBar(), the four system buttons with
+  WindowIcon, the full set of window materials, showSystemMenu() on the icon button)
+  rather than restored - the original leaned on a WindowStyleAgent and a
+  WindowBar/WindowButton pair that were deleted in the same commit. It links qxwindow
+  and nothing else
+- docs: doc/pages/build.md lists the demo again and the example count is 23; the
+  qxapp example modules that still lack a visual sample are noted for 4.4.1
+
 4.3.0
 ---
 - qxribbon 0.11.0 -> 0.12.0. FramelessHelper and the window class on top of it,
