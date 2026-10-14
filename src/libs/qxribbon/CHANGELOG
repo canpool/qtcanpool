@@ -6,6 +6,28 @@ Cleanup
   of the connect() calls against the static_cast spelling, and the threshold is
   below the 5.15 minimum, so the QOverload form is now used unconditionally.
 
+Bugfix
+- The window button group came up in the top-left corner, over the tab bar,
+  and only moved to the top-right after the window was resized by hand. The
+  ribbon lays itself out through resizeRibbon(), which queues a resize event,
+  and a window is normally still hidden when that event is delivered: the
+  AppShell demo drains the queue through QxSplashScreen::step() while the
+  window is being built. Every layout decision in the four resize and
+  minimumWidth functions asked isVisible(), which is false for the whole
+  window at that point, so the group was skipped and left at its default
+  position, and nothing re-ran the layout until the window happened to be
+  resized. Those functions now ask whether a widget is explicitly hidden,
+  through one helper, so the first layout - the one that runs while the
+  window is hidden - produces the geometry the first painted frame shows.
+  The paint functions keep isVisible(): they only run while the window is
+  visible and they ask the other question.
+- WindowButtonGroupPrivate::sizeHint() was the second half of the same
+  defect: it summed the button widths from isVisible(), so a group sized
+  while the window was hidden came out zero wide. Fixing the ribbon alone
+  would therefore have placed a zero-width group on the title bar with its
+  buttons stacked on top of each other. The size hint now reads the hidden
+  flag as well.
+
 0.12.1
 ---
 Bugfix
