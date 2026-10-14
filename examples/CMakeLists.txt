@@ -3,35 +3,57 @@
 ## SPDX-License-Identifier: MulanPSL-2.0
 ##
 
-# Each sample is one main window - occasionally with a small extra class - plus
-# a shared main() that used to arrive through an `include(../shared/shared.pri)`.
-# Two kinds of shared main() exist, one per library group and one at the top
-# level, and which of them a sample picks decides where its mainwindow.h comes
-# from, so every target gets both include paths: the sample directory first,
-# because a sample that ships its own mainwindow.h must win over the generic
-# one in shared/, which is exactly what the samples without a header rely on.
+# Every sample is one main window - occasionally with a small extra class - and
+# all of them share the single main() in this directory. What a sample does not
+# always bring along is MainWindow itself, so `window` says where that comes from:
+#
+#   sample - the sample directory ships mainwindow.h
+#   ribbon - it comes from qxribbon/shared/, and opens a RibbonMainWindow
+#   plain  - it comes from shared/, and opens a plain QMainWindow
+#   none   - the sample directory ships main() too, so nothing is shared with it
+#
+# The sample directory always comes first on the include path, so a sample that
+# ships its own mainwindow.h wins over either shared one, and main.cpp - which
+# does `#include "mainwindow.h"` - is resolved by that same order. That is why
+# main.cpp sits here and not in shared/: a quoted include is looked for in the
+# including file's own directory first, so a main.cpp living next to
+# shared/mainwindow.h could only ever see that one, whatever the include path
+# said. Keep it where no mainwindow.h shares its directory.
+#
+# The header supplying MainWindow has to be in the source list, because AUTOMOC
+# only looks at headers that belong to the target - left out, its Q_OBJECT gets
+# no moc_ file and the link fails on a missing vtable. Exactly one of them has to
+# be there, because two MainWindow classes in one target is two staticMetaObject
+# definitions - and it has to be the same header the sample's own mainwindow.cpp
+# sees, or main() builds an object of the wrong size on the stack.
 #
 # The resource file is shared by all of them - /logo is its only alias.
 
-function(add_qtc_example name library directory main_source)
+function(add_qtc_example name library directory window)
     file(GLOB _sample_sources CONFIGURE_DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*.ui")
 
     set(_sources ${_sample_sources})
-    if (NOT main_source STREQUAL "none")
-        list(APPEND _sources "${CMAKE_CURRENT_SOURCE_DIR}/${main_source}")
+    set(_includes "${CMAKE_CURRENT_SOURCE_DIR}/${directory}")
 
-        # A sample that ships no mainwindow.h of its own compiles against the
-        # generic one in shared/, and AUTOMOC only looks at headers that belong
-        # to the target - left out, its Q_OBJECT gets no moc_ file and the link
-        # fails on a missing vtable. Adding it here, and only here, also keeps
-        # it away from the samples that do bring their own MainWindow class.
-        get_filename_component(_main_dir "${main_source}" DIRECTORY)
-        if (_main_dir STREQUAL "shared")
-            list(APPEND _sources "${CMAKE_CURRENT_SOURCE_DIR}/shared/mainwindow.h")
-        endif()
+    if (window STREQUAL "none")
+        # Nothing shared to add.
+    elseif (window STREQUAL "sample")
+        list(APPEND _sources "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+    elseif (window STREQUAL "ribbon")
+        list(APPEND _sources
+            "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/qxribbon/shared/mainwindow.h")
+        list(APPEND _includes "${CMAKE_CURRENT_SOURCE_DIR}/qxribbon/shared")
+    elseif (window STREQUAL "plain")
+        list(APPEND _sources
+            "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/shared/mainwindow.h")
+        list(APPEND _includes "${CMAKE_CURRENT_SOURCE_DIR}/shared")
+    else()
+        message(FATAL_ERROR "add_qtc_example(${name}): unknown window kind '${window}'")
     endif()
 
     add_qtc_executable(${name}
@@ -44,8 +66,7 @@ function(add_qtc_example name library directory main_source)
             Qt5::Gui
             Qt5::Widgets
         INCLUDES
-            "${CMAKE_CURRENT_SOURCE_DIR}/${directory}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/shared"
+            ${_includes}
         SOURCES
             ${_sources}
             "${CMAKE_CURRENT_SOURCE_DIR}/shared/res.qrc"
@@ -53,32 +74,32 @@ function(add_qtc_example name library directory main_source)
 endfunction()
 
 # ------------------------------------------------------------------ qxribbon --
-add_qtc_example(Example_Ribbon_Simple qxribbon qxribbon/simple qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_GroupAutoLayout qxribbon qxribbon/groupautolayout qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_CustomizeDialogModeless qxribbon qxribbon/customizedialogmodeless qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_CustomizeWidget qxribbon qxribbon/customizewidget qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_PageContext qxribbon qxribbon/pagecontext qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_Menu qxribbon qxribbon/ribbonmenu qxribbon/shared/main.cpp)
-add_qtc_example(Example_RibbonBar qxribbon qxribbon/ribbonbar qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_ButtonGroup qxribbon qxribbon/ribbonbuttongroup qxribbon/shared/main.cpp)
-add_qtc_example(Example_Ribbon_Gallery qxribbon qxribbon/ribbongallery qxribbon/shared/main.cpp)
-add_qtc_example(Example_RibbonStyle qxribbon qxribbon/ribbonstyle qxribbon/shared/main.cpp)
-# These two build against the top-level shared main() and its generic main window.
-add_qtc_example(Example_Ribbon_ColorIcon qxribbon qxribbon/coloricon shared/main.cpp)
-add_qtc_example(Example_RibbonQuickAccessBar qxribbon qxribbon/ribbonquickaccessbar shared/main.cpp)
+add_qtc_example(Example_Ribbon_Simple qxribbon qxribbon/simple ribbon)
+add_qtc_example(Example_Ribbon_GroupAutoLayout qxribbon qxribbon/groupautolayout sample)
+add_qtc_example(Example_Ribbon_CustomizeDialogModeless qxribbon qxribbon/customizedialogmodeless ribbon)
+add_qtc_example(Example_Ribbon_CustomizeWidget qxribbon qxribbon/customizewidget sample)
+add_qtc_example(Example_Ribbon_PageContext qxribbon qxribbon/pagecontext ribbon)
+add_qtc_example(Example_Ribbon_Menu qxribbon qxribbon/ribbonmenu sample)
+add_qtc_example(Example_RibbonBar qxribbon qxribbon/ribbonbar sample)
+add_qtc_example(Example_Ribbon_ButtonGroup qxribbon qxribbon/ribbonbuttongroup ribbon)
+add_qtc_example(Example_Ribbon_Gallery qxribbon qxribbon/ribbongallery ribbon)
+add_qtc_example(Example_RibbonStyle qxribbon qxribbon/ribbonstyle sample)
+# These two build against the generic main window in shared/.
+add_qtc_example(Example_Ribbon_ColorIcon qxribbon qxribbon/coloricon plain)
+add_qtc_example(Example_RibbonQuickAccessBar qxribbon qxribbon/ribbonquickaccessbar plain)
 
 # -------------------------------------------------------------------- qxdock --
-add_qtc_example(Example_Dock_AutoHide qxdock qxdock/autohide qxdock/shared/main.cpp)
-add_qtc_example(Example_Dock_CentralWidget qxdock qxdock/centralwidget qxdock/shared/main.cpp)
-add_qtc_example(Example_Dock_DockInDock qxdock qxdock/dockindock qxdock/shared/main.cpp)
-add_qtc_example(Example_Dock_Group qxdock qxdock/dockgroup qxdock/shared/main.cpp)
-add_qtc_example(Example_Dock_HideShow qxdock qxdock/hideshow qxdock/shared/main.cpp)
-add_qtc_example(Example_Dock_SideBar qxdock qxdock/sidebar qxdock/shared/main.cpp)
-add_qtc_example(Example_Dock_ConfigFlags qxdock qxdock/configflags shared/main.cpp)
-add_qtc_example(Example_Dock_EmptyDockArea qxdock qxdock/emptydockarea shared/main.cpp)
-add_qtc_example(Example_Dock_WidgetToPanel qxdock qxdock/widgettopanel shared/main.cpp)
-# The one sample that carries its own main(): nothing shared to add.
+add_qtc_example(Example_Dock_AutoHide qxdock qxdock/autohide sample)
+add_qtc_example(Example_Dock_CentralWidget qxdock qxdock/centralwidget sample)
+add_qtc_example(Example_Dock_DockInDock qxdock qxdock/dockindock sample)
+add_qtc_example(Example_Dock_Group qxdock qxdock/dockgroup sample)
+add_qtc_example(Example_Dock_HideShow qxdock qxdock/hideshow sample)
+add_qtc_example(Example_Dock_SideBar qxdock qxdock/sidebar sample)
+add_qtc_example(Example_Dock_ConfigFlags qxdock qxdock/configflags plain)
+add_qtc_example(Example_Dock_EmptyDockArea qxdock qxdock/emptydockarea plain)
+add_qtc_example(Example_Dock_WidgetToPanel qxdock qxdock/widgettopanel plain)
+# The one sample that carries its own main().
 add_qtc_example(Example_Dock_DeleteOnClose qxdock qxdock/deleteonclose none)
 
 # --------------------------------------------------------------------- qxapp --
-add_qtc_example(Example_RibbonAppEmpty qxapp qxapp/ribbonappempty qxapp/shared/main.cpp)
+add_qtc_example(Example_RibbonAppEmpty qxapp qxapp/ribbonappempty sample)
