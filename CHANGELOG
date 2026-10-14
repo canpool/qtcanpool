@@ -1,3 +1,30 @@
+4.4.1
+---
+- examples: the eleven qxapp classes that had a unit test but no visual sample now
+  have one, as four family samples rather than one sample per class - a family is
+  what a user looks at, and eleven windows over the same four ideas would have
+  hidden that. Example_App_PropertyEditor covers QxProperty, QxPropertyEditor and
+  QxSettingsDialog against one file-backed QxSettings, so an edit made in the form
+  is the edit the dialog shows; Example_App_Buttons covers QxToolButton,
+  QxMenuButton, QxMenuAccessButton and QxExtensionButton; Example_App_NavigationBar
+  covers QxNavigationBar (the vertical rail, driving a page stack) and QxNavBar (a
+  QxTabBar subclass with a customize menu) - different base classes behind similar
+  names; Example_App_TabWidget covers QxTabWidget and QxTabBar. doc/pages/build.md
+  example count 23 -> 27
+- tests: one in-process smoke test per new sample. Each compiles the sample's own
+  mainwindow.cpp, stands the window up offscreen and looks up the classes the sample
+  exists for, so a sample cannot rot silently - if its source stops compiling or its
+  window starts crashing, the test fails. Launching the sample executables through
+  QProcess was tried first and does not work here: CreateProcess fails for them on
+  Windows whatever the environment or working directory is, while the same
+  executables start fine when launched by hand. The files live in
+  tests/qxapp/examples/ because tests/qxapp/auto/ is swept by a tst_*.cpp glob that
+  would have registered each of them a second time
+- qxcore 0.1.2, qxtheme 0.1.1, qxwindow 0.3.1, qxribbon 0.12.1, qxdock 0.2.2,
+  qxplugin 0.2.1, qxapp 0.1.1: unchanged. 4.4.1 touched examples, tests and docs
+  only - src/libs has no change at all since the 4.4.0 tag - so no library version
+  moves (K11)
+
 4.4.0
 ---
 - qxwindow 0.3.0 -> 0.3.1. Internal cleanup only - no public API changed, so the
