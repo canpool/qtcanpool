@@ -85,6 +85,42 @@ add_qtc_test(tst_qxapp
         ${QXAPP_TEST_SOURCES}
 )
 
+# ----------------------------------------------------- qxapp examples --
+# In-process smoke tests for the four family examples added in 4.4.1. Each test
+# compiles the example's own MainWindow source and stands the window up
+# offscreen, so an example cannot rot silently: if its source stops building or
+# its window starts crashing, the test fails.
+#
+# Launching the example executables through QProcess was tried first and is not
+# viable here - CreateProcess fails for them on Windows no matter what
+# environment, working directory or argument list is used - so the example is
+# exercised in-process instead, which also keeps the test independent of how the
+# example is deployed.
+#
+# The example targets only exist when examples are built, hence the guard.
+set(QTCANPOOL_EXAMPLES_DIR "${CMAKE_SOURCE_DIR}/examples")
+macro(add_qxapp_example_test dir target)
+  if (TARGET ${target})
+    add_qtc_test(tst_qxappexample_${dir}
+        DEPENDS qxapp
+        INCLUDES
+            "${QTCANPOOL_TESTS_DIR}/common"
+            "${QTCANPOOL_EXAMPLES_DIR}/qxapp/${dir}"
+        SOURCES
+            "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+            "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+            "${QTCANPOOL_TESTS_DIR}/qxapp/auto/main.cpp"
+            "${QTCANPOOL_EXAMPLES_DIR}/qxapp/${dir}/mainwindow.cpp"
+            "${QTCANPOOL_TESTS_DIR}/qxapp/examples/tst_qxappexample_${dir}.cpp"
+    )
+    add_dependencies(tst_qxappexample_${dir} ${target})
+  endif()
+endmacro()
+add_qxapp_example_test(propertyeditor Example_App_PropertyEditor)
+add_qxapp_example_test(buttons Example_App_Buttons)
+add_qxapp_example_test(navigationbar Example_App_NavigationBar)
+add_qxapp_example_test(tabwidget Example_App_TabWidget)
+
 # --------------------------------------------------------------- qxplugin --
 # The plugin runtime: contract, discovery, dependency resolution and failure
 # isolation. The host-adapter case links qxapp to drive a real QxAppShell as
