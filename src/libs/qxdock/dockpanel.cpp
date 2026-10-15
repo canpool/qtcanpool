@@ -1249,8 +1249,9 @@ bool DockPanel::restoreState(DockStateReader &s, DockPanel *&createdWidget, bool
 }
 
 /**
- * Returns the largest minimumSizeHint() of the dock widgets in this panel.
- * The minimum size hint is updated if a dock widget is removed or added.
+ * Returns the largest minimumSizeHint() of the dock widgets in this panel,
+ * plus the height of the title bar when the panel has one. The minimum size
+ * hint is updated if a dock widget is removed or added.
  */
 QSize DockPanel::minimumSizeHint() const
 {
@@ -1259,7 +1260,12 @@ QSize DockPanel::minimumSizeHint() const
         return Super::minimumSizeHint();
     }
 
-    if (d->m_titleBar->isVisible()) {
+    // Asked as "does the panel have a title bar", which is a question about
+    // intent, so it takes isHidden() and not isVisible(). A panel inside a
+    // window that has not been shown yet reports isVisible() false while the
+    // title bar is very much there, and a layout that asks during that window
+    // would get a bound a title bar too short for what it has to place.
+    if (!d->m_titleBar->isHidden()) {
         return d->m_minSizeHint + QSize(0, d->m_titleBar->minimumSizeHint().height());
     } else {
         return d->m_minSizeHint;

@@ -1,5 +1,16 @@
 Unreleased
 ---
+Bugfix
+- DockPanel::minimumSizeHint() asked whether the title bar is visible when it
+  meant whether the panel has one, and so left the title bar height out of the
+  bound while the window had not been shown yet - isVisible() is false for the
+  whole tree until then. Everything else in this library asks that question of
+  isHidden() (openedDockPanels(), topLevelDockPanel(), the drop overlay), so
+  this was the one place that disagreed with its neighbours. The hint is asked
+  again rather than cached, so the value corrects itself once the window is
+  shown; what made it worth fixing is that the contradiction was invisible,
+  not that the damage lasted. tst_DockPanel::minimumSizeHintKeepsTheTitleBar
+
 Cleanup
 - Drop the Qt 5.12.2 branch in DockFloatingContainer::event(). The threshold
   sits below the 5.15 minimum K1 set, so the "#if" side is the one that always

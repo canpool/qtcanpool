@@ -6,6 +6,7 @@
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
 #include "qxdock/docksplitter.h"
+#include "qxdock/docktitlebar.h"
 
 QX_DOCK_USE_NAMESPACE
 
@@ -17,6 +18,7 @@ private slots:
     void splitter();
     void centralWidget();
     void topLevelArea();
+    void minimumSizeHintKeepsTheTitleBar();
 };
 
 void tst_DockPanel::dockWidget()
@@ -236,6 +238,47 @@ void tst_DockPanel::topLevelArea()
         QVERIFY(dw->dockPanel() != Q_NULLPTR);
         QCOMPARE(dw->dockPanel()->isTopLevelArea(), false);
     }
+}
+
+/*!
+ * The hint counts the title bar in when the panel has one. The question is
+ * "does this panel have a title bar" - a matter of intent - so it is asked with
+ * isHidden(), the way the rest of this library asks it (openedDockPanels(),
+ * topLevelDockPanel(), the drop overlay). isVisible() would also go false for
+ * the whole tree while the window has not been shown yet, and a layout that
+ * happens to ask during that window would be handed a bound one title bar
+ * short of what it has to place.
+ *
+ * The damage is smaller than the ribbon case was - the hint is asked again
+ * rather than cached, so the bound corrects itself once the window is shown -
+ * but this library has no demo and no golden image, so a wrong bound here is
+ * not something a screenshot would have caught either way.
+ */
+void tst_DockPanel::minimumSizeHintKeepsTheTitleBar()
+{
+    DockWindow wd;
+
+    DockWidget *dw = new DockWidget(QStringLiteral("dw"));
+    QWidget *content = new QWidget();
+    content->setMinimumSize(60, 40);
+    dw->setWidget(content);
+
+    DockPanel *p = wd.addDockWidget(Qx::LeftDockWidgetArea, dw);
+
+    // The window is still hidden, so the whole tree reports isVisible() false
+    // while the panel does have a title bar.
+    QVERIFY(!wd.isVisible());
+    QVERIFY(!p->titleBar()->isHidden());
+
+    const int titleBarHeight = p->titleBar()->minimumSizeHint().height();
+    QVERIFY(titleBarHeight > 0);
+
+    const QSize whileHidden = p->minimumSizeHint();
+    QCOMPARE(whileHidden.height(), dw->minimumSizeHint().height() + titleBarHeight);
+
+    // Showing the window must not change the answer.
+    wd.show();
+    QCOMPARE(p->minimumSizeHint(), whileHidden);
 }
 
 TEST_ADD(tst_DockPanel)
