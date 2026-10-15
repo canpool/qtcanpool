@@ -12,9 +12,10 @@
 QX_RIBBON_BEGIN_NAMESPACE
 
 /**
- * @brief 属性，用于标记是否可以进行自定义，用于动态设置到 RibbonPage 和 RibbonGroup，
- * 值为bool，在为true时，可以通过 RibbonCustomizeWidget 改变这个RibbonPage和RibbonGroup的布局，
- * 默认不会有此属性，仅在有此属性且为true时才会在RibbonCustomizeWidget中能显示为可设置
+ * @brief Property that marks whether customization is allowed; dynamically set on RibbonPage and RibbonGroup.
+ * Its value is bool; when true, the layout of this RibbonPage and RibbonGroup can be changed via RibbonCustomizeWidget.
+ * This property is absent by default; only when it is present and true can the item be shown as customizable in
+ * RibbonCustomizeWidget
  */
 #ifndef QX_RIBBON_PROP_CAN_CUSTOMIZE
 #define QX_RIBBON_PROP_CAN_CUSTOMIZE "_qx_isCanCustomize"
@@ -55,7 +56,7 @@ RibbonCustomizeData::RibbonCustomizeData(ActionType type, RibbonActionsManager *
 }
 
 /**
- * @brief 获取CustomizeData的action type
+ * @brief Gets the action type of the CustomizeData
  * @return
  */
 RibbonCustomizeData::ActionType RibbonCustomizeData::actionType() const
@@ -64,7 +65,7 @@ RibbonCustomizeData::ActionType RibbonCustomizeData::actionType() const
 }
 
 /**
- * @brief 设置CustomizeData的action type
+ * @brief Sets the action type of the CustomizeData
  * @param a
  */
 void RibbonCustomizeData::setActionType(RibbonCustomizeData::ActionType a)
@@ -73,10 +74,10 @@ void RibbonCustomizeData::setActionType(RibbonCustomizeData::ActionType a)
 }
 
 /**
- * @brief 判断是否是一个正常的CustomizeData
+ * @brief Checks whether this is a valid CustomizeData
  *
- * 实际逻辑actionType() != UnknowActionType
- * @return 有用的CustomizeData返回true
+ * The actual logic is actionType() != UnknowActionType
+ * @return Returns true for a usable CustomizeData
  */
 bool RibbonCustomizeData::isValid() const
 {
@@ -84,9 +85,9 @@ bool RibbonCustomizeData::isValid() const
 }
 
 /**
- * @brief 应用RibbonCustomizeData到RibbonBar
+ * @brief Applies the RibbonCustomizeData to the RibbonBar
  * @param bar
- * @return 如果应用失败，返回false,如果actionType==UnknowActionType直接返回false
+ * @return Returns false if the application fails; returns false directly if actionType==UnknowActionType
  */
 bool RibbonCustomizeData::apply(RibbonBar *bar)
 {
@@ -101,7 +102,7 @@ bool RibbonCustomizeData::apply(RibbonBar *bar)
         return false;
 
     case AddPageActionType: {
-        // 添加标签
+        // Add page
         RibbonPage *page = bar->insertPage(indexValue, keyValue);
         if (Q_NULLPTR == page) {
             return false;
@@ -112,7 +113,7 @@ bool RibbonCustomizeData::apply(RibbonBar *bar)
     }
 
     case AddGroupActionType: {
-        // 添加group
+        // Add group
         RibbonPage *page = bar->pageByObjectName(pageObjNameValue);
         if (Q_NULLPTR == page) {
             return false;
@@ -302,12 +303,12 @@ RibbonCustomizeData RibbonCustomizeData::makeAddPageCustomizeData(const QString 
 }
 
 /**
- * @brief 创建一个AddGroupActionType的RibbonCustomizeData
- * @param title group的标题
- * @param index group的index
- * @param pageObjName group的page的objectname
- * @param objName group的objname
- * @return 返回AddGroupActionType的RibbonCustomizeData
+ * @brief Creates a RibbonCustomizeData of type AddGroupActionType
+ * @param title The title of the group
+ * @param index The index of the group
+ * @param pageObjName The object name of the group's page
+ * @param objName The object name of the group
+ * @return Returns a RibbonCustomizeData of type AddGroupActionType
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddGroupCustomizeData(const QString &title, int index,
                                                                    const QString &pageObjName, const QString &objName)
@@ -325,12 +326,12 @@ RibbonCustomizeData RibbonCustomizeData::makeAddGroupCustomizeData(const QString
 }
 
 /**
- * @brief 添加action
- * @param key action的索引
- * @param mgr action管理器
- * @param rp 定义action的占位情况
- * @param pageObjName action添加到的page的objname
- * @param groupObjName action添加到的page下的group的objname
+ * @brief Adds an action
+ * @param key The index of the action
+ * @param mgr The action manager
+ * @param rp Defines the space proportion of the action
+ * @param pageObjName The object name of the page to which the action is added
+ * @param groupObjName The object name of the group under the page to which the action is added
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeAddActionCustomizeData(const QString &key, RibbonActionsManager *mgr,
@@ -385,9 +386,9 @@ RibbonCustomizeData RibbonCustomizeData::makeRenameGroupCustomizeData(const QStr
 }
 
 /**
- * @brief 对应ChangePageOrderActionType
- * @param pageObjName 需要移动的pageobjName
- * @param moveIndex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
+ * @brief Corresponds to ChangePageOrderActionType
+ * @param pageObjName The pageObjName to move
+ * @param moveIndex The move position; -1 moves up (left) by one position, 1 moves down (right) by one position
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const QString &pageObjName, int moveIndex)
@@ -409,10 +410,10 @@ RibbonCustomizeData RibbonCustomizeData::makeChangePageOrderCustomizeData(const 
 }
 
 /**
- * @brief 对应ChangeGroupOrderActionType
- * @param pageObjName 需要移动的group对应的pageobjName
- * @param groupObjName 需要移动的groupObjName
- * @param moveIndex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
+ * @brief Corresponds to ChangeGroupOrderActionType
+ * @param pageObjName The pageObjName corresponding to the group to move
+ * @param groupObjName The groupObjName to move
+ * @param moveIndex The move position; -1 moves up (left) by one position, 1 moves down (right) by one position
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeChangeGroupOrderCustomizeData(const QString &pageObjName,
@@ -436,12 +437,12 @@ RibbonCustomizeData RibbonCustomizeData::makeChangeGroupOrderCustomizeData(const
 }
 
 /**
- * @brief 对应ChangeActionOrderActionType
- * @param pageObjName 需要移动的group对应的pageobjName
- * @param groupObjName 需要移动的groupObjName
- * @param key RibbonActionsManager管理的key名
- * @param mgr RibbonActionsManager指针
- * @param moveIndex 移动位置，-1代表向上（向左）移动一个位置，1带表向下（向右）移动一个位置
+ * @brief Corresponds to ChangeActionOrderActionType
+ * @param pageObjName The pageObjName corresponding to the group to move
+ * @param groupObjName The groupObjName to move
+ * @param key The key name managed by RibbonActionsManager
+ * @param mgr RibbonActionsManager pointer
+ * @param moveIndex The move position; -1 moves up (left) by one position, 1 moves down (right) by one position
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeChangeActionOrderCustomizeData(const QString &pageObjName,
@@ -504,11 +505,11 @@ RibbonCustomizeData RibbonCustomizeData::makeRemoveGroupCustomizeData(const QStr
 }
 
 /**
- * @brief 对应RemoveActionActionType
- * @param pageObjName group对应的page的obj name
- * @param groupObjName group对应的 obj name
- * @param key RibbonActionsManager管理的key名
- * @param mgr RibbonActionsManager指针
+ * @brief Corresponds to RemoveActionActionType
+ * @param pageObjName The obj name of the page corresponding to the group
+ * @param groupObjName The obj name corresponding to the group
+ * @param key The key name managed by RibbonActionsManager
+ * @param mgr RibbonActionsManager pointer
  * @return
  */
 RibbonCustomizeData RibbonCustomizeData::makeRemoveActionCustomizeData(const QString &pageObjName,
@@ -569,17 +570,17 @@ void RibbonCustomizeData::setCanCustomize(QObject *obj, bool canbe)
 }
 
 /**
- * @brief 对QList<RibbonCustomizeData>进行简化操作
+ * @brief Simplifies QList<RibbonCustomizeData>
  *
- * 此函数会执行如下操作：
- * 1、针对同一个元素出现添加和删除操作的进行移除（先添加，后删除）
- * 2、针对VisiblePageActionType，对于多次出现的操作只保留最后一步
- * 3、针对RenamePageActionType和RenameGroupActionType操作，先只保留最后一个，然后直接修改
- * 4、针对连续的ChangePageOrderActionType，ChangeGroupOrderActionType，ChangeActionOrderActionType进行合并为一个动作，
- * 如果合并后原地不动，则删除
+ * This function performs the following operations:
+ * 1. Removes add-then-remove operations on the same element (added first, removed later)
+ * 2. For VisiblePageActionType, keeps only the last step among repeated occurrences
+ * 3. For RenamePageActionType and RenameGroupActionType, keeps only the last one and then applies it directly
+ * 4. Merges consecutive ChangePageOrderActionType, ChangeGroupOrderActionType and ChangeActionOrderActionType into a
+ * single operation; if the merge results in no movement, it is removed
  *
  * @param csd
- * @return 返回简化的QList<RibbonCustomizeData>
+ * @return Returns the simplified QList<RibbonCustomizeData>
  */
 QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCustomizeData> &csd)
 {
@@ -589,10 +590,11 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
         return csd;
     }
     QList<RibbonCustomizeData> res;
-    QList<int> willRemoveIndexs;   // 记录要删除的index
+    QList<int> willRemoveIndexs;   // Records the indices to remove
 
-    //! 首先针对添加和删除操作进行优化
-    // 说明：同一个元素不可能先删再加，只能先加再删，而且只能删一次，所以二级循环遍历，找到就跳出内循环
+    //! First optimize add and remove operations
+    // Note: The same element cannot be removed before it is added; it can only be added first and removed later, and
+    // can be removed only once, so use a nested loop and break out of the inner loop as soon as a match is found
     for (int i = 0; i < size; ++i) {
         if (csd[i].actionType() == AddPageActionType) {
             for (int j = i + 1; j < size; ++j) {
@@ -631,14 +633,16 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     res = remove_indexs(csd, willRemoveIndexs);
     willRemoveIndexs.clear();
 
-    //! 筛选VisiblePageActionType，对于多次出现的操作只保留最后一步
-    // 说明：同一个元素可能会被反复隐藏和显示，所以二级循环遍历，找到就删除前一个、记录后一个，直到内循环结束
-    // 下一次外循环，如果已被删除的或已经是最后的，就直接跳过
-    QList<int> willNotCheckIndexs;   // 记录免检的index
+    //! Filter VisiblePageActionType, keeping only the last step among repeated occurrences
+    // Note: The same element may be hidden and shown repeatedly, so use a nested loop to delete the previous one and
+    // record the next one as soon as a match is found, until the inner loop ends On the next outer iteration, skip
+    // indices that have already been removed or are already the last
+    QList<int> willNotCheckIndexs;   // Records the indices exempt from checking
     size = res.size();
     for (int i = 0; i < size; ++i) {
         if (res[i].actionType() == VisiblePageActionType) {
-            // 前置判断中使用的contains也是for循环，加了这个判断一级循环增加了处理能有多少性能收益？
+            // The contains used in the precondition check is also a loop; how much performance benefit does adding this
+            // check bring to the first-level loop?
             if (willRemoveIndexs.contains(i) || willNotCheckIndexs.contains(i)) {
                 continue;
             }
@@ -646,12 +650,13 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
             for (int j = i + 1; j < size; ++j) {
                 if (res[j].actionType() == VisiblePageActionType) {
                     if (res[i].pageObjNameValue == res[j].pageObjNameValue) {
-                        willRemoveIndexs << last;   // 删除前一个只保留最后一个
+                        willRemoveIndexs << last;   // Remove the previous one and keep only the last
                         last = j;
                     }
                 }
             }
-            if (last != i) {   // 说明多次出现，last已经是最后了，下次可以免检了
+            if (last != i) {   // Indicates multiple occurrences; last is already the final one and can be exempt from
+                               // checking next time
                 willNotCheckIndexs << last;
             }
         }
@@ -660,12 +665,12 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     res = remove_indexs(res, willRemoveIndexs);
     willRemoveIndexs.clear();
 
-    //! 针对RenamePageActionType和RenameGroupActionType操作，只需保留最后一个
+    //! For RenamePageActionType and RenameGroupActionType, keep only the last one
     size = res.size();
     QList<int> willRenameIndexs;
     for (int i = 0; i < size; ++i) {
         if (res[i].actionType() == RenamePageActionType) {
-            // 向后查询，如果查询到有同一个Page改名，把这个索引加入删除队列
+            // Search forward; if another rename of the same page is found, add this index to the removal queue
             int last = i;
             for (int j = i + 1; j < size; ++j) {
                 if ((res[j].actionType() == RenamePageActionType) &&
@@ -676,7 +681,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
             }
             willRenameIndexs << last;
         } else if (res[i].actionType() == RenameGroupActionType) {
-            // 向后查询，如果查询到有同一个group改名，把这个索引加入删除队列
+            // Search forward; if another rename of the same group is found, add this index to the removal queue
             int last = i;
             for (int j = i + 1; j < size; ++j) {
                 if ((res[j].actionType() == RenameGroupActionType) &&
@@ -692,7 +697,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     res = remove_indexs(res, willRemoveIndexs);
     willRemoveIndexs.clear();
 
-    //! 对于RenamePageActionType和RenameGroupActionType操作，直接修改，不留到apply时
+    //! For RenamePageActionType and RenameGroupActionType, apply directly instead of leaving it until apply
     foreach (int i, willRenameIndexs) {
         if (res[i].actionType() == RenamePageActionType) {
             for (int j = 0; j < i; ++j) {
@@ -714,27 +719,30 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     res = remove_indexs(res, willRenameIndexs);
     willRenameIndexs.clear();
 
-    //! 针对连续的ChangePageOrderActionType，ChangeGroupOrderActionType，ChangeActionOrderActionType进行合并
+    //! Merge consecutive ChangePageOrderActionType, ChangeGroupOrderActionType and ChangeActionOrderActionType
     size = res.size();
     for (int i = 1; i < size; ++i) {
         if ((res[i - 1].actionType() == ChangePageOrderActionType) &&
             (res[i].actionType() == ChangePageOrderActionType) &&
             (res[i - 1].pageObjNameValue == res[i].pageObjNameValue)) {
-            // 说明连续两个顺序调整，把前一个indexvalue和后一个indexvalue相加，前一个删除
+            // Indicates two consecutive order changes; add the previous indexValue to the next one and remove the
+            // previous one
             res[i].indexValue += res[i - 1].indexValue;
             willRemoveIndexs << i - 1;
         } else if ((res[i - 1].actionType() == ChangeGroupOrderActionType) &&
                    (res[i].actionType() == ChangeGroupOrderActionType) &&
                    (res[i - 1].groupObjNameValue == res[i].groupObjNameValue) &&
                    (res[i - 1].pageObjNameValue == res[i].pageObjNameValue)) {
-            // 说明连续两个顺序调整，把前一个indexvalue和后一个indexvalue相加，前一个删除
+            // Indicates two consecutive order changes; add the previous indexValue to the next one and remove the
+            // previous one
             res[i].indexValue += res[i - 1].indexValue;
             willRemoveIndexs << i - 1;
         } else if ((res[i - 1].actionType() == ChangeActionOrderActionType) &&
                    (res[i].actionType() == ChangeActionOrderActionType) && (res[i - 1].keyValue == res[i].keyValue) &&
                    (res[i - 1].groupObjNameValue == res[i].groupObjNameValue) &&
                    (res[i - 1].pageObjNameValue == res[i].pageObjNameValue)) {
-            // 说明连续两个顺序调整，把前一个indexvalue和后一个indexvalue相加，前一个删除
+            // Indicates two consecutive order changes; add the previous indexValue to the next one and remove the
+            // previous one
             res[i].indexValue += res[i - 1].indexValue;
             willRemoveIndexs << i - 1;
         }
@@ -742,7 +750,7 @@ QList<RibbonCustomizeData> RibbonCustomizeData::simplify(const QList<RibbonCusto
     res = remove_indexs(res, willRemoveIndexs);
     willRemoveIndexs.clear();
 
-    //! 上一步操作可能会产生indexvalue为0的情况，此操作把indexvalue为0的删除
+    //! The previous step may produce an indexValue of 0; this step removes the entries with indexValue 0
     size = res.size();
     for (int i = 0; i < size; ++i) {
         if ((res[i].actionType() == ChangePageOrderActionType) || (res[i].actionType() == ChangeGroupOrderActionType) ||

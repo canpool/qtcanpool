@@ -23,61 +23,63 @@ class RibbonCustomizeWidgetPrivate;
 class RibbonBar;
 
 /**
- * @brief 自定义界面窗口
+ * @brief Customize interface window
  */
 class RibbonCustomizeWidget : public QWidget
 {
     Q_OBJECT
 public:
     /**
-     * @brief 定义ribbon树的显示类型
+     * @brief Defines the display type of the ribbon tree
      */
     enum RibbonTreeShowType {
-        ShowAllPage,   ///< 显示所有的页，包括上下文
-        ShowMainPage   ///< 显示主要的页，不包含上下文
+        ShowAllPage,   ///< Show all pages, including context pages
+        ShowMainPage   ///< Show main pages only, excluding context pages
     };
 
     /**
-     * @brief QStandardItem对应的role
+     * @brief Role associated with QStandardItem
      */
     enum ItemRole {
-        LevelRole = Qt::UserRole + 1,   ///< 代表这是层级，有0：page 1：group 2：item
-        PointerRole,                    ///< 代表这是存放指针。根据LevelRole来进行转
-        CanCustomizeRole,               ///< 代表个item是可以自定义的.bool
-        CustomizeRole,   ///< 代表这个是自定义的item,bool,主要用于那些自己添加的标签和group，有此角色必有CanCustomizeRole
-        CustomizeObjNameRole,   ///< 记录了临时的自定义内容的obj名 QString
+        LevelRole = Qt::UserRole + 1,   ///< Indicates the level: 0 for page, 1 for group, 2 for item
+        PointerRole,                    ///< Stores a pointer, cast according to LevelRole
+        CanCustomizeRole,               ///< Indicates whether the item can be customized (bool)
+        CustomizeRole,   ///< Indicates a customized item (bool), mainly for user-added tabs and groups; this role
+                         ///< implies CanCustomizeRole
+        CustomizeObjNameRole,   ///< Records the obj name of temporary customized content (QString)
     };
 public:
     RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~RibbonCustomizeWidget();
 
-    // 设置action管理器
+    // Sets up the action manager
     void setupActionsManager(RibbonActionsManager *mgr);
 
-    // 根据当前的radiobutton选项来更新model
+    // Updates the model according to the current radio button option
     void updateModel();
 
-    // 更新model
+    // Updates the model
     void updateModel(RibbonTreeShowType type);
 
-    // 应用所有的设定
+    // Applies all settings
     bool apply();
 
-    // 转换为xml
+    // Converts to xml
     bool toXml(QXmlStreamWriter *xml) const;
     bool toXml(const QString &xmlpath) const;
 
-    // 从xml中加载QList<RibbonCustomizeData>，对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
+    // Loads QList<RibbonCustomizeData> from xml; for file-based settings, call this before showing the dialog to ensure
+    // correct recording of stacked settings
     void fromXml(QXmlStreamReader *xml);
     void fromXml(const QString &xmlpath);
 
-    // 应用xml配置，可以结合customize_datas_from_xml和customize_datas_apply函数
+    // Applies xml configuration; can be combined with customize_datas_from_xml and customize_datas_apply
     static bool fromXml(QXmlStreamReader *xml, RibbonBar *bar, RibbonActionsManager *mgr);
 
-    // 清除所有动作，在执行applys函数后，如果要继续调用，应该clear，否则会导致异常
+    // Clears all actions; after calling apply(), call clear() before continuing, otherwise an exception may occur
     void clear();
 protected:
-    // 把QList<RibbonCustomizeData>进行裁剪,把一些动作合并
+    // Trims QList<RibbonCustomizeData> and merges some actions
     void simplify();
 
     RibbonGroup::RowProportion selectedRowProportion() const;
@@ -87,27 +89,27 @@ protected:
 
     QStandardItem *selectedItem() const;
 
-    // 获取选中的ribbon tree 的level
+    // Gets the level of the selected ribbon tree
     int selectedRibbonLevel() const;
 
-    // 根据选中的item判断
+    // Determines based on the selected item
     int itemLevel(QStandardItem *item) const;
 
-    // 设置某个item被选中
+    // Selects the specified item
     void setSelectItem(QStandardItem *item, bool ensureVisible = true);
 
-    // 判断itemn能否改动，可以改动返回true
+    // Checks whether the item can be modified; returns true if it can
     bool isItemCanCustomize(QStandardItem *item) const;
     bool isSelectedItemCanCustomize() const;
 
-    // 判断item是否是自定义的item
+    // Checks whether the item is a customized item
     bool isCustomizeItem(QStandardItem *item) const;
     bool isSelectedItemIsCustomize() const;
 
-    // 删除一个item
+    // Removes an item
     void removeItem(QStandardItem *item);
 
-    // 上移/下移选中的item，delta为-1表示上移，1表示下移
+    // Moves the selected item up/down; delta of -1 moves up and 1 moves down
     void moveSelectedItem(int delta);
 
 private Q_SLOTS:

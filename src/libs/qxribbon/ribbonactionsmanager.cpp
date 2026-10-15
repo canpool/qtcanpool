@@ -21,12 +21,14 @@ public:
     void clear();
 public:
     QMap<int, QList<QAction *>> m_tagToActions;   ///< tag : QList<QAction*>
-    QMap<int, QString> m_tagToName;               ///< tag对应的名字
-    QHash<QString, QAction *> m_keyToAction;      ///< key对应action
-    QMap<QAction *, QString> m_actionToKey;       ///< action对应key
-    QMap<int, RibbonPage *> m_tagToPage;          ///< 仅仅在autoRegisteActions函数会有用
-    int m_salt;                                   ///< 盐用于生成固定的id，在用户不主动设置key时，id基于msale生成，
-                  ///< 只要RibbonActionsManager的调用registerAction顺序不变，生成的id都不变，因为它是基于自增实现的
+    QMap<int, QString> m_tagToName;               ///< Name corresponding to a tag
+    QHash<QString, QAction *> m_keyToAction;      ///< Action corresponding to a key
+    QMap<QAction *, QString> m_actionToKey;       ///< Key corresponding to an action
+    QMap<int, RibbonPage *> m_tagToPage;          ///< Only used by the autoRegisteActions function
+    int m_salt;   ///< Salt used to generate stable ids; when the user does not set a key,
+                  ///< the id is generated based on m_salt, and as long as the registerAction call order of
+                  ///< RibbonActionsManager is unchanged, the generated id stays the same because it is based on an
+                  ///< auto-increment
 };
 
 RibbonActionsManagerPrivate::RibbonActionsManagerPrivate()
@@ -57,10 +59,10 @@ RibbonActionsManager::~RibbonActionsManager()
 }
 
 /**
- * @brief 设置tag对应的名字，通过这个可以得到tag和文本的映射
+ * @brief Sets the name corresponding to a tag; this provides a mapping between tags and text
  * @param tag
  * @param name
- * @note 在支持多语言的环境下，在语言切换时需要重新设置，以更新名字
+ * @note In a multilingual environment, it must be set again on language switch to update the name
  */
 void RibbonActionsManager::setTagName(int tag, const QString &name)
 {
@@ -69,7 +71,7 @@ void RibbonActionsManager::setTagName(int tag, const QString &name)
 }
 
 /**
- * @brief 获取tag对应的中文名字
+ * @brief Gets the display name corresponding to a tag
  * @param tag
  * @return
  */
@@ -80,8 +82,8 @@ QString RibbonActionsManager::tagName(int tag) const
 }
 
 /**
- * @brief 移除tag
- * @note 注意，这个函数非常耗时
+ * @brief Removes a tag
+ * @note Note that this function is very time-consuming
  * @param tag
  */
 void RibbonActionsManager::removeTag(int tag)
@@ -89,11 +91,11 @@ void RibbonActionsManager::removeTag(int tag)
     Q_D(RibbonActionsManager);
     QList<QAction *> willRemoveActs = actions(tag);
 
-    // 开始移除
+    // Start removing
     d->m_tagToActions.remove(tag);
     d->m_tagToName.remove(tag);
 
-    // 开始查找需要移出总表的action
+    // Start finding the actions that must be removed from the master table
     QList<QAction *> needRemoveActs;
     QList<QAction *> remainingActs;
 
@@ -105,7 +107,7 @@ void RibbonActionsManager::removeTag(int tag)
             needRemoveActs.append(a);
         }
     }
-    // 从总表移除action
+    // Remove the actions from the master table
     for (QAction *a : needRemoveActs) {
         auto i = d->m_actionToKey.find(a);
         if (i != d->m_actionToKey.end()) {
@@ -116,16 +118,18 @@ void RibbonActionsManager::removeTag(int tag)
 }
 
 /**
- * @brief 把action注册到管理器中，实现action的管理
+ * @brief Registers an action into the manager to enable action management
  * @param act
- * @param tag tag是可以按照位进行叠加，见 @ref ActionTag 如果
- * 要定义自己的标签，建议定义大于 @ref ActionTag::UserDefineActionTag 的值，
- * registerAction的tag是直接记录进去的，如果要多个标签并存，在registe之前先或好tag
- * @param key key是action对应的key，一个key只对应一个action，是查找action的关键
- * ,默认情况为一个QString(),这时key是QAction的objectName
- * @param enableEmit 是否发射 actionTagChanged 信号
- * @note 同一个action多次注册不同的tag可以通过tag索引到action，但通过action只能索引到最后一个注册的tag
- * @note tag的新增会触发actionTagChanged信号
+ * @param tag The tag can be combined bitwise, see @ref ActionTag. If
+ * you want to define your own tag, define a value greater than @ref ActionTag::UserDefineActionTag.
+ * The tag passed to registerAction is recorded directly; to keep multiple tags simultaneously, OR them before
+ * registering
+ * @param key The key corresponding to the action; one key maps to only one action and is the key for looking up an
+ * action. By default it is an empty QString(), in which case the key is the objectName of the QAction
+ * @param enableEmit Whether to emit the actionTagChanged signal
+ * @note Registering the same action with different tags allows indexing the action by tag, but indexing by action only
+ * yields the last registered tag
+ * @note Adding a tag triggers the actionTagChanged signal
  */
 bool RibbonActionsManager::registerAction(QAction *act, int tag, const QString &key, bool enableEmit)
 {
@@ -146,49 +150,50 @@ bool RibbonActionsManager::registerAction(QAction *act, int tag, const QString &
     }
     d->m_keyToAction[k] = act;
     d->m_actionToKey[act] = k;
-    // 记录tag 对 action
-    bool isneedemit = !(d->m_tagToActions.contains(tag));   // 记录是否需要发射信号
+    // Records the mapping from tag to action
+    bool isneedemit = !(d->m_tagToActions.contains(tag));   // Records whether a signal must be emitted
 
     d->m_tagToActions[tag].append(act);
-    // 绑定槽
+    // Binds the slot
     connect(act, &QObject::destroyed, this, &RibbonActionsManager::onActionDestroyed);
     if (isneedemit && enableEmit) {
-        // 说明新增tag
+        // Indicates a newly added tag
         Q_EMIT actionTagChanged(tag, false);
     }
     return true;
 }
 
 /**
- * @brief 取消action的注册
+ * @brief Unregisters an action
  *
- * 如果tag对应的最后一个action被撤销，tag也将一块删除
+ * If the last action of a tag is unregistered, the tag is removed as well
  * @param act
- * @param enableEmit 是否发射 actionTagChanged 信号
- * @note tag的删除会触发actionTagChanged信号
- * @note 如果action关联了多个tag，这些tag里的action都会被删除，对应的key也同理
+ * @param enableEmit Whether to emit the actionTagChanged signal
+ * @note Removing a tag triggers the actionTagChanged signal
+ * @note If an action is associated with multiple tags, removing these tags removes the action from all of them, and the
+ * same applies to the corresponding keys
  */
 void RibbonActionsManager::unregisterAction(QAction *act, bool enableEmit)
 {
     if (Q_NULLPTR == act) {
         return;
     }
-    // 绑定槽
+    // Binds the slot
     disconnect(act, &QObject::destroyed, this, &RibbonActionsManager::onActionDestroyed);
     removeAction(act, enableEmit);
 }
 
 /**
- * @brief 移除action
+ * @brief Removes an action
  *
- * 仅移除内存内容
+ * Only removes in-memory content
  * @param act
  * @param enableEmit
  */
 void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
 {
     Q_D(RibbonActionsManager);
-    QList<int> deletedTags;   // 记录删除的tag，用于触发actionTagChanged
+    QList<int> deletedTags;   // Records the deleted tags, used to trigger actionTagChanged
     QMap<int, QList<QAction *>> tagToActions;
 
     if (!d->m_actionToKey.contains(act)) {
@@ -196,7 +201,7 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
     }
 
     for (auto i = d->m_tagToActions.begin(); i != d->m_tagToActions.end(); ++i) {
-        // 把不是act的内容转移到tagToActions中，之后再和d里的替换
+        // Moves the content that is not act into tagToActions, then swaps it with the one in d
         auto tmpi = tagToActions.insert(i.key(), QList<QAction *>());
         int count = 0;
         for (int j = 0; j < i.value().size(); ++j) {
@@ -207,19 +212,19 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
             }
         }
         if (0 == count) {
-            // 说明这个tag没有内容
+            // Indicates this tag has no content
             tagToActions.erase(tmpi);
             deletedTags.append(i.key());
         }
     }
-    // 删除keyToAction
+    // Removes from keyToAction
     QString key = d->m_actionToKey.value(act);
     d->m_actionToKey.remove(act);
     d->m_keyToAction.remove(key);
 
-    // 置换
+    // Swap
     d->m_tagToActions.swap(tagToActions);
-    // 发射信号
+    // Emit signals
     if (enableEmit) {
         for (int delTag : deletedTags) {
             Q_EMIT actionTagChanged(delTag, true);
@@ -228,7 +233,7 @@ void RibbonActionsManager::removeAction(QAction *act, bool enableEmit)
 }
 
 /**
- * @brief 根据tag得到actions
+ * @brief Gets the actions by tag
  * @param tag
  * @return
  */
@@ -239,7 +244,7 @@ QList<QAction *> RibbonActionsManager::actions(int tag) const
 }
 
 /**
- * @brief 获取所有的标签
+ * @brief Gets all tags
  * @return
  */
 QList<int> RibbonActionsManager::actionTags() const
@@ -249,9 +254,9 @@ QList<int> RibbonActionsManager::actionTags() const
 }
 
 /**
- * @brief 通过key获取action
+ * @brief Gets an action by key
  * @param key
- * @return 如果没有key，返回Q_NULLPTR
+ * @return Returns Q_NULLPTR if there is no such key
  */
 QAction *RibbonActionsManager::action(const QString &key) const
 {
@@ -260,9 +265,9 @@ QAction *RibbonActionsManager::action(const QString &key) const
 }
 
 /**
- * @brief 通过action找到key
+ * @brief Finds the key by action
  * @param act
- * @return 如果找不到，返回QString()
+ * @return Returns QString() if not found
  */
 QString RibbonActionsManager::key(QAction *act) const
 {
@@ -271,7 +276,7 @@ QString RibbonActionsManager::key(QAction *act) const
 }
 
 /**
- * @brief 返回所有管理的action数
+ * @brief Returns the number of all managed actions
  * @return
  */
 int RibbonActionsManager::count() const
@@ -281,7 +286,7 @@ int RibbonActionsManager::count() const
 }
 
 /**
- * @brief 返回所有管理的actions
+ * @brief Returns all managed actions
  * @return
  */
 QList<QAction *> RibbonActionsManager::allActions() const
@@ -291,18 +296,19 @@ QList<QAction *> RibbonActionsManager::allActions() const
 }
 
 /**
- * @brief 自动加载RibbonBar的action
- * 此函数会遍历@ref RibbonBar 下的所有子object，找到action注册，
- * 并会遍历所有@ref RibbonPage,把RibbonPage下的action按RibbonPage的title name进行分类
+ * @brief Automatically loads the actions of the RibbonBar
+ * This function traverses all child objects under @ref RibbonBar, finds and registers the actions,
+ * and traverses all @ref RibbonPage, classifying the actions under each RibbonPage by the RibbonPage's title name
  *
- * 此函数会把所有page下的action生成tag并注册，返回的QMap<int, RibbonPage *>是记录了page对应的tag
+ * This function generates and registers a tag for the actions under every page; the returned QMap<int, RibbonPage *>
+ * records the tag corresponding to each page
  *
- * 此函数还会把RibbonBar下面的action，但不在任何一个page下的作为NotInRibbonPageTag标签注册，默认名字会赋予not
- * in ribbon， 可以通过@ref setTagName 改变
+ * This function also registers the actions under the RibbonBar that are not under any page with the NotInRibbonPageTag
+ * tag; the default name assigned is "not in ribbon", which can be changed via @ref setTagName
  *
  * @param bar
  * @return
- * @note 此函数的调用最好在page设置了标题后调用，因为会以page的标题作为标签的命名
+ * @note It is best to call this function after the page titles are set, because the page title is used as the tag name
  */
 QMap<int, RibbonPage *> RibbonActionsManager::autoRegisterActions(RibbonBar *bar)
 {
@@ -311,7 +317,7 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisterActions(RibbonBar *bar
     if (Q_NULLPTR == bar) {
         return res;
     }
-    // 先遍历RibbonBar下的所有子对象，把所有action找到
+    // First traverse all child objects under the RibbonBar and find all actions
     QSet<QAction *> ribbonBarActions;
 
     for (QObject *o : bar->children()) {
@@ -335,7 +341,7 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisterActions(RibbonBar *bar
         res[tag] = page;
         ++tag;
     }
-    // 找到不在功能区的actions
+    // Find the actions that are not in the functional area
     QSet<QAction *> notInPageActions = ribbonBarActions - pageActions;
 
     for (QAction *a : notInPageActions) {
@@ -354,11 +360,11 @@ QMap<int, RibbonPage *> RibbonActionsManager::autoRegisterActions(RibbonBar *bar
 }
 
 /**
- * @brief 自动加载action
+ * @brief Automatically loads actions
  * @param w
  * @param tag
  * @param enableEmit
- * @return 返回成功加入RibbonActionsManager管理的action
+ * @return Returns the actions successfully added to RibbonActionsManager management
  */
 QSet<QAction *> RibbonActionsManager::autoRegisterWidgetActions(QWidget *w, int tag, bool enableEmit)
 {
@@ -367,7 +373,7 @@ QSet<QAction *> RibbonActionsManager::autoRegisterWidgetActions(QWidget *w, int 
 
     for (QAction *a : was) {
         if (res.contains(a) || a->objectName().isEmpty()) {
-            // 重复内容不重复加入，没有object name不加入
+            // Skip duplicate content and entries without an object name
             continue;
         }
         if (registerAction(a, tag, a->objectName(), enableEmit)) {
@@ -378,7 +384,7 @@ QSet<QAction *> RibbonActionsManager::autoRegisterWidgetActions(QWidget *w, int 
 }
 
 /**
- * @brief 根据标题查找action
+ * @brief Finds actions by title
  * @param text
  * @return
  */
@@ -418,7 +424,7 @@ RibbonBar *RibbonActionsManager::ribbonBar() const
 }
 
 /**
- * @brief 此函数用于设置所有管理的action都可以自定义编辑
+ * @brief This function makes all managed actions customizable
  * @param on
  */
 void RibbonActionsManager::setAllActionCanCustomize(bool on)
@@ -430,9 +436,9 @@ void RibbonActionsManager::setAllActionCanCustomize(bool on)
 }
 
 /**
- * @brief action 被delete时，将触发此槽把管理的action删除
+ * @brief Triggered when an action is deleted; this slot removes the managed action
  * @param o
- * @note 这个函数不会触发actionTagChanged信号
+ * @note This function does not trigger the actionTagChanged signal
  */
 void RibbonActionsManager::onActionDestroyed(QObject *o)
 {
@@ -442,7 +448,8 @@ void RibbonActionsManager::onActionDestroyed(QObject *o)
 }
 
 /**
- * @brief autoRegisteActions函数会关联此槽，在标签内容改变时改变tag 对应 文本
+ * @brief The autoRegisteActions function connects this slot to update the tag-to-text mapping when the tag content
+ * changes
  * @param title
  */
 void RibbonActionsManager::onPageTitleChanged(const QString &title)
@@ -541,10 +548,10 @@ RibbonActionsManagerModel::~RibbonActionsManagerModel()
 int RibbonActionsManagerModel::rowCount(const QModelIndex &parent) const
 {
     Q_D(const RibbonActionsManagerModel);
-    if (parent.isValid()) {   // 非顶层
+    if (parent.isValid()) {   // Not top-level
         return 0;
     }
-    // 顶层
+    // Top-level
     return d->count();
 }
 
@@ -639,7 +646,7 @@ QAction *RibbonActionsManagerModel::indexToAction(QModelIndex index) const
 }
 
 /**
- * @brief 查找
+ * @brief Searches
  * @param text
  */
 void RibbonActionsManagerModel::search(const QString &text)

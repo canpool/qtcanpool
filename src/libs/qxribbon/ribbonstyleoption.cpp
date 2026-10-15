@@ -27,7 +27,8 @@ public:
     int m_ribbonBarHeightWpsLiteStyleThreeRow = 0;
     int m_ribbonBarHeightOfficeStyleTwoRow = 0;
     int m_ribbonBarHeightWpsLiteStyleTwoRow = 0;
-    // true = title/tab 仍由 baseHeight 派生（recalc 时重算）；false = 已被 setter 显式覆盖
+    // true = title/tab are still derived from baseHeight (recomputed in recalc); false = explicitly overridden by a
+    // setter
     bool m_titleTabAuto = true;
 };
 

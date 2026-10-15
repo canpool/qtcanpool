@@ -50,14 +50,14 @@ void RibbonKeyTip::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing, true);
     const QRect r = rect();
-    // 角标底色（深底浅字，贴近 Office 风格）
+    // Badge background (dark fill / light glyph, close to the Office look)
     p.setPen(Qt::NoPen);
     p.setBrush(QColor(45, 45, 48));
     p.drawRoundedRect(r.adjusted(0, 0, -1, -1), 3, 3);
-    // 边框
+    // Border
     p.setPen(QColor(0, 120, 215));
     p.drawRoundedRect(r.adjusted(0, 0, -1, -1), 3, 3);
-    // 字母
+    // Letter
     p.setPen(Qt::white);
     p.setBrush(Qt::NoBrush);
     p.drawText(r, Qt::AlignCenter, m_key);

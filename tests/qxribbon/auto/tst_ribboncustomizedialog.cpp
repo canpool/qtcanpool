@@ -29,11 +29,13 @@ static QString dialogToXml(RibbonCustomizeDialog &dlg)
 }
 
 /**
- * @brief 构建一个“一页一组两动作”的 ribbon，选中第 selectedRow 个动作并点击某个移动按钮，返回记录下来的xml
- * @param selectedRow 选中的动作行号(0表示第一个动作)
- * @param buttonName 移动按钮的对象名，pushButtonUp 为“上移”，pushButtonDown 为“下移”
- * @return 记录的自定义数据xml；如果按钮不可用，返回一个可读的哨兵字符串
- * @note RibbonCustomizeWidget 未导出，只能透过 RibbonCustomizeDialog 及其子控件对象名来驱动
+ * @brief Builds a Ribbon with "one page, one group, two actions", selects the selectedRow-th action, clicks a move
+ * button, and returns the recorded XML
+ * @param selectedRow row index of the selected action (0 means the first action)
+ * @param buttonName object name of the move button; pushButtonUp means "move up", pushButtonDown means "move down"
+ * @return the recorded customization XML; if the button is unavailable, returns a readable sentinel string
+ * @note RibbonCustomizeWidget is not exported, so it can only be driven through RibbonCustomizeDialog and the object
+ * names of its child widgets
  */
 static QString recordMove(int selectedRow, const char *buttonName)
 {

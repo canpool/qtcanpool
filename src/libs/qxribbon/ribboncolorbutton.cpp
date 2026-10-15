@@ -11,7 +11,7 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-const int c_colorHeight = 5;   ///< 颜色块的高度
+const int c_colorHeight = 5;   ///< height of the color block
 
 RibbonColorButtonPrivate::RibbonColorButtonPrivate()
     : RibbonButtonPrivate()
@@ -40,12 +40,12 @@ QPixmap RibbonColorButtonPrivate::createIconPixmap(const QStyleOptionToolButton 
 #else
     QPixmap pixmap = opt.icon.pixmap(realIconSize, q->window()->devicePixelRatio(), mode, state);
 #endif
-    QPixmap res(pixmap.size() + QSize(4, c_colorHeight + 4));   // 宽度上，颜色块多出2px
+    QPixmap res(pixmap.size() + QSize(4, c_colorHeight + 4));   // in width, the color block extends 2px on each side
     res.fill(Qt::transparent);
     QPainter painter(&res);
     int xPixmap = (res.width() - pixmap.width()) / 2;
-    int yPixmap =
-        (res.height() - c_colorHeight - 2 - pixmap.height()) / 2;   // 这里要减去2而不是1，这样奇数偶数都不会影响
+    int yPixmap = (res.height() - c_colorHeight - 2 - pixmap.height()) /
+                  2;   // subtract 2 rather than 1 so both odd and even sizes are handled
     QRect rPixmap = QRect(xPixmap, yPixmap, pixmap.width(), pixmap.height());
     painter.drawPixmap(rPixmap, pixmap);
     QRect colorRect = rPixmap.adjusted(0, pixmap.height() + 1, 0, c_colorHeight + 1);

@@ -14,7 +14,7 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonPageContextPrivate;
 
 /**
- * @brief 管理上下文标签的类
+ * @brief Class that manages context tabs
  */
 class QX_RIBBON_EXPORT RibbonPageContext : public QObject
 {

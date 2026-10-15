@@ -101,7 +101,7 @@ QString RibbonPageContext::contextTitle() const
 }
 
 /**
- * @brief 设置上下文标签的标题，标题仅在 office 模式下显示 @ref RibbonBar::RibbonStyle
+ * @brief Sets the title of the context tab; the title is only shown in office mode @ref RibbonBar::RibbonStyle
  * @param title
  */
 void RibbonPageContext::setContextTitle(const QString &title)
@@ -131,9 +131,9 @@ QList<RibbonPage *> RibbonPageContext::pageList() const
 }
 
 /**
- * @brief 移除这个page，这时RibbonPageContext不再管理这个page
+ * @brief Removes this page; the RibbonPageContext no longer manages this page
  * @param page
- * @return 成功移除返回true
+ * @return true if successfully removed
  */
 bool RibbonPageContext::takePage(RibbonPage *page)
 {

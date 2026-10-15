@@ -79,11 +79,11 @@ class RibbonBarPrivate : public QObject
     Q_OBJECT
     QX_DECLARE_PUBLIC(RibbonBar)
 public:
-    // KeyTips (B1)：一个可挂角标的目标
+    // KeyTips (B1): a target that can carry a badge
     struct KeyTipTarget {
-        QWidget *widget;     ///< 触发控件（应用按钮 / RibbonButton）；页签目标为 nullptr
-        int pageIndex;       ///< >=0 为页签索引；<0 为控件目标
-        QString preferred;   ///< 首选助记符（可能为空，则由 A–Z 自动补）
+        QWidget *widget;     ///< Trigger widget (application button / RibbonButton); nullptr for tab targets
+        int pageIndex;       ///< >= 0: tab index; < 0: control target
+        QString preferred;   ///< Preferred mnemonic (may be empty, then auto-filled from A-Z)
     };
 
     RibbonBarPrivate();
@@ -110,9 +110,9 @@ public:
     void updateTabData();
     void updatePageContextManagerData();
 
-    // KeyTips (B1): Alt 进入的键盘级联角标模式
-    void showKeyTips();          ///< 一级：应用按钮 + 可见页签
-    void showControlKeyTips();   ///< 二级：当前页内的 RibbonButton 角标
+    // KeyTips (B1): the keyboard-cascade badge mode entered with Alt
+    void showKeyTips();          ///< Level 1: application button + visible page tabs
+    void showControlKeyTips();   ///< Level 2: RibbonButton badges inside the current page
     void renderKeyTips(const QList<KeyTipTarget> &targets);
     void hideKeyTips();
     bool handleKeyTipKeyEvent(QKeyEvent *ke);
@@ -165,12 +165,13 @@ public:
     QList<PageContextManagerData> m_currentShowingPageContextList;
     QList<RibbonPageContext *> m_pageContextList;
     QList<RibbonTabData> m_hidedPage;
-    int m_iconRightBorderPosition;              ///< 标题栏x值的最小值，在有图标和快捷启动按钮，此值都需要变化
-    RibbonControlButton *m_minimumPageButton;   ///< 隐藏面板按钮
+    int m_iconRightBorderPosition;   ///< Minimum x value of the title bar; changes with the icon and quick access
+                                     ///< button
+    RibbonControlButton *m_minimumPageButton;   ///< Button that hides the panel
     RibbonButtonGroup *m_topLeftButtonGroup;
     RibbonButtonGroup *m_topRightButtonGroup;
     RibbonButtonGroup *m_bottomLeftButtonGroup;
-    RibbonButtonGroup *m_bottomRightButtonGroup;   ///< 在 tabbar 右边的按钮群
+    RibbonButtonGroup *m_bottomRightButtonGroup;   ///< Button group to the right of the tabbar
     QWidget *m_windowButtonGroup;
     RibbonQuickAccessBarContainer *m_quickAccessBar;
     RibbonBar::QuickAccessBarPosition m_quickAccessBarPosition;
@@ -186,8 +187,8 @@ public:
     bool m_layoutRequest;
     bool m_blockResize;
 
-    bool m_keyTipMode;                 ///< 是否处于 keytip 角标模式
-    QList<RibbonKeyTip *> m_keyTips;   ///< 当前显示的 KeyTip 角标
+    bool m_keyTipMode;                 ///< Whether keytip badge mode is active
+    QList<RibbonKeyTip *> m_keyTips;   ///< Currently shown KeyTip badges
 };
 
 QX_RIBBON_END_NAMESPACE

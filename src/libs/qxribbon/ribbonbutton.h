@@ -11,11 +11,11 @@ QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonButtonPrivate;
 /**
- * @brief Ribbon 界面适用的 toolButton
+ * @brief A toolButton suitable for the Ribbon UI
  *
- * 相对于普通 toolbutton，主要多了两个类型设置， @ref setButtonType 和 @ref setLargeButtonType
+ * Compared with a normal toolbutton, it mainly adds two type settings, @ref setButtonType and @ref setLargeButtonType
  *
- * @note @sa setIconSize 函数不在起作用
+ * @note @sa setIconSize no longer has any effect
  */
 class QX_RIBBON_EXPORT RibbonButton : public QToolButton
 {
@@ -28,9 +28,11 @@ public:
     Q_ENUM(RibbonButtonType)
 
     enum LargeButtonType {
-        Normal,   ///< icon占大按钮的一半区域,
-                  ///< 箭头在按钮最下方，文字可以换一行，对应于office的菜单按钮，下箭头在按钮最下方(默认)
-        Lite      ///< icon占大按钮的60%，文字占40%，且文字不换行，对应于wps模式的菜单按钮，下箭头在文字旁边
+        Normal,   ///< the icon takes half of the large button,
+                  ///< the arrow is at the very bottom of the button and the text may wrap to one extra line;
+                  ///< corresponds to the office menu button, arrow at the button bottom (default)
+        Lite      ///< the icon takes 60% and the text 40% of the large button with no word wrap; corresponds to the wps
+                  ///< menu button, arrow beside the text
     };
 public:
     explicit RibbonButton(QWidget *parent = Q_NULLPTR);

@@ -13,22 +13,24 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonStyleOptionPrivate;
 
 /**
- * @brief 定义了 ribbon 所有尺寸相关信息，ribbon 的建立都基于此类的尺寸，如果想调整，
- * 可以通过 @ref RibbonFactory （通过 RibbonManager 单例管理） 的 @ref RibbonFactory::setRibbonStyleOption
- * 函数设置自己的 RibbonStyleOption
+ * @brief Defines all size-related information of the ribbon; the ribbon is built based on the sizes of this class. To
+ * adjust them, use the @ref RibbonFactory::setRibbonStyleOption of @ref RibbonFactory (managed via the RibbonManager
+ * singleton) to set your own RibbonStyleOption
  *
  * @sa RibbonManager
  *
- * 一般 RibbonFactory::setRibbonStyleOption 函数最好在 ribbonbar 构建之前调用
+ * It is generally best to call RibbonFactory::setRibbonStyleOption before the ribbonbar is built
  *
- * @note 此类定义了 ribbonbar 和 group 的高度信息，并通过字体提前计算好一些布局信息
+ * @note This class defines the height information of the ribbonbar and groups, and precomputes some layout information
+ * from the font
  *
- * @note 尺寸布局是可替换的：两种做法都行——
- *   - 子类化本类、覆盖几个 virtual，再交给 RibbonFactory::setRibbonStyleOption；
- *   - 或直接用本类，调用 setBaseHeight() / setTitleBarHeight() / setTabBarHeight()
- *     微调尺寸（配置文件的读写属于调用方，不在这层——调用方把自己的配置映射到这些 setter 即可）。
- *   这两种做法不冲突：setter 改的是基础高度，recalc() 据此重算四个 ribbonbar 高度；
- *   显式 set 过 title/tab 之后，recalc() 会保留你设的值、只重算派生项。
+ * @note The size layout is replaceable: either approach works —
+ *   - subclass this class, override a few virtuals, then pass it to RibbonFactory::setRibbonStyleOption;
+ *   - or use this class directly and call setBaseHeight() / setTitleBarHeight() / setTabBarHeight()
+ *     to fine-tune the sizes (reading/writing the config file belongs to the caller, not this layer — the caller just
+ * maps its settings to these setters). The two approaches do not conflict: the setter changes the base height, and
+ * recalc() recomputes the four ribbonbar heights accordingly; after title/tab are explicitly set, recalc() keeps your
+ * values and only recomputes the derived items.
  */
 class QX_RIBBON_EXPORT RibbonStyleOption
 {
@@ -42,17 +44,20 @@ public:
     virtual void recalc();
 public:
     /**
-     * @brief 设定尺寸布局的主尺度（以字体行高为单位的基准高度）。
-     * 设为正数后，titleBar / tabBar 按固定比例（1.65 / 1.5）重新派生，四个 ribbonbar 高度跟随重算。
-     * 传 0 或不调用则维持构造时的字体派生值。
+     * @brief Sets the primary scale of the size layout (base height in units of the font line spacing).
+     * When set to a positive value, titleBar / tabBar are re-derived with fixed ratios (1.65 / 1.5), and the four
+     * ribbonbar heights are recomputed accordingly. Passing 0 or not calling this keeps the font-derived values from
+     * construction.
      */
     void setBaseHeight(int height);
     /**
-     * @brief 直接覆盖标题栏高度（px）。覆盖后 recalc() 会保留此值、只重算四个 ribbonbar 高度。
+     * @brief Directly overrides the title bar height (px). After overriding, recalc() keeps this value and only
+     * recomputes the four ribbonbar heights.
      */
     void setTitleBarHeight(int height);
     /**
-     * @brief 直接覆盖标签栏高度（px）。覆盖后 recalc() 会保留此值、只重算四个 ribbonbar 高度。
+     * @brief Directly overrides the tab bar height (px). After overriding, recalc() keeps this value and only
+     * recomputes the four ribbonbar heights.
      */
     void setTabBarHeight(int height);
 private:

@@ -23,14 +23,14 @@ public:
     QStyle *style() const;
 
     void recalcSizeHint(QStyleOptionToolButton &opt, QSize s);
-    // 此函数用来计算icon和text的尺寸
-    // 注意icon的尺寸依赖text，且只要知道字体大小就可以确定icon的高度
+    // Computes the sizes of the icon and the text
+    // Note the icon size depends on the text, and the icon height is known once the font size is known
     void calcIconAndTextRect(const QStyleOptionToolButton &opt);
-    // 在需要绘制文字的时候调用此函数，有些效果需要文字的文字改变
+    // Call this when the text must be drawn; some effects need text changes to take effect
     QRect adjustedTextRect(const QStyleOptionToolButton &opt, const QWidget *w);
     QRect calcIndicatorArrowDownRect(const QStyleOptionToolButton &opt);
     virtual QPixmap createIconPixmap(const QStyleOptionToolButton &opt, const QSize &iconsize);
-    // 根据鼠标位置更新按钮的信息
+    // Updates the button information based on the mouse position
     void updateButtonState(const QPoint &pos);
 
     void drawButton(QStyleOptionToolButton &opt, QPainter &p, const QWidget *w);
@@ -40,16 +40,17 @@ public:
 public:
     RibbonButton::RibbonButtonType m_buttonType;
     RibbonButton::LargeButtonType m_largeButtonType;
-    bool m_mouseOnSubControl;   ///< 这个用于标记MenuButtonPopup模式下，鼠标在文本区域
+    bool m_mouseOnSubControl;   ///< Marks that the mouse is over the text area in MenuButtonPopup mode
     bool m_menuButtonPressed;
-    bool m_isWordWrap;            ///< 标记是否文字换行，默认 false
-    int m_spacing;                ///< 按钮和边框的距离
-    QSize m_sizeHint;             ///< 保存计算好的sizehint
-    QRect m_iconRect;             ///< 记录icon的绘制位置
-    QRect m_textRect;             ///< 记录text的绘制位置
-    QRect m_indicatorArrowRect;   ///< 记录IndicatorArrow的绘制位置
+    bool m_isWordWrap;            ///< Whether the text wraps, default false
+    int m_spacing;                ///< Distance between the button and the border
+    QSize m_sizeHint;             ///< The computed sizehint
+    QRect m_iconRect;             ///< The icon drawing position
+    QRect m_textRect;             ///< The text drawing position
+    QRect m_indicatorArrowRect;   ///< The IndicatorArrow drawing position
 
-    static bool s_isToolButtonTextShift;   ///< 配置RibbonButton文字在点击时是否会轻微改变位置而达到一种类似跳动的效果
+    static bool
+        s_isToolButtonTextShift;   ///< Whether RibbonButton text shifts slightly on click for a bounce-like effect
 };
 
 QX_RIBBON_END_NAMESPACE

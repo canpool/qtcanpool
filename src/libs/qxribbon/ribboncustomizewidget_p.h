@@ -18,26 +18,29 @@ class RibbonBar;
 class RibbonActionsManager;
 
 /**
- * @brief 转换为xml
+ * @brief Converts to xml
  *
- * 此函数仅会写element，不会写document相关内容，因此如果需要写document，
- * 需要在此函数前调用QXmlStreamWriter::writeStartDocument(),在此函数后调用QXmlStreamWriter::writeEndDocument()
- * @param xml QXmlStreamWriter指针
- * @note 注意，在传入QXmlStreamWriter之前，需要设置编码为utf-8:xml->setCodec("utf-8");
- * @note 由于QXmlStreamWriter在QString作为io时，是不支持编码的，而此又无法保证自定义过程不出现中文字符，
- * 因此，QXmlStreamWriter不应该通过QString进行构造，如果需要用到string，也需要通过QByteArray构造，如：
- * @param cds 基于QList<RibbonCustomizeData>生成的步骤
- * @return 如果出现异常，返回false,如果没有自定义数据也会返回false
+ * This function only writes elements and does not write document-related content.
+ * Therefore, to write a document, call QXmlStreamWriter::writeStartDocument() before this
+ * function and QXmlStreamWriter::writeEndDocument() after it.
+ * @param xml QXmlStreamWriter pointer
+ * @note Before passing in the QXmlStreamWriter, set the encoding to utf-8: xml->setCodec("utf-8");
+ * @note Since QXmlStreamWriter does not support encoding when a QString is used as the IO device,
+ * and the customization process cannot be guaranteed to be free of Chinese characters,
+ * QXmlStreamWriter should not be constructed from a QString; if a string is needed, construct it from a QByteArray,
+ * e.g.:
+ * @param cds The steps generated from QList<RibbonCustomizeData>
+ * @return Returns false on exception; also returns false when there is no customization data
  */
 bool QxRibbonCustomizeDataSetToXml(QXmlStreamWriter *xml, const QList<RibbonCustomizeData> &cds);
 
 QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml, RibbonActionsManager *mgr);
 
 /**
- * @brief 应用QList<RibbonCustomizeData>
+ * @brief Applies QList<RibbonCustomizeData>
  * @param cds
  * @param bar
- * @return 成功应用的个数
+ * @return The number of successfully applied entries
  */
 int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonBar *bar);
 

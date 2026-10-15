@@ -106,10 +106,10 @@ bool RibbonStackedWidget::event(QEvent *event)
 }
 
 /**
- * @brief 类似 tabbar 的 moveTab 函数，交换两个窗口的 index
+ * @brief Like the tabbar moveTab function, swaps the indexes of two widgets
  * @param from
  * @param to
- * @note 此操作会触发 widgetRemoved(int index) 信号
+ * @note This operation emits the widgetRemoved(int index) signal
  */
 void RibbonStackedWidget::moveWidget(int from, int to)
 {
@@ -165,12 +165,12 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_blockResize(false)
     , m_keyTipMode(false)
 {
-    m_pageContextColorList << QColor(201, 89, 156)   // 玫红
-                           << QColor(242, 203, 29)   // 黄
-                           << QColor(255, 157, 0)    // 橙
-                           << QColor(14, 81, 167)    // 蓝
-                           << QColor(228, 0, 69)     // 红
-                           << QColor(67, 148, 0)     // 绿
+    m_pageContextColorList << QColor(201, 89, 156)   // Rose red
+                           << QColor(242, 203, 29)   // Yellow
+                           << QColor(255, 157, 0)    // Orange
+                           << QColor(14, 81, 167)    // Blue
+                           << QColor(228, 0, 69)     // Red
+                           << QColor(67, 148, 0)     // Green
         ;
 }
 
@@ -297,12 +297,12 @@ void RibbonBarPrivate::updateTabData()
             m_tabBar->setTabData(i, QVariant::fromValue(data));
         }
     }
-    // 刷新完tabdata信息也要接着刷新ContextPage信息
+    // After refreshing the tabdata, also refresh the ContextPage information
     updatePageContextManagerData();
 }
 
 /**
- * @brief 刷新所有ContextPageManagerData，这个在单独一个Page删除时调用
+ * @brief Refreshes all ContextPageManagerData; called when a single Page is removed
  */
 void RibbonBarPrivate::updatePageContextManagerData()
 {
@@ -330,12 +330,12 @@ void RibbonBarPrivate::updatePageContextManagerData()
 void RibbonBarPrivate::updateRibbonElementGeometry()
 {
     Q_Q(RibbonBar);
-    // 根据样式调整 RibbonPage 的布局形式
+    // Adjust the RibbonPage layout mode according to the style
     QList<RibbonPage *> pages = q->pages();
     for (RibbonPage *page : std::as_const(pages)) {
         page->setGroupLayoutMode(isTwoRowStyle() ? RibbonGroup::TwoRowMode : RibbonGroup::ThreeRowMode);
     }
-    // 阻止因高度变化而会触发resizeEvent，进而执行resizeXX
+    // Prevent a height change from triggering resizeEvent, which would run resizeXX
     m_blockResize = true;
     updateRibbonBarHeight();
     m_blockResize = false;
@@ -344,10 +344,10 @@ void RibbonBarPrivate::updateRibbonElementGeometry()
 void RibbonBarPrivate::updateRibbonBarHeight()
 {
     Q_Q(RibbonBar);
-    // 根据样式调整bar的高度
+    // Adjust the bar height according to the style
     if (m_minimized) {
-        // 处于最小模式下时，bar 的高度为 tabbar 的 bottom
-        // 最小模式时，bar 的高度在 setMinimizedFlag 中已调整
+        // In minimized mode the bar height is the bottom of the tabbar
+        // In minimized mode the bar height is already adjusted in setMinimizedFlag
         // q->setFixedHeight(m_tabBar->geometry().bottom());
     } else {
         q->setFixedHeight(mainBarHeight());
@@ -355,14 +355,14 @@ void RibbonBarPrivate::updateRibbonBarHeight()
 }
 
 /**
- * @brief 最小模式下弹出 stack：先把 tab bar 的 hover 状态收尾，再定位、聚焦并显示
+ * @brief Pops up the stack in minimized mode: finish the tab bar hover state, then position, focus and show it
  */
 void RibbonBarPrivate::showPopupStack()
 {
     if (m_stack->isVisible() || !m_stack->isPopup()) {
         return;
     }
-    // 在StackedWidget弹出前，先给tabbar一个QHoverEvent，让tabbar知道鼠标已经移开
+    // Before popping up the StackedWidget, send the tabbar a QHoverEvent so it knows the mouse has left
 #if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
     QHoverEvent ehl(QEvent::HoverLeave, m_tabBar->mapToGlobal(QCursor::pos()), m_tabBar->mapToGlobal(QCursor::pos()));
 #else
@@ -370,7 +370,7 @@ void RibbonBarPrivate::showPopupStack()
                     m_tabBar->mapToGlobal(QCursor::pos()));
 #endif
     QApplication::sendEvent(m_tabBar, &ehl);
-    // 弹出前都调整一下位置，避免移动后位置异常
+    // Adjust the position before showing to avoid a wrong position after moving
     resizeStackedWidget();
     m_stack->setFocus();
     m_stack->show();
@@ -381,11 +381,11 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
     Q_Q(RibbonBar);
     paintBackground(p);
 
-    //! 显示上下文标签
+    //! Draw the context tabs
     const QMargins border = q->contentsMargins();
     const QPoint pageContextPos = paintPageContextTabs(p, true);
 
-    //! 显示标题等
+    //! Draw the title, etc.
     QWidget *parWindow = q->parentWidget();
     if (parWindow && m_titleVisible) {
         QRect titleRegion;
@@ -437,11 +437,11 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
     Q_Q(RibbonBar);
     paintBackground(p);
 
-    //! 显示上下文标签
+    //! Draw the context tabs
     const QMargins border = q->contentsMargins();
     paintPageContextTabs(p, false);
 
-    //! 显示标题等
+    //! Draw the title, etc.
     QWidget *parWindow = q->parentWidget();
     if (parWindow && m_titleVisible) {
         // |m_tabBar|~~~        ~~~|m_windowButtonGroup|
@@ -477,7 +477,7 @@ void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
 void RibbonBarPrivate::paintBackground(QPainter &painter)
 {
     Q_Q(RibbonBar);
-    // 在tabbar下绘制一条线
+    // Draw a line below the tabbar
     painter.save();
     QPen pen(m_tabBarBaseLine->palette().window().color());
     pen.setWidth(tabBarBaseLineHeight);
@@ -490,20 +490,21 @@ void RibbonBarPrivate::paintBackground(QPainter &painter)
 }
 
 /**
- * @brief 绘制当前显示的上下文标签，返回它们覆盖的横向范围
+ * @brief Paints the currently visible context tabs and returns the horizontal range they cover
  *
- * 返回值 x 是左边界、y 是右边界；y < 0 表示没有显示上下文标签（沿用调用方的约定）。
- * 标签文字只在 office 样式下绘制，由 paintPageContextTab 内部判断，所以这里统一传标题。
+ * The returned x is the left edge and y is the right edge; y < 0 means no context tab is shown (caller convention).
+ * The tab text is drawn only in office style (decided inside paintPageContextTab), so the title is always passed here.
  *
- * @param extendToWindowTop office 把每段的可见矩形上沿提到窗口顶部（标签条压在 tab bar 之上）；
- *   wps 样式里 tab bar 本就在第一行，上沿一致，所以传 false 保持原样。
+ * @param extendToWindowTop office raises the top of each visible rect to the window top (the tab strip sits above the
+ * tab bar); in wps style the tab bar is already on the first row with the same top edge, so pass false to keep it
+ * unchanged.
  */
 QPoint RibbonBarPrivate::paintPageContextTabs(QPainter &painter, bool extendToWindowTop)
 {
     Q_Q(RibbonBar);
     painter.save();
     const QMargins border = q->contentsMargins();
-    QPoint pageContextPos(q->width(), -1);   // x表示左边界，y表示右边界
+    QPoint pageContextPos(q->width(), -1);   // x is the left edge, y is the right edge
 
     for (const PageContextManagerData &data : std::as_const(m_currentShowingPageContextList)) {
         const QList<int> indexes = data.tabPageIndex;
@@ -514,11 +515,12 @@ QPoint RibbonBarPrivate::paintPageContextTabs(QPainter &painter, bool extendToWi
         QRect contextTitleRect = m_tabBar->tabRect(indexes.first());
         const QRect endRect = m_tabBar->tabRect(indexes.last());
         contextTitleRect.setRight(endRect.right());
-        // contextTitleRect是相对于m_tabBar返回的矩形框，不是RibbonBar中的真实位置，所以需要移动到m_tabBar的起点坐标处
+        // contextTitleRect is relative to m_tabBar, not a real position in RibbonBar, so translate it to the m_tabBar
+        // origin
         contextTitleRect.translate(m_tabBar->x(), m_tabBar->y());
-        contextTitleRect.setHeight(m_tabBar->height() - 1);   // 减1像素，避免tabbar基线覆盖
+        contextTitleRect.setHeight(m_tabBar->height() - 1);   // subtract 1 pixel to avoid covering the tabbar base line
         contextTitleRect -= m_tabBar->tabMargin() / 2;
-        contextTitleRect.setTop(border.top());   // 把区域顶部扩展到窗口顶部
+        contextTitleRect.setTop(border.top());   // extend the top of the region to the window top
         const QRect tabBarRect(m_tabBar->pos(), m_tabBar->size());
         if (tabBarRect.intersects(contextTitleRect)) {
             QRect visibleRect = tabBarRect.intersected(contextTitleRect);
@@ -527,7 +529,7 @@ QPoint RibbonBarPrivate::paintPageContextTabs(QPainter &painter, bool extendToWi
             }
             paintPageContextTab(painter, data.pageContext->contextTitle(), visibleRect, color);
         }
-        // 更新上下文标签的范围，用于控制标题栏的显示。如果pageContextPos.y()小于0，说明没有显示上下文标签
+        // Update the context tab range used to control the title bar. If pageContextPos.y() < 0 no context tab is shown
         pageContextPos.setX(qMin(pageContextPos.x(), contextTitleRect.left()));
         pageContextPos.setY(qMax(pageContextPos.y(), contextTitleRect.right()));
 #ifdef QX_DRAW_CONTEXT_PAGE_BORDER
@@ -559,25 +561,25 @@ void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &tit
                                            const QColor &color)
 {
     Q_Q(RibbonBar);
-    // 首先有5像素的实体粗线位于顶部
+    // First, a solid 5-pixel thick line at the top
     QMargins border = q->contentsMargins();
     painter.save();
     painter.setPen(Qt::NoPen);
     painter.setBrush(color);
     painter.drawRect(QRect(contextRect.x(), border.top(), contextRect.width(), 5));
 
-    // 剩下把颜色变亮90%
+    // Lighten the remaining color by 90%
     QColor gColor = color.lighter(190);
 
-    // 减去之前的5像素
+    // Subtract the previous 5 pixels
     contextRect -= QMargins(0, 5, 0, 0);
     if (!m_pageContextCoverTab) {
-        // 设置底部位置，不覆盖 tab
+        // Set the bottom position so the tab is not covered
         contextRect.setBottom(m_tabBar->geometry().top());
     }
     painter.fillRect(contextRect, gColor);
 
-    // 只有在office模式下才需要绘制标题
+    // The title is only drawn in office mode
     if (q->isOfficeStyle()) {
         if (!title.isEmpty()) {
             contextRect.setBottom(m_tabBar->geometry().top());
@@ -589,7 +591,7 @@ void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &tit
 
     if (!m_pageContextCoverTab) {
         painter.save();
-        // 绘制 tab 边框
+        // Draw the tab border
         painter.setPen(gColor);
         painter.setBrush(Qt::NoBrush);
         QRect tabRect(contextRect.bottomLeft(), QPoint(contextRect.bottomRight().x(), m_tabBar->geometry().bottom()));
@@ -722,13 +724,13 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         placeCornerWidget(cornerL, endX, y, validTitleBarHeight, validTitleBarHeight);
     }
 
-    // tab 的y值需要重新计算
+    // The tab y value needs to be recalculated
     int tabH = q->tabBarHeight();
     if (tabH > validTitleBarHeight) {
-        // 这种直接把tabH设置为validTitleBarHeight
+        // In this case just set tabH to validTitleBarHeight
         tabH = validTitleBarHeight;
     }
-    // 如果tabH较小，则下移，让tab底部和title的底部对齐
+    // If tabH is smaller, move it down so the tab bottom aligns with the title bottom
     y += validTitleBarHeight - tabH;
 
     // |m_applicationButton|<m_quickAccessBar>|m_topLeftButtonGroup|m_tabBar|~~~~~~
@@ -747,18 +749,19 @@ void RibbonBarPrivate::resizeInWpsLiteStyle()
         x = m_topLeftButtonGroup->geometry().right() + 2;
     }
     // 20200831
-    // tabBarWidth的宽度原来为endX - x;，现需要根据实际进行调整
-    // 为了把tabbar没有tab的部分不占用，这里的宽度需要根据tab的size来进行设置，让tabbar的长度刚刚好，这样能让出
-    // mainwindow的空间，接受鼠标事件，从而实现拖动等操作，否则tabbar占用整个顶栏，鼠标无法点击到mainwindow
+    // tabBarWidth used to be endX - x; it now needs to be adjusted to the actual size
+    // To avoid the tabbar's tab-free part taking up space, set the width from the tab sizes so the tabbar is exactly as
+    // long as needed; this frees mainwindow space to receive mouse events for dragging, otherwise the tabbar would
+    // cover the whole top bar and the mouse could not click mainwindow
     layoutTabBar(x, y, endX - x - dragAreaMinimumWidth, tabH);
 
     resizeStackedWidget();
 }
 
 /**
- * @brief 把 corner widget 放进一条水平带：装得下就垂直居中，装不下就撑满
- * @param centredHeight 居中参照的高度
- * @param stretchedHeight 控件高于参照高度时采用的高度
+ * @brief Places a corner widget in a horizontal band: center it vertically if it fits, otherwise stretch it
+ * @param centredHeight reference height for centering
+ * @param stretchedHeight height used when the widget is taller than the reference
  */
 void RibbonBarPrivate::placeCornerWidget(QWidget *corner, int x, int y, int centredHeight, int stretchedHeight)
 {
@@ -771,7 +774,7 @@ void RibbonBarPrivate::placeCornerWidget(QWidget *corner, int x, int y, int cent
 }
 
 /**
- * @brief 按 tab bar 位置（左对齐/居中）在剩余宽度里摆放 tab bar
+ * @brief Places the tab bar within the remaining width according to its position (left / centered)
  */
 void RibbonBarPrivate::layoutTabBar(int x, int y, int allowedTabBarWidth, int tabH)
 {
@@ -909,7 +912,7 @@ int RibbonBarPrivate::minimumWidthInWpsLiteStyle() const
 }
 
 /**
- * @brief 根据情况重置tabbar的宽度，主要针对wps模式
+ * @brief Resets the tabbar width as needed, mainly for the wps style
  */
 int RibbonBarPrivate::calcMinTabBarWidth() const
 {
@@ -927,10 +930,10 @@ int RibbonBarPrivate::calcMinTabBarWidth() const
 }
 
 /**
- * @brief mainBarHeight 的计算高度
+ * @brief The computed height of mainBarHeight
  *
- * 有可能 RibbonBar::height 和 mainBarHeight 不相等，这种情况发生在 minimized 状态下
- * @return 高度
+ * RibbonBar::height and mainBarHeight may differ; this happens in the minimized state
+ * @return height
  */
 int RibbonBarPrivate::mainBarHeight() const
 {
@@ -938,11 +941,11 @@ int RibbonBarPrivate::mainBarHeight() const
 }
 
 /**
- * @brief 根据RibbonPage*指针查找tabbar的index
+ * @brief Finds the tabbar index by RibbonPage* pointer
  *
- * @param page RibbonPage对应的QObject指针
- * @return 如果没有找到，返回-1
- * @note 此函数不会调用RibbonPage*的任何方法，因此可以在RibbonPage的destroyed槽中调用
+ * @param page the QObject pointer of the RibbonPage
+ * @return -1 if not found
+ * @note This function calls no method on RibbonPage*, so it can be called from RibbonPage's destroyed slot
  */
 int RibbonBarPrivate::tabIndex(RibbonPage *page) const
 {
@@ -994,7 +997,7 @@ void RibbonBarPrivate::onPageWindowTitleChanged(const QString &title)
         return;
     }
     for (int i = 0; i < m_tabBar->count(); ++i) {
-        // 鉴于tab不会很多，不考虑效率问题
+        // There are few tabs, so efficiency is not a concern
         QVariant var = m_tabBar->tabData(i);
         if (var.isValid()) {
             RibbonTabData data = var.value<RibbonTabData>();
@@ -1008,7 +1011,7 @@ void RibbonBarPrivate::onPageWindowTitleChanged(const QString &title)
 void RibbonBarPrivate::onPageContextAdded(RibbonPage *page)
 {
     Q_ASSERT_X(page != Q_NULLPTR, "onPageContextAdded", "add Q_NULLPTR page");
-    m_stack->addWidget(page);   // 这里stackedWidget用append，其他地方都应该使用insert
+    m_stack->addWidget(page);   // here the stackedWidget appends; everywhere else should use insert
 }
 
 void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
@@ -1027,8 +1030,8 @@ void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
         }
         if (m_minimized) {
             m_tabBar->clearFocus();
-            // 在最小模式下，每次显示完StackedWidget后把tab的index设置为-1，
-            // 这样每次点击都会触发onCurrentRibbonTabChanged
+            // In minimized mode, set the tab index to -1 after each StackedWidget show,
+            // so every click triggers onCurrentRibbonTabChanged
             showPopupStack();
         }
     }
@@ -1036,17 +1039,18 @@ void RibbonBarPrivate::onCurrentRibbonTabChanged(int index)
 }
 
 /**
- * @brief ribbon tab bar单击
+ * @brief ribbon tab bar single click
  *
- * 此实现必须在eventfilter中传递stackedwidget的QEvent::MouseButtonDblClick事件到tabbar中，否则会导致双击变两次单击
+ * This implementation must forward the stackedwidget's QEvent::MouseButtonDblClick to the tabbar in the eventfilter,
+ * otherwise a double click becomes two single clicks
  *
- * 单击事件仅用于响应点击同一个tab时
+ * The single click event only responds when the same tab is clicked
  * @param index
  */
 void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
 {
     if (index != m_tabBar->currentIndex()) {
-        // 点击的标签不一致通过changed槽去处理
+        // A different clicked tab is handled by the changed slot
         return;
     }
     if (index == -1) {
@@ -1113,13 +1117,13 @@ QAbstractButton *RibbonBar::applicationButton()
 }
 
 /**
- * @brief 设置applicationButton,如果想隐藏，可以传入Q_NULLPTR
+ * @brief Sets the applicationButton; pass Q_NULLPTR to hide it
  *
- * 默认会有一个RibbonApplicationButton，如果想取消，可传入Q_NULLPTR，或者自定义的button也可以传入
+ * There is a RibbonApplicationButton by default; pass Q_NULLPTR to cancel it, or pass a custom button
  *
- * @note applicationButton的所有权归RibbonBar所有，不要在外部对applicationButton进行delete操作
- * @param btn applicationButton指针，可以传入 @ref RibbonApplicationButton ，
- * 已经对RibbonApplicationButton进行了样式设置
+ * @note RibbonBar owns the applicationButton; do not delete it externally
+ * @param btn the applicationButton pointer; @ref RibbonApplicationButton may be passed
+ * RibbonApplicationButton already has style settings applied
  */
 void RibbonBar::setApplicationButton(QAbstractButton *btn)
 {
@@ -1172,13 +1176,13 @@ void RibbonBar::insertPage(int index, RibbonPage *page)
 }
 
 /**
- * @brief 通过索引找到page，如果超过索引范围，会返回Q_NULLPTR
- * @param index 索引
- * @return 如果超过索引范围，会返回Q_NULLPTR
- * @note 如果此时有上下文标签，上下文的标签也会返回
- * @note 通过索引查找的page必须是visible状态的page，如果通过@ref hidePage 隐藏的标签，通过索引是找不到的
- * @note 通过@ref pageByObjectName 可以找到所有加入过的标签，
- * 如果想得到ribbonbar管理的所有标签，可以通过函数@ref pages 得到
+ * @brief Finds a page by index; returns Q_NULLPTR if the index is out of range
+ * @param index index
+ * @return Q_NULLPTR if the index is out of range
+ * @note If context tabs exist, their pages are returned as well
+ * @note A page found by index must be visible; a tab hidden with @ref hidePage cannot be found by index
+ * @note @ref pageByObjectName finds all tabs that were ever added,
+ * to get all tabs managed by the ribbonbar, use @ref pages
  * @see pageIndex pageByObjectName pageByName
  */
 RibbonPage *RibbonBar::page(int index) const
@@ -1194,10 +1198,10 @@ RibbonPage *RibbonBar::page(int index) const
 }
 
 /**
- * @brief 通过名字查找Page
- * @param title Page的名字，既标签的标题
- * @return 如果没有找到，将返回Q_NULLPTR，如果有重名，将返回第一个查询到的名字，因此，尽量避免重名标签
- * @note 由于翻译等原因，可能title会变化，因此如果想通过固定内容查找page，应该使用 @ref pageByObjectName
+ * @brief Finds a Page by name
+ * @param title the Page name, i.e. the tab title
+ * @return Q_NULLPTR if not found; if names are duplicated, the first match is returned, so avoid duplicate tab names
+ * @note The title may change due to translation, so to find a page by fixed content use @ref pageByObjectName
  * @see pageByObjectName
  */
 RibbonPage *RibbonBar::pageByName(const QString &title) const
@@ -1215,9 +1219,10 @@ RibbonPage *RibbonBar::pageByName(const QString &title) const
 }
 
 /**
- * @brief 通过ObjectName查找Page
+ * @brief Finds a Page by ObjectName
  * @param objname
- * @return 如果没有找到，将返回Q_NULLPTR，如果有同样的ObjectName，将返回第一个查询到的名字，因此，尽量避免ObjectName重名
+ * @return Q_NULLPTR if not found; if the ObjectName is duplicated, the first match is returned, so avoid duplicate
+ * ObjectNames
  * @see pageByName
  */
 RibbonPage *RibbonBar::pageByObjectName(const QString &objname) const
@@ -1235,7 +1240,7 @@ RibbonPage *RibbonBar::pageByObjectName(const QString &objname) const
 }
 
 /**
- * @brief 获取当前显示的所有的RibbonPage，包含未显示的RibbonPageContext的RibbonPage也一并返回
+ * @brief Gets all currently visible RibbonPages; RibbonPages of hidden RibbonPageContexts are also returned
  *
  * @return
  */
@@ -1249,7 +1254,7 @@ QList<RibbonPage *> RibbonBar::pages(bool getAll) const
         RibbonPage *w = qobject_cast<RibbonPage *>(d->m_stack->widget(i));
         if (w) {
             if (!getAll && w->isPageContext()) {
-                // 不是getall且是上下文时跳过
+                // Skip context pages when getAll is false
                 continue;
             }
             res.append(w);
@@ -1259,7 +1264,7 @@ QList<RibbonPage *> RibbonBar::pages(bool getAll) const
 }
 
 /**
- * @brief 判断这个page是否在显示状态，也就是tabbar有这个page
+ * @brief Checks whether this page is visible, i.e. the tabbar has this page
  * @param page
  * @return
  */
@@ -1271,19 +1276,19 @@ bool RibbonBar::isPageVisible(RibbonPage *page) const
 }
 
 /**
- * @brief 显示被隐藏的page
+ * @brief Shows a hidden page
  * @param page
  */
 void RibbonBar::showPage(RibbonPage *page)
 {
     Q_D(RibbonBar);
     for (auto i = d->m_hidedPage.begin(); i != d->m_hidedPage.end(); ++i) {
-        if (i->page == page) {   // 说明要显示
+        if (i->page == page) {   // this is the one to show
             int index = d->m_tabBar->insertTab(i->index, i->page->windowTitle());
             i->index = index;
             d->m_tabBar->setTabData(index, QVariant::fromValue(*i));
-            d->m_hidedPage.erase(i);   // 移除
-            d->updateTabData();        // 更新index信息
+            d->m_hidedPage.erase(i);   // remove
+            d->updateTabData();        // update the index information
             break;
         }
     }
@@ -1291,7 +1296,7 @@ void RibbonBar::showPage(RibbonPage *page)
 }
 
 /**
- * @brief 隐藏page,并不会删除或者取走，只是隐藏
+ * @brief Hides a page without deleting or removing it
  * @param page
  */
 void RibbonBar::hidePage(RibbonPage *page)
@@ -1305,8 +1310,8 @@ void RibbonBar::hidePage(RibbonPage *page)
             RibbonTabData p = var.value<RibbonTabData>();
             if (p.page == page) {
                 d->m_hidedPage.append(p);
-                d->m_tabBar->removeTab(i);   // 仅仅把tab移除
-                // 注意Page隐藏后，contex的位置就会发生变化，需要更新
+                d->m_tabBar->removeTab(i);   // only remove the tab
+                // After hiding the Page the context position changes, so it must be updated
                 d->updateTabData();
                 return;
             }
@@ -1315,8 +1320,8 @@ void RibbonBar::hidePage(RibbonPage *page)
 }
 
 ///
-/// \brief 确保标签显示出来，tab并切换到对应页
-/// \param page 标签指针
+/// \brief Ensures the tab is shown and switches to the corresponding page
+/// \param page tab pointer
 ///
 void RibbonBar::raisePage(RibbonPage *page)
 {
@@ -1329,10 +1334,10 @@ void RibbonBar::raisePage(RibbonPage *page)
 }
 
 /**
- * @brief 移除RibbonPage
+ * @brief Removes a RibbonPage
  *
- * RibbonBar不会delete RibbonPage*，但这个RibbonPage会脱离RibbonBar的管理
- * 表现在tabbar会移除，面板会移除，使用此函数后可以对RibbonPage进行delete
+ * RibbonBar does not delete RibbonPage*, but the RibbonPage leaves RibbonBar's management
+ * the tab is removed from the tabbar and the panel is removed; after this call the RibbonPage can be deleted
  * @param page
  */
 void RibbonBar::removePage(RibbonPage *page)
@@ -1345,15 +1350,15 @@ void RibbonBar::removePage(RibbonPage *page)
         isupdate = true;
     }
     d->m_stack->removeWidget(page);
-    // 同时验证这个page是否是contexpage里的
+    // Also check whether this page belongs to a context page
     for (RibbonPageContext *c : std::as_const(d->m_pageContextList)) {
         c->takePage(page);
     }
-    // 这时要刷新所有tabdata的index信息
+    // Refresh the index information of all tabdata
     if (isupdate) {
         d->updateTabData();
     }
-    // 移除完后需要重绘
+    // Repaint after removal
     repaint();
     resizeRibbon();
 }
@@ -1370,9 +1375,9 @@ void RibbonBar::movePage(int from, int to)
 {
     Q_D(RibbonBar);
     d->m_tabBar->moveTab(from, to);
-    // 这时要刷新所有tabdata的index信息
+    // Refresh the index information of all tabdata
     d->updateTabData();
-    // 这里会触发tabMoved信号，在tabMoved信号中调整stacked里窗口的位置
+    // This emits the tabMoved signal, which adjusts the window position in the stacked widget
 }
 
 int RibbonBar::pageIndex(RibbonPage *page) const
@@ -1382,18 +1387,18 @@ int RibbonBar::pageIndex(RibbonPage *page) const
 }
 
 /**
- * @brief 添加上下文标签
+ * @brief Adds a context tab
  *
- * 上下文标签是特殊时候触发的标签，需要用户手动触发
+ * A context tab is triggered on special occasions and must be triggered manually by the user
  *
- * 调用@ref RibbonPageContext::addPage 可在上下文标签中添加RibbonPage，
- * 在上下文标签添加的RibbonPage，只有在上下文标签显示的时候才会显示
- * @param title 上下文标签的标题，在Office模式下会显示，在wps模式下不显示。默认情况下RibbonPageContext的object
- * name也被设置为title
- * @param color 上下文标签的颜色，如果指定为空QColor(),将会使用RibbonBar的默认色系
- * @return 返回上下文标签指针
- * @note RibbonBar拥有RibbonPageContext的管理权，用户避免在外部直接delete,如果要删除，调用@ref
- * destroyPageContext 函数
+ * Call @ref RibbonPageContext::addPage to add a RibbonPage to the context tab;
+ * a RibbonPage added to a context tab is shown only while the context tab is shown
+ * @param title the context tab title, shown in Office mode but not in wps mode. By default the RibbonPageContext's
+ * object name is also set to title
+ * @param color the context tab color; if an invalid QColor() is given, the RibbonBar default color set is used
+ * @return the context tab pointer
+ * @note RibbonBar owns the RibbonPageContext; do not delete it externally. To delete it, call @ref
+ * destroyPageContext
  */
 RibbonPageContext *RibbonBar::addPageContext(const QString &title, const QColor &color)
 {
@@ -1414,7 +1419,8 @@ void RibbonBar::addPageContext(RibbonPageContext *context)
         return;
     }
     connect(context, &RibbonPageContext::pageAdded, d, &RibbonBarPrivate::onPageContextAdded);
-    // remove并没有绑定，主要是remove后在stacked里也不会显示，remove且delete的话，stacked里也会删除
+    // remove is not connected: after remove the page is not shown in the stacked widget either, and remove followed by
+    // delete also deletes it from the stacked widget
     if (currentRibbonStyle() == WpsLiteStyle) {
         d->resizeInWpsLiteStyle();
     }
@@ -1433,9 +1439,9 @@ void RibbonBar::showPageContext(RibbonPageContext *context)
     int cnt = context->pageCount();
     for (int i = 0; i < context->pageCount(); ++i) {
         RibbonPage *page = context->page(i);
-        // 此句如果模式重复设置不会进行多余操作
+        // Setting the same mode again performs no extra work
         page->setGroupLayoutMode(isTwoRowStyle() ? RibbonGroup::TwoRowMode : RibbonGroup::ThreeRowMode);
-        // 切换模式后会改变高度，上下文标签显示时要保证显示出来
+        // Switching the mode changes the height; the context tab must be shown when it is displayed
         // page->setFixedHeight(pageHeight());
         int index = d->m_tabBar->addTab(page->windowTitle());
         pageContextData.tabPageIndex.append(index);
@@ -1445,14 +1451,15 @@ void RibbonBar::showPageContext(RibbonPageContext *context)
         tabdata.index = index;
         d->m_tabBar->setTabData(index, QVariant::fromValue(tabdata));
         if (cnt > 1) {
-            // 如果连续添加多页，每添加一页就立即更新一下尺寸，如果依赖最后的postEvent会短暂出现导航箭头
+            // When adding several pages in a row, update the size right after each page; relying on the final postEvent
+            // briefly shows navigation arrows
             QRect r = d->m_tabBar->geometry();
             r.setWidth(d->calcMinTabBarWidth());
             d->m_tabBar->setGeometry(r);
         }
     }
     d->m_currentShowingPageContextList.append(pageContextData);
-    // 由于上下文都是在最后追加，不需要调用updateTabData();
+    // Since contexts are always appended last, updateTabData() is not needed;
     resizeRibbon();
 }
 
@@ -1467,7 +1474,7 @@ void RibbonBar::hidePageContext(RibbonPageContext *context)
             for (int j = indexs.size() - 1; j >= 0; --j) {
                 d->m_tabBar->removeTab(indexs[j]);
             }
-            // 注意，删除ContextPage后，tab的序号就会改变，这时，这个tab后面的都要调整它的序号
+            // After removing a ContextPage the tab indexes change, so all tabs after it must be renumbered
             needResize = true;
             d->m_currentShowingPageContextList.removeAt(i);
             break;
@@ -1516,8 +1523,8 @@ QList<RibbonPageContext *> RibbonBar::pageContextList() const
 }
 
 /**
- * @brief 销毁上下文标签，上下文标签的RibbonPage也会随之销毁
- * @param context 需要销毁的上下文标签指针
+ * @brief Destroys a context tab; its RibbonPages are destroyed as well
+ * @param context the context tab pointer to destroy
  */
 void RibbonBar::destroyPageContext(RibbonPageContext *context)
 {
@@ -1525,11 +1532,11 @@ void RibbonBar::destroyPageContext(RibbonPageContext *context)
     if (Q_NULLPTR == context) {
         return;
     }
-    //! 1、如果上下文标签显示中，先隐藏
+    //! 1. If the context tab is shown, hide it first
     if (isPageContextVisible(context)) {
         hidePageContext(context);
     }
-    //! 2、删除上下文标签的相关内容
+    //! 2. Remove the context tab's related content
     d->m_pageContextList.removeAll(context);
 
     QList<RibbonPage *> res = context->pageList();
@@ -1575,7 +1582,7 @@ void RibbonBar::showMinimumButton(bool isShow)
         cornerButtonGroup(Qt::BottomRightCorner);   // create m_bottomRightButtonGroup
         if (Q_NULLPTR == d->m_minimumPageButton) {
             d->m_minimumPageButton = RibbonElementFactory->createHideGroupButton(this);
-            d->m_minimumPageButton->ensurePolished();   // 载入样式图标
+            d->m_minimumPageButton->ensurePolished();   // load the style icon
             QAction *action = new QAction(d->m_minimumPageButton);
             connect(action, &QAction::triggered, this, [=]() {
                 this->setMinimized(!isMinimized());
@@ -1692,10 +1699,10 @@ RibbonBar::RibbonStyle RibbonBar::currentRibbonStyle() const
 }
 
 /**
- * @brief 设置ribbonbar的风格，此函数会重新设置所有元素，包括button的布局方式，
- * 尤其是从三行变到两行的过程，重设的内容较多
- * @note 此函数会自动触发ResizeEvent，不需要手动调用
- * @param v 样式，见@ref RibbonBar::RibbonStyle
+ * @brief Sets the ribbonbar style; this resets all elements, including the button layout,
+ * especially when switching from three rows to two rows, where much is reset
+ * @note This function triggers ResizeEvent automatically; no manual call is needed
+ * @param v the style, see @ref RibbonBar::RibbonStyle
  */
 void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
 {
@@ -1711,7 +1718,7 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     QResizeEvent es(newSize, oldSize);
     QApplication::sendEvent(this, &es);
     */
-    // sendEvent会导致RibbonQuickAccessBar在样式切换后无法更新尺寸，改为用postEvent
+    // sendEvent prevents RibbonQuickAccessBar from updating its size after a style switch, so use postEvent instead
     // resizeRibbon();
 
     // NOTE: resizeRibbon() defers its work with postEvent(), and that delay is
@@ -1726,7 +1733,7 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     update();
 
     if (isMinimized()) {
-        // 处于最小模式下时，bar的高度为tabbar的bottom,这个调整必须在resize event之后
+        // In minimized mode the bar height is the tabbar bottom; this adjustment must happen after the resize event
         d->m_blockResize = true;
         setFixedHeight(d->m_tabBar->geometry().bottom());
         d->m_blockResize = false;
@@ -1765,9 +1772,9 @@ void RibbonBar::setWindowButtonGroup(QWidget *widget)
 }
 
 /**
- * @brief 更新ribbon的布局数据，此函数适用于一些关键性尺寸变化，换起ribbon下面元素的布局
+ * @brief Updates the ribbon layout data; use this for key size changes that require relayout of the ribbon's items
  *
- * @note 此函数调用较慢，避免在高速要求场合调用
+ * @note This function is slow; avoid calling it in performance-critical paths
  */
 void RibbonBar::updateRibbonGeometry()
 {
@@ -1842,8 +1849,9 @@ QSize RibbonBar::minimumSizeHint() const
 bool RibbonBar::event(QEvent *event)
 {
     Q_D(RibbonBar);
-    // KeyTips (B1): Alt 进入/退出角标模式，模式内拦截所有按键做级联导航。
-    // 必须在基类 QMenuBar::event 之前拦截，避免 Alt 被原生菜单逻辑吃掉。
+    // KeyTips (B1): bare Alt enters/exits badge mode; while in the mode every key is
+    // intercepted to drive cascade navigation. This must run before the base-class
+    // QMenuBar::event() so the native menu logic does not swallow Alt first.
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *ke = static_cast<QKeyEvent *>(event);
         if (d->handleKeyTipKeyEvent(ke)) {
@@ -1883,15 +1891,17 @@ bool RibbonBar::eventFilter(QObject *obj, QEvent *e)
 {
     Q_D(RibbonBar);
     if (obj) {
-        // 调整多文档时在窗口模式下的按钮更新
+        // Adjust button updates in window mode for multi-document setups
         if ((obj == cornerWidget(Qt::TopLeftCorner)) || (obj == cornerWidget(Qt::TopRightCorner))) {
-            // 对于QMdiArea，最大化时会存在ShowToParent事件，之后有效点击按钮（logo、最大/小、关闭按钮）会存在MouseButtonRelease事件
+            // For QMdiArea, maximizing produces a ShowToParent event, after which effective clicks on buttons (logo,
+            // max/min, close) produce MouseButtonRelease events
             if ((QEvent::ShowToParent == e->type()) || (QEvent::MouseButtonRelease == e->type())) {
                 d->m_layoutRequest = true;
             }
         } else if (obj == d->m_stack && d->m_stack->isPopup()) {
-            // 在 stack 是 popup 模式时，点击 stack 区域外的时候，如果是在 ribbonTabBar 上点击, 那么忽略掉这次点击
-            // 把点击下发到 ribbonTabBar, 这样可以避免在点击 ribbonTabBar 后 stack 隐藏又显示，出现闪烁
+            // When the stack is in popup mode and the click is outside the stack area, if it is on the ribbonTabBar,
+            // ignore this click Forward the click to the ribbonTabBar to avoid flicker from the stack hiding and
+            // showing again after clicking the ribbonTabBar
             if ((QEvent::MouseButtonPress == e->type()) || (QEvent::MouseButtonDblClick == e->type())) {
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(e);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -1930,7 +1940,7 @@ void RibbonBarPrivate::hideKeyTips()
 
 static QString keyTipMnemonic(const QString &title)
 {
-    // 从 "&File" 形式取助记符字母；无则返回空
+    // Extract the mnemonic letter from a "&File" style title; empty when absent
     const int idx = title.indexOf(QLatin1Char('&'));
     if (idx >= 0 && idx + 1 < title.size()) {
         const QChar c = title.at(idx + 1);
@@ -1948,7 +1958,7 @@ void RibbonBarPrivate::renderKeyTips(const QList<KeyTipTarget> &targets)
     if (targets.isEmpty() || !q->isVisible()) {
         return;
     }
-    // 分配角标字母：先放助记符，再自动补 A–Z
+    // Assign badge letters: mnemonics first, then auto-fill with A-Z
     QSet<QChar> used;
     QList<QString> keys(targets.size());
     for (int i = 0; i < targets.size(); ++i) {
@@ -1974,7 +1984,7 @@ void RibbonBarPrivate::renderKeyTips(const QList<KeyTipTarget> &targets)
     m_keyTipMode = true;
     for (int i = 0; i < targets.size(); ++i) {
         if (keys.at(i).isEmpty()) {
-            continue;   // 字母池耗尽，放弃该目标
+            continue;   // Letter pool exhausted: drop this target
         }
         const KeyTipTarget &tg = targets.at(i);
         QRect rect;
@@ -2002,12 +2012,13 @@ void RibbonBarPrivate::renderKeyTips(const QList<KeyTipTarget> &targets)
 void RibbonBarPrivate::showKeyTips()
 {
     Q_Q(RibbonBar);
-    // 一级目标：应用按钮 + 可见页签
+    // Level-1 targets: application button + visible page tabs
     QList<KeyTipTarget> targets;
     if (m_applicationButton && m_applicationButton->isVisible()) {
         targets.append({m_applicationButton, -1, QString()});
     }
-    // 按页签下标枚举（与 tabRect/setCurrentIndex 同一坐标系，避免隐藏页导致错位）
+    // Enumerate by tab index (same coordinate space as tabRect/setCurrentIndex,
+    // so hidden pages cannot desync the badge positions)
     const int tabCount = m_tabBar->count();
     for (int i = 0; i < tabCount; ++i) {
         RibbonPage *p = q->page(i);
@@ -2022,7 +2033,7 @@ void RibbonBarPrivate::showKeyTips()
 void RibbonBarPrivate::showControlKeyTips()
 {
     Q_Q(RibbonBar);
-    // 二级目标：当前页内的 RibbonButton（保留应用按钮）
+    // Level-2 targets: RibbonButtons inside the current page (keep the application button)
     QList<KeyTipTarget> targets;
     if (m_applicationButton && m_applicationButton->isVisible()) {
         targets.append({m_applicationButton, -1, QString()});
@@ -2060,13 +2071,13 @@ bool RibbonBarPrivate::handleKeyTipKeyEvent(QKeyEvent *ke)
                 const int pageIndex = kt->property("pageIndex").toInt();
                 QWidget *target = kt->target();
                 if (target) {
-                    // 控件目标：应用按钮 / RibbonButton，均按点击触发
+                    // Control target: application button / RibbonButton, both fire on click
                     if (QAbstractButton *btn = qobject_cast<QAbstractButton *>(target)) {
                         btn->click();
                     }
                     hideKeyTips();
                 } else if (pageIndex >= 0) {
-                    // 页签目标：切到该页并下探为二级（页内控件角标）
+                    // Tab target: switch to that page and descend into level-2 (in-page badges)
                     q->setCurrentIndex(pageIndex);
                     showControlKeyTips();
                 } else {
@@ -2074,11 +2085,11 @@ bool RibbonBarPrivate::handleKeyTipKeyEvent(QKeyEvent *ke)
                 }
                 return true;
             }
-            return true;   // 未命中：留在模式内，等待 Esc/Alt 或下一次按键
+            return true;   // No match: stay in the mode, awaiting Esc/Alt or the next key
         }
         return true;
     }
-    // 非模式：裸 Alt 进入 keytip 模式（不含 Ctrl/Meta，避免抢占系统快捷键）
+    // Not in the mode: bare Alt enters keytip mode (no Ctrl/Meta, to avoid stealing system shortcuts)
     if (ke->key() == Qt::Key_Alt) {
         if (!(ke->modifiers() & (Qt::ControlModifier | Qt::MetaModifier))) {
             showKeyTips();

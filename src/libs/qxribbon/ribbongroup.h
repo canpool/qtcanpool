@@ -15,15 +15,17 @@ class RibbonGallery;
 class RibbonGroupPrivate;
 
 /**
- * @brief group 用于对 ribbon 页窗口中的控件进行分组
+ * @brief A group is used to group the controls in a ribbon page window
  *
- * ribbon 的 group 分为两行模式和三行模式，以 office 为代表的 ribbon 为 3 行模式，以 WPS 为代表的“紧凑派”就是 2 行模式，
- * Ribbon 可通过 RibbonBar 的 @ref RibbonBar::RibbonStyle 来指定模式 (通过函数 @ref RibbonBar::setRibbonStyle )
+ * Ribbon groups come in two-row and three-row modes; the Office-style ribbon is three-row mode,
+ * while the "compact" WPS-style ribbon is two-row mode. Ribbon can specify the mode through
+ * RibbonBar's @ref RibbonBar::RibbonStyle (via the function @ref RibbonBar::setRibbonStyle)
  *
- * 在 group 中，可以通过 @ref setExpanding 函数指定 group 水平扩展，如果 group 里面没有能水平扩展的控件，将会留白，
- * 因此，建议在 group 里面有水平扩展的控件如（ @ref RibbonGallery ）才指定这个函数
+ * Within a group, @ref setExpanding can be used to make the group expand horizontally; if the
+ * group has no horizontally expandable controls, whitespace is left, so it is recommended to call
+ * this function only when the group contains such a control (e.g. @ref RibbonGallery)
  *
- * group 的布局通过 @ref RibbonGroupLayout 来实现
+ * The group layout is implemented through @ref RibbonGroupLayout
  */
 class QX_RIBBON_EXPORT RibbonGroup : public QWidget
 {
@@ -33,15 +35,19 @@ class QX_RIBBON_EXPORT RibbonGroup : public QWidget
     Q_PROPERTY(QString groupName READ groupName WRITE setGroupName)
 public:
     enum GroupLayoutMode {
-        ThreeRowMode,   ///< 三行布局模式，office就是三行布局模式，group能布置3行小toolbutton，默认模式
-        TwoRowMode      ///< 两行布局模式，wps的后续布局模式就是两行布局模式，group能布置2行小toolbutton
+        ThreeRowMode,   ///< Three-row layout; Office uses it and a group can hold 3 rows of small toolbuttons; the
+                        ///< default
+        TwoRowMode      ///< Two-row layout; WPS's later layout, where a group can hold 2 rows of small toolbuttons
     };
     enum RowProportion {
-        Auto,   ///< 未定义占比，这时候将会依据expandingDirections来判断，如果能有Qt::Vertical，就等同于Large，否则就是Small
-        Large,    ///< 大占比，一个widget的高度会充满整个group
-        Medium,   ///< 中占比，在 @ref RibbonGroup::groupLayoutMode 为 @ref RibbonGroup::ThreeRowMode 时才会起作用，
-                  ///< 且要同一列里两个都是 Medium 时，会在三行中占据两行
-        Small,    ///< 小占比，占RibbonGroup的一行，Medium在不满足条件时也会变为Small，但不会变为Large
+        Auto,     ///< Undefined proportion; determined from expandingDirections: Qt::Vertical means Large, otherwise
+                  ///< Small
+        Large,    ///< Large proportion; a widget's height fills the whole group
+        Medium,   ///< Medium proportion; only takes effect when @ref RibbonGroup::groupLayoutMode is @ref
+                  ///< RibbonGroup::ThreeRowMode, and occupies two of the three rows when two Mediums are in the same
+                  ///< column
+        Small,    ///< Small proportion; occupies one row of the RibbonGroup; Medium becomes Small when its condition is
+                  ///< not met, but never Large
     };
 public:
     // make the addAction of QWidget visible in the subclass

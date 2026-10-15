@@ -70,7 +70,7 @@ void RibbonGalleryPrivate::init()
     QObject::connect(m_buttonUp, &QAbstractButton::clicked, q, &RibbonGallery::pageUp);
     QObject::connect(m_buttonDown, &QAbstractButton::clicked, q, &RibbonGallery::pageDown);
     QObject::connect(m_buttonMore, &QAbstractButton::clicked, q, &RibbonGallery::showMoreDetail);
-    QObject::connect(q, &RibbonGallery::triggered, q, &RibbonGallery::onTriggered);   // 信号转发
+    QObject::connect(q, &RibbonGallery::triggered, q, &RibbonGallery::onTriggered);   // signal forwarding
 
     m_btnLayout = new QBoxLayout(QBoxLayout::TopToBottom);
     m_btnLayout->setSpacing(0);
@@ -132,7 +132,7 @@ RibbonGallery::RibbonGallery(QWidget *parent)
 RibbonGallery::~RibbonGallery(){QX_FINI_PRIVATE()}
 
 /**
- * @brief 获取一个空白RibbonGalleryGroup
+ * @brief Gets an empty RibbonGalleryGroup
  * @return
  */
 RibbonGalleryGroup *RibbonGallery::addGalleryGroup()
@@ -143,7 +143,7 @@ RibbonGalleryGroup *RibbonGallery::addGalleryGroup()
 }
 
 /**
- * @brief 添加一组RibbonGalleryGroup
+ * @brief Adds a RibbonGalleryGroup
  * @param group
  */
 void RibbonGallery::addGalleryGroup(RibbonGalleryGroup *group)
@@ -190,7 +190,7 @@ QSize RibbonGallery::sizeHint() const
 }
 
 /**
- * @brief 设置最右边三个控制按钮的最大宽度（默认15）
+ * @brief Sets the maximum width of the three rightmost control buttons (default 15)
  * @param w
  */
 void RibbonGallery::setGalleryButtonMaximumWidth(int w)
@@ -221,7 +221,8 @@ void RibbonGallery::pageUp()
 }
 
 /**
- * @brief 显示更多触发，默认弹出内部管理的RibbonGalleryViewport，用户可重载此函数实现自定义的弹出
+ * @brief Triggered by "show more"; by default pops up the internally managed RibbonGalleryViewport. Users can override
+ * this function to implement a custom popup.
  */
 void RibbonGallery::showMoreDetail()
 {
@@ -255,7 +256,7 @@ void RibbonGallery::onTriggered(QAction *action)
 {
     Q_D(RibbonGallery);
     Q_UNUSED(action);
-    // 点击后关闭弹出窗口
+    // Close the popup after a click
     if (d->m_popupWidget && d->m_popupWidget->isVisible()) {
         d->m_popupWidget->hide();
     }
@@ -265,7 +266,7 @@ void RibbonGallery::resizeEvent(QResizeEvent *event)
 {
     Q_D(RibbonGallery);
     QFrame::resizeEvent(event);
-    // 对RibbonGalleryViewport所有RibbonGalleryGroup重置尺寸
+    // Resize all RibbonGalleryGroups in the RibbonGalleryViewport
     int h = layout()->contentsRect().height();
     if (d->m_viewportGroup) {
         h = d->m_viewportGroup->height();
@@ -376,9 +377,9 @@ void RibbonGalleryViewport::removeWidget(QWidget *w)
 }
 
 /**
- * @brief 通过RibbonGalleryGroup获取对应的标题，用户可以通过此函数设置QLabel的属性
+ * @brief Gets the corresponding title for a RibbonGalleryGroup; users can set QLabel properties through this function
  * @param w
- * @return 如果没有管理group，将返回Q_NULLPTRTR
+ * @return Q_NULLPTRTR if no group is managed
  */
 QLabel *RibbonGalleryViewport::getWidgetTitleLabel(QWidget *w)
 {

@@ -22,7 +22,7 @@ QX_RIBBON_BEGIN_NAMESPACE
 #define QX_WIDTH_HEIGHT_RATIO    1.2
 
 /**
- * @def 开启此宏会打印一些常见信息
+ * @def Enabling this macro prints some common information
  */
 #define DebugRibbonButton_TextDrawPrint 0
 
@@ -83,59 +83,62 @@ QStyle *RibbonButtonPrivate::style() const
 }
 
 /**
- * @brief 重新计算sizehint，sizehint函数在第一次计算完成后会记录结果，如果文字字体或者内容不变是不需要进行重复计算
+ * @brief Recomputes the sizehint; sizeHint caches its result after the first computation and need not recompute when
+ * the font or text is unchanged
  *
- * 正常来讲，高度是不需要管，因为高度是有RibbonGroupLayout来控制，这个函数主要是为了提供宽度信息，宽度信息给到RibbonGroupLayout，
- * 然后对button进行布局，最终会触发resize函数，resize函数会再进行一次计算确定具体的尺寸
+ * Normally the height need not be handled because RibbonGroupLayout controls it; this function mainly provides width
+ * information to RibbonGroupLayout, which lays out the button and eventually triggers resize, where the concrete size
+ * is computed again
  *
- * 因此，resize函数确定的尺寸方式必须和recalcSizeHint保持一致，尤其是涉及字体设置
+ * Therefore resize must compute the size the same way recalcSizeHint does, especially regarding font settings
  *
- * 一般布局前调用sizehint，布局后会调用resizeevent，尤其字体信息会计算两遍，这里后续可以有更好的优化空间
+ * sizeHint is usually called before layout and resizeEvent after it, so font metrics are computed twice; this could be
+ * optimized later
  */
 void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
 {
     Q_Q(RibbonButton);
-    // QToolButton的sizeHint已经考虑了菜单箭头的位置
-    // 从源码看，QToolButton的sizeHint是不会考虑换行的
+    // QToolButton's sizeHint already accounts for the menu arrow position
+    // Looking at the source, QToolButton's sizeHint does not account for word wrap
     if (RibbonButton::LargeButton == m_buttonType) {
-        // 计算最佳大小
+        // Compute the optimal size
         if (RibbonGroup *group = qobject_cast<RibbonGroup *>(q->parent())) {
-            // 对于建立在RibbonGroup的基础上的大按钮，把高度设置为RibbonGroup计算的大按钮高度
+            // For a large button based on a RibbonGroup, use the large button height computed by RibbonGroup
             s.setHeight(group->largeHeight());
         }
         if (RibbonButton::Normal == m_largeButtonType) {
-            // 普通模式下才涉及到文字换行
+            // Word wrap only applies in Normal mode
             if (s.width() > s.height() * QX_WIDTH_HEIGHT_RATIO) {
-                // 说明是一个长方形按钮，如果宽度大于高度，就看看换行是否能满足
+                // This is a rectangular button; if the width exceeds the height, check whether word wrap fits
                 QFontMetrics fm = q->fontMetrics();
                 QRect textRange(0, 0, s.width(), s.height());
 
-                //! 1 先获取最优的文字textRange
+                //! 1. First compute the optimal text textRange
                 {
                     const int maxTryCount = 3;
                     int tryCount = 0;
-                    int alignment = Qt::TextShowMnemonic | Qt::TextWordWrap;   // 文本对齐方式
+                    int alignment = Qt::TextShowMnemonic | Qt::TextWordWrap;   // text alignment
                     do {
-                        // 先计算两行文本的紧凑矩形，从一半开始逐渐递增
+                        // Compute the tight rect for two lines of text, starting from half and increasing
                         textRange.setWidth(s.width() / 2 + (s.width() / 2) * (float(tryCount) / maxTryCount));
                         textRange = fm.boundingRect(textRange, alignment, opt.text);
-                        // Linux GNOME平台上，fm.lineSpacing()为15，textRange.height()为35
-                        // Windows 10平台上，fm.lineSpacing()为16，textRange.height()为32
+                        // On Linux GNOME, fm.lineSpacing() is 15 and textRange.height() is 35
+                        // On Windows 10, fm.lineSpacing() is 16 and textRange.height() is 32
 #ifdef Q_OS_WINDOWS
                         if (textRange.height() <= (fm.lineSpacing() * 2)) {
 #else
                         if (textRange.height() <= (fm.lineSpacing() * 2.5)) {
 #endif
-                            // 保证在两行
+                            // Keep it within two lines
                             m_isWordWrap = (textRange.height() > fm.lineSpacing());
                             break;
                         }
                         ++tryCount;
                     } while (tryCount < maxTryCount);
                 }
-                // 左右留2像素
+                // Leave 2 pixels on each side
                 s.setWidth(textRange.width() + m_spacing * 2);
-                //! 2 再判断箭头来调整textRange
+                //! 2. Then consider the arrow to adjust textRange
                 if ((opt.features & QStyleOptionToolButton::MenuButtonPopup) ||
                     (opt.features & QStyleOptionToolButton::HasMenu)) {
                     if (m_isWordWrap) {
@@ -152,9 +155,9 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
                 }
             }
         } else {
-            // 否则就是lite模式，只允许1行，有菜单就偏移
+            // Otherwise it is lite mode: only one line is allowed and a menu causes an offset
             if (s.width() > s.height() * 2) {
-                // 过于宽的按钮，把文字用...来替代
+                // For an overly wide button, elide the text with "..."
                 s.rwidth() = s.height() * 2;
             }
             if ((opt.features & QStyleOptionToolButton::MenuButtonPopup) ||
@@ -164,7 +167,8 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
         }
         if (RibbonButton::Normal == m_largeButtonType) {
             if (s.width() < s.height()) {
-                // 短文本的图标相对于长文本的图标可能会比较小，此处根据高度扩展短文本的按钮宽度
+                // A short text's icon may be smaller than a long text's, so widen the short-text button based on the
+                // height
                 int textHeight = q->fontMetrics().lineSpacing();
                 if (m_isWordWrap && !opt.text.contains('\n')) {
                     textHeight <<= 1;
@@ -176,8 +180,8 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
             }
         }
     } else {
-        // InstantPopup在qtoolbutton不会添加控件来放下箭头，这里处理的和MenuButtonPopup一致
-        // 在仅有图标的小模式显示时，预留一个下拉箭头位置
+        // InstantPopup does not add a widget for the arrow in qtoolbutton, so handle it like MenuButtonPopup
+        // In icon-only small mode, reserve space for the drop-down arrow
 #ifdef Q_OS_WINDOWS
         if (Qt::ToolButtonIconOnly == opt.toolButtonStyle) {
 #else
@@ -185,7 +189,7 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
 #endif
             if (opt.features & QStyleOptionToolButton::MenuButtonPopup ||
                 opt.features & QStyleOptionToolButton::HasMenu) {
-                // 如果有菜单
+                // If there is a menu
                 // s.rwidth() += style()->pixelMetric(QStyle::PM_MenuButtonIndicator, &opt, this);
                 s.rwidth() += QX_INDICATOR_ARROW_WIDTH + m_spacing;
             }
@@ -197,7 +201,8 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
 /**
  * @brief RibbonButton::drawIconAndLabel
  *
- * 在LargeButtonType == Normal模式下，icon占大按钮的一半区域，在wps模式下，icon占大按钮的60%，文字占40%，且文字不换行
+ * With LargeButtonType == Normal the icon takes half of the large button; in wps mode the icon takes 60% and the text
+ * 40%, with no word wrap
  * @param opt
  * @param p
  * @param w
@@ -205,13 +210,14 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
 void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter &p, const QWidget *w)
 {
     if (RibbonButton::LargeButton == m_buttonType) {
-        // 绘制图标和文字
+        // Draw the icon and text
         QRect textRect = adjustedTextRect(opt, w);
         bool isArrow = opt.features & QStyleOptionToolButton::Arrow;
         if (((!isArrow && opt.icon.isNull()) && !opt.text.isEmpty()) ||
             (opt.toolButtonStyle == Qt::ToolButtonTextOnly)) {
-            // 没有箭头 且 没图标 有文字 || 只有文字模式
-            int alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextWordWrap;   // 纯文本下，居中对齐,换行
+            // no arrow, no icon, has text || text-only mode
+            int alignment =
+                Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextWordWrap;   // for plain text, center and wrap
             if (!style()->styleHint(QStyle::SH_UnderlineShortcut, &opt, w)) {
                 alignment |= Qt::TextHideMnemonic;
             }
@@ -219,16 +225,16 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
             style()->drawItemText(&p, textRect, alignment, opt.palette, opt.state & QStyle::State_Enabled, opt.text,
                                   QPalette::ButtonText);
         } else {
-            // 非纯文本
+            // not plain text
             if (opt.toolButtonStyle != Qt::ToolButtonIconOnly) {
-                // 文本加图标情况
+                // text plus icon
                 p.setFont(opt.font);
-                int alignment = Qt::TextShowMnemonic | Qt::TextWordWrap;   // 换行
+                int alignment = Qt::TextShowMnemonic | Qt::TextWordWrap;   // word wrap
                 if (!style()->styleHint(QStyle::SH_UnderlineShortcut, &opt, w)) {
                     alignment |= Qt::TextHideMnemonic;
                 }
-                // 文字在icon下
-                // 先绘制图标
+                // text below the icon
+                // draw the icon first
                 if (!isArrow) {
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
                     HELP_DRAW_RECT(p, m_iconRect);
@@ -244,20 +250,21 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
                 if (RibbonButton::Lite == m_largeButtonType) {
                     alignment |= Qt::AlignCenter;
                 } else {
-                    alignment |= Qt::AlignHCenter | Qt::AlignTop;   // 文字是顶部对齐
+                    alignment |= Qt::AlignHCenter | Qt::AlignTop;   // text is top-aligned
                 }
 
                 QString text = opt.text;
-                // 再绘制文本，对于Normal模式下的Largebutton，如果有菜单，且m_isWordWrap是true，箭头将在文本旁边
+                // Then draw the text; for a LargeButton in Normal mode with a menu and m_isWordWrap true, the arrow
+                // goes beside the text
                 if (RibbonButton::Lite == m_largeButtonType) {
-                    // lite 模式，文字不换行, 显示的内容需要进行省略处理
+                    // lite mode: no word wrap, so the displayed content must be elided
                     text.remove('\n');
                     text = w->fontMetrics().elidedText(text, Qt::ElideRight, textRect.width(), Qt::TextShowMnemonic);
                 }
                 style()->drawItemText(&p, QStyle::visualRect(opt.direction, opt.rect, textRect), alignment, opt.palette,
                                       opt.state & QStyle::State_Enabled, text, QPalette::ButtonText);
             } else {
-                // 只有图标情况
+                // icon only
                 if (isArrow) {
                     drawArrow(style(), &opt, opt.rect, &p, w);
                 } else {
@@ -265,7 +272,7 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
                     style()->drawItemPixmap(&p, m_iconRect, Qt::AlignCenter, pm);
                 }
             }
-            // 绘制sub control 的下拉箭头
+            // Draw the sub control drop-down arrow
             if (opt.features & QStyleOptionToolButton::MenuButtonPopup ||
                 opt.features & QStyleOptionToolButton::HasMenu) {
                 opt.rect = calcIndicatorArrowDownRect(opt);
@@ -276,7 +283,7 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
             }
         }
     } else {
-        // 小图标
+        // small icon
         if (!opt.icon.isNull() && opt.toolButtonStyle != Qt::ToolButtonTextOnly) {
             QPixmap pm = createIconPixmap(opt, m_iconRect.size());
 
@@ -284,8 +291,8 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
                 p.save();
                 p.setFont(opt.font);
 
-                QRect pr = m_iconRect;                                                // 图标区域
-                QRect tr = opt.rect.adjusted(pr.width() + 2 * m_spacing, 0, -1, 0);   // 文本区域
+                QRect pr = m_iconRect;                                                // icon area
+                QRect tr = opt.rect.adjusted(pr.width() + 2 * m_spacing, 0, -1, 0);   // text area
 
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
                 HELP_DRAW_RECT(p, pr);
@@ -293,12 +300,12 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
 #endif
 
                 int alignment = Qt::TextShowMnemonic;
-                // 快捷键的下划线
+                // shortcut underline
                 if (!style()->styleHint(QStyle::SH_UnderlineShortcut, &opt, w)) {
                     alignment |= Qt::TextHideMnemonic;
                 }
                 if (opt.toolButtonStyle == Qt::ToolButtonTextUnderIcon) {
-                    // ribbonbutton在小图标下，不支持ToolButtonTextUnderIcon
+                    // ribbonbutton does not support ToolButtonTextUnderIcon in small-icon mode
                 } else {
                     style()->drawItemPixmap(&p, QStyle::visualRect(opt.direction, opt.rect, pr), Qt::AlignCenter, pm);
                     alignment |= Qt::AlignLeft | Qt::AlignVCenter;
@@ -309,9 +316,9 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
             } else {
                 style()->drawItemPixmap(&p, m_iconRect, Qt::AlignCenter, pm);
             }
-        } else {   // 只有文字
+        } else {   // text only
             int alignment = Qt::TextShowMnemonic;
-            // 快捷键的下划线
+            // shortcut underline
             if (!style()->styleHint(QStyle::SH_UnderlineShortcut, &opt, w)) {
                 alignment |= Qt::TextHideMnemonic;
             }
@@ -320,7 +327,7 @@ void RibbonButtonPrivate::drawIconAndLabel(QStyleOptionToolButton &opt, QPainter
                                   QPalette::ButtonText);
         }
 
-        // 绘制sub control 的下拉箭头
+        // Draw the sub control drop-down arrow
         if (opt.features & QStyleOptionToolButton::MenuButtonPopup || opt.features & QStyleOptionToolButton::HasMenu) {
             QStyleOptionToolButton tool = opt;
             tool.rect = calcIndicatorArrowDownRect(tool);
@@ -360,7 +367,7 @@ void RibbonButtonPrivate::drawArrow(const QStyle *style, const QStyleOptionToolB
 }
 
 /**
- * @brief 根据设定计算图标和文本的绘制区域
+ * @brief Computes the drawing areas for the icon and the text according to the settings
  * @param opt
  */
 void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
@@ -369,30 +376,31 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
     if (RibbonButton::LargeButton == m_buttonType) {
         m_iconRect = opt.rect.adjusted(m_spacing, m_spacing, -m_spacing, -m_spacing);
         if (opt.toolButtonStyle != Qt::ToolButtonIconOnly) {
-            // sizehint已经保证宽度能显示两行
-            // icon 的区域就是文字以外的区域，如果m_isEnableWordWrap=true，就保证有两行文本的空间
+            // sizehint already guarantees the width can show two lines
+            // The icon area is the area outside the text; if m_isEnableWordWrap is true, leave room for two lines of
+            // text
             QFontMetrics fm = q->fontMetrics();
             int maxheight = 30;
             if (RibbonButton::Normal == m_largeButtonType) {
-                // 减去2行文本，减去上下边距，减去icon和text的分隔距离
+                // Subtract two lines of text, the vertical margins, and the gap between icon and text
                 maxheight = opt.rect.height() - (fm.lineSpacing() * 2) - 3 * m_spacing;
             } else {
                 maxheight = opt.rect.height() - (fm.lineSpacing() * 1.2) - 3 * m_spacing;
             }
             m_iconRect.setHeight(maxheight);
 
-            // 没有菜单，高度是矩形底部减去icon底部再减去2*Space
+            // Without a menu, the height is the rect bottom minus the icon bottom minus 2*spacing
             m_textRect.setRect(m_spacing, m_iconRect.bottom() + m_spacing, m_iconRect.width(),
                                opt.rect.bottom() - m_iconRect.bottom() - 2 * m_spacing);
-            // 保证能显示两行文本
-            // 下面确定文字区域
+            // Ensure two lines of text fit
+            // Determine the text area below
             if ((opt.features & QStyleOptionToolButton::MenuButtonPopup) ||
                 (opt.features & QStyleOptionToolButton::HasMenu)) {
-                // 有菜单且换行,宽度偏移ARROW_WIDTH
+                // With a menu and word wrap, offset the width by ARROW_WIDTH
                 if (m_isWordWrap) {
                     m_textRect.adjust(0, 0, -(QX_INDICATOR_ARROW_WIDTH + m_spacing), 0);
                 } else if (RibbonButton::Lite == m_largeButtonType) {
-                    // 在lite模式下，不允许换行的时候，也需要偏移下三角
+                    // In lite mode, also offset for the down arrow when word wrap is disabled
                     m_textRect.adjust(0, 0, -(QX_INDICATOR_ARROW_WIDTH + m_spacing), 0);
                 }
             }
@@ -400,16 +408,16 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
             m_textRect = QRect();
         }
     } else {
-        // 小按钮
+        // small button
         if (opt.toolButtonStyle == Qt::ToolButtonIconOnly) {
-            // InstantPopup在qtoolbutton不会添加控件来放下箭头，这里处理的和MenuButtonPopup一致
-            // 在仅有图标的小模式显示时，预留一个下拉箭头位置
+            // InstantPopup does not add a widget for the arrow in qtoolbutton, so handle it like MenuButtonPopup
+            // In icon-only small mode, reserve space for the drop-down arrow
             m_iconRect = opt.rect.adjusted(m_spacing, m_spacing, -m_spacing, -m_spacing);
             if (opt.features & QStyleOptionToolButton::MenuButtonPopup ||
                 opt.features & QStyleOptionToolButton::HasMenu) {
                 m_iconRect.adjust(0, 0, -(QX_INDICATOR_ARROW_WIDTH + m_spacing), 0);
             }
-            // 确定文本区域
+            // Determine the text area
             m_textRect = QRect();
         } else {
             m_iconRect = QRect(m_spacing, m_spacing, qMax(opt.rect.height(), opt.iconSize.width()) - 2 * m_spacing,
@@ -417,16 +425,16 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
             m_textRect.setRect(m_iconRect.right() + m_spacing, m_spacing,
                                opt.rect.right() - m_iconRect.right() - 2 * m_spacing,
                                opt.rect.height() - 2 * m_spacing);
-            // 确定文本区域
+            // Determine the text area
             if ((opt.features & QStyleOptionToolButton::MenuButtonPopup) ||
                 (opt.features & QStyleOptionToolButton::HasMenu)) {
-                // 有菜单,宽度偏移ARROW_WIDTH
+                // With a menu, offset the width by ARROW_WIDTH
                 m_textRect.adjust(0, 0, -(QX_INDICATOR_ARROW_WIDTH + m_spacing), 0);
             }
         }
     }
 
-    // 纯文本的文字位置
+    // Text position for plain text
     bool isArrow = opt.features & QStyleOptionToolButton::Arrow;
     if ((Qt::ToolButtonTextOnly == opt.toolButtonStyle) || (opt.icon.isNull() && !isArrow)) {
         m_textRect = opt.rect.adjusted(m_spacing, m_spacing, -m_spacing, -m_spacing);
@@ -434,16 +442,17 @@ void RibbonButtonPrivate::calcIconAndTextRect(const QStyleOptionToolButton &opt)
 }
 
 /**
- * @brief 根据设定计算文本显示区域
+ * @brief Computes the text display area according to the settings
  * @param opt
  * @param w
- * @return 文本显示区域
+ * @return the text display area
  */
 QRect RibbonButtonPrivate::adjustedTextRect(const QStyleOptionToolButton &opt, const QWidget *w)
 {
     QRect rect = m_textRect;
 
-    // 这两个偏移量是有些按钮在点击时文字会出现一个类似抖动的效果，但据观察office2013的ribbon是不会动的，因此把这个效果取消
+    // These two offsets give some buttons a jitter effect on the text when clicked; office2013's ribbon does not move,
+    // so the effect is disabled
     if (s_isToolButtonTextShift) {
         int shiftX = 0;
         int shiftY = 0;
@@ -459,33 +468,34 @@ QRect RibbonButtonPrivate::adjustedTextRect(const QStyleOptionToolButton &opt, c
 }
 
 /**
- * @brief sub control 的下拉箭头的位置
+ * @brief Position of the sub control drop-down arrow
  *
- * 对于大模式，如果文字换行，箭头会在最右侧，如果文字不换行，箭头就在原来文字第二行的位置
+ * For large mode, if the text wraps the arrow is at the far right; otherwise it sits where the second text line would
+ * be
  * @param opt
  * @return
- * @note IndicatorArrow尺寸的计算依赖text，前置需要先调用calcIconAndTextRect
+ * @note The IndicatorArrow size calculation depends on the text, so calcIconAndTextRect must be called first
  */
 QRect RibbonButtonPrivate::calcIndicatorArrowDownRect(const QStyleOptionToolButton &opt)
 {
-    // 预留 QX_INDICATOR_ARROW_WIDTH px绘制箭头
+    // Reserve QX_INDICATOR_ARROW_WIDTH px for drawing the arrow
     QRect rect = opt.rect;
     if (RibbonButton::LargeButton == m_buttonType) {
-        // Lite下，箭头的大小通过rect的宽度控制（见calcIconAndTextRect中的m_textRect），
-        // 否则通过rect的高度控制（见下文的QX_INDICATOR_ARROW_WIDTH）
+        // In Lite the arrow size is controlled by the rect width (see m_textRect in calcIconAndTextRect),
+        // otherwise it is controlled by the rect height (see QX_INDICATOR_ARROW_WIDTH below)
         if ((RibbonButton::Lite == m_largeButtonType)) {
-            // 首先判断是否为lite且不允许换行
+            // First check whether it is lite with word wrap disabled
             // yh + QX_INDICATOR_ARROW_WIDTH + yh = m_textRect.height()
             // yh = (m_textRect.height() - QX_INDICATOR_ARROW_WIDTH) / 2
             // y = m_textRect.top() + yh
             int y = m_textRect.top() + (m_textRect.height() - QX_INDICATOR_ARROW_WIDTH) / 2;
             rect.setRect(m_textRect.right() + m_spacing, y, QX_INDICATOR_ARROW_WIDTH, QX_INDICATOR_ARROW_WIDTH);
         } else if (m_isWordWrap) {
-            // 如果允许换行，那么就在文本第二行最后端，菜单的下拉箭头位于第二行文本的矩形区域
+            // If word wrap is allowed, the menu drop-down arrow sits at the end of the second text line's rect
             rect.setRect(m_textRect.right() + m_spacing, m_textRect.top() + m_textRect.height() / 2,
                          QX_INDICATOR_ARROW_WIDTH, m_textRect.height() / 2);
         } else {
-            // 都不是的情况下就第二行文本位置       |y坐标
+            // Otherwise it uses the second text line position       | y coordinate
             // m_textRect.height() / 2 + yh + QX_INDICATOR_ARROW_WIDTH + yh = m_textRect.height()
             // yh = m_textRect.height() / 4 - QX_INDICATOR_ARROW_WIDTH / 2
             // y = m_textRect.bottom() - yh - QX_INDICATOR_ARROW_WIDTH
@@ -496,14 +506,14 @@ QRect RibbonButtonPrivate::calcIndicatorArrowDownRect(const QStyleOptionToolButt
         rect.setRect(rect.width() - QX_INDICATOR_ARROW_WIDTH - m_spacing, m_spacing, QX_INDICATOR_ARROW_WIDTH,
                      rect.height() - 2 * m_spacing);
     }
-    m_indicatorArrowRect = rect;   // 记录
+    m_indicatorArrowRect = rect;   // record
     return rect;
 }
 
 QPixmap RibbonButtonPrivate::createIconPixmap(const QStyleOptionToolButton &opt, const QSize &iconsize)
 {
     Q_Q(RibbonButton);
-    if (!opt.icon.isNull()) {   // 有图标
+    if (!opt.icon.isNull()) {   // has an icon
         QIcon::State state = opt.state & QStyle::State_On ? QIcon::On : QIcon::Off;
         QIcon::Mode mode;
         if (!(opt.state & QStyle::State_Enabled)) {
@@ -530,12 +540,12 @@ void RibbonButtonPrivate::updateButtonState(const QPoint &pos)
     if (RibbonButton::LargeButton == m_buttonType) {
         isMouseOnSubControl = m_textRect.united(m_indicatorArrowRect).contains(pos);
     } else {
-        // 小按钮模式就和普通toolbutton一样
+        // Small button mode behaves like a normal toolbutton
         isMouseOnSubControl = m_indicatorArrowRect.contains(pos);
     }
     if (m_mouseOnSubControl != isMouseOnSubControl) {
         m_mouseOnSubControl = isMouseOnSubControl;
-        // 从icon变到text过程中刷新一次
+        // Refresh once when switching from icon to text
         q->update();
     }
 }
@@ -562,7 +572,7 @@ void RibbonButtonPrivate::drawButton(QStyleOptionToolButton &opt, QPainter &p, c
             bflags |= QStyle::State_MouseOver;
         }
     }
-    // 绘制背景
+    // Draw the background
     QStyleOption tool(0);
     tool.palette = opt.palette;
     QStyle::PrimitiveElement pe = autoRaise ? QStyle::PE_PanelButtonTool : QStyle::PE_PanelButtonBevel;
@@ -570,23 +580,26 @@ void RibbonButtonPrivate::drawButton(QStyleOptionToolButton &opt, QPainter &p, c
         tool.rect = opt.rect;
         tool.state = bflags;
         if (opt.activeSubControls & QStyle::SC_ToolButtonMenu) {
-            // 菜单激活,整个按钮都绘制为选中
+            // The menu is active, draw the whole button as selected
             style()->drawPrimitive(QStyle::PE_PanelButtonTool, &tool, &p, w);
         } else {
-            // 菜单没有激活,这时候要把图标域或者文字域绘制为正常模式
+            // The menu is not active, so draw the icon or text area in normal mode
             style()->drawPrimitive(QStyle::PE_PanelButtonTool, &tool, &p, w);
             if (tool.state & QStyle::State_MouseOver) {
                 if (m_mouseOnSubControl) {
                     if (opt.toolButtonStyle == Qt::ToolButtonTextUnderIcon) {   // LargeButton
-                        tool.rect = m_iconRect;                                 // 鼠标在文字区，把图标显示为正常
+                        tool.rect = m_iconRect;   // mouse is on the text area, show the icon as normal
                     } else {
-                        tool.rect = m_iconRect.united(m_textRect);   // 鼠标在箭头区，把图标和文字显示为正常
+                        tool.rect =
+                            m_iconRect.united(m_textRect);   // mouse is on the arrow area, show icon and text as normal
                     }
                 } else {
                     if (opt.toolButtonStyle == Qt::ToolButtonTextUnderIcon) {   // LargeButton
-                        tool.rect = m_textRect.united(m_indicatorArrowRect);    // 鼠标在图标区，把文字显示为正常
+                        tool.rect = m_textRect.united(
+                            m_indicatorArrowRect);   // mouse is on the icon area, show the text as normal
                     } else {
-                        tool.rect = m_indicatorArrowRect;   // 鼠标在非箭头区，把箭头区显示为正常
+                        tool.rect =
+                            m_indicatorArrowRect;   // mouse is not on the arrow area, show the arrow area as normal
                     }
                 }
                 tool.state = QStyle::State_Raised;
@@ -662,15 +675,15 @@ void RibbonButton::mousePressEvent(QMouseEvent *e)
         if (d->m_mouseOnSubControl) {
             d->m_menuButtonPressed = true;
             showMenu();
-            // showMenu结束后，再判断当前的鼠标位置是否是在SubControl
+            // After showMenu ends, check again whether the mouse is on a SubControl
             d->updateButtonState(mapFromGlobal(QCursor::pos()));
             return;
         }
     }
     d->m_menuButtonPressed = false;
-    // 此处用QAbstractButton的mousePressEvent，而不是QToolButton的mousePressEvent
-    // 对于带菜单的QToolButton，QToolButton的mousePressEvent默认是点击按钮右侧弹出菜单，
-    // 弹出菜单的点击位置在上面进行了定制处理，所以不需要再用QToolButton的mousePressEvent进行处理
+    // Use QAbstractButton's mousePressEvent here, not QToolButton's
+    // For a QToolButton with a menu, QToolButton's mousePressEvent pops up the menu when the right side is clicked,
+    // and the menu pop-up click position is customized above, so QToolButton's mousePressEvent is not needed
     QAbstractButton::mousePressEvent(e);
 }
 
@@ -705,7 +718,7 @@ bool RibbonButton::hitButton(const QPoint &pos) const
 }
 
 /**
- * @brief 在 resizeevent 计算绘图所需的尺寸，避免在绘图过程中实时绘制提高效率
+ * @brief Computes the drawing sizes in resizeEvent, avoiding on-the-fly computation during painting
  * @param e
  */
 void RibbonButton::resizeEvent(QResizeEvent *e)
@@ -721,8 +734,9 @@ void RibbonButton::resizeEvent(QResizeEvent *e)
 }
 
 /**
- * @brief toolbutton 的尺寸确定是先定下字体的尺寸，再定下icon的尺寸，自底向上，保证字体能显示两行
- * @note m_sizeHint 的刷新需要注意
+ * @brief A toolbutton's size is determined bottom-up: the text size first, then the icon size, ensuring two lines of
+ * text
+ * @note Beware of when m_sizeHint is refreshed
  * @return
  */
 QSize RibbonButton::sizeHint() const
@@ -762,9 +776,9 @@ RibbonButton::RibbonButtonType RibbonButton::buttonType() const
 }
 
 /**
- * @brief 设置按钮样式
- * @note 设置按钮样式过程会调用 setToolButtonStyle, 如果要改变 toolButtonStyle,
- * 如设置为 Qt::ToolButtonIconOnly, 需要在此函数之后设置
+ * @brief Sets the button style
+ * @note Setting the button style calls setToolButtonStyle; to change toolButtonStyle,
+ * e.g. to Qt::ToolButtonIconOnly, set it after this function
  * @param type
  */
 void RibbonButton::setButtonType(RibbonButton::RibbonButtonType type)
@@ -798,7 +812,7 @@ RibbonButton::LargeButtonType RibbonButton::largeButtonType() const
 }
 
 /**
- * @brief 设置按钮点击时文字会闪烁一下
+ * @brief Makes the text flicker once when the button is clicked
  * @param on
  */
 void RibbonButton::setToolButtonTextShift(bool on)

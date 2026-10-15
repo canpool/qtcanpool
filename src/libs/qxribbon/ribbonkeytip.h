@@ -11,10 +11,12 @@
 QX_RIBBON_BEGIN_NAMESPACE
 
 /**
- * @brief KeyTip 角标：在键盘级联（Alt）模式下覆盖在 ribbon 各可触发元素上的字母提示
+ * @brief KeyTip badge: a letter hint overlaid on each triggerable ribbon element
+ *        while the keyboard-cascade (Alt) mode is active.
  *
- * 纯展示控件，鼠标穿透（WA_TransparentForMouseEvents），不参与正常交互。
- * 由 RibbonBar 在 keytip 模式进入时统一创建/定位/销毁。
+ * Display-only widget with a mouse-transparent surface (WA_TransparentForMouseEvents);
+ * it never takes part in normal interaction. RibbonBar creates, positions and destroys
+ * it uniformly when keytip mode is entered.
  */
 class RibbonKeyTip : public QWidget
 {

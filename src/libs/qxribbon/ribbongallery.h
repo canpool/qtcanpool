@@ -14,15 +14,17 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonGalleryPrivate;
 
 /**
- * @brief Gallery 控件
+ * @brief Gallery widget
  *
- * Gallery 控件是由一个当前激活的 @sa RibbonGalleryGroup 和弹出的 @sa RibbonGalleryViewport 组成
+ * The Gallery widget consists of a currently active @sa RibbonGalleryGroup and a popup @sa RibbonGalleryViewport
  *
- * @sa RibbonGalleryGroup 是继承 @sa QListView actions 通过 icon 展示出来，相关的属性可以按照 QListView 设置
+ * @sa RibbonGalleryGroup inherits @sa QListView and displays actions as icons; its related properties can be set as for
+ * a QListView
  *
- * @sa RibbonGalleryViewport 是一个内部有垂直布局的窗体，在弹出激活时，把管理的 RibbonGalleryGroup 都展示出来
+ * @sa RibbonGalleryViewport is a widget with an internal vertical layout; when the popup is activated, it displays all
+ * managed RibbonGalleryGroups
  *
- * 示例如下：
+ * Example as follows:
  * @code
  * RibbonGallery *gallery = ribbonGroup1->addGallery();
  * QList< QAction* > galleryActions;

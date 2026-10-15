@@ -80,7 +80,7 @@ RibbonButton *RibbonGroupPrivate::lastAddedButton()
 }
 
 /**
- * @brief 重置大按钮的类型
+ * @brief Reset the large button type
  */
 void RibbonGroupPrivate::resetLargeToolButtonStyle()
 {
@@ -104,7 +104,7 @@ void RibbonGroupPrivate::resetLargeToolButtonStyle()
 }
 
 /**
- * @brief 获取布局item
+ * @brief Get the layout items
  * @return
  */
 const QList<RibbonGroupItem *> &RibbonGroupPrivate::ribbonGroupItems() const
@@ -139,9 +139,9 @@ QString RibbonGroup::groupName() const
 }
 
 /**
- * @brief 设置group的标题
- * @note 注意会触发windowTitleChange信号
- * @param title 标题
+ * @brief Set the group title
+ * @note Note that this triggers the windowTitleChange signal
+ * @param title Title
  */
 void RibbonGroup::setGroupName(const QString &title)
 {
@@ -160,7 +160,7 @@ void RibbonGroup::setTitle(const QString &title)
 }
 
 /**
- * @brief 获取action的行属性
+ * @brief Get the row property of an action
  * @param action
  * @return
  */
@@ -176,7 +176,7 @@ RibbonGroup::RowProportion RibbonGroup::getActionRowProportionProperty(QAction *
 }
 
 /**
- * @brief 把action的行属性设置进action中，action自身携带了行属性
+ * @brief Store the action row property into the action; the action carries the row property itself
  * @param action
  * @param rp
  */
@@ -189,9 +189,9 @@ void RibbonGroup::setActionRowProportionProperty(QAction *action, RibbonGroup::R
 }
 
 /**
- * @brief 设置action的行行为，行属性决定了ribbon group的显示方式
- * @param action 需要设置的action，此action必须已经被group添加过
- * @param rp 行为
+ * @brief Set the action row behavior; the row property determines how the ribbon group is displayed
+ * @param action The action to set; it must already have been added to the group
+ * @param rp Behavior
  */
 void RibbonGroup::setActionRowProportion(QAction *action, RibbonGroup::RowProportion rp)
 {
@@ -212,10 +212,10 @@ void RibbonGroup::setActionRowProportion(QAction *action, RibbonGroup::RowPropor
 }
 
 /**
- * @brief 添加action
+ * @brief Add an action
  * @param action action
- * @param rp 指定action的行占比
- * @return 返回对应的RibbonButton
+ * @param rp Row proportion of the specified action
+ * @return The corresponding RibbonButton
  */
 RibbonButton *RibbonGroup::addAction(QAction *action, RibbonGroup::RowProportion rp)
 {
@@ -230,10 +230,10 @@ RibbonButton *RibbonGroup::addAction(QAction *action, RibbonGroup::RowProportion
 }
 
 /**
- * @brief 添加大图标
+ * @brief Add a large icon action
  *
  * @param action
- * @sa 如果想获取actiom对应的RibbonButton,可以使用@ref ribbonButtonForAction 函数
+ * @sa To get the RibbonButton for an action, use the @ref ribbonButtonForAction function
  */
 RibbonButton *RibbonGroup::addLargeAction(QAction *action)
 {
@@ -241,11 +241,11 @@ RibbonButton *RibbonGroup::addLargeAction(QAction *action)
 }
 
 /**
- * @brief 在三栏模式下，强制加为2栏action
- * @note 在两行模式下，Medium和Small等价
- * 主要应用在ThreeRowMode下
+ * @brief Force the action into a 2-row action in three-column mode
+ * @note In two-row mode Medium and Small are equivalent
+ * Mainly applies under ThreeRowMode
  * @param action
- * @sa 如果想获取actiom对应的RibbonButton,可以使用@ref ribbonButtonForAction 函数
+ * @sa To get the RibbonButton for an action, use the @ref ribbonButtonForAction function
  */
 RibbonButton *RibbonGroup::addMediumAction(QAction *action)
 {
@@ -253,9 +253,9 @@ RibbonButton *RibbonGroup::addMediumAction(QAction *action)
 }
 
 /**
- * @brief 添加小图标
+ * @brief Add a small icon action
  * @param action
- * @sa 如果想获取actiom对应的RibbonButton,可以使用@ref ribbonButtonForAction 函数
+ * @sa To get the RibbonButton for an action, use the @ref ribbonButtonForAction function
  */
 RibbonButton *RibbonGroup::addSmallAction(QAction *action)
 {
@@ -263,10 +263,10 @@ RibbonButton *RibbonGroup::addSmallAction(QAction *action)
 }
 
 /**
- * @brief 添加一个action
+ * @brief Add an action
  * @param act
- * @param popMode 按钮的样式
- * @param rp action在group中的占位情况，默认是大图标
+ * @param popMode Button style
+ * @param rp How the action occupies space in the group; defaults to a large icon
  */
 void RibbonGroup::addAction(QAction *act, QToolButton::ToolButtonPopupMode popMode, RibbonGroup::RowProportion rp)
 {
@@ -283,18 +283,18 @@ void RibbonGroup::addAction(QAction *act, QToolButton::ToolButtonPopupMode popMo
 }
 
 /**
- * @brief 生成并添加一个action
+ * @brief Create and add an action
  *
- * 如果不对此action做操作，RibbonGroup将管理此action
+ * If no further operation is performed on this action, RibbonGroup takes ownership of it
  *
- * @note action的父对象将设置为RibbonGroup，RibbonGroup在删除时将会删除子对象，会把这个action也删除，
- * 如果不想此action也删除，需要对action重新设置父对象
+ * @note The action's parent is set to RibbonGroup; when RibbonGroup is deleted it deletes its
+ * child objects, so this action is deleted as well. To keep the action, reparent it.
  *
- * @param text action的文字
- * @param icon action的图标
- * @param popMode 按钮的样式
- * @param rp action在group中的占位情况，默认是大图标
- * @return 返回添加的action
+ * @param text Action text
+ * @param icon Action icon
+ * @param popMode Button style
+ * @param rp How the action occupies space in the group; defaults to a large icon
+ * @return The added action
  */
 QAction *RibbonGroup::addAction(const QString &text, const QIcon &icon, QToolButton::ToolButtonPopupMode popMode,
                                 RibbonGroup::RowProportion rp)
@@ -305,10 +305,10 @@ QAction *RibbonGroup::addAction(const QString &text, const QIcon &icon, QToolBut
 }
 
 /**
- * @brief 添加一个普通菜单
+ * @brief Add a normal menu
  * @param menu
  * @param rp
- * @param popMode 菜单弹出模式，默认InstantPopup模式
+ * @param popMode Menu popup mode; defaults to InstantPopup mode
  * @return
  */
 RibbonButton *RibbonGroup::addMenu(QMenu *menu, RibbonGroup::RowProportion rp, QToolButton::ToolButtonPopupMode popMode)
@@ -338,7 +338,7 @@ RibbonButton *RibbonGroup::addSmallMenu(QMenu *menu, QToolButton::ToolButtonPopu
 }
 
 /**
- * @brief 添加一个ActionMenu
+ * @brief Add an ActionMenu
  * @param action
  * @param menu
  * @param rp
@@ -356,10 +356,11 @@ RibbonButton *RibbonGroup::addActionMenu(QAction *action, QMenu *menu, RibbonGro
 }
 
 /**
- * @brief 添加action menu,action menu是一个特殊的menu,即可点击触发action，也可弹出菜单
- * @param action 点击触发的action，在group中，图标以此action的图标为准
- * @param menu 需要弹出的menu
- * @return 返回
+ * @brief Add an action menu; an action menu is a special menu that both triggers an action on
+ * click and pops up a menu
+ * @param action The action triggered on click; in the group the icon is that of this action
+ * @param menu The menu to pop up
+ * @return
  */
 RibbonButton *RibbonGroup::addLargeActionMenu(QAction *action, QMenu *menu)
 {
@@ -367,12 +368,13 @@ RibbonButton *RibbonGroup::addLargeActionMenu(QAction *action, QMenu *menu)
 }
 
 /**
- * @brief 添加窗口
+ * @brief Add a widget
  *
  * @param w
  * @param rp
- * @return 返回action(QWidgetAction)
- * @note RibbonGroup并不会管理此窗口内存，在delete RibbonGroup时，此窗口如果父对象不是RibbonGroup将不会被删除
+ * @return Returns the action (QWidgetAction)
+ * @note RibbonGroup does not manage this widget's memory; when RibbonGroup is deleted, the widget
+ * is not deleted if its parent is not RibbonGroup
  */
 QAction *RibbonGroup::addWidget(QWidget *w, RibbonGroup::RowProportion rp)
 {
@@ -387,9 +389,9 @@ QAction *RibbonGroup::addWidget(QWidget *w, RibbonGroup::RowProportion rp)
 }
 
 /**
- * @brief 添加窗口，占用所有行
+ * @brief Add a widget that occupies all rows
  * @param w
- * @return 返回action(QWidgetAction)
+ * @return Returns the action (QWidgetAction)
  */
 QAction *RibbonGroup::addLargeWidget(QWidget *w)
 {
@@ -397,7 +399,7 @@ QAction *RibbonGroup::addLargeWidget(QWidget *w)
 }
 
 /**
- * @brief 添加窗口,占用ribbon的一行
+ * @brief Add a widget that occupies one row of the ribbon
  * @param w
  * @return
  */
@@ -407,9 +409,9 @@ QAction *RibbonGroup::addMediumWidget(QWidget *w)
 }
 
 /**
- * @brief 添加窗口,占用ribbon的一行
+ * @brief Add a widget that occupies one row of the ribbon
  * @param w
- * @return 返回action(QWidgetAction)
+ * @return Returns the action (QWidgetAction)
  */
 QAction *RibbonGroup::addSmallWidget(QWidget *w)
 {
@@ -419,7 +421,7 @@ QAction *RibbonGroup::addSmallWidget(QWidget *w)
 /**
  * @brief RibbonGroup::addGallery
  * @return
- * @note RibbonGroup将拥有RibbonGallery的管理权
+ * @note RibbonGroup takes ownership of the RibbonGallery
  */
 RibbonGallery *RibbonGroup::addGallery()
 {
@@ -432,9 +434,9 @@ RibbonGallery *RibbonGroup::addGallery()
 }
 
 /**
- * @brief 添加分割线
- * @param top 上边距，默认 6
- * @param bottom 下边距，默认 6
+ * @brief Add a separator
+ * @param top Top margin; defaults to 6
+ * @param bottom Bottom margin; defaults to 6
  */
 QAction *RibbonGroup::addSeparator(int top, int bottom)
 {
@@ -467,9 +469,10 @@ RibbonButton *RibbonGroup::ribbonButtonByIndex(int index) const
 }
 
 /**
- * @brief 从group中把action对应的button提取出来，如果action没有对应的button，就返回Q_NULLPTR
+ * @brief Extract from the group the button corresponding to an action; returns Q_NULLPTR if the
+ * action has no corresponding button
  * @param action
- * @return 如果action没有对应的button，就返回Q_NULLPTR
+ * @return Returns Q_NULLPTR if the action has no corresponding button
  */
 RibbonButton *RibbonGroup::ribbonButtonForAction(QAction *action) const
 {
@@ -509,10 +512,12 @@ bool RibbonGroup::hasOptionAction() const
 }
 
 /**
- * @brief 添加操作action，如果要去除，传入Q_NULLPTR指针即可，RibbonGroup不会对QAction的所有权进行管理
+ * @brief Add the option action; to remove it, pass a Q_NULLPTR pointer. RibbonGroup does not take
+ * ownership of the QAction
  * @param action
- * @note 要去除OptionAction直接传入Q_NULLPTR即可
- * @note RibbonGroup不对QAction的destroy进行关联，如果外部对action进行delete，需要先传入Q_NULLPTR给addOptionAction
+ * @note To remove the OptionAction, simply pass Q_NULLPTR
+ * @note RibbonGroup is not connected to the QAction's destruction; if the action is deleted
+ * externally, Q_NULLPTR must first be passed to addOptionAction
  */
 void RibbonGroup::addOptionAction(QAction *action)
 {
@@ -530,14 +535,15 @@ void RibbonGroup::addOptionAction(QAction *action)
     d->m_optionActionButton->setFixedSize(optionActionButtonSize());
     d->m_optionActionButton->setIconSize(optionActionButtonSize() - QSize(-2, -2));
     d->m_optionActionButton->connectAction(action);
-    updateGeometry();   // 通知layout进行重新布局
+    updateGeometry();   // Notify the layout to relayout
     repaint();
 }
 
 /**
- * @brief action对应的布局index，此操作一般用于移动，其他意义不大
+ * @brief The layout index corresponding to an action; this is generally used for moving and has
+ * little other use
  * @param act
- * @return 没有查到返回-1
+ * @return Returns -1 if not found
  */
 int RibbonGroup::actionIndex(QAction *act) const
 {
@@ -546,15 +552,15 @@ int RibbonGroup::actionIndex(QAction *act) const
 }
 
 /**
- * @brief 移动action
- * @param from 要移动action的位置，通过@ref actionIndex 获取
- * @param to 要移动的位置
+ * @brief Move an action
+ * @param from Position of the action to move, obtained via @ref actionIndex
+ * @param to The destination position
  */
 void RibbonGroup::moveAction(int from, int to)
 {
     Q_D(RibbonGroup);
     d->m_layout->move(from, to);
-    updateGeometry();   // 通知layout进行重新布局
+    updateGeometry();   // Notify the layout to relayout
 }
 
 RibbonGroup::GroupLayoutMode RibbonGroup::groupLayoutMode() const
@@ -604,7 +610,7 @@ QSize RibbonGroup::sizeHint() const
         QFontMetrics fm = fontMetrics();
         QSize titleSize = fm.size(Qt::TextShowMnemonic, groupName());
         if (d->m_optionActionButton) {
-            // optionActionButton的宽度需要预留
+            // Space must be reserved for the optionActionButton width
             titleSize.setWidth(titleSize.width() + d->m_optionActionButton->width() + 4);
         }
         maxWidth = qMax(maxWidth, titleSize.width());
@@ -618,8 +624,8 @@ QSize RibbonGroup::minimumSizeHint() const
 }
 
 /**
- * @brief 判断此group是否为（水平）扩展模式
- * @return 是扩展模式返回true
+ * @brief Determine whether this group is in (horizontal) expanding mode
+ * @return Returns true if in expanding mode
  */
 bool RibbonGroup::isExpanding() const
 {
@@ -629,7 +635,7 @@ bool RibbonGroup::isExpanding() const
 }
 
 /**
- * @brief 把group设置为扩展模式，此时会撑大水平区域
+ * @brief Set the group to expanding mode, which stretches the horizontal area
  * @param expanding
  */
 void RibbonGroup::setExpanding(bool expanding)
@@ -650,7 +656,7 @@ void RibbonGroup::setCanCustomize(bool b)
 }
 
 /**
- * @brief 获取大图标的高度
+ * @brief Get the height of the large icon
  * @return
  */
 int RibbonGroup::largeHeight() const
@@ -677,8 +683,9 @@ void RibbonGroup::setTitleVisible(bool visible)
 }
 
 /**
- * @brief 定义所有的 group 的标题栏高度，有别于 @sa titleHeight 此函数是静态函数，获取的是全局的高度
- * 而 @sa titleHeight 函数会根据当前标题栏是否显示来返回标题栏高度，标题栏显示时调用该函数，否则返回0
+ * @brief Define the title bar height of all groups; unlike @sa titleHeight this static function
+ * gets the global height, whereas @sa titleHeight returns the title bar height depending on
+ * whether the title bar is currently shown (0 when hidden)
  *
  * @return
  */
@@ -688,8 +695,9 @@ int RibbonGroup::groupTitleHeight()
 }
 
 /**
- * @brief 设置 group 的全局高度，此函数是个全局的影响
- * @note RibbonStyleOption 会用到 groupTitleHeight ，调用设置函数后需要手动重新计算 RibbonStyleOption 的内容,
+ * @brief Set the global group height; this function has a global effect
+ * @note RibbonStyleOption uses groupTitleHeight; after calling the setter the RibbonStyleOption
+ * contents must be recomputed manually,
  * @sa RibbonStyleOption::recalc
  * @param h
  */
@@ -731,7 +739,7 @@ void RibbonGroup::paintEvent(QPaintEvent *event)
 void RibbonGroup::resizeEvent(QResizeEvent *event)
 {
     Q_D(RibbonGroup);
-    //! 1.移动操作按钮到角落
+    //! 1. Move the option button to the corner
     if (d->m_optionActionButton) {
         if (titleVisible()) {
             d->m_optionActionButton->move(width() - d->m_optionActionButton->width() - 2,
@@ -742,25 +750,27 @@ void RibbonGroup::resizeEvent(QResizeEvent *event)
                                           height() - d->m_optionActionButton->height());
         }
     }
-    //! 2.resize后，重新设置分割线的高度
-    //! 由于分割线在布局中，只要分割线足够高就可以，不需要重新设置
+    //! 2. After resize, reset the separator height
+    //! Since the separator is in the layout, it is enough for it to be tall enough; no reset needed
     return QWidget::resizeEvent(event);
 }
 
 /**
- * @brief 处理action的事件
+ * @brief Handle action events
  *
- * 这里处理了ActionAdded，ActionChanged，ActionRemoved三个事件
+ * This handles the ActionAdded, ActionChanged and ActionRemoved events
  *
- * ActionAdded时向布局请求，添加action，布局中同时触发了 createItem 函数
- * 此函数用于生成窗口，例如QRibbonButton
+ * On ActionAdded the layout is asked to add the action, which in turn triggers the createItem
+ * function; that function creates the widget, e.g. QRibbonButton
  *
- * ActionChanged时会让布局重新计算尺寸，并向page请求重新布局，有可能page的所有要重新调整尺寸
+ * On ActionChanged the layout recomputes its sizes and asks the page to relayout; everything on
+ * the page may need to be resized
  *
- * ActionRemoved会移除布局管理的QLayoutItem，并进行内存清理，这时窗口也会隐藏，同时销毁
+ * On ActionRemoved the QLayoutItem managed by the layout is removed and memory is cleaned up; the
+ * widget is also hidden and destroyed at this point
  *
  * @param event
- * @note 所有action事件都会向page请求重新布局
+ * @note All action events ask the page to relayout
  *
  */
 void RibbonGroup::actionEvent(QActionEvent *event)
@@ -773,23 +783,23 @@ void RibbonGroup::actionEvent(QActionEvent *event)
         RibbonGroupLayout *lay = d->m_layout;
         int index = layout()->count();
         if (event->before()) {
-            // 说明是插入
+            // This is an insertion
             index = lay->indexOf(action);
             if (-1 == index) {
-                index = layout()->count();   // 找不到的时候就插入到最后
+                index = layout()->count();   // Append to the end if not found
             }
         }
         lay->insertAction(index, action, getActionRowProportionProperty(action));
-        // 由于group的尺寸发生变化，需要让page也调整
+        // The group size changed, so the page must adjust as well
         if (parentWidget()) {
             QApplication::postEvent(parentWidget(), new QEvent(QEvent::LayoutRequest));
         }
     } break;
 
     case QEvent::ActionChanged: {
-        // 让布局重新绘制
+        // Make the layout repaint
         layout()->invalidate();
-        // 由于group的尺寸发生变化，需要让page也调整
+        // The group size changed, so the page must adjust as well
         if (parentWidget()) {
             QApplication::postEvent(parentWidget(), new QEvent(QEvent::LayoutRequest));
         }
@@ -803,7 +813,7 @@ void RibbonGroup::actionEvent(QActionEvent *event)
             QLayoutItem *item = lay->takeAt(index);
             delete item;
         }
-        // 由于group的尺寸发生变化，需要让page也调整
+        // The group size changed, so the page must adjust as well
         if (parentWidget()) {
             QApplication::postEvent(parentWidget(), new QEvent(QEvent::LayoutRequest));
         }

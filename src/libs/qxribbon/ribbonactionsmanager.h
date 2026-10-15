@@ -20,26 +20,26 @@ class RibbonPage;
 class RibbonActionsManagerPrivate;
 
 /**
- * @brief 用于管理 Ribbon 的所有 Action
+ * @brief Manages all Actions of the Ribbon
  *
- * RibbonActionsManager 维护着两个表，一个是 tag（标签）对应的 Action list，
- * 一个是所有接受 RibbonActionsManager 管理的 action list。
+ * RibbonActionsManager maintains two tables: one mapping tags to action lists,
+ * and one list of all actions managed by RibbonActionsManager.
  *
- * RibbonActionsManager 的标签对应一组 actions，每个标签对应的 action 可以重复出现，
- * 但 RibbonActionsManager 维护的 action list 里只有一份 action，不会重复出现。
+ * A RibbonActionsManager tag corresponds to a group of actions; the same action may appear under multiple tags,
+ * but the action list maintained by RibbonActionsManager contains only one copy of each action, without duplicates.
  *
- * tag 用于对 action list 分组，每个 tag 的实体名字通过 @ref setTagName 进行设置，在语言变化时需要及时调用
- * setTagName 设置新的标签对应的文本。
+ * A tag groups the action list; the display name of each tag is set via @ref setTagName, which must be called
+ * in time when the language changes to set the text for the new tag.
  *
- * RibbonActionsManager 默认预设了6个常用标签见 @ref RibbonActionsManager::ActionTag ，用户自定义标签需要在
- * RibbonActionsManager::UserDefineActionTag 值的基础上进行累加。
+ * RibbonActionsManager provides six common preset tags by default, see @ref RibbonActionsManager::ActionTag;
+ * user-defined tags must be accumulated on top of the RibbonActionsManager::UserDefineActionTag value.
  *
- * @ref RibbonActionsManager::actions 函数用于提取标签管理的 action list， @ref allActions 函数返回 RibbonActionsManager
- * 管理的所有标签。
+ * The @ref RibbonActionsManager::actions function extracts the action list managed by a tag, and the @ref allActions
+ * function returns all tags managed by RibbonActionsManager.
  *
- * 通过 @ref autoRegisterActions 函数可以快速的建立 action 的管理，此函数会遍历 @ref RibbonBar 下的所有子 object，
- * 同时遍历 RibbonBar 下所有 @ref RibbonGroup
- * 添加的 action, 并给予 Page 建立 tag，正常使用用户仅需关注此 autoRegisterActions 函数即可
+ * The @ref autoRegisterActions function quickly sets up action management; it traverses all child objects under
+ * @ref RibbonBar, as well as the actions added by all @ref RibbonGroup under the RibbonBar, and builds tags for
+ * each Page. For normal usage, the user only needs to care about this autoRegisterActions function.
  *
  */
 class QX_RIBBON_EXPORT RibbonActionsManager : public QObject
@@ -47,76 +47,79 @@ class QX_RIBBON_EXPORT RibbonActionsManager : public QObject
     Q_OBJECT
 public:
     /**
-     * @brief 定义action的标签
+     * @brief Defines the tag of an action
      */
     enum ActionTag {
-        UnknowActionTag = 0,                    ///< 未知的tag
-        CommonlyUsedActionTag = 0x01,           ///< 预设tag-常用命令
-        NotInFunctionalAreaActionTag = 0x02,    ///< 预设tag-不在功能区命令
-        AutoPageDistinguishBeginTag = 0x1000,   ///< 自动按Page划分的标签起始，在 @ref autoRegisterActions 函数会用到
-        AutoPageDistinguishEndTag = 0x2000,     ///< 自动按Page划分的标签结束，在 @ref autoRegisterActions 函数会用到
-        NotInRibbonPageTag = 0x2001,            ///< 不在功能区的标签@ref autoRegisterActions
-                                                ///< 函数会遍历所有page的action以及RibbonBar下的action，如果两个
-        UserDefineActionTag = 0x8000,           ///< 自定义标签，所有用户自定义tag要大于此tag
+        UnknowActionTag = 0,                   ///< Unknown tag
+        CommonlyUsedActionTag = 0x01,          ///< Preset tag - commonly used commands
+        NotInFunctionalAreaActionTag = 0x02,   ///< Preset tag - commands not in the functional area
+        AutoPageDistinguishBeginTag =
+            0x1000,   ///< Start of tags automatically divided by Page, used by the @ref autoRegisterActions function
+        AutoPageDistinguishEndTag =
+            0x2000,   ///< End of tags automatically divided by Page, used by the @ref autoRegisterActions function
+        NotInRibbonPageTag =
+            0x2001,   ///< Tag for commands not in the functional area @ref autoRegisterActions
+                      ///< The function traverses the actions of all pages and the actions under the RibbonBar; if two
+        UserDefineActionTag = 0x8000,   ///< Custom tag; all user-defined tags must be greater than this tag
     };
 public:
     RibbonActionsManager(RibbonBar *bar);
     ~RibbonActionsManager();
 
-    // 设置tag对应的名字
+    // Sets the name corresponding to a tag
     void setTagName(int tag, const QString &name);
 
-    // 获取tag对应的名字
+    // Gets the name corresponding to a tag
     QString tagName(int tag) const;
 
-    // 移除tag，注意，这个函数非常耗时
+    // Removes a tag; note that this function is very time-consuming
     void removeTag(int tag);
 
-    // 注册action
+    // Registers an action
     bool registerAction(QAction *act, int tag, const QString &key = QString(), bool enableEmit = true);
 
-    // 取消action的注册
+    // Unregisters an action
     void unregisterAction(QAction *act, bool enableEmit = true);
 
-    // 通过tag筛选出系列action
+    // Filters the actions of a series by tag
     QList<QAction *> actions(int tag) const;
 
-    // 获取所有的标签
+    // Gets all tags
     QList<int> actionTags() const;
 
-    // 通过key获取action
+    // Gets an action by key
     QAction *action(const QString &key) const;
 
-    // 通过action找到key
+    // Finds the key by action
     QString key(QAction *act) const;
 
-    // 返回所有管理的action数
+    // Returns the number of all managed actions
     int count() const;
 
-    // 返回所有管理的actions
+    // Returns all managed actions
     QList<QAction *> allActions() const;
 
-    // 自动加载RibbonBar下的actions
+    // Automatically loads the actions under the RibbonBar
     QMap<int, RibbonPage *> autoRegisterActions(RibbonBar *bar);
 
-    // 自动加载widget下的actions
+    // Automatically loads the actions under the widget
     QSet<QAction *> autoRegisterWidgetActions(QWidget *w, int tag, bool enableEmit = false);
 
-    // 根据标题查找action
+    // Finds actions by title
     QList<QAction *> search(const QString &text);
 
-    // 清除
+    // Clears
     void clear();
 
-    // 获取ribbonbar
+    // Gets the ribbon bar
     RibbonBar *ribbonBar() const;
 
-    // 设置所有管理的action都可以编辑
+    // Makes all managed actions customizable
     void setAllActionCanCustomize(bool on = true);
 
 Q_SIGNALS:
     /**
-     * @brief 标签变化触发的信号，变化包括新增和删除
+     * @brief Signal emitted when a tag changes; changes include addition and removal
      */
     void actionTagChanged(int tag, bool isDeleted);
 

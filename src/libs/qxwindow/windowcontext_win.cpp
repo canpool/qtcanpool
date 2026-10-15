@@ -1353,7 +1353,8 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
             return true;
         }
         case WM_NCPAINT: {
-            // 边框阴影处于非客户区的范围，因此如果直接阻止非客户区的绘制，会导致边框阴影丢失
+            // The frame shadow lies within the non-client area, so directly blocking the painting of the non-client
+            // area would cause the frame shadow to be lost
 
             if (!isDwmCompositionEnabled()) {
                 // Only block WM_NCPAINT when DWM composition is disabled. If
@@ -1402,39 +1403,40 @@ bool WindowContextWin::customWindowHandler(HWND hWnd, UINT message, WPARAM wPara
 }
 bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
 {
-    // 原生Win32窗口只有顶边是在窗口内部resize的，其余三边都是在窗口
-    // 外部进行resize的，其原理是，WS_THICKFRAME这个窗口样式会在窗
-    // 口的左、右和底边添加三个透明的resize区域，这三个区域在正常状态
-    // 下是完全不可见的，它们由DWM负责绘制和控制。这些区域的宽度等于
-    // (SM_CXSIZEFRAME + SM_CXPADDEDBORDER)，高度等于
-    // (SM_CYSIZEFRAME + SM_CXPADDEDBORDER)，在100%缩放时，均等
-    // 于8像素。它们属于窗口区域的一部分，但不属于客户区，而是属于非客
-    // 户区，因此GetWindowRect获取的区域中是包含这三个resize区域的，
-    // 而GetClientRect获取的区域是不包含它们的。当把
-    // DWMWA_EXTENDED_FRAME_BOUNDS作为参数调用
-    // DwmGetWindowAttribute时，也能获取到一个窗口大小，这个大小介
-    // 于前面两者之间，暂时不知道这个数据的意义及其作用。我们在
-    // WM_NCCALCSIZE消息的处理中，已经把整个窗口都设置为客户区了，也
-    // 就是说，我们的窗口已经没有非客户区了，因此那三个透明的resize区
-    // 域，此刻也已经成为窗口客户区的一部分了，从而变得不透明了。所以
-    // 现在的resize，看起来像是在窗口内部resize，是因为原本透明的地方
-    // 现在变得不透明了，实际上，单纯从范围上来看，现在我们resize的地方，
-    // 就是普通窗口的边框外部，那三个透明区域的范围。
-    // 因此，如果我们把边框完全去掉（就是我们正在做的事情），resize就
-    // 会看起来是在内部进行，这个问题通过常规方法非常难以解决。我测试过
-    // QQ和钉钉的窗口，它们的窗口就是在外部resize，但实际上它们是通过
-    // 把窗口实际的内容，嵌入到一个完全透明的但尺寸要大一圈的窗口中实现
-    // 的，虽然看起来效果还不错，但对于此项目而言，代码和窗口结构过于复
-    // 杂，因此我没有采用此方案。然而，对于具体的软件项目而言，其做法也
-    // 不失为一个优秀的解决方案，毕竟其在大多数条件下的表现都还可以。
+    // For a native Win32 window, only the top edge is resized from inside the window; the other three edges are resized
+    // from outside the window. The reason is that the WS_THICKFRAME window style adds to the
+    // left, right and bottom edges of the window three transparent resize areas that are completely
+    // invisible in the normal state and are drawn and controlled by DWM. Their width equals
+    // (SM_CXSIZEFRAME + SM_CXPADDEDBORDER) and their height equals
+    // (SM_CYSIZEFRAME + SM_CXPADDEDBORDER); at 100% scaling both are
+    // 8 pixels. They are part of the window area, but not the client area; they belong to the non-client
+    // area. Therefore the region returned by GetWindowRect includes these three resize areas,
+    // whereas the region returned by GetClientRect does not. When
+    // DWMWA_EXTENDED_FRAME_BOUNDS is passed to
+    // DwmGetWindowAttribute, another window size can also be obtained, and this size falls
+    // between the previous two; the meaning and purpose of this data are still unknown. In
+    // our handling of the WM_NCCALCSIZE message we have already set the entire window as the client area, that
+    // is, our window no longer has a non-client area, so the three transparent resize
+    // areas have now become part of the window's client area and thus become opaque. So
+    // the current resize looks like it happens inside the window because the originally transparent places
+    // are now opaque; in fact, purely in terms of range, the place we resize now
+    // is outside the border of an ordinary window, the range of those three transparent areas.
+    // Therefore, if we remove the border completely (which is what we are doing), the resize
+    // will look like it happens inside. This problem is very hard to solve with conventional methods. I tested
+    // the windows of QQ and DingTalk; their windows do resize outside, but in fact they achieve this by
+    // embedding the actual window content into a fully transparent window that is one size larger.
+    // Although the effect looks decent, for this project the code and window structure are too
+    // complex, so I did not adopt this approach. However, for a specific software project, this method is
+    // also a good solution after all, since its behavior is acceptable under most conditions.
     //
-    // 和1.x的做法不同，现在的2.x选择了保留窗口三边，去除整个窗口顶部，
-    // 好处是保留了系统的原生边框，外观较好，且与系统结合紧密，而且resize
-    // 的表现也有很大改善，缺点是需要自行绘制顶部边框线。原本以为只能像
-    // Windows Terminal那样在WM_PAINT里搞黑魔法，但后来发现，其实只
-    // 要颜色相近，我们自行绘制一根实线也几乎能以假乱真，而且这样也不会
-    // 破坏Qt自己的绘制系统，能做到不依赖黑魔法就能实现像Windows Terminal
-    // 那样外观和功能都比较完美的自定义边框。
+    // Unlike the approach in 1.x, the current 2.x chooses to keep the three window edges and remove the entire window
+    // top; the advantage is that it keeps the system's native border, looks better and integrates closely with the
+    // system, and the resize behavior is also greatly improved; the drawback is that the top border line must be drawn
+    // manually. I originally thought it could only be done like Windows Terminal by doing black magic in WM_PAINT, but
+    // later found that actually, as long as the color is similar, drawing a solid line ourselves is almost
+    // indistinguishable from the real thing, and this also does not break Qt's own painting system, so a custom border
+    // with both appearance and functionality as complete as Windows Terminal's can be implemented without relying on
+    // black magic.
 
     // A normal Win32 window can be resized outside of it. Here is the
     // reason: the WS_THICKFRAME window style will cause a window has three
@@ -1753,38 +1755,39 @@ bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM 
     Q_UNUSED(message)
     Q_UNUSED(this)
 
-    // Windows是根据这个消息的返回值来设置窗口的客户区（窗口中真正显示的内容）
-    // 和非客户区（标题栏、窗口边框、菜单栏和状态栏等Windows系统自行提供的部分
-    // ，不过对于Qt来说，除了标题栏和窗口边框，非客户区基本也都是自绘的）的范
-    // 围的，lParam里存放的就是新客户区的几何区域，默认是整个窗口的大小，正常
-    // 的程序需要修改这个参数，告知系统窗口的客户区和非客户区的范围（一般来说可
-    // 以完全交给Windows，让其自行处理，使用默认的客户区和非客户区），因此如果
-    // 我们不修改lParam，就可以使客户区充满整个窗口，从而去掉标题栏和窗口边框
-    // （因为这些东西都被客户区给盖住了。但边框阴影也会因此而丢失，不过我们会使
-    // 用其他方式将其带回，请参考其他消息的处理，此处不过多提及）。但有个情况要
-    // 特别注意，那就是窗口最大化后，窗口的实际尺寸会比屏幕的尺寸大一点，从而使
-    // 用户看不到窗口的边界，这样用户就不能在窗口最大化后调整窗口的大小了（虽然
-    // 这个做法听起来特别奇怪，但Windows确实就是这样做的），因此如果我们要自行
-    // 处理窗口的非客户区，就要在窗口最大化后，将窗口边框的宽度和高度（一般是相
-    // 等的）从客户区裁剪掉，否则我们窗口所显示的内容就会超出屏幕边界，显示不全。
-    // 如果用户开启了任务栏自动隐藏，在窗口最大化后，还要考虑任务栏的位置。因为
-    // 如果窗口最大化后，其尺寸和屏幕尺寸相等（因为任务栏隐藏了，所以窗口最大化
-    // 后其实是充满了整个屏幕，变相的全屏了），Windows会认为窗口已经进入全屏的
-    // 状态，从而导致自动隐藏的任务栏无法弹出。要避免这个状况，就要使窗口的尺寸
-    // 小于屏幕尺寸。我下面的做法参考了火狐、Chromium和Windows Terminal
-    // 如果没有开启任务栏自动隐藏，是不存在这个问题的，所以要先进行判断。
-    // 一般情况下，*result设置为0（相当于DefWindowProc的返回值为0）就可以了，
-    // 根据MSDN的说法，返回0意为此消息已经被程序自行处理了，让Windows跳过此消
-    // 息，否则Windows会添加对此消息的默认处理，对于当前这个消息而言，就意味着
-    // 标题栏和窗口边框又会回来，这当然不是我们想要的结果。根据MSDN，当wParam
-    // 为FALSE时，只能返回0，但当其为TRUE时，可以返回0，也可以返回一个WVR_常
-    // 量。根据Chromium的注释，当存在非客户区时，如果返回WVR_REDRAW会导致子
-    // 窗口/子控件出现奇怪的bug（自绘控件错位），并且Lucas在Windows 10
-    // 上成功复现，说明这个bug至今都没有解决。我查阅了大量资料，发现唯一的解决
-    // 方案就是返回0。但如果不存在非客户区，且wParam为TRUE，最好返回
-    // WVR_REDRAW，否则窗口在调整大小可能会产生严重的闪烁现象。
-    // 虽然对大多数消息来说，返回0都代表让Windows忽略此消息，但实际上不同消息
-    // 能接受的返回值是不一样的，请注意自行查阅MSDN。
+    // Windows uses the return value of this message to set the range of the window's client area (the content actually
+    // displayed in the window) and non-client area (the parts provided by the Windows system itself, such as the title
+    // bar, window border, menu bar and status bar — though for Qt, apart from the title bar and window border, the
+    // non-client area is basically all custom-drawn). lParam holds the geometry of the new client area, which by
+    // default is the size of the whole window. A normal program needs to modify this parameter to tell the system the
+    // range of the window's client and non-client areas (generally it can be left entirely to Windows to handle by
+    // itself, using the default client and non-client areas). Therefore, if we do not modify lParam, the client area
+    // can fill the whole window, thereby removing the title bar and window border (because these things are covered by
+    // the client area. But the frame shadow will also be lost because of this; we will bring it back by other means,
+    // please refer to the handling of other messages, which is not elaborated here). But one situation needs special
+    // attention: after the window is maximized, the actual window size is a bit larger than the screen size, so that
+    // the user cannot see the window boundary, and thus cannot resize the window after it is maximized (although
+    // this behavior sounds very strange, Windows really does it this way). So if we want to handle the
+    // window's non-client area ourselves, we must clip the width and height of the window border (which are usually
+    // equal) from the client area after maximization, otherwise the content displayed by our window will exceed the
+    // screen boundary and be incompletely displayed. If the user has enabled taskbar auto-hide, the position of the
+    // taskbar must also be considered after the window is maximized. Because if the window size equals the screen size
+    // after maximization (since the taskbar is hidden, a maximized window actually fills the whole screen, effectively
+    // becoming fullscreen), Windows will consider the window to have entered fullscreen state, so the auto-hidden
+    // taskbar cannot pop up. To avoid this, the window size must be made smaller than the screen size. My approach
+    // below references Firefox, Chromium and Windows Terminal. If taskbar auto-hide is not enabled, this problem does
+    // not exist, so a check must be made first. In general, setting *result to 0 (equivalent to DefWindowProc returning
+    // 0) is enough. According to MSDN, returning 0 means this message has been handled by the program itself, telling
+    // Windows to skip this message; otherwise Windows will add default handling for this message, which for the current
+    // message means the title bar and window border will come back, which is of course not the result we want.
+    // According to MSDN, when wParam is FALSE, only 0 can be returned, but when it is TRUE, either 0 or a WVR_ constant
+    // can be returned. According to Chromium's comments, when a non-client area exists, returning WVR_REDRAW causes
+    // child windows/child controls to exhibit strange bugs (custom-drawn controls misplaced), and Lucas successfully
+    // reproduced it on Windows 10, indicating this bug has not been fixed to this day. I consulted a lot of material
+    // and found the only solution is to return 0. But if no non-client area exists and wParam is TRUE, it is best to
+    // return WVR_REDRAW, otherwise the window may exhibit severe flicker when resizing. Although for most messages
+    // returning 0 means telling Windows to ignore this message, in fact different messages accept different return
+    // values, please consult MSDN yourself.
 
     // Sent when the size and position of a window's client area must be
     // calculated. By processing this message, an application can

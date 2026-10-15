@@ -15,13 +15,13 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonGroupLayoutPrivate;
 
 /**
- * @brief 是对 group 所有子窗口的抽象，参考 qt 的 toolbar
+ * @brief An abstraction of all child widgets of a group, modeled after the Qt toolbar
  *
- * 参考 qt 的 toolbar，group 所有子窗口内容都通过 QAction 进行抽象，包括 gallery 这些窗口，也是通过 QAction 进行抽象
- * QAction 最终会转换为 RibbonGroupItem，每个 RibbonGroupItem 都含有一个 widget，RibbonGroup 的布局就基于
- * RibbonGroupItem
+ * Following the Qt toolbar, all child widget content of a group is abstracted through QAction,
+ * including widgets such as the gallery; QAction is ultimately converted into a RibbonGroupItem,
+ * each of which contains a widget, and the RibbonGroup layout is based on RibbonGroupItem
  *
- * 无窗口的 action 会在内部生成一个 RibbonButton
+ * An action without a widget creates a RibbonButton internally
  */
 class RibbonGroupItem : public QWidgetItem
 {
@@ -29,24 +29,26 @@ public:
     RibbonGroupItem(QWidget *widget);
     bool isEmpty() const Q_DECL_OVERRIDE;
 
-    short rowIndex;       ///< 记录当前item属于第几行，hide模式下为-1
-    int columnIndex;      ///< 记录当前item属于第几列，hide模式下为-1
-    QRect willGeometry;   ///< 在调用RibbonGroupLayout::updateGeomArray会更新该成员，
-                          ///< 实际设置的时候会传给QWidgetItem::setGeometry设置Geometry
-    QAction *action;      ///< 记录action，参考QToolBarLayoutItem
-    bool customWidget;    ///< 对于没有窗口的action，实际也会有一个RibbonButton，在销毁时要delete掉
-    RibbonGroup::RowProportion
-        rowProportion;   ///< 行的占比，ribbon中有large，medium和small三种占比,见 @ref RibbonGroup::RowProportion
+    short rowIndex;       ///< Records which row the current item belongs to; -1 in hide mode
+    int columnIndex;      ///< Records which column the current item belongs to; -1 in hide mode
+    QRect willGeometry;   ///< Updated when RibbonGroupLayout::updateGeomArray is called,
+                          ///< passed to QWidgetItem::setGeometry to set the geometry when applied
+    QAction *action;      ///< Records the action; see QToolBarLayoutItem
+    bool customWidget;    ///< For an action without a widget a RibbonButton still exists and must be deleted on
+                          ///< destruction
+    RibbonGroup::RowProportion rowProportion;   ///< Row proportion; ribbon has three kinds, large, medium and small,
+                                                ///< see @ref RibbonGroup::RowProportion
 };
 
 /**
- * @brief 针对 RibbonGroup 的布局
+ * @brief Layout for RibbonGroup
  *
- * RibbonGroupLayout 实际是一个列布局，每一列有 2~3 行，看窗口定义占几行
+ * RibbonGroupLayout is actually a column layout where each column has 2~3 rows, depending on how
+ * many rows the widgets are defined to occupy
  *
- * 核心函数： createItem （把 QAction 转换成布局项 RibbonGroupItem）
+ * Core function: createItem (converts a QAction into the layout item RibbonGroupItem)
  *
- * @note QLayout::contentsMargins 函数不会起作用, 如果要设置 contentsMargins，使用 @sa setGroupContentsMargins
+ * @note QLayout::contentsMargins has no effect; to set contentsMargins use @sa setGroupContentsMargins
  */
 class RibbonGroupLayout : public QLayout
 {

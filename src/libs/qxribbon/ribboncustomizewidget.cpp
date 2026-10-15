@@ -43,8 +43,10 @@ QX_RIBBON_BEGIN_NAMESPACE
 
 bool QxRibbonCustomizeDataSetToXml(QXmlStreamWriter *xml, const QList<RibbonCustomizeData> &cds, bool force = false)
 {
-    // 如果xml中之前记录了添加页的定制数据，当再次删除该页时，经过simplify后，cds被抵消为空
-    // 此时如果因为cds为空不写，那么xml中始终保留一份添加的定制数据，所以增加force参数，当cds为空，old数据非空时，应该强制写
+    // If the xml previously recorded customization data that added a page, and that page is later removed,
+    // after simplify the cds are cancelled out to empty. In that case, if we skip writing because cds is empty,
+    // the xml would keep a stale add entry forever, so a force parameter is added: when cds is empty but the old
+    // data is not, the write must be forced
     if (cds.size() == 0 && !force) {
         return false;
     }
@@ -70,7 +72,7 @@ bool QxRibbonCustomizeDataSetToXml(QXmlStreamWriter *xml, const QList<RibbonCust
 
 QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml, RibbonActionsManager *mgr)
 {
-    // 先找到"qx-ribbon-customize"
+    // First locate "qx-ribbon-customize"
     while (!xml->atEnd()) {
 #ifdef QX_RIBBON_DEBUG
         qDebug() << "name:" << xml->name() << " qualifiedName:" << xml->qualifiedName();
@@ -82,26 +84,26 @@ QList<RibbonCustomizeData> QxRibbonCustomizeDataGetFromXml(QXmlStreamReader *xml
     }
     QList<RibbonCustomizeData> res;
 
-    // 开始遍历"customize-data"
+    // Start traversing "customize-data"
     while (!xml->atEnd()) {
         if (xml->isStartElement() && (xml->name().toString() == "customize-data")) {
-            // 首先读取属性type
+            // First read the type attribute
             RibbonCustomizeData data;
             QXmlStreamAttributes attrs = xml->attributes();
             if (!attrs.hasAttribute("type")) {
-                // 说明异常，跳过这个
+                // Unexpected; skip this one
                 xml->readNextStartElement();
                 continue;
             }
             bool isOk = false;
             int v = xml->attributes().value("type").toInt(&isOk);
             if (!isOk) {
-                // 说明异常，跳过这个
+                // Unexpected; skip this one
                 xml->readNextStartElement();
                 continue;
             }
             data.setActionType(static_cast<RibbonCustomizeData::ActionType>(v));
-            // 开始读取子对象
+            // Start reading the child fields
             if (attrs.hasAttribute("index")) {
                 v = xml->attributes().value("index").toInt(&isOk);
                 if (isOk) {
@@ -147,7 +149,7 @@ int QxRibbonCustomizeDataApply(QList<RibbonCustomizeData> &cds, RibbonBar *bar)
 }
 
 /**
- * @brief 构建RibbonCustomizeWidget的Ui
+ * @brief Builds the Ui of RibbonCustomizeWidget
  */
 class RibbonCustomizeWidgetUi
 {
@@ -285,8 +287,8 @@ public:
         treeViewResult->setObjectName(QStringLiteral("treeViewResult"));
         treeViewResult->setHeaderHidden(true);
         treeViewResult->setSelectionMode(QAbstractItemView::SingleSelection);
-        treeViewResult->setAnimated(true);                                    // 支持动画
-        treeViewResult->setEditTriggers(QAbstractItemView::NoEditTriggers);   // 不允许直接在item上重命名
+        treeViewResult->setAnimated(true);                                    // Enables animation
+        treeViewResult->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Disallows renaming directly on the item
 
         verticalLayoutResult->addWidget(treeViewResult);
 
@@ -353,33 +355,34 @@ public:
         customizeWidget->setWindowTitle(
             QApplication::translate("RibbonCustomizeWidget", "Customize Widget", Q_NULLPTR));
         labelSelectAction->setText(
-            QApplication::translate("RibbonCustomizeWidget", "Please Select", Q_NULLPTR));   // cn:请选择
+            QApplication::translate("RibbonCustomizeWidget", "Please Select", Q_NULLPTR));   // cn: please select
         lineEditSearchAction->setInputMask(QString());
         lineEditSearchAction->setText(QString());
         lineEditSearchAction->setPlaceholderText(
-            QApplication::translate("RibbonCustomizeWidget", "Find Command", Q_NULLPTR));                // cn:查找命令
-        pushButtonAdd->setText(QApplication::translate("RibbonCustomizeWidget", "Add >>", Q_NULLPTR));   // cn:添加 >>
+            QApplication::translate("RibbonCustomizeWidget", "Find Command", Q_NULLPTR));   // cn: find command
+        pushButtonAdd->setText(QApplication::translate("RibbonCustomizeWidget", "Add >>", Q_NULLPTR));   // cn: add >>
         pushButtonDelete->setText(
-            QApplication::translate("RibbonCustomizeWidget", "<< Remove", Q_NULLPTR));   // cn:<< 移除
-        labelCustomize->setText(
-            QApplication::translate("RibbonCustomizeWidget", "Customize the Ribbon", Q_NULLPTR));   // cn:自定义功能区
+            QApplication::translate("RibbonCustomizeWidget", "<< Remove", Q_NULLPTR));   // cn: << remove
+        labelCustomize->setText(QApplication::translate("RibbonCustomizeWidget", "Customize the Ribbon",
+                                                        Q_NULLPTR));   // cn: customize the ribbon
         radioButtonMainPage->setText(
-            QApplication::translate("RibbonCustomizeWidget", "Main Page", Q_NULLPTR));   // cn:主要页
+            QApplication::translate("RibbonCustomizeWidget", "Main Page", Q_NULLPTR));   // cn: main page
         radioButtonAllPage->setText(
-            QApplication::translate("RibbonCustomizeWidget", "All Page", Q_NULLPTR));   // cn:所有页
+            QApplication::translate("RibbonCustomizeWidget", "All Page", Q_NULLPTR));   // cn: all pages
         pushButtonNewPage->setText(
-            QApplication::translate("RibbonCustomizeWidget", "New Page", Q_NULLPTR));   // cn:新建页
+            QApplication::translate("RibbonCustomizeWidget", "New Page", Q_NULLPTR));   // cn: new page
         pushButtonNewGroup->setText(
-            QApplication::translate("RibbonCustomizeWidget", "New Group", Q_NULLPTR));                      // cn:新建组
-        pushButtonRename->setText(QApplication::translate("RibbonCustomizeWidget", "Rename", Q_NULLPTR));   // cn:重命名
-        pushButtonReset->setText(QApplication::translate("RibbonCustomizeWidget", "reset", Q_NULLPTR));     // cn:重置
+            QApplication::translate("RibbonCustomizeWidget", "New Group", Q_NULLPTR));   // cn: new group
+        pushButtonRename->setText(
+            QApplication::translate("RibbonCustomizeWidget", "Rename", Q_NULLPTR));                       // cn: rename
+        pushButtonReset->setText(QApplication::translate("RibbonCustomizeWidget", "reset", Q_NULLPTR));   // cn: reset
         labelProportion->setText(
-            QApplication::translate("RibbonCustomizeWidget", "proportion:", Q_NULLPTR));   // cn:比例
+            QApplication::translate("RibbonCustomizeWidget", "proportion:", Q_NULLPTR));   // cn: proportion
     }   // retranslateUi
 };
 
 /**
- * @brief 管理RibbonCustomizeWidget的业务逻辑
+ * @brief Manages the business logic of RibbonCustomizeWidget
  */
 class RibbonCustomizeWidgetPrivate
 {
@@ -388,39 +391,39 @@ public:
 
     void updateModel();
 
-    // 创建一个随机id，形如：pre_QDateTime::currentMSecsSinceEpoch_suf
+    // Creates a random id in the form: pre_QDateTime::currentMSecsSinceEpoch_suf
     static QString makeRandomObjName(const QString &pre);
 
     int itemLevel(QStandardItem *item) const;
 
     bool isCustomizeItem(QStandardItem *item) const;
 
-    // 把item转换为page
+    // Converts the item to a page
     RibbonPage *itemToPage(QStandardItem *item) const;
 
-    // 把item转换为RibbonGroup
+    // Converts the item to a RibbonGroup
     RibbonGroup *itemToGroup(QStandardItem *item) const;
 
-    // 获取item对应的object name
+    // Gets the object name corresponding to the item
     QString itemObjectName(QStandardItem *item) const;
 
-    // 判断是否可以自定义
+    // Checks whether customization is allowed
     bool isItemCanCustomize(QStandardItem *item) const;
 
-    // 从item转为action
+    // Converts the item to an action
     QAction *itemToAction(QStandardItem *item) const;
 public:
     RibbonCustomizeWidget *q;
-    RibbonCustomizeWidget::RibbonTreeShowType m_showType;   ///< 显示类型
-    RibbonBar *m_ribbonBar;                                 ///< 保存RibbonBar的指针
-    RibbonActionsManager *m_actionMgr;                      ///< action管理器
-    RibbonActionsManagerModel *m_acionModel;                ///< action管理器对应的model
-    QStandardItemModel *m_ribbonModel;                      ///< 用于生成ribbon的树
-    int m_customizePageCount;                               ///< 记录自定义Page的个数
-    int m_customizeGroupCount;                              ///< 记录自定义Group的个数
+    RibbonCustomizeWidget::RibbonTreeShowType m_showType;   ///< Display type
+    RibbonBar *m_ribbonBar;                                 ///< Holds the RibbonBar pointer
+    RibbonActionsManager *m_actionMgr;                      ///< Action manager
+    RibbonActionsManagerModel *m_acionModel;                ///< Model corresponding to the action manager
+    QStandardItemModel *m_ribbonModel;                      ///< Tree used to build the ribbon
+    int m_customizePageCount;                               ///< Records the number of customized pages
+    int m_customizeGroupCount;                              ///< Records the number of customized groups
 
-    QList<RibbonCustomizeData> m_customizeDatas;      ///< 记录所有的自定义动作
-    QList<RibbonCustomizeData> m_oldCustomizeDatas;   ///< 记录旧的自定义动作
+    QList<RibbonCustomizeData> m_customizeDatas;      ///< Records all customization actions
+    QList<RibbonCustomizeData> m_oldCustomizeDatas;   ///< Records the old customization actions
 };
 
 RibbonCustomizeWidgetPrivate::RibbonCustomizeWidgetPrivate(RibbonCustomizeWidget *p)
@@ -446,7 +449,7 @@ void RibbonCustomizeWidgetPrivate::updateModel()
 
     for (RibbonPage *page : std::as_const(pages)) {
         if ((m_showType == RibbonCustomizeWidget::ShowMainPage) && page->isPageContext()) {
-            // 如果是只显示主内容，如果是上下文标签就忽略
+            // If only the main content is shown, ignore context tabs
             continue;
         }
         if (page->objectName().isEmpty()) {
@@ -459,10 +462,10 @@ void RibbonCustomizeWidgetPrivate::updateModel()
             pageSI->setText(page->windowTitle());
         }
         if (page->isCanCustomize() && !page->isPageContext()) {
-            // 上下文标签不做显示隐藏处理
+            // Context tabs are not handled for show/hide
             pageSI->setCheckable(true);
             pageSI->setCheckState(ribbonbar->isPageVisible(page) ? Qt::Checked : Qt::Unchecked);
-            pageSI->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 标记这个是可以自定义的
+            pageSI->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Marks this as customizable
         }
         pageSI->setData(0, RibbonCustomizeWidget::LevelRole);
         pageSI->setData(QVariant::fromValue<qintptr>(qintptr(page)), RibbonCustomizeWidget::PointerRole);
@@ -475,7 +478,7 @@ void RibbonCustomizeWidgetPrivate::updateModel()
             grpSI->setData(1, RibbonCustomizeWidget::LevelRole);
             grpSI->setData(QVariant::fromValue<qintptr>(qintptr(grp)), RibbonCustomizeWidget::PointerRole);
             if (grp->isCanCustomize()) {
-                grpSI->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 标记这个是可以自定义的
+                grpSI->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Marks this as customizable
             }
             pageSI->appendRow(grpSI);
             const QList<RibbonGroupItem *> &goupItems = grp->d_ptr->ribbonGroupItems();
@@ -485,22 +488,22 @@ void RibbonCustomizeWidgetPrivate::updateModel()
                 }
                 QStandardItem *stdItem = new QStandardItem();
                 if (grpItem->customWidget) {
-                    // 如果是自定义窗口
+                    // Custom widget
                     if (grpItem->widget()->windowTitle().isEmpty() /* && grpItem->widget()->windowIcon().isNull()*/) {
                         delete stdItem;
-                        continue;   // 如果窗口啥也没有，就跳过
+                        continue;   // Skip if the widget has nothing
                     }
                     stdItem->setText(grpItem->widget()->windowTitle());
                     stdItem->setIcon(grpItem->widget()->windowIcon());
                     if (RibbonCustomizeData::isCanCustomize(grpItem->widget())) {
-                        stdItem->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 标记这个是可以自定义的
+                        stdItem->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Marks this as customizable
                     }
                 } else {
-                    // 不是自定义，说明是action
+                    // Not customized, so it is an action
                     stdItem->setText(grpItem->action->text());
                     stdItem->setIcon(grpItem->action->icon());
                     if (RibbonCustomizeData::isCanCustomize(grpItem->action)) {
-                        stdItem->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 标记这个是可以自定义的
+                        stdItem->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Marks this as customizable
                     }
                 }
                 stdItem->setData(2, RibbonCustomizeWidget::LevelRole);
@@ -513,8 +516,8 @@ void RibbonCustomizeWidgetPrivate::updateModel()
 }
 
 /**
- * @brief 创建一个随机id，形如：pre_QDateTime::currentMSecsSinceEpoch
- * @param pre 前缀
+ * @brief Creates a random id in the form: pre_QDateTime::currentMSecsSinceEpoch
+ * @param pre Prefix
  * @return
  */
 QString RibbonCustomizeWidgetPrivate::makeRandomObjName(const QString &pre)
@@ -523,7 +526,7 @@ QString RibbonCustomizeWidgetPrivate::makeRandomObjName(const QString &pre)
 }
 
 /**
- * @brief 获取item的level
+ * @brief Gets the level of the item
  * @param item
  * @return
  */
@@ -533,7 +536,7 @@ int RibbonCustomizeWidgetPrivate::itemLevel(QStandardItem *item) const
 }
 
 /**
- * @brief 判断itemn为自定义的item，自定义的item都带有CustomizeRole角色
+ * @brief Checks whether the item is a customized item; customized items all carry the CustomizeRole role
  * @param item
  * @return
  */
@@ -546,9 +549,9 @@ bool RibbonCustomizeWidgetPrivate::isCustomizeItem(QStandardItem *item) const
 }
 
 /**
- * @brief 把item转换为page
+ * @brief Converts the item to a page
  * @param item
- * @return无法转换返回Q_NULLPTR
+ * @return Returns Q_NULLPTR if it cannot be converted
  */
 RibbonPage *RibbonCustomizeWidgetPrivate::itemToPage(QStandardItem *item) const
 {
@@ -563,9 +566,9 @@ RibbonPage *RibbonCustomizeWidgetPrivate::itemToPage(QStandardItem *item) const
 }
 
 /**
- * @brief 把item转换为group
+ * @brief Converts the item to a group
  * @param item
- * @return 无法转换返回Q_NULLPTR
+ * @return Returns Q_NULLPTR if it cannot be converted
  */
 RibbonGroup *RibbonCustomizeWidgetPrivate::itemToGroup(QStandardItem *item) const
 {
@@ -580,19 +583,19 @@ RibbonGroup *RibbonCustomizeWidgetPrivate::itemToGroup(QStandardItem *item) cons
 }
 
 /**
- * @brief 获取item对应的objectname
+ * @brief Gets the object name corresponding to the item
  * @param item
- * @return 如果无法获取，返回一个空的QString
+ * @return Returns an empty QString if it cannot be obtained
  */
 QString RibbonCustomizeWidgetPrivate::itemObjectName(QStandardItem *item) const
 {
     QString objName;
 
     if (isCustomizeItem(item)) {
-        // 说明是自定义的
+        // Indicates a customized item
         objName = item->data(RibbonCustomizeWidget::CustomizeObjNameRole).toString();
     } else {
-        // 说明这个是非自定义的
+        // Indicates a non-customized item
         int level = itemLevel(item);
         if (0 == level) {
             RibbonPage *page = itemToPage(item);
@@ -610,7 +613,7 @@ QString RibbonCustomizeWidgetPrivate::itemObjectName(QStandardItem *item) const
 }
 
 /**
- * @brief 判断item是否可自定义
+ * @brief Checks whether the item can be customized
  * @param item
  * @return
  */
@@ -628,7 +631,7 @@ bool RibbonCustomizeWidgetPrivate::isItemCanCustomize(QStandardItem *item) const
 }
 
 /**
- * @brief 从item 转为action
+ * @brief Converts the item to an action
  * @param item
  * @return
  */
@@ -637,8 +640,8 @@ QAction *RibbonCustomizeWidgetPrivate::itemToAction(QStandardItem *item) const
     if (2 != itemLevel(item)) {
         return Q_NULLPTR;
     }
-    // 这里要非常注意，RibbonCustomizeWidget::CustomizeRole为true时，说明这个是自定义的内容，
-    // 这时PointerRole里存放的是action指针，不是RibbonGroupItem
+    // Note carefully: when RibbonCustomizeWidget::CustomizeRole is true, this is customized content,
+    // and PointerRole then stores an action pointer, not a RibbonGroupItem
     QAction *act = Q_NULLPTR;
     if (item->data(RibbonCustomizeWidget::CustomizeRole).toBool()) {
         act = reinterpret_cast<QAction *>(item->data(RibbonCustomizeWidget::PointerRole).value<qintptr>());
@@ -654,9 +657,9 @@ QAction *RibbonCustomizeWidgetPrivate::itemToAction(QStandardItem *item) const
 
 /**
  * @brief RibbonCustomizeWidget::RibbonCustomizeWidget
- * @param ribbonBar 传入需要管理的ribbonBar指针
- * @param parent 用于界面生成的parent
- * @param f 同QWidget::QWidget的第二个参数
+ * @param ribbonBar The ribbonBar pointer to be managed
+ * @param parent The parent used for UI generation
+ * @param f Same as the second parameter of QWidget::QWidget
  */
 RibbonCustomizeWidget::RibbonCustomizeWidget(RibbonBar *ribbonBar, QWidget *parent, Qt::WindowFlags f)
     : QWidget(parent, f)
@@ -700,7 +703,7 @@ void RibbonCustomizeWidget::initConnection()
 }
 
 /**
- * @brief 设置action管理器
+ * @brief Sets up the action manager
  * @param mgr
  */
 void RibbonCustomizeWidget::setupActionsManager(RibbonActionsManager *mgr)
@@ -713,7 +716,7 @@ void RibbonCustomizeWidget::setupActionsManager(RibbonActionsManager *mgr)
     }
     d->m_actionMgr = mgr;
     d->m_acionModel->setupActionsManager(mgr);
-    // 更新左边复选框
+    // Updates the combo box on the left
     ui->comboBoxActionIndex->clear();
     const QList<int> tags = mgr->actionTags();
     for (int tag : tags) {
@@ -722,7 +725,7 @@ void RibbonCustomizeWidget::setupActionsManager(RibbonActionsManager *mgr)
 }
 
 /**
- * @brief 根据当前的radiobutton选项来更新model
+ * @brief Updates the model according to the current radio button option
  */
 void RibbonCustomizeWidget::updateModel()
 {
@@ -741,7 +744,7 @@ void RibbonCustomizeWidget::updateModel()
 }
 
 /**
- * @brief 更新model
+ * @brief Updates the model
  */
 void RibbonCustomizeWidget::updateModel(RibbonTreeShowType type)
 {
@@ -750,18 +753,18 @@ void RibbonCustomizeWidget::updateModel(RibbonTreeShowType type)
 }
 
 /**
- * @brief 应用所有设定
+ * @brief Applies all settings
  *
- * 先apply再simplify，保证操作都被应用到。
+ * Apply first, then simplify, to ensure all operations are applied.
  *
- * 如果先simplify后apply会存在如下问题：
- * 比如：
- *   1.先添加一个元素，执行apply，元素被添加到ribbonBar
- *   2.接着删除该元素，执行apply，由于先simplify，那么添加和删除相互抵消，
- *     再apply时，元素将无法从ribbonBar中删除
+ * If simplify runs before apply, the following problem occurs:
+ * for example:
+ *   1. First add an element and apply; the element is added to the ribbonBar
+ *   2. Then remove that element and apply; since simplify runs first, the add and remove cancel each other out,
+ *      so on apply the element cannot be removed from the ribbonBar
  *
- * @return 应用成功返回true
- * @note 所有设定有一个应用成功都会返回true
+ * @return Returns true on success
+ * @note Returns true if any one of the settings is applied successfully
  */
 bool RibbonCustomizeWidget::apply()
 {
@@ -771,41 +774,39 @@ bool RibbonCustomizeWidget::apply()
 }
 
 /**
- * @brief 转换为xml
+ * @brief Converts to xml
  *
- * 此函数仅会写element，不会写document相关内容，因此如果需要写document，
- * 需要在此函数前调用QXmlStreamWriter::writeStartDocument(),在此函数后调用QXmlStreamWriter::writeEndDocument()
+ * This function only writes elements and does not write document-related content.
+ * Therefore, to write a document, call QXmlStreamWriter::writeStartDocument() before this
+ * function and QXmlStreamWriter::writeEndDocument() after it.
  *
- * @note 注意，在传入QXmlStreamWriter之前，需要设置编码为utf-8:xml->setCodec("utf-8");
- * @note 由于QXmlStreamWriter在QString作为io时，是不支持编码的，而此又无法保证自定义过程不出现中文字符，
- * 因此，QXmlStreamWriter不应该通过QString进行构造，如果需要用到string，也需要通过QByteArray构造，如：
+ * @note Before passing in the QXmlStreamWriter, set the encoding to utf-8: xml->setCodec("utf-8");
+ * @note Since QXmlStreamWriter does not support encoding when a QString is used as the IO device,
+ * and the customization process cannot be guaranteed to be free of Chinese characters,
+ * QXmlStreamWriter should not be constructed from a QString; if a string is needed, construct it from a QByteArray,
+ * e.g.:
  * @code
- * RibbonCustomizeDialog dlg(this);//this为RibbonMainWindow的窗口
+ * RibbonCustomizeDialog dlg(this);//this is the window of RibbonMainWindow
  * dlg.setupActionsManager(m_actMgr);
  * if (RibbonCustomizeDialog::Accepted == dlg.exec()) {
  *    dlg.apply();
  *    QByteArray str;
- *    QXmlStreamWriter xml(&str);//QXmlStreamWriter不建议通过QString构造，遇到中文会异常
- *    xml.setAutoFormatting(true);
- *    xml.setAutoFormattingIndent(2);
- *    xml.setCodec("utf-8");//在writeStartDocument之前指定编码
- *    xml.writeStartDocument();
- *    bool isOk = dlg.toXml(&xml);
- *    xml.writeEndDocument();
- *    if (isOk) {
+ *    QXmlStreamWriter xml(&str);//QXmlStreamWriter should not be constructed from a QString; it fails with Chinese
+ * characters xml.setAutoFormatting(true); xml.setAutoFormattingIndent(2); xml.setCodec("utf-8");//Specify the encoding
+ * before writeStartDocument xml.writeStartDocument(); bool isOk = dlg.toXml(&xml); xml.writeEndDocument(); if (isOk) {
  *        QFile f("customize.xml");
  *        if (f.open(QIODevice::ReadWrite|QIODevice::Text|QIODevice::Truncate)) {
  *            QTextStream s(&f);
- *            s.setCodec("utf-8");//指定编码输出
+ *            s.setCodec("utf-8");//Specify the encoding for output
  *            s << str;
  *            s.flush();
  *        }
- *        m_edit->append("write xml:");//m_edit的定义为：QTextEdit *m_edit;
+ *        m_edit->append("write xml:");//m_edit is defined as: QTextEdit *m_edit;
  *        m_edit->append(str);
  *    }
  * }
  * @endcode
- * @return 如果出现异常，返回false,如果没有自定义数据也会返回false
+ * @return Returns false on exception; also returns false when there is no customization data
  * @see QxRibbonCustomizeDataSetToXml
  */
 bool RibbonCustomizeWidget::toXml(QXmlStreamWriter *xml) const
@@ -818,7 +819,7 @@ bool RibbonCustomizeWidget::toXml(QXmlStreamWriter *xml) const
 }
 
 /**
- * @brief 把配置写入文件中
+ * @brief Writes the configuration to a file
  * @param xmlpath
  * @return
  */
@@ -833,7 +834,7 @@ bool RibbonCustomizeWidget::toXml(const QString &xmlpath) const
     xml.setAutoFormatting(true);
     xml.setAutoFormattingIndent(2);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)   // QXmlStreamWriter always encodes XML in UTF-8.
-    xml.setCodec("utf-8");                   // 在writeStartDocument之前指定编码
+    xml.setCodec("utf-8");                   // Specify the encoding before writeStartDocument
 #endif
     xml.writeStartDocument();
     bool isOK = toXml(&xml);
@@ -844,11 +845,11 @@ bool RibbonCustomizeWidget::toXml(const QString &xmlpath) const
 }
 
 /**
- * @brief 从xml中加载QList<RibbonCustomizeData>
+ * @brief Loads QList<RibbonCustomizeData> from xml
  *
- * 对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
+ * For file-based settings, call this before showing the dialog to ensure correct recording of stacked settings
  * @param xml
- * @note 此函数要在@ref setupActionsManager 函数之后调用
+ * @note This function must be called after the @ref setupActionsManager function
  */
 void RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml)
 {
@@ -857,13 +858,14 @@ void RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml)
 }
 
 /**
- * @brief 从xml中加载QList<RibbonCustomizeData>
+ * @brief Loads QList<RibbonCustomizeData> from xml
  *
- * 对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
+ * For file-based settings, call this before showing the dialog to ensure correct recording of stacked settings
  * @param xmlpath
- * @note 此函数要在@ref setupActionsManager 函数之后调用
- * @note 如果程序启动后加载了自定义配置，再调用此窗口时需要调用此函数，把原来的配置加载进来，
- * 在生成新动作时会把旧动作保存，但在调用applys时不会调用此加载的动作
+ * @note This function must be called after the @ref setupActionsManager function
+ * @note If the application has loaded a custom configuration at startup, this function must be called when this
+ * window is opened again to load the previous configuration; when new actions are generated the old actions are
+ * preserved, but the actions loaded by this call are not applied when apply() is called
  */
 void RibbonCustomizeWidget::fromXml(const QString &xmlpath)
 {
@@ -879,11 +881,12 @@ void RibbonCustomizeWidget::fromXml(const QString &xmlpath)
 }
 
 /**
- * @brief 应用xml配置
+ * @brief Applies the xml configuration
  *
- * @note 重复加载一个配置文件会发生异常，为了避免此类事件发生，一般通过一个变量保证只加载一次，如：
+ * @note Loading the same configuration file twice causes an exception; to avoid this, typically use a variable to
+ * ensure it is loaded only once, e.g.:
  * @code
- * //只能调用一次
+ * // Can be called only once
  * static bool has_call = false;
  * if (!has_call) {
  *     QFile f("customize.xml");
@@ -898,7 +901,7 @@ void RibbonCustomizeWidget::fromXml(const QString &xmlpath)
  * @param xml
  * @param bar
  * @param mgr
- * @return 所有设定有一个应用成功都会返回true
+ * @return Returns true if any one of the settings is applied successfully
  * @see QxRibbonCustomizeDataGetFromXml QxRibbonCustomizeDataApply QxRibbonCustomizeApplyFromXmlFile
  */
 bool RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml, RibbonBar *bar, RibbonActionsManager *mgr)
@@ -908,9 +911,9 @@ bool RibbonCustomizeWidget::fromXml(QXmlStreamReader *xml, RibbonBar *bar, Ribbo
 }
 
 /**
- * @brief 清除所有动作
+ * @brief Clears all actions
  *
- * 在执行applys函数后，如果要继续调用，应该clear，否则会导致异常
+ * After calling apply(), if you want to continue, call clear(), otherwise an exception may occur
  */
 void RibbonCustomizeWidget::clear()
 {
@@ -918,7 +921,7 @@ void RibbonCustomizeWidget::clear()
 }
 
 /**
- * @brief 精简
+ * @brief Simplifies
  */
 void RibbonCustomizeWidget::simplify()
 {
@@ -926,7 +929,7 @@ void RibbonCustomizeWidget::simplify()
 }
 
 /**
- * @brief 获取当前界面选中的行属性
+ * @brief Gets the row proportion selected in the current interface
  * @return
  */
 RibbonGroup::RowProportion RibbonCustomizeWidget::selectedRowProportion() const
@@ -935,9 +938,9 @@ RibbonGroup::RowProportion RibbonCustomizeWidget::selectedRowProportion() const
 }
 
 /**
- * @brief 获取listview中选中的action
- * @return 如果没有选中action，返回Q_NULLPTR
- * @note 如果要获取treeview选中的action，使用@ref itemToAction 函数
+ * @brief Gets the action selected in the listview
+ * @return Returns Q_NULLPTR if no action is selected
+ * @note To get the action selected in the treeview, use the @ref itemToAction function
  */
 QAction *RibbonCustomizeWidget::selectedAction() const
 {
@@ -952,9 +955,9 @@ QAction *RibbonCustomizeWidget::selectedAction() const
 }
 
 /**
- * @brief 把item转换为action
+ * @brief Converts the item to an action
  * @param item
- * @return 如果没有action可转换，返回Q_NULLPTR
+ * @return Returns Q_NULLPTR if there is no action to convert
  */
 QAction *RibbonCustomizeWidget::itemToAction(QStandardItem *item) const
 {
@@ -962,7 +965,7 @@ QAction *RibbonCustomizeWidget::itemToAction(QStandardItem *item) const
 }
 
 /**
- * @brief 获取ribbon tree选中的item
+ * @brief Gets the item selected in the ribbon tree
  * @return
  */
 QStandardItem *RibbonCustomizeWidget::selectedItem() const
@@ -978,8 +981,8 @@ QStandardItem *RibbonCustomizeWidget::selectedItem() const
 }
 
 /**
- * @brief 获取选中的ribbon tree 的level
- * @return -1为选中异常，0代表选中了page 1代表选中了group 2代表选中了action
+ * @brief Gets the level of the selected ribbon tree
+ * @return -1 for an invalid selection, 0 for a selected page, 1 for a selected group, 2 for a selected action
  */
 int RibbonCustomizeWidget::selectedRibbonLevel() const
 {
@@ -992,7 +995,7 @@ int RibbonCustomizeWidget::selectedRibbonLevel() const
 }
 
 /**
- * @brief 获取StandardItem 的level
+ * @brief Gets the level of the StandardItem
  * @param item
  * @return
  */
@@ -1002,9 +1005,9 @@ int RibbonCustomizeWidget::itemLevel(QStandardItem *item) const
 }
 
 /**
- * @brief 设置某个item被选中
+ * @brief Selects the specified item
  * @param item
- * @param ensureVisible 是否确保该项可见
+ * @param ensureVisible Whether to ensure the item is visible
  */
 void RibbonCustomizeWidget::setSelectItem(QStandardItem *item, bool ensureVisible)
 {
@@ -1014,9 +1017,10 @@ void RibbonCustomizeWidget::setSelectItem(QStandardItem *item, bool ensureVisibl
     }
 
     m->clearSelection();
-    // 如果用select，看起来选中了，但是itemFromIndex却返回空
-    // 比如：新建一个页，接着新建一个组，onPushButtonNewGroupClicked中的selectedItem返回空，导致无法新建组。
-    // 备注：命令用SelectCurrent也没有用
+    // If select is used, it looks selected but itemFromIndex returns null.
+    // For example, after creating a page and then creating a group, selectedItem in onPushButtonNewGroupClicked
+    // returns null, so the group cannot be created.
+    // Note: using SelectCurrent does not help either
     // m->select(item->index(), QItemSelectionModel::Select);
     m->setCurrentIndex(item->index(), QItemSelectionModel::Select);
 
@@ -1026,7 +1030,7 @@ void RibbonCustomizeWidget::setSelectItem(QStandardItem *item, bool ensureVisibl
 }
 
 /**
- * @brief 判断itemn能否改动，可以改动返回true
+ * @brief Checks whether the item can be modified; returns true if it can
  * @param item
  * @return
  */
@@ -1041,7 +1045,7 @@ bool RibbonCustomizeWidget::isSelectedItemCanCustomize() const
 }
 
 /**
- * @brief 判断itemn能否改动，可以改动返回true
+ * @brief Checks whether the item can be modified; returns true if it can
  * @param item
  * @return
  */
@@ -1086,16 +1090,16 @@ void RibbonCustomizeWidget::onPushButtonNewPageClicked()
         while (i.parent().isValid()) {
             i = i.parent();
         }
-        // 获取选中的最顶层item
+        // Gets the topmost selected item
         row = i.row() + 1;
     }
     QStandardItem *ni = new QStandardItem(tr("new page[customize]%1").arg(++(d->m_customizePageCount)));
 
     ni->setData(0, RibbonCustomizeWidget::LevelRole);
     d->m_ribbonModel->insertRow(row, ni);
-    // 设置新增的为选中
+    // Sets the newly added item as selected
     setSelectItem(ni);
-    // 把动作插入动作列表中
+    // Inserts the action into the action list
     RibbonCustomizeData data = RibbonCustomizeData::makeAddPageCustomizeData(
         ni->text(), ni->row(), RibbonCustomizeWidgetPrivate::makeRandomObjName("page"));
 
@@ -1105,7 +1109,7 @@ void RibbonCustomizeWidget::onPushButtonNewPageClicked()
     // is not exported (RibbonCustomizeDialog owns it and is the only way in),
     // an extra buffer would be machinery the lifetime already provides.
     d->m_customizeDatas.append(data);
-    ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole
+    ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Having CustomizeRole implies CanCustomizeRole
     ni->setData(true, RibbonCustomizeWidget::CustomizeRole);
     ni->setData(data.pageObjNameValue, RibbonCustomizeWidget::CustomizeObjNameRole);
 }
@@ -1124,22 +1128,22 @@ void RibbonCustomizeWidget::onPushButtonNewGroupClicked()
     ni->setData(1, RibbonCustomizeWidget::LevelRole);
 
     if (0 == level) {
-        // 说明是page,插入到最后
+        // It is a page; insert at the end
         item->appendRow(ni);
     } else if (1 == level) {
-        // 说明选择的是group，插入到此group之后
+        // A group is selected; insert after this group
         QStandardItem *pageItem = item->parent();
         if (Q_NULLPTR == pageItem) {
             return;
         }
         pageItem->insertRow(item->row() + 1, ni);
     } else {
-        // 不符合就删除退出
+        // Otherwise remove and exit
         delete ni;
         ni = Q_NULLPTR;
         return;
     }
-    // 查找page的object name
+    // Finds the object name of the page
     QStandardItem *pageItem = ni->parent();
     QString pageObjName = "";
 
@@ -1156,7 +1160,7 @@ void RibbonCustomizeWidget::onPushButtonNewGroupClicked()
     // unique id would be the alternative, and is more machinery than the
     // problem needs.
     d->m_customizeDatas.append(data);
-    ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole
+    ni->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Having CustomizeRole implies CanCustomizeRole
     ni->setData(true, RibbonCustomizeWidget::CustomizeRole);
     ni->setData(data.groupObjNameValue, RibbonCustomizeWidget::CustomizeObjNameRole);
     setSelectItem(ni);
@@ -1180,7 +1184,7 @@ void RibbonCustomizeWidget::onPushButtonRenameClicked()
     int level = itemLevel(item);
 
     if (0 == level) {
-        // 改Page名
+        // Rename the page
         QString pageObjName = d->itemObjectName(item);
         RibbonCustomizeData data = RibbonCustomizeData::makeRenamePageCustomizeData(text, pageObjName);
         d->m_customizeDatas.append(data);
@@ -1196,7 +1200,7 @@ void RibbonCustomizeWidget::onPushButtonRenameClicked()
         qDebug() << QString("rename group %1 from %2 to %3").arg(groupObjName, item->text(), text);
 #endif
     } else {
-        // action 不允许改名
+        // Actions cannot be renamed
         return;
     }
     item->setText(text);
@@ -1213,10 +1217,10 @@ void RibbonCustomizeWidget::onPushButtonAddClicked()
     int level = itemLevel(item);
 
     if (0 == level) {
-        // 选中page不进行操作
+        // Do nothing when a page is selected
         return;
     } else if (2 == level) {
-        // 选中action，添加到这个action之后,把item设置为group
+        // An action is selected; add after this action by setting item to its group
         item = item->parent();
     }
     QString groupObjName = d->itemObjectName(item);
@@ -1231,10 +1235,10 @@ void RibbonCustomizeWidget::onPushButtonAddClicked()
     QStandardItem *actItem = new QStandardItem(act->icon(), act->text());
 
     actItem->setData(2, RibbonCustomizeWidget::LevelRole);
-    actItem->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // 有CustomizeRole，必有CanCustomizeRole
+    actItem->setData(true, RibbonCustomizeWidget::CanCustomizeRole);   // Having CustomizeRole implies CanCustomizeRole
     actItem->setData(true, RibbonCustomizeWidget::CustomizeRole);
     actItem->setData(act->objectName(), RibbonCustomizeWidget::CustomizeObjNameRole);
-    actItem->setData(qintptr(act), RibbonCustomizeWidget::PointerRole);   // 把action指针传入
+    actItem->setData(qintptr(act), RibbonCustomizeWidget::PointerRole);   // Stores the action pointer
     item->appendRow(actItem);
 }
 
@@ -1251,17 +1255,17 @@ void RibbonCustomizeWidget::onPushButtonDeleteClicked()
     int level = itemLevel(item);
 
     if (0 == level) {
-        // 删除page
+        // Remove the page
         RibbonCustomizeData data = RibbonCustomizeData::makeRemovePageCustomizeData(d->itemObjectName(item));
         d->m_customizeDatas.append(data);
     } else if (1 == level) {
-        // 删除group
+        // Remove the group
         QString pageObjName = d->itemObjectName(item->parent());
         QString groupObjName = d->itemObjectName(item);
         RibbonCustomizeData data = RibbonCustomizeData::makeRemoveGroupCustomizeData(pageObjName, groupObjName);
         d->m_customizeDatas.append(data);
     } else if (2 == level) {
-        // 删除Action
+        // Remove the action
         QString pageObjName = d->itemObjectName(item->parent()->parent());
         QString groupObjName = d->itemObjectName(item->parent());
         QAction *act = itemToAction(item);
@@ -1274,17 +1278,17 @@ void RibbonCustomizeWidget::onPushButtonDeleteClicked()
             RibbonCustomizeData::makeRemoveActionCustomizeData(pageObjName, groupObjName, key, d->m_actionMgr);
         d->m_customizeDatas.append(data);
     }
-    // 执行删除操作
+    // Performs the removal
     removeItem(item);
-    // 删除后重新识别
+    // Re-evaluates after removal
     ui->pushButtonAdd->setEnabled(selectedAction() && isSelectedItemIsCustomize() && selectedRibbonLevel() > 0);
     ui->pushButtonDelete->setEnabled(isSelectedItemIsCustomize());
 }
 
 void RibbonCustomizeWidget::onListViewSelectClicked(const QModelIndex &index)
 {
-    // 每次点击，判断是否可以进行操作，决定pushButtonAdd和pushButtonDelete的显示状态
-    // 点击了listview，判断treeview的状态
+    // On each click, decide whether the operation is available and set the display state of pushButtonAdd and
+    // pushButtonDelete The listview was clicked, so check the treeview state
     Q_UNUSED(index);
     ui->pushButtonAdd->setEnabled(isSelectedItemCanCustomize() && selectedRibbonLevel() > 0);
     ui->pushButtonDelete->setEnabled(isSelectedItemCanCustomize());
@@ -1293,7 +1297,8 @@ void RibbonCustomizeWidget::onListViewSelectClicked(const QModelIndex &index)
 void RibbonCustomizeWidget::onTreeViewResultClicked(const QModelIndex &index)
 {
     Q_UNUSED(index);
-    // 每次点击，判断是否可以进行操作，决定pushButtonAdd和pushButtonDelete的显示状态
+    // On each click, decide whether the operation is available and set the display state of pushButtonAdd and
+    // pushButtonDelete
     QStandardItem *item = selectedItem();
 
     if (Q_NULLPTR == item) {
@@ -1302,8 +1307,8 @@ void RibbonCustomizeWidget::onTreeViewResultClicked(const QModelIndex &index)
     int level = itemLevel(item);
 
     ui->pushButtonAdd->setEnabled(selectedAction() && (level > 0) && isItemCanCustomize(item));
-    ui->pushButtonDelete->setEnabled(isItemCanCustomize(item));                 // 有CustomizeRole，必有CanCustomizeRole
-    ui->pushButtonRename->setEnabled(level != 2 || isItemCanCustomize(item));   // QAction 不能改名
+    ui->pushButtonDelete->setEnabled(isItemCanCustomize(item));   // Having CustomizeRole implies CanCustomizeRole
+    ui->pushButtonRename->setEnabled(level != 2 || isItemCanCustomize(item));   // QAction cannot be renamed
     ui->pushButtonNewGroup->setEnabled(level != 2);
     ui->toolButtonUp->setEnabled(item->index().row() != 0);
 
@@ -1326,9 +1331,10 @@ void RibbonCustomizeWidget::onToolButtonDownClicked()
 }
 
 /**
- * @brief 上移/下移选中的item
- * @param delta -1表示上移，1表示下移
- * @note 两个方向只差一个符号：记录的顺序变更值，以及在父节点里的目标行(row + delta)
+ * @brief Moves the selected item up/down
+ * @param delta -1 moves up, 1 moves down
+ * @note The two directions differ only by a sign: the recorded order-change value, and the target row within the parent
+ * (row + delta)
  */
 void RibbonCustomizeWidget::moveSelectedItem(int delta)
 {
@@ -1340,14 +1346,14 @@ void RibbonCustomizeWidget::moveSelectedItem(int delta)
     const int row = item->row();
     const int count = item->parent() ? item->parent()->rowCount() : d->m_ribbonModel->rowCount();
 
-    // 第一个不能再上移，最后一个不能再下移
+    // The first item cannot move up and the last item cannot move down
     if (((delta < 0) && (0 == row)) || ((delta > 0) && ((row + 1) >= count))) {
         return;
     }
     const int level = itemLevel(item);
 
     if (0 == level) {
-        // 移动page
+        // Move the page
         RibbonCustomizeData data =
             RibbonCustomizeData::makeChangePageOrderCustomizeData(d->itemObjectName(item), delta);
         d->m_customizeDatas.append(data);
@@ -1355,7 +1361,7 @@ void RibbonCustomizeWidget::moveSelectedItem(int delta)
         d->m_ribbonModel->removeRow(row);
         d->m_ribbonModel->insertRow(row + delta, item);
     } else if (1 == level) {
-        // 移动group
+        // Move the group
         QStandardItem *paritem = item->parent();
         RibbonCustomizeData data = RibbonCustomizeData::makeChangeGroupOrderCustomizeData(
             d->itemObjectName(paritem), d->itemObjectName(item), delta);
@@ -1364,7 +1370,7 @@ void RibbonCustomizeWidget::moveSelectedItem(int delta)
         paritem->removeRow(row);
         paritem->insertRow(row + delta, item);
     } else if (2 == level) {
-        // 移动action
+        // Move the action
         QStandardItem *groupItem = item->parent();
         QStandardItem *pageItem = groupItem->parent();
         QAction *act = itemToAction(item);

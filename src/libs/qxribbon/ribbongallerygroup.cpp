@@ -351,9 +351,9 @@ public:
     QString m_groupTitle;
     RibbonGalleryGroup::GalleryGroupStyle m_preStyle;
     RibbonGalleryGroup::DisplayRow m_displayRow;
-    int m_gridMinimumWidth;        ///< grid最小宽度
-    int m_gridMaximumWidth;        ///< grid最大宽度
-    QActionGroup *m_actionGroup;   ///< 所有GalleryGroup管理的actions都由这个actiongroup管理
+    int m_gridMinimumWidth;        ///< minimum grid width
+    int m_gridMaximumWidth;        ///< maximum grid width
+    QActionGroup *m_actionGroup;   ///< all actions managed by the GalleryGroup are managed by this action group
     bool m_blockRecalc;
 };
 
@@ -431,7 +431,7 @@ RibbonGalleryGroup::~RibbonGalleryGroup()
 }
 
 /**
- * @brief 是否禁止计算
+ * @brief Whether recalculation is disabled
  * @param on
  */
 void RibbonGalleryGroup::setRecalcGridSizeBlock(bool on)
@@ -447,7 +447,7 @@ bool RibbonGalleryGroup::isRecalcGridSizeBlock() const
 }
 
 /**
- * @brief 重新计算grid和icon的尺寸
+ * @brief Recalculates the sizes of the grid and icons
  */
 void RibbonGalleryGroup::recalcGridSize()
 {
@@ -459,7 +459,7 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
     if (isRecalcGridSizeBlock()) {
         return;
     }
-    // 首先通过DisplayRow计算GridSize
+    // First compute the grid size from DisplayRow
     Q_D(RibbonGalleryGroup);
     int dr = d->displayRowCount();
     int h = galleryHeight / dr;
@@ -476,8 +476,9 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
         w = mw;
     }
     setGridSize(QSize(w, h));
-    // 再通过GalleryGroupStyle确定icon的尺寸
-    // 这个是移动像素，qt在鼠标移动到图标上时会移动一下，给用户明确的动态，导致如果布局很满会超出显示范围，因此要在此基础上缩放一点
+    // Then determine the icon size from GalleryGroupStyle
+    // The shift pixel: Qt shifts the item slightly when the mouse hovers over the icon for clear feedback, which may
+    // exceed the visible area when the layout is tight, so scale down a little on this basis
     const int shiftpix = 4;
     switch (galleryGroupStyle()) {
     case IconWithText: {
@@ -516,7 +517,7 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
 }
 
 ///
-/// \brief 设置默认的预设样式
+/// \brief Sets the default preset style
 /// \param style
 ///
 void RibbonGalleryGroup::setGalleryGroupStyle(RibbonGalleryGroup::GalleryGroupStyle style)
@@ -614,7 +615,7 @@ RibbonGalleryGroup::DisplayRow RibbonGalleryGroup::displayRow() const
 }
 
 /**
- * @brief 设置grid最小的宽度，默认为0（不限制）
+ * @brief Sets the minimum grid width, default 0 (unlimited)
  * @param w
  */
 void RibbonGalleryGroup::setGridMinimumWidth(int w)
@@ -624,7 +625,7 @@ void RibbonGalleryGroup::setGridMinimumWidth(int w)
 }
 
 /**
- * @brief grid最小的宽度，默认为0（不限制）
+ * @brief Minimum grid width, default 0 (unlimited)
  * @return
  */
 int RibbonGalleryGroup::gridMinimumWidth() const
@@ -634,7 +635,7 @@ int RibbonGalleryGroup::gridMinimumWidth() const
 }
 
 /**
- * @brief 设置grid最大的宽度，默认为0（不限制）
+ * @brief Sets the maximum grid width, default 0 (unlimited)
  * @param w
  */
 void RibbonGalleryGroup::setGridMaximumWidth(int w)
@@ -644,7 +645,7 @@ void RibbonGalleryGroup::setGridMaximumWidth(int w)
 }
 
 /**
- * @brief grid最大的的宽度，默认为0（不限制）
+ * @brief Maximum grid width, default 0 (unlimited)
  */
 int RibbonGalleryGroup::gridMaximumWidth() const
 {
@@ -661,7 +662,7 @@ QSize RibbonGalleryGroup::sizeHint() const
 }
 
 /**
- * @brief 获取RibbonGalleryGroup管理的actiongroup
+ * @brief Gets the action group managed by the RibbonGalleryGroup
  * @return
  */
 QActionGroup *RibbonGalleryGroup::actionGroup() const

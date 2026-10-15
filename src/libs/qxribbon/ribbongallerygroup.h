@@ -14,28 +14,29 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonGalleryGroupPrivate;
 
 ///
-/// \brief Gallery 的组
+/// \brief Group of the Gallery
 ///
-/// 组负责显示管理 Gallery Item
+/// The group is responsible for displaying and managing Gallery Items
 ///
 class QX_RIBBON_EXPORT RibbonGalleryGroup : public QListView
 {
     Q_OBJECT
 public:
     /**
-     * @brief GalleryGroup显示的样式
+     * @brief The display style of the GalleryGroup
      */
     enum GalleryGroupStyle {
-        IconWithText,   ///< 图标带文字
-        IconWithWordWrapText,   ///< 图标带文字,文字会换行显示，此模式只会对DisplayOneRow生效，如果不是DisplayOneRow，等同IconWithText
-        IconOnly   ///< 只有图标
+        IconWithText,           ///< icon with text
+        IconWithWordWrapText,   ///< icon with text, the text wraps; this mode only takes effect for DisplayOneRow,
+                                ///< otherwise it is equivalent to IconWithText
+        IconOnly                ///< icon only
     };
 
     /**
-     * @brief 定义Gallery在一个group下面显示的图标行数
+     * @brief Defines the number of icon rows the Gallery displays under a group
      */
     enum DisplayRow {
-        DisplayOneRow = 1,   ///< 显示1行，默认
+        DisplayOneRow = 1,   ///< display 1 row, default
         DisplayTwoRow = 2,
         DisplayThreeRow = 3
     };
@@ -78,16 +79,18 @@ private Q_SLOTS:
 Q_SIGNALS:
     void groupTitleChanged(const QString &title);
     /**
-     * @brief 等同QActionGroup的triggered
-     * 所有加入RibbonGalleryGroup的action都会被一个QActionGroup管理,可以通过@sa actionGroup获取到对应的actiongroup
+     * @brief Equivalent to QActionGroup's triggered
+     * All actions added to the RibbonGalleryGroup are managed by a QActionGroup; the corresponding action group can be
+     * obtained via @sa actionGroup
      * @param action
      */
     void triggered(QAction *action);
     /**
-     * @brief 等同QActionGroup的hovered
-     * 所有加入RibbonGalleryGroup的action都会被一个QActionGroup管理,可以通过@sa actionGroup获取到对应的actiongroup
-     * @note 此属性需要通过QAbstractItemView::entered(const QModelIndex
-     * &index)激活，因此要保证设置了setMouseTracking(true)
+     * @brief Equivalent to QActionGroup's hovered
+     * All actions added to the RibbonGalleryGroup are managed by a QActionGroup; the corresponding action group can be
+     * obtained via @sa actionGroup
+     * @note This property is activated via QAbstractItemView::entered(const QModelIndex
+     * &index), so make sure setMouseTracking(true) is set
      * @param action
      */
     void hovered(QAction *action);

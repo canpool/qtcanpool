@@ -17,14 +17,15 @@ class RibbonCustomizeDialogUi;
 class RibbonBar;
 
 /**
- * @brief RibbonCustomizeWidget 的对话框封装
+ * @brief Dialog wrapper for RibbonCustomizeWidget
  *
- * 此功能依赖于 @ref RibbonActionsManager ，RibbonActionsManager 建议作为 mianwindow 的成员变量，
- * RibbonActionsManager 可以快速绑定所有 QAction，详细见 RibbonActionsManager 的说明
+ * This feature depends on @ref RibbonActionsManager; RibbonActionsManager is recommended to be a member
+ * variable of the main window and can quickly bind all QAction instances; see the RibbonActionsManager
+ * documentation for details
  *
- * @note Ribbon 的自定义是基于步骤的，如果在窗口生成前调用了 @ref QxRibbonCustomizeApplyFromXmlFile 类似函数
- * 那么在对话框执行前为了保证同步需要调用 @ref RibbonCustomizeDialog::fromXml
- * 同步配置文件，这样再次修改后的配置文件就一致
+ * @note Ribbon customization is step-based; if a function such as @ref QxRibbonCustomizeApplyFromXmlFile
+ * was called before the window is created, then @ref RibbonCustomizeDialog::fromXml must be called before
+ * the dialog runs to keep them in sync, so that the configuration file stays consistent after further edits
  */
 class QX_RIBBON_EXPORT RibbonCustomizeDialog : public QDialog
 {
@@ -32,20 +33,21 @@ class QX_RIBBON_EXPORT RibbonCustomizeDialog : public QDialog
 public:
     RibbonCustomizeDialog(RibbonBar *ribbonBar, QWidget *p = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
 
-    // 设置action管理器
+    // Sets up the action manager
     void setupActionsManager(RibbonActionsManager *mgr);
 
-    // 应用所有的设定
+    // Applies all settings
     bool apply();
 
-    // 清除所有动作
+    // Clears all actions
     void clear();
 
-    // 转换为xml
+    // Converts to xml
     bool toXml(QXmlStreamWriter *xml) const;
     bool toXml(const QString &xmlpath) const;
 
-    // 从xml中加载QList<RibbonCustomizeData>，对于基于配置文件的设置，对话框显示前建议调用此函数，保证叠加设置的正确记录
+    // Loads QList<RibbonCustomizeData> from xml; for file-based settings, call this before showing the dialog to ensure
+    // correct recording of stacked settings
     void fromXml(QXmlStreamReader *xml);
     void fromXml(const QString &xmlpath);
 protected:
@@ -55,12 +57,13 @@ private:
 };
 
 /**
- * @brief 直接加载xml自定义ribbon配置文件用于ribbon的自定义显示
- * @param filePath xml配置文件
+ * @brief Directly loads an xml custom ribbon configuration file for custom ribbon display
+ * @param filePath xml configuration file
  * @param bar
- * @param mgr action管理器
- * @return 成功返回true
- * @note 重复加载一个配置文件会发生异常，为了避免此类事件发生，一般通过一个变量保证只加载一次，如：
+ * @param mgr Action manager
+ * @return Returns true on success
+ * @note Loading the same configuration file twice causes an exception; to avoid this, typically use a variable to
+ * ensure it is loaded only once, e.g.:
  * @code
  * static bool has_call = false;
  * if (!has_call) {

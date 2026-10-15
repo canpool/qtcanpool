@@ -15,132 +15,133 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonBar;
 
 /**
- * @brief 记录所有自定义操作的数据类
- * @note 此数据依赖于 @ref RibbonActionsManager 要在 RibbonActionsManager 之后使用此类
+ * @brief Data class that records all customization operations
+ * @note This data depends on @ref RibbonActionsManager and must be used after RibbonActionsManager
  */
 class RibbonCustomizeData
 {
 public:
     enum ActionType {
-        UnknowActionType = 0,          ///< 未知操作
-        AddPageActionType,             ///< 添加page操作
-        AddGroupActionType,            ///< 添加group操作
-        AddActionActionType,           ///< 添加action操作
-        RemovePageActionType,          ///< 删除page操作
-        RemoveGroupActionType,         ///< 删除group操作
-        RemoveActionActionType,        ///< 删除action操作
-        ChangePageOrderActionType,     ///< 改变page顺序的操作
-        ChangeGroupOrderActionType,    ///< 改变group顺序的操作
-        ChangeActionOrderActionType,   ///< 改变action顺序的操作
-        RenamePageActionType,          ///< 对page更名操作
-        RenameGroupActionType,         ///< 对Group更名操作
-        VisiblePageActionType,         ///< 对page执行隐藏/显示操作
+        UnknowActionType = 0,          ///< Unknown operation
+        AddPageActionType,             ///< Add page operation
+        AddGroupActionType,            ///< Add group operation
+        AddActionActionType,           ///< Add action operation
+        RemovePageActionType,          ///< Remove page operation
+        RemoveGroupActionType,         ///< Remove group operation
+        RemoveActionActionType,        ///< Remove action operation
+        ChangePageOrderActionType,     ///< Change page order operation
+        ChangeGroupOrderActionType,    ///< Change group order operation
+        ChangeActionOrderActionType,   ///< Change action order operation
+        RenamePageActionType,          ///< Rename page operation
+        RenameGroupActionType,         ///< Rename group operation
+        VisiblePageActionType,         ///< Hide/show page operation
     };
 public:
     RibbonCustomizeData();
     RibbonCustomizeData(ActionType type, RibbonActionsManager *mgr = Q_NULLPTR);
 
-    // 获取CustomizeData的action type
+    // Gets the action type of the CustomizeData
     ActionType actionType() const;
 
-    // 设置CustomizeData的action type
+    // Sets the action type of the CustomizeData
     void setActionType(ActionType a);
 
-    // 判断是否是一个正常的CustomizeData
+    // Checks whether this is a valid CustomizeData
     bool isValid() const;
 
-    // 应用RibbonCustomizeData
+    // Applies the RibbonCustomizeData
     bool apply(RibbonBar *bar);
 
-    // 获取actionsmanager指针
+    // Gets the actions manager pointer
     RibbonActionsManager *actionsManager();
 
-    // 设置ActionsManager
+    // Sets the ActionsManager
     void setActionsManager(RibbonActionsManager *mgr);
 
-    // 对应AddPageActionType
+    // Corresponds to AddPageActionType
     static RibbonCustomizeData makeAddPageCustomizeData(const QString &title, int index, const QString &objName);
 
-    // 对应AddGroupActionType
+    // Corresponds to AddGroupActionType
     static RibbonCustomizeData makeAddGroupCustomizeData(const QString &title, int index, const QString &pageObjName,
                                                          const QString &objName);
 
-    // 对应AddActionActionType
+    // Corresponds to AddActionActionType
     static RibbonCustomizeData makeAddActionCustomizeData(const QString &key, RibbonActionsManager *mgr,
                                                           RibbonGroup::RowProportion rp, const QString &pageObjName,
                                                           const QString &groupObjName);
 
-    // 对应RenamePageActionType
+    // Corresponds to RenamePageActionType
     static RibbonCustomizeData makeRenamePageCustomizeData(const QString &newName, const QString &pageObjName);
 
-    // 对应RenameGroupActionType
+    // Corresponds to RenameGroupActionType
     static RibbonCustomizeData makeRenameGroupCustomizeData(const QString &newName, const QString &pageObjName,
                                                             const QString &groupObjName);
 
-    // 对应RemovePageActionType
+    // Corresponds to RemovePageActionType
     static RibbonCustomizeData makeRemovePageCustomizeData(const QString &pageObjName);
 
-    // 对应ChangePageOrderActionType
+    // Corresponds to ChangePageOrderActionType
     static RibbonCustomizeData makeChangePageOrderCustomizeData(const QString &pageObjName, int moveIndex);
 
-    // 对应ChangeGroupOrderActionType
+    // Corresponds to ChangeGroupOrderActionType
     static RibbonCustomizeData makeChangeGroupOrderCustomizeData(const QString &pageObjName,
                                                                  const QString &groupObjName, int moveIndex);
 
-    // 对应ChangeActionOrderActionType
+    // Corresponds to ChangeActionOrderActionType
     static RibbonCustomizeData makeChangeActionOrderCustomizeData(const QString &pageObjName,
                                                                   const QString &groupObjName, const QString &key,
                                                                   RibbonActionsManager *mgr, int moveIndex);
 
-    // 对应RemoveGroupActionType
+    // Corresponds to RemoveGroupActionType
     static RibbonCustomizeData makeRemoveGroupCustomizeData(const QString &pageObjName, const QString &groupObjName);
 
-    // 对应RemoveActionActionType
+    // Corresponds to RemoveActionActionType
     static RibbonCustomizeData makeRemoveActionCustomizeData(const QString &pageObjName, const QString &groupObjName,
                                                              const QString &key, RibbonActionsManager *mgr);
 
-    // 对应VisiblePageActionType
+    // Corresponds to VisiblePageActionType
     static RibbonCustomizeData makeVisiblePageCustomizeData(const QString &pageObjName, bool isShow);
 
-    // 判断是否可以自定义,如果某个action不想被编辑，可以通过此函数设置
+    // Checks whether the object can be customized; use this to prevent a specific action from being edited
     static bool isCanCustomize(QObject *obj);
     static void setCanCustomize(QObject *obj, bool canbe = true);
 
-    // 对QList<RibbonCustomizeData>进行简化
+    // Simplifies QList<RibbonCustomizeData>
     static QList<RibbonCustomizeData> simplify(const QList<RibbonCustomizeData> &csd);
 public:
     /**
-     * @brief 记录顺序的参数
+     * @brief Parameter recording the order
      *
-     * 在actionType==AddPageActionType时，此参数记录Page的insert位置,
-     * 在actionType==AddGroupActionType时，此参数记录group的insert位置,
-     * 在actionType==AddActionActionType时，此参数记录group的insert位置
+     * When actionType==AddPageActionType, this parameter records the insert position of the page;
+     * when actionType==AddGroupActionType, it records the insert position of the group;
+     * when actionType==AddActionActionType, it records the insert position of the group
      */
     int indexValue;
 
     /**
-     * @brief 记录标题、索引等参数
+     * @brief Parameter recording the title, index, etc.
      *
-     * 在actionType==AddPageActionType时，key为page标题，
-     * 在actionType==AddGroupActionType时，key为group标题，
-     * 在actionType==AddActionActionType时，key为action的查询依据，基于RibbonActionsManager::action查询
+     * When actionType==AddPageActionType, key is the page title;
+     * when actionType==AddGroupActionType, key is the group title;
+     * when actionType==AddActionActionType, key is the lookup base for the action, queried via
+     * RibbonActionsManager::action
      */
     QString keyValue;
 
     /**
-     * @brief 记录pageObjName，用于定位Page
+     * @brief Records pageObjName, used to locate the page
      */
     QString pageObjNameValue;
 
     /**
-     * @brief 记录groupObjName，ribbon的Customize索引大部分基于objname
+     * @brief Records groupObjName; most of the ribbon customize indices are based on objname
      */
     QString groupObjNameValue;
 
-    ///< 行的占比，ribbon中有large，medium和small三种占比,见 @ref RibbonGroup::RowProportion
+    ///< Row proportion; ribbon has three proportions: large, medium and small, see @ref RibbonGroup::RowProportion
     RibbonGroup::RowProportion actionRowProportionValue;
 private:
-    ActionType m_type;   ///< 标记这个data是page还是group亦或是action
+    ActionType m_type;   ///< Marks whether this data is a page, a group, or an action
     RibbonActionsManager *m_actionsManager;
     bool customized;
 };

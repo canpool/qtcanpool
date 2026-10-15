@@ -22,9 +22,9 @@ class RibbonBar;
 class RibbonBarPrivate;
 
 /**
- * @brief 一项 ribbon tab 页
- * @note RibbonPage 的 windowTitle 影响了其在 RibbonBar 的标签显示，
- * 如果要改标签名字，直接调用 RibbonPage 的 setWindowTitle 函数
+ * @brief A ribbon tab page
+ * @note The windowTitle of RibbonPage affects how its tab label is shown in the RibbonBar;
+ * to change the tab name, call the setWindowTitle function of RibbonPage directly
  */
 class QX_RIBBON_EXPORT RibbonPage : public QWidget
 {

@@ -22,26 +22,26 @@ class RibbonButtonGroup;
 class RibbonQuickAccessBar;
 
 /**
- * @brief RibbonBar 继承 QMenuBar, 在 RibbonMainWindow 中直接替换了原来的 QMenuBar
+ * @brief RibbonBar inherits QMenuBar and directly replaces the original QMenuBar in RibbonMainWindow
  *
- * 通过 setRibbonStyle 函数设置 ribbon 的风格:
+ * Set the ribbon style via setRibbonStyle:
  *
  * @code
  * void setRibbonStyle(RibbonStyle v);
  * @endcode
  *
- * RibbonBar 参考 office 和 wps，提供了四种风格的 Ribbon 模式, @ref RibbonBar::RibbonStyle
+ * RibbonBar follows office and wps and provides four ribbon style modes, @ref RibbonBar::RibbonStyle
  *
- * 如果想 ribbon 占用的空间足够小，WpsLiteStyleTwoRow 模式能比 OfficeStyle 节省 35% 的高度空间
+ * If the ribbon needs to be compact, WpsLiteStyleTwoRow saves 35% of the height used by OfficeStyle
  *
- * 如何生成 ribbon? 先看看一个传统的 MenuBar/ToolBar 是如何生成的：
+ * How to build a ribbon? First look at how a traditional MenuBar/ToolBar is built:
  *
  * @code
  * void MainWindow::MainWindow()
  * {
  *    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
  *    QToolBar *fileToolBar = addToolBar(tr("File"));
- *    // 生成action
+ *    // create the action
  *    QAction *newAct = new QAction(newIcon, tr("&New"), this);
  *    fileMenu->addAction(newAct);
  *    fileToolBar->addAction(newAct);
@@ -52,15 +52,15 @@ class RibbonQuickAccessBar;
  * }
  * @endcode
  *
- * 传统的 MenuBar/ToolBar 主要通过 QMenuBar 的 addMenu 添加菜单, 通过 QMainWindow::addToolBar 生成 QToolBar,
- * 再把 QAction 设置进 QMenu 和 QToolBar 中
+ * A traditional MenuBar/ToolBar adds menus via QMenuBar::addMenu, creates a QToolBar via QMainWindow::addToolBar,
+ * and then puts QActions into the QMenu and QToolBar
  *
- * RibbonBar 和传统方法相似，不过相对于传统的 MenuBar/ToolBar, QMenuBar 和 QToolBar 是平级的，
- * Ribbon 是有明显的层级关系，RibbonBar 下面是 @ref RibbonPage ，
- * RibbonPage 下面是 @ref RibbonGroup ，RibbonGroup下 面是 @ref RibbonButton ，
- * RibbonButton 管理着 QAction
+ * RibbonBar is similar, but whereas QMenuBar and QToolBar are peers in a traditional MenuBar/ToolBar,
+ * a Ribbon has a clear hierarchy: below RibbonBar is @ref RibbonPage,
+ * below RibbonPage is @ref RibbonGroup, below RibbonGroup is @ref RibbonButton,
+ * and RibbonButton manages the QAction
  *
- * 因此，生成一个 ribbon 只需以下几个函数：
+ * Therefore only the following functions are needed to build a ribbon:
  * @code
  * RibbonPage *RibbonBar::addPage(const QString &title);
  * RibbonGroup *RibbonPage::addGroup(const QString &title);
@@ -68,25 +68,25 @@ class RibbonQuickAccessBar;
  * RibbonButton *RibbonGroup::addSmallAction(QAction *action);
  * @endcode
  *
- * 因此生成步骤如下：
+ * The steps are therefore:
  *
  * @code
- * // 成员变量
+ * // member variables
  * RibbonPage *pageMain;
  * RibbonGroup *fileGroup;
  *
- * // 建立ui
+ * // build the ui
  * void setupRibbonUi()
  * {
  *     ......
- *     // ribbonwindow 为 RibbonMainWindow
+ *     // ribbonwindow is a RibbonMainWindow
  *     RibbonBar *ribbon = ribbonwindow->ribbonBar();
  *     ribbon->setRibbonStyle(RibbonBar::WpsLiteStyle);
- *     // 添加一个 Main 标签页
+ *     // add a Main tab
  *     pageMain = ribbon->addPage(QStringLiteral("Main"));
- *     // Main 标签页下添加一个 File Group
+ *     // add a File Group under the Main tab
  *     fileGroup = pageMain->addGroup(QStringLiteral("FileGroup"));
- *     // 开始为 File Group 添加 action
+ *     // start adding actions to the File Group
  *     fileGroup->addLargeAction(actionNew);
  *     fileGroup->addLargeAction(actionOpen);
  *     fileGroup->addLargeAction(actionSave);

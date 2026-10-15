@@ -141,13 +141,13 @@ QList<RibbonGroup *> RibbonPagePrivate::groupList() const
 }
 
 /**
- * @brief 设置group的模式
+ * @brief Set the group mode
  *
- * 在 RibbonBar 调用 @ref RibbonBar::setRibbonStyle 函数时，会对所有的RibbonPage调用此函数
- * 把新的RibbonGroup::GroupLayoutMode设置进去
+ * When RibbonBar calls @ref RibbonBar::setRibbonStyle it invokes this function on every RibbonPage
+ * to apply the new RibbonGroup::GroupLayoutMode
  *
- * 此函数为RibbonPage::setGroupLayoutMode的代理，
- * 在RibbonPage类中，此函数为protected，主要在RibbonBar::setRibbonStyle时才会触发
+ * This function proxies RibbonPage::setGroupLayoutMode;
+ * in the RibbonPage class it is protected and is mainly triggered by RibbonBar::setRibbonStyle
  * @param m
  */
 void RibbonPagePrivate::setGroupLayoutMode(RibbonGroup::GroupLayoutMode m)
@@ -214,9 +214,9 @@ void RibbonPagePrivate::updateItemGeometry()
     }
 
     int totalWidth = totalSizeHintWidth();
-    // 记录可以扩展的数量
+    // Records the expandable count
     int canExpandingCount = 0;
-    // 扩展的宽度
+    // Expanded width
     int expandWidth = 0;
 
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
@@ -225,38 +225,39 @@ void RibbonPagePrivate::updateItemGeometry()
              << "\r\npage name:" << page->windowTitle() << "\r\n first totalWidth:" << totalWidth << "\r\n y:" << y
              << "\r\nexpandWidth:" << expandWidth;
 #endif
-    // 如果 totalWidth < pageWidth, m_XBase 可以设置为 0
+    // If totalWidth < pageWidth, m_XBase can be set to 0
     if (totalWidth <= pageWidth) {
-        // 这个是避免一开始 totalWidth > pageWidth，通过滚动按钮调整了 m_XBase，随之调整了窗体尺寸，
-        // 调整后 totalWidth < pageWidth 导致 page 在原来位置无法显示，必须这里把 m_XBase 设置为 0
+        // This avoids the case where totalWidth > pageWidth initially, m_XBase was adjusted via the
+        // scroll button and the widget was resized accordingly, after which totalWidth < pageWidth
+        // so the page cannot be shown at its original position; m_XBase must be set to 0 here
         m_XBase = 0;
         for (const RibbonPageItem &item : m_itemList) {
             if (!item.isEmpty()) {
                 if (item.m_group->isExpanding()) {
-                    // group可扩展
+                    // Group can expand
                     ++canExpandingCount;
                 }
             }
         }
-        // 计算可扩展的宽度
+        // Compute the expandable width
         if (canExpandingCount > 0) {
             expandWidth = (pageWidth - totalWidth) / canExpandingCount;
         } else {
             expandWidth = 0;
         }
     }
-    totalWidth = 0;   // total重新计算
+    totalWidth = 0;   // Recompute total
     // The offset the geometry below is laid out with, kept so that a clamp
     // after the measurement can be applied as a translation of it.
     const int xBaseBeforeMeasure = m_XBase;
     x += m_XBase;
 
-    // 先按照sizeHint设置所有的尺寸
+    // First set all sizes according to sizeHint
     for (RibbonPageItem &item : m_itemList) {
         if (item.isEmpty()) {
-            // 如果是hide就直接跳过
+            // Skip directly if hidden
             if (item.m_separator) {
-                // group hide分割线也要hide
+                // The separator is hidden too when the group is hidden
                 item.m_separator->hide();
             }
             item.m_groupWillGeometry = QRect(0, 0, 0, 0);
@@ -274,7 +275,7 @@ void RibbonPagePrivate::updateItemGeometry()
             separatorSize = item.m_separator->sizeHint();
         }
         if (group->isExpanding()) {
-            // 可扩展，就把group扩展到最大
+            // Expandable, so expand the group to the maximum
             groupSize.setWidth(groupSize.width() + expandWidth);
         }
         int w = groupSize.width();
@@ -312,24 +313,24 @@ void RibbonPagePrivate::updateItemGeometry()
             item.m_separatorWillGeometry.translate(xShift, 0);
         }
     }
-    // 判断滚动按钮是否显示
+    // Determine whether the scroll buttons are shown
     if (totalWidth > pageWidth) {
-        // 超过总长度，需要显示滚动按钮
+        // Exceeds the total length, so the scroll buttons must be shown
         if (m_XBase == 0) {
-            // 已经移动到最左，需要可以向右移动
+            // Already at the leftmost, so it can move right
             m_isRightScrollBtnShow = true;
             m_isLeftScrollBtnShow = false;
         } else if (m_XBase <= (pageWidth - totalWidth)) {
-            // 已经移动到最右，需要可以向左移动
+            // Already at the rightmost, so it can move left
             m_isRightScrollBtnShow = false;
             m_isLeftScrollBtnShow = true;
         } else {
-            // 移动到中间两边都可以动
+            // In the middle, so both directions can move
             m_isRightScrollBtnShow = true;
             m_isLeftScrollBtnShow = true;
         }
     } else {
-        // 说明 totalWidth 小于 pageWidth
+        // totalWidth is less than pageWidth
         m_isRightScrollBtnShow = false;
         m_isLeftScrollBtnShow = false;
     }
@@ -345,7 +346,7 @@ void RibbonPagePrivate::doItemLayout()
     Q_Q(RibbonPage);
     RibbonPage *page = q;
 
-    // 两个滚动按钮的位置永远不变
+    // The positions of the two scroll buttons never change
     m_leftScrollBtn->setGeometry(0, 0, 12, page->height());
     m_rightScrollBtn->setGeometry(page->width() - 12, 0, 12, page->height());
     QList<QWidget *> showWidgets, hideWidgets;
@@ -385,7 +386,8 @@ void RibbonPagePrivate::doItemLayout()
     if (m_isLeftScrollBtnShow) {
         m_leftScrollBtn->raise();
     }
-    // 不在上面那里进行show和hide因为这会触发RibbonGroupLayout的重绘，导致循环绘制，非常影响效率
+    // Show and hide are not done above because that would trigger a repaint of
+    // RibbonGroupLayout, causing recursive painting and hurting efficiency
     for (QWidget *w : std::as_const(showWidgets)) {
         w->show();
     }
@@ -400,28 +402,28 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
     int totalWidth = m_totalWidth;
 
     if (totalWidth > pageWidth) {
-        // 这个时候滚动有效
+        // Scrolling is effective at this point
         QPoint numPixels = event->pixelDelta();
         QPoint numDegrees = event->angleDelta() / 8;
 
-        // Linux GNOME 平台上测试，event->pixelDelta() 和 event->angleDelta() 取值都为 (0, +/-120)
-        // Windows 10 平台上测试，event->pixelDelta() 和 event->angleDelta() 取值分别为 (0, 0) 和 (0, +/-120)
+        // Tested on the Linux GNOME platform: both event->pixelDelta() and event->angleDelta() are (0, +/-120)
+        // Tested on the Windows 10 platform: event->pixelDelta() and event->angleDelta() are (0, 0) and (0, +/-120)
         int scrollpix = 0;
         if (!numPixels.isNull()) {
-            // Linux GNOME 平台上，一次 scrollpix 为 30
+            // On the Linux GNOME platform, one scrollpix is 30
             scrollpix = numPixels.y() / 4;
         } else if (!numDegrees.isNull()) {
-            // Windows 10 平台上, 一次 scrollpix 为 15
+            // On the Windows 10 platform, one scrollpix is 15
             scrollpix = numDegrees.y();
         }
-        if (scrollpix > 0) {   // 当滚轮向上滑，RibbonPage向左走
+        if (scrollpix > 0) {   // When the wheel scrolls up, RibbonPage moves left
             int tmp = m_XBase - scrollpix;
             if (tmp < (pageWidth - totalWidth)) {
                 tmp = pageWidth - totalWidth;
             }
             m_XBase = tmp;
-        } else {                             // 当滚轮向下滑，RibbonPage向右走
-            int tmp = m_XBase - scrollpix;   // 此时numDegrees为负数
+        } else {                             // When the wheel scrolls down, RibbonPage moves right
+            int tmp = m_XBase - scrollpix;   // numDegrees is negative here
             if (tmp > 0) {
                 tmp = 0;
             }
@@ -429,22 +431,23 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
         }
         updateItemGeometry();
     } else {
-        // 这时候无需处理事件，把滚动事件上发让父级也能接收
+        // No handling is needed here; forward the scroll event so the parent can also receive it
         event->ignore();
         m_XBase = 0;
     }
 }
 
 /**
- * @brief 按页横向滚动
+ * @brief Scroll horizontally by page
  *
- * pages > 0 表示点击左侧按钮，内容向右移一页；pages < 0 表示点击右侧按钮。
+ * pages > 0 means the left button was clicked and the content moves right by one page; pages < 0
+ * means the right button.
  *
- * m_XBase 的合法区间是 [pageWidth - totalWidth, 0]：
+ * The legal range of m_XBase is [pageWidth - totalWidth, 0]:
  *
  *    |---- pageWidth ----|
  *    |-------- totalWidth --------|
- *    `-> m_XBase (0 为最右，pageWidth - totalWidth 为最左)
+ *    `-> m_XBase (0 is the rightmost, pageWidth - totalWidth is the leftmost)
  */
 void RibbonPagePrivate::scrollByPage(int pages)
 {
@@ -518,12 +521,12 @@ void RibbonPage::setGroupLayoutMode(RibbonGroup::GroupLayoutMode m)
 }
 
 /**
- * @brief 添加group
+ * @brief Add a group
  *
- * @note group的所有权由RibbonPage来管理，请不要在外部对其进行销毁
- * @param title group的标题，在office/wps的三行模式下会显示在group的下方
- * @return 返回生成的@ref RibbonGroup 指针
- * @see 对RibbonGroup的其他操作，参考 @ref RibbonPage::takeGroup
+ * @note Ownership of the group is managed by RibbonPage; do not destroy it externally
+ * @param title Group title; shown below the group in Office/WPS three-row mode
+ * @return The created @ref RibbonGroup pointer
+ * @see For other operations on RibbonGroup, refer to @ref RibbonPage::takeGroup
  */
 RibbonGroup *RibbonPage::addGroup(const QString &title)
 {
@@ -532,8 +535,8 @@ RibbonGroup *RibbonPage::addGroup(const QString &title)
 }
 
 /**
- * @brief 添加group
- * @param group group的所有权RibbonPage来管理
+ * @brief Add a group
+ * @param group Ownership of the group is managed by RibbonPage
  */
 void RibbonPage::addGroup(RibbonGroup *group)
 {
@@ -542,10 +545,10 @@ void RibbonPage::addGroup(RibbonGroup *group)
 }
 
 /**
- * @brief 新建一个group，并插入到index位置
- * @param title group的title
- * @param index 插入的位置，如果index超出page里group的个数，将插入到最后
- * @return 返回生成的@ref RibbonGroup 指针
+ * @brief Create a group and insert it at the given index
+ * @param title Group title
+ * @param index Insert position; if it exceeds the number of groups in the page, it is inserted last
+ * @return The created @ref RibbonGroup pointer
  */
 RibbonGroup *RibbonPage::insertGroup(int index, const QString &title)
 {
@@ -554,9 +557,9 @@ RibbonGroup *RibbonPage::insertGroup(int index, const QString &title)
 }
 
 /**
- * @brief 通过索引找到group，如果超过索引范围，会返回Q_NULLPTR
+ * @brief Find a group by index; returns Q_NULLPTR if the index is out of range
  * @param index
- * @return 如果超过索引范围，会返回Q_NULLPTR
+ * @return Returns Q_NULLPTR if the index is out of range
  */
 RibbonGroup *RibbonPage::group(int index) const
 {
@@ -565,9 +568,9 @@ RibbonGroup *RibbonPage::group(int index) const
 }
 
 /**
- * @brief 通过名字查找group
+ * @brief Find a group by name
  * @param title
- * @return 如果有重名，只会返回第一个符合条件的
+ * @return If there are duplicate names, only the first match is returned
  */
 RibbonGroup *RibbonPage::groupByName(const QString &title) const
 {
@@ -583,9 +586,9 @@ RibbonGroup *RibbonPage::groupByName(const QString &title) const
 }
 
 /**
- * @brief 通过ObjectName查找group
+ * @brief Find a group by object name
  * @param objname
- * @return 如果有重名，只会返回第一个符合条件的
+ * @return If there are duplicates, only the first match is returned
  */
 RibbonGroup *RibbonPage::groupByObjectName(const QString &objname) const
 {
@@ -601,9 +604,9 @@ RibbonGroup *RibbonPage::groupByObjectName(const QString &objname) const
 }
 
 /**
- * @brief 查找group对应的索引
+ * @brief Find the index corresponding to a group
  * @param group
- * @return 如果找不到，返回-1
+ * @return Returns -1 if not found
  */
 int RibbonPage::groupIndex(RibbonGroup *group) const
 {
@@ -619,9 +622,9 @@ int RibbonPage::groupIndex(RibbonGroup *group) const
 }
 
 /**
- * @brief 移动一个Group从from index到to index
- * @param from 要移动group的index
- * @param to 要移动到的位置
+ * @brief Move a Group from one index to another
+ * @param from Index of the group to move
+ * @param to Destination position
  */
 void RibbonPage::moveGroup(int from, int to)
 {
@@ -648,11 +651,12 @@ bool RibbonPage::takeGroup(RibbonGroup *group)
 }
 
 /**
- * @brief 移除Group，Page会直接回收RibbonGroup内存
- * @param group 需要移除的group
- * @note 移除后group为野指针，一般操作完建议把group指针设置为Q_NULLPTR
+ * @brief Remove a Group; the Page reclaims the RibbonGroup memory directly
+ * @param group The group to remove
+ * @note After removal the group is a dangling pointer; it is recommended to set the group pointer
+ * to Q_NULLPTR after the operation
  *
- * 此操作等同于：
+ * This operation is equivalent to:
  *
  * @code
  * RibbonGroup *group;
@@ -669,9 +673,9 @@ bool RibbonPage::removeGroup(RibbonGroup *group)
 }
 
 /**
- * @brief 移除group
- * @param index group的索引，如果超出会返回false
- * @return 成功返回true
+ * @brief Remove a group
+ * @param index Group index; returns false if out of range
+ * @return Returns true on success
  */
 bool RibbonPage::removeGroup(int index)
 {
@@ -717,7 +721,7 @@ QSize RibbonPage::sizeHint() const
 }
 
 /**
- * @brief 如果是ContextPage，此函数返回true
+ * @brief Returns true if this is a ContextPage
  * @return
  */
 bool RibbonPage::isPageContext() const
@@ -751,7 +755,7 @@ RibbonBar *RibbonPage::ribbonBar() const
 }
 
 /**
- * @brief 刷新page的布局，适用于改变ribbon的模式之后调用
+ * @brief Refresh the page layout; suitable to call after changing the ribbon mode
  */
 void RibbonPage::updateItemGeometry()
 {
@@ -769,7 +773,7 @@ void RibbonPage::setTitle(const QString &title)
 }
 
 /**
- * @brief 标记这个是上下文标签
+ * @brief Mark this as a context tab
  * @param isPageContext
  */
 void RibbonPage::markIsPageContext(bool isPageContext)
