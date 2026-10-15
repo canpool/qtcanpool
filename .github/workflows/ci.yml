@@ -37,10 +37,15 @@ jobs:
           cache: true
 
       - name: Configure
+        # macOS is the slowest leg and adds no demos-only signal: the other four
+        # legs already compile every demo, and demos are exercised by no test, so
+        # building them here is pure wall-clock with zero extra gate coverage.
+        # Same "don't pay for the whole tree" reasoning the qxwindow native job
+        # uses. Tests stay on - they are the macOS signal.
         run: >
           cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Release
-          -DWITH_DEMOS=ON
+          -DWITH_DEMOS=${{ matrix.os == 'macos-latest' && 'OFF' || 'ON' }}
           -DWITH_TESTS=ON
 
       - name: Build
