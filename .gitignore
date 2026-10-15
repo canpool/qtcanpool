@@ -38,6 +38,12 @@ target_wrapper.*
 # QtCreator
 *.autosave
 
+# QtCreator's shared user-file directory - the alternative to a .user file next
+# to each CMakeLists.txt. Ignoring the directory rather than the names inside it:
+# what Qt Creator writes there is its business, and today's contents stay out of
+# `git status` only by accident, by matching CMakeLists.txt.user* and *.pro.user.
+.qtcreator/
+
 # QtCreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
