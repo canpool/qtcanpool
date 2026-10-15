@@ -1105,6 +1105,7 @@ RibbonBar::RibbonBar(QWidget *parent)
     setRibbonStyle(OfficeStyle);
     // Accessibility (B2): a stable accessible name for the ribbon container.
     setAccessibleName(QStringLiteral("Ribbon"));
+    installRibbonAccessibility();
 }
 
 RibbonBar::~RibbonBar()

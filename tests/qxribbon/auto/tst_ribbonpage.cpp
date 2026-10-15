@@ -5,6 +5,7 @@
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpagecontext.h"
 
+#include <QAccessible>
 #include <QAction>
 #include <QToolButton>
 
@@ -19,6 +20,7 @@ private slots:
     void scroll();
     void clampAfterWidening();
     void clear();
+    void accessibleRoles();
 };
 
 void tst_RibbonPage::page()
@@ -319,6 +321,26 @@ void tst_RibbonPage::clear()
     p2 = nullptr;
     g3 = nullptr;
     g4 = nullptr;
+}
+
+void tst_RibbonPage::accessibleRoles()
+{
+    RibbonBar rb;
+    RibbonPage *page = rb.addPage(tr("&Home"));
+    RibbonGroup *group = page->addGroup(tr("&Clipboard"));
+
+    // Accessibility (B2): page and group are painted widgets with no text of their
+    // own, so the ribbon registers a QAccessible factory that gives them a
+    // meaningful role and mirrors each one's name.
+    QAccessibleInterface *pageIf = QAccessible::queryAccessibleInterface(page);
+    QVERIFY(pageIf);
+    QCOMPARE(pageIf->role(), QAccessible::Pane);
+    QCOMPARE(pageIf->text(QAccessible::Name), QStringLiteral("Home"));
+
+    QAccessibleInterface *groupIf = QAccessible::queryAccessibleInterface(group);
+    QVERIFY(groupIf);
+    QCOMPARE(groupIf->role(), QAccessible::Grouping);
+    QCOMPARE(groupIf->text(QAccessible::Name), QStringLiteral("Clipboard"));
 }
 
 TEST_ADD(tst_RibbonPage)

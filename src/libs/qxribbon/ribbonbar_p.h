@@ -17,6 +17,9 @@ class RibbonQuickAccessBar;
 class RibbonControlButton;
 class RibbonKeyTip;
 
+// Accessibility (B2): register the ribbon's QAccessible factory. Idempotent.
+void installRibbonAccessibility();
+
 class RibbonStackedWidget : public QStackedWidget
 {
     Q_OBJECT

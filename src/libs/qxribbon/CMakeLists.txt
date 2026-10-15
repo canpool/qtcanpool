@@ -5,6 +5,7 @@ add_qtc_library(qxribbon
   SOURCES
     qxribbon_global.h
     res.qrc
+    ribbonaccessible.cpp
     ribbonactionsmanager.cpp ribbonactionsmanager.h ribbonactionsmanager_p.h
     ribbonapplicationbutton.cpp ribbonapplicationbutton.h
     ribbonbar.cpp ribbonbar.h ribbonbar_p.h
