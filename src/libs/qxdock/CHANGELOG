@@ -10,6 +10,12 @@ Bugfix
   again rather than cached, so the value corrects itself once the window is
   shown; what made it worth fixing is that the contradiction was invisible,
   not that the damage lasted. tst_DockPanel::minimumSizeHintKeepsTheTitleBar
+- DockWindow::loadStylesheet() dropped the result of opening the compiled-in
+  stylesheet and, if the open failed, went on to set the empty string it had
+  read - an empty stylesheet being how an application's own stylesheet gets
+  wiped. The resource cannot fail to open in a correct build, so this fixes the
+  shape of the code rather than a symptom anybody reported: it now leaves the
+  stylesheet alone and says why. tst_DockWindow::builtInStylesheetIsApplied
 
 Cleanup
 - Drop the Qt 5.12.2 branch in DockFloatingContainer::event(). The threshold

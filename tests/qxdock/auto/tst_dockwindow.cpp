@@ -30,7 +30,21 @@ private slots:
     void lockDockWidget();
     void state();
     void perspective();
+    void builtInStylesheetIsApplied();
 };
+
+/*!
+ * DockWindow loads its stylesheet from the library's own resources while it is
+ * being constructed. Pinned because the load used to hand an empty string to
+ * setStyleSheet() when the resource could not be opened, which would have wiped
+ * whatever stylesheet the application had set, and nothing would have said so.
+ */
+void tst_DockWindow::builtInStylesheetIsApplied()
+{
+    DockWindow window;
+
+    QVERIFY(!window.styleSheet().isEmpty());
+}
 
 void tst_DockWindow::addDockWidget_other()
 {

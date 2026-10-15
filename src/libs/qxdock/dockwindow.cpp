@@ -110,7 +110,14 @@ void DockWindowPrivate::loadStylesheet()
 #endif
     fileName += ".css";
     QFile styleSheetFile(fileName);
-    styleSheetFile.open(QIODevice::ReadOnly);
+    if (!styleSheetFile.open(QIODevice::ReadOnly)) {
+        // The stylesheet is compiled into the library, so a correct build always
+        // finds it. What must not happen is what the code used to do: read
+        // nothing and hand that empty string to setStyleSheet(), which would
+        // wipe whatever stylesheet the application had put there.
+        qWarning("DockWindow: cannot open the built-in stylesheet %s", qPrintable(fileName));
+        return;
+    }
     QTextStream styleSheetStream(&styleSheetFile);
     result = styleSheetStream.readAll();
     styleSheetFile.close();
