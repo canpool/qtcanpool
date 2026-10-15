@@ -120,6 +120,11 @@ RibbonGroup::RibbonGroup(QWidget *parent)
     Q_D(RibbonGroup);
     d->init();
     setGroupLayoutMode(ThreeRowMode);
+    // Accessibility (B2): expose the group name (sans the '&' mnemonic) as the accessible
+    // name, so assistive tools can announce the group.
+    connect(this, &QWidget::windowTitleChanged, this, [this](const QString &title) {
+        setAccessibleName(QString(title).remove(QLatin1Char('&')));
+    });
 }
 
 RibbonGroup::RibbonGroup(const QString &name, QWidget *parent)

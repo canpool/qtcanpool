@@ -480,6 +480,11 @@ RibbonPage::RibbonPage(QWidget *parent)
     d->init();
     setAutoFillBackground(true);
     setBackgroundBrush(Qt::white);
+    // Accessibility (B2): expose the page title (sans the '&' mnemonic) as the accessible
+    // name, so assistive tools can announce the page.
+    connect(this, &QWidget::windowTitleChanged, this, [this](const QString &title) {
+        setAccessibleName(QString(title).remove(QLatin1Char('&')));
+    });
 }
 
 RibbonPage::RibbonPage(const QString &name, QWidget *parent)

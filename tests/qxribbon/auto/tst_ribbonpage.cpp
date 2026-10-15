@@ -30,6 +30,15 @@ void tst_RibbonPage::page()
     page->setPageName(tr("egap"));
     QCOMPARE(tr("egap"), page->pageName());
 
+    // Accessibility (B2): the page title is mirrored into the accessible name, with the
+    // '&' mnemonic stripped.
+    QCOMPARE(page->accessibleName(), QStringLiteral("egap"));
+    page->setPageName(tr("&Home"));
+    QCOMPARE(page->accessibleName(), QStringLiteral("Home"));
+
+    // Accessibility (B2): the ribbon container exposes a stable accessible name.
+    QCOMPARE(rb.accessibleName(), QStringLiteral("Ribbon"));
+
     QCOMPARE(true, page->isCanCustomize());
     page->setCanCustomize(false);
     QCOMPARE(false, page->isCanCustomize());

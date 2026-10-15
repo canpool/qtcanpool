@@ -39,6 +39,12 @@ void tst_RibbonGroup::group()
     anonymousGrp.setGroupName(tr("group1"));
     QCOMPARE(anonymousGrp.groupName(), tr("group1"));
 
+    // Accessibility (B2): the group name is mirrored into the accessible name, with the
+    // '&' mnemonic stripped.
+    QCOMPARE(anonymousGrp.accessibleName(), QStringLiteral("group1"));
+    anonymousGrp.setGroupName(tr("&Format"));
+    QCOMPARE(anonymousGrp.accessibleName(), QStringLiteral("Format"));
+
     RibbonGroup grp(tr("group2"));
     QCOMPARE(grp.groupName(), tr("group2"));
 
