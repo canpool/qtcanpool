@@ -1,4 +1,4 @@
-Unreleased
+0.1.2
 ---
 Bugfix
 - QxNavigationBar did not stretch its entries across the rail. The bar pins

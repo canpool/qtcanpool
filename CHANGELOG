@@ -1,3 +1,61 @@
+4.4.2
+---
+- ci: Qt 6.12 LTS now gates, on Linux, next to Qt 6.8.1 on all three platforms
+  and Qt 5.15.2 on Linux. It was added report only first - nobody had compiled
+  this tree against 6.12, so the first run could have been red - and it was:
+  Qt 6.12 does not install the QPA headers, so qxdock's X11 helper, which asked
+  QPlatformNativeInterface for the connection by name, stopped compiling. It asks
+  QNativeInterface::QX11Application instead, which is public and typed and reaches
+  the same connection; Qt 5 keeps the old call. The second 6.12 failure never
+  appeared on that leg: 6.12 ships the private Qt modules as packages of their
+  own, so qxwindow's Qt5::CorePrivate no longer arrived with Qt6Core, and the root
+  project now asks for CorePrivate and GuiPrivate explicitly. That failure is
+  Windows-only - the leg is Linux, where the native Windows backend is not
+  configured in - so a green 6.12 leg still does not mean 6.12 builds on Windows;
+  a local 6.12 is what found it
+- qxcore: a log rotation that could not reopen its file after moving it away said
+  nothing and dropped every line after it, the reopen's result having been
+  discarded. The result is now checked and the failure reported on stderr, the one
+  channel left to a logger that cannot call qWarning() without re-entering itself
+- qxdock: three fixes. loadStylesheet() dropped the result of opening the
+  compiled-in stylesheet and, if the open failed, went on to set the empty string
+  it had read - an empty stylesheet being how an application's own stylesheet gets
+  wiped - and now leaves the stylesheet alone and says why.
+  DockPanel::minimumSizeHint() asked whether the title bar was visible where the
+  question is whether it is hidden, and before a window is shown the whole tree
+  answers false, so the hint came out a title bar short. And
+  QApplication::setActiveWindow(), deprecated as of 6.12, is now
+  QWidget::activateWindow()
+- qxribbon: RibbonPage clamps its offset after measuring instead of before, so
+  widening a page that had been scrolled to the right no longer leaves a gap along
+  the right edge until the next click (R6); and the window button group is placed
+  while the window is still hidden, which is what had been leaving it on the left
+- qxapp: the navigation rail's entries stretch across the rail instead of keeping
+  their own width
+- demos and tests: the version guards below the 5.15 minimum are gone, which is
+  what two earlier sweeps had left behind - one swept the "<" direction in
+  src/libs, the other the ">=" direction in demos, and the "<" direction in demos
+  and examples had never been swept at all. DockDemo gained the --screenshot
+  switch and a golden image, so qxdock, which has no demo of its own, is covered
+  by visual regression after all
+- qxcore 0.1.2 -> 0.1.3. The log rotation fix above. Patch, per appendix B:
+  a patch is "an addition or a fix", and no exported symbol moved
+- qxribbon 0.12.1 -> 0.12.2. Two fixes: the page offset clamp and the window
+  button group. The dead Qt version branches this release also dropped in
+  `ribbonbar`, `ribboncontainers` and `ribboncustomizewidget` are build wiring
+  and are not what moves the number
+- qxdock 0.2.2 -> 0.2.3. Three fixes: the stylesheet, the minimum size hint and
+  the activation call. The X11 helper's new route to the connection is the same
+  connection by another question - it is part of this step because the library
+  changed, not because it is a defect
+- qxapp 0.1.1 -> 0.1.2. The navigation rail fix
+- qxtheme 0.1.1, qxwindow 0.3.1, qxplugin 0.2.1: unchanged. `qxtheme` and
+  `qxwindow` each lost one Qt version guard below the 5.15 minimum and nothing
+  else, which is build wiring - appendix B's own example is deleting
+  `header.list`, which was recorded and did not move any version either - and
+  `qxplugin` received no change at all. The four libraries that did move carry
+  their `Unreleased` section over as the new version, in the same commit
+
 4.4.1
 ---
 - examples: the eleven qxapp classes that had a unit test but no visual sample now

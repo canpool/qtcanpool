@@ -1,5 +1,5 @@
 add_qtc_library(qxapp
-  VERSION 0.1.1
+  VERSION 0.1.2
   DEFINES QX_APP_LIBRARY
   DEPENDS qxwindow
   PUBLIC_DEPENDS qxribbon qxdock qxtheme qxcore qxplugin Qt5::Core Qt5::Gui Qt5::Widgets

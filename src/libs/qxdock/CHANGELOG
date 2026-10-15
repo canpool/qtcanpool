@@ -1,4 +1,4 @@
-Unreleased
+0.2.3
 ---
 Bugfix
 - DockPanel::minimumSizeHint() asked whether the title bar is visible when it

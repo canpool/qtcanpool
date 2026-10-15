@@ -11,7 +11,7 @@ list(REMOVE_ITEM DEFAULT_DEFINES
 )
 
 add_qtc_library(qxdock
-  VERSION 0.2.2
+  VERSION 0.2.3
   DEFINES QX_DOCK_LIBRARY
   PUBLIC_DEPENDS Qt5::Core Qt5::Widgets
   SOURCES

@@ -1,4 +1,4 @@
-Unreleased
+0.12.2
 ---
 Cleanup
 - Drop the Qt 5.7 branches in RibbonGridContainerPrivate::init() and

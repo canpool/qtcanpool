@@ -1,5 +1,5 @@
 add_qtc_library(qxribbon
-  VERSION 0.12.1
+  VERSION 0.12.2
   DEFINES QX_RIBBON_LIBRARY
   PUBLIC_DEPENDS Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES
