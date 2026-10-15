@@ -1,3 +1,16 @@
+Unreleased
+---
+Bugfix
+- Rotating the log file dropped the result of reopening it. If that reopen
+  failed, the logger went on running with no file behind it and every later line
+  was lost, and nothing said so - the rotation has already moved the old file
+  away at that point, so there is no way back from it. The failure is now
+  reported on stderr, which is the only channel left to a logger that cannot use
+  qWarning() without re-entering itself. The failure cannot be forced from a
+  test portably - it takes a file system that refuses the file - so
+  tst_QxLogger::keepsItsFileAfterRotation pins the other half: a rotation that
+  works still leaves a file behind the logger.
+
 0.1.2
 ---
 Bugfix

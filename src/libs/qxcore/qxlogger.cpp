@@ -110,7 +110,13 @@ void rotate(LoggerState &s, qint64 pending)
     QFile::rename(base, backupName(base, 1));
 
     s.file.setFileName(base);
-    s.file.open(QIODevice::WriteOnly | QIODevice::Append);
+    if (!s.file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        // The rotation already moved the old file away, so from here on there is
+        // no file behind the logger and every later line is dropped. Say so on
+        // stderr - it cannot go through qWarning(), which would come straight
+        // back in here - rather than let the log stop without a word.
+        std::fprintf(stderr, "QxLogger: cannot reopen %s after rotating it away\n", qPrintable(base));
+    }
 }
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)

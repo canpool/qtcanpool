@@ -39,6 +39,7 @@ private slots:
     void fileOutput();
     void levelFilter();
     void rotation();
+    void keepsItsFileAfterRotation();
     void rotationIsOffAtZeroSize();
     void consoleOnly();
     void unopenableFileKeepsConsoleOutput();
@@ -137,6 +138,35 @@ void tst_QxLogger::rotation()
     // the active one.
     QVERIFY(QFile::exists(logFile + ".2"));
     QVERIFY(!QFile::exists(logFile + ".3"));
+}
+
+/*!
+ * Rotation closes the active file, shifts the backups and opens a fresh one, so
+ * the logger must still have a file behind it afterwards. Pinning this through
+ * fileName() is the only public way to see it: a reopen that failed left the
+ * logger writing to nowhere while everything else looked normal, and the open()
+ * result was dropped, so nothing ever said so.
+ */
+void tst_QxLogger::keepsItsFileAfterRotation()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString logFile = dir.filePath("reopen.log");
+    QxLogger::Options options;
+    options.fileName = logFile;
+    options.maxFileSize = 256;
+    options.maxBackups = 2;
+    options.toConsole = false;
+    QVERIFY(QxLogger::init(options));
+
+    for (int i = 0; i < 40; ++i) {
+        qWarning() << "rotation line" << i << QString(60, QLatin1Char('x'));
+    }
+    QxLogger::flush();
+
+    QVERIFY(QFile::exists(logFile + ".1"));    // the rotation really happened
+    QCOMPARE(QxLogger::fileName(), logFile);   // ... and there is still a file
 }
 
 /*!
