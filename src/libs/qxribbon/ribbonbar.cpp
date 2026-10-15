@@ -12,12 +12,13 @@
 #include "ribbontabbar.h"
 #include "ribbonquickaccessbar.h"
 
+#include <QAbstractButton>
 #include <QAction>
 #include <QApplication>
 #include <QDebug>
+#include <QHoverEvent>
 #include <QKeyEvent>
 #include <QSet>
-#include <QHoverEvent>
 #include <QLinearGradient>
 #include <QPainter>
 #include <QResizeEvent>
@@ -1940,31 +1941,11 @@ static QString keyTipMnemonic(const QString &title)
     return QString();
 }
 
-void RibbonBarPrivate::showKeyTips()
+void RibbonBarPrivate::renderKeyTips(const QList<KeyTipTarget> &targets)
 {
     Q_Q(RibbonBar);
     hideKeyTips();
-    if (!q->isVisible()) {
-        return;
-    }
-    // 候选目标：应用按钮 + 可见页签
-    struct Target {
-        QWidget *widget;     // 应用按钮；页签为 nullptr
-        QString preferred;   // 助记符（可能为空）
-        int pageIndex;       // <0 表示应用按钮
-    };
-    QList<Target> targets;
-    if (m_applicationButton && m_applicationButton->isVisible()) {
-        targets.append({m_applicationButton, QString(), -1});
-    }
-    const QList<RibbonPage *> pages = q->pages();
-    for (int i = 0; i < pages.size(); ++i) {
-        if (!q->isPageVisible(pages.at(i))) {
-            continue;
-        }
-        targets.append({Q_NULLPTR, keyTipMnemonic(pages.at(i)->title()), i});
-    }
-    if (targets.isEmpty()) {
+    if (targets.isEmpty() || !q->isVisible()) {
         return;
     }
     // 分配角标字母：先放助记符，再自动补 A–Z
@@ -1992,17 +1973,23 @@ void RibbonBarPrivate::showKeyTips()
     }
     m_keyTipMode = true;
     for (int i = 0; i < targets.size(); ++i) {
+        if (keys.at(i).isEmpty()) {
+            continue;   // 字母池耗尽，放弃该目标
+        }
+        const KeyTipTarget &tg = targets.at(i);
+        QRect rect;
+        if (tg.pageIndex >= 0) {
+            const QRect tabRect = m_tabBar->tabRect(tg.pageIndex);
+            rect = QRect(m_tabBar->mapTo(q, tabRect.topLeft()), tabRect.size());
+        } else if (tg.widget) {
+            rect = QRect(tg.widget->mapTo(q, QPoint(0, 0)), tg.widget->size());
+        } else {
+            continue;
+        }
         RibbonKeyTip *kt = new RibbonKeyTip(q);
         kt->setKey(keys.at(i));
-        kt->setTarget(targets.at(i).widget);
-        kt->setProperty("pageIndex", targets.at(i).pageIndex);
-        QRect rect;
-        if (targets.at(i).pageIndex < 0) {
-            rect = m_applicationButton->geometry();
-        } else {
-            const QRect tabRect = m_tabBar->tabRect(targets.at(i).pageIndex);
-            rect = QRect(m_tabBar->mapTo(q, tabRect.topLeft()), tabRect.size());
-        }
+        kt->setTarget(tg.widget);
+        kt->setProperty("pageIndex", tg.pageIndex);
         const QSize sz = kt->sizeHint();
         const QPoint pos(rect.center().x() - sz.width() / 2, rect.top() + (rect.height() - sz.height()) / 2);
         kt->setGeometry(QRect(pos, sz));
@@ -2012,36 +1999,82 @@ void RibbonBarPrivate::showKeyTips()
     }
 }
 
+void RibbonBarPrivate::showKeyTips()
+{
+    Q_Q(RibbonBar);
+    // 一级目标：应用按钮 + 可见页签
+    QList<KeyTipTarget> targets;
+    if (m_applicationButton && m_applicationButton->isVisible()) {
+        targets.append({m_applicationButton, -1, QString()});
+    }
+    // 按页签下标枚举（与 tabRect/setCurrentIndex 同一坐标系，避免隐藏页导致错位）
+    const int tabCount = m_tabBar->count();
+    for (int i = 0; i < tabCount; ++i) {
+        RibbonPage *p = q->page(i);
+        if (!p || !q->isPageVisible(p)) {
+            continue;
+        }
+        targets.append({Q_NULLPTR, i, keyTipMnemonic(p->title())});
+    }
+    renderKeyTips(targets);
+}
+
+void RibbonBarPrivate::showControlKeyTips()
+{
+    Q_Q(RibbonBar);
+    // 二级目标：当前页内的 RibbonButton（保留应用按钮）
+    QList<KeyTipTarget> targets;
+    if (m_applicationButton && m_applicationButton->isVisible()) {
+        targets.append({m_applicationButton, -1, QString()});
+    }
+    RibbonPage *page = q->page(q->currentIndex());
+    if (page) {
+        const QList<RibbonGroup *> groups = page->groups();
+        for (RibbonGroup *g : groups) {
+            const QList<RibbonButton *> btns = g->ribbonButtons();
+            for (RibbonButton *b : btns) {
+                if (!b->isVisible()) {
+                    continue;
+                }
+                targets.append({b, -1, keyTipMnemonic(b->text())});
+            }
+        }
+    }
+    renderKeyTips(targets);
+}
+
 bool RibbonBarPrivate::handleKeyTipKeyEvent(QKeyEvent *ke)
 {
     Q_Q(RibbonBar);
     if (m_keyTipMode) {
-        if (ke->key() == Qt::Key_Escape) {
-            hideKeyTips();
-            return true;
-        }
-        if (ke->key() == Qt::Key_Alt) {
+        if (ke->key() == Qt::Key_Escape || ke->key() == Qt::Key_Alt) {
             hideKeyTips();
             return true;
         }
         const QString t = ke->text().toUpper();
         if (!t.isEmpty()) {
             for (RibbonKeyTip *kt : m_keyTips) {
-                if (kt->key().toUpper() == t) {
-                    const int pageIndex = kt->property("pageIndex").toInt();
-                    if (pageIndex < 0) {
-                        if (m_applicationButton) {
-                            m_applicationButton->click();
-                        }
-                    } else {
-                        q->setCurrentIndex(pageIndex);
+                if (kt->key().toUpper() != t) {
+                    continue;
+                }
+                const int pageIndex = kt->property("pageIndex").toInt();
+                QWidget *target = kt->target();
+                if (target) {
+                    // 控件目标：应用按钮 / RibbonButton，均按点击触发
+                    if (QAbstractButton *btn = qobject_cast<QAbstractButton *>(target)) {
+                        btn->click();
                     }
                     hideKeyTips();
-                    return true;
+                } else if (pageIndex >= 0) {
+                    // 页签目标：切到该页并下探为二级（页内控件角标）
+                    q->setCurrentIndex(pageIndex);
+                    showControlKeyTips();
+                } else {
+                    hideKeyTips();
                 }
+                return true;
             }
-            // 未命中：保留在模式内，等待 Esc/Alt 或下一次按键
-            return true;
+            return true;   // 未命中：留在模式内，等待 Esc/Alt 或下一次按键
         }
         return true;
     }

@@ -79,6 +79,13 @@ class RibbonBarPrivate : public QObject
     Q_OBJECT
     QX_DECLARE_PUBLIC(RibbonBar)
 public:
+    // KeyTips (B1)：一个可挂角标的目标
+    struct KeyTipTarget {
+        QWidget *widget;     ///< 触发控件（应用按钮 / RibbonButton）；页签目标为 nullptr
+        int pageIndex;       ///< >=0 为页签索引；<0 为控件目标
+        QString preferred;   ///< 首选助记符（可能为空，则由 A–Z 自动补）
+    };
+
     RibbonBarPrivate();
 
     void init();
@@ -104,7 +111,9 @@ public:
     void updatePageContextManagerData();
 
     // KeyTips (B1): Alt 进入的键盘级联角标模式
-    void showKeyTips();
+    void showKeyTips();          ///< 一级：应用按钮 + 可见页签
+    void showControlKeyTips();   ///< 二级：当前页内的 RibbonButton 角标
+    void renderKeyTips(const QList<KeyTipTarget> &targets);
     void hideKeyTips();
     bool handleKeyTipKeyEvent(QKeyEvent *ke);
     void updateRibbonElementGeometry();
