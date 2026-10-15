@@ -5,10 +5,13 @@
 #include "ribbonbutton.h"
 #include "ribbonbutton_p.h"
 #include "ribbongroup.h"
+#include "ribbonscreentip.h"
 
 #include <QCursor>
 #include <QAction>
 #include <QDebug>
+#include <QHelpEvent>
+#include <QKeySequence>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QStyleOption>
@@ -670,6 +673,7 @@ void RibbonButton::mouseMoveEvent(QMouseEvent *e)
 void RibbonButton::mousePressEvent(QMouseEvent *e)
 {
     Q_D(RibbonButton);
+    RibbonScreenTip::hideTip();
     if ((e->button() == Qt::LeftButton) && (popupMode() == MenuButtonPopup)) {
         d->updateButtonState(e->pos());
         if (d->m_mouseOnSubControl) {
@@ -705,6 +709,7 @@ void RibbonButton::leaveEvent(QEvent *e)
 {
     Q_D(RibbonButton);
     d->m_mouseOnSubControl = false;
+    RibbonScreenTip::hideTip();
     QToolButton::leaveEvent(e);
 }
 
@@ -825,10 +830,62 @@ bool RibbonButton::isToolButtonTextShift()
     return RibbonButtonPrivate::s_isToolButtonTextShift;
 }
 
+namespace
+{
+
+/*!
+ * \brief Removes the '&' mnemonic markers from a button text.
+ */
+QString withoutMnemonic(const QString &text)
+{
+    QString plain;
+    plain.reserve(text.size());
+    for (int i = 0; i < text.size(); ++i) {
+        if (text.at(i) != QLatin1Char('&')) {
+            plain.append(text.at(i));
+            continue;
+        }
+        if (i + 1 < text.size() && text.at(i + 1) == QLatin1Char('&')) {   // "&&" stands for a literal '&'
+            plain.append(QLatin1Char('&'));
+            ++i;
+        }
+    }
+    return plain;
+}
+
+/*!
+ * \brief Shows the rich screen tip for the button's default action.
+ *
+ * Returns false when the action carries nothing richer than its text, so the plain
+ * tooltip keeps being used and the change stays invisible for plain buttons.
+ */
+bool showScreenTipFor(RibbonButton *button)
+{
+    QAction *action = button->defaultAction();
+    if (!action) {
+        return false;
+    }
+    const QString text = action->iconText().isEmpty() ? action->text() : action->iconText();
+    const QString description = action->statusTip();
+    const QString shortcut = action->shortcut().toString(QKeySequence::NativeText);
+    if (description.isEmpty() && shortcut.isEmpty()) {
+        return false;
+    }
+    RibbonScreenTip::showTip(button, withoutMnemonic(text), description, shortcut);
+    return true;
+}
+
+}   // namespace
+
 bool RibbonButton::event(QEvent *e)
 {
     Q_D(RibbonButton);
     switch (e->type()) {
+    case QEvent::ToolTip:
+        if (showScreenTipFor(this)) {
+            return true;
+        }
+        break;
     case QEvent::WindowDeactivate:
     case QEvent::ActionChanged:
     case QEvent::ActionRemoved:
