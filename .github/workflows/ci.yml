@@ -223,11 +223,32 @@ jobs:
         # A build directory of its own: the gate's `build` must stay built
         # against 6.8, because the SDK-consumption steps below it install from
         # that directory and nobody has agreed to move them to 6.12.
-        run: >
-          cmake -S . -B build-qt612
-          -DCMAKE_BUILD_TYPE=Release
-          -DWITH_DEMOS=ON
-          -DWITH_TESTS=ON
+        #
+        # The configure output is also echoed into annotations while this leg is
+        # being brought up. It is report only, so a failure here costs nobody a
+        # merge - but a report-only leg nobody reads is a leg that stays red for
+        # the same reason CI diagnostics usually go unread: the reason lives in a
+        # log behind two clicks. Annotations put it on the run page itself.
+        run: |
+          # `bash -e` is the default shell, so configure has to be allowed to
+          # fail into STATUS instead of aborting the step before it is echoed.
+          set +e
+          echo "::notice title=qt612-toolchain::$(cmake --version | head -1), Qt at ${QT_ROOT_DIR:-unset}"
+          echo "::notice title=qt612-qt-packages::$(ls "${QT_ROOT_DIR}/lib/cmake" 2>/dev/null | tr '\n' ' ' || echo none)"
+          cmake -S . -B build-qt612 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DWITH_DEMOS=ON \
+            -DWITH_TESTS=ON 2>&1 | tee configure.log
+          STATUS=$?
+          if [ "${STATUS}" -ne 0 ]; then
+            grep -A6 -iE "^CMake Error|Could NOT find|Call Stack|error:" configure.log |
+              head -80 > configure-errors.txt || true
+            while IFS= read -r line; do
+              printf '::error title=qt612-configure::%s\n' \
+                "$(printf '%s' "${line}" | sed -e 's/%/%25/g' -e 's/\r/%0D/g')"
+            done < configure-errors.txt
+          fi
+          exit "${STATUS}"
 
       - name: Build
         run: cmake --build build-qt612 --config Release --parallel
