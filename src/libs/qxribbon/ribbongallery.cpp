@@ -10,6 +10,7 @@
 #include <QIcon>
 #include <QActionGroup>
 #include <QDebug>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QResizeEvent>
 #include <QScrollBar>
@@ -127,6 +128,9 @@ RibbonGallery::RibbonGallery(QWidget *parent)
     setFrameShape(QFrame::Box);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMinimumWidth(200);
+    // B9: the gallery can be reached and driven from the keyboard: arrows move the
+    // current item, Enter/Space activates it, PageUp/PageDown scroll like the buttons.
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 RibbonGallery::~RibbonGallery(){QX_FINI_PRIVATE()}
@@ -238,6 +242,64 @@ void RibbonGallery::showMoreDetail()
     width += qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);   // scrollbar
     d->m_popupWidget->setGeometry(start.x(), start.y(), width, popupSize.height());
     d->m_popupWidget->show();
+}
+
+/**
+ * @brief Moves the viewport's current item by @a step, clamped to the model (B9)
+ *
+ * With no current item yet, the first Down/Right selects the first item and the first
+ * Up/Left selects the last one, which is what a list is expected to do.
+ */
+void RibbonGallery::moveCurrentItem(int step)
+{
+    Q_D(RibbonGallery);
+    RibbonGalleryGroup *group = d->m_viewportGroup;
+    if (!group || !group->model()) {
+        return;
+    }
+    const int count = group->model()->rowCount();
+    if (count == 0) {
+        return;
+    }
+    const QModelIndex current = group->currentIndex();
+    const int row = current.isValid() ? current.row() : (step > 0 ? -1 : count);
+    const QModelIndex next = group->model()->index(qBound(0, row + step, count - 1), 0);
+    group->setCurrentIndex(next);
+    group->scrollTo(next);
+}
+
+void RibbonGallery::keyPressEvent(QKeyEvent *event)
+{
+    Q_D(RibbonGallery);
+    RibbonGalleryGroup *group = d->m_viewportGroup;
+    if (!group) {
+        QFrame::keyPressEvent(event);
+        return;
+    }
+    switch (event->key()) {
+    case Qt::Key_PageUp:
+        pageUp();
+        return;
+    case Qt::Key_PageDown:
+        pageDown();
+        return;
+    case Qt::Key_Up:
+    case Qt::Key_Left:
+        moveCurrentItem(-1);
+        return;
+    case Qt::Key_Down:
+    case Qt::Key_Right:
+        moveCurrentItem(1);
+        return;
+    case Qt::Key_Return:
+    case Qt::Key_Enter:
+    case Qt::Key_Space:
+        group->triggerCurrentItem();
+        return;
+    default:
+        break;
+    }
+    QFrame::keyPressEvent(event);
 }
 
 void RibbonGallery::onItemClicked(const QModelIndex &index)

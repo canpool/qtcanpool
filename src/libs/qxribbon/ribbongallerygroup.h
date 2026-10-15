@@ -61,6 +61,10 @@ public:
 
     void selectByIndex(int i);
 
+    /// Activates the current item exactly as a mouse click would; used by the keyboard
+    /// navigation of RibbonGallery (B9).
+    void triggerCurrentItem();
+
     void setDisplayRow(DisplayRow r);
     DisplayRow displayRow() const;
 

@@ -601,6 +601,12 @@ void RibbonGalleryGroup::selectByIndex(int i)
     }
 }
 
+void RibbonGalleryGroup::triggerCurrentItem()
+{
+    Q_D(RibbonGalleryGroup);
+    d->itemActivate(currentIndex(), QAction::Trigger);
+}
+
 void RibbonGalleryGroup::setDisplayRow(DisplayRow r)
 {
     Q_D(RibbonGalleryGroup);

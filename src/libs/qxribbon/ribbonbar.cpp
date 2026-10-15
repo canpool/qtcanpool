@@ -7,6 +7,7 @@
 #include "ribbonapplicationbutton.h"
 #include "ribbonbuttongroup.h"
 #include "ribboncontrols.h"
+#include "ribbongallery.h"
 #include "ribbonkeytip.h"
 #include "ribbonmanager.h"
 #include "ribbontabbar.h"
@@ -2052,6 +2053,15 @@ void RibbonBarPrivate::showControlKeyTips()
                 }
                 targets.append({b, -1, keyTipMnemonic(b->text())});
             }
+            // Galleries in the group carry a badge too: pressing it moves the focus
+            // into the gallery, which is then driven from the keyboard (B9).
+            const QList<RibbonGallery *> galleries = g->findChildren<RibbonGallery *>();
+            for (RibbonGallery *gallery : galleries) {
+                if (!gallery->isVisible()) {
+                    continue;
+                }
+                targets.append({gallery, -1, QString()});
+            }
         }
     }
     renderKeyTips(targets);
@@ -2074,9 +2084,13 @@ bool RibbonBarPrivate::handleKeyTipKeyEvent(QKeyEvent *ke)
                 const int pageIndex = kt->property("pageIndex").toInt();
                 QWidget *target = kt->target();
                 if (target) {
-                    // Control target: application button / RibbonButton, both fire on click
+                    // Control target: the application button and RibbonButtons fire on
+                    // click; a gallery takes the focus instead, so it can then be
+                    // driven from the keyboard (B9).
                     if (QAbstractButton *btn = qobject_cast<QAbstractButton *>(target)) {
                         btn->click();
+                    } else {
+                        target->setFocus(Qt::ShortcutFocusReason);
                     }
                     hideKeyTips();
                 } else if (pageIndex >= 0) {
