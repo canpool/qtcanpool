@@ -7,6 +7,7 @@
 #include "ribbonapplicationbutton.h"
 #include "ribbonbuttongroup.h"
 #include "ribboncontrols.h"
+#include "ribbonkeytip.h"
 #include "ribbonmanager.h"
 #include "ribbontabbar.h"
 #include "ribbonquickaccessbar.h"
@@ -14,6 +15,8 @@
 #include <QAction>
 #include <QApplication>
 #include <QDebug>
+#include <QKeyEvent>
+#include <QSet>
 #include <QHoverEvent>
 #include <QLinearGradient>
 #include <QPainter>
@@ -159,6 +162,7 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_pageContextCoverTab(false)
     , m_layoutRequest(false)
     , m_blockResize(false)
+    , m_keyTipMode(false)
 {
     m_pageContextColorList << QColor(201, 89, 156)   // 玫红
                            << QColor(242, 203, 29)   // 黄
@@ -1837,6 +1841,14 @@ QSize RibbonBar::minimumSizeHint() const
 bool RibbonBar::event(QEvent *event)
 {
     Q_D(RibbonBar);
+    // KeyTips (B1): Alt 进入/退出角标模式，模式内拦截所有按键做级联导航。
+    // 必须在基类 QMenuBar::event 之前拦截，避免 Alt 被原生菜单逻辑吃掉。
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+        if (d->handleKeyTipKeyEvent(ke)) {
+            return true;
+        }
+    }
     bool res = QMenuBar::event(event);
 
     switch (event->type()) {
@@ -1905,6 +1917,144 @@ bool RibbonBar::eventFilter(QObject *obj, QEvent *e)
     return QMenuBar::eventFilter(obj, e);
 }
 
+// ===== KeyTips (B1) =====
+
+void RibbonBarPrivate::hideKeyTips()
+{
+    Q_Q(RibbonBar);
+    m_keyTipMode = false;
+    qDeleteAll(m_keyTips);
+    m_keyTips.clear();
+}
+
+static QString keyTipMnemonic(const QString &title)
+{
+    // 从 "&File" 形式取助记符字母；无则返回空
+    const int idx = title.indexOf(QLatin1Char('&'));
+    if (idx >= 0 && idx + 1 < title.size()) {
+        const QChar c = title.at(idx + 1);
+        if (!c.isSpace()) {
+            return QString(c).toUpper();
+        }
+    }
+    return QString();
+}
+
+void RibbonBarPrivate::showKeyTips()
+{
+    Q_Q(RibbonBar);
+    hideKeyTips();
+    if (!q->isVisible()) {
+        return;
+    }
+    // 候选目标：应用按钮 + 可见页签
+    struct Target {
+        QWidget *widget;     // 应用按钮；页签为 nullptr
+        QString preferred;   // 助记符（可能为空）
+        int pageIndex;       // <0 表示应用按钮
+    };
+    QList<Target> targets;
+    if (m_applicationButton && m_applicationButton->isVisible()) {
+        targets.append({m_applicationButton, QString(), -1});
+    }
+    const QList<RibbonPage *> pages = q->pages();
+    for (int i = 0; i < pages.size(); ++i) {
+        if (!q->isPageVisible(pages.at(i))) {
+            continue;
+        }
+        targets.append({Q_NULLPTR, keyTipMnemonic(pages.at(i)->title()), i});
+    }
+    if (targets.isEmpty()) {
+        return;
+    }
+    // 分配角标字母：先放助记符，再自动补 A–Z
+    QSet<QChar> used;
+    QList<QString> keys(targets.size());
+    for (int i = 0; i < targets.size(); ++i) {
+        const QString &pref = targets.at(i).preferred;
+        if (!pref.isEmpty() && !used.contains(pref.at(0))) {
+            keys[i] = pref;
+            used.insert(pref.at(0));
+        }
+    }
+    static const QString pool = QStringLiteral("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    for (int i = 0; i < targets.size(); ++i) {
+        if (!keys.at(i).isEmpty()) {
+            continue;
+        }
+        for (const QChar &c : pool) {
+            if (!used.contains(c)) {
+                keys[i] = QString(c);
+                used.insert(c);
+                break;
+            }
+        }
+    }
+    m_keyTipMode = true;
+    for (int i = 0; i < targets.size(); ++i) {
+        RibbonKeyTip *kt = new RibbonKeyTip(q);
+        kt->setKey(keys.at(i));
+        kt->setTarget(targets.at(i).widget);
+        kt->setProperty("pageIndex", targets.at(i).pageIndex);
+        QRect rect;
+        if (targets.at(i).pageIndex < 0) {
+            rect = m_applicationButton->geometry();
+        } else {
+            const QRect tabRect = m_tabBar->tabRect(targets.at(i).pageIndex);
+            rect = QRect(m_tabBar->mapTo(q, tabRect.topLeft()), tabRect.size());
+        }
+        const QSize sz = kt->sizeHint();
+        const QPoint pos(rect.center().x() - sz.width() / 2, rect.top() + (rect.height() - sz.height()) / 2);
+        kt->setGeometry(QRect(pos, sz));
+        kt->show();
+        kt->raise();
+        m_keyTips.append(kt);
+    }
+}
+
+bool RibbonBarPrivate::handleKeyTipKeyEvent(QKeyEvent *ke)
+{
+    Q_Q(RibbonBar);
+    if (m_keyTipMode) {
+        if (ke->key() == Qt::Key_Escape) {
+            hideKeyTips();
+            return true;
+        }
+        if (ke->key() == Qt::Key_Alt) {
+            hideKeyTips();
+            return true;
+        }
+        const QString t = ke->text().toUpper();
+        if (!t.isEmpty()) {
+            for (RibbonKeyTip *kt : m_keyTips) {
+                if (kt->key().toUpper() == t) {
+                    const int pageIndex = kt->property("pageIndex").toInt();
+                    if (pageIndex < 0) {
+                        if (m_applicationButton) {
+                            m_applicationButton->click();
+                        }
+                    } else {
+                        q->setCurrentIndex(pageIndex);
+                    }
+                    hideKeyTips();
+                    return true;
+                }
+            }
+            // 未命中：保留在模式内，等待 Esc/Alt 或下一次按键
+            return true;
+        }
+        return true;
+    }
+    // 非模式：裸 Alt 进入 keytip 模式（不含 Ctrl/Meta，避免抢占系统快捷键）
+    if (ke->key() == Qt::Key_Alt) {
+        if (!(ke->modifiers() & (Qt::ControlModifier | Qt::MetaModifier))) {
+            showKeyTips();
+            return true;
+        }
+    }
+    return false;
+}
+
 void RibbonBar::paintEvent(QPaintEvent *e)
 {
     Q_D(RibbonBar);
@@ -1926,6 +2076,7 @@ void RibbonBar::resizeEvent(QResizeEvent *e)
 {
     Q_D(RibbonBar);
     Q_UNUSED(e);
+    d->hideKeyTips();
     if (d->m_blockResize) {
         return;
     }

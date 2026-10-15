@@ -15,6 +15,7 @@ QX_RIBBON_BEGIN_NAMESPACE
 class RibbonTabBar;
 class RibbonQuickAccessBar;
 class RibbonControlButton;
+class RibbonKeyTip;
 
 class RibbonStackedWidget : public QStackedWidget
 {
@@ -101,6 +102,11 @@ public:
 
     void updateTabData();
     void updatePageContextManagerData();
+
+    // KeyTips (B1): Alt 进入的键盘级联角标模式
+    void showKeyTips();
+    void hideKeyTips();
+    bool handleKeyTipKeyEvent(QKeyEvent *ke);
     void updateRibbonElementGeometry();
     void updateRibbonBarHeight();
 
@@ -170,6 +176,9 @@ public:
     bool m_pageContextCoverTab;
     bool m_layoutRequest;
     bool m_blockResize;
+
+    bool m_keyTipMode;                 ///< 是否处于 keytip 角标模式
+    QList<RibbonKeyTip *> m_keyTips;   ///< 当前显示的 KeyTip 角标
 };
 
 QX_RIBBON_END_NAMESPACE
