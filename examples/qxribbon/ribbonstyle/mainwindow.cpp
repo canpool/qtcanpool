@@ -25,9 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
     QActionGroup *styleGroup = new QActionGroup(this);
     QAction *actionTheme = new QAction(icon, tr("style"), this);
     RibbonMenu *menu = new RibbonMenu(tr("style"), this);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    menu->setObjectName(QLatin1String("qx_compatible"));
-#endif
     actionTheme->setMenu(menu);
     styleGroup->addAction(addStyleAction(menu->addAction(tr("office style")), RibbonBar::OfficeStyle));
     styleGroup->addAction(addStyleAction(menu->addAction(tr("wps style")), RibbonBar::WpsLiteStyle));
