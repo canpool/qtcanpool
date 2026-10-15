@@ -251,7 +251,20 @@ jobs:
           exit "${STATUS}"
 
       - name: Build
-        run: cmake --build build-qt612 --config Release --parallel
+        # Same reason as the annotations on Configure above: while this leg is
+        # being brought up, the compiler errors are worth putting on the run
+        # page rather than two clicks away in the log.
+        run: |
+          set +e
+          cmake --build build-qt612 --config Release --parallel 2>&1 | tee build.log
+          STATUS=$?
+          grep -E "error:|fatal error|CMake Error|Error [0-9]" build.log |
+            sort -u | head -40 > build-errors.txt || true
+          while IFS= read -r line; do
+            printf '::error title=qt612-build::%s\n' \
+              "$(printf '%s' "${line}" | sed -e 's/%/%25/g' -e 's/\r/%0D/g')"
+          done < build-errors.txt
+          exit "${STATUS}"
 
       - name: Test
         env:
