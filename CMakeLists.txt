@@ -156,6 +156,16 @@ endif()
 find_package(Qt5 COMPONENTS LinguistTools QUIET)
 find_package(Qt5 COMPONENTS Designer DesignerComponents Help SerialPort Svg Tools QUIET)
 
+# The private modules qxwindow and qxdock link have to be asked for. Up to
+# Qt 6.11 they came with the module they are private to - Qt6::CorePrivate was
+# defined by Qt6Core - so linking Qt5::CorePrivate worked without ever naming
+# it. Qt 6.12 ships them as packages of their own, and the target is then only
+# defined if the component is requested; without this line the build fails at
+# generate time with "target Qt5::CorePrivate ... was not found". Asking is
+# harmless on the older versions, where the component does not exist as a
+# package but the target does.
+find_package(Qt5 COMPONENTS CorePrivate GuiPrivate QUIET)
+
 find_package(Threads)
 if (Qt5_VERSION VERSION_LESS 6.0.0)
 find_package(KF5SyntaxHighlighting QUIET)
