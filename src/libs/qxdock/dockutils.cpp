@@ -23,7 +23,16 @@
 #include <QSettings>
 #include <QFile>
 #include <QApplication>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+// Qt 6 replaced the string-keyed QPlatformNativeInterface with typed native
+// interfaces, and the QPA header the old call needs is not installed by every
+// Qt 6 build: 6.12 leaves it out of the binary packages, which made this file
+// fail to compile there. QX11Application is the documented replacement and
+// needs no private header at all.
+#include <QGuiApplication>
+#else
 #include <qpa/qplatformnativeinterface.h>
+#endif
 #endif
 
 QX_DOCK_BEGIN_NAMESPACE
@@ -243,12 +252,19 @@ xcb_connection_t *x11_connection()
 {
     if (!qApp)
         return nullptr;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (auto *native = qApp->nativeInterface<QNativeInterface::QX11Application>()) {
+        return native->connection();
+    }
+    return nullptr;
+#else
     QPlatformNativeInterface *native = qApp->platformNativeInterface();
     if (!native)
         return nullptr;
 
     void *connection = native->nativeResourceForIntegration(QByteArray("connection"));
     return reinterpret_cast<xcb_connection_t *>(connection);
+#endif
 }
 
 xcb_atom_t xcb_get_atom(const char *name)

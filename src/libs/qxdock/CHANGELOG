@@ -19,6 +19,16 @@ Cleanup
   unconditional, and the "#else" side that checked for the left mouse button is
   gone.
 
+Other
+- The X11 helpers no longer include a QPA header. x11_connection() reached the
+  X connection through QPlatformNativeInterface and its "connection" key, which
+  is Qt's private platform API and needs <qpa/qplatformnativeinterface.h> - a
+  header Qt 6.12 does not install, so this library stopped compiling on it. Qt 6
+  now asks for QNativeInterface::QX11Application, the documented replacement:
+  typed instead of string keyed, and public, so it needs no private header. Qt 5
+  keeps the old call, having no QNativeInterface. The connection is the same
+  either way; only the way of asking for it changed.
+
 0.2.2
 ---
 Bugfix
