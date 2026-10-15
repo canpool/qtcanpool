@@ -19,6 +19,14 @@ jobs:
           - { os: windows-latest, qt: '6.8.1' }
           - { os: macos-latest,   qt: '6.8.1' }
           - { os: ubuntu-latest,  qt: '5.15.2' }
+          # 6.12 LTS, gating. One Linux leg and not three: what it answers is
+          # whether the tree builds and passes against 6.12 at all, which is a
+          # property of the code rather than of the platform, and the three
+          # platforms are already covered on 6.8 above. It was report only - a
+          # job of its own with continue-on-error - for as long as nobody had
+          # compiled this tree against 6.12 and the first run could have been
+          # red; it has been green since dda5b328, so it now gates like the rest.
+          - { os: ubuntu-latest,  qt: '6.12.0' }
     steps:
       - uses: actions/checkout@v4
 
@@ -186,91 +194,6 @@ jobs:
             exit 1
           fi
           exit "${STATUS}"
-
-  qt612:
-    # Qt 6.12 LTS, report only. 6.12.0 shipped on 2026-09-30 as the LTS that
-    # follows 6.8, and decision K31 reserved a 6.12 verification leg for 4.5 -
-    # but "add a leg" touches nothing under src/libs, so a patch release can
-    # carry it, and having it green before 4.5 starts means the feature work
-    # there does not walk into a pile of 6.12 deprecations first.
-    #
-    # Report only, and a job of its own rather than a fifth entry in `build`'s
-    # matrix. Local development is on 6.8.3, so nobody has compiled this tree
-    # against 6.12 yet and the first run may well be red; and this repository
-    # integrates by pushing to master, with no pull request standing in front
-    # of the gate, so a red gating leg would hold up every push until the
-    # fallout is triaged. Same reasoning that made `native` a job of its own:
-    # a non-gating job must not share a job with a gate.
-    #
-    # One Linux leg, not three: the point of this job is whether the tree
-    # compiles and the tests pass against 6.12 at all, which is a property of
-    # the code and not of the platform - and `build` already covers the three
-    # platforms on 6.8. Promoting it to a gate is a one-line change (drop
-    # continue-on-error, move the entry into the matrix) once it is green.
-    name: Qt 6.12 (report only)
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '6.12.0'
-          cache: true
-
-      - name: Configure
-        # A build directory of its own: the gate's `build` must stay built
-        # against 6.8, because the SDK-consumption steps below it install from
-        # that directory and nobody has agreed to move them to 6.12.
-        #
-        # The configure output is also echoed into annotations while this leg is
-        # being brought up. It is report only, so a failure here costs nobody a
-        # merge - but a report-only leg nobody reads is a leg that stays red for
-        # the same reason CI diagnostics usually go unread: the reason lives in a
-        # log behind two clicks. Annotations put it on the run page itself.
-        run: |
-          # `bash -e` is the default shell, so configure has to be allowed to
-          # fail into STATUS instead of aborting the step before it is echoed.
-          set +e
-          echo "::notice title=qt612-toolchain::$(cmake --version | head -1), Qt at ${QT_ROOT_DIR:-unset}"
-          echo "::notice title=qt612-qt-packages::$(ls "${QT_ROOT_DIR}/lib/cmake" 2>/dev/null | tr '\n' ' ' || echo none)"
-          cmake -S . -B build-qt612 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DWITH_DEMOS=ON \
-            -DWITH_TESTS=ON 2>&1 | tee configure.log
-          STATUS=$?
-          if [ "${STATUS}" -ne 0 ]; then
-            grep -A6 -iE "^CMake Error|Could NOT find|Call Stack|error:" configure.log |
-              head -80 > configure-errors.txt || true
-            while IFS= read -r line; do
-              printf '::error title=qt612-configure::%s\n' \
-                "$(printf '%s' "${line}" | sed -e 's/%/%25/g' -e 's/\r/%0D/g')"
-            done < configure-errors.txt
-          fi
-          exit "${STATUS}"
-
-      - name: Build
-        # Same reason as the annotations on Configure above: while this leg is
-        # being brought up, the compiler errors are worth putting on the run
-        # page rather than two clicks away in the log.
-        run: |
-          set +e
-          cmake --build build-qt612 --config Release --parallel 2>&1 | tee build.log
-          STATUS=$?
-          grep -E "error:|fatal error|CMake Error|Error [0-9]" build.log |
-            sort -u | head -40 > build-errors.txt || true
-          while IFS= read -r line; do
-            printf '::error title=qt612-build::%s\n' \
-              "$(printf '%s' "${line}" | sed -e 's/%/%25/g' -e 's/\r/%0D/g')"
-          done < build-errors.txt
-          exit "${STATUS}"
-
-      - name: Test
-        env:
-          # Headless CI runner: use the offscreen platform to avoid GUI test failures.
-          QT_QPA_PLATFORM: offscreen
-        run: ctest --test-dir build-qt612 -C Release --output-on-failure --timeout 120
 
   format:
     # Mandatory gate: the whole tree has been clang-formatted since release-3.x,
