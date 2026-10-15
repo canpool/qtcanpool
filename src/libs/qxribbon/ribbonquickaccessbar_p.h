@@ -88,6 +88,7 @@ public:
     QMenu *m_menu;
     QAction *m_actionAccessPopup;
     QActionGroup *m_customizeGroup;
+    QAction *m_customizeDialogAction;   ///< Trailing "Customize Quick Access Toolbar..." entry (B8)
     RibbonQuickAccessButton *m_accessPopup;
     QList<QAction *> m_actionList;
     bool m_removingAction : 1;

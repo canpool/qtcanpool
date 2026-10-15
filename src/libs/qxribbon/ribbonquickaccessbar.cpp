@@ -7,6 +7,7 @@
 
 #include <QToolButton>
 #include <QAction>
+#include <QCoreApplication>
 #include <QStyle>
 #include <QEvent>
 #include <QActionEvent>
@@ -44,6 +45,7 @@ RibbonQuickAccessBarPrivate::RibbonQuickAccessBarPrivate()
     : m_menu(Q_NULLPTR)
     , m_actionAccessPopup(Q_NULLPTR)
     , m_customizeGroup(Q_NULLPTR)
+    , m_customizeDialogAction(Q_NULLPTR)
     , m_accessPopup(Q_NULLPTR)
     , m_removingAction(false)
     , m_takingAction(false)
@@ -76,6 +78,15 @@ void RibbonQuickAccessBarPrivate::init()
     m_customizeGroup = new QActionGroup(q);
     m_customizeGroup->setExclusive(false);
     connect(m_customizeGroup, SIGNAL(triggered(QAction *)), this, SLOT(customizeAction(QAction *)));
+
+    // B8: the customize menu ends with the entry that opens the application's
+    // customization dialog, as in Office. The action is owned by the bar, not by the
+    // menu: the menu is cleared on every hide (aboutToHideCustomizeMenu), and clear()
+    // deletes the actions the menu owns.
+    m_customizeDialogAction =
+        new QAction(QCoreApplication::translate("RibbonQuickAccessBar", "Customize Quick Access Toolbar..."), q);
+    m_customizeDialogAction->setObjectName(QStringLiteral("qx_RibbonCustomizeQabAction"));
+    QObject::connect(m_customizeDialogAction, &QAction::triggered, q, &RibbonQuickAccessBar::customizeDialogRequested);
 
     connect(m_menu, SIGNAL(aboutToShow()), this, SLOT(aboutToShowCustomizeMenu()));
     connect(m_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHideCustomizeMenu()));
@@ -181,6 +192,8 @@ void RibbonQuickAccessBarPrivate::aboutToShowCustomizeMenu()
     foreach (QAction *action, m_actionList) {
         m_menu->addAction(action);
     }
+    m_menu->addSeparator();
+    m_menu->addAction(m_customizeDialogAction);
     Q_EMIT q->showCustomizeMenu(m_menu);
 }
 

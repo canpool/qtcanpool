@@ -916,6 +916,11 @@ void MainWindow::createQuickAccessBar()
     connect(quickAccessBar, &RibbonQuickAccessBar::customizeActionChanged, this, [this]() {
         this->ribbonBar()->resizeRibbon();
     });
+    // The customize menu's trailing entry opens the same customization dialog as the
+    // "customize and save" button (B8).
+    connect(quickAccessBar, &RibbonQuickAccessBar::customizeDialogRequested, this, [this]() {
+        onActionCustomizeAndSaveTriggered(false);
+    });
     quickAccessBar->addAction(createAction(tr("save"), ":/icon/res/save.svg", "save-quickbar"));
     quickAccessBar->addAction(createAction(tr("printer"), ":/icon/res/printer.svg"));
 

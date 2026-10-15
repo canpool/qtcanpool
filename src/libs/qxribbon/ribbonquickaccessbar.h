@@ -31,6 +31,9 @@ public:
 Q_SIGNALS:
     void showCustomizeMenu(QMenu *menu);
     void customizeActionChanged();
+    /// Emitted when the customize menu's trailing "Customize Quick Access Toolbar..."
+    /// entry is triggered; the application opens its customization dialog (B8).
+    void customizeDialogRequested();
 protected:
     virtual bool event(QEvent *event);
     virtual void actionEvent(QActionEvent *event);
