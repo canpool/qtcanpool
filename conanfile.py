@@ -14,7 +14,7 @@ class QtCanpoolConan(ConanFile):
     """
 
     name = "qtcanpool"
-    version = "4.4.2"
+    version = "4.5.0"
     license = "MulanPSL-2.0"
     url = "https://github.com/canpool/qtcanpool"
     homepage = "https://canpool.github.io/qtcanpool/"
