@@ -1162,7 +1162,10 @@ bool DockWindow::eventFilter(QObject *obj, QEvent *e)
             }
         }
         if (!window()->isMinimized()) {
-            QApplication::setActiveWindow(window());
+            // QApplication::setActiveWindow() is deprecated as of Qt 6.12; it
+            // asked for the same thing this does, activation of the window that
+            // contains this widget.
+            window()->activateWindow();
         }
     }
     return Super::eventFilter(obj, e);

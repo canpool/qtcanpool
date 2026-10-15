@@ -26,6 +26,12 @@ Cleanup
   gone.
 
 Other
+- DockWindow no longer calls QApplication::setActiveWindow(), deprecated as of
+  Qt 6.12, when a restore from minimized should make the window active again; it
+  calls QWidget::activateWindow(), the documented replacement, which asks for
+  the same thing. Measured before the swap, under the offscreen platform the
+  window is already active once it is shown, so no observable state tells the
+  two calls apart - which is why the swap has no test of its own.
 - The X11 helpers no longer include a QPA header. x11_connection() reached the
   X connection through QPlatformNativeInterface and its "connection" key, which
   is Qt's private platform API and needs <qpa/qplatformnativeinterface.h> - a
