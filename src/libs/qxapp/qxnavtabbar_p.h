@@ -6,7 +6,7 @@
 
 #include "qxapp_global.h"
 #include "qxtabbar_p.h"
-#include "qxnavbar.h"   // must, for Q_DECLARE_PUBLIC -> static_cast
+#include "qxnavtabbar.h"   // must, for Q_DECLARE_PUBLIC -> static_cast
 #include <QToolButton>
 #include <QMap>
 
@@ -15,15 +15,15 @@ class QMenu;
 QX_APP_BEGIN_NAMESPACE
 
 class QxMenuAccessButton;
-class QxNavBar;
+class QxNavTabBar;
 
-class QxNavBarPrivate : public QxTabBarPrivate
+class QxNavTabBarPrivate : public QxTabBarPrivate
 {
     Q_OBJECT
 public:
-    Q_DECLARE_PUBLIC(QxNavBar)
+    Q_DECLARE_PUBLIC(QxNavTabBar)
 public:
-    QxNavBarPrivate();
+    QxNavTabBarPrivate();
 public:
     void init();
 private Q_SLOTS:

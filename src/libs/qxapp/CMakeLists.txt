@@ -9,7 +9,7 @@ add_qtc_library(qxapp
     qxextensionbutton.cpp qxextensionbutton.h
     qxmenuaccessbutton.cpp qxmenuaccessbutton.h
     qxmenubutton.cpp qxmenubutton.h
-    qxnavbar.cpp qxnavbar.h qxnavbar_p.h
+    qxnavtabbar.cpp qxnavtabbar.h qxnavtabbar_p.h
     qxnavigationbar.cpp qxnavigationbar.h
     qxpluginmanagerdialog.cpp qxpluginmanagerdialog.h qxpluginmanagerdialog_p.h
     qxproperty.h

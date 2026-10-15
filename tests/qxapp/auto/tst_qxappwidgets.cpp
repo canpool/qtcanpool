@@ -2,7 +2,7 @@
  * \file
  *
  * The qxapp widgets that had no test at all before the 4.4 B group audit:
- * QxTabBar, QxTabWidget, QxNavBar, QxToolButton and the three small buttons
+ * QxTabBar, QxTabWidget, QxNavTabBar, QxToolButton and the three small buttons
  * QxMenuButton, QxMenuAccessButton and QxExtensionButton.
  *
  * They are the reason the audit was worth running. Every one of them is an
@@ -23,7 +23,7 @@
 #include "qxapp/qxextensionbutton.h"
 #include "qxapp/qxmenuaccessbutton.h"
 #include "qxapp/qxmenubutton.h"
-#include "qxapp/qxnavbar.h"
+#include "qxapp/qxnavtabbar.h"
 #include "qxapp/qxtabbar.h"
 #include "qxapp/qxtabwidget.h"
 #include "qxapp/qxtoolbutton.h"
@@ -299,14 +299,14 @@ void tst_QxAppWidgets::tabWidgetButtons()
 }
 
 /*!
- * QxNavBar adds a customize menu to the tab bar: every tab gets a checkable
+ * QxNavTabBar adds a customize menu to the tab bar: every tab gets a checkable
  * entry in it, and unchecking one hides the tab. visibleCount() is the number
  * of tabs that are on, and it has to follow setTabVisible() - that sync is the
  * only reason the two lists exist side by side.
  */
 void tst_QxAppWidgets::navBarCountsTheVisibleTabs()
 {
-    QxNavBar bar;
+    QxNavTabBar bar;
     QCOMPARE(bar.count(), 0);
     QCOMPARE(bar.visibleCount(), 0);
     QVERIFY(bar.actionCustomizeButton() != Q_NULLPTR);

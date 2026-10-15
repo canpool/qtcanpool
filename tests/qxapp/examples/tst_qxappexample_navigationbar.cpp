@@ -10,7 +10,7 @@
 #include "tst_global.h"
 #include "mainwindow.h"
 
-#include "qxapp/qxnavbar.h"
+#include "qxapp/qxnavtabbar.h"
 #include "qxapp/qxnavigationbar.h"
 
 #include <QtWidgets/QWidget>
@@ -29,7 +29,7 @@ void tst_QxAppExample_NavigationBar::constructsAndShows()
     w.show();
 
     QVERIFY(w.findChild<QxApp::QxNavigationBar *>() != nullptr);
-    QVERIFY(w.findChild<QxApp::QxNavBar *>() != nullptr);
+    QVERIFY(w.findChild<QxApp::QxNavTabBar *>() != nullptr);
 
     QTest::qWait(30);
 }

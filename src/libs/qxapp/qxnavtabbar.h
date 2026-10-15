@@ -9,14 +9,14 @@
 
 QX_APP_BEGIN_NAMESPACE
 
-class QxNavBarPrivate;
+class QxNavTabBarPrivate;
 
-class QX_APP_EXPORT QxNavBar : public QxTabBar
+class QX_APP_EXPORT QxNavTabBar : public QxTabBar
 {
     Q_OBJECT
 public:
-    explicit QxNavBar(QWidget *parent = Q_NULLPTR);
-    virtual ~QxNavBar();
+    explicit QxNavTabBar(QWidget *parent = Q_NULLPTR);
+    virtual ~QxNavTabBar();
 public:
     QAction *actionCustomizeButton() const;
     int visibleCount() const;
@@ -26,8 +26,8 @@ Q_SIGNALS:
 protected:
     virtual void actionEvent(QActionEvent *event);
 private:
-    Q_DECLARE_PRIVATE(QxNavBar)
-    Q_DISABLE_COPY(QxNavBar)
+    Q_DECLARE_PRIVATE(QxNavTabBar)
+    Q_DISABLE_COPY(QxNavTabBar)
 };
 
 QX_APP_END_NAMESPACE

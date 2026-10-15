@@ -190,7 +190,7 @@ manager.loadPlugins();
 | @ref QxApp::QxNavigationBar | 竖排互斥导航轨 |
 | @ref QxApp::QxSplashScreen | 带进度与消息的启动屏 |
 | `QxToolButton` / `QxExtensionButton` / `QxMenuButton` / `QxMenuAccessButton` | 工具按钮与菜单按钮（3.1 自 `qcanpool` 迁入） |
-| `QxTabBar` / `QxTabWidget` / `QxNavBar` | 轻量 Tab 与导航（3.1 自 `qcanpool` 迁入） |
+| `QxTabBar` / `QxTabWidget` / `QxNavTabBar` | 轻量 Tab 与导航（3.1 自 `qcanpool` 迁入） |
 | @ref QxApp::QxToast | 应用内提示条：带级别、自动消失、悬停暂停（3.2） |
 | @ref QxApp::QxToastManager | 同一宿主窗口的 toast 堆叠、超时与淘汰（3.2） |
 | @ref QxApp::QxProperty | 一个设置项的描述：键、类型、默认值与可选项（3.2） |

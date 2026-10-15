@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 
 #include "qxapp/qxnavigationbar.h"
-#include "qxapp/qxnavbar.h"
+#include "qxapp/qxnavtabbar.h"
 
 #include <QIcon>
 #include <QLabel>
@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     resize(720, 480);
-    setWindowTitle(tr("QxNavigationBar / QxNavBar"));
+    setWindowTitle(tr("QxNavigationBar / QxNavTabBar"));
 
     auto *central = new QWidget(this);
     auto *root = new QHBoxLayout(central);
@@ -38,14 +38,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(nav, &QxNavigationBar::currentChanged, this, &MainWindow::onNavCurrentChanged);
     nav->setCurrentIndex(0);
 
-    // QxNavBar: a toolbar-style navigation bar whose customize menu is fed by
+    // QxNavTabBar: a toolbar-style navigation bar whose customize menu is fed by
     // the application through the showCustomizeMenu signal.
-    auto *bar = new QxNavBar(this);
+    auto *bar = new QxNavTabBar(this);
     bar->addTab(tr("One"));
     bar->addTab(tr("Two"));
     bar->addTab(tr("Three"));
     addToolBar(bar);
-    connect(bar, &QxNavBar::showCustomizeMenu, this, [](QMenu *menu) {
+    connect(bar, &QxNavTabBar::showCustomizeMenu, this, [](QMenu *menu) {
         menu->addAction(tr("Reset layout"));
     });
 }

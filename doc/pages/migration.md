@@ -107,7 +107,7 @@ connect(actionOption, &QAction::triggered, this, &MainWindow::onOption);
 | `MenuAccessButton` | `QxMenuAccessButton` | `qcanpool/menuaccessbutton.h` | `qxapp/qxmenuaccessbutton.h` |
 | `TinyTabBar` | `QxTabBar` | `qcanpool/tinytabbar.h` | `qxapp/qxtabbar.h` |
 | `TinyTabWidget` | `QxTabWidget` | `qcanpool/tinytabwidget.h` | `qxapp/qxtabwidget.h` |
-| `TinyNavBar` | `QxNavBar` | `qcanpool/tinynavbar.h` | `qxapp/qxnavbar.h` |
+| `TinyNavBar` | `QxNavTabBar` | `qcanpool/tinynavbar.h` | `qxapp/qxnavtabbar.h` |
 
 > ⚠️ `TinyTabBar` 现在是**独立的另一个类型**（派生自 `QxTabBar` 的子类），不再是别名。
 > 凡是把旧类型互相传递、或接收 `TinyTabWidget::tabBar()` 返回值的代码需要改，
@@ -383,3 +383,19 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
     [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)。
 17. **（可选，4.0）** 接入[插件体系](plugins.md)：把可选的业务模块改写成插件，让宿主不再认识
     它由哪些模块组成。这是 4.0 的**新增**能力，不做也不影响升级。
+
+## 4.x 破坏性变更
+
+4.x 是长生命周期主版本（类 Qt 5.0→5.15），破坏性变更只在 minor 版本发生，并集中记录于此。
+
+### 4.5
+
+- **`QxNavBar` → `QxNavTabBar`**（库 `qxapp`，破坏 API / ABI）：`QxNavBar` 实为
+  `QxTabBar` 派生、带「显示 / 隐藏标签页」定制菜单的 tab 式导航栏，与 `QxNavigationBar`
+  （`QxAppShell` 用的竖直导轨）名字相近但基类、语义都不同。4.5 将其改名为 `QxNavTabBar`
+  以消除歧义；`QxNavigationBar` 保持不变。
+  - 迁移：全局替换 `QxNavBar` → `QxNavTabBar`，include `qxapp/qxnavbar.h` → `qxapp/qxnavtabbar.h`。
+  - 旧名无转发别名、无弃用缓冲期（4.5 起直接不存在），需一次性改完。
+- **`RibbonGallery` 的 `pageUp` / `pageDown` / `showMoreDetail` 保留**：原计划标为「空转虚函数」
+  拟删除，核查后确认三者均有真实实现（驱动滚动视口 / 弹出详情）并已连到按钮，且类带导出宏，
+  删除会同时破坏行为与 ABI，故 4.5 不做此变更。
