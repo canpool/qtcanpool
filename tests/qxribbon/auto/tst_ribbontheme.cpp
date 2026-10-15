@@ -28,6 +28,7 @@ private slots:
     void loadThemeWithoutAWidgetAppliesToTheApplication();
     void loadThemeOfAnUnreadableFileChangesNothing();
     void setThemeAppliesTheBundledSheet();
+    void setThemeAppliesTheFluentSheets();
     void setThemeIgnoresAnUnknownStyle();
     void customThemeClearsTheWidgetSheet();
     void customThemeWithoutAWidgetClearsTheApplicationSheet();
@@ -102,6 +103,26 @@ void tst_RibbonTheme::setThemeAppliesTheBundledSheet()
     RibbonTheme::setTheme(RibbonTheme::LightOffice2013Theme, &widget);
 
     QCOMPARE(widget.styleSheet(), css);
+}
+
+void tst_RibbonTheme::setThemeAppliesTheFluentSheets()
+{
+    const QString office2013 = readResource(QStringLiteral(":/qxribbon/res/stylesheets/light_office2013.css"));
+    const QString fluent2016 = readResource(QStringLiteral(":/qxribbon/res/stylesheets/light_fluent2016.css"));
+    const QString fluent2019 = readResource(QStringLiteral(":/qxribbon/res/stylesheets/light_fluent2019.css"));
+    QVERIFY(!fluent2016.isEmpty());
+    QVERIFY(!fluent2019.isEmpty());
+    // Both Fluent sheets share the selectors of the base theme but are genuine
+    // recolourings: each differs from it and from the other.
+    QVERIFY(fluent2016 != office2013);
+    QVERIFY(fluent2019 != office2013);
+    QVERIFY(fluent2016 != fluent2019);
+
+    QWidget widget;
+    RibbonTheme::setTheme(RibbonTheme::LightFluent2016Theme, &widget);
+    QCOMPARE(widget.styleSheet(), fluent2016);
+    RibbonTheme::setTheme(RibbonTheme::LightFluent2019Theme, &widget);
+    QCOMPARE(widget.styleSheet(), fluent2019);
 }
 
 void tst_RibbonTheme::setThemeIgnoresAnUnknownStyle()

@@ -23,6 +23,11 @@ public:
         DarkWpsTheme,
         DarkOfficePlusTheme,
         CustomTheme,
+        // Appended, not inserted, so the numeric value of every style above stays
+        // what it was: RibbonMainWindow exposes the theme as an int property, and
+        // projects may have persisted those numbers.
+        LightFluent2016Theme,
+        LightFluent2019Theme,
     };
     Q_ENUM(ThemeStyle)
 public:

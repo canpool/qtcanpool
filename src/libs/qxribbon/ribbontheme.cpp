@@ -49,6 +49,12 @@ void RibbonTheme::setTheme(int themeStyle, QWidget *widget)
     case LightYellowTheme:
         loadTheme(":/qxribbon/res/stylesheets/light_yellow.css", widget);
         break;
+    case LightFluent2016Theme:
+        loadTheme(":/qxribbon/res/stylesheets/light_fluent2016.css", widget);
+        break;
+    case LightFluent2019Theme:
+        loadTheme(":/qxribbon/res/stylesheets/light_fluent2019.css", widget);
+        break;
     case CustomTheme:
         // "No widget means the application" is what loadTheme() above promises, and what
         // the nullptr default of the widget argument says. Dereferencing the pointer

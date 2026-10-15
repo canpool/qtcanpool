@@ -34,5 +34,7 @@
         <file>res/stylesheets/light_fancy.css</file>
         <file>res/stylesheets/dark_wps.css</file>
         <file>res/stylesheets/dark_officeplus.css</file>
+        <file>res/stylesheets/light_fluent2016.css</file>
+        <file>res/stylesheets/light_fluent2019.css</file>
     </qresource>
 </RCC>
