@@ -94,6 +94,8 @@ add_qtc_example(Example_Ribbon_MdiTabs qxribbon qxribbon/mditabs sample)
 add_qtc_example(Example_RibbonStyle qxribbon qxribbon/ribbonstyle sample)
 # 4.5: the full-takeover backstage the application button opens (B4).
 add_qtc_example(Example_Ribbon_Backstage qxribbon qxribbon/backstage sample)
+# Segments on the left, view switches on the right, in a themed status bar.
+add_qtc_example(Example_Ribbon_StatusBar qxribbon qxribbon/statusbar sample)
 # These two build against the generic main window in shared/.
 add_qtc_example(Example_Ribbon_ColorIcon qxribbon qxribbon/coloricon plain)
 add_qtc_example(Example_RibbonQuickAccessBar qxribbon qxribbon/ribbonquickaccessbar plain)
