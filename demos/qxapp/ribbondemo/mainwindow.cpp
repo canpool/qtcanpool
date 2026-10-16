@@ -17,6 +17,7 @@
 #include "qxribbon/ribbonquickaccessbar.h"
 #include "qxribbon/ribbonutils.h"
 #include "qxribbon/ribbonbackstageview.h"
+#include "qxribbon/ribbonstatusbar.h"
 
 #include <QAbstractButton>
 #include <QAction>
@@ -135,7 +136,29 @@ void MainWindow::createCentralWidget()
 
 void MainWindow::createStatusBar()
 {
-    setStatusBar(new QStatusBar());
+    // The ribbon-styled status bar: plain-text segments on the left, a view
+    // switch on the right. The segments are driven by their actions' text, so the
+    // demo keeps them up to date the way it would for any other action, and the
+    // switch stays put while showMessage() scrolls its text across the left.
+    RibbonStatusBar *bar = new RibbonStatusBar();
+    setStatusBar(bar);
+
+    QAction *document = bar->addAction(tr("Ready"));
+    bar->addSeparator();
+    QAction *position = bar->addAction(tr("Ln 1, Col 1"));
+
+    QAction *viewSwitch = new QAction(QIcon(":/icon/res/file.svg"), tr("Toggle view"), this);
+    viewSwitch->setCheckable(true);
+    bar->addPermanentAction(viewSwitch);
+
+    connect(viewSwitch, &QAction::triggered, this, [this, document](bool on) {
+        document->setText(on ? tr("View: switched") : tr("Ready"));
+        m_edit->append(tr("View switched: %1").arg(on ? tr("on") : tr("off")));
+    });
+    connect(m_edit, &QTextEdit::cursorPositionChanged, this, [this, position] {
+        QTextCursor cursor = m_edit->textCursor();
+        position->setText(tr("Ln %1, Col %2").arg(cursor.blockNumber() + 1).arg(cursor.positionInBlock() + 1));
+    });
 }
 
 void MainWindow::createRibbon()
