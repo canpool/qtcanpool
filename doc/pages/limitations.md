@@ -44,6 +44,21 @@
 读到半旧的状态。目前没有已知的写法能同时满足这两点；改的时候注意 `RibbonBar::event()` 里的
 `QEvent::LayoutRequest` 分支（见下一条），它与这里是同一个问题的两面。
 
+**（4.5 F2）这条延迟曾经有一处会漏到屏幕上，已修，并因此多了一个同步出口**：
+`RibbonBar::resizeRibbonNow()`（`RibbonMainWindow` 有对应转发）做的是**同一份活、立刻做完**。
+它**不是**把延迟改成同步，而是「**调用方自己声明"我这里必须现在拿到新几何"**」的写法——
+按上面的理由，**样式切换那条路径仍必须用排队版**，所以两个入口并存、由调用方选。
+
+要它的那条路径是 `QxApp::RibbonAppWindow::updateWindowFlags()`——唯一一个「**窗口已经在屏幕上、
+却还要改右侧按钮组与窗口按钮组**」的入口（基类实现是 `setWindowFlags()` + `show()`，
+窗口在那一刻就重新显示了）。它此前请求的是**排队**版，于是那一轮事件循环里屏幕上留的是**旧几何**：
+用户看到的那一帧就是两个组按老边界画出来的**重叠**（`WpsLiteStyle` 下最明显）。
+改用 `resizeRibbonNow()` 后，`updateWindowFlags()` **返回的那一刻**两个组已经是新几何。
+⚠️ 由此得到的**使用约束**写进了 `resizeRibbonNow()` 的**头文件注释**（`src/libs/qxribbon/ribbonbar.h`）：
+它只能由"**调用方已经在看**"的路径使用，**样式切换那条路径必须继续排队**——延迟的理由正是不让它中招。
+回归用例 `tst_RibbonAppWindow::flagsChangeLaysTheGroupsOutImmediately()`（离屏成立，进 18/18 门禁），
+探针是把它换回排队版即红。
+
 ---
 
 ## LayoutRequest 可能带来多余的 resize 轮次（LayoutRequest can add resize passes）
@@ -75,24 +90,6 @@
 要判断的是"能不能用 `LayoutRequest` 替掉其中某几个"，以及"替掉之后 resize 轮次是变多还是变少"。
 ⚠️ 这一步需要一份**真机事件日志**来对照（离屏测的不是这个），而且 `resizeRibbon()` 的延迟正是上面
 「RibbonBar 的 resize 是延迟的」那一条的来源——动它要连着那一条一起看。
-
----
-
-## WpsLiteStyle 下按钮组短暂重叠（WpsLiteStyle button group overlap）
-
-> **（4.4 D1）已复核**：落点 `RibbonAppWindow::updateWindowFlags()` 仍在，成因未变
-> （它依赖上面「RibbonBar 的 resize 是延迟的」那一条）。结论不变：仍维持现状。
-
-**现象**：`WpsLiteStyle` 下，右侧按钮组与窗口按钮组会有一瞬间重叠。
-
-**成因**：按钮组先显示，ribbon 后 resize；而 ribbon 的 resize 是延迟的（见第一条），
-所以"显示"没有办法等到"resize 完成"。曾经试过先隐藏按钮组、等 resize 完再显示——
-按钮组仍然在 resize 完成前就回来了。
-
-**出现位置**：`RibbonAppWindow::updateWindowFlags()`。
-
-**要改变它需要什么**：同样落回"让 ribbon 的 resize 变同步"。这是外观问题、瞬时的、不丢状态，
-所以排在正确性问题之后。
 
 ---
 

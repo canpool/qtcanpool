@@ -108,7 +108,7 @@ void RibbonAppWindow::updateWindowFlags(Qt::WindowFlags flags)
         // the flags change below has already re-shown the window, so a queued
         // re-layout leaves the previous geometry on screen and the right button
         // group overlapping the window button group until it runs.
-        // See doc/pages/limitations.md, "WpsLiteStyle button group overlap".
+        // See doc/pages/limitations.md, "RibbonBar resize is deferred".
         resizeRibbonNow();
     }
 }
