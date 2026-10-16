@@ -27,6 +27,9 @@ QX_RIBBON_BEGIN_NAMESPACE
 #define QX_RIBBON_PROP_ROW_PROPORTION "_qx_RibbonGroupRowProportion"
 #endif
 
+// Opt-in layout debugging aid: define QX_RIBBON_DEBUG_HELP_DRAW (as ribbonbutton.cpp
+// does) to draw the rectangles the group computes in blue dashes.
+#ifdef QX_RIBBON_DEBUG_HELP_DRAW
 #define HELP_DRAW_RECT(p, rect)                                                                                        \
     do {                                                                                                               \
         p.save();                                                                                                      \
@@ -37,6 +40,7 @@ QX_RIBBON_BEGIN_NAMESPACE
         p.drawRect(rect);                                                                                              \
         p.restore();                                                                                                   \
     } while (0)
+#endif
 
 RibbonGroupOptionButton::RibbonGroupOptionButton(QWidget *parent)
     : QToolButton(parent)

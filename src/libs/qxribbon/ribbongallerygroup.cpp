@@ -195,17 +195,16 @@ void RibbonGalleryGroupItemDelegate::paint(QPainter *painter, const QStyleOption
         return;
     }
     switch (m_group->galleryGroupStyle()) {
-    case RibbonGalleryGroup::IconWithText:
-        paintIconWithText(painter, option, index);
-        break;
-    case RibbonGalleryGroup::IconWithWordWrapText:
-        paintIconWithTextWordWrap(painter, option, index);
-        break;
     case RibbonGalleryGroup::IconOnly:
         paintIconOnly(painter, option, index);
         break;
+    case RibbonGalleryGroup::IconWithText:
+    case RibbonGalleryGroup::IconWithWordWrapText:
     default:
-        paintIconWithText(painter, option, index);
+        // The two text presentations ask the base delegate for the plain
+        // icon-and-text item; there is nothing about either that the base
+        // paints differently, so they share one call.
+        QStyledItemDelegate::paint(painter, option, index);
         break;
     }
 }
@@ -227,18 +226,6 @@ void RibbonGalleryGroupItemDelegate::paintIconOnly(QPainter *painter, const QSty
     QIcon ico = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
     ico.paint(painter, iconRect, Qt::AlignCenter, QIcon::Normal, QIcon::On);
     painter->restore();
-}
-
-void RibbonGalleryGroupItemDelegate::paintIconWithText(QPainter *painter, const QStyleOptionViewItem &option,
-                                                       const QModelIndex &index) const
-{
-    QStyledItemDelegate::paint(painter, option, index);
-}
-
-void RibbonGalleryGroupItemDelegate::paintIconWithTextWordWrap(QPainter *painter, const QStyleOptionViewItem &option,
-                                                               const QModelIndex &index) const
-{
-    QStyledItemDelegate::paint(painter, option, index);
 }
 
 QSize RibbonGalleryGroupItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

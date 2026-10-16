@@ -10,6 +10,25 @@ Cleanup
   tst_RibbonPage::wheelAndButtonsShareOneRange drives both paths to both ends
   and compares them pixel for pixel, which is the check the duplication made
   impossible to write before.
+- RibbonGalleryGroupItemDelegate loses the two paint helpers that held nothing.
+  paintIconWithText() and paintIconWithTextWordWrap() were one line each, and that
+  line was the call to QStyledItemDelegate::paint() the surrounding switch reaches
+  for anyway; the two text presentations now make that call directly, and only
+  paintIconOnly() - the one presentation that paints something the base does not -
+  keeps a helper of its own. The delegate is private to the library, so no caller
+  outside it could have overridden the pair. No behaviour change.
+- RibbonButton::actionEvent() is gone, an override whose entire body was the call
+  to QToolButton::actionEvent(). The base implementation is reached directly now.
+  A subclass that overrides actionEvent() keeps working: the slot it overrides is
+  QWidget's, not the removed one's. No behaviour change.
+- The HELP_DRAW_RECT macro in ribbongroup.cpp was defined unconditionally while
+  its two call sites sit inside #ifdef QX_RIBBON_DEBUG_HELP_DRAW, so every ordinary
+  build carried a macro it never expanded. The definition now sits under the same
+  guard as the one in ribbonbutton.cpp, which keeps the opt-in layout aid intact
+  and the two files consistent.
+- RibbonActionsManagerModelPrivate::m_seatchText is spelled m_searchText. The
+  member records the text the model is filtered by; the class is private to its
+  cpp, so the rename reaches nothing outside it.
 
 Feature
 - RibbonBar::resizeRibbonNow() does the layout resizeRibbon() asks for before it

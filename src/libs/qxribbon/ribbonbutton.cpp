@@ -769,11 +769,6 @@ void RibbonButton::changeEvent(QEvent *e)
     QToolButton::changeEvent(e);
 }
 
-void RibbonButton::actionEvent(QActionEvent *e)
-{
-    QToolButton::actionEvent(e);
-}
-
 RibbonButton::RibbonButtonType RibbonButton::buttonType() const
 {
     Q_D(const RibbonButton);

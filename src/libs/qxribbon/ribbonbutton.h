@@ -61,7 +61,6 @@ protected:
     virtual void focusOutEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
     virtual void leaveEvent(QEvent *e) Q_DECL_OVERRIDE;
     virtual bool hitButton(const QPoint &pos) const Q_DECL_OVERRIDE;
-    virtual void actionEvent(QActionEvent *e) Q_DECL_OVERRIDE;
 protected:
     explicit RibbonButton(RibbonButtonPrivate *d, QWidget *parent = Q_NULLPTR);
 protected:

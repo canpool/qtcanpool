@@ -68,10 +68,6 @@ public:
 
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
     virtual void paintIconOnly(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void paintIconWithText(QPainter *painter, const QStyleOptionViewItem &option,
-                                   const QModelIndex &index) const;
-    virtual void paintIconWithTextWordWrap(QPainter *painter, const QStyleOptionViewItem &option,
-                                           const QModelIndex &index) const;
 private:
     RibbonGalleryGroup *m_group;
 };

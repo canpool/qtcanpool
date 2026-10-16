@@ -484,14 +484,14 @@ public:
 public:
     RibbonActionsManager *m_mgr;
     int m_tag;
-    QString m_seatchText;
+    QString m_searchText;
     QList<QAction *> m_actions;
 };
 
 RibbonActionsManagerModelPrivate::RibbonActionsManagerModelPrivate()
     : m_mgr(Q_NULLPTR)
     , m_tag(RibbonActionsManager::CommonlyUsedActionTag)
-    , m_seatchText(QString())
+    , m_searchText(QString())
 {
 }
 
@@ -500,8 +500,8 @@ void RibbonActionsManagerModelPrivate::updateRef()
     if (isNull()) {
         return;
     }
-    if (!m_seatchText.isEmpty()) {
-        m_actions = m_mgr->search(m_seatchText);
+    if (!m_searchText.isEmpty()) {
+        m_actions = m_mgr->search(m_searchText);
     } else {
         m_actions = m_mgr->actions(m_tag);
     }
@@ -652,7 +652,7 @@ QAction *RibbonActionsManagerModel::indexToAction(QModelIndex index) const
 void RibbonActionsManagerModel::search(const QString &text)
 {
     Q_D(RibbonActionsManagerModel);
-    d->m_seatchText = text;
+    d->m_searchText = text;
     update();
 }
 
