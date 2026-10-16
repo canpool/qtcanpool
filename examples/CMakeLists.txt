@@ -100,6 +100,8 @@ add_qtc_example(Example_Dock_EmptyDockArea qxdock qxdock/emptydockarea plain)
 add_qtc_example(Example_Dock_WidgetToPanel qxdock qxdock/widgettopanel plain)
 # The one sample that carries its own main().
 add_qtc_example(Example_Dock_DeleteOnClose qxdock qxdock/deleteonclose none)
+# A frameless host, so also its own main().
+add_qtc_example(Example_Dock_Frameless qxdock qxdock/frameless none)
 
 # --------------------------------------------------------------------- qxapp --
 add_qtc_example(Example_RibbonAppEmpty qxapp qxapp/ribbonappempty sample)

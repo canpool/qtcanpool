@@ -33,6 +33,7 @@ private slots:
     void state();
     void stateFile();
     void perspective();
+    void framelessHost();
     void builtInStylesheetIsApplied();
 };
 
@@ -42,6 +43,59 @@ private slots:
  * setStyleSheet() when the resource could not be opened, which would have wiped
  * whatever stylesheet the application had set, and nothing would have said so.
  */
+/*!
+ * The window a DockWindow lives in may be frameless - the main window this
+ * release was asked to work with is one. Nothing in the docking machinery asks
+ * the top level for a frame, and that is what this holds on to: docking, closing
+ * and reopening, floating, and the state round trip all behave the same when the
+ * DockWindow is a child of a frameless window.
+ *
+ * The frame itself is the host's business: moving the window and resizing it by
+ * the edges takes a title bar and a hit test that docking has no opinion about,
+ * and examples/qxdock/frameless shows the host side of that arrangement.
+ */
+void tst_DockWindow::framelessHost()
+{
+    QWidget host;
+    host.setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    host.resize(800, 600);
+
+    DockWindow *wd = new DockWindow(&host);
+    QCOMPARE(wd->window(), &host);
+    QCOMPARE(wd->isWindow(), false);
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockPanel *p1 = wd->addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    DockPanel *p2 = wd->addDockWidget(Qx::CenterDockWidgetArea, dw2);
+
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+
+    // Closing and reopening still works
+    dw1->toggleView(false);
+    QCOMPARE(dw1->isClosed(), true);
+    dw1->toggleView(true);
+    QCOMPARE(dw1->isClosed(), false);
+
+    // A dock widget still floats, in a window of its own
+    DockFloatingContainer *fc = wd->addDockWidgetFloating(dw2);
+    QCOMPARE(fc->topLevelDockWidget(), dw2);
+    QCOMPARE(fc->isWindow(), true);
+
+    // And the layout still survives a save and restore. The panels are rebuilt
+    // by a restore, so this asks where the dock widgets ended up rather than
+    // whether the old panel objects are still around.
+    const QByteArray state = wd->saveState();
+    QCOMPARE(wd->restoreState(state), true);
+
+    QCOMPARE(wd->dockWidgetsMap().count(), 2);
+    QCOMPARE(wd->findDockWidget("dw1"), dw1);
+    QVERIFY(dw1->dockPanel() != nullptr);
+    QCOMPARE(dw1->dockPanel()->dockContainer(), wd);
+    QCOMPARE(dw2->dockFloatingContainer(), fc);
+}
+
 void tst_DockWindow::builtInStylesheetIsApplied()
 {
     DockWindow window;
