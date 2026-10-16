@@ -178,7 +178,13 @@ void tst_RibbonGroup::layoutGeometry()
     RibbonButton *mid2 = grp->addMediumAction(new QAction(tr("mid2")));
     RibbonButton *small1 = grp->addSmallAction(new QAction(tr("small1")));
 
-    auto relayout = [grp]() {
+    auto relayout = [&]() {
+        // B11: whether a group is laid out in its reduced presentation is the page's
+        // call, and the page made here has no room to spare. The shape asserted below
+        // is the natural one, so give the page room and let it decide again.
+        page->resize(2000, 200);
+        page->updateItemGeometry();
+        QVERIFY(!grp->isReduced());
         grp->resize(800, 120);
         grp->layout()->activate();
     };

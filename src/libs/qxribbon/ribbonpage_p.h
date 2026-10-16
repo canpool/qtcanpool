@@ -76,6 +76,10 @@ public:
 
     int totalSizeHintWidth() const;
 
+    // B11: narrow the groups until they fit the page and return the width they then
+    // need; the states are applied as a side effect
+    int fitGroupsInWidth(int pageWidth);
+
     QSize pageContentSize() const;
 
     void updateItemGeometry();

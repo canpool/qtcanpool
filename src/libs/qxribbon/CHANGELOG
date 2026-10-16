@@ -32,11 +32,18 @@ Feature
   stable name; a QAccessible factory gives the painted page and group containers
   the Pane and Grouping roles, which their custom painting otherwise hid from
   assistive tools.
+- A page that runs out of room narrows its groups before it falls back to its
+  scroll buttons. A group has a reduced presentation in which a button that would
+  own a whole column is packed as a small one instead, trading rows for width; the
+  page reduces groups from the right until they fit, so a page with room always
+  shows every group at full width, and the left and right scroll buttons appear
+  only when the narrowest form of every group still overflows.
 
 Interface
 - RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
 - RibbonGalleryGroup: add triggerCurrentItem
 - RibbonBar: add overridable addContextMenuActions
+- RibbonGroup: add setReduced and isReduced
 
 Bugfix
 - The KeyTip letter pool was filled with QList<QString>(int), a constructor only

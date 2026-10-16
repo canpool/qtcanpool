@@ -116,6 +116,9 @@ public:
     bool isExpanding() const;
     void setExpanding(bool expanding = true);
 
+    bool isReduced() const;
+    void setReduced(bool reduced = true);
+
     bool isCanCustomize() const;
     void setCanCustomize(bool b);
 
@@ -136,6 +139,15 @@ protected:
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     virtual void actionEvent(QActionEvent *event) Q_DECL_OVERRIDE;
+private:
+    // B11: switch the presentation without telling the page. The page's own layout
+    // and the width measurement both run through here; neither may post a
+    // LayoutRequest, or the page would be asked to lay out again while it is
+    // laying out.
+    void setReducedInternal(bool reduced);
+    // B11: the width the group needs in each of its two presentations
+    int normalWidth();
+    int reducedWidth();
 private:
     QX_DECLARE_PRIVATE(RibbonGroup)
     friend class RibbonPage;

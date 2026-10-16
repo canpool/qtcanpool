@@ -19,6 +19,7 @@ private slots:
     void group();
     void scroll();
     void clampAfterWidening();
+    void groupShrink();
     void clear();
     void accessibleRoles();
 };
@@ -286,6 +287,118 @@ void tst_RibbonPage::clampAfterWidening()
              qPrintable(QStringLiteral("content ends at %1, %2 short of where the resize put the page edge")
                             .arg(widened)
                             .arg(atTheEnd + widenBy - widened)));
+}
+
+/*!
+ * B11: a page narrows its groups before it falls back to its scroll buttons.
+ *
+ * A group has two presentations. The natural one gives a large button a column of its
+ * own; the reduced one packs those buttons as small ones instead, which costs rows but
+ * saves columns and so makes the group narrower. A page that runs out of room reduces
+ * groups from the right - the side a shrinking window eats into first - until they fit,
+ * and only when the narrowest form of every group still overflows do its scroll buttons
+ * appear.
+ */
+void tst_RibbonPage::groupShrink()
+{
+    RibbonBar rb;
+
+    RibbonPage *page = rb.addPage(tr("page"));
+    // Three large actions per group: laid out naturally they own a column each, while
+    // the reduced presentation packs them into a single column of small ones.
+    for (int i = 0; i < 6; ++i) {
+        RibbonGroup *group = page->addGroup(QStringLiteral("group%1").arg(i));
+        for (int j = 0; j < 3; ++j) {
+            group->addLargeAction(new QAction(QStringLiteral("action%1%2").arg(i).arg(j), &rb));
+        }
+    }
+
+    // The two scroll buttons belong to RibbonPagePrivate, whose class is not exported,
+    // so they are collected as plain QToolButtons and told apart by the arrow only they
+    // set.
+    RibbonGroup *first = page->group(0);
+    RibbonGroup *last = page->group(page->groupCount() - 1);
+    QToolButton *left = nullptr;
+    QToolButton *right = nullptr;
+    for (QToolButton *button : page->findChildren<QToolButton *>()) {
+        if (button->arrowType() == Qt::LeftArrow) {
+            left = button;
+        } else if (button->arrowType() == Qt::RightArrow) {
+            right = button;
+        }
+    }
+    QVERIFY(left);
+    QVERIFY(right);
+
+    // A page with room to spare: every group keeps its natural presentation, and the
+    // page has no reason to offer its scroll buttons.
+    page->resize(4000, 120);
+    page->updateItemGeometry();
+    for (RibbonGroup *group : page->groupList()) {
+        QVERIFY(!group->isReduced());
+    }
+    QVERIFY(left->isHidden());
+    QVERIFY(right->isHidden());
+    const int naturalEnd = last->geometry().right();
+    QVERIFY(naturalEnd < page->width());
+
+    // The width one group needs in each of its presentations, read back through the
+    // group rather than assumed, because a button's width depends on the font.
+    const int naturalGroup = first->sizeHint().width();
+    first->setReduced(true);
+    const int reducedGroup = first->sizeHint().width();
+    first->setReduced(false);
+    QVERIFY2(reducedGroup < naturalGroup,
+             qPrintable(QStringLiteral("the reduced presentation is %1 wide, the natural one %2")
+                            .arg(reducedGroup)
+                            .arg(naturalGroup)));
+    const int reducedEnd = naturalEnd - (naturalGroup - reducedGroup) * page->groupCount();
+    QVERIFY(reducedEnd < naturalEnd);
+
+    // Walk the page down from a width that leaves room to one below the narrowest form
+    // of the groups. Somewhere in between it has to shed width by narrowing some groups
+    // and leaving the others alone.
+    int narrowed = 0;
+    for (int w = naturalEnd + 200; w > reducedEnd / 2; --w) {
+        page->resize(w, 120);
+        page->updateItemGeometry();
+        narrowed = 0;
+        for (RibbonGroup *group : page->groupList()) {
+            if (group->isReduced()) {
+                ++narrowed;
+            }
+        }
+        if ((narrowed > 0) && (narrowed < page->groupCount())) {
+            break;
+        }
+    }
+    QVERIFY2((narrowed > 0) && (narrowed < page->groupCount()),
+             qPrintable(QStringLiteral("%1 of %2 groups were narrowed, and no width in the range did less")
+                            .arg(narrowed)
+                            .arg(page->groupCount())));
+    // The width comes off the right-hand groups ...
+    QVERIFY(!first->isReduced());
+    QVERIFY(last->isReduced());
+    // ... and it is enough, so the content fits and no scroll button is offered.
+    QVERIFY2(
+        last->geometry().right() <= page->width(),
+        qPrintable(
+            QStringLiteral("content ends at %1 in a %2 wide page").arg(last->geometry().right()).arg(page->width())));
+    QVERIFY(left->isHidden());
+    QVERIFY(right->isHidden());
+
+    // Narrower than the reduced groups: there is nothing left to give, so the page falls
+    // back to its scroll buttons, with every group narrowed as far as it goes.
+    page->resize(reducedEnd / 3, 120);
+    page->updateItemGeometry();
+    for (RibbonGroup *group : page->groupList()) {
+        QVERIFY(group->isReduced());
+    }
+    QVERIFY2(
+        last->geometry().right() > page->width(),
+        qPrintable(
+            QStringLiteral("content spans %1 in a %2 wide page").arg(last->geometry().right()).arg(page->width())));
+    QVERIFY(!right->isHidden());
 }
 
 void tst_RibbonPage::clear()

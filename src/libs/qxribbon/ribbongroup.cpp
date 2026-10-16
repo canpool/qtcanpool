@@ -61,6 +61,12 @@ RibbonGroupPrivate::RibbonGroupPrivate()
     : m_optionActionButton(Q_NULLPTR)
     , m_groupLayoutMode(RibbonGroup::ThreeRowMode)
     , m_isCanCustomize(true)
+    , m_reduced(false)
+    , m_widthsValid(false)
+    , m_normalWidth(0)
+    , m_reducedWidth(0)
+    , m_widthsHeight(-1)
+    , m_widthsTitleHeight(-1)
 {
 }
 
@@ -101,6 +107,91 @@ void RibbonGroupPrivate::resetLargeToolButtonStyle()
             }
         }
     }
+}
+
+/**
+ * @brief B11: the proportion an item ends up with, resolving RowProportion::Auto
+ *
+ * RibbonGroupLayout resolves Auto from the item's expanding directions while it lays
+ * the group out; the same rule is needed here to know which button, at its natural
+ * presentation, is a large one.
+ */
+static RibbonGroup::RowProportion effectiveRowProportion(const RibbonGroupItem *item)
+{
+    RibbonGroup::RowProportion rp = item->rowProportion;
+
+    if (RibbonGroup::Auto == rp) {
+        rp = (item->expandingDirections() & Qt::Vertical) ? RibbonGroup::Large : RibbonGroup::Small;
+    }
+    return rp;
+}
+
+/**
+ * @brief B11: bring the button presentation in line with the reduced state
+ *
+ * In the reduced presentation a button that would own a whole column is placed in a
+ * fraction of the height, so it has to be drawn as a small button for the placement
+ * and the painting to agree. Items that are not buttons keep whatever they are.
+ */
+void RibbonGroupPrivate::applyButtonTypes()
+{
+    const QList<RibbonGroupItem *> &items = m_layout->ribbonGroupItems();
+
+    for (RibbonGroupItem *item : items) {
+        RibbonButton *button = qobject_cast<RibbonButton *>(item->widget());
+        if (Q_NULLPTR == button) {
+            continue;
+        }
+        if (!m_reduced && (RibbonGroup::Large == effectiveRowProportion(item))) {
+            button->setButtonType(RibbonButton::LargeButton);
+        } else {
+            button->setButtonType(RibbonButton::SmallButton);
+        }
+    }
+    if (!m_reduced) {
+        // The large buttons that just came back need the group's large-button style
+        resetLargeToolButtonStyle();
+    }
+}
+
+void RibbonGroupPrivate::invalidateWidths()
+{
+    m_widthsValid = false;
+}
+
+/**
+ * @brief B11: measure the group in both presentations
+ *
+ * The widths cannot be derived from one another: a button's width depends on the
+ * style it is drawn in, so each presentation has to be laid out to be measured. The
+ * cached pair stays valid while the group keeps its height, its title height and its
+ * contents, which is what makes this a one-off cost per change rather than a cost per
+ * resize step.
+ */
+void RibbonGroupPrivate::ensureWidths()
+{
+    Q_Q(RibbonGroup);
+    const int h = q->height();
+    const int th = q->titleHeight();
+
+    if (m_widthsValid && (m_widthsHeight == h) && (m_widthsTitleHeight == th)) {
+        return;
+    }
+    const bool wasReduced = m_reduced;
+
+    // setReducedInternal() refreshes the size hint, so each width can be read back
+    // straight after the presentation it belongs to has been applied
+    q->setReducedInternal(false);
+    m_normalWidth = q->sizeHint().width();
+
+    q->setReducedInternal(true);
+    m_reducedWidth = q->sizeHint().width();
+
+    q->setReducedInternal(wasReduced);
+
+    m_widthsHeight = h;
+    m_widthsTitleHeight = th;
+    m_widthsValid = true;
 }
 
 /**
@@ -150,7 +241,10 @@ QString RibbonGroup::groupName() const
  */
 void RibbonGroup::setGroupName(const QString &title)
 {
+    Q_D(RibbonGroup);
     setWindowTitle(title);
+    // B11: the title is part of the width the group asks for
+    d->invalidateWidths();
     update();
 }
 
@@ -531,6 +625,7 @@ void RibbonGroup::addOptionAction(QAction *action)
         if (d->m_optionActionButton) {
             delete d->m_optionActionButton;
             d->m_optionActionButton = Q_NULLPTR;
+            d->invalidateWidths();
         }
         return;
     }
@@ -540,6 +635,8 @@ void RibbonGroup::addOptionAction(QAction *action)
     d->m_optionActionButton->setFixedSize(optionActionButtonSize());
     d->m_optionActionButton->setIconSize(optionActionButtonSize() - QSize(-2, -2));
     d->m_optionActionButton->connectAction(action);
+    // B11: the option button is part of the width the group asks for
+    d->invalidateWidths();
     updateGeometry();   // Notify the layout to relayout
     repaint();
 }
@@ -592,6 +689,8 @@ void RibbonGroup::updateItemGeometry()
     updateGeometry();
 
     d->resetLargeToolButtonStyle();
+    // B11: the row mode and the spacing both feed into the widths
+    d->invalidateWidths();
 }
 
 bool RibbonGroup::isTwoRow() const
@@ -646,6 +745,85 @@ bool RibbonGroup::isExpanding() const
 void RibbonGroup::setExpanding(bool expanding)
 {
     setSizePolicy(expanding ? QSizePolicy::Expanding : QSizePolicy::Preferred, QSizePolicy::Fixed);
+}
+
+/**
+ * @brief B11: whether the group is laid out in its reduced presentation
+ * @return
+ */
+bool RibbonGroup::isReduced() const
+{
+    Q_D(const RibbonGroup);
+    return d->m_reduced;
+}
+
+/**
+ * @brief B11: lay the group out in its reduced presentation
+ *
+ * A reduced group packs a button that would own a whole column as a small one
+ * instead. It gives up some of the group's compactness for a narrower width, which is
+ * how a page keeps its groups inside a window that has become too narrow for them:
+ * RibbonPage reduces the groups before it falls back to its scroll buttons. An
+ * application can also use this directly, for instance to collapse the groups of a
+ * page it knows to be short of room.
+ *
+ * @param reduced
+ */
+void RibbonGroup::setReduced(bool reduced)
+{
+    Q_D(RibbonGroup);
+    if (d->m_reduced == reduced) {
+        return;
+    }
+    setReducedInternal(reduced);
+    // The group is a different width now, so the page has to distribute again
+    if (parentWidget()) {
+        QApplication::postEvent(parentWidget(), new QEvent(QEvent::LayoutRequest));
+    }
+}
+
+/**
+ * @brief B11: change the presentation without notifying the page
+ *
+ * The page's own layout drives the state through here, as does the width measurement;
+ * neither may post a LayoutRequest, or the page would be asked to lay out again while
+ * it is laying out.
+ *
+ * The width the group asks for is refreshed before returning: it depends on the
+ * presentation, and the caller reads it back as soon as this returns.
+ */
+void RibbonGroup::setReducedInternal(bool reduced)
+{
+    Q_D(RibbonGroup);
+    if (d->m_reduced != reduced) {
+        d->m_reduced = reduced;
+        d->m_layout->setReduced(reduced);
+        d->applyButtonTypes();
+        update();
+    }
+    d->m_layout->recalcSizeHint();
+}
+
+/**
+ * @brief B11: the width the group needs at its natural presentation
+ * @return
+ */
+int RibbonGroup::normalWidth()
+{
+    Q_D(RibbonGroup);
+    d->ensureWidths();
+    return d->m_normalWidth;
+}
+
+/**
+ * @brief B11: the width the group needs at its reduced presentation
+ * @return
+ */
+int RibbonGroup::reducedWidth()
+{
+    Q_D(RibbonGroup);
+    d->ensureWidths();
+    return d->m_reducedWidth;
 }
 
 bool RibbonGroup::isCanCustomize() const
@@ -785,6 +963,7 @@ void RibbonGroup::actionEvent(QActionEvent *event)
 
     switch (event->type()) {
     case QEvent::ActionAdded: {
+        d->invalidateWidths();
         RibbonGroupLayout *lay = d->m_layout;
         int index = layout()->count();
         if (event->before()) {
@@ -802,6 +981,7 @@ void RibbonGroup::actionEvent(QActionEvent *event)
     } break;
 
     case QEvent::ActionChanged: {
+        d->invalidateWidths();
         // Make the layout repaint
         layout()->invalidate();
         // The group size changed, so the page must adjust as well
@@ -811,6 +991,7 @@ void RibbonGroup::actionEvent(QActionEvent *event)
     } break;
 
     case QEvent::ActionRemoved: {
+        d->invalidateWidths();
         RibbonGroupLayout *lay = d->m_layout;
         action->disconnect(this);
         int index = lay->indexOf(action);

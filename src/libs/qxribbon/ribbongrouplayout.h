@@ -92,6 +92,16 @@ public:
 protected:
     const QList<RibbonGroupItem *> &ribbonGroupItems() const;
 private:
+    // B11: switch between the natural placement and the reduced one, in which a
+    // button that would claim a whole column is packed as a small one instead.
+    // Driven by RibbonGroup, which also has to match the button presentation.
+    void setReduced(bool reduced);
+    // B11: refresh the cached size hint from the current geometry, without moving
+    // the items. setGeometry() does the same and then lays the items out; while the
+    // two presentations are being measured that pass is left to the layout that
+    // follows anyway.
+    void recalcSizeHint();
+private:
     QX_DECLARE_PRIVATE(RibbonGroupLayout)
     friend class RibbonGroup;
     friend class RibbonGroupPrivate;

@@ -59,6 +59,7 @@ public:
     int m_largeHeight;   ///< Height of the large icon
     bool m_expandFlag;   ///< Whether the layout can expand
     bool m_dirty;        ///< Marks whether elements need refreshing; see QToolBarLayout source
+    bool m_reduced;      ///< B11: place buttons that would own a column as small ones instead
 };
 
 QMargins RibbonGroupLayoutPrivate::s_contentsMargins = QMargins(1, 1, 1, 1);
@@ -67,6 +68,7 @@ RibbonGroupLayoutPrivate::RibbonGroupLayoutPrivate()
     : m_columnCount(0)
     , m_expandFlag(false)
     , m_dirty(true)
+    , m_reduced(false)
 {
 }
 
@@ -337,6 +339,14 @@ void RibbonGroupLayoutPrivate::updateGeomArray(const QRect &setrect)
             } else {
                 rp = RibbonGroup::Small;
             }
+        }
+        // B11: a reduced group is narrower than its natural width, because a button
+        // that would otherwise own a whole column is packed as a small one instead.
+        // Items that are not buttons - a gallery, a widget added through addWidget()
+        // - keep the proportion they were added with: their height cannot be
+        // squeezed, so demoting them would only clip them.
+        if (m_reduced && (RibbonGroup::Small != rp) && qobject_cast<RibbonButton *>(item->widget())) {
+            rp = RibbonGroup::Small;
         }
         // Start the layout according to the proportion and the layout mode
         switch (rp) {
@@ -767,6 +777,41 @@ void RibbonGroupLayout::setGeometry(const QRect &rect)
     d->updateGeomArray(rect);
     QLayout::setGeometry(rect);
     d->layoutActions();
+}
+
+/**
+ * @brief B11: choose between the natural and the reduced placement
+ *
+ * A reduced layout packs a button that would own a whole column as a small one
+ * instead, which costs rows but saves a column; that is what makes a group narrower
+ * than its sizeHint. RibbonGroup drives this together with the button presentation,
+ * because the placement and the way each button is drawn have to agree.
+ */
+void RibbonGroupLayout::setReduced(bool reduced)
+{
+    Q_D(RibbonGroupLayout);
+    if (d->m_reduced == reduced) {
+        return;
+    }
+    d->m_reduced = reduced;
+    invalidate();
+}
+
+/**
+ * @brief B11: refresh the cached size hint from the current geometry
+ *
+ * setGeometry() does the same and then lays the items out. While the two
+ * presentations of a group are being measured the items are laid out by the pass
+ * that follows anyway, so only the sizes are recomputed here.
+ */
+void RibbonGroupLayout::recalcSizeHint()
+{
+    Q_D(RibbonGroupLayout);
+    QWidget *w = parentWidget();
+
+    if (w) {
+        d->updateGeomArray(w->rect());
+    }
 }
 
 QX_RIBBON_END_NAMESPACE

@@ -198,6 +198,76 @@ QSize RibbonPagePrivate::pageContentSize() const
     return s;
 }
 
+/**
+ * @brief B11: keep the groups inside the page by narrowing them
+ *
+ * A group can be laid out in a reduced presentation, which trades rows for width by
+ * packing a button that would otherwise own a whole column as a small one. This walks
+ * the groups from the right - the side a shrinking window eats into first - and
+ * reduces as many of them as it takes to fit, leaving the rest at their natural
+ * width. Only when the narrowest form of every group still overflows does the caller
+ * fall through to the page's scroll buttons.
+ *
+ * Nothing is reduced while the natural layout still fits, so a page with room always
+ * shows every group at full width.
+ *
+ * @param pageWidth The width the page content has to fit into, margins included
+ * @return The width the groups need once the states have been applied
+ */
+int RibbonPagePrivate::fitGroupsInWidth(int pageWidth)
+{
+    struct Entry {
+        RibbonGroup *group;
+        int normal;
+        int reduced;
+    };
+    QList<Entry> entries;
+    // What the groups do not contribute: the contents margins and the separators
+    int fixed = 0;
+
+    if (!m_contentsMargins.isNull()) {
+        fixed += (m_contentsMargins.left() + m_contentsMargins.right());
+    }
+    for (const RibbonPageItem &item : std::as_const(m_itemList)) {
+        if (item.isEmpty() || (Q_NULLPTR == item.m_group)) {
+            continue;
+        }
+        Entry e;
+        e.group = item.m_group;
+        e.normal = item.m_group->normalWidth();
+        e.reduced = item.m_group->reducedWidth();
+        entries.append(e);
+        if (item.m_separator) {
+            fixed += item.m_separator->sizeHint().width();
+        }
+    }
+    int natural = fixed;
+    for (const Entry &e : std::as_const(entries)) {
+        natural += e.normal;
+    }
+    QList<bool> target;
+    for (int i = 0; i < entries.size(); ++i) {
+        target.append(false);
+    }
+    if (natural > pageWidth) {
+        int total = natural;
+        for (int i = entries.size() - 1; (i >= 0) && (total > pageWidth); --i) {
+            const int gain = entries.at(i).normal - entries.at(i).reduced;
+            if (gain <= 0) {
+                // This group is no narrower once reduced - a lone large button is drawn
+                // wider beside its icon than under it - so it keeps its natural width
+                continue;
+            }
+            target[i] = true;
+            total -= gain;
+        }
+    }
+    for (int i = 0; i < entries.size(); ++i) {
+        entries.at(i).group->setReducedInternal(target.at(i));
+    }
+    return totalSizeHintWidth();
+}
+
 void RibbonPagePrivate::updateItemGeometry()
 {
     Q_Q(RibbonPage);
@@ -213,7 +283,10 @@ void RibbonPagePrivate::updateItemGeometry()
         x = m_contentsMargins.left();
     }
 
-    int totalWidth = totalSizeHintWidth();
+    // B11: a page that has run out of room narrows its groups before it falls back
+    // to the scroll buttons, so the width to start from is the one the narrowest
+    // form of the groups needs rather than their natural one
+    int totalWidth = fitGroupsInWidth(pageWidth);
     // Records the expandable count
     int canExpandingCount = 0;
     // Expanded width
