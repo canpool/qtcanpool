@@ -73,9 +73,8 @@ QString MainWindow::defaultLayoutPath() const
 
 void MainWindow::saveLayout()
 {
-    const QString path = QFileDialog::getSaveFileName(this, tr("Save layout"),
-                                                       defaultLayoutPath(),
-                                                       QStringLiteral("XML (*.xml)"));
+    const QString path =
+        QFileDialog::getSaveFileName(this, tr("Save layout"), defaultLayoutPath(), QStringLiteral("XML (*.xml)"));
     if (path.isEmpty())
         return;
     if (m_window->saveStateToFile(path))
@@ -86,9 +85,8 @@ void MainWindow::saveLayout()
 
 void MainWindow::restoreLayout()
 {
-    const QString path = QFileDialog::getOpenFileName(this, tr("Restore layout"),
-                                                       defaultLayoutPath(),
-                                                       QStringLiteral("XML (*.xml)"));
+    const QString path =
+        QFileDialog::getOpenFileName(this, tr("Restore layout"), defaultLayoutPath(), QStringLiteral("XML (*.xml)"));
     if (path.isEmpty())
         return;
     if (m_window->restoreStateFromFile(path))

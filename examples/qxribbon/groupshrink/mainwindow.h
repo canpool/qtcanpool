@@ -14,10 +14,8 @@ class MainWindow : public QxRibbon::RibbonMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 protected:
     void resizeEvent(QResizeEvent *event) override;
-
 private:
     void updateReducedReadout();
 

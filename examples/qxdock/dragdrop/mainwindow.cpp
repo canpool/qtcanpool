@@ -42,8 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_notes->setWidget(new QTextEdit(tr("Notes content")));
     m_window->addDockWidget(Qx::RightDockWidgetArea, m_notes);
 
-    connect(m_window, &DockWindow::dockWidgetDropped,
-            this, &MainWindow::onDockWidgetDropped);
+    connect(m_window, &DockWindow::dockWidgetDropped, this, &MainWindow::onDockWidgetDropped);
 
     resize(960, 600);
 }
@@ -63,6 +62,6 @@ void MainWindow::startNativeDrag()
 
 void MainWindow::onDockWidgetDropped(const QString &name, const QPoint &globalPos)
 {
-    statusBar()->showMessage(tr("Dropped dock widget '%1' at (%2, %3)")
-                             .arg(name).arg(globalPos.x()).arg(globalPos.y()));
+    statusBar()->showMessage(
+        tr("Dropped dock widget '%1' at (%2, %3)").arg(name).arg(globalPos.x()).arg(globalPos.y()));
 }

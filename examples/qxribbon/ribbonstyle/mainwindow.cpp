@@ -43,7 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     actionTheme->setMenu(themeMenu);
     themeGroup->addAction(addThemeAction(themeMenu->addAction(tr("Office 2013")), RibbonTheme::LightOffice2013Theme));
     themeGroup->addAction(addThemeAction(themeMenu->addAction(tr("Fancy")), RibbonTheme::LightFancyTheme));
-    themeGroup->addAction(addThemeAction(themeMenu->addAction(tr("Dark Office Plus")), RibbonTheme::DarkOfficePlusTheme));
+    themeGroup->addAction(
+        addThemeAction(themeMenu->addAction(tr("Dark Office Plus")), RibbonTheme::DarkOfficePlusTheme));
     themeGroup->addAction(addThemeAction(themeMenu->addAction(tr("Fluent 2016")), RibbonTheme::LightFluent2016Theme));
     themeGroup->addAction(addThemeAction(themeMenu->addAction(tr("Fluent 2019")), RibbonTheme::LightFluent2019Theme));
     rightBar->addAction(actionTheme);

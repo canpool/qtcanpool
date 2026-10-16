@@ -24,7 +24,6 @@ public:
 private slots:
     void startNativeDrag();
     void onDockWidgetDropped(const QString &name, const QPoint &globalPos);
-
 private:
     DockWindow *m_window;
     DockWidget *m_notes;

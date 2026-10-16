@@ -30,13 +30,13 @@ MainWindow::MainWindow(QWidget *parent)
     // Each group carries at least one large button, so it owns a whole column
     // and therefore has a reduced presentation (B11: a group narrows itself
     // before the page falls back to its scroll buttons).
-    struct GroupSpec { QString title; int large; int small; };
+    struct GroupSpec {
+        QString title;
+        int large;
+        int small;
+    };
     const GroupSpec specs[] = {
-        {tr("Clipboard"), 1, 2},
-        {tr("Font"), 2, 1},
-        {tr("Paragraph"), 1, 3},
-        {tr("Styles"), 3, 0},
-        {tr("View"), 1, 2},
+        {tr("Clipboard"), 1, 2}, {tr("Font"), 2, 1}, {tr("Paragraph"), 1, 3}, {tr("Styles"), 3, 0}, {tr("View"), 1, 2},
     };
     for (const GroupSpec &s : specs) {
         RibbonGroup *g = page->addGroup(s.title);
@@ -60,9 +60,9 @@ void MainWindow::updateReducedReadout()
 {
     QStringList parts;
     for (int i = 0; i < m_groups.count(); ++i)
-        parts.append(QString::fromLatin1("%1:%2").arg(m_titles.at(i),
-                        m_groups.at(i)->isReduced() ? QString::fromLatin1("reduced")
-                                                    : QString::fromLatin1("full")));
+        parts.append(QString::fromLatin1("%1:%2").arg(m_titles.at(i), m_groups.at(i)->isReduced()
+                                                                          ? QString::fromLatin1("reduced")
+                                                                          : QString::fromLatin1("full")));
     statusBar()->showMessage(tr("group state  ->  ") + parts.join(QString::fromLatin1("   ")));
 }
 

@@ -23,7 +23,6 @@ public:
 private slots:
     void saveLayout();
     void restoreLayout();
-
 private:
     QString defaultLayoutPath() const;
 
