@@ -73,6 +73,44 @@ public:
 
     /*! Scans the paths (or the registered static plugins), resolves dependencies and loads in order. */
     void loadPlugins();
+
+    /*!
+     * Discovery, metadata, dependency resolution and ordering, and nothing
+     * else. Every plugin that would start is left resolved, waiting for
+     * requestPlugin().
+     *
+     * This is for an application that would rather spend its startup budget on
+     * its window than on its modules: the window comes up, and each module is
+     * paid for when it is first needed.
+     *
+     * An alternative to loadPlugins() rather than a step before it: the host
+     * reads the metadata once and then either starts everything at once or one
+     * plugin at a time. What resolvePlugins() leaves resolved, requestPlugin()
+     * can start; calling loadPlugins() afterwards would resolve the same
+     * metadata a second time and start a second instance of what is already up.
+     */
+    void resolvePlugins();
+    /*!
+     * Starts \a id, along with everything it requires that has not started yet,
+     * and returns it - or null when there is no such plugin, when it will not
+     * start, or when a dependency of it will not.
+     *
+     * The plugin goes through exactly the checks a load applies, and reports
+     * through the same signals: spec()->error() and errorString() say why when
+     * the answer is null.
+     *
+     * Requires resolvePlugins() (or loadPlugins()) first - before either, the
+     * manager has not read the metadata and does not know the id. Asking twice
+     * starts nothing twice: an initialized plugin is returned as it is.
+     *
+     * initialize() runs in dependency order and extensionsInitialized() follows
+     * it, as in a load - but this run reaches that second moment with only the
+     * plugins that have been asked for so far, since the ones nobody wants yet
+     * do not exist. A plugin whose extensionsInitialized() has to see every
+     * peer is therefore a reason to call loadPlugins() instead.
+     */
+    QxPlugin *requestPlugin(const QString &id);
+
     /*! Calls shutdown() on every initialized plugin, in reverse initialization order. */
     void shutdown();
 

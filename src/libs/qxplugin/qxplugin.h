@@ -13,6 +13,8 @@ QX_PLUGIN_BEGIN_NAMESPACE
 
 class QxPluginContext;
 
+class QxPluginManagerPrivate;
+
 /*!
  * Base class of every QtCanpool plugin.
  *
@@ -55,8 +57,12 @@ class QxPluginContext;
 class QX_PLUGIN_EXPORT QxPlugin : public QObject
 {
     Q_OBJECT
-    /*! QxPluginManager sets m_context before initialize(); nothing else should. */
+    /*!
+     * QxPluginManager - and its private, which does the manager's work - sets
+     * m_context before initialize(); nothing else should.
+     */
     friend class QxPluginManager;
+    friend class QxPluginManagerPrivate;
 public:
     explicit QxPlugin(QObject *parent = Q_NULLPTR);
     ~QxPlugin() override;

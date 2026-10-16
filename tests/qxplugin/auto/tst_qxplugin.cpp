@@ -167,6 +167,7 @@ private slots:
     void extensionsInitializedFollowsInitializationOrder();
     void managerAccessorsRoundTrip();
     void dependencyGraph();
+    void lazyLoadingStartsOnDemand();
 };
 
 void tst_QxPlugin::specReadsMetadata()
@@ -821,6 +822,146 @@ void tst_QxPlugin::dependencyGraph()
     mgr.loadPlugins();
     QCOMPARE(mgr.dependentsOf(QStringLiteral("a"), true), QStringList({QStringLiteral("b"), QStringLiteral("c")}));
     QCOMPARE(mgr.missingDependenciesOf(QStringLiteral("e")), QStringList({QStringLiteral("ghost")}));
+}
+
+/*!
+ * E6: lazy loading. resolvePlugins() is a load up to the point of starting
+ * anything, and requestPlugin() is what starts one plugin - along with whatever
+ * it requires, because a plugin can only take from the pool what has already
+ * published itself.
+ *
+ * The value of the split is a window that comes up before its modules do, so
+ * most of what is pinned here is what has *not* happened yet: nothing is
+ * instantiated by resolvePlugins(), asking twice instantiates nothing twice,
+ * and a plugin nobody asked for keeps its Resolved state and no instance. The
+ * one guarantee a batch load makes that a lazy run cannot - "every plugin is up
+ * before any of them is told to extend" - is pinned too, as the limitation it
+ * is rather than left to be discovered.
+ */
+void tst_QxPlugin::lazyLoadingStartsOnDemand()
+{
+    QStringList log;
+    QxPluginManager mgr;
+    mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), [&log]() {
+        return new OrderPlugin(&log, QStringLiteral("a"));
+    });
+    mgr.registerStaticPlugin(QStringLiteral("b"),
+                             metaData(QStringLiteral("b"), QStringLiteral("1.0.0"), {QStringLiteral("a")}), [&log]() {
+                                 return new OrderPlugin(&log, QStringLiteral("b"));
+                             });
+    mgr.registerStaticPlugin(QStringLiteral("c"), metaData(QStringLiteral("c"), QStringLiteral("1.0.0")), [&log]() {
+        return new OrderPlugin(&log, QStringLiteral("c"));
+    });
+
+    // Resolution on its own starts nothing, which is the whole point of it - but
+    // it has read and ordered the metadata, so a plugin list can already be
+    // shown, and the order a load would use is already known.
+    mgr.resolvePlugins();
+    QCOMPARE(log, QStringList());
+    QVERIFY(!mgr.hasError());
+    QCOMPARE(mgr.spec(QStringLiteral("a"))->state(), QxPluginState::Resolved);
+    QStringList order;
+    for (QxPluginSpec *s : mgr.specs())
+        order.append(s->id());
+    // The order a load would use. The tie between the two plugins that are ready
+    // at the start is broken by discovery: a and c are both unblocked, so both
+    // are seeded before b is unlocked by a.
+    QCOMPARE(order, QStringList({QStringLiteral("a"), QStringLiteral("c"), QStringLiteral("b")}));
+
+    // Qt 5 only, and for the same reason as in signalsReportTheRun: the spy has
+    // to resolve its argument type before it can record anything, and
+    // Q_DECLARE_METATYPE registers lazily.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    qRegisterMetaType<QxPluginSpec *>();
+#endif
+    QSignalSpy initialized(&mgr, &QxPluginManager::pluginInitialized);
+
+    // Asking for b starts a first, then b. Both are up, and extensions run
+    // after both - the recursion defers them to the end of the request, so a
+    // dependency is never told to finish over a half-built set.
+    ::QxPlugin::QxPlugin *b = mgr.requestPlugin(QStringLiteral("b"));
+    QVERIFY(b != Q_NULLPTR);
+    QVERIFY(b == mgr.plugin(QStringLiteral("b")));
+    QCOMPARE(log, QStringList({QStringLiteral("a-init"), QStringLiteral("b-init"), QStringLiteral("a-extend"),
+                               QStringLiteral("b-extend")}));
+    QCOMPARE(initialized.count(), 2);
+
+    // c was never asked for, and nothing asked for it on its behalf.
+    QCOMPARE(mgr.spec(QStringLiteral("c"))->state(), QxPluginState::Resolved);
+    QVERIFY(mgr.plugin(QStringLiteral("c")) == Q_NULLPTR);
+
+    // Asking again is not a second start.
+    QVERIFY(mgr.requestPlugin(QStringLiteral("b")) == b);
+    QCOMPARE(initialized.count(), 2);
+    QCOMPARE(log.size(), 4);
+
+    // Its own request starts it, and only it: the plugins that already had their
+    // extensionsInitialized() do not get a second one, even though this request
+    // reaches that moment again.
+    QVERIFY(mgr.requestPlugin(QStringLiteral("c")) != Q_NULLPTR);
+    QCOMPARE(log, QStringList({QStringLiteral("a-init"), QStringLiteral("b-init"), QStringLiteral("a-extend"),
+                               QStringLiteral("b-extend"), QStringLiteral("c-init"), QStringLiteral("c-extend")}));
+    QCOMPARE(initialized.count(), 3);
+    QVERIFY(!mgr.hasError());
+
+    // An id that does not exist, and one resolution switched off, both answer
+    // null - and neither is an error of the call.
+    {
+        QxPluginManager m;
+        m.registerStaticPlugin(QStringLiteral("opt"),
+                               metaData(QStringLiteral("opt"), QStringLiteral("1.0.0"), {}, false), []() {
+                                   return new FakePlugin;
+                               });
+        m.resolvePlugins();
+        QVERIFY(m.requestPlugin(QStringLiteral("nobody")) == Q_NULLPTR);
+        QVERIFY(m.requestPlugin(QStringLiteral("opt")) == Q_NULLPTR);
+        QCOMPARE(m.spec(QStringLiteral("opt"))->state(), QxPluginState::Disabled);
+        QVERIFY(!m.hasError());
+        QVERIFY(m.errorString().isEmpty());
+    }
+
+    // A dependency that refuses to start refuses the request, and the reason is
+    // left where a load would have left it: on the plugin that failed, and on
+    // the one that was asked for.
+    {
+        QxPluginManager m;
+        m.registerStaticPlugin(QStringLiteral("base"), metaData(QStringLiteral("base"), QStringLiteral("1.0.0")), []() {
+            return new FakePlugin(false);
+        });
+        m.registerStaticPlugin(QStringLiteral("child"),
+                               metaData(QStringLiteral("child"), QStringLiteral("1.0.0"), {QStringLiteral("base")}),
+                               []() {
+                                   return new FakePlugin(true);
+                               });
+        m.resolvePlugins();
+        // Nothing is wrong with the metadata, so resolution reports nothing yet.
+        QVERIFY(!m.hasError());
+
+        QVERIFY(m.requestPlugin(QStringLiteral("child")) == Q_NULLPTR);
+        QVERIFY(m.hasError());
+        QxPluginSpec *base = m.spec(QStringLiteral("base"));
+        QCOMPARE(base->state(), QxPluginState::Disabled);
+        QCOMPARE(base->error(), QStringLiteral("fake init refused"));
+        QxPluginSpec *child = m.spec(QStringLiteral("child"));
+        QCOMPARE(child->state(), QxPluginState::Disabled);
+        QVERIFY(child->error().contains(QStringLiteral("base")));
+        QVERIFY(child->error().contains(QStringLiteral("not available")));
+        QVERIFY(m.errorString().contains(QStringLiteral("base: fake init refused")));
+    }
+
+    // A dependency that is not there at all is found by resolution, so a host
+    // that only resolves and shows a list can already explain the entries in it.
+    {
+        QxPluginManager m;
+        m.registerStaticPlugin(QStringLiteral("e"),
+                               metaData(QStringLiteral("e"), QStringLiteral("1.0.0"), {QStringLiteral("ghost")}), []() {
+                                   return new FakePlugin;
+                               });
+        m.resolvePlugins();
+        QVERIFY(m.hasError());
+        QVERIFY(m.errorString().contains(QStringLiteral("ghost")));
+        QVERIFY(m.requestPlugin(QStringLiteral("e")) == Q_NULLPTR);
+    }
 }
 
 #include "tst_qxplugin.moc"

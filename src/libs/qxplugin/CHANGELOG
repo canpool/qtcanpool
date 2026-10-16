@@ -1,6 +1,15 @@
 Unreleased
 ---
 Feature
+- Lazy loading: resolvePlugins() and requestPlugin(). loadPlugins() was the only
+  way in, so a host that wanted to show its window before paying for its modules
+  had no way to say so - the whole set had to be loaded, initialized and
+  extended before the first frame. The run is now cut in two: resolvePlugins()
+  reads the metadata, resolves the graph and computes the order without starting
+  anything, and requestPlugin(id) starts one plugin together with whatever it
+  requires that has not started yet. Both halves apply the same checks and
+  report through the same signals and errors as a load, so "started" means one
+  thing. tst_QxPlugin::lazyLoadingStartsOnDemand
 - The dependency graph is queryable: dependenciesOf(), dependentsOf() and
   missingDependenciesOf(). The manager has always resolved the graph -
   topologically, rejecting cycles and version mismatches with a diagnosable

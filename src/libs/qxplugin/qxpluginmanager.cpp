@@ -81,11 +81,28 @@ public:
 
     QString errorString;
     bool hasError = false;
+    /*!
+     * Ids whose extensionsInitialized() has been called. Kept because a lazy run
+     * reaches that moment more than once - once per request - and the hook is a
+     * one-off by contract.
+     */
+    QSet<QString> extensionsDone;
 
     void gatherDynamic();
     void resolve();
     QString cycleChain(QxPluginSpec *start, const QList<QxPluginSpec *> &live) const;
     QxPlugin *createInstance(QxPluginSpec *spec);
+    /*! Takes one resolved plugin to an initialized instance; see the definition. */
+    bool startSpec(QxPluginSpec *spec);
+    /*!
+     * requestPlugin()'s recursion: \a id and everything it requires, with no
+     * announcement of its own. See the definition.
+     */
+    QxPlugin *requestSpec(const QString &id);
+    /*! Calls extensionsInitialized() on every initialized plugin that has not had it yet. */
+    void runExtensionsInitialized();
+    /*! Recomputes errorString and hasError from the specs. */
+    void collectErrors();
 };
 
 void QxPluginManagerPrivate::gatherDynamic()
@@ -431,6 +448,140 @@ void QxPluginManager::registerStaticPlugin(const QString &key, const QJsonObject
     d->staticEntries.append(new QxPluginManagerPrivate::Entry{spec, Q_NULLPTR, factory, true});
 }
 
+/*!
+ * One step of a load: from a resolved spec to an initialized instance.
+ *
+ * This is the body of the load loop, kept in one place because a lazy run needs
+ * exactly the same steps one plugin at a time - and a plugin started on request
+ * has to pass the same checks and report the same failures as one started by
+ * loadPlugins(), or "started" would mean two different things. Returns true
+ * when the plugin ended up initialized.
+ */
+bool QxPluginManagerPrivate::startSpec(QxPluginSpec *spec)
+{
+    Q_Q(QxPluginManager);
+
+    if (spec->state() == QxPluginState::Initialized) {
+        return true;
+    }
+
+    // a required dep may have failed at load/init time (late cascade)
+    for (const QString &dep : spec->dependencies()) {
+        QxPluginSpec *depSpec = specById.value(dep);
+        if (depSpec && depSpec->state() == QxPluginState::Disabled) {
+            spec->setState(QxPluginState::Disabled);
+            if (spec->error().isEmpty())
+                spec->setError(
+                    QStringLiteral("plugin '%1' depends on '%2', which is not available").arg(spec->id(), dep));
+            Q_EMIT q->pluginFailed(spec, spec->error());
+            return false;
+        }
+    }
+    if (spec->isDisabled()) {
+        return false;   // skipped by default or by config: nothing to instantiate
+    }
+
+    QxPlugin *instance = createInstance(spec);
+    if (!instance) {
+        spec->setState(QxPluginState::Disabled);
+        spec->setError(QStringLiteral("plugin '%1' could not be instantiated").arg(spec->id()));
+        Q_EMIT q->pluginFailed(spec, spec->error());
+        return false;
+    }
+    spec->setPlugin(instance);
+    spec->setState(QxPluginState::Loaded);
+
+    if (instance->interfaceVersion() < requiredInterfaceVersion) {
+        spec->setState(QxPluginState::Disabled);
+        spec->setError(QStringLiteral("plugin '%1' interface version %2 is below the required %3")
+                           .arg(spec->id())
+                           .arg(instance->interfaceVersion())
+                           .arg(requiredInterfaceVersion));
+        Q_EMIT q->pluginFailed(spec, spec->error());
+        return false;
+    }
+
+    instance->m_context = context;
+    QString err;
+    if (!instance->initialize(context, &err)) {
+        spec->setState(QxPluginState::Disabled);
+        spec->setError(err.isEmpty() ? QStringLiteral("plugin '%1' returned false from initialize()").arg(spec->id())
+                                     : err);
+        Q_EMIT q->pluginFailed(spec, spec->error());
+        return false;
+    }
+    spec->setState(QxPluginState::Initialized);
+    Q_EMIT q->pluginInitialized(spec);
+    return true;
+}
+
+/*!
+ * requestPlugin()'s recursion. Everything \a id needs is started before \a id
+ * itself, which is the only guarantee a plugin can be given: it may take from
+ * the pool what has already published itself, and nothing else.
+ *
+ * Deliberately without the two passes that close a run - extensionsInitialized()
+ * and the error roll-up. They belong to the request as a whole, not to each step
+ * of it: a dependency that finished before its dependent had even started would
+ * be told to extend over a set that is still half-built.
+ */
+QxPlugin *QxPluginManagerPrivate::requestSpec(const QString &id)
+{
+    QxPluginSpec *spec = specById.value(id);
+    if (!spec) {
+        // Either there is no such plugin or resolvePlugins() has not run: both
+        // leave nothing to start, and neither is an error of this call.
+        return Q_NULLPTR;
+    }
+    if (spec->state() == QxPluginState::Initialized) {
+        return spec->plugin();
+    }
+    if (spec->state() == QxPluginState::Disabled) {
+        return Q_NULLPTR;
+    }
+
+    const QStringList required = spec->dependencies();
+    for (const QString &dependency : required) {
+        requestSpec(dependency);
+    }
+    return startSpec(spec) ? spec->plugin() : Q_NULLPTR;
+}
+
+/*!
+ * Lets initialized plugins finish their setup, in the order they were
+ * initialized in. Peers are reachable from here exactly as they are from
+ * initialize() - through the object pool on the context - so a plugin that
+ * offers something may well prefer to publish it here, once its own setup is
+ * complete.
+ *
+ * The hook is a one-off, so the ids it has run for are remembered: a load
+ * reaches this moment once, a lazy run reaches it once per request.
+ */
+void QxPluginManagerPrivate::runExtensionsInitialized()
+{
+    for (QxPluginSpec *s : std::as_const(orderedSpecs)) {
+        if (s->state() != QxPluginState::Initialized || !s->plugin() || extensionsDone.contains(s->id())) {
+            continue;
+        }
+        extensionsDone.insert(s->id());
+        s->plugin()->extensionsInitialized();
+    }
+}
+
+void QxPluginManagerPrivate::collectErrors()
+{
+    QStringList lines;
+    hasError = false;
+    for (QxPluginManagerPrivate::Entry *e : std::as_const(entries)) {
+        QxPluginSpec *s = e->spec;
+        if (!s->error().isEmpty()) {
+            lines.append(QStringLiteral("%1: %2").arg(s->id(), s->error()));
+            hasError = true;
+        }
+    }
+    errorString = lines.join(QLatin1String("\n"));
+}
+
 void QxPluginManager::loadPlugins()
 {
     Q_D(QxPluginManager);
@@ -439,81 +590,37 @@ void QxPluginManager::loadPlugins()
 
     d->errorString.clear();
     d->hasError = false;
+    d->extensionsDone.clear();
 
     for (QxPluginSpec *s : std::as_const(d->orderedSpecs)) {
-        // a required dep may have failed at load/init time (late cascade)
-        bool depFailed = false;
-        for (const QString &dep : s->dependencies()) {
-            QxPluginSpec *depSpec = d->specById.value(dep);
-            if (depSpec && depSpec->state() == QxPluginState::Disabled) {
-                s->setState(QxPluginState::Disabled);
-                if (s->error().isEmpty())
-                    s->setError(
-                        QStringLiteral("plugin '%1' depends on '%2', which is not available").arg(s->id(), dep));
-                depFailed = true;
-                break;
-            }
-        }
-        if (depFailed) {
-            emit pluginFailed(s, s->error());
-            continue;
-        }
-        if (s->isDisabled())
-            continue;   // skipped by default or by config: nothing to instantiate
-
-        QxPlugin *instance = d->createInstance(s);
-        if (!instance) {
-            s->setState(QxPluginState::Disabled);
-            s->setError(QStringLiteral("plugin '%1' could not be instantiated").arg(s->id()));
-            emit pluginFailed(s, s->error());
-            continue;
-        }
-        s->setPlugin(instance);
-        s->setState(QxPluginState::Loaded);
-
-        if (instance->interfaceVersion() < d->requiredInterfaceVersion) {
-            s->setState(QxPluginState::Disabled);
-            s->setError(QStringLiteral("plugin '%1' interface version %2 is below the required %3")
-                            .arg(s->id())
-                            .arg(instance->interfaceVersion())
-                            .arg(d->requiredInterfaceVersion));
-            emit pluginFailed(s, s->error());
-            continue;
-        }
-
-        instance->m_context = d->context;
-        QString err;
-        if (!instance->initialize(d->context, &err)) {
-            s->setState(QxPluginState::Disabled);
-            s->setError(err.isEmpty() ? QStringLiteral("plugin '%1' returned false from initialize()").arg(s->id())
-                                      : err);
-            emit pluginFailed(s, s->error());
-            continue;
-        }
-        s->setState(QxPluginState::Initialized);
-        emit pluginInitialized(s);
+        d->startSpec(s);
     }
 
-    // let initialized plugins finish setup now the whole set is up, in the order
-    // they were initialized in. Peers are reachable from here exactly as they are
-    // from initialize() - through the object pool on the context - so a plugin
-    // that offers something may well prefer to publish it here, once its own
-    // setup is complete.
-    for (QxPluginSpec *s : std::as_const(d->orderedSpecs)) {
-        if (s->state() == QxPluginState::Initialized && s->plugin())
-            s->plugin()->extensionsInitialized();
-    }
+    d->runExtensionsInitialized();
+    d->collectErrors();
+}
 
-    // aggregate failures
-    QStringList lines;
-    for (QxPluginManagerPrivate::Entry *e : std::as_const(d->entries)) {
-        QxPluginSpec *s = e->spec;
-        if (!s->error().isEmpty()) {
-            lines.append(QStringLiteral("%1: %2").arg(s->id(), s->error()));
-            d->hasError = true;
-        }
-    }
-    d->errorString = lines.join(QLatin1String("\n"));
+void QxPluginManager::resolvePlugins()
+{
+    Q_D(QxPluginManager);
+    d->gatherDynamic();
+    d->resolve();
+
+    d->extensionsDone.clear();
+    // Resolution is where a missing dependency, a version mismatch and a cycle
+    // are found, so the failure report is already due here: a host that only
+    // resolves and then shows a plugin list has to be able to say what is wrong
+    // with the entries in it without starting anything.
+    d->collectErrors();
+}
+
+QxPlugin *QxPluginManager::requestPlugin(const QString &id)
+{
+    Q_D(QxPluginManager);
+    QxPlugin *plugin = d->requestSpec(id);
+    d->runExtensionsInitialized();
+    d->collectErrors();
+    return plugin;
 }
 
 void QxPluginManager::shutdown()
