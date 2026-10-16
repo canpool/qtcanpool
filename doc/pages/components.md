@@ -145,6 +145,7 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonManager` | Ribbon 全局管理器（单例 `instance()`）：持有 `RibbonFactory`；旧宏 `RibbonElementMgr` 是其 `instance()` 的别名 |
 | `RibbonFactory` | 控件工厂 + `RibbonStyleOption`（条带高度等布局尺寸参数）的持有者 |
 | `RibbonPageContext` | 把一组页作为上下文整体显隐（如「表格工具」上下文页签） |
+| `RibbonMdiArea` | 标签式文档 MDI 区（`QMdiArea` 派生，4.5 新增）：文档以标签页呈现，切换活动文档时自动换掉其登记的 `RibbonPage`；见 `Example_Ribbon_MdiTabs` |
 
 样式表资源位于 `:/qxribbon/res/stylesheets/*.css`，是**进程级**资源；
 `QxThemeManager` 正是按路径从这里取内置主题。
