@@ -58,8 +58,21 @@ Feature
   page reduces groups from the right until they fit, so a page with room always
   shows every group at full width, and the left and right scroll buttons appear
   only when the narrowest form of every group still overflows.
+- RibbonMdiArea is a tabbed-document MDI area that keeps the ribbon in step
+  with the active document. Documents open as tabs by default (tabbed view
+  plus document mode, closable and movable), and a document may carry a
+  RibbonPage that is shown while the document is active and hidden while it
+  is not, so switching tabs swaps the ribbon pages - the treatment a ribbon
+  application gives its documents. Of the pages it manages, only the active
+  document's stays up, and none at all while nothing is active; a document
+  added without a page leaves the ribbon alone, and so does a page that is on
+  no RibbonBar. The area paints nothing of its own - the document tabs are the
+  plain tab bar QMdiArea drives - so it adds no visual semantics a theme would
+  have to follow. tst_RibbonMdiArea drives the swap, the close paths and the
+  guards on both legs.
 
 Interface
+- RibbonMdiArea: add RibbonMdiArea
 - RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
 - RibbonGalleryGroup: add triggerCurrentItem
 - RibbonBar: add overridable addContextMenuActions
