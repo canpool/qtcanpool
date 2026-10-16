@@ -102,6 +102,10 @@ add_qtc_example(Example_Dock_DockInDock qxdock qxdock/dockindock sample)
 add_qtc_example(Example_Dock_Group qxdock qxdock/dockgroup sample)
 add_qtc_example(Example_Dock_HideShow qxdock qxdock/hideshow sample)
 add_qtc_example(Example_Dock_SideBar qxdock qxdock/sidebar sample)
+# 4.5: plain, human-readable XML layout persistence (C2).
+add_qtc_example(Example_Dock_Persistence qxdock qxdock/persistence sample)
+# 4.5: native OS drag of a dock widget + the dockWidgetDropped() signal (C3).
+add_qtc_example(Example_Dock_NativeDrag qxdock qxdock/dragdrop sample)
 add_qtc_example(Example_Dock_ConfigFlags qxdock qxdock/configflags plain)
 add_qtc_example(Example_Dock_EmptyDockArea qxdock qxdock/emptydockarea plain)
 add_qtc_example(Example_Dock_WidgetToPanel qxdock qxdock/widgettopanel plain)
