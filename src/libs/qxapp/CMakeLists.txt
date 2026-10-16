@@ -4,6 +4,7 @@ add_qtc_library(qxapp
   DEPENDS qxwindow
   PUBLIC_DEPENDS qxribbon qxdock qxtheme qxcore qxplugin Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES
+    appaccessible.cpp
     qxapp_global.h
     qxappshell.cpp qxappshell.h
     qxextensionbutton.cpp qxextensionbutton.h

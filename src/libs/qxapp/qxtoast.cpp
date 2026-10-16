@@ -229,6 +229,10 @@ QxToast::QxToast(const QString &text, Level level, QWidget *parent)
     d->m_text = text;
     d->m_level = level;
     d->init();
+
+    // Accessibility (B2): make sure the factory that reports this toast's role is
+    // in place before anything can query it.
+    installQxAppAccessibility();
 }
 
 QxToast::~QxToast()

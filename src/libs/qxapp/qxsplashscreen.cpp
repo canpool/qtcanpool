@@ -122,6 +122,10 @@ void QxSplashScreen::setMessage(const QString &message)
         return;
     }
     d->m_message = message;
+    // Accessibility (B2): the message is drawn into the splash pixmap, not placed
+    // in a child widget, so mirror it into the accessible name for assistive
+    // tools to announce.
+    setAccessibleName(message);
     repaint();
 }
 

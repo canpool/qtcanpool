@@ -16,6 +16,11 @@ QT_END_NAMESPACE
 
 QX_APP_BEGIN_NAMESPACE
 
+// Accessibility (B2): register the app's QAccessible factory. Idempotent. Called
+// from the QxToast constructor, because a toast can be shown on its own - there
+// is no shell or manager that every toast necessarily passes through.
+void installQxAppAccessibility();
+
 /*!
  * The state behind QxToast: the message, the level, the clock and the two
  * animations.

@@ -1,5 +1,15 @@
 Unreleased
 ---
+Feature
+- QxToast is reported as a Notification and QxSplashScreen names its message. A
+  toast is a transient notification, but a plain QWidget as far as the default
+  accessibility is concerned, so it was announced as a Client - or not at all,
+  since it is not focusable; a QAccessible factory, installed by the QxToast
+  constructor because a toast can be shown on its own, now reports the
+  Notification role. The splash draws its message into the pixmap instead of
+  placing it in a child widget, so the message is mirrored into the accessible
+  name. tst_AppAccessible
+
 Interface
 - Rename QxNavBar to QxNavTabBar. The class is a QxTabBar-derived tab navigation
   bar with a show/hide-tabs customize menu, but its name sat one letter from
