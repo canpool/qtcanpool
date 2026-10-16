@@ -90,6 +90,7 @@ add_qtc_example(Example_Ribbon_ButtonGroup qxribbon qxribbon/ribbonbuttongroup r
 add_qtc_example(Example_Ribbon_Gallery qxribbon qxribbon/ribbongallery ribbon)
 # 4.5: group-level shrink on resize (B11), with a live isReduced() readout.
 add_qtc_example(Example_Ribbon_GroupShrink qxribbon qxribbon/groupshrink sample)
+add_qtc_example(Example_Ribbon_MdiTabs qxribbon qxribbon/mditabs sample)
 add_qtc_example(Example_RibbonStyle qxribbon qxribbon/ribbonstyle sample)
 # These two build against the generic main window in shared/.
 add_qtc_example(Example_Ribbon_ColorIcon qxribbon qxribbon/coloricon plain)
