@@ -112,6 +112,8 @@ add_qtc_example(Example_Dock_ToolBars qxdock qxdock/toolbars none)
 
 # --------------------------------------------------------------------- qxapp --
 add_qtc_example(Example_RibbonAppEmpty qxapp qxapp/ribbonappempty sample)
+# 4.5: the smallest complete shell, built from the D1/D2 convenience calls.
+add_qtc_example(Example_App_Shell qxapp qxapp/shell sample)
 # 4.4.1: examples for the 11 classes that had no visual sample yet, grouped by family.
 add_qtc_example(Example_App_PropertyEditor qxapp qxapp/propertyeditor sample)
 add_qtc_example(Example_App_Buttons qxapp qxapp/buttons sample)
