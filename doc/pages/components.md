@@ -129,6 +129,7 @@ themes->setTheme(DarkOfficePlus);
 | 类 | 说明 |
 | :--- | :--- |
 | `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组；4.5 起内建 KeyTips（B1）、富提示（B6）、右键上下文菜单（B10） |
+| `RibbonBackstageView` | 应用按钮打开的整屏后台视图（4.5 新增，B4）：覆盖 RibbonBar 所在宿主、左侧命令列（addAction/addSeparator/addPage）+ 右侧页面（setActivePage/activePage）；Esc 与返回按钮关闭，除非 setClosePrevented()；列/按钮/分隔符带 qx_RibbonBackstage* 对象名供主题着色，见 `Example_Ribbon_Backstage` |
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单；页面变窄时先逐组缩放、缩不动才出滚动条（B11） |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口 |
 | `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
