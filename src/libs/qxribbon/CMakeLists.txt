@@ -8,6 +8,7 @@ add_qtc_library(qxribbon
     ribbonaccessible.cpp
     ribbonactionsmanager.cpp ribbonactionsmanager.h ribbonactionsmanager_p.h
     ribbonapplicationbutton.cpp ribbonapplicationbutton.h
+    ribbonbackstageview.cpp ribbonbackstageview.h ribbonbackstageview_p.h
     ribbonbar.cpp ribbonbar.h ribbonbar_p.h
     ribbonbutton.cpp ribbonbutton.h ribbonbutton_p.h
     ribbonbuttongroup.cpp ribbonbuttongroup.h

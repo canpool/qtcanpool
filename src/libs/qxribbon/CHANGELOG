@@ -90,8 +90,23 @@ Feature
   have to follow. tst_RibbonMdiArea drives the swap, the close paths and the
   guards on both legs.
 
+- RibbonBackstageView: add the full-takeover backstage panel the application button
+  opens - Office's File menu as a panel that covers the ribbon bar's host and lays
+  the document commands down a left column and their pages to the right of it.
+  addAction()/addSeparator()/addPage() fill the column; setActivePage()/activePage()
+  swap the right-hand page; open() shows the panel and Esc or the styled close
+  button hides it, unless setClosePrevented() holds it open; the panel answers
+  RibbonBar::applicationButtonClicked by itself, so a host that wants it to do
+  something else disconnects that signal. The column, its button and its separator
+  carry the qx_RibbonBackstage* object names, so a theme styles them the way it
+  styles the rest of the ribbon, and the panel paints nothing of its own - the
+  column hugs the left edge and the page fills what is left. tst_RibbonBackstageView
+  drives open/close, the page swap, the host-resize follow and the application-button
+  toggle; Example_Ribbon_Backstage is a host that ends in the backstage.
+
 Interface
 - RibbonMdiArea: add RibbonMdiArea
+- RibbonBackstageView: add RibbonBackstageView (QWidget)
 - RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
 - RibbonGalleryGroup: add triggerCurrentItem
 - RibbonBar: add overridable addContextMenuActions
