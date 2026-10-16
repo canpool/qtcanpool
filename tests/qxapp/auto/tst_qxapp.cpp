@@ -840,12 +840,12 @@ void tst_QxAppShell::standardShell()
 /* --------------------------------------------------------------- plugin -- */
 
 /*! A plugin that always starts, so the dialog cases can look at the bookkeeping. */
-class ReadyPlugin : public QxPlugin
+class ReadyPlugin : public ::QxPlugin::QxPlugin
 {
     Q_OBJECT
 public:
     explicit ReadyPlugin(QObject *parent = Q_NULLPTR)
-        : QxPlugin(parent)
+        : ::QxPlugin::QxPlugin(parent)
     {
     }
 

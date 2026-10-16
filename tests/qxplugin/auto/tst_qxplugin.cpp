@@ -35,12 +35,12 @@ QX_APP_USE_NAMESPACE
 Q_DECLARE_METATYPE(QxPluginSpec *)
 
 /*! A controllable plugin: refuses to initialize, or reports an old interface. */
-class FakePlugin : public QxPlugin
+class FakePlugin : public ::QxPlugin::QxPlugin
 {
     Q_OBJECT
 public:
     explicit FakePlugin(bool ok = true, int iface = 1)
-        : QxPlugin(Q_NULLPTR)
+        : ::QxPlugin::QxPlugin(Q_NULLPTR)
         , m_ok(ok)
         , m_iface(iface)
     {
@@ -82,12 +82,12 @@ public:
  * and shutdown() are three separate moments of the same life, and the library
  * makes a claim about the order of each.
  */
-class OrderPlugin : public QxPlugin
+class OrderPlugin : public ::QxPlugin::QxPlugin
 {
     Q_OBJECT
 public:
     OrderPlugin(QStringList *log, const QString &name)
-        : QxPlugin(Q_NULLPTR)
+        : ::QxPlugin::QxPlugin(Q_NULLPTR)
         , m_log(log)
         , m_name(name)
     {
