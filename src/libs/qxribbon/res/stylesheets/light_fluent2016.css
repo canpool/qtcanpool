@@ -199,6 +199,54 @@ QAbstractButton#qx_RibbonApplicationButton::menu-indicator {
   image: none;
 }
 
+/*RibbonBackstageView*/
+
+QWidget#qx_RibbonBackstageView {
+  background-color: white;
+}
+
+QWidget#qx_RibbonBackstageMenu {
+  background-color: white;
+  border-right: 1px solid #c8c6c4;
+}
+
+QToolButton#qx_RibbonBackstageButton,
+QToolButton#qx_RibbonBackstageCloseButton {
+  border: 1px solid transparent;
+  color: #323130;
+  background-color: transparent;
+  text-align: left;
+  padding: 4px 8px;
+}
+
+QToolButton#qx_RibbonBackstageButton:hover,
+QToolButton#qx_RibbonBackstageCloseButton:hover {
+  color: #323130;
+  border: 1px solid #a9d3f5;
+  background-color: #deecf9;
+}
+
+QToolButton#qx_RibbonBackstageButton:pressed,
+QToolButton#qx_RibbonBackstageCloseButton:pressed {
+  color: #323130;
+  border: 1px solid #0078d4;
+  background-color: #106ebe;
+}
+
+QToolButton#qx_RibbonBackstageButton:checked,
+QToolButton#qx_RibbonBackstageCloseButton:checked {
+  color: #323130;
+  border: 1px solid #a9d3f5;
+  background-color: #deecf9;
+}
+
+QFrame#qx_RibbonBackstageSeparator {
+  background-color: #c8c6c4;
+  border: none;
+  min-height: 1px;
+  max-height: 1px;
+}
+
 /*RibbonButton*/
 
 QxRibbon--RibbonButton {
