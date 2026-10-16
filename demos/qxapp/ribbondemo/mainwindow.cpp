@@ -16,6 +16,7 @@
 #include "qxribbon/ribboncontainers.h"
 #include "qxribbon/ribbonquickaccessbar.h"
 #include "qxribbon/ribbonutils.h"
+#include "qxribbon/ribbonbackstageview.h"
 
 #include <QAbstractButton>
 #include <QAction>
@@ -38,6 +39,7 @@
 #include <QSpinBox>
 #include <QStatusBar>
 #include <QTextEdit>
+#include <QVBoxLayout>
 #include <QTextStream>
 #include <QXmlStreamWriter>
 #include <QDialog>
@@ -99,6 +101,16 @@ MainWindow::MainWindow(QWidget *par, bool screenshotMode)
 #endif
 
     QxRibbonCustomizeApplyFromXmlFile(m_customizeXml, ribbonBar(), m_actMgr);
+}
+
+MainWindow::~MainWindow()
+{
+    // The backstage answers its host's teardown like any other child: it is hidden with
+    // the window, which emits aboutToHide into the status bar - already gone by then. Cutting
+    // the links first keeps the hints from firing into a half-destroyed window.
+    if (m_backstage) {
+        disconnect(m_backstage, nullptr, this, nullptr);
+    }
 }
 
 void MainWindow::setRibbonTheme(int theme)
@@ -170,6 +182,7 @@ void MainWindow::createPageHome()
 
     QAction *actHideRibbon = createAction(tr("hide ribbon"), ":/icon/res/hideRibbon.svg", "actHideRibbon");
     actHideRibbon->setCheckable(true);
+    actHideRibbon->setStatusTip(tr("Collapse the ribbon down to just the tab row"));
     groupStyle->addLargeAction(actHideRibbon);
     connect(actHideRibbon, &QAction::triggered, this, [this](bool b) {
         this->ribbonBar()->setMinimized(b);
@@ -921,11 +934,17 @@ void MainWindow::createQuickAccessBar()
     connect(quickAccessBar, &RibbonQuickAccessBar::customizeDialogRequested, this, [this]() {
         onActionCustomizeAndSaveTriggered(false);
     });
-    quickAccessBar->addAction(createAction(tr("save"), ":/icon/res/save.svg", "save-quickbar"));
+    QAction *saveQab = createAction(tr("save"), ":/icon/res/save.svg", "save-quickbar");
+    saveQab->setStatusTip(tr("Save the current document to disk"));
+    quickAccessBar->addAction(saveQab);
     quickAccessBar->addAction(createAction(tr("printer"), ":/icon/res/printer.svg"));
 
-    quickAccessBar->addAction(createAction(tr("undo"), ":/icon/res/undo.svg"));
-    quickAccessBar->addAction(createAction(tr("redo"), ":/icon/res/redo.svg"));
+    QAction *undoQab = createAction(tr("undo"), ":/icon/res/undo.svg");
+    undoQab->setStatusTip(tr("Undo the last action"));
+    quickAccessBar->addAction(undoQab);
+    QAction *redoQab = createAction(tr("redo"), ":/icon/res/redo.svg");
+    redoQab->setStatusTip(tr("Redo the last undone action"));
+    quickAccessBar->addAction(redoQab);
 
     QAction *menuAction = createAction(tr("file"), ":/icon/res/file.svg");
     RibbonMenu *m = new RibbonMenu(tr("file"), this);
@@ -959,6 +978,8 @@ void MainWindow::createRightButtonGroup()
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFancy")), RibbonTheme::LightFancyTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkWps")), RibbonTheme::DarkWpsTheme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkOfficePlus")), RibbonTheme::DarkOfficePlusTheme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFluent2016")), RibbonTheme::LightFluent2016Theme));
+    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFluent2019")), RibbonTheme::LightFluent2019Theme));
     m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2016Blue")), MainWindow::Office2016BlueTheme));
     rightBar->addAction(actionTheme);
 
@@ -1006,18 +1027,75 @@ void MainWindow::createApplicationButton()
     QToolButton *appBtn = new QToolButton(this);
     appBtn->setAutoRaise(true);
     appBtn->setFocusPolicy(Qt::NoFocus);
-    appBtn->setPopupMode(QToolButton::InstantPopup);
     appBtn->setText(tr("&File"));
     appBtn->setIcon(windowIcon());
     appBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     appBtn->setMinimumWidth(40);
-    RibbonMenu *appMenu = new RibbonMenu(this);
-    // A menu can hold actions from anywhere; this one is made here to keep the demo self-contained.
-    appMenu->addAction(createAction(tr("file"), ":/icon/res/file.svg"));
-    appMenu->addAction(createAction(tr("save"), ":/icon/res/save.svg"));
-    appMenu->addAction(createAction(tr("cut"), ":/icon/res/cut.svg"));
-    appBtn->setMenu(appMenu);
     ribbonBar()->setApplicationButton(appBtn);
+    // B4: the Backstage view takes over the application-button click (no menu needed).
+    createBackstage();
+}
+
+void MainWindow::createBackstage()
+{
+    // B4: the Office-style application menu is replaced by a RibbonBackstageView that covers
+    // the window when the application button is clicked. The view wires itself to
+    // RibbonBar::applicationButtonClicked, so the button needs no menu of its own.
+    RibbonBackstageView *backstage = new RibbonBackstageView(ribbonBar());
+    QIcon icon(":/icon/res/logo.svg");
+
+    QAction *saveAction = backstage->addAction(icon, tr("Save"));
+    QAction *openAction = backstage->addAction(icon, tr("Open"));
+    backstage->addSeparator();
+    backstage->addAction(icon, tr("Print"));
+    backstage->addSeparator();
+    QAction *exitAction = backstage->addAction(icon, tr("Exit"));
+
+    // Pages are arbitrary widgets; the view reparents the active one and sizes it to the
+    // area right of the command column.
+    QLabel *infoPage = new QLabel(tr("The Info page.\n\n"
+                                     "A page is any widget the host hands over: the view reparents it, "
+                                     "keeps it hidden while another page is up, and sizes it to the area "
+                                     "right of the column."));
+    infoPage->setWordWrap(true);
+    infoPage->setContentsMargins(16, 16, 16, 16);
+    infoPage->setWindowTitle(tr("Info"));
+    backstage->addPage(infoPage);
+
+    QWidget *optionsPage = new QWidget();
+    optionsPage->setWindowTitle(tr("Options"));
+    QVBoxLayout *optionsLayout = new QVBoxLayout(optionsPage);
+    QCheckBox *preventClose = new QCheckBox(tr("Prevent the backstage from closing"));
+    optionsLayout->addWidget(preventClose);
+    optionsLayout->addStretch();
+    backstage->addPage(optionsPage);
+
+    QLabel *aboutPage = new QLabel(tr("The About page.\n\n"
+                                      "Clicking an entry in the column shows its page and checks the "
+                                      "entry; the one before it is hidden and unchecked."));
+    aboutPage->setWordWrap(true);
+    aboutPage->setContentsMargins(16, 16, 16, 16);
+    aboutPage->setWindowTitle(tr("About"));
+    backstage->addPage(aboutPage);
+
+    backstage->setActivePage(infoPage);
+
+    connect(saveAction, &QAction::triggered, this, [this] {
+        m_edit->append(tr("Save triggered"));
+    });
+    connect(openAction, &QAction::triggered, this, [this] {
+        m_edit->append(tr("Open triggered"));
+    });
+    connect(exitAction, &QAction::triggered, this, &MainWindow::close);
+    connect(preventClose, &QCheckBox::toggled, backstage, &RibbonBackstageView::setClosePrevented);
+    connect(backstage, &RibbonBackstageView::aboutToShow, this, [this] {
+        statusBar()->showMessage(tr("Backstage open"), 3000);
+    });
+    connect(backstage, &RibbonBackstageView::aboutToHide, this, [this] {
+        statusBar()->showMessage(tr("Backstage closed"), 3000);
+    });
+
+    m_backstage = backstage;
 }
 
 void MainWindow::addSomeOtherAction()
@@ -1060,7 +1138,8 @@ void MainWindow::setApplicationButton(QAbstractButton *btn)
 {
     btn->setText(tr("&File"));
     btn->setCheckable(true);
-    connect(ribbonBar(), &RibbonBar::applicationButtonClicked, this, &MainWindow::onApplicationButtonClicked);
+    // B4: the Backstage view (created in createBackstage) owns the application-button click
+    // through RibbonBar::applicationButtonClicked; no extra popup is needed here.
 }
 
 QAction *MainWindow::createAction(const QString &text, const QString &iconurl, const QString &objName)
@@ -1275,18 +1354,6 @@ void MainWindow::onButtonGroupActionTriggered(QAction *act)
         ribbonBar()->setWindowTitleAligment(al);
         ribbonBar()->repaint();
     }
-}
-
-void MainWindow::onApplicationButtonClicked()
-{
-    // A QWidget with Qt::ApplicationModal does not block here, so the popup is a QDialog.
-    QDialog w(this);
-    w.setWindowFlags(Qt::Popup);
-    w.resize(200, 100);
-    QAbstractButton *btn = ribbonBar()->applicationButton();
-    w.move(mapToGlobal(btn->geometry().bottomLeft()));
-    w.exec();
-    btn->setChecked(false);
 }
 
 void MainWindow::onMenuButtonPopupCheckableTest(bool b)

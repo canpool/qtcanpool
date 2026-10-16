@@ -20,6 +20,7 @@ class RibbonPageContext;
 class RibbonActionsManager;
 class RibbonQuickAccessBar;
 class RibbonButtonGroup;
+class RibbonBackstageView;
 QX_RIBBON_END_NAMESPACE
 
 QX_RIBBON_USE_NAMESPACE
@@ -29,7 +30,9 @@ class MainWindow : public MyRibbonWindow
     Q_OBJECT
 public:
     enum RibbonThemeCustom {
-        Office2016BlueTheme = RibbonTheme::CustomTheme + 1,
+        // B7 added LightFluent2016/2019 right after CustomTheme, so CustomTheme + 1/2 now
+        // collide with them. Keep the demo's custom ids above the library's full range.
+        Office2016BlueTheme = RibbonTheme::LightFluent2019Theme + 1,
         UserCustomTheme,
     };
 public:
@@ -41,6 +44,7 @@ public:
      * still printed, they just go to the log file instead of the window.
      */
     MainWindow(QWidget *par = nullptr, bool screenshotMode = false);
+    ~MainWindow();
     void setRibbonTheme(int theme);
 private:
     void createCentralWidget();
@@ -58,6 +62,7 @@ private:
     void createQuickAccessBar();
     void createRightButtonGroup();
     void createApplicationButton();
+    void createBackstage();
     void addSomeOtherAction();
 
     void setApplicationButton(QAbstractButton *btn);
@@ -91,11 +96,11 @@ private slots:
     void onActionFontLargerTriggered();
     void onActionFontSmallerTriggered();
     void onButtonGroupActionTriggered(QAction *act);
-    void onApplicationButtonClicked();
 private:
     RibbonPageContext *m_pageContext = nullptr;
     RibbonPageContext *m_pageContext2 = nullptr;
     QTextEdit *m_edit = nullptr;
+    RibbonBackstageView *m_backstage = nullptr;
     QActionGroup *m_themeGroup = nullptr;
     RibbonActionsManager *m_actMgr = nullptr;
     int m_actionTagText = 0;
