@@ -145,6 +145,30 @@ shell.restoreLayout();
 
 `setAutoSaveLayout(true)`（默认）会让 `closeEvent()` 自动调用 `saveLayout()`。
 
+## 标准外壳骨架（4.5）
+
+外壳既然总是保存布局，就总得有个让用户**主动**存/取的地方。这两个动作是所有
+ribbon 外壳共有的一组，因此由外壳自己提供，而不必每个应用各写一遍：
+
+```cpp
+// 一条调用给出标准骨架：Home 页 + 其上的"布局"组 + 状态栏 "Ready"
+// + 关窗自动存布局。返回该页，供调用方继续加自己的组
+RibbonPage *home = shell.createStandardShell();
+home->addGroup(tr("Edit"));
+
+// 只想要那一组（已有自己的页面结构时）：
+// addLayoutGroup(page)——Save / Restore，接 saveLayout()/restoreLayout()，
+// 并经状态栏报出结果；返回 RibbonGroup，便于继续添加。
+```
+
+该组用的是**样式自带的图标**（`SP_DialogSaveButton` / `SP_BrowserReload`），
+外壳没有自己的图标集。`createStandardShell()` 的返回点是预置与应用的**分界线**：
+标准部分到此为止，之后都是应用自己的组。
+
+> 这三个部件（ribbon、dock、window）本来就已互相接通 —— `saveLayout()` 一份配置
+> 同时管几何、停靠布局与当前页；`createStandardShell()` 补的是"布局组需要一张
+> ribbon 页"这件事，而不是新的集成。
+
 > **注意**：`setSettings()` **故意不自动恢复布局**，这一点与 `QxThemeManager` 不同。
 > 布局引用了具体的页面与停靠面板，只有在它们都创建之后才能应用，
 > 因此时机由调用方决定 —— 也就是上面的"先建页面和面板，再 `restoreLayout()`"。
