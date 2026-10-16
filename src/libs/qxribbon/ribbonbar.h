@@ -132,6 +132,20 @@ public:
     ~RibbonBar() Q_DECL_OVERRIDE;
 
     QAbstractButton *applicationButton();
+    /*!
+     * Hosts btn as the application button, left of the tab bar; the bar takes
+     * ownership of whatever was there before.
+     *
+     * A button without an object name is given "qx_RibbonApplicationButton",
+     * which is what the theme stylesheets target
+     * (QAbstractButton#qx_RibbonApplicationButton) - that is how a
+     * caller-supplied QToolButton ends up with the same themed look as the
+     * library's own RibbonApplicationButton, press included. A button that
+     * already has an object name keeps it, and with it the platform's own press
+     * look; style it against that name to match the theme. See
+     * doc/pages/limitations.md, "custom QToolButton application button sinks on
+     * press".
+     */
     void setApplicationButton(QAbstractButton *btn);
 
     RibbonPage *addPage(const QString &title);

@@ -12,6 +12,7 @@
 #include <QEventLoop>
 #include <QMenu>
 #include <QScopedPointer>
+#include <QToolButton>
 #include <QWidget>
 
 QX_RIBBON_USE_NAMESPACE
@@ -72,6 +73,16 @@ void tst_RibbonBar::applicationButton()
 
     QTest::mouseClick(ab, Qt::LeftButton);
     QCOMPARE(2, i);
+
+    // A button the caller named keeps that name. The theme stylesheets target
+    // the ribbon's own name (QAbstractButton#qx_RibbonApplicationButton), so
+    // keeping it is what leaves a caller's button on the platform style instead
+    // of the theme - see doc/pages/limitations.md, "custom QToolButton
+    // application button sinks on press".
+    QToolButton *named = new QToolButton();
+    named->setObjectName(QStringLiteral("mine"));
+    rb.setApplicationButton(named);
+    QCOMPARE("mine", rb.applicationButton()->objectName());
 
     // delete
     rb.setApplicationButton(nullptr);
