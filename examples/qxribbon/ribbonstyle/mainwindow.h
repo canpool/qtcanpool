@@ -11,8 +11,11 @@ public:
     ~MainWindow();
 
     QAction *addStyleAction(QAction *action, int styleId);
+    QAction *addThemeAction(QAction *action, int themeId);
 
 private slots:
     void onActionChangeStyleTriggered();
+    void onActionChangeThemeTriggered();
 };
+
 #endif   // MAINWINDOW_H

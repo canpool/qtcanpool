@@ -12,6 +12,10 @@
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QDebug>
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 
 QX_RIBBON_USE_NAMESPACE
 
@@ -55,6 +59,20 @@ void MainWindow::createQuickAccessBar()
     connect(qab, &RibbonQuickAccessBar::showCustomizeMenu, this, [otherAction](QMenu *menu) {
         menu->addSeparator();
         menu->addAction(otherAction);
+    });
+
+    // B8: the QAB's "Customize Quick Access Toolbar..." entry (after a separator,
+    // at the end of the customize menu) emits this signal; the host opens its own
+    // customize dialog here.
+    connect(qab, &RibbonQuickAccessBar::customizeDialogRequested, this, [this]() {
+        QDialog dlg(this);
+        dlg.setWindowTitle(tr("Customize Quick Access Toolbar"));
+        auto *layout = new QVBoxLayout(&dlg);
+        layout->addWidget(new QLabel(tr("Host-provided customize dialog.")));
+        auto *ok = new QPushButton(tr("Close"), &dlg);
+        connect(ok, &QPushButton::clicked, &dlg, &QDialog::accept);
+        layout->addWidget(ok);
+        dlg.exec();
     });
 }
 
