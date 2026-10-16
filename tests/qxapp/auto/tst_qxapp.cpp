@@ -4,6 +4,7 @@
 #include "qxapp/qxnavigationbar.h"
 #include "qxapp/qxpluginmanagerdialog.h"
 #include "qxapp/qxsplashscreen.h"
+#include "qxapp/ribbonappwindow.h"
 
 #include "qxcore/qxsettings.h"
 #include "qxdock/dockwidget.h"
@@ -15,6 +16,8 @@
 #include "qxribbon/ribbonbutton.h"
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpage.h"
+#include "qxribbon/ribbonbuttongroup.h"
+#include "qxribbon/windowbuttongroup.h"
 
 // QAction lives in QtGui from Qt 6 on and in QtWidgets before that; the
 // module-less form is the one the rest of the project uses for it.
@@ -1097,5 +1100,95 @@ TEST_ADD(tst_QxNavigationBar)
 TEST_ADD(tst_QxSplashScreen)
 TEST_ADD(tst_QxAppShell)
 TEST_ADD(tst_QxPluginManagerDialog)
+
+class tst_RibbonAppWindow : public QObject
+{
+    Q_OBJECT
+private slots:
+    void flagsChangeLaysTheGroupsOutImmediately();
+};
+
+/*!
+ * F2: RibbonAppWindow::updateWindowFlags() has to leave the ribbon laid out, not
+ * queue the layout for the next event loop pass.
+ *
+ * Both button groups on the title bar are placed by the ribbon, and this is the
+ * one path that changes them while the window is already on screen - the base
+ * implementation calls setWindowFlags() and then show(). A re-layout that waits
+ * leaves the previous geometry visible for that pass, which is the transient
+ * overlap doc/pages/limitations.md records under "WpsLiteStyle button group
+ * overlap".
+ *
+ * What is asserted is the ordering rather than a picture: whatever geometry the
+ * two groups have when updateWindowFlags() returns is the geometry they still
+ * have after the event loop has run. A queued re-layout cannot pass that, and
+ * needs no window manager not to - it runs offscreen, on every leg.
+ */
+void tst_RibbonAppWindow::flagsChangeLaysTheGroupsOutImmediately()
+{
+    RibbonAppWindow window;
+    window.resize(1200, 800);
+    window.show();
+    QApplication::processEvents();
+
+    RibbonBar *ribbon = window.ribbonBar();
+    QVERIFY(ribbon != Q_NULLPTR);
+    ribbon->setRibbonStyle(RibbonBar::WpsLiteStyle);
+
+    // Give the ribbon's own right-hand group something to hold, so that the two
+    // groups really are placed side by side rather than one of them being empty
+    // and every assertion below passing for the wrong reason.
+    RibbonButtonGroup *rightGroup = ribbon->cornerButtonGroup(Qt::TopRightCorner);
+    QVERIFY(rightGroup != Q_NULLPTR);
+    rightGroup->addAction(new QAction(QStringLiteral("one"), rightGroup));
+    rightGroup->addAction(new QAction(QStringLiteral("two"), rightGroup));
+
+    WindowButtonGroup *windowButtons = window.findChild<WindowButtonGroup *>();
+    QVERIFY(windowButtons != Q_NULLPTR);
+
+    // Settle the fixture, which takes two steps: the ribbon places its groups
+    // when it is asked to lay out - filling a corner group is not such an ask -
+    // and the size that group reports is only real once it has been laid out
+    // once. So: a real resize to give it a size, then a re-layout to place it.
+    window.resize(1201, 800);
+    QApplication::processEvents();
+    QTest::qWait(20);
+    ribbon->resizeRibbon();
+    QApplication::processEvents();
+    QTest::qWait(20);
+    QVERIFY2(rightGroup->width() > 0, "the corner group was never placed, so there is no arrangement to keep");
+
+    // Taking the maximize button away is what changes the window button group; it
+    // is 30px narrower afterwards, and both groups have to move. The size hint is
+    // read from which buttons are hidden, so it answers immediately and can be
+    // used to tell "the change did not happen" apart from "the change was not
+    // laid out yet" - the two failures this case has to distinguish.
+    const int buttonsBefore = windowButtons->sizeHint().width();
+    window.updateWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    QVERIFY2(windowButtons->sizeHint().width() < buttonsBefore,
+             "removing the maximize hint did not change the window button group, so there was nothing to re-place");
+
+    // This is the whole of F2: the ribbon has already placed the groups, so the
+    // geometry read here is final. A re-layout that waits for the next event loop
+    // pass reads the old geometry here instead, and that pass is the frame a user
+    // sees as the two groups overlapping.
+    const QRect rightNow = rightGroup->geometry();
+    const QRect buttonsNow = windowButtons->geometry();
+    QVERIFY2(buttonsNow.width() == windowButtons->sizeHint().width(),
+             "the window button group has not been placed again yet: it is still the width it had before "
+             "the maximize hint went away");
+    QCOMPARE(rightGroup->geometry().right() + 1, buttonsNow.left());
+    QVERIFY(!rightNow.intersects(buttonsNow));
+
+    // ...and nothing moves it afterwards either, which is what "already laid out"
+    // means. Both halves are needed: the first catches a late layout, this one
+    // catches a layout that runs twice.
+    QApplication::processEvents();
+    QTest::qWait(20);
+    QCOMPARE(rightGroup->geometry(), rightNow);
+    QCOMPARE(windowButtons->geometry(), buttonsNow);
+}
+
+TEST_ADD(tst_RibbonAppWindow)
 
 #include "tst_qxapp.moc"

@@ -28,6 +28,15 @@ Feature
 0.1.2
 ---
 Bugfix
+- RibbonAppWindow::updateWindowFlags() left the ribbon laid out for the next
+  event loop pass, so the window button group it had just resized stayed on the
+  previous boundary for one frame - which is the "button group overlap for a
+  moment" doc/pages/limitations.md records. The deferral comes from
+  RibbonBar::resizeRibbon(), and this is the one path where it costs something
+  visible: the base implementation re-shows the window, so the frame is on screen
+  before the re-layout happens. It now asks for the layout with
+  RibbonBar::resizeRibbonNow() and the groups are placed by the time the call
+  returns. tst_RibbonAppWindow::flagsChangeLaysTheGroupsOutImmediately
 - QxNavigationBar did not stretch its entries across the rail. The bar pins
   itself to QSizePolicy::Fixed horizontally, so the shell's layout gives it
   the width of its widest entry, but the entries themselves were plain

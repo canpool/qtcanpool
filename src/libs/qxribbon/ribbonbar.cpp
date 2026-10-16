@@ -1608,8 +1608,7 @@ void RibbonBar::setMinimized(bool flag)
     Q_D(RibbonBar);
     d->setMinimizedFlag(flag);
     d->updateMinimumButtonIcon();
-    QResizeEvent resizeEvent(size(), size());
-    QApplication::sendEvent(this, &resizeEvent);
+    resizeRibbonNow();
     Q_EMIT minimizationChanged(flag);
 }
 
@@ -1643,8 +1642,7 @@ void RibbonBar::showMinimumButton(bool isShow)
             d->m_minimumPageButton = Q_NULLPTR;
         }
     }
-    QResizeEvent resizeEvent(size(), size());
-    QApplication::sendEvent(this, &resizeEvent);
+    resizeRibbonNow();
 }
 
 int RibbonBar::tabBarHeight() const
@@ -1850,6 +1848,17 @@ void RibbonBar::resizeRibbon()
     // bar's content asks through here, so the reason above has one home instead
     // of one per caller.
     QApplication::postEvent(this, new QResizeEvent(size(), size()));
+}
+
+void RibbonBar::resizeRibbonNow()
+{
+    // The event a real resize would have delivered, sent instead of posted: the
+    // same work in the same order, and resizeEvent()'s m_blockResize guard still
+    // applies. This is the idiom two callers inside this class already use -
+    // setMinimized() and showMinimumButton() - given a name, so a caller outside
+    // it does not have to build the event itself.
+    QResizeEvent resizeEvent(size(), size());
+    QApplication::sendEvent(this, &resizeEvent);
 }
 
 Qt::Alignment RibbonBar::windowTitleAligment() const

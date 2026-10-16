@@ -101,14 +101,15 @@ void RibbonAppWindow::updateWindowFlags(Qt::WindowFlags flags)
             d->m_windowAgent->removeSystemButton(WindowAgentBase::Maximize);
         }
         d->m_windowButtonGroup->updateWindowFlags(flags);
-        // NOTE: in the WpsLiteStyle style the right button group and the window
-        // button group overlap for a moment. The button group is shown first
-        // and the ribbon is resized after it, and resizeRibbon() is deliberately
-        // deferred (queued, see the RibbonBar notes), so the show cannot wait
-        // for the resize to finish - hiding the group until the resize
-        // completed was tried and the group still came back too early.
+        // The group is placed by the ribbon, so changing which buttons it has is
+        // what decides where it goes - and the ribbon has to have placed it before
+        // this returns, not on the next event loop pass. This is the one path
+        // where the deferral resizeRibbon() is built around costs a visible frame:
+        // the flags change below has already re-shown the window, so a queued
+        // re-layout leaves the previous geometry on screen and the right button
+        // group overlapping the window button group until it runs.
         // See doc/pages/limitations.md, "WpsLiteStyle button group overlap".
-        resizeRibbon();
+        resizeRibbonNow();
     }
 }
 

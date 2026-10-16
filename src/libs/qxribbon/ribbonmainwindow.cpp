@@ -112,6 +112,14 @@ void RibbonMainWindow::resizeRibbon()
     }
 }
 
+void RibbonMainWindow::resizeRibbonNow()
+{
+    Q_D(RibbonMainWindow);
+    if (d->m_ribbonBar) {
+        d->m_ribbonBar->resizeRibbonNow();
+    }
+}
+
 void RibbonMainWindow::setRibbonTheme(int theme)
 {
     Q_D(RibbonMainWindow);

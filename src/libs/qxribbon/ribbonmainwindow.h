@@ -24,6 +24,8 @@ public:
     RibbonBar *ribbonBar() const;
 
     void resizeRibbon();
+    /*! Forwards to RibbonBar::resizeRibbonNow(); see there for when to use it. */
+    void resizeRibbonNow();
 
     /** theme, see to RibbonTheme::ThemeStyle */
     void setRibbonTheme(int theme);

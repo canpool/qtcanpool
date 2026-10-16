@@ -12,6 +12,15 @@ Cleanup
   impossible to write before.
 
 Feature
+- RibbonBar::resizeRibbonNow() does the layout resizeRibbon() asks for before it
+  returns, instead of on the next event loop pass. resizeRibbon() defers for a
+  reason (see doc/pages/limitations.md, "RibbonBar resize is deferred") and the
+  deferral is observable: the caller has already changed something the user is
+  looking at, and the previous geometry stays on screen for that pass. The two
+  callers inside this class that needed it now - setMinimized() and
+  showMinimumButton() - built the event themselves; that idiom now has a name, and
+  RibbonMainWindow forwards it for callers that hold the window rather than the
+  bar. tst_RibbonAppWindow::flagsChangeLaysTheGroupsOutImmediately
 - KeyTips: pressing Alt labels the application button and the visible pages with
   letter badges; picking a page's letter switches to it and descends one level to
   label that page's buttons - a button's mnemonic where it has one, a generated

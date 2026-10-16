@@ -204,6 +204,20 @@ public:
     void updateRibbonGeometry();
     void updateRibbonTheme();
     void resizeRibbon();
+    /*!
+     * The same layout work resizeRibbon() asks for, done before this returns
+     * instead of on the next event loop pass.
+     *
+     * resizeRibbon() defers on purpose and that deferral costs one frame of stale
+     * geometry - see doc/pages/limitations.md, "RibbonBar resize is deferred".
+     * A caller that has just changed something the user is already looking at (a
+     * style, the window button group) and needs the new geometry now asks here.
+     *
+     * The reason the work is deferred is the reason to be careful with this: it
+     * reads widget state that a style switch updates halfway through, so a style
+     * switch is the caller that has to keep using resizeRibbon().
+     */
+    void resizeRibbonNow();
 
     Qt::Alignment windowTitleAligment() const;
     void setWindowTitleAligment(Qt::Alignment al);
