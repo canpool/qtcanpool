@@ -16,6 +16,7 @@ public:
 
     void createQuickAccessBar();
     void createStyleGroup(QxRibbon::RibbonPage *page);
+    void createScreenTipGroup(QxRibbon::RibbonPage *page);
 
 private slots:
     void onStyleClicked(int id);

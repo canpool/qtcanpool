@@ -7,6 +7,7 @@
 #include "qxribbon/ribbonquickaccessbar.h"
 
 #include <QAction>
+#include <QKeySequence>
 #include <QToolButton>
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -30,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     RibbonPage *page = rb->addPage(tr("page1"));
     createStyleGroup(page);
+    createScreenTipGroup(page);
 
     rb->addPage(tr("loooooooooooongpage2"));
 
@@ -149,4 +151,26 @@ void MainWindow::createStyleGroup(QxRibbon::RibbonPage *page)
 void MainWindow::onStyleClicked(int id)
 {
     ribbonBar()->setRibbonStyle(static_cast<RibbonBar::RibbonStyle>(id));
+}
+
+void MainWindow::createScreenTipGroup(RibbonPage *page)
+{
+    // B6: the rich screen tip (title + description + shortcut) shows on hover only
+    // when the action carries a statusTip() or a shortcut(); an action with neither
+    // keeps the plain tooltip. The three buttons below cover both cases.
+    RibbonGroup *group = page->addGroup(tr("screen tip"));
+
+    QAction *saveAction = new QAction(tr("save"), this);
+    saveAction->setStatusTip(tr("Save the current document to disk"));
+    saveAction->setShortcut(QKeySequence(QKeySequence::Save));
+    group->addLargeAction(saveAction);
+
+    QAction *undoAction = new QAction(tr("undo"), this);
+    undoAction->setStatusTip(tr("Undo the last edit"));
+    undoAction->setShortcut(QKeySequence(QKeySequence::Undo));
+    group->addSmallAction(undoAction);
+
+    QAction *plainAction = new QAction(tr("plain"), this);
+    plainAction->setToolTip(tr("no statusTip, no shortcut: stays a plain tooltip"));
+    group->addSmallAction(plainAction);
 }
