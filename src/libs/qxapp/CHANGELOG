@@ -17,6 +17,13 @@ Feature
   not anyone can ask it to, and the two demo shells had been writing the same
   page->addGroup(tr("Layout")) block out by hand - the group is now one call.
   tst_QxAppShell::layoutGroup
+- QxAppShell::createStandardShell() builds the standard shell in one call and
+  returns its ribbon page: the page carrying the group above, the status bar
+  showing "Ready", and the layout stored when the window closes. The three
+  pieces a shell is made of - the ribbon, the docks, the window - were already
+  wired to each other; what was missing was the scaffolding the layout group
+  needs a page for, which every application was assembling in the same order.
+  tst_QxAppShell::standardShell
 
 0.1.2
 ---

@@ -60,14 +60,16 @@ ShellWindow::ShellWindow(QWidget *parent)
     // Installing the engine first restores the theme the user picked last time.
     QxThemeManager::instance();
 
+    // The ribbon brings the status message with it, so nothing to say here.
     createRibbon();
-    setStatusMessage(tr("Ready"));
 }
 
 void ShellWindow::createRibbon()
 {
     const QStyle *s = style();
-    RibbonPage *page = ribbonBar()->addPage(tr("&Home"));
+    // A shell that knows none of its modules still has a ribbon, a layout to
+    // save and a status line: that part is the shell's, not a module's.
+    RibbonPage *page = createStandardShell();
 
     // Application ------------------------------------------------------------
     RibbonGroup *application = page->addGroup(tr("Application"));
@@ -75,11 +77,6 @@ void ShellWindow::createRibbon()
     QAction *manage = new QAction(s->standardIcon(QStyle::SP_FileDialogListView), tr("Plugins..."), this);
     application->addMediumAction(manage);
     connect(manage, &QAction::triggered, this, &ShellWindow::openPluginManager);
-
-    // Layout -----------------------------------------------------------------
-    // The one group the shell provides itself: a shell that knows none of its
-    // modules still has a layout to save, so this is not a module's business.
-    addLayoutGroup(page);
 
     // Pages ------------------------------------------------------------------
     // The entries are the page ids the modules registered, so this menu is empty

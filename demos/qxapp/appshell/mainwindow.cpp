@@ -40,18 +40,19 @@ MainWindow::MainWindow(QWidget *parent)
     // and polishes the widgets once, before the window is even shown.
     QxThemeManager::instance();
 
+    // The ribbon brings the status message with it, so nothing to say here.
     createRibbon();
     createPages();
     createDocks();
-
-    setStatusMessage(tr("Ready"));
 }
 
 void MainWindow::createRibbon()
 {
     const QStyle *s = style();
 
-    RibbonPage *page = ribbonBar()->addPage(tr("&Home"));
+    // The page, the layout group on it and the "Ready" line all come from the
+    // shell; what follows is this application's own.
+    RibbonPage *page = createStandardShell();
 
     // Pages ------------------------------------------------------------------
     RibbonGroup *pages = page->addGroup(tr("Pages"));
@@ -99,11 +100,6 @@ void MainWindow::createRibbon()
     connect(followSystem, &QAction::toggled, this, [](bool on) {
         QxThemeManager::instance()->setFollowSystemTheme(on);
     });
-
-    // Layout -----------------------------------------------------------------
-    // The one group the shell provides itself: every ribbon shell carries it,
-    // so it is one call rather than the block it used to be.
-    addLayoutGroup(page);
 
     // Workspaces ------------------------------------------------------------
     // The group next to "Layout" is the point of the comparison: Layout keeps

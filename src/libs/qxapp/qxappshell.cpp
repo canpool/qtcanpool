@@ -560,6 +560,15 @@ RibbonGroup *QxAppShell::addLayoutGroup(RibbonPage *page, const QString &title)
     return group;
 }
 
+RibbonPage *QxAppShell::createStandardShell(const QString &title)
+{
+    RibbonPage *page = ribbonBar()->addPage(title.isEmpty() ? tr("&Home") : title);
+    addLayoutGroup(page);
+    setAutoSaveLayout(true);
+    setStatusMessage(tr("Ready"));
+    return page;
+}
+
 void QxAppShell::setStatusMessage(const QString &message)
 {
     Q_D(QxAppShell);

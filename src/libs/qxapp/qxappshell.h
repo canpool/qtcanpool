@@ -141,6 +141,28 @@ public:
      */
     QX_RIBBON_PREPEND_NAMESPACE(RibbonGroup) *
         addLayoutGroup(QX_RIBBON_PREPEND_NAMESPACE(RibbonPage) * page, const QString &title = QString());
+    /*!
+     * Builds the standard shell in one call and returns its ribbon page: a page
+     * titled \a title ("&Home" by default) carrying the layout group of
+     * addLayoutGroup(), with the status bar showing "Ready" and the layout
+     * stored when the window closes.
+     *
+     * A shell is three pieces - the ribbon on top, the docks around the pages,
+     * the window that holds both - and they are already wired to each other
+     * here; what this adds is the ribbon scaffolding the layout group needs a
+     * page for, so that a shell with the standard menu is one call rather than
+     * three. The caller adds its own groups to the returned page.
+     *
+     * @code
+     * QxAppShell shell;
+     * RibbonPage *home = shell.createStandardShell();
+     * home->addGroup(tr("Edit"));   // application groups follow the standard one
+     * shell.restoreLayout();        // once the pages and docks it names exist
+     * shell.show();
+     * @endcode
+     */
+    QX_RIBBON_PREPEND_NAMESPACE(RibbonPage) * createStandardShell(const QString &title = QString());
+
     // Plugin context --------------------------------------------------------
     /*!
      * Returns the QxPluginContext adapter. Plugins reach the host only through

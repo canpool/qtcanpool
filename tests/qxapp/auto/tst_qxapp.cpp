@@ -354,6 +354,7 @@ private slots:
     void persistence();
     void autoSaveOnClose();
     void layoutGroup();
+    void standardShell();
 private:
     /*! A settings file of its own per case, so no case depends on another. */
     QString newSettingsFile();
@@ -790,6 +791,47 @@ void tst_QxAppShell::layoutGroup()
         shell.addLayoutGroup(shell.ribbonBar()->addPage(QStringLiteral("Other")), QStringLiteral("Fenster"));
     QCOMPARE(renamed->title(), QStringLiteral("Fenster"));
     QCOMPARE(renamed->ribbonButtonCount(), 2);
+}
+
+void tst_QxAppShell::standardShell()
+{
+    const QString file = newSettingsFile();
+    QxAppShell shell;
+    shell.setSettings(new QxSettings(file, QSettings::IniFormat));
+
+    RibbonPage *home = shell.createStandardShell();
+
+    // The page really is the ribbon's, it came with the layout group on it, and
+    // the two things a fresh shell says about itself are set.
+    QVERIFY(home != Q_NULLPTR);
+    QCOMPARE(home->title(), QStringLiteral("&Home"));
+    QCOMPARE(shell.ribbonBar()->page(0), home);
+    QCOMPARE(home->groupCount(), 1);
+    QCOMPARE(home->findChild<RibbonGroup *>()->title(), QStringLiteral("Layout"));
+    QCOMPARE(shell.statusMessage(), QStringLiteral("Ready"));
+    QVERIFY(shell.autoSaveLayout());
+
+    // One call, one page: an application adds its own groups to the one that
+    // came back rather than building the standard one again.
+    QVERIFY(home->addGroup(QStringLiteral("Edit")) != Q_NULLPTR);
+    QCOMPARE(home->groupCount(), 2);
+
+    // The title is the caller's when it has one.
+    QxAppShell other;
+    QCOMPARE(other.createStandardShell(QStringLiteral("Start"))->title(), QStringLiteral("Start"));
+
+    // And the group on the standard page is the live one: what is on it saves
+    // the layout, and closing the window does too, because the preset turned
+    // the automatic save on.
+    QVERIFY(actionIn(home->findChild<RibbonGroup *>(), QStringLiteral("Save")) != Q_NULLPTR);
+    shell.addPage(QStringLiteral("one"), QIcon(), QStringLiteral("One"), new QWidget);
+    shell.show();
+    QVERIFY(shell.close());
+
+    QxSettings reader(file, QSettings::IniFormat);
+    reader.beginGroup(QStringLiteral("ui"));
+    QCOMPARE(reader.stringValue(QStringLiteral("currentPage")), QStringLiteral("one"));
+    reader.endGroup();
 }
 
 /* --------------------------------------------------------------- plugin -- */
