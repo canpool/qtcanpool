@@ -5,6 +5,13 @@
 #include "qxtheme.h"
 
 #include <QtCore/QFile>
+#include <QtGui/QGuiApplication>
+
+#if defined(Q_OS_WIN) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
+// Only the Windows branch below needs these, and only below 6.6: from 6.6 on
+// the colour arrives through QPalette::Accent and no system call is made.
+#include <QtCore/qt_windows.h>
+#endif
 
 QX_THEME_BEGIN_NAMESPACE
 
@@ -101,6 +108,50 @@ QString themeStyleSheet(Theme theme)
         return QString();
     }
     return QString::fromUtf8(file.readAll());
+}
+
+/*!
+ * The Windows accent below Qt 6.6, kept as its own function so the version
+ * branch reads as one decision rather than as a block in the middle of another.
+ */
+#if defined(Q_OS_WIN) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
+static QColor accentFromRegistry()
+{
+    HKEY key = Q_NULLPTR;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, LR"(Software\Microsoft\Windows\DWM)", 0, KEY_READ, &key) != ERROR_SUCCESS) {
+        return QColor();
+    }
+
+    DWORD value = 0;
+    DWORD size = sizeof(value);
+    DWORD type = 0;
+    const LONG status =
+        RegQueryValueExW(key, L"AccentColor", Q_NULLPTR, &type, reinterpret_cast<LPBYTE>(&value), &size);
+    RegCloseKey(key);
+    if (status != ERROR_SUCCESS || type != REG_DWORD || size != sizeof(value)) {
+        return QColor();
+    }
+
+    // The key holds #AABBGGRR while QColor::fromRgba() reads #AARRGGBB, so the
+    // three colour bytes come back in the opposite order; alpha is in its place
+    // either way.
+    const QColor swapped = QColor::fromRgba(value);
+    return QColor::fromRgb(swapped.blue(), swapped.green(), swapped.red(), swapped.alpha());
+}
+#endif
+
+QColor systemAccentColor()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    return QGuiApplication::palette().color(QPalette::Accent);
+#elif defined(Q_OS_WIN)
+    return accentFromRegistry();
+#else
+    // The desktop's own accent is not readable through Qt below 6.6, and there
+    // is no one place the various desktops agree on. Saying so is better than
+    // inventing a colour here.
+    return QColor();
+#endif
 }
 
 QX_THEME_END_NAMESPACE

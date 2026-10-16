@@ -29,6 +29,39 @@ const char *const kThemeKey = "theme";
 const char *const kFollowKey = "followSystemTheme";
 const char *const kSystemLightKey = "systemLightTheme";
 const char *const kSystemDarkKey = "systemDarkTheme";
+const char *const kAccentKey = "accentColor";
+
+/*!
+ * A colour from the text QSettings stored it as.
+ *
+ * QColor::fromString() arrived in 6.4 and the QString constructor went away
+ * after 6.6, so the two ends of the supported range need a different door into
+ * the same parse - and each door is compiled only where it exists.
+ */
+QColor colorFromText(const QString &text)
+{
+    if (text.isEmpty()) {
+        return QColor();
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    return QColor::fromString(text);
+#else
+    return QColor(text);
+#endif
+}
+
+/*!
+ * Black or white, whichever stays readable on \a background.
+ *
+ * The usual perceptual weighting rather than a plain average: the eye is far
+ * more sensitive to green than to blue, so an average would call a saturated
+ * blue "light" and paint black on it.
+ */
+QColor readableOn(const QColor &background)
+{
+    const double luminance = 0.299 * background.redF() + 0.587 * background.greenF() + 0.114 * background.blueF();
+    return luminance > 0.5 ? QColor(Qt::black) : QColor(Qt::white);
+}
 
 /*!
  * Reads the colour scheme the operating system reports.
@@ -73,12 +106,21 @@ public:
     void reload();
     /*! Writes the current theme as the explicit choice. */
     void persistTheme();
+    /*! Writes the accent override, or removes the key when there is none. */
+    void persistAccent();
 public:
     mutable QX_CORE_PREPEND_NAMESPACE(QxSettings) * m_settings;
     Theme m_theme = LightYellow;
     bool m_followSystem = false;
     Theme m_systemLight = LightOffice2013;
     Theme m_systemDark = DarkOfficePlus;
+    /*!
+     * The platform's accent, taken once before the theme takes the application
+     * palette over. Invalid when the platform never named one.
+     */
+    QColor m_systemAccent;
+    /*! Set by setAccentColor(); invalid while the platform's colour is the answer. */
+    QColor m_accentOverride;
     bool m_warnedMissingStyleSheet = false;
     QHash<int, QString> m_styleSheetFiles;
     QHash<int, QString> m_styleSheetContent;
@@ -86,6 +128,11 @@ public:
 
 void QxThemeManagerPrivate::start()
 {
+    // Before apply(), and that is the whole point: from the first apply() on, the
+    // application palette belongs to the theme, so the platform's accent can
+    // only be read while the application still owns it.
+    m_systemAccent = QX_THEME_PREPEND_NAMESPACE(systemAccentColor)();
+
     ensureSettings();
     reload();
     setupSystemHook();
@@ -137,6 +184,23 @@ void QxThemeManagerPrivate::reload()
         themeFromId(settings->stringValue(QString::fromLatin1(kSystemLightKey), themeId(m_systemLight)), m_systemLight);
     m_systemDark =
         themeFromId(settings->stringValue(QString::fromLatin1(kSystemDarkKey), themeId(m_systemDark)), m_systemDark);
+    // Unparsable text is no override, which is also what a fresh installation
+    // has: the platform's colour stays the answer.
+    m_accentOverride = colorFromText(settings->stringValue(QString::fromLatin1(kAccentKey)));
+    settings->endGroup();
+}
+
+void QxThemeManagerPrivate::persistAccent()
+{
+    QX_CORE_PREPEND_NAMESPACE(QxSettings) *settings = ensureSettings();
+    settings->beginGroup(QString::fromLatin1(kGroup));
+    if (m_accentOverride.isValid()) {
+        // HexArgb rather than name(): the alpha is part of the colour, and a
+        // name() would drop it silently for every colour that is not opaque.
+        settings->setValue(QString::fromLatin1(kAccentKey), m_accentOverride.name(QColor::HexArgb));
+    } else {
+        settings->remove(QString::fromLatin1(kAccentKey));
+    }
     settings->endGroup();
 }
 
@@ -180,6 +244,44 @@ Theme QxThemeManager::theme() const
 bool QxThemeManager::isDark() const
 {
     return isDarkTheme(theme());
+}
+
+QColor QxThemeManager::accentColor() const
+{
+    Q_D(const QxThemeManager);
+    if (d->m_accentOverride.isValid()) {
+        return d->m_accentOverride;
+    }
+    if (d->m_systemAccent.isValid()) {
+        return d->m_systemAccent;
+    }
+    // The platform said nothing and nobody overrode it, so the theme's own
+    // highlight is the accent - which is what the widgets are using anyway.
+    return QX_THEME_PREPEND_NAMESPACE(palette)(d->m_theme).color(QPalette::Highlight);
+}
+
+void QxThemeManager::setAccentColor(const QColor &color)
+{
+    Q_D(QxThemeManager);
+    const QColor override = color.isValid() ? color : QColor();
+    if (d->m_accentOverride == override) {
+        return;
+    }
+
+    d->m_accentOverride = override;
+    d->persistAccent();
+    // The accent lives in the palette, so installing it is the same call that
+    // installs a theme - and it is what makes the override visible.
+    apply();
+    // The colour in force, not the argument: clearing the override is a change
+    // like any other, and what the listeners want is what to paint with now.
+    Q_EMIT accentColorChanged(accentColor());
+}
+
+bool QxThemeManager::hasAccentOverride() const
+{
+    Q_D(const QxThemeManager);
+    return d->m_accentOverride.isValid();
 }
 
 bool QxThemeManager::followSystemTheme() const
@@ -321,7 +423,21 @@ void QxThemeManager::apply()
         return;
     }
 
-    app->setPalette(QX_THEME_PREPEND_NAMESPACE(palette)(d->m_theme));
+    QPalette palette = QX_THEME_PREPEND_NAMESPACE(palette)(d->m_theme);
+    if (d->m_accentOverride.isValid()) {
+        // Only an override is written here. A theme carries a highlight colour
+        // of its own and was designed around it, so letting the platform's
+        // accent through by default would repaint every one of them.
+        palette.setColor(QPalette::Highlight, d->m_accentOverride);
+        palette.setColor(QPalette::HighlightedText, readableOn(d->m_accentOverride));
+        // QPalette has no accent text role: the pair of a highlight is
+        // HighlightedText, and that is the one set above, so the accent role is
+        // the only one to add - and it only exists from 6.6 on.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+        palette.setColor(QPalette::Accent, d->m_accentOverride);
+#endif
+    }
+    app->setPalette(palette);
 
     const QString css = styleSheet(d->m_theme);
     if (css.isEmpty() && d->m_theme != Custom) {

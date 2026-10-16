@@ -1,5 +1,25 @@
 Unreleased
 ---
+Feature
+- systemAccentColor() reports the accent colour the platform uses, or an
+  invalid colour when it does not name one. The engine could already read the
+  system colour scheme, but not the accent, which lived in a private header of
+  qxwindow and was reachable from one drawing call. From Qt 6.6 on it is
+  QPalette::Accent - one piece of code, every platform - and below that only
+  Windows keeps it somewhere readable, in the DWM key of the registry, which is
+  the single platform branch here; elsewhere the answer is that the platform
+  does not say.
+- QxThemeManager::accentColor() / setAccentColor() are the colour in force and
+  the override that replaces it, with accentColorChanged() to follow. The
+  platform's colour is taken once, in instance(), before the first apply() -
+  after that the application palette belongs to the theme and asking the
+  platform would be asking the engine about its own work. Only an override
+  reaches the palette: a theme carries a highlight colour of its own and was
+  designed around it, so honouring the platform accent by default would repaint
+  every theme. The accompanying text colour is picked for contrast. The
+  override is stored beside the theme and removed, not stored invalid, when it
+  is cleared. tst_QxTheme::accentColor
+
 Cleanup
 - Drop the Qt 5.12 guard around QPalette::PlaceholderText in buildPalette(),
   which both the light and the dark scheme go through. The role exists since

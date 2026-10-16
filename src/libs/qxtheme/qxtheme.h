@@ -9,6 +9,7 @@
 
 #include <QtCore/QMetaType>
 #include <QtCore/QString>
+#include <QtGui/QColor>
 
 QX_THEME_BEGIN_NAMESPACE
 
@@ -47,6 +48,23 @@ QX_THEME_EXPORT bool isDarkTheme(Theme theme);
 QX_THEME_EXPORT QString themeStyleSheetPath(Theme theme);
 /*! Content of the built-in style sheet, empty when the resource is missing. */
 QX_THEME_EXPORT QString themeStyleSheet(Theme theme);
+
+/*!
+ * The accent colour the platform uses, or an invalid QColor when it does not
+ * name one.
+ *
+ * From Qt 6.6 on this is QPalette::Accent, which the platform plugin fills in
+ * from the system - the Windows accent, the desktop's selection colour - so
+ * that path is one piece of code on every platform. Below 6.6 only Windows
+ * keeps the colour somewhere readable, under the DWM key of the registry, and
+ * that is the single platform-specific branch here; everywhere else the answer
+ * is that the platform does not say.
+ *
+ * This is what the system offers, not what is in force: a theme of this library
+ * carries its own highlight colour, and QxThemeManager::accentColor() is the
+ * one to ask which of the two is actually being used.
+ */
+QX_THEME_EXPORT QColor systemAccentColor();
 
 QX_THEME_END_NAMESPACE
 

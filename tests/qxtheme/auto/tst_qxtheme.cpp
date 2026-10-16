@@ -30,6 +30,7 @@ private slots:
     void styleSheetSources();
     void applyTheme();
     void persistence();
+    void accentColor();
     void followSystem();
     void systemThemePair();
     void applyReinstallsWithoutAnnouncing();
@@ -204,6 +205,67 @@ void tst_QxTheme::persistence()
     // Handing the same file back restores the stored theme.
     manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
     QCOMPARE(manager->theme(), DarkOfficePlus);
+}
+
+/*!
+ * E1: the accent colour the platform uses, and the override that replaces it.
+ *
+ * The platform half cannot be pinned - it depends on what the machine reports -
+ * so what is held here is the contract around it: a usable colour with no
+ * override, an override that reaches the application palette, and a key that is
+ * removed rather than stored invalid when the override goes away.
+ */
+void tst_QxTheme::accentColor()
+{
+    resetSettings();
+    QxThemeManager *manager = QxThemeManager::instance();
+    manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
+
+    // No override: the answer is the platform's colour, or the theme's own
+    // highlight when the platform named none. Either way it is a colour.
+    manager->setAccentColor(QColor());
+    QVERIFY(!manager->hasAccentOverride());
+    QVERIFY(manager->accentColor().isValid());
+
+    QSignalSpy spy(manager, &QxThemeManager::accentColorChanged);
+
+    // The override is what the engine reports and what the widgets paint with:
+    // it reaches the application palette, text included.
+    const QColor crimson(0xd1, 0x2b, 0x2b);
+    manager->setAccentColor(crimson);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.first().at(0).value<QColor>(), crimson);
+    QVERIFY(manager->hasAccentOverride());
+    QCOMPARE(manager->accentColor(), crimson);
+    QCOMPARE(QApplication::palette().color(QPalette::Highlight), crimson);
+    QCOMPARE(QApplication::palette().color(QPalette::HighlightedText), QColor(Qt::white));
+
+    // Saying the same thing again is not a change.
+    manager->setAccentColor(crimson);
+    QCOMPARE(spy.count(), 1);
+
+    // A light accent takes dark text, which is the other half of the rule and
+    // the one a single saturated colour cannot show.
+    manager->setAccentColor(QColor(0xff, 0xf0, 0x9a));
+    QCOMPARE(spy.count(), 2);
+    QCOMPARE(QApplication::palette().color(QPalette::HighlightedText), QColor(Qt::black));
+
+    // The alpha travels with it: name() would have dropped it.
+    QxSettings reader(m_settingsFile, QSettings::IniFormat);
+    reader.beginGroup(QStringLiteral("ui"));
+    QCOMPARE(reader.stringValue(QStringLiteral("accentColor")), QStringLiteral("#fffff09a"));
+    reader.endGroup();
+
+    manager->setAccentColor(QColor());
+    QCOMPARE(spy.count(), 3);
+    QVERIFY(!manager->hasAccentOverride());
+
+    // Clearing removes the key: an absent override and a stored invalid colour
+    // would be two spellings of the same thing.
+    QxSettings cleared(m_settingsFile, QSettings::IniFormat);
+    cleared.beginGroup(QStringLiteral("ui"));
+    QVERIFY(!cleared.contains(QStringLiteral("accentColor")));
+    cleared.endGroup();
 }
 
 void tst_QxTheme::followSystem()

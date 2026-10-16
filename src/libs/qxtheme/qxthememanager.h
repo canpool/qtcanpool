@@ -56,6 +56,30 @@ public:
     /*! Convenience wrapper around isDarkTheme(theme()). */
     bool isDark() const;
 
+    /*!
+     * The accent colour in force: the override when one was set, otherwise what
+     * the platform reported when this engine started, otherwise the highlight
+     * colour of the current theme. Never an invalid colour, because all three
+     * of those are colours a caller can paint with.
+     *
+     * The platform's answer is taken once, in instance(), before the first
+     * apply(): from that point on the application palette belongs to the theme,
+     * so asking the platform afterwards would be asking this engine about its
+     * own work.
+     */
+    QColor accentColor() const;
+    /*!
+     * Overrides the accent colour, for every theme, until it is cleared.
+     *
+     * An invalid \a color takes the override away and goes back to the
+     * platform's colour. Only an override reaches the palette: the themes carry
+     * their own highlight colour and were designed around it, so honouring the
+     * platform accent by default would repaint all of them.
+     */
+    void setAccentColor(const QColor &color);
+    /*! True while an override is in force, that is while the platform's colour is not the answer. */
+    bool hasAccentOverride() const;
+
     /*! True when the theme follows the operating system colour scheme. */
     bool followSystemTheme() const;
     /*!
@@ -120,6 +144,11 @@ Q_SIGNALS:
     void themeChanged(Theme theme);
     /*! Emitted when following the system colour scheme is toggled. */
     void followSystemThemeChanged(bool on);
+    /*!
+     * Emitted with the colour in force - accentColor(), not the override that
+     * was passed in - after setAccentColor() changed it.
+     */
+    void accentColorChanged(const QColor &color);
 protected:
     explicit QxThemeManager(QObject *parent = Q_NULLPTR);
     ~QxThemeManager() override;
