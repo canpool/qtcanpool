@@ -32,6 +32,7 @@ add_qtc_library(qxribbon
     ribbonpage.cpp ribbonpage.h ribbonpage_p.h
     ribbonpagecontext.cpp ribbonpagecontext.h
     ribbonquickaccessbar.cpp ribbonquickaccessbar.h ribbonquickaccessbar_p.h
+    ribbonsliderpane.cpp ribbonsliderpane.h ribbonsliderpane_p.h
     ribbonstyleoption.cpp ribbonstyleoption.h
     ribbontabbar.cpp ribbontabbar.h
     ribbontheme.cpp ribbontheme.h

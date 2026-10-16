@@ -104,9 +104,22 @@ Feature
   drives open/close, the page swap, the host-resize follow and the application-button
   toggle; Example_Ribbon_Backstage is a host that ends in the backstage.
 
+- RibbonSliderPane: add the Office zoom control - a minus button, a slider track
+  and a plus button in one compact pane, the control a ribbon application puts at
+  the right end of its status bar. The buttons step by singleStep (auto-repeat on
+  hold), the track reports valueChanged() when the level settles and sliderMoved()
+  for every step of a drag; setRange() bounds both and setScrollButtons(false)
+  keeps the track alone. It is a plain widget, so a host joins it to the permanent
+  section with QStatusBar::addPermanentWidget() and a message never pushes it out.
+  Nothing paints here either: the stock widgets carry the qx_RibbonSliderPane*
+  object names and the buttons draw their glyphs from the palette, so they read on
+  a dark theme without one carrying icons. tst_RibbonSliderPane drives the range,
+  the buttons and the forwarding of both signals.
+
 Interface
 - RibbonMdiArea: add RibbonMdiArea
 - RibbonBackstageView: add RibbonBackstageView (QWidget)
+- RibbonSliderPane: add RibbonSliderPane (QWidget)
 - RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
 - RibbonGalleryGroup: add triggerCurrentItem
 - RibbonBar: add overridable addContextMenuActions
