@@ -166,6 +166,7 @@ private slots:
     void signalsReportTheRun();
     void extensionsInitializedFollowsInitializationOrder();
     void managerAccessorsRoundTrip();
+    void dependencyGraph();
 };
 
 void tst_QxPlugin::specReadsMetadata()
@@ -761,5 +762,65 @@ void tst_QxPlugin::managerAccessorsRoundTrip()
 }
 
 TEST_ADD(tst_QxPlugin)
+
+/*!
+ * E5: the dependency graph is queryable, and before anything is loaded.
+ *
+ * The manager has always resolved the graph - topologically, with cycles
+ * rejected - but only as a step of loadPlugins(), so the answer existed only
+ * afterwards and only as a load order. A window that has to warn "turning this
+ * off also disables those" needs it beforehand.
+ */
+void tst_QxPlugin::dependencyGraph()
+{
+    QxPluginManager mgr;
+    // a <- b <- c, plus d which nothing touches, plus a plugin asking for
+    // something that is not there.
+    mgr.registerStaticPlugin(QStringLiteral("a"), metaData(QStringLiteral("a"), QStringLiteral("1.0.0")), []() {
+        return new FakePlugin;
+    });
+    mgr.registerStaticPlugin(QStringLiteral("b"),
+                             metaData(QStringLiteral("b"), QStringLiteral("1.0.0"), {QStringLiteral("a")}), []() {
+                                 return new FakePlugin;
+                             });
+    mgr.registerStaticPlugin(QStringLiteral("c"),
+                             metaData(QStringLiteral("c"), QStringLiteral("1.0.0"), {QStringLiteral("b")}), []() {
+                                 return new FakePlugin;
+                             });
+    mgr.registerStaticPlugin(QStringLiteral("d"), metaData(QStringLiteral("d"), QStringLiteral("1.0.0")), []() {
+        return new FakePlugin;
+    });
+    mgr.registerStaticPlugin(QStringLiteral("e"),
+                             metaData(QStringLiteral("e"), QStringLiteral("1.0.0"), {QStringLiteral("ghost")}), []() {
+                                 return new FakePlugin;
+                             });
+
+    // Nothing has been loaded yet, and the graph is already readable.
+    QCOMPARE(mgr.specs(), QList<QxPluginSpec *>());
+    QCOMPARE(mgr.dependenciesOf(QStringLiteral("c")), QStringList({QStringLiteral("b")}));
+    QCOMPARE(mgr.dependenciesOf(QStringLiteral("a")), QStringList());
+    QCOMPARE(mgr.dependenciesOf(QStringLiteral("nope")), QStringList());
+
+    // Direct dependents, and the closure that would go down with a.
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("b")), QStringList({QStringLiteral("c")}));
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("a")), QStringList({QStringLiteral("b")}));
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("a"), true), QStringList({QStringLiteral("b"), QStringLiteral("c")}));
+    // Nothing depends on d, and a plugin is never its own dependent.
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("d")), QStringList());
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("d"), true), QStringList());
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("a"), true).contains(QStringLiteral("a")), false);
+
+    // The dependency nobody has is sayable before the load refuses it.
+    QCOMPARE(mgr.missingDependenciesOf(QStringLiteral("e")), QStringList({QStringLiteral("ghost")}));
+    QCOMPARE(mgr.missingDependenciesOf(QStringLiteral("c")), QStringList());
+    QCOMPARE(mgr.missingDependenciesOf(QStringLiteral("nope")), QStringList());
+
+    // The closure is the one the load actually applies: e and c are refused or
+    // cascaded, and what stops is not asserted here - initializeFailureCascades
+    // covers that - only that the graph still reads the same afterwards.
+    mgr.loadPlugins();
+    QCOMPARE(mgr.dependentsOf(QStringLiteral("a"), true), QStringList({QStringLiteral("b"), QStringLiteral("c")}));
+    QCOMPARE(mgr.missingDependenciesOf(QStringLiteral("e")), QStringList({QStringLiteral("ghost")}));
+}
 
 #include "tst_qxplugin.moc"

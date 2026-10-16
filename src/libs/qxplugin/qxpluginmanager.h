@@ -92,6 +92,42 @@ public:
     QxPluginSpec *spec(const QString &id) const;
     QxPlugin *plugin(const QString &id) const;
 
+    // Dependency graph ------------------------------------------------------
+    /*!
+     * The required dependencies of \a id, in declaration order. Empty for an
+     * unknown id.
+     *
+     * These three are answered from the metadata rather than from the outcome
+     * of a load, which is the point of them: a plugin manager window has to say
+     * who needs whom before anything has been loaded, and the resolution that
+     * knows the answer at the end of a load has already changed states by then.
+     */
+    QStringList dependenciesOf(const QString &id) const;
+    /*!
+     * The required dependencies of \a id that this manager does not know about
+     * at all - the ones that will keep it from starting, sayable before
+     * loadPlugins() has run.
+     *
+     * A dependency that is present but cannot start itself is a different
+     * answer, and it is the one loadPlugins() gives: it depends on the run, so
+     * it belongs to that call and not to this one.
+     */
+    QStringList missingDependenciesOf(const QString &id) const;
+    /*!
+     * The plugins that require \a id - with \a transitive, everything that
+     * would be set aside along with them, however deep the chain. This is the
+     * closure a load walks when a plugin turns out to be unavailable, which is
+     * what a window has to show before it lets anyone switch a plugin off.
+     *
+     * Only required dependencies are edges. An optional one never blocks, so it
+     * is not a reason for anything to be set aside - it does order a run that
+     * has both ends, but that is a different question and specs() answers it.
+     *
+     * \a id itself is never in the result, and the list is sorted and free of
+     * duplicates.
+     */
+    QStringList dependentsOf(const QString &id, bool transitive = false) const;
+
     /*! True when at least one plugin failed (load or initialize). Skips-by-default do not count. */
     bool hasError() const;
     /*! Every failure joined once, each prefixed by its plugin id. */

@@ -561,6 +561,87 @@ QxPlugin *QxPluginManager::plugin(const QString &id) const
     return s ? s->plugin() : Q_NULLPTR;
 }
 
+/*!
+ * The id -> spec map the graph queries are answered from.
+ *
+ * Built from allSpecs() rather than read off spec(), which resolves through the
+ * map resolve() fills in: before loadPlugins() that map is empty, so every id
+ * would look unknown - and "who depends on this" is exactly the question asked
+ * before a load.
+ */
+static QHash<QString, QxPluginSpec *> specIndex(const QList<QxPluginSpec *> &specs)
+{
+    QHash<QString, QxPluginSpec *> index;
+    for (QxPluginSpec *spec : specs) {
+        // The first wins, the same way resolve() treats a duplicated id as one
+        // plugin and disables the other.
+        if (!index.contains(spec->id())) {
+            index.insert(spec->id(), spec);
+        }
+    }
+    return index;
+}
+
+QStringList QxPluginManager::dependenciesOf(const QString &id) const
+{
+    const QxPluginSpec *spec = specIndex(allSpecs()).value(id, Q_NULLPTR);
+    return spec ? spec->dependencies() : QStringList();
+}
+
+QStringList QxPluginManager::missingDependenciesOf(const QString &id) const
+{
+    const QHash<QString, QxPluginSpec *> index = specIndex(allSpecs());
+    const QxPluginSpec *spec = index.value(id, Q_NULLPTR);
+    if (!spec) {
+        return QStringList();
+    }
+
+    QStringList missing;
+    for (const QString &dependency : spec->dependencies()) {
+        if (!index.contains(dependency)) {
+            missing.append(dependency);
+        }
+    }
+    return missing;
+}
+
+QStringList QxPluginManager::dependentsOf(const QString &id, bool transitive) const
+{
+    const QList<QxPluginSpec *> specs = allSpecs();
+
+    QSet<QString> seen;
+    seen.insert(id);
+
+    QStringList found;
+    QStringList frontier{id};
+    while (!frontier.isEmpty()) {
+        QStringList next;
+        for (QxPluginSpec *spec : specs) {
+            if (seen.contains(spec->id())) {
+                continue;
+            }
+            const QStringList dependencies = spec->dependencies();
+            for (const QString &dependency : frontier) {
+                if (dependencies.contains(dependency)) {
+                    seen.insert(spec->id());
+                    found.append(spec->id());
+                    next.append(spec->id());
+                    break;
+                }
+            }
+        }
+        if (!transitive) {
+            break;
+        }
+        // One ring further out; a cycle in the metadata simply runs out of
+        // plugins to add rather than looping, because seen only grows.
+        frontier = next;
+    }
+
+    found.sort();
+    return found;
+}
+
 bool QxPluginManager::hasError() const
 {
     Q_D(const QxPluginManager);

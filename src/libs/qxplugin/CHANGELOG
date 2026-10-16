@@ -1,3 +1,15 @@
+Unreleased
+---
+Feature
+- The dependency graph is queryable: dependenciesOf(), dependentsOf() and
+  missingDependenciesOf(). The manager has always resolved the graph -
+  topologically, rejecting cycles and version mismatches with a diagnosable
+  message - but only as a step of loadPlugins(), so the answer existed only
+  afterwards and only as a load order. A window that lets someone switch a
+  plugin off has to say beforehand who goes down with it, and these answer from
+  the metadata, so they work before anything is loaded.
+  tst_QxPlugin::dependencyGraph
+
 0.2.1
 ---
 Bugfix
