@@ -11,6 +11,9 @@
 #include <QAction>
 #include <QTextEdit>
 #include <QSettings>
+#include <QApplication>
+#include <QDebug>
+#include <QDir>
 
 QX_DOCK_USE_NAMESPACE
 
@@ -24,8 +27,16 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    // C5: also enable the auto-hide slide animation.
+    DockManager::setAutoHideConfigFlag(DockManager::AutoHideAnimationEnabled, true);
 
     m_dockWindow = new DockWindow();
+
+    // C3: react to a dock widget dropped back onto the window through the native
+    // OS drag (e.g. re-dropping a detached dock widget from outside the app).
+    connect(m_dockWindow, &DockWindow::dockWidgetDropped, this, [](const QString &name, const QPoint &pos) {
+        qDebug() << "dock widget dropped:" << name << "at" << pos;
+    });
 
     QTextEdit *te = nullptr;
     QWidget *cw = nullptr;
@@ -81,6 +92,16 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     });
     editMenu->addAction(tr("restoreState"), [this]() {
         restoreFromSettings();
+    });
+    // C2: persist the docking layout to / restore it from an XML file.
+    const QString dockStateFile = qApp->applicationDirPath() + QDir::separator() + QStringLiteral("dockstate.xml");
+    editMenu->addAction(tr("saveStateToFile"), [this, dockStateFile]() {
+        const bool ok = m_dockWindow->saveStateToFile(dockStateFile);
+        qDebug() << "saveStateToFile" << dockStateFile << (ok ? "ok" : "FAILED");
+    });
+    editMenu->addAction(tr("restoreStateFromFile"), [this, dockStateFile]() {
+        const bool ok = m_dockWindow->restoreStateFromFile(dockStateFile);
+        qDebug() << "restoreStateFromFile" << dockStateFile << (ok ? "ok" : "FAILED");
     });
 
     setCentralWidget(m_dockWindow);
