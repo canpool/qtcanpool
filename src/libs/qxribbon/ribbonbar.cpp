@@ -25,10 +25,10 @@
 #include <QLinearGradient>
 #include <QPainter>
 #include <QResizeEvent>
-#include <QSet>
 #include <QStyleOptionMenuItem>
 #include <QTimer>
 #include <QVariant>
+#include <QVector>
 #include <QEventLoop>
 #include <QMouseEvent>
 #include "qtcompat/qtcompat.h"
@@ -2004,7 +2004,7 @@ void RibbonBarPrivate::renderKeyTips(const QList<KeyTipTarget> &targets)
     }
     // Assign badge letters: mnemonics first, then auto-fill with A-Z
     QSet<QChar> used;
-    QList<QString> keys(targets.size());
+    QVector<QString> keys(targets.size());
     for (int i = 0; i < targets.size(); ++i) {
         const QString &pref = targets.at(i).preferred;
         if (!pref.isEmpty() && !used.contains(pref.at(0))) {

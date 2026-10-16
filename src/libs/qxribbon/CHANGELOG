@@ -38,6 +38,11 @@ Interface
 - RibbonGalleryGroup: add triggerCurrentItem
 - RibbonBar: add overridable addContextMenuActions
 
+Bugfix
+- The KeyTip letter pool was filled with QList<QString>(int), a constructor only
+  Qt 6 has, so the ribbon did not compile against Qt 5. The list is resized
+  instead, which both versions provide.
+
 0.12.2
 ---
 Cleanup
