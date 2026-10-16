@@ -1,3 +1,16 @@
+Unreleased
+---
+Feature
+- QxTranslator::translate() looks a string up in the catalogues this object
+  installed. The class had languageChanged() and said in its own
+  documentation that "a slot may call translate() immediately" - but there was
+  no such call: a model, a controller or a log writer holding a QxTranslator
+  had to reach for QCoreApplication and know that the two were connected. The
+  lookup is Qt's, forwarded, so this is not a second answer to the question;
+  what is new is that it is reachable from the object that owns the answer, and
+  that it carries the count through to the plural form.
+  tst_QxTranslator::translateFollowsTheInstalledCatalogue
+
 0.1.3
 ---
 Bugfix

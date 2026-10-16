@@ -11,5 +11,12 @@
         <source>Goodbye</source>
         <translation>Au revoir</translation>
     </message>
+    <message numerus="yes">
+        <source>%n file(s) selected</source>
+        <translation>
+            <numerusform>%n fichier sélectionné</numerusform>
+            <numerusform>%n fichiers sélectionnés</numerusform>
+        </translation>
+    </message>
 </context>
 </TS>

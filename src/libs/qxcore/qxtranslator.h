@@ -86,6 +86,23 @@ public:
     /*! The files installed by the last successful setLanguage() call. */
     QStringList loadedFiles() const;
 
+    /*!
+     * The translation of \a sourceText in \a context, as the installed
+     * catalogues give it - and, when \a n is not negative, the plural form for
+     * \a n items rather than the singular.
+     *
+     * This is not a second lookup beside Qt's: it is the same one, reachable
+     * from the object that installed the catalogues. A slot connected to
+     * languageChanged() holds a QxTranslator and often nothing else - a model,
+     * a controller, a log writer - and this is how it asks.
+     *
+     * With no catalogue installed the source text comes back unchanged, which
+     * is Qt's rule and the reason a missing translation is a readable sentence
+     * rather than an empty label.
+     */
+    QString translate(const char *context, const char *sourceText, const char *disambiguation = nullptr,
+                      int n = -1) const;
+
 Q_SIGNALS:
     /*!
      * Emitted once \a language is installed, so a slot may call translate()

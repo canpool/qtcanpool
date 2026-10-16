@@ -34,6 +34,7 @@ private slots:
     void malformedNames();
     void unavailableLanguageChangesNothing();
     void switchingAppliesAndReplaces();
+    void translateFollowsTheInstalledCatalogue();
     void destructionRemovesTheCatalogue();
 };
 
@@ -176,6 +177,42 @@ void tst_QxTranslator::switchingAppliesAndReplaces()
     }
 #else
     QSKIP("no lrelease was available, so there is no .qm file to prove a switch with");
+#endif
+}
+
+void tst_QxTranslator::translateFollowsTheInstalledCatalogue()
+{
+#ifdef QXCORE_TEST_TRANSLATIONS
+    QxTranslator translator;
+    translator.setTranslationPath(QStringLiteral(QXCORE_TEST_TRANSLATIONS));
+
+    // Before anything is installed the source text comes back, which is Qt's
+    // rule and the reason a missing translation reads as a sentence.
+    QCOMPARE(translator.translate("QxTranslatorTest", "Hello"), QStringLiteral("Hello"));
+    // A context no catalogue declares is the same as no catalogue at all.
+    QCOMPARE(translator.translate("NoSuchContext", "Hello"), QStringLiteral("Hello"));
+    // A count on a message with no plural in it changes nothing either.
+    QCOMPARE(translator.translate("QxTranslatorTest", "Hello", nullptr, 3), QStringLiteral("Hello"));
+
+    QVERIFY(translator.setLanguage(QStringLiteral("fr")));
+
+    // The lookup goes through the catalogue this object installed, which is the
+    // whole point: the caller of translate() never had to hold the QTranslator.
+    QCOMPARE(translator.translate("QxTranslatorTest", "Hello"), QStringLiteral("Bonjour"));
+    QCOMPARE(translator.translate("QxTranslatorTest", "Goodbye"), QStringLiteral("Au revoir"));
+
+    // And the count reaches the plural form, which the singular lookup cannot
+    // reach at all. French has two forms and puts the boundary after one.
+    QCOMPARE(translator.translate("QxTranslatorTest", "%n file(s) selected", nullptr, 1),
+             QStringLiteral("1 fichier sélectionné"));
+    QCOMPARE(translator.translate("QxTranslatorTest", "%n file(s) selected", nullptr, 4),
+             QStringLiteral("4 fichiers sélectionnés"));
+
+    // Which language is in force is the object's answer, not the caller's.
+    QVERIFY(translator.setLanguage(QStringLiteral("zh_CN")));
+    QCOMPARE(translator.translate("QxTranslatorTest", "Hello"), QStringLiteral("你好"));
+#else
+    QSKIP("no lrelease was available, so there is no .qm file to prove a lookup with");
 #endif
 }
 

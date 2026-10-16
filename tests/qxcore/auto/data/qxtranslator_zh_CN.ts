@@ -11,5 +11,11 @@
         <source>Goodbye</source>
         <translation>再见</translation>
     </message>
+    <message numerus="yes">
+        <source>%n file(s) selected</source>
+        <translation>
+            <numerusform>已选择 %n 个文件</numerusform>
+        </translation>
+    </message>
 </context>
 </TS>

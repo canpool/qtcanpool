@@ -199,6 +199,15 @@ bool QxTranslator::setLanguage(const QString &language)
     return true;
 }
 
+QString QxTranslator::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
+{
+    // QCoreApplication consults every installed QTranslator, and the catalogues
+    // setLanguage() installed are installed ones: forwarding is the whole of it,
+    // and re-implementing the lookup here would be a second answer to a question
+    // Qt has already answered.
+    return QCoreApplication::translate(context, sourceText, disambiguation, n);
+}
+
 QStringList QxTranslator::loadedFiles() const
 {
     Q_D(const QxTranslator);
