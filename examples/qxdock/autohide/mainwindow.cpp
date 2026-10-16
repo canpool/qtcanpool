@@ -28,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
     DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, false);
     DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    // The slide is off by default; this is the sample that turns it on, so an
+    // auto hidden dock widget is seen coming out of its side bar.
+    DockManager::setAutoHideConfigFlag(DockManager::AutoHideAnimationEnabled, true);
 
     m_window = new DockWindow(this);
     setCentralWidget(m_window);

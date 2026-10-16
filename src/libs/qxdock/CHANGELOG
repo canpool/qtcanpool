@@ -21,6 +21,15 @@ Feature
   receiver that is not built on this library can still read it, and only that mime
   type is accepted - which is what keeps the in-process mouse dragging, that
   produces no QDrag, unaffected. tst_DockDrag
+- An auto hide container can slide in and out, behind the new
+  DockManager::AutoHideAnimationEnabled flag. Auto hiding has always been an
+  instant show() and hide() - there was no animation anywhere in this library -
+  and that stays the default, because a container that slides is a visual change
+  and nothing verifies looks here. With the flag set, the container travels into
+  place from the side bar it belongs to: the animation drives the widget's own
+  geometry, so the container still positions itself and the flag only decides how
+  it arrives, never where it belongs - which is also what the test holds on to
+  rather than the animation itself. tst_DockAutoHideContainer::collapseSlidesIntoPlace
 
 0.2.3
 ---

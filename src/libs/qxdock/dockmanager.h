@@ -145,6 +145,11 @@ public:
         AutoHideHasCloseButton = 0x80,
         // if this flag is set, the auto hide title bar has a minimize button to collapse the dock widget
         AutoHideHasMinimizeButton = 0x100,
+        // If the flag is set, an auto hide container slides in and out instead of
+        // appearing and disappearing at once. Off by default: the sliding is a
+        // visual change, and a docking layout that moves when it is asked to do
+        // something is not what every application wants.
+        AutoHideAnimationEnabled = 0x200,
 
         DefaultAutoHideConfig = AutoHideFeatureEnabled | DockAreaHasAutoHideButton | AutoHideHasMinimizeButton
     };

@@ -16,12 +16,18 @@
 
 #include <QBoxLayout>
 #include <QApplication>
+#include <QEasingCurve>
+#include <QPropertyAnimation>
 #include <QXmlStreamWriter>
 #include <QPointer>
 
 QX_DOCK_BEGIN_NAMESPACE
 
 static const int s_resizeMargin = 30;
+
+// How long an auto hide container takes to slide into place. Only used when
+// DockManager::AutoHideAnimationEnabled is set.
+static const int s_slideDuration = 200;
 
 static Qt::Edge edgeFromSideBarArea(Qx::DockSideBarArea area)
 {
@@ -90,6 +96,56 @@ static bool isObjectOrAncestor(const QObject *descendant, const QObject *ancesto
     }
 }
 
+/**
+ * Moves an auto hide container into place instead of letting it appear where it
+ * belongs, when the slide is enabled.
+ *
+ * The container positions itself in updateSize(), so the animation does not
+ * decide where it goes - it only travels there. The distance is the one the
+ * container would have covered coming out of its side bar, so the slide runs in
+ * the direction the container belongs to, and the part that is still outside the
+ * container rect is clipped away - which is what makes it look like it is
+ * growing out of the side bar rather than being squashed into place.
+ */
+static void slideIntoPlace(DockAutoHideContainer *container, QPropertyAnimation *&slide)
+{
+    if (container->isHidden() || !DockManager::testAutoHideConfigFlag(DockManager::AutoHideAnimationEnabled)) {
+        return;
+    }
+
+    const QRect target = container->geometry();
+    QRect start = target;
+    switch (container->sideBarArea()) {
+    case Qx::DockSideBarTop:
+        start.translate(0, -target.height());
+        break;
+    case Qx::DockSideBarBottom:
+        start.translate(0, target.height());
+        break;
+    case Qx::DockSideBarLeft:
+        start.translate(-target.width(), 0);
+        break;
+    case Qx::DockSideBarRight:
+        start.translate(target.width(), 0);
+        break;
+    default:
+        return;
+    }
+
+    if (!slide) {
+        // The animation drives the widget's own geometry property, so nothing
+        // else has to know that it is running.
+        slide = new QPropertyAnimation(container, "geometry", container);
+        slide->setDuration(s_slideDuration);
+        slide->setEasingCurve(QEasingCurve::OutCubic);
+    }
+
+    slide->stop();
+    slide->setStartValue(start);
+    slide->setEndValue(target);
+    slide->start();
+}
+
 class DockAutoHideContainerPrivate
 {
 public:
@@ -112,6 +168,7 @@ public:
     QPointer<DockSideTab> m_sideTab;
     QSize m_size;   // creates invalid size
     QSize m_sizeCache;
+    QPropertyAnimation *m_slide = nullptr;   ///< Only created when the slide is used
 };
 
 DockAutoHideContainerPrivate::DockAutoHideContainerPrivate()
@@ -392,6 +449,11 @@ void DockAutoHideContainer::collapseView(bool enable)
 {
     Q_D(DockAutoHideContainer);
     if (enable) {
+        // A slide that is still running belongs to a container that is going
+        // away, and it must not keep moving a hidden widget around.
+        if (d->m_slide) {
+            d->m_slide->stop();
+        }
         hide();
         qApp->removeEventFilter(this);
     } else {
@@ -399,6 +461,7 @@ void DockAutoHideContainer::collapseView(bool enable)
         d->updateResizeHandleSizeLimitMax();
         raise();
         show();
+        slideIntoPlace(this, d->m_slide);
         d->m_dockWidget->dockWindow()->setDockWidgetFocused(d->m_dockWidget);
         qApp->installEventFilter(this);
     }
@@ -566,6 +629,13 @@ void DockAutoHideContainer::updateSize()
     auto dockContainerParent = dockContainer();
     if (!dockContainerParent) {
         return;
+    }
+
+    // A slide in progress would otherwise keep overwriting the geometry this call
+    // is about to compute. Wherever the container has got to, the size it should
+    // end up at is the one computed here.
+    if (d->m_slide) {
+        d->m_slide->stop();
     }
 
     auto rect = dockContainerParent->contentRect();
