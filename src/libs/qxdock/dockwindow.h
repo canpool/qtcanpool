@@ -9,6 +9,11 @@
 #include "dockwidget.h"
 
 class QSettings;
+class QMimeData;
+class QDragEnterEvent;
+class QDragMoveEvent;
+class QDragLeaveEvent;
+class QDropEvent;
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -100,6 +105,20 @@ Q_SIGNALS:
     void openingPerspective(const QString &perspectiveName);
     void perspectiveOpened(const QString &perspectiveName);
 
+    /**
+     * Emitted when a native drag carrying a dock widget (see DockDrag) is
+     * dropped onto this window. The dock widget named by the payload may be one
+     * this window owns already, may not exist at all because the drag came from
+     * another process, or may belong to another window of the application:
+     * \a dockWidgetName is what identifies it, and \a globalPos is where it was
+     * dropped. Only the application can build a dock widget that is not here
+     * yet, which is why the drop is reported instead of being carried out.
+     *
+     * A dock widget of this window that was closed is brought back before the
+     * signal is emitted; nothing else is repositioned.
+     */
+    void dockWidgetDropped(const QString &dockWidgetName, const QPoint &globalPos);
+
 public Q_SLOTS:
     void setDockWidgetFocused(DockWidget *w);
     void endLeavingMinimizedState();
@@ -123,6 +142,27 @@ protected:
 protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
     virtual void showEvent(QShowEvent *e) override;
+
+    // Dock widgets arrive here only when a native drag - one started through
+    // DockDrag - is dropped on the window. The in-process mouse handling never
+    // reaches these, so refusing a payload that is not ours keeps the two paths
+    // from meeting.
+    void dragEnterEvent(QDragEnterEvent *e) override;
+    void dragMoveEvent(QDragMoveEvent *e) override;
+    void dragLeaveEvent(QDragLeaveEvent *e) override;
+    void dropEvent(QDropEvent *e) override;
+
+    /**
+     * Carries out a drop of a dock widget payload (see DockDrag) at \a dropPos,
+     * which is in this window's coordinates, and returns whether the payload was
+     * one: false means nothing happened at all.
+     *
+     * dropEvent() is a shell around this - the position it takes differs between
+     * Qt 5 and 6, and nothing else differs - so an application that wants to
+     * decide itself which dock widgets may arrive reimplements this rather than
+     * the event handler. The base implementation lets any of them in.
+     */
+    virtual bool handleDockWidgetDrop(const QMimeData *data, const QPoint &dropPos);
 private:
     QByteArray saveStateData(bool compress, int version) const;
 

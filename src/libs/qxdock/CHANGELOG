@@ -10,6 +10,17 @@ Feature
   through the same restoreState(), which already accepted uncompressed XML. An
   empty path, a file that will not open, and a version mismatch all return false
   without disturbing the current layout. tst_DockWindow::stateFile
+- DockDrag carries a dock widget over a native drag, and DockWindow accepts one.
+  Docking moved a dock widget with plain mouse events, which only works inside
+  one process - the object dragged is the object dropped - so nothing could ever
+  arrive from elsewhere. A drag now carries a payload naming the dock widget, and
+  the window accepts a drop of it: a dock widget of its own that was closed comes
+  back, and every drop is reported through the new dockWidgetDropped() signal and
+  its position, because a dock widget that is not in this process can only be
+  built by the application. The payload is UTF-8 text with a signature line, so a
+  receiver that is not built on this library can still read it, and only that mime
+  type is accepted - which is what keeps the in-process mouse dragging, that
+  produces no QDrag, unaffected. tst_DockDrag
 
 0.2.3
 ---

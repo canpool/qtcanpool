@@ -11,6 +11,7 @@
 #include "dockfocuscontroller.h"
 #include "dockmanager.h"
 #include "dockautohidecontainer.h"
+#include "dockdrag.h"
 #include "dockutils.h"
 #include "dockstatereader.h"
 #include "docksplitter.h"
@@ -28,6 +29,10 @@
 #include <QDebug>
 #include <QApplication>
 #include <QAction>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
+#include <QDropEvent>
 
 QX_DOCK_BEGIN_NAMESPACE
 
@@ -353,6 +358,10 @@ DockWindow::DockWindow(QWidget *parent)
     registerDockContainer(this);
 
     window()->installEventFilter(this);
+
+    // A dock widget can arrive as a native drag (see DockDrag) as well as by
+    // mouse; the window is what receives it, so it has to be a drop target.
+    setAcceptDrops(true);
 
 #if QX_DOCK_X11
     connect(qApp, &QApplication::focusWindowChanged, [](QWindow *focusWindow) {
@@ -1267,6 +1276,77 @@ void DockWindow::showEvent(QShowEvent *e)
         }
     }
     d->m_uninitializedFloatingWidgets.clear();
+}
+
+/**
+ * The native drag entry points. Only a payload of ours is accepted: every other
+ * drag is ignored so that the widget under the cursor - not the window - gets to
+ * decide, and the in-process mouse dragging, which never produces a QDrag, is
+ * unaffected either way.
+ */
+void DockWindow::dragEnterEvent(QDragEnterEvent *e)
+{
+    if (!DockDrag::canDecode(e->mimeData())) {
+        e->ignore();
+        return;
+    }
+    e->setDropAction(Qt::MoveAction);
+    e->accept();
+}
+
+void DockWindow::dragMoveEvent(QDragMoveEvent *e)
+{
+    if (!DockDrag::canDecode(e->mimeData())) {
+        e->ignore();
+        return;
+    }
+    e->setDropAction(Qt::MoveAction);
+    e->accept();
+}
+
+void DockWindow::dragLeaveEvent(QDragLeaveEvent *e)
+{
+    e->accept();
+}
+
+void DockWindow::dropEvent(QDropEvent *e)
+{
+    // Qt 6 moved the drop position to QPointF; Qt 5 has only the integer one.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QPoint dropPos = e->position().toPoint();
+#else
+    const QPoint dropPos = e->pos();
+#endif
+
+    if (!handleDockWidgetDrop(e->mimeData(), dropPos)) {
+        e->ignore();
+        return;
+    }
+
+    e->setDropAction(Qt::MoveAction);
+    e->accept();
+}
+
+bool DockWindow::handleDockWidgetDrop(const QMimeData *data, const QPoint &dropPos)
+{
+    if (!DockDrag::canDecode(data)) {
+        return false;
+    }
+
+    const QString name = DockDrag::dockWidgetName(data);
+
+    // A dock widget this window owns may have been closed; the payload names it,
+    // so bringing it back needs no decision from the application. A dock widget
+    // that is not here - the drag came from another process - can only be built
+    // by the application, which is what the signal below is for.
+    if (DockWidget *w = findDockWidget(name)) {
+        if (w->isClosed()) {
+            w->toggleView(true);
+        }
+    }
+
+    Q_EMIT dockWidgetDropped(name, mapToGlobal(dropPos));
+    return true;
 }
 
 QX_DOCK_END_NAMESPACE
