@@ -303,7 +303,7 @@ void RibbonPagePrivate::updateItemGeometry()
         // This avoids the case where totalWidth > pageWidth initially, m_XBase was adjusted via the
         // scroll button and the widget was resized accordingly, after which totalWidth < pageWidth
         // so the page cannot be shown at its original position; m_XBase must be set to 0 here
-        m_XBase = 0;
+        m_XBase = clampXBase(m_XBase, totalWidth);
         for (const RibbonPageItem &item : m_itemList) {
             if (!item.isEmpty()) {
                 if (item.m_group->isExpanding()) {
@@ -369,16 +369,12 @@ void RibbonPagePrivate::updateItemGeometry()
     // as wide as the resize, while the buttons still report "already at the
     // right end" - clicking one heals it, which makes it a transient visual
     // defect rather than corrupted state.
-    // Clamping has to use the width just measured: the size hint total above
-    // carries the contents margins and none of the expanding width, so
-    // clamping with it would land on the wrong pixel. Once the offset has
-    // moved, the geometry of this pass is simply shifted by the same amount
-    // instead of being measured a second time.
-    if (m_totalWidth > pageWidth) {
-        m_XBase = qBound(pageWidth - m_totalWidth, m_XBase, 0);
-    } else {
-        m_XBase = 0;
-    }
+    // Clamping has to use the width just measured - the reason is in
+    // clampXBase() - and it goes through the same range as every other path
+    // that moves the content. Once the offset has moved, the geometry of this
+    // pass is simply shifted by the same amount instead of being measured a
+    // second time.
+    m_XBase = clampXBase(m_XBase, m_totalWidth);
     const int xShift = m_XBase - xBaseBeforeMeasure;
     if (xShift != 0) {
         for (RibbonPageItem &item : m_itemList) {
@@ -469,6 +465,34 @@ void RibbonPagePrivate::doItemLayout()
     }
 }
 
+/**
+ * @brief The legal range of m_XBase for content that is contentWidth wide
+ *
+ * The range is [pageWidth - contentWidth, 0]:
+ *
+ *    |---- pageWidth ----|
+ *    |-------- contentWidth --------|
+ *    `-> m_XBase (0 is the rightmost, pageWidth - contentWidth is the leftmost)
+ *
+ * While the content fits, the range collapses to the single point 0: there is
+ * nothing to scroll to, and "scrolled" stops having a meaning.
+ *
+ * Every path that moves the content - the wheel, a scroll button, a resize that
+ * re-clamps - lands here, because the range is one rule and not three. The
+ * content width is always the caller's, because the caller is the one that
+ * knows which measurement it is allowed to use: the total from the size hints
+ * carries the contents margins but none of the expanding width, so clamping
+ * with it would land on the wrong pixel.
+ */
+int RibbonPagePrivate::clampXBase(int xBase, int contentWidth) const
+{
+    const int pageWidth = pageContentSize().width();
+    if (contentWidth <= pageWidth) {
+        return 0;
+    }
+    return qBound(pageWidth - contentWidth, xBase, 0);
+}
+
 void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
 {
     int pageWidth = pageContentSize().width();
@@ -489,24 +513,15 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
             // On the Windows 10 platform, one scrollpix is 15
             scrollpix = numDegrees.y();
         }
-        if (scrollpix > 0) {   // When the wheel scrolls up, RibbonPage moves left
-            int tmp = m_XBase - scrollpix;
-            if (tmp < (pageWidth - totalWidth)) {
-                tmp = pageWidth - totalWidth;
-            }
-            m_XBase = tmp;
-        } else {                             // When the wheel scrolls down, RibbonPage moves right
-            int tmp = m_XBase - scrollpix;   // numDegrees is negative here
-            if (tmp > 0) {
-                tmp = 0;
-            }
-            m_XBase = tmp;
-        }
+        // The sign of the step says which way the wheel went; the direction it
+        // moves the content in is the opposite one, and both ends come from the
+        // single range clampXBase() holds.
+        m_XBase = clampXBase(m_XBase - scrollpix, totalWidth);
         updateItemGeometry();
     } else {
         // No handling is needed here; forward the scroll event so the parent can also receive it
         event->ignore();
-        m_XBase = 0;
+        m_XBase = clampXBase(m_XBase, totalWidth);
     }
 }
 
@@ -515,23 +530,13 @@ void RibbonPagePrivate::doWheelEvent(QWheelEvent *event)
  *
  * pages > 0 means the left button was clicked and the content moves right by one page; pages < 0
  * means the right button.
- *
- * The legal range of m_XBase is [pageWidth - totalWidth, 0]:
- *
- *    |---- pageWidth ----|
- *    |-------- totalWidth --------|
- *    `-> m_XBase (0 is the rightmost, pageWidth - totalWidth is the leftmost)
  */
 void RibbonPagePrivate::scrollByPage(int pages)
 {
     int pageWidth = pageContentSize().width();
     int totalWidth = m_totalWidth;
 
-    if (totalWidth > pageWidth) {
-        m_XBase = qBound(pageWidth - totalWidth, m_XBase + pages * pageWidth, 0);
-    } else {
-        m_XBase = 0;
-    }
+    m_XBase = clampXBase(m_XBase + pages * pageWidth, totalWidth);
     updateItemGeometry();
 }
 

@@ -7,7 +7,9 @@
 
 #include <QAccessible>
 #include <QAction>
+#include <QCoreApplication>
 #include <QToolButton>
+#include <QWheelEvent>
 
 QX_RIBBON_USE_NAMESPACE
 
@@ -18,6 +20,7 @@ private slots:
     void page();
     void group();
     void scroll();
+    void wheelAndButtonsShareOneRange();
     void clampAfterWidening();
     void groupShrink();
     void clear();
@@ -227,6 +230,92 @@ void tst_RibbonPage::scroll()
     QVERIFY(left->isHidden());
     left->click();
     QCOMPARE(first->x(), origin);
+}
+
+/*!
+ * E2: the wheel and the scroll buttons go through one range, so the same
+ * journey lands on the same offsets whichever way it was made.
+ *
+ * They used to be two spellings of the range - a hand-rolled pair of if-chains
+ * in the wheel path, a qBound() in the button path - which agreed only because
+ * someone had read them against each other. Here they are driven to both ends
+ * and compared pixel for pixel.
+ */
+void tst_RibbonPage::wheelAndButtonsShareOneRange()
+{
+    RibbonBar rb;
+
+    RibbonPage *page = rb.addPage(tr("page"));
+    // More than one page of overflow, so an end is an end rather than a step.
+    for (int i = 0; i < 16; ++i) {
+        RibbonGroup *group = page->addGroup(QStringLiteral("group%1").arg(i));
+        group->addLargeAction(new QAction(QStringLiteral("action%1").arg(i), &rb));
+    }
+    page->resize(120, 80);
+    page->updateItemGeometry();
+
+    QToolButton *left = nullptr;
+    QToolButton *right = nullptr;
+    for (QToolButton *button : page->findChildren<QToolButton *>()) {
+        if (button->arrowType() == Qt::LeftArrow) {
+            left = button;
+        } else if (button->arrowType() == Qt::RightArrow) {
+            right = button;
+        }
+    }
+    QVERIFY(left);
+    QVERIFY(right);
+
+    RibbonGroup *first = page->group(0);
+
+    // One notch is 120 eighths of a degree, which is 15 pixels of content: the
+    // conversion lives in doWheelEvent(). Enough notches therefore reach either
+    // end whatever the font makes the content.
+    const auto wheelBy = [page](int notches) {
+        QWheelEvent event(QPointF(10, 10), page->mapToGlobal(QPoint(10, 10)), QPoint(), QPoint(0, notches * 120),
+                          Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
+        QCoreApplication::sendEvent(page, &event);
+    };
+
+    // The buttons define the two ends first: the right button walks the content
+    // left, and the left button walks it back.
+    for (int i = 0; i < 40; ++i) {
+        right->click();
+    }
+    const int farEnd = first->x();
+    for (int i = 0; i < 40; ++i) {
+        left->click();
+    }
+    const int homeEnd = first->x();
+    QVERIFY(farEnd < homeEnd);
+
+    // The wheel has to agree with both of them, end for end - and the clamps
+    // hold, so asking for more does not walk past them. The wheel's sign is the
+    // opposite of the direction the content moves in: an upward wheel walks the
+    // content left, exactly as the right button does.
+    wheelBy(400);
+    QCOMPARE(first->x(), farEnd);
+    wheelBy(400);
+    QCOMPARE(first->x(), farEnd);
+
+    wheelBy(-400);
+    QCOMPARE(first->x(), homeEnd);
+    wheelBy(-400);
+    QCOMPARE(first->x(), homeEnd);
+
+    // A page whose content fits has nothing to scroll to: the range collapses
+    // to 0, so the wheel leaves the content exactly where it was.
+    RibbonPage *wide = rb.addPage(tr("wide"));
+    RibbonGroup *only = wide->addGroup(QStringLiteral("only"));
+    only->addLargeAction(new QAction(QStringLiteral("only"), &rb));
+    wide->resize(2000, 80);
+    wide->updateItemGeometry();
+
+    const int sittingStill = only->x();
+    QWheelEvent event(QPointF(10, 10), wide->mapToGlobal(QPoint(10, 10)), QPoint(), QPoint(0, -120), Qt::NoButton,
+                      Qt::NoModifier, Qt::NoScrollPhase, false);
+    QCoreApplication::sendEvent(wide, &event);
+    QCOMPARE(only->x(), sittingStill);
 }
 
 void tst_RibbonPage::clampAfterWidening()

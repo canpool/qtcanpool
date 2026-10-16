@@ -1,5 +1,16 @@
 Unreleased
 ---
+Cleanup
+- The scroll offset of a ribbon page is clamped in one place. The legal range
+  was written down four times - a pair of hand-rolled if-chains in the wheel
+  path, a qBound() in the button path, and twice more in the layout pass - which
+  agreed only because someone had read them against each other. They now all
+  fold into RibbonPagePrivate::clampXBase(), so a path that moves the content
+  cannot answer "how far" differently from its neighbours. No behaviour change.
+  tst_RibbonPage::wheelAndButtonsShareOneRange drives both paths to both ends
+  and compares them pixel for pixel, which is the check the duplication made
+  impossible to write before.
+
 Feature
 - KeyTips: pressing Alt labels the application button and the visible pages with
   letter badges; picking a page's letter switches to it and descends one level to

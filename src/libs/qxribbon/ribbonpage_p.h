@@ -82,6 +82,17 @@ public:
 
     QSize pageContentSize() const;
 
+    /*!
+     * The legal range of m_XBase for content that is \a contentWidth wide, with
+     * \a xBase folded into it - the one place the range is written down.
+     *
+     * See the definition for why the range is what it is; the short form is
+     * that every path that moves the content has to land on the same offset for
+     * the same content and the same page width, whichever way it was asked to
+     * move - the wheel, a scroll button, or a resize that re-clamps.
+     */
+    int clampXBase(int xBase, int contentWidth) const;
+
     void updateItemGeometry();
 
     void doItemLayout();
