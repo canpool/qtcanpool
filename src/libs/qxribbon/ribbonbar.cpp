@@ -16,9 +16,11 @@
 #include <QAbstractButton>
 #include <QAction>
 #include <QApplication>
+#include <QContextMenuEvent>
 #include <QDebug>
 #include <QHoverEvent>
 #include <QKeyEvent>
+#include <QMenu>
 #include <QSet>
 #include <QLinearGradient>
 #include <QPainter>
@@ -1112,6 +1114,44 @@ RibbonBar::RibbonBar(QWidget *parent)
 RibbonBar::~RibbonBar()
 {
     QX_FINI_PRIVATE();
+}
+
+/**
+ * @brief Adds the ribbon's standard context-menu entries (B10)
+ *
+ * "Minimize the Ribbon" mirrors RibbonBar::isMinimized() and toggles it, and
+ * "Customize Quick Access Toolbar..." triggers the quick access bar's own customize
+ * entry, so both the menu and the bar emit customizeDialogRequested().
+ */
+void RibbonBar::addContextMenuActions(QMenu *menu)
+{
+    QAction *minimizeAction = menu->addAction(tr("Minimize the Ribbon"));
+    minimizeAction->setObjectName(QStringLiteral("qx_RibbonMinimizeAction"));
+    minimizeAction->setCheckable(true);
+    minimizeAction->setChecked(isMinimized());
+    connect(minimizeAction, &QAction::toggled, this, &RibbonBar::setMinimized);
+
+    RibbonQuickAccessBar *qab = quickAccessBar();
+    QAction *customizeAction = menu->addAction(tr("Customize Quick Access Toolbar..."));
+    customizeAction->setObjectName(QStringLiteral("qx_RibbonCustomizeQabAction"));
+    customizeAction->setEnabled(qab && qab->actionCustomizeDialog());
+    connect(customizeAction, &QAction::triggered, this, [qab]() {
+        if (qab) {
+            if (QAction *action = qab->actionCustomizeDialog()) {
+                action->trigger();
+            }
+        }
+    });
+}
+
+void RibbonBar::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+    addContextMenuActions(&menu);
+    if (!menu.isEmpty()) {
+        menu.exec(event->globalPos());
+    }
+    event->accept();
 }
 
 QAbstractButton *RibbonBar::applicationButton()

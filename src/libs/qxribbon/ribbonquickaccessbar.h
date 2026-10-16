@@ -21,6 +21,9 @@ public:
     virtual ~RibbonQuickAccessBar();
 public:
     QAction *actionCustomizeButton() const;
+    /// The trailing "Customize Quick Access Toolbar..." entry of the customize menu;
+    /// triggering it emits customizeDialogRequested() (B8/B10).
+    QAction *actionCustomizeDialog() const;
     void setActionVisible(QAction *action, bool visible);
     bool isActionVisible(QAction *action) const;
     int visibleCount() const;

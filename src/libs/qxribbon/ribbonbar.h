@@ -13,6 +13,8 @@
 #include <QVariant>
 
 class QAbstractButton;
+class QContextMenuEvent;
+class QMenu;
 
 QX_RIBBON_BEGIN_NAMESPACE
 
@@ -221,6 +223,11 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent *e) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *e) Q_DECL_OVERRIDE;
+    void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
+    /// Fills @a menu with the ribbon's standard context entries: minimizing the ribbon
+    /// and customizing the quick access bar. Override to add entries; call the base
+    /// implementation first (B10).
+    virtual void addContextMenuActions(QMenu *menu);
 private:
     QX_DECLARE_PRIVATE(RibbonBar)
 };

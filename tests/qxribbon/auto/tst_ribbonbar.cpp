@@ -3,14 +3,36 @@
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonpage.h"
 #include "qxribbon/ribbonpagecontext.h"
+#include "qxribbon/ribbonquickaccessbar.h"
 #include "qxribbon/windowbuttongroup.h"
 
 #include <QAbstractButton>
+#include <QAction>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QMenu>
+#include <QScopedPointer>
 #include <QWidget>
 
 QX_RIBBON_USE_NAMESPACE
+
+namespace
+{
+
+/// Exposes the protected context-menu hook so the entries can be built and inspected
+/// without going through a modal popup.
+class ContextMenuRibbonBar : public RibbonBar
+{
+public:
+    QMenu *buildContextMenu()
+    {
+        QMenu *menu = new QMenu(this);
+        addContextMenuActions(menu);
+        return menu;
+    }
+};
+
+}   // namespace
 
 class tst_RibbonBar : public QObject
 {
@@ -23,6 +45,7 @@ private slots:
     void style();
     void objectNames();
     void windowButtonGroupIsPlacedBeforeTheWindowIsShown();
+    void contextMenu();
 };
 
 void tst_RibbonBar::applicationButton()
@@ -300,6 +323,39 @@ void tst_RibbonBar::windowButtonGroupIsPlacedBeforeTheWindowIsShown()
     const int groupWidth = group.sizeHint().width();
     QVERIFY(groupWidth > 0);
     QCOMPARE(group.geometry(), QRect(windowWidth - groupWidth, 0, groupWidth, rb.titleBarHeight()));
+}
+
+void tst_RibbonBar::contextMenu()
+{
+    ContextMenuRibbonBar rb;
+    rb.addPage(QStringLiteral("page"));
+
+    QScopedPointer<QMenu> menu(rb.buildContextMenu());
+    QVERIFY(!menu->isEmpty());
+
+    QAction *minimizeAction = nullptr;
+    QAction *customizeAction = nullptr;
+    for (QAction *action : menu->actions()) {
+        if (action->objectName() == QStringLiteral("qx_RibbonMinimizeAction")) {
+            minimizeAction = action;
+        } else if (action->objectName() == QStringLiteral("qx_RibbonCustomizeQabAction")) {
+            customizeAction = action;
+        }
+    }
+    QVERIFY(minimizeAction);
+    QVERIFY(customizeAction);
+
+    // The minimize entry mirrors the ribbon state and toggles it.
+    QCOMPARE(minimizeAction->isCheckable(), true);
+    QCOMPARE(minimizeAction->isChecked(), rb.isMinimized());
+    minimizeAction->trigger();
+    QVERIFY(rb.isMinimized());
+
+    // The customize entry reaches the quick access bar's own entry, so the application
+    // receives the same signal it receives from the bar's customize menu.
+    QSignalSpy spy(rb.quickAccessBar(), &RibbonQuickAccessBar::customizeDialogRequested);
+    customizeAction->trigger();
+    QCOMPARE(spy.count(), 1);
 }
 
 TEST_ADD(tst_RibbonBar)

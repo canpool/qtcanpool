@@ -219,6 +219,12 @@ QAction *RibbonQuickAccessBar::actionCustomizeButton() const
     return d->m_actionAccessPopup;
 }
 
+QAction *RibbonQuickAccessBar::actionCustomizeDialog() const
+{
+    Q_D(const RibbonQuickAccessBar);
+    return d->m_customizeDialogAction;
+}
+
 void RibbonQuickAccessBar::setActionVisible(QAction *action, bool visible)
 {
     Q_D(RibbonQuickAccessBar);
