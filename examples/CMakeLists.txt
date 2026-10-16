@@ -102,6 +102,8 @@ add_qtc_example(Example_Dock_WidgetToPanel qxdock qxdock/widgettopanel plain)
 add_qtc_example(Example_Dock_DeleteOnClose qxdock qxdock/deleteonclose none)
 # A frameless host, so also its own main().
 add_qtc_example(Example_Dock_Frameless qxdock qxdock/frameless none)
+# Toolbars come from the host QMainWindow, so this one brings its own main() too.
+add_qtc_example(Example_Dock_ToolBars qxdock qxdock/toolbars none)
 
 # --------------------------------------------------------------------- qxapp --
 add_qtc_example(Example_RibbonAppEmpty qxapp qxapp/ribbonappempty sample)
