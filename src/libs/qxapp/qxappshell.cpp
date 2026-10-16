@@ -10,6 +10,13 @@
 #include "qxcore/qxsettings.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
+#include "qxribbon/ribbonbar.h"
+#include "qxribbon/ribbongroup.h"
+#include "qxribbon/ribbonpage.h"
+
+// QAction lives in QtGui from Qt 6 on and in QtWidgets before that; the
+// module-less form is the one the rest of the project uses for it.
+#include <QAction>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
@@ -22,10 +29,12 @@
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QStyle>
 
 QX_CORE_USE_NAMESPACE
 QX_DOCK_USE_NAMESPACE
 QX_PLUGIN_USE_NAMESPACE
+QX_RIBBON_USE_NAMESPACE
 
 QX_APP_BEGIN_NAMESPACE
 
@@ -519,6 +528,36 @@ QX_DOCK_PREPEND_NAMESPACE(DockWidget) * QxAppShell::dock(const QString &id) cons
 {
     Q_D(const QxAppShell);
     return d->m_dockWindow->findDockWidget(id);
+}
+
+RibbonGroup *QxAppShell::addLayoutGroup(RibbonPage *page, const QString &title)
+{
+    if (!page) {
+        qWarning("QxAppShell: the layout group needs a ribbon page");
+        return Q_NULLPTR;
+    }
+
+    RibbonGroup *group = page->addGroup(title.isEmpty() ? tr("Layout") : title);
+
+    // The icons are the style's, not ours: a shell has no icon set of its own,
+    // and these two already mean "save" and "reload" in every desktop.
+    const QStyle *s = style();
+
+    QAction *save = new QAction(s->standardIcon(QStyle::SP_DialogSaveButton), tr("Save"), this);
+    group->addMediumAction(save);
+    connect(save, &QAction::triggered, this, [this]() {
+        saveLayout();
+        setStatusMessage(tr("Layout saved"));
+    });
+
+    QAction *restore = new QAction(s->standardIcon(QStyle::SP_BrowserReload), tr("Restore"), this);
+    group->addMediumAction(restore);
+    connect(restore, &QAction::triggered, this, [this]() {
+        restoreLayout();
+        setStatusMessage(tr("Layout restored"));
+    });
+
+    return group;
 }
 
 void QxAppShell::setStatusMessage(const QString &message)

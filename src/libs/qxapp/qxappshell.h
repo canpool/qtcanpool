@@ -28,6 +28,11 @@ class DockWidget;
 class DockWindow;
 QX_DOCK_END_NAMESPACE
 
+QX_RIBBON_BEGIN_NAMESPACE
+class RibbonGroup;
+class RibbonPage;
+QX_RIBBON_END_NAMESPACE
+
 QX_APP_BEGIN_NAMESPACE
 
 class QxAppShellPrivate;
@@ -121,6 +126,21 @@ public:
     /*! The dock widget created with addDock() under \a id, or null. */
     QX_DOCK_PREPEND_NAMESPACE(DockWidget) * dock(const QString &id) const;
 
+    // Ribbon ----------------------------------------------------------------
+    /*!
+     * Adds the standard Layout group to \a page: a Save and a Restore action,
+     * both wired to saveLayout() and restoreLayout() and both reporting through
+     * the status bar.
+     *
+     * A shell persists its layout whether or not anyone can ask it to, so this
+     * is the one group every ribbon shell carries, and the one group every
+     * application otherwise writes out itself. \a page is a page of
+     * ribbonBar(); \a title is the group title, "Layout" by default.
+     *
+     * Returns the group, so a caller can go on adding to it.
+     */
+    QX_RIBBON_PREPEND_NAMESPACE(RibbonGroup) *
+        addLayoutGroup(QX_RIBBON_PREPEND_NAMESPACE(RibbonPage) * page, const QString &title = QString());
     // Plugin context --------------------------------------------------------
     /*!
      * Returns the QxPluginContext adapter. Plugins reach the host only through

@@ -11,7 +11,14 @@
 #include "qxplugin/qxplugin.h"
 #include "qxplugin/qxpluginmanager.h"
 #include "qxplugin/qxpluginspec.h"
+#include "qxribbon/ribbonbar.h"
+#include "qxribbon/ribbonbutton.h"
+#include "qxribbon/ribbongroup.h"
+#include "qxribbon/ribbonpage.h"
 
+// QAction lives in QtGui from Qt 6 on and in QtWidgets before that; the
+// module-less form is the one the rest of the project uses for it.
+#include <QAction>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
 #include <QtCore/QMargins>
@@ -28,6 +35,26 @@ QX_APP_USE_NAMESPACE
 QX_CORE_USE_NAMESPACE
 QX_DOCK_USE_NAMESPACE
 QX_PLUGIN_USE_NAMESPACE
+QX_RIBBON_USE_NAMESPACE
+
+/*!
+ * The action behind a group's button whose text is \a text.
+ *
+ * The button order is the order the actions were added in, which is a detail of
+ * how a group lays itself out; the text is what the user reads, so that is what
+ * the shell tests look a button up by.
+ */
+static QAction *actionIn(RibbonGroup *group, const QString &text)
+{
+    const QList<RibbonButton *> buttons = group->ribbonButtons();
+    for (RibbonButton *button : buttons) {
+        QAction *action = button->defaultAction();
+        if (action && action->text() == text) {
+            return action;
+        }
+    }
+    return Q_NULLPTR;
+}
 
 /* ------------------------------------------------------------------ rail -- */
 
@@ -326,6 +353,7 @@ private slots:
     void busyAndProgressShareOneIndicator();
     void persistence();
     void autoSaveOnClose();
+    void layoutGroup();
 private:
     /*! A settings file of its own per case, so no case depends on another. */
     QString newSettingsFile();
@@ -714,6 +742,54 @@ void tst_QxAppShell::autoSaveOnClose()
 
     QxSettings untouched(other, QSettings::IniFormat);
     QVERIFY(!untouched.contains(QStringLiteral("ui/currentPage")));
+}
+
+void tst_QxAppShell::layoutGroup()
+{
+    QxAppShell shell;
+
+    // A group needs a page to live on; asking for one without is the caller's
+    // mistake and is refused, not a crash.
+    QCOMPARE(shell.addLayoutGroup(Q_NULLPTR), static_cast<RibbonGroup *>(Q_NULLPTR));
+
+    RibbonPage *home = shell.ribbonBar()->addPage(QStringLiteral("Home"));
+    RibbonGroup *group = shell.addLayoutGroup(home);
+    QVERIFY(group != Q_NULLPTR);
+    QCOMPARE(group->title(), QStringLiteral("Layout"));
+
+    // The group is exactly the two actions the shell offers, and a caller that
+    // wants a different title gets it without losing the wiring.
+    QCOMPARE(group->ribbonButtonCount(), 2);
+    QCOMPARE(actionIn(group, QStringLiteral("Save")) != Q_NULLPTR, true);
+    QCOMPARE(actionIn(group, QStringLiteral("Restore")) != Q_NULLPTR, true);
+
+    // A group of two buttons is worth nothing unless the buttons are wired to
+    // the layout, so the test drives them rather than looking at their labels.
+    const QString file = newSettingsFile();
+    shell.setSettings(new QxSettings(file, QSettings::IniFormat));
+    shell.addPage(QStringLiteral("one"), QIcon(), QStringLiteral("One"), new QWidget);
+    shell.addPage(QStringLiteral("two"), QIcon(), QStringLiteral("Two"), new QWidget);
+    shell.setCurrentPage(QStringLiteral("two"));
+
+    actionIn(group, QStringLiteral("Save"))->trigger();
+    QCOMPARE(shell.statusMessage(), QStringLiteral("Layout saved"));
+    {
+        QxSettings reader(file, QSettings::IniFormat);
+        reader.beginGroup(QStringLiteral("ui"));
+        QCOMPARE(reader.stringValue(QStringLiteral("currentPage")), QStringLiteral("two"));
+        QVERIFY(!reader.value(QStringLiteral("dockState")).toByteArray().isEmpty());
+        reader.endGroup();
+    }
+
+    shell.setCurrentPage(QStringLiteral("one"));
+    actionIn(group, QStringLiteral("Restore"))->trigger();
+    QCOMPARE(shell.statusMessage(), QStringLiteral("Layout restored"));
+    QCOMPARE(shell.currentPageId(), QStringLiteral("two"));
+
+    RibbonGroup *renamed =
+        shell.addLayoutGroup(shell.ribbonBar()->addPage(QStringLiteral("Other")), QStringLiteral("Fenster"));
+    QCOMPARE(renamed->title(), QStringLiteral("Fenster"));
+    QCOMPARE(renamed->ribbonButtonCount(), 2);
 }
 
 /* --------------------------------------------------------------- plugin -- */

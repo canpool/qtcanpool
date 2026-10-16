@@ -77,21 +77,9 @@ void ShellWindow::createRibbon()
     connect(manage, &QAction::triggered, this, &ShellWindow::openPluginManager);
 
     // Layout -----------------------------------------------------------------
-    RibbonGroup *layout = page->addGroup(tr("Layout"));
-
-    QAction *action = new QAction(s->standardIcon(QStyle::SP_DialogSaveButton), tr("Save"), this);
-    layout->addMediumAction(action);
-    connect(action, &QAction::triggered, this, [this]() {
-        saveLayout();
-        setStatusMessage(tr("Layout saved"));
-    });
-
-    action = new QAction(s->standardIcon(QStyle::SP_BrowserReload), tr("Restore"), this);
-    layout->addMediumAction(action);
-    connect(action, &QAction::triggered, this, [this]() {
-        restoreLayout();
-        setStatusMessage(tr("Layout restored"));
-    });
+    // The one group the shell provides itself: a shell that knows none of its
+    // modules still has a layout to save, so this is not a module's business.
+    addLayoutGroup(page);
 
     // Pages ------------------------------------------------------------------
     // The entries are the page ids the modules registered, so this menu is empty

@@ -10,6 +10,14 @@ Interface
   point of the rename is to stop the two names from looking like siblings.
   See doc/pages/migration.md.
 
+Feature
+- QxAppShell::addLayoutGroup() adds the layout group every ribbon shell carries:
+  a Save and a Restore action, both wired to saveLayout()/restoreLayout() and
+  both reporting through the status bar. A shell persists its layout whether or
+  not anyone can ask it to, and the two demo shells had been writing the same
+  page->addGroup(tr("Layout")) block out by hand - the group is now one call.
+  tst_QxAppShell::layoutGroup
+
 0.1.2
 ---
 Bugfix

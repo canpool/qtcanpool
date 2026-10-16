@@ -101,21 +101,9 @@ void MainWindow::createRibbon()
     });
 
     // Layout -----------------------------------------------------------------
-    RibbonGroup *layout = page->addGroup(tr("Layout"));
-
-    action = new QAction(s->standardIcon(QStyle::SP_DialogSaveButton), tr("Save"), this);
-    layout->addMediumAction(action);
-    connect(action, &QAction::triggered, this, [this]() {
-        saveLayout();
-        setStatusMessage(tr("Layout saved"));
-    });
-
-    action = new QAction(s->standardIcon(QStyle::SP_BrowserReload), tr("Restore"), this);
-    layout->addMediumAction(action);
-    connect(action, &QAction::triggered, this, [this]() {
-        restoreLayout();
-        setStatusMessage(tr("Layout restored"));
-    });
+    // The one group the shell provides itself: every ribbon shell carries it,
+    // so it is one call rather than the block it used to be.
+    addLayoutGroup(page);
 
     // Workspaces ------------------------------------------------------------
     // The group next to "Layout" is the point of the comparison: Layout keeps
