@@ -29,12 +29,15 @@ QX_PLUGIN_USE_NAMESPACE
 // can show the order resolve/request walks them in. initialize() runs first, in
 // dependency order; extensionsInitialized() follows it, once the whole request
 // - the plugin and every dependency it pulled in - is up.
-class DemoPlugin : public QxPlugin
+// The namespace and the base class share the name QxPlugin, so every use of
+// the class is qualified from the global scope (::QxPlugin::QxPlugin): with
+// QX_PLUGIN_USE_NAMESPACE in effect the bare name is ambiguous on MSVC.
+class DemoPlugin : public ::QxPlugin::QxPlugin
 {
     Q_OBJECT
 public:
     explicit DemoPlugin(const QString &name, QStringList *log)
-        : QxPlugin(nullptr)
+        : ::QxPlugin::QxPlugin(nullptr)
         , m_name(name)
         , m_log(log)
     {
@@ -106,14 +109,14 @@ int main(int argc, char *argv[])
 
     // Ask for b: a starts first (b needs it), then b. c and anything else is
     // left alone.
-    QxPlugin::QxPlugin *b = manager.requestPlugin(QStringLiteral("b"));
+    ::QxPlugin::QxPlugin *b = manager.requestPlugin(QStringLiteral("b"));
     std::printf("requestPlugin(\"b\") -> %s\n",
                 (b ? manager.spec(QStringLiteral("b"))->id() : QStringLiteral("null")).toUtf8().constData());
     std::printf("  lifecycle so far: %s\n", log.join(QStringLiteral(", ")).toUtf8().constData());
 
     // Ask for c on its own later. The plugins already up are not started again,
     // and c's extensionsInitialized() does not re-run for them.
-    QxPlugin::QxPlugin *c = manager.requestPlugin(QStringLiteral("c"));
+    ::QxPlugin::QxPlugin *c = manager.requestPlugin(QStringLiteral("c"));
     std::printf("requestPlugin(\"c\") -> %s\n",
                 (c ? manager.spec(QStringLiteral("c"))->id() : QStringLiteral("null")).toUtf8().constData());
     std::printf("  lifecycle so far: %s\n", log.join(QStringLiteral(", ")).toUtf8().constData());
