@@ -1,3 +1,43 @@
+Unreleased
+---
+Feature
+- KeyTips: pressing Alt labels the application button and the visible pages with
+  letter badges; picking a page's letter switches to it and descends one level to
+  label that page's buttons - a button's mnemonic where it has one, a generated
+  A-Z letter otherwise. A control runs on click, Esc or Alt leaves the mode, and a
+  resize puts the badges away. RibbonGallery is a KeyTip target too: its letter
+  moves focus into the gallery, which then takes over the keyboard.
+- RibbonButton shows a rich ScreenTip on hover: the action's text without its
+  mnemonic, its statusTip, and its shortcut, in a shared frameless tool window
+  that follows the pointer. An action with neither a statusTip nor a shortcut
+  keeps the plain tooltip.
+- Add the LightFluent2016Theme and LightFluent2019Theme ribbon themes. They reuse
+  the Office 2013 selectors with the palette remapped to the Fluent accent and
+  neutral colours (2019 the lighter chrome). The two enumerators are appended
+  after CustomTheme so the existing theme values do not shift, because
+  RibbonMainWindow exposes the theme as an int.
+- RibbonQuickAccessBar: the customize menu now ends with the Office-style
+  "Customize Quick Access Toolbar..." entry, after a separator, which emits the
+  new customizeDialogRequested() signal for the host to open its dialog. The entry
+  action is owned by the bar rather than the menu, because the menu clears itself
+  when it hides and would delete an action it owned.
+- RibbonGallery is keyboard reachable: it takes focus and handles the arrow keys
+  (moving the current item, clamped at the ends), Enter/Space (activating the
+  current item) and PageUp/PageDown (the two scroll buttons).
+- RibbonBar: right-clicking opens a context menu with "Minimize the Ribbon"
+  (checkable, tracking isMinimized()) and the quick access bar's customize entry.
+  Subclasses can extend it by overriding addContextMenuActions().
+- RibbonPage and RibbonGroup mirror their title into accessibleName (mnemonics
+  stripped, kept in step with windowTitleChanged) and the ribbon bar carries a
+  stable name; a QAccessible factory gives the painted page and group containers
+  the Pane and Grouping roles, which their custom painting otherwise hid from
+  assistive tools.
+
+Interface
+- RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
+- RibbonGalleryGroup: add triggerCurrentItem
+- RibbonBar: add overridable addContextMenuActions
+
 0.12.2
 ---
 Cleanup

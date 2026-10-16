@@ -1,3 +1,15 @@
+Unreleased
+---
+Interface
+- Rename QxNavBar to QxNavTabBar. The class is a QxTabBar-derived tab navigation
+  bar with a show/hide-tabs customize menu, but its name sat one letter from
+  QxNavigationBar - a QWidget, the QxAppShell vertical rail, sharing neither a
+  base nor a purpose with it. The two read as variants of one another while being
+  unrelated, so the tab bar is renamed and the rail keeps its name. Breaking, and
+  it lands in this minor; no forward-compatibility alias is kept, because the
+  point of the rename is to stop the two names from looking like siblings.
+  See doc/pages/migration.md.
+
 0.1.2
 ---
 Bugfix
