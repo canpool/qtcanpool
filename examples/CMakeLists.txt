@@ -73,6 +73,11 @@ function(add_qtc_example name library directory window)
     )
 endfunction()
 
+# ------------------------------------------------------------------ qxplugin --
+# On-demand plugin loading (4.5): resolvePlugins() reads and orders metadata,
+# requestPlugin() starts one plugin - with its still-needed dependencies - on ask.
+add_qtc_example(Example_Plugin_LazyLoading qxplugin qxplugin/lazyloading none)
+
 # ------------------------------------------------------------------ qxribbon --
 add_qtc_example(Example_Ribbon_Simple qxribbon qxribbon/simple ribbon)
 add_qtc_example(Example_Ribbon_GroupAutoLayout qxribbon qxribbon/groupautolayout sample)
