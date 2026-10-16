@@ -12,6 +12,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
+#include <QtCore/QVariantMap>
 
 #include <functional>
 
@@ -53,6 +54,29 @@ public:
     void beginGroup(const QString &prefix);
     void endGroup();
     QString group() const;
+    /*! Names of the groups directly below the current one. */
+    QStringList childGroups() const;
+    /*! Names of the keys directly below the current one. */
+    QStringList childKeys() const;
+
+    /*!
+     * Every key directly below \a prefix, as a map whose keys have \a prefix
+     * taken off: the group "ui" comes back as "windowGeometry", not
+     * "ui/windowGeometry". An empty \a prefix reads the group already in force.
+     *
+     * This is the whole of a group in one step, and that is the point of it
+     * beside beginGroup()/endGroup(): those pair up by hand, so an early return
+     * between them leaves the group open for every later call. A restore path
+     * wants the whole group anyway.
+     */
+    QVariantMap section(const QString &prefix) const;
+    /*!
+     * Writes every entry of \a values below \a prefix, and reports each one
+     * through valueChanged() exactly as setValue() does: a section write is as
+     * many writes as it has entries, and a listener has no other way to learn
+     * that. An empty \a prefix writes into the group already in force.
+     */
+    void setSection(const QString &prefix, const QVariantMap &values);
 
     // Read ------------------------------------------------------------------
     bool contains(const QString &key) const;

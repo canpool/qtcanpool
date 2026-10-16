@@ -84,6 +84,18 @@ QString QxSettings::group() const
     return d->m_settings->group();
 }
 
+QStringList QxSettings::childGroups() const
+{
+    Q_D(const QxSettings);
+    return d->m_settings->childGroups();
+}
+
+QStringList QxSettings::childKeys() const
+{
+    Q_D(const QxSettings);
+    return d->m_settings->childKeys();
+}
+
 // Read ----------------------------------------------------------------------
 
 bool QxSettings::contains(const QString &key) const
@@ -124,6 +136,31 @@ QStringList QxSettings::allKeys() const
     return d->m_settings->allKeys();
 }
 
+QVariantMap QxSettings::section(const QString &prefix) const
+{
+    Q_D(const QxSettings);
+
+    // An empty prefix means "the group in force", so there is nothing to enter -
+    // and endGroup() on a group nobody entered is what would break the caller's
+    // own pairing. QSettings::beginGroup() would be a no-op for it, but the
+    // matching endGroup() would not.
+    const bool entered = !prefix.isEmpty();
+    if (entered) {
+        d->m_settings->beginGroup(prefix);
+    }
+
+    QVariantMap values;
+    const QStringList keys = d->m_settings->childKeys();
+    for (const QString &key : keys) {
+        values.insert(key, d->m_settings->value(key));
+    }
+
+    if (entered) {
+        d->m_settings->endGroup();
+    }
+    return values;
+}
+
 // Write ---------------------------------------------------------------------
 
 void QxSettings::setValue(const QString &key, const QVariant &value)
@@ -131,6 +168,27 @@ void QxSettings::setValue(const QString &key, const QVariant &value)
     Q_D(QxSettings);
     d->m_settings->setValue(key, value);
     emit valueChanged(qualifiedKey(d->m_settings, key), value);
+}
+
+void QxSettings::setSection(const QString &prefix, const QVariantMap &values)
+{
+    Q_D(QxSettings);
+
+    const bool entered = !prefix.isEmpty();
+    if (entered) {
+        d->m_settings->beginGroup(prefix);
+    }
+
+    // Through setValue() rather than straight into QSettings, so that each
+    // entry is reported the way a single write is: the group is a convenience
+    // of the caller, not a reason for the signal to go quiet.
+    for (auto it = values.constBegin(); it != values.constEnd(); ++it) {
+        setValue(it.key(), it.value());
+    }
+
+    if (entered) {
+        d->m_settings->endGroup();
+    }
 }
 
 void QxSettings::remove(const QString &key)
@@ -177,7 +235,11 @@ int QxSettings::version() const
 void QxSettings::setVersion(int version)
 {
     Q_D(QxSettings);
+    // The version is a stored key like any other, so it goes out the same door:
+    // it used to be the one write that reached QSettings without a word, which
+    // left a listener holding a copy of the settings unable to learn about it.
     d->m_settings->setValue(d->m_versionKey, version);
+    emit valueChanged(qualifiedKey(d->m_settings, d->m_versionKey), version);
 }
 
 void QxSettings::addMigration(int version, Migration migration)

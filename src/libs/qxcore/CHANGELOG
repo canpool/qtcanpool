@@ -10,6 +10,20 @@ Feature
   what is new is that it is reachable from the object that owns the answer, and
   that it carries the count through to the plural form.
   tst_QxTranslator::translateFollowsTheInstalledCatalogue
+- QxSettings reads and writes a whole group at once: section(prefix) returns its
+  keys with the prefix taken off, setSection(prefix, values) writes them. The
+  class had beginGroup()/endGroup(), which pair up by hand - an early return
+  between them leaves the group open for every later call - while the one thing
+  a restore path wants is the whole group in one step. An empty prefix means the
+  group already in force, so a caller's own beginGroup() is never cancelled.
+  childGroups() and childKeys() join allKeys() as the enumeration half.
+  tst_QxSettings::sections
+
+Bugfix
+- QxSettings::setVersion() was the one write that reached QSettings without a
+  word, so a listener holding a copy of the settings could not learn about it.
+  It now reports through valueChanged() like every other write. No caller
+  depends on the silence: the version is a stored key, not a private field.
 
 0.1.3
 ---

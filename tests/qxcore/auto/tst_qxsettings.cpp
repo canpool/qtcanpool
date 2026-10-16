@@ -13,6 +13,7 @@ private slots:
     void defaults();
     void typedAccessors();
     void groups();
+    void sections();
     void removeAndClear();
     void persistence();
     void migration();
@@ -100,6 +101,69 @@ void tst_QxSettings::groups()
     QCOMPARE(settings.contains("window/width"), false);
     QCOMPARE(spy.count(), 3);
     QCOMPARE(spy.at(2).at(0).toString(), QStringLiteral("window/width"));
+}
+
+/*!
+ * E3: a whole group in one step, so a restore path does not have to pair
+ * beginGroup() with endGroup() and hope no early return sits between them.
+ */
+void tst_QxSettings::sections()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    QxSettings settings(dir.filePath("sections.ini"), QSettings::IniFormat);
+    QSignalSpy spy(&settings, &QxSettings::valueChanged);
+
+    // Writing a section is as many writes as it has entries, and each one is
+    // reported the way a single setValue() is.
+    settings.setSection(QStringLiteral("ui"),
+                        {{QStringLiteral("geometry"), QByteArray("abc")}, {QStringLiteral("page"), 2}});
+    QCOMPARE(spy.count(), 2);
+    QCOMPARE(settings.intValue(QStringLiteral("ui/page")), 2);
+
+    // Reading it gives the keys back without the prefix - the caller asked for
+    // the group, so repeating its name on every key would be noise.
+    const QVariantMap ui = settings.section(QStringLiteral("ui"));
+    QCOMPARE(ui.count(), 2);
+    QCOMPARE(ui.value(QStringLiteral("page")).toInt(), 2);
+    QCOMPARE(ui.value(QStringLiteral("geometry")).toByteArray(), QByteArray("abc"));
+    QVERIFY(!ui.contains(QStringLiteral("ui/page")));
+
+    // The group in force is left exactly as it was found: reading a section is
+    // not a reason for the caller's own beginGroup() to be cancelled.
+    settings.beginGroup(QStringLiteral("outer"));
+    settings.setSection(QStringLiteral("inner"), {{QStringLiteral("k"), 1}});
+    QCOMPARE(settings.group(), QStringLiteral("outer"));
+    QCOMPARE(settings.section(QStringLiteral("inner")).value(QStringLiteral("k")).toInt(), 1);
+    // An empty prefix is that group, not a new one.
+    QVERIFY(settings.section(QString()).isEmpty());
+    settings.setSection(QString(), {{QStringLiteral("direct"), 5}});
+    QCOMPARE(settings.group(), QStringLiteral("outer"));
+    QCOMPARE(settings.intValue(QStringLiteral("direct")), 5);
+    settings.endGroup();
+    QCOMPARE(settings.group(), QString());
+
+    // An absent section is an empty map, not a null one.
+    QVERIFY(settings.section(QStringLiteral("nothing")).isEmpty());
+
+    // The enumeration half, beside allKeys().
+    QCOMPARE(settings.childGroups(), QStringList({QStringLiteral("outer"), QStringLiteral("ui")}));
+    QCOMPARE(settings.childKeys(), QStringList());
+    settings.beginGroup(QStringLiteral("outer"));
+    QCOMPARE(settings.childGroups(), QStringList({QStringLiteral("inner")}));
+    QCOMPARE(settings.childKeys(), QStringList({QStringLiteral("direct")}));
+    settings.beginGroup(QStringLiteral("inner"));
+    QCOMPARE(settings.childKeys(), QStringList({QStringLiteral("k")}));
+    settings.endGroup();
+    settings.endGroup();
+
+    // And the version is a stored key like the others, so it is announced too.
+    spy.clear();
+    settings.setVersion(3);
+    QCOMPARE(settings.version(), 3);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.first().at(0).toString(), QStringLiteral("version"));
 }
 
 void tst_QxSettings::removeAndClear()
