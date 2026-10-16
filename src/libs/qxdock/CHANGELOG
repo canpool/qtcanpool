@@ -30,6 +30,15 @@ Feature
   geometry, so the container still positions itself and the flag only decides how
   it arrives, never where it belongs - which is also what the test holds on to
   rather than the animation itself. tst_DockAutoHideContainer::collapseSlidesIntoPlace
+- The dock widgets carry accessible names and roles. Docking paints its own
+  containers, so the default accessibility saw unnamed Clients: a dock panel, its
+  tabs and the side bar had no name for an assistive tool to announce and no role
+  to tell them apart from plain frames. DockWidget and DockTab now mirror their
+  title into accessibleName (the '&' mnemonic stripped, kept in step with
+  windowTitleChanged and setText), and a QAccessible factory, installed by the
+  DockWindow constructor, reports the panel as Pane, the tabs as PageTab, and the
+  tab bar and the side bar as PageTabList - the same treatment the ribbon gave its
+  painted page and group. tst_DockAccessible
 
 0.2.3
 ---

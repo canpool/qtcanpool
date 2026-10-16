@@ -4,6 +4,7 @@
  **/
 
 #include "dockwindow.h"
+#include "dockwindow_p.h"
 #include "dockpanel.h"
 #include "dockwidget.h"
 #include "dockfloatingcontainer.h"
@@ -356,6 +357,10 @@ DockWindow::DockWindow(QWidget *parent)
     Q_D(DockWindow);
     d->init();
     registerDockContainer(this);
+
+    // Accessibility (B2): the window is the dock landmark, so it is what registers
+    // the factory that gives the panel, tab, tab bar and side bar their roles.
+    installDockAccessibility();
 
     window()->installEventFilter(this);
 

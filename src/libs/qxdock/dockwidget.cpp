@@ -289,6 +289,14 @@ DockWidget::DockWidget(const QString &title, QWidget *parent)
     setWindowTitle(title);
     setObjectName(title);
 
+    // Accessibility (B2): expose the dock widget title (sans the '&' mnemonic) as
+    // the accessible name, so assistive tools can announce the widget; keep it in
+    // step with later title changes.
+    setAccessibleName(QString(title).remove(QLatin1Char('&')));
+    connect(this, &QWidget::windowTitleChanged, this, [this](const QString &t) {
+        setAccessibleName(QString(t).remove(QLatin1Char('&')));
+    });
+
     Q_D(DockWidget);
     d->init();
 

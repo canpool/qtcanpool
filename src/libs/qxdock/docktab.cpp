@@ -81,7 +81,9 @@ void DockTabPrivate::init()
     } else {
         m_label->setElideMode(Qt::ElideRight);
     }
-    m_label->setText(m_dockWidget->windowTitle());
+    // Accessibility (B2): route the initial text through setText(), which mirrors
+    // it into the accessible name (see DockTab::setText).
+    q->setText(m_dockWidget->windowTitle());
     m_label->setObjectName("dockTabLabel");
     m_label->setAlignment(Qt::AlignCenter);
     q->connect(m_label, SIGNAL(elidedChanged(bool)), SIGNAL(elidedChanged(bool)));
@@ -419,6 +421,9 @@ void DockTab::setText(const QString &title)
 {
     Q_D(DockTab);
     d->m_label->setText(title);
+    // Accessibility (B2): expose the tab text (sans the '&' mnemonic) as the accessible
+    // name; the tab is a painted frame, so nothing else would carry its text.
+    setAccessibleName(QString(title).remove(QLatin1Char('&')));
 }
 
 bool DockTab::isTitleElided() const
