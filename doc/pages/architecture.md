@@ -104,6 +104,11 @@ QX_CORE_END_NAMESPACE
 导出符号由 `QX_CORE_EXPORT` 一类宏控制：`add_qtc_library()` 会自动为库本身定义
 `QX_CORE_LIBRARY`，消费方由此得到 `Q_DECL_IMPORT`。静态库场景下定义 `QX_CORE_LIBRARY_STATIC` 即可。
 
+**未带导出宏 ⇒ 非公开 API**：判断一个类是否是公开 API，看它有没有 `QX_<LIB>_EXPORT`
+（`QX_CORE_EXPORT` / `QX_RIBBON_EXPORT` …），而不是看它的头文件在不在磁盘上。库会把**所有** `.h`
+（含 `_p.h` 私有头）一并安装，所以"头文件存在"不等于"可以用"——没有导出宏的类（私有实现、内部辅助类）
+随时可改可删，应用不应依赖。本仓按此口径维护文档：[组件全览](components.md) 只列导出类。
+
 ## d-pointer
 
 公开类一律使用 d-pointer，把实现细节从公开头文件中挪走。宏家族在 `*_global.h` 中提供

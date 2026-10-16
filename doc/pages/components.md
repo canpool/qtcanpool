@@ -10,6 +10,9 @@
 - qxplugin → @ref QxPlugin
 - qxapp → @ref QxApp
 
+> 本页只列**导出类**（带 `QX_<LIB>_EXPORT` 宏）；未带导出宏的头文件（含随库一并安装的 `_p.h`
+> 私有头）不是公开 API，随时可改可删，应用不应依赖。该口径详见[架构](architecture.md)。
+
 > `qcanpool` 已于 **3.2 删除**（含 3.1 留下的转发头），本页不再列出。迁移见
 > [迁移指南](migration.md)。
 
@@ -125,12 +128,23 @@ themes->setTheme(DarkOfficePlus);
 
 | 类 | 说明 |
 | :--- | :--- |
-| `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组 |
-| `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单 |
+| `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组；4.5 起内建 KeyTips（B1）、富提示（B6）、右键上下文菜单（B10） |
+| `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单；页面变窄时先逐组缩放、缩不动才出滚动条（B11） |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口 |
 | `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
-| `RibbonTheme` | widget 级样式表加载器（6 套内置样式表）。新代码请优先使用 @ref QxTheme::QxThemeManager |
-| `RibbonGallery` / `RibbonCustomizeDialog` 等 | 选项板、自定义对话框等配套控件 |
+| `RibbonTheme` | widget 级样式表加载器（6 套内置 + 4.5 的 Fluent 2016/2019，B7）。新代码请优先使用 @ref QxTheme::QxThemeManager |
+| `RibbonGallery` / `RibbonGalleryGroup` | 选项板及其分组；4.5 起可聚焦并用方向键 / Enter / PageUp 导航（B9） |
+| `RibbonCustomizeDialog` / `RibbonActionsManager` | 自定义对话框，及其背后按标签管理 action 的管理器 |
+| `RibbonButton` | Ribbon 标准按钮（大 / 中 / 小三种尺寸，可带弹出菜单） |
+| `RibbonControlButton` | 通用按钮基类（`QToolButton` 派生），`RibbonFactory` 据此造隐藏组按钮等 |
+| `RibbonColorButton` | 选择颜色的按钮（`RibbonButton` 派生，带取色与 `colorChanged` / `colorClicked` 信号） |
+| `RibbonButtonGroup` | 一行并排按钮（如右下角 `cornerButtonGroup`） |
+| `RibbonMenu` | 支持嵌套子菜单的 `QMenu` |
+| `RibbonCheckBox` / `RibbonComboBox` / `RibbonLineEdit` | Ribbon 内的复选框、下拉框与单行输入 |
+| `RibbonControl` | Ribbon 控件基类（`QWidget` 派生） |
+| `RibbonManager` | Ribbon 全局管理器（单例 `instance()`）：持有 `RibbonFactory`；旧宏 `RibbonElementMgr` 是其 `instance()` 的别名 |
+| `RibbonFactory` | 控件工厂 + `RibbonStyleOption`（条带高度等布局尺寸参数）的持有者 |
+| `RibbonPageContext` | 把一组页作为上下文整体显隐（如「表格工具」上下文页签） |
 
 样式表资源位于 `:/qxribbon/res/stylesheets/*.css`，是**进程级**资源；
 `QxThemeManager` 正是按路径从这里取内置主题。
