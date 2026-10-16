@@ -110,11 +110,12 @@ Feature
   setting the action's text, addSeparator() adds a hairline between two of them,
   and addPermanentAction() adds a right-hand switch that stays put while
   showMessage() scrolls its text across the left. The bar carries the
-  qx_RibbonStatusBar object name and draws a 1px top seam in the window
-  background, so a dark theme styles it the way it styles the rest of the ribbon;
-  the segments and the permanent buttons carry their own qx_RibbonStatusBar*
-  names. tst_RibbonStatusBar drives the two sections, the text tracking and the
-  showMessage() hide; Example_Ribbon_StatusBar is a host with both sections filled.
+  qx_RibbonStatusBar object name and paints nothing of its own, so a dark theme
+  styles it the way it styles the rest of the ribbon - the dark themes already
+  carry a QStatusBar rule; the segments and the permanent buttons carry their own
+  qx_RibbonStatusBar* names. tst_RibbonStatusBar drives the two sections, the text
+  tracking and the showMessage() hide; Example_Ribbon_StatusBar is a host with
+  both sections filled.
 
 - RibbonSliderPane: add the Office zoom control - a minus button, a slider track
   and a plus button in one compact pane, the control a ribbon application puts at

@@ -204,13 +204,13 @@ QTreeView::pane, QListView, QTableView::pane, QTabWidget::pane {
   border: 0px solid #303030;
   selection-color: #ffffff;
   selection-background-color: #19191a;
-  alternate-background-color: #808096;
+  alternate-background-color: #303030;
   gridline-color: #0075d1;
 }
 
 QTreeView, QListView, QTableView, QTabWidget {
   show-decoration-selected: 1;
-  alternate-background-color: #808096;
+  alternate-background-color: #303030;
 }
 
 QTreeView, QListView, QTableView, QSplitter::handle {
@@ -514,6 +514,7 @@ QComboBox QAbstractItemView::item {
 
 QStatusBar {
   background: #292929;
+  color: #e0e0e0;
 }
 
 QStatusBar::item {
@@ -592,7 +593,7 @@ QCalendarWidget QTableView {
   color: #f0f0f0;
   background-color: #292929;
   selection-color: #ffffff;
-  alternate-background-color: #808096;
+  alternate-background-color: #303030;
   selection-background-color: #19191a;
 }
 

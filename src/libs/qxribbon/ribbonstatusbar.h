@@ -20,10 +20,9 @@ class RibbonStatusBarPrivate;
  * RibbonStatusBar is a QStatusBar with the extra structure Office's ribbon puts in
  * its status bar: a left section of plain text segments - each one a QAction, so the
  * host updates a segment by setting the action's text - and a right, permanent
- * section for view switches and the like. A theme styles it the way it styles the
- * rest of the ribbon: the dark themes already carry a QStatusBar rule, and the bar
- * draws a 1px top divider that matches the window background so it reads as part of
- * the ribbon rather than a separate strip.
+ * section for view switches and the like. Nothing here paints: the bar is a plain
+ * QStatusBar to a theme, which styles it the way it styles the rest of the ribbon -
+ * the dark themes already carry a QStatusBar rule.
  */
 class QX_RIBBON_EXPORT RibbonStatusBar : public QStatusBar
 {
@@ -55,8 +54,6 @@ public:
     // Keep QWidget::addAction(QAction *) / addAction(QIcon, QString) reachable;
     // the signature above hides them.
     using QWidget::addAction;
-protected:
-    void paintEvent(QPaintEvent *event) override;
 private:
     Q_DISABLE_COPY(RibbonStatusBar)
     friend class RibbonStatusBarPrivate;

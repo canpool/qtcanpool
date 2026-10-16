@@ -8,7 +8,6 @@
 #include <QAction>
 #include <QFrame>
 #include <QLabel>
-#include <QPainter>
 #include <QStatusBar>
 #include <QToolButton>
 
@@ -89,17 +88,6 @@ void RibbonStatusBar::addPermanentAction(QAction *action)
     button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     addPermanentWidget(button);
     d->m_permanent.insert(action, button);
-}
-
-void RibbonStatusBar::paintEvent(QPaintEvent *event)
-{
-    QStatusBar::paintEvent(event);
-    QPainter painter(this);
-    // A 1px seam along the top edge that reads as the join between the ribbon and
-    // the bar. It takes the window background colour, so it matches the chrome
-    // around the bar rather than the bar's own fill.
-    painter.setPen(palette().color(QPalette::Window));
-    painter.drawLine(0, 0, width() - 1, 0);
 }
 
 QX_RIBBON_END_NAMESPACE

@@ -15,7 +15,7 @@ background-hover: #595b5d
 background-editable: #303030
 background-pressed: #262829
 background-selection: #19191a
-background-alternate: #808096
+background-alternate: #303030
 background-disabled: #404244
 background-opposite: #9d9d9e
 background-status: #00a0e6
@@ -198,13 +198,13 @@ QTreeView::pane, QListView, QTableView::pane, QTabWidget::pane {
   border: 0px solid #303030;
   selection-color: #ffffff;
   selection-background-color: #19191a;
-  alternate-background-color: #808096;
+  alternate-background-color: #303030;
   gridline-color: #0075d1;
 }
 
 QTreeView, QListView, QTableView, QTabWidget {
   show-decoration-selected: 1;
-  alternate-background-color: #808096;
+  alternate-background-color: #303030;
 }
 
 QTreeView, QListView, QTableView, QSplitter::handle {
@@ -508,6 +508,7 @@ QComboBox QAbstractItemView::item {
 
 QStatusBar {
   background: #404244;
+  color: #e0e0e0;
 }
 
 QStatusBar::item {
@@ -586,7 +587,7 @@ QCalendarWidget QTableView {
   color: #f0f0f0;
   background-color: #404244;
   selection-color: #ffffff;
-  alternate-background-color: #808096;
+  alternate-background-color: #303030;
   selection-background-color: #19191a;
 }
 
