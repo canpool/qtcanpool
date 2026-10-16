@@ -36,6 +36,7 @@
 #include "qxwindow/windowagentwidget.h"
 
 #include <QtGui/QGuiApplication>
+#include <QtGui/QScreen>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
 
@@ -54,6 +55,7 @@ private slots:
     void hitTestAnswersForTheTitleBar();
     void hitTestAnswersForTheSystemButtons();
     void theFrameIsRemovedWithoutClearingTheStyleBits();
+    void maximisedFirstShowStillRestores();
 #endif
 };
 
@@ -398,6 +400,67 @@ void tst_QxWindowNative::theFrameIsRemovedWithoutClearingTheStyleBits()
     // probe that found it.
     QVERIFY2(style & WS_CAPTION, "the frame is not removed through the window style");
     QVERIFY2(style & WS_THICKFRAME, "the window keeps the resizable frame bit");
+}
+
+/*!
+ * The limitation "a frameless window on Windows, Qt 6, maximised on first show"
+ * says the regression cannot be reached from here: this library's window is not
+ * frameless, and its maximise and restore are still the system's business. That
+ * claim has been prose measured by hand. The plain-Qt probe in
+ * tst_qxwindowframeless.cpp pins the other half of it - what the regression looks
+ * like - and this case pins this half, on the one suite that has a window manager
+ * to ask.
+ *
+ * Both halves need that window manager: the trigger is the *first* show being the
+ * maximised one, so it cannot be written as a build-then-show case, and the
+ * offscreen platform has no window procedure to ask afterwards.
+ *
+ * The assertions are about the native state rather than the size, because that is
+ * what the regression leaves behind: after showNormal() a frameless window keeps
+ * WS_MAXIMIZE and stays IsZoomed, which is the "the native window is still
+ * maximised" the limitation names. The width is the one size assertion worth
+ * making; the height legitimately comes back taller than requested, because the
+ * agent hands Qt a frame margin and Qt adds it back. See the note at the top of
+ * this file.
+ */
+void tst_QxWindowNative::maximisedFirstShowStillRestores()
+{
+    if (!onTheWindowsPlatform()) {
+        QSKIP("there is no window procedure to ask under this platform plugin");
+    }
+
+    QWidget host;
+    WindowAgentWidget agent;
+    QVERIFY(agent.setup(&host));
+
+    host.resize(kWidth, kHeight);
+    host.showMaximized();
+    QVERIFY(QTest::qWaitForWindowExposed(&host));
+    QTest::qWait(200);
+
+    const HWND hwnd = reinterpret_cast<HWND>(host.winId());
+
+    // Without this the case would pass for the wrong reason: a window that never
+    // maximised has nothing to restore from, and every assertion below is about
+    // what a restore leaves behind.
+    QVERIFY2(::IsZoomed(hwnd) != 0, "the window did not end up maximised, so there is nothing to restore");
+    QVERIFY2((host.windowState() & Qt::WindowMaximized) != 0, "Qt does not agree that the window is maximised");
+
+    host.showNormal();
+    QTest::qWait(200);
+
+    // The three answers the plain-Qt regression gets wrong on the same sequence.
+    // Read against tst_qxwindowframeless.cpp, they are the difference between the
+    // window this library makes and one that asks Qt for a frameless one.
+    QVERIFY2(::IsZoomed(hwnd) == 0, "the native window is still maximised after showNormal()");
+    QVERIFY2((::GetWindowLongPtrW(hwnd, GWL_STYLE) & WS_MAXIMIZE) == 0, "WS_MAXIMIZE is still set after showNormal()");
+    QVERIFY2((host.windowState() & Qt::WindowMaximized) == 0,
+             "Qt still reports the maximised state after showNormal()");
+
+    // ...and it came back to the window it was, not to the screen.
+    QCOMPARE(host.width(), kWidth);
+    QVERIFY2(host.width() < QGuiApplication::primaryScreen()->geometry().width(),
+             "the window is still as wide as the screen, which is what not restoring looks like");
 }
 
 #endif   // defined(Q_OS_WINDOWS)
