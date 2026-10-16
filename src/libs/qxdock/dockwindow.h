@@ -75,6 +75,8 @@ public:
 
     QByteArray saveState(int version = 0) const;
     bool restoreState(const QByteArray &state, int version = 0);
+    bool saveStateToFile(const QString &fileName, int version = 0) const;
+    bool restoreStateFromFile(const QString &fileName, int version = 0);
     bool isRestoringState() const;
 
     void addPerspective(const QString &uniquePrespectiveName);
@@ -122,6 +124,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
     virtual void showEvent(QShowEvent *e) override;
 private:
+    QByteArray saveStateData(bool compress, int version) const;
+
     QX_DECLARE_PRIVATE(DockWindow)
     friend class DockContainer;
     friend class DockContainerPrivate;

@@ -1,3 +1,16 @@
+Unreleased
+---
+Feature
+- DockWindow gained saveStateToFile() and restoreStateFromFile(), which write and
+  read a layout as a plain XML file. saveState() has always built XML underneath,
+  but the default configuration compresses it before returning, so a saved layout
+  could only travel as an opaque QByteArray - right for QSettings, useless as a
+  file a person can open, hand-edit or diff. The two new methods share saveState()'s
+  writer through an internal helper and ask it not to compress; the reader goes
+  through the same restoreState(), which already accepted uncompressed XML. An
+  empty path, a file that will not open, and a version mismatch all return false
+  without disturbing the current layout. tst_DockWindow::stateFile
+
 0.2.3
 ---
 Bugfix

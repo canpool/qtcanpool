@@ -12,6 +12,8 @@
 
 #include <QLabel>
 #include <QDebug>
+#include <QFile>
+#include <QTemporaryDir>
 
 QX_DOCK_USE_NAMESPACE
 
@@ -29,6 +31,7 @@ private slots:
     void centralWidget();
     void lockDockWidget();
     void state();
+    void stateFile();
     void perspective();
     void builtInStylesheetIsApplied();
 };
@@ -523,6 +526,59 @@ void tst_DockWindow::state()
     QCOMPARE(p2->currentDockWidget(), dw2);
     QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
     QCOMPARE(fc1->topLevelDockWidget(), dw4);
+}
+
+void tst_DockWindow::stateFile()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    const QString fileName = dir.filePath("dock-state.xml");
+
+    // Empty / unreadable paths must fail cleanly instead of crashing or writing.
+    {
+        DockWindow wd;
+        QCOMPARE(wd.saveStateToFile(QString()), false);
+        QCOMPARE(wd.restoreStateFromFile(QString()), false);
+        QCOMPARE(wd.restoreStateFromFile(dir.filePath("does-not-exist.xml")), false);
+    }
+
+    DockWindow wd;
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+
+    DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    DockPanel *p2 = wd.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
+    DockAutoHideContainer *ahc1 = wd.addAutoHideDockWidget(Qx::DockSideBarTop, dw3);
+    DockFloatingContainer *fc1 = wd.addDockWidgetFloating(dw4);
+
+    QCOMPARE(wd.dockWidgetsMap().count(), 4);
+
+    QVERIFY(wd.saveStateToFile(fileName));
+
+    // The file must hold plain, human readable XML - never the compressed blob
+    // that saveState() returns, so that a saved layout can be inspected by hand.
+    QFile file(fileName);
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    const QByteArray contents = file.readAll();
+    file.close();
+    QVERIFY(contents.startsWith("<?xml"));
+    QVERIFY(contents.contains("<QxDock"));
+
+    QCOMPARE(wd.restoreStateFromFile(fileName), true);
+    QCOMPARE(wd.dockWidgetsMap().count(), 4);
+    QCOMPARE(p1->dockContainer(), p2->dockContainer());
+    QCOMPARE(p1->currentDockWidget(), dw1);
+    QCOMPARE(p2->currentDockWidget(), dw2);
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+
+    // A version mismatch must be rejected without touching the current state.
+    QCOMPARE(wd.restoreStateFromFile(fileName, 12345), false);
 }
 
 void tst_DockWindow::perspective()

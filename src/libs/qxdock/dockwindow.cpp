@@ -794,6 +794,18 @@ void DockWindow::setSplitterSizes(DockPanel *panel, const QList<int> &sizes)
  */
 QByteArray DockWindow::saveState(int version) const
 {
+    return saveStateData(DockManager::configFlags().testFlag(DockManager::XmlCompressionEnabled), version);
+}
+
+/**
+ * Serializes the current state of the dock window and all its dock widgets
+ * into the returned QByteArray. When \a compress is true the XML document is
+ * compressed with qCompress(), otherwise the plain XML text is returned. The
+ * auto formatting of the XML stream is still controlled by the global
+ * XmlAutoFormattingEnabled configuration flag.
+ */
+QByteArray DockWindow::saveStateData(bool compress, int version) const
+{
     Q_D(const DockWindow);
     QByteArray xmldata;
     QXmlStreamWriter s(&xmldata);
@@ -816,7 +828,60 @@ QByteArray DockWindow::saveState(int version) const
     s.writeEndElement();
     s.writeEndDocument();
 
-    return configFlags.testFlag(DockManager::XmlCompressionEnabled) ? qCompress(xmldata, 9) : xmldata;
+    return compress ? qCompress(xmldata, 9) : xmldata;
+}
+
+/**
+ * Saves the current state of the dock window to \a fileName as a human readable
+ * XML document. Unlike saveState(), the XML is never compressed - a file on disk
+ * is expected to be inspectable and diffable. The version number is stored as
+ * part of the document.
+ * Returns true on success, and false if the file could not be written.
+ * \see restoreStateFromFile()
+ */
+bool DockWindow::saveStateToFile(const QString &fileName, int version) const
+{
+    if (fileName.isEmpty()) {
+        return false;
+    }
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qWarning() << "Failed to open dock state file for writing:" << fileName << file.errorString();
+        return false;
+    }
+
+    const QByteArray data = saveStateData(false, version);
+    const qint64 written = file.write(data);
+    file.close();
+
+    return written == data.size();
+}
+
+/**
+ * Restores the state of this dock window from the XML document stored in
+ * \a fileName. The file is expected to have been written by saveStateToFile().
+ * The version number is compared with the one stored in the document; if they
+ * do not match the state is left unchanged and this function returns false.
+ * Returns true if the file could be read and the state was restored.
+ * \see saveStateToFile()
+ */
+bool DockWindow::restoreStateFromFile(const QString &fileName, int version)
+{
+    if (fileName.isEmpty()) {
+        return false;
+    }
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open dock state file for reading:" << fileName << file.errorString();
+        return false;
+    }
+
+    const QByteArray data = file.readAll();
+    file.close();
+
+    return restoreState(data, version);
 }
 
 /**
