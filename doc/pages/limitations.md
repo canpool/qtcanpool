@@ -374,20 +374,39 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 > **（4.4 D1）已复核**：demo 里的引用（`demos/qxapp/ribbondemo` 的 `QXRIBBON_TEST_CUSTOMIZE_APPBTN`
 > 分支）仍在，成因未变——是 `QToolButton` 的标准按下视觉，库不该替调用方的控件定样式。
 > 结论不变：仍维持现状。
+> **（4.5 F3）成因改写**：上面两条旧结论**实测都不成立**（见下）。现象还在，但边界不在
+> `QToolButton`，在 **objectName**。
 
-**现象**：用调用方自己提供的 `QToolButton` 当 ribbon 应用按钮时，单击（按下）按钮内容会下沉，
-与 ribbon 自带的 `RibbonApplicationButton` 观感不同。
+**现象**：应用按钮按下时露出平台自己的按压观感（内容/面板下沉），与 ribbon 主题里应用按钮
+的扁平观感不同。
 
-**成因**：这是 `QToolButton` 的**标准按下视觉**（按下时下压内边距），不是 bug。`RibbonApplicationButton`
-是 qxribbon 自己的类，ribbon 样式表覆盖了它的按下观感；但样式表**覆盖不到调用方提供的任意 `QToolButton`**，
-所以这个标准视觉就露出来了。`demos/qxapp/ribbondemo` 在 `QXRIBBON_TEST_CUSTOMIZE_APPBTN` 开时
-就用 `QToolButton` 当应用按钮，因此看得到这个下沉（`mainwindow.cpp` 里用本页英文名引用了本条）。
+**成因（4.5 F3 改写）**：主题样式表对应用按钮的全部规则都挂在
+`QAbstractButton#qx_RibbonApplicationButton` 上，而这个名字是 `setApplicationButton()`
+**只授予没有名字的按钮**的。于是覆盖与否只取决于一件事——按钮有没有自己的 objectName：
 
-**为什么保持现状**：要消除，调用方得自己给 `QToolButton` 设样式（例如 `padding: 0` 或针对 `:pressed`
-的重写）。这是"用自己的控件"必然带来的代价，库不该替调用方的控件定样式。
+- 传入**无名**按钮（类不限，`QToolButton` 也一样）→ 被授予该名字 → **完全在主题覆盖内**。
+  实测它与库自带的 `RibbonApplicationButton` 在**静止与按下两个状态逐像素相同**
+  （Qt 5.15.2 与 Qt 6.8.3、离屏 windows/fusion 与真机 windows 四种组合，PNG md5 相同）；
+- 传入**自己命了名**的按钮 → 名字保留 → 主题规则匹配不到 → 露出平台按压观感。
+  这才是"按下下沉"的真正触发条件，与按钮的类无关（换成 `QPushButton` 同样下沉）。
 
-**要改变它需要什么**：调用方给应用按钮 `QToolButton` 设一条针对 `:pressed` 的样式；或改用
-`RibbonApplicationButton`（它已经没有这个下沉）。
+另一面同样实测过：**脱离主题时库自己的按钮一样下沉**——裸 `RibbonBar`（不经
+`RibbonMainWindow`，无人加载任何样式表）里，`RibbonApplicationButton` 与调用方
+`QToolButton` 的按压观感同为基础样式的（Qt 6.8.3 下两者 `PM_ButtonShift` 同为 (1,1)，
+差异只在面板配色）。所以这**不是** `QToolButton` 带来的东西，`RibbonApplicationButton`
+也并不"免疫"；旧条目给的修法（调用方设 `padding: 0`）也实测无效（与不加完全同像素）。
+
+**为什么保持现状**：objectName 是调用方的属性，库不能为了套主题而改掉它。要抹掉这个边界，
+只能把全部主题样式表的选择器从 `#qx_RibbonApplicationButton` 换成（或加上）一个由
+`setApplicationButton()` 维护的动态属性——本库 8 份 + demo 1 份共 9 份样式表加一处代码，
+而收益只落在"调用方主动给应用按钮起了名字"这一个分支上；主动命名本就意味着调用方要自己
+接管这块外观。保持现状的同时，契约已经**写进头文件**（`setApplicationButton()` 的注释）
+并被测试钉住：无名按钮获得主题覆盖、有名按钮保留自己的名字
+（`tst_RibbonBar::applicationButton` 两支都断言）。
+
+**要改变它需要什么**：即上面的动态属性方案（9 份样式表 + `setApplicationButton()` 一处）。
+在此之前，想要主题观感的调用方**让按钮保持无名**即可；想要自己的观感的调用方给自己的按钮
+命名（或按自己的 objectName 写样式）。
 
 ---
 

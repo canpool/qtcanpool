@@ -997,10 +997,12 @@ void MainWindow::createRightButtonGroup()
 
 void MainWindow::createApplicationButton()
 {
-    // NOTE: a custom QToolButton used as the application button sinks on press - that is QToolButton's
-    // standard pressed look. RibbonApplicationButton avoids it, but qxribbon's stylesheet does not reach
-    // a caller-supplied QToolButton. See doc/pages/limitations.md, "custom QToolButton application button
-    // sinks on press".
+    // NOTE: the theme stylesheets target the ribbon's own object name, which
+    // setApplicationButton() grants to an unnamed button. This one is unnamed,
+    // so the theme covers it and its pressed look is the theme's, identical to
+    // the library's own RibbonApplicationButton. Naming it here is what would
+    // leave it on the platform's press look.
+    // See doc/pages/limitations.md, "custom QToolButton application button sinks on press".
     QToolButton *appBtn = new QToolButton(this);
     appBtn->setAutoRaise(true);
     appBtn->setFocusPolicy(Qt::NoFocus);
