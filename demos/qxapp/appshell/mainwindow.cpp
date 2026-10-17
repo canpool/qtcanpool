@@ -16,6 +16,8 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QMenu>
+#include <QtCore/QFile>
+#include <QtCore/QStringList>
 #include <QtCore/QTimer>
 #include <QtGui/QFont>
 #include <QtWidgets/QFormLayout>
@@ -30,6 +32,44 @@
 QX_RIBBON_USE_NAMESPACE
 QX_THEME_USE_NAMESPACE
 
+namespace
+{
+
+/*! Reads one of the style sheets the ribbon ships. */
+QxThemeInfo bundledTheme(const QString &id, const QString &name, bool dark, const QString &fileName)
+{
+    QFile file(QStringLiteral(":/qxribbon/res/stylesheets/") + fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return QxThemeInfo();
+    }
+
+    QxThemeInfo info(id, name, dark);
+    info.styleSheet = QString::fromUtf8(file.readAll());
+    return info;
+}
+
+/*!
+ * The themes this demo offers.
+ *
+ * The engine ships none of its own, so offering a theme means registering it:
+ * an id, a name for the menu, whether it is dark, and what it paints with.
+ */
+void registerDemoThemes(QxThemeManager *engine)
+{
+    engine->registerTheme(bundledTheme(QStringLiteral("light-office2013"), MainWindow::tr("Light Office 2013"), false,
+                                       QStringLiteral("light_office2013.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("light-classic"), MainWindow::tr("Light Classic"), false,
+                                       QStringLiteral("light_classic.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("light-fancy"), MainWindow::tr("Light Fancy"), false,
+                                       QStringLiteral("light_fancy.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("dark-wps"), MainWindow::tr("Dark WPS"), true, QStringLiteral("dark_wps.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("dark-officeplus"), MainWindow::tr("Dark Office Plus"), true,
+                                       QStringLiteral("dark_officeplus.css")));
+}
+
+}   // namespace
+
 MainWindow::MainWindow(QWidget *parent)
     : QxAppShell(parent)
 {
@@ -38,7 +78,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Installing the engine first restores the theme the user picked last time
     // and polishes the widgets once, before the window is even shown.
-    QxThemeManager::instance();
+    QxThemeManager *engine = QxThemeManager::instance();
+    registerDemoThemes(engine);
 
     // The ribbon brings the status message with it, so nothing to say here.
     createRibbon();
@@ -80,17 +121,19 @@ void MainWindow::createRibbon()
 
     QActionGroup *themes = new QActionGroup(this);
     themes->setExclusive(true);
-    const Theme builtIn[] = {LightOffice2013, LightClassic, LightFancy, DarkWps, DarkOfficePlus};
-    for (Theme theme : builtIn) {
-        QAction *entry = new QAction(themeName(theme), this);
+    // One entry per theme the engine knows, which is one per registration: the
+    // ids are the engine's, the names come from what was registered under them.
+    const QStringList ids = QxThemeManager::instance()->themeIds();
+    for (const QString &id : ids) {
+        QAction *entry = new QAction(QxThemeManager::instance()->themeInfo(id).name, this);
         entry->setCheckable(true);
-        entry->setChecked(QxThemeManager::instance()->theme() == theme);
-        entry->setData(int(theme));
+        entry->setChecked(QxThemeManager::instance()->theme() == id);
+        entry->setData(id);
         themes->addAction(entry);
         appearance->addSmallAction(entry);
     }
     connect(themes, &QActionGroup::triggered, this, [](QAction *entry) {
-        QxThemeManager::instance()->setTheme(Theme(entry->data().toInt()));
+        QxThemeManager::instance()->setTheme(entry->data().toString());
     });
 
     QAction *followSystem = new QAction(tr("Follow system"), this);
@@ -312,7 +355,7 @@ QWidget *MainWindow::createPropertiesDock()
     QFormLayout *layout = new QFormLayout(page);
     layout->addRow(tr("Name"), new QLabel(tr("AppShellDemo")));
     layout->addRow(tr("Version"), new QLabel(QStringLiteral("3.0")));
-    layout->addRow(tr("Theme"), new QLabel(themeName(QxThemeManager::instance()->theme())));
+    layout->addRow(tr("Theme"), new QLabel(QxThemeManager::instance()->themeName()));
     return page;
 }
 

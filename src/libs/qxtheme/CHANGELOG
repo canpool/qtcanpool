@@ -20,6 +20,27 @@ Feature
   override is stored beside the theme and removed, not stored invalid, when it
   is cleared. tst_QxTheme::accentColor
 
+Interface
+- QxThemeManager addresses a theme by id - a QString - and registers none of its
+  own. The Theme enumeration is gone, and with it themeId(), themeName(),
+  themeFromId(), isDarkTheme(), themeStyleSheetPath() and themeStyleSheet(); so
+  is the table behind them, which named the ribbon's style sheets and mirrored
+  the ribbon's own enumeration. Which themes exist is the application's to say:
+  it hands QxThemeManager::registerTheme() a QxThemeInfo - an id, a name,
+  whether the theme is dark, the style sheet - and picks one with setTheme(id).
+  theme(), systemLightTheme() and systemDarkTheme() return the id and
+  themeChanged() carries it, while themeInfo(), themeIds(), hasTheme() and
+  unregisterTheme() answer what was registered. What the engine keeps is what
+  was never about a particular theme: persistence, following the system, the
+  accent colour and the two palettes. An id written by an earlier version -
+  "dark-wps" and the rest - still restores, because ids were always what was
+  stored.
+- palette(Theme) becomes paletteFor(bool dark): with no table to look a theme up
+  in, brightness is the only thing left to ask for a palette by.
+- setStyleSheetFile() is gone. A theme carries its style sheet in its
+  registration, so reading one from a file is the application's line to write;
+  setStyleSheet() now takes an id and replaces the sheet of that registration.
+
 Cleanup
 - Drop the Qt 5.12 guard around QPalette::PlaceholderText in buildPalette(),
   which both the light and the dark scheme go through. The role exists since

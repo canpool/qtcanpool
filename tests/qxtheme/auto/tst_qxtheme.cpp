@@ -4,8 +4,8 @@
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthemepalette.h"
 
+#include <QApplication>
 #include <QColor>
-#include <QFile>
 #include <QPalette>
 #include <QSignalSpy>
 #include <QTemporaryDir>
@@ -13,21 +13,45 @@
 QX_THEME_USE_NAMESPACE
 QX_CORE_USE_NAMESPACE
 
+namespace
+{
+
+const char *const kLight = "test-light";
+const char *const kDark = "test-dark";
+const char *const kBare = "test-bare";
+
+QxThemeInfo makeTheme(const QString &id, const QString &name, bool dark, const QString &css = QString())
+{
+    QxThemeInfo info(id, name, dark);
+    info.styleSheet = css;
+    return info;
+}
+
+}   // namespace
+
 /*!
+ * The engine owns no theme of its own: what it can apply is exactly what the
+ * application registered, addressed by the id the application chose. Every case
+ * therefore starts by registering the few themes it addresses, which is also
+ * the order a real application uses - restore the stored selection first,
+ * register second.
+ *
  * The manager is a process-wide singleton, so every case starts by handing it a
- * brand new settings file. That keeps the cases independent from the order they
- * run in without reaching into the private state.
+ * brand new settings file and by taking its own registrations back out. That
+ * keeps the cases independent of the order they run in without reaching into
+ * the private state.
  */
 class tst_QxTheme : public QObject
 {
     Q_OBJECT
 private slots:
     void initTestCase();
+    void init();
 
-    void themeIds();
-    void themeLookup();
+    void registering();
+    void unknownThemeIsLeftAlone();
     void palettes();
-    void styleSheetSources();
+    void styleSheetOfARegisteredTheme();
     void applyTheme();
     void persistence();
     void accentColor();
@@ -49,6 +73,24 @@ void tst_QxTheme::initTestCase()
     QVERIFY(m_dir.isValid());
 }
 
+void tst_QxTheme::init()
+{
+    resetSettings();
+
+    QxThemeManager *manager = QxThemeManager::instance();
+    const QStringList stale = manager->themeIds();
+    for (const QString &id : stale) {
+        manager->unregisterTheme(id);
+    }
+
+    manager->registerTheme(makeTheme(QString::fromLatin1(kLight), QStringLiteral("Test light"), false,
+                                     QStringLiteral("QWidget { color: #0f0f0f; }")));
+    manager->registerTheme(makeTheme(QString::fromLatin1(kDark), QStringLiteral("Test dark"), true,
+                                     QStringLiteral("QWidget { color: #f0f0f0; }")));
+    // A theme with nothing to paint is a legitimate registration.
+    manager->registerTheme(makeTheme(QString::fromLatin1(kBare), QStringLiteral("Test bare"), false));
+}
+
 void tst_QxTheme::resetSettings()
 {
     QVERIFY(m_dir.isValid());
@@ -56,53 +98,54 @@ void tst_QxTheme::resetSettings()
     QxThemeManager::instance()->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
 }
 
-void tst_QxTheme::themeIds()
+void tst_QxTheme::registering()
 {
-    // Ids end up in the configuration file, so they are part of the contract.
-    QCOMPARE(themeId(LightYellow), QStringLiteral("light-yellow"));
-    QCOMPARE(themeId(LightOffice2013), QStringLiteral("light-office2013"));
-    QCOMPARE(themeId(LightClassic), QStringLiteral("light-classic"));
-    QCOMPARE(themeId(LightFancy), QStringLiteral("light-fancy"));
-    QCOMPARE(themeId(DarkWps), QStringLiteral("dark-wps"));
-    QCOMPARE(themeId(DarkOfficePlus), QStringLiteral("dark-officeplus"));
-    QCOMPARE(themeId(Custom), QStringLiteral("custom"));
+    QxThemeManager *manager = QxThemeManager::instance();
 
-    // Display names are for a settings dialog, so only their presence is fixed.
-    const Theme themes[] = {LightYellow, LightOffice2013, LightClassic, LightFancy, DarkWps, DarkOfficePlus, Custom};
-    for (Theme theme : themes) {
-        QVERIFY(!themeName(theme).isEmpty());
-    }
+    // The three themes of init(), in the order they were given - the order a
+    // menu lists them in.
+    QCOMPARE(manager->themeIds().size(), 3);
+    QCOMPARE(manager->themeIds().first(), QString::fromLatin1(kLight));
+    QVERIFY(manager->hasTheme(QString::fromLatin1(kDark)));
+    QVERIFY(!manager->hasTheme(QStringLiteral("never-registered")));
+    QVERIFY(!manager->themeInfo(QStringLiteral("never-registered")).isValid());
+    QCOMPARE(manager->themeInfo(QString::fromLatin1(kDark)).name, QStringLiteral("Test dark"));
+    QCOMPARE(manager->themeInfo(QString::fromLatin1(kDark)).dark, true);
 
-    // Custom ships no resource of its own.
-    QCOMPARE(themeStyleSheetPath(Custom), QString());
-    QVERIFY(themeStyleSheetPath(LightYellow).startsWith(QStringLiteral(":/")));
-    QVERIFY(themeStyleSheetPath(DarkWps).endsWith(QStringLiteral("/dark_wps.css")));
-    QVERIFY(themeStyleSheetPath(DarkOfficePlus).endsWith(QStringLiteral("/dark_officeplus.css")));
+    // Registering an id again replaces what was stored under it, and does not
+    // add a second entry.
+    manager->registerTheme(makeTheme(QString::fromLatin1(kDark), QStringLiteral("Renamed"), true));
+    QCOMPARE(manager->themeIds().size(), 3);
+    QCOMPARE(manager->themeInfo(QString::fromLatin1(kDark)).name, QStringLiteral("Renamed"));
 
-    // The built-in sheets live in the qxribbon resource bundle. This test only
-    // links qxtheme, so either the resource is absent or it is real CSS; what
-    // must not happen is a garbage string.
-    const QString builtIn = themeStyleSheet(DarkWps);
-    QVERIFY(builtIn.isEmpty() || builtIn.contains(QStringLiteral("QWidget")));
-    QCOMPARE(themeStyleSheet(Custom), QString());
+    // An info without an id cannot be addressed, so there is nothing to store.
+    manager->registerTheme(QxThemeInfo());
+    QCOMPARE(manager->themeIds().size(), 3);
+
+    // Unregistering takes it out of the lookup and of the order alike.
+    manager->unregisterTheme(QString::fromLatin1(kDark));
+    QVERIFY(!manager->hasTheme(QString::fromLatin1(kDark)));
+    QCOMPARE(manager->themeIds().size(), 2);
 }
 
-void tst_QxTheme::themeLookup()
+/*!
+ * An id that was never registered is the state a restored configuration lands
+ * in before the application registers anything, and it is also what a stale
+ * configuration looks like. Applying it has to leave the application alone
+ * rather than clear a style sheet somebody else installed.
+ */
+void tst_QxTheme::unknownThemeIsLeftAlone()
 {
-    const Theme themes[] = {LightYellow, LightOffice2013, LightClassic, LightFancy, DarkWps, DarkOfficePlus, Custom};
-    for (Theme theme : themes) {
-        QCOMPARE(themeFromId(themeId(theme)), theme);
-    }
+    QxThemeManager *manager = QxThemeManager::instance();
+    qApp->setStyleSheet(QStringLiteral("QWidget { color: magenta; }"));
+    const QPalette before = qApp->palette();
 
-    QCOMPARE(themeFromId(QStringLiteral("does-not-exist")), LightYellow);
-    QCOMPARE(themeFromId(QStringLiteral("does-not-exist"), DarkWps), DarkWps);
-    QCOMPARE(themeFromId(QString()), LightYellow);
+    manager->setTheme(QStringLiteral("never-registered"));
 
-    QCOMPARE(isDarkTheme(DarkWps), true);
-    QCOMPARE(isDarkTheme(DarkOfficePlus), true);
-    QCOMPARE(isDarkTheme(LightClassic), false);
-    QCOMPARE(isDarkTheme(LightFancy), false);
-    QCOMPARE(isDarkTheme(Custom), false);
+    QCOMPARE(manager->theme(), QStringLiteral("never-registered"));
+    QCOMPARE(manager->isDark(), false);
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: magenta; }"));
+    QCOMPARE(qApp->palette(), before);
 }
 
 void tst_QxTheme::palettes()
@@ -120,91 +163,88 @@ void tst_QxTheme::palettes()
     QVERIFY(light.color(QPalette::Disabled, QPalette::Text) != light.color(QPalette::Text));
     QVERIFY(dark.color(QPalette::Disabled, QPalette::Text) != dark.color(QPalette::Text));
 
-    // A theme routes to the palette that matches its brightness.
-    QCOMPARE(palette(DarkWps).color(QPalette::Window), dark.color(QPalette::Window));
-    QCOMPARE(palette(DarkOfficePlus).color(QPalette::Window), dark.color(QPalette::Window));
-    QCOMPARE(palette(LightFancy).color(QPalette::Window), light.color(QPalette::Window));
-    QCOMPARE(palette(Custom).color(QPalette::Window), light.color(QPalette::Window));
+    // Brightness alone names the palette.
+    QCOMPARE(paletteFor(true).color(QPalette::Window), dark.color(QPalette::Window));
+    QCOMPARE(paletteFor(false).color(QPalette::Window), light.color(QPalette::Window));
+
+    // A registration says which of the two it is, and that is what reaches the
+    // application - a theme never spells out a palette of its own.
+    QxThemeManager *manager = QxThemeManager::instance();
+    manager->setTheme(QString::fromLatin1(kDark));
+    QCOMPARE(qApp->palette().color(QPalette::Window), dark.color(QPalette::Window));
+    manager->setTheme(QString::fromLatin1(kLight));
+    QCOMPARE(qApp->palette().color(QPalette::Window), light.color(QPalette::Window));
 }
 
-void tst_QxTheme::styleSheetSources()
+void tst_QxTheme::styleSheetOfARegisteredTheme()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
-    // Inline content has the highest priority.
-    manager->setStyleSheet(DarkWps, QStringLiteral("QWidget { color: red; }"));
-    QCOMPARE(manager->styleSheet(DarkWps), QStringLiteral("QWidget { color: red; }"));
+    QCOMPARE(manager->styleSheet(QString::fromLatin1(kDark)), QStringLiteral("QWidget { color: #f0f0f0; }"));
+    // Nothing to paint is a registration like any other, not a failure to
+    // resolve.
+    QCOMPARE(manager->styleSheet(QString::fromLatin1(kBare)), QString());
+    QCOMPARE(manager->styleSheet(QStringLiteral("never-registered")), QString());
 
-    // Without inline content the registered file is read. Written in binary
-    // mode so the read-back is byte-identical on every platform.
-    const QString fileName = m_dir.filePath(QStringLiteral("custom.css"));
-    QFile file(fileName);
-    QVERIFY(file.open(QIODevice::WriteOnly));
-    file.write("QWidget { color: blue; }\n");
-    file.close();
+    // Replacing the sheet of a theme is how it is given its look after the
+    // fact, and the theme on screen is repainted by it.
+    manager->setTheme(QString::fromLatin1(kDark));
+    manager->setStyleSheet(QString::fromLatin1(kDark), QStringLiteral("QWidget { color: red; }"));
+    QCOMPARE(manager->styleSheet(QString::fromLatin1(kDark)), QStringLiteral("QWidget { color: red; }"));
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: red; }"));
 
-    manager->setStyleSheetFile(LightClassic, fileName);
-    QCOMPARE(manager->styleSheet(LightClassic), QStringLiteral("QWidget { color: blue; }\n"));
-
-    // Inline content replaces the file registration.
-    manager->setStyleSheet(LightClassic, QStringLiteral("inline"));
-    QCOMPARE(manager->styleSheet(LightClassic), QStringLiteral("inline"));
-
-    // Clearing it falls back to the built-in resource, which this test does not
-    // link, so the override has to be gone either way.
-    manager->setStyleSheet(LightClassic, QString());
-    QVERIFY(manager->styleSheet(LightClassic) != QStringLiteral("inline"));
-
-    // A file that does not exist is reported as "no style sheet", not as a crash.
-    manager->setStyleSheetFile(LightFancy, m_dir.filePath(QStringLiteral("absent.css")));
-    QCOMPARE(manager->styleSheet(LightFancy), QString());
+    // An id that was never registered is not something to override: there is
+    // no built-in sheet behind it any more, so it would only be invented.
+    manager->setStyleSheet(QStringLiteral("never-registered"), QStringLiteral("junk"));
+    QVERIFY(!manager->hasTheme(QStringLiteral("never-registered")));
 }
 
 void tst_QxTheme::applyTheme()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
-    // Keep the applied sheet recognisable regardless of the built-in resources.
-    manager->setStyleSheet(DarkWps, QStringLiteral("QWidget { color: #f0f0f0; }"));
-    manager->setStyleSheet(LightClassic, QStringLiteral("QWidget { color: #0f0f0f; }"));
-
     QSignalSpy spy(manager, &QxThemeManager::themeChanged);
-    manager->setTheme(DarkWps);
+    manager->setTheme(QString::fromLatin1(kDark));
 
     QCOMPARE(spy.count(), 1);
-    QCOMPARE(manager->theme(), DarkWps);
+    QCOMPARE(spy.first().at(0).toString(), QString::fromLatin1(kDark));
+    QCOMPARE(manager->theme(), QString::fromLatin1(kDark));
+    QCOMPARE(manager->themeName(), QStringLiteral("Test dark"));
     QCOMPARE(manager->isDark(), true);
 
     // Both the palette and the style sheet have to reach the application.
     QCOMPARE(qApp->palette().color(QPalette::Window), darkPalette().color(QPalette::Window));
     QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #f0f0f0; }"));
 
-    manager->setTheme(LightClassic);
+    manager->setTheme(QString::fromLatin1(kLight));
 
-    QCOMPARE(manager->theme(), LightClassic);
+    QCOMPARE(manager->theme(), QString::fromLatin1(kLight));
     QCOMPARE(manager->isDark(), false);
     QCOMPARE(qApp->palette().color(QPalette::Window), lightPalette().color(QPalette::Window));
     QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #0f0f0f; }"));
     QCOMPARE(spy.count(), 2);
+
+    // A theme that paints nothing clears what the previous one installed,
+    // which is the only way "no skin" can be a choice.
+    manager->setTheme(QString::fromLatin1(kBare));
+    QCOMPARE(qApp->styleSheet(), QString());
 }
 
 void tst_QxTheme::persistence()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
-    manager->setTheme(DarkOfficePlus);
+    manager->setTheme(QString::fromLatin1(kDark));
 
-    // The choice is written under a stable key, not as a raw enum value.
+    // The choice is written as the id, so a theme the application has not
+    // registered yet still comes back on the next launch.
     QxSettings reader(m_settingsFile, QSettings::IniFormat);
     reader.beginGroup(QStringLiteral("ui"));
-    QCOMPARE(reader.stringValue(QStringLiteral("theme")), QStringLiteral("dark-officeplus"));
+    QCOMPARE(reader.stringValue(QStringLiteral("theme")), QString::fromLatin1(kDark));
     reader.endGroup();
 
     // Handing the same file back restores the stored theme.
     manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
-    QCOMPARE(manager->theme(), DarkOfficePlus);
+    QCOMPARE(manager->theme(), QString::fromLatin1(kDark));
 }
 
 /*!
@@ -217,9 +257,8 @@ void tst_QxTheme::persistence()
  */
 void tst_QxTheme::accentColor()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
-    manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
+    manager->setTheme(QString::fromLatin1(kDark));
 
     // No override: the answer is the platform's colour, or the theme's own
     // highlight when the platform named none. Either way it is a colour.
@@ -270,13 +309,15 @@ void tst_QxTheme::accentColor()
 
 void tst_QxTheme::followSystem()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
+    // Nothing is preset: which two themes answer the system is the
+    // application's to say, not the engine's to guess.
     QCOMPARE(manager->followSystemTheme(), false);
-    QCOMPARE(manager->systemLightTheme(), LightOffice2013);
-    QCOMPARE(manager->systemDarkTheme(), DarkOfficePlus);
+    QCOMPARE(manager->systemLightTheme(), QString());
+    QCOMPARE(manager->systemDarkTheme(), QString());
 
+    manager->setSystemThemePair(QString::fromLatin1(kLight), QString::fromLatin1(kDark));
     QSignalSpy spy(manager, &QxThemeManager::followSystemThemeChanged);
     manager->setFollowSystemTheme(true);
 
@@ -284,8 +325,8 @@ void tst_QxTheme::followSystem()
     QCOMPARE(manager->followSystemTheme(), true);
 
     // Following selects one of the configured pair, never an unrelated theme.
-    QVERIFY(manager->theme() == manager->systemLightTheme() || manager->theme() == manager->systemDarkTheme());
-    QCOMPARE(manager->isDark(), manager->theme() == manager->systemDarkTheme());
+    QVERIFY(manager->theme() == QString::fromLatin1(kLight) || manager->theme() == QString::fromLatin1(kDark));
+    QCOMPARE(manager->isDark(), manager->theme() == QString::fromLatin1(kDark));
 
     // The flag survives a restart.
     QxSettings reader(m_settingsFile, QSettings::IniFormat);
@@ -300,32 +341,34 @@ void tst_QxTheme::followSystem()
 
     QxSettings after(m_settingsFile, QSettings::IniFormat);
     after.beginGroup(QStringLiteral("ui"));
-    QCOMPARE(after.stringValue(QStringLiteral("theme")), themeId(manager->theme()));
+    QCOMPARE(after.stringValue(QStringLiteral("theme")), manager->theme());
     after.endGroup();
 }
 
 void tst_QxTheme::systemThemePair()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
     manager->setFollowSystemTheme(true);
+    // Start from a theme outside the pair, so that naming the pair is a change
+    // rather than a confirmation of what is already on screen.
+    manager->setTheme(QString::fromLatin1(kBare));
     QSignalSpy spy(manager, &QxThemeManager::themeChanged);
 
-    manager->setSystemThemePair(LightClassic, DarkWps);
+    manager->setSystemThemePair(QString::fromLatin1(kLight), QString::fromLatin1(kDark));
 
-    QCOMPARE(manager->systemLightTheme(), LightClassic);
-    QCOMPARE(manager->systemDarkTheme(), DarkWps);
-    QVERIFY(manager->theme() == LightClassic || manager->theme() == DarkWps);
+    QCOMPARE(manager->systemLightTheme(), QString::fromLatin1(kLight));
+    QCOMPARE(manager->systemDarkTheme(), QString::fromLatin1(kDark));
+    QVERIFY(manager->theme() == QString::fromLatin1(kLight) || manager->theme() == QString::fromLatin1(kDark));
 
-    // The pair moved to themes that were not on screen before, so the change is
-    // applied and announced exactly once.
+    // The pair moved from nothing to a real pair, so the change is applied and
+    // announced exactly once.
     QCOMPARE(spy.count(), 1);
 
     QxSettings reader(m_settingsFile, QSettings::IniFormat);
     reader.beginGroup(QStringLiteral("ui"));
-    QCOMPARE(reader.stringValue(QStringLiteral("systemLightTheme")), QStringLiteral("light-classic"));
-    QCOMPARE(reader.stringValue(QStringLiteral("systemDarkTheme")), QStringLiteral("dark-wps"));
+    QCOMPARE(reader.stringValue(QStringLiteral("systemLightTheme")), QString::fromLatin1(kLight));
+    QCOMPARE(reader.stringValue(QStringLiteral("systemDarkTheme")), QString::fromLatin1(kDark));
     reader.endGroup();
 
     manager->setFollowSystemTheme(false);
@@ -339,11 +382,9 @@ void tst_QxTheme::systemThemePair()
  */
 void tst_QxTheme::applyReinstallsWithoutAnnouncing()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
-    manager->setStyleSheet(DarkWps, QStringLiteral("QWidget { color: #f0f0f0; }"));
-    manager->setTheme(DarkWps);
+    manager->setTheme(QString::fromLatin1(kDark));
 
     // Something else overwrites what the manager installed.
     qApp->setStyleSheet(QStringLiteral("QWidget { color: magenta; }"));
@@ -355,7 +396,7 @@ void tst_QxTheme::applyReinstallsWithoutAnnouncing()
 
     QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #f0f0f0; }"));
     QCOMPARE(qApp->palette().color(QPalette::Window), darkPalette().color(QPalette::Window));
-    QCOMPARE(manager->theme(), DarkWps);
+    QCOMPARE(manager->theme(), QString::fromLatin1(kDark));
     QCOMPARE(spy.count(), 0);
 }
 
@@ -366,12 +407,11 @@ void tst_QxTheme::applyReinstallsWithoutAnnouncing()
  */
 void tst_QxTheme::refreshSystemThemeIsANoOpWhileNotFollowing()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
     manager->setFollowSystemTheme(false);
-    manager->setTheme(LightClassic);
-    const Theme before = manager->theme();
+    manager->setTheme(QString::fromLatin1(kLight));
+    const QString before = manager->theme();
 
     QSignalSpy spy(manager, &QxThemeManager::themeChanged);
     manager->refreshSystemTheme();
@@ -381,6 +421,7 @@ void tst_QxTheme::refreshSystemThemeIsANoOpWhileNotFollowing()
 
     // With following on it is safe as well, and whatever it decides has to be
     // one of the configured pair - never a theme from outside it.
+    manager->setSystemThemePair(QString::fromLatin1(kLight), QString::fromLatin1(kDark));
     manager->setFollowSystemTheme(true);
     manager->refreshSystemTheme();
     QVERIFY(manager->theme() == manager->systemLightTheme() || manager->theme() == manager->systemDarkTheme());
@@ -393,7 +434,6 @@ void tst_QxTheme::refreshSystemThemeIsANoOpWhileNotFollowing()
  */
 void tst_QxTheme::settingsIsTheObjectSetSettingsTook()
 {
-    resetSettings();
     QxThemeManager *manager = QxThemeManager::instance();
 
     QxSettings *expected = manager->settings();
@@ -401,10 +441,10 @@ void tst_QxTheme::settingsIsTheObjectSetSettingsTook()
     QCOMPARE(manager->settings(), expected);
 
     // What the manager persists is visible through that object.
-    manager->setTheme(DarkOfficePlus);
+    manager->setTheme(QString::fromLatin1(kDark));
     QxSettings *reader = manager->settings();
     reader->beginGroup(QStringLiteral("ui"));
-    QCOMPARE(reader->stringValue(QStringLiteral("theme")), QStringLiteral("dark-officeplus"));
+    QCOMPARE(reader->stringValue(QStringLiteral("theme")), QString::fromLatin1(kDark));
     reader->endGroup();
 }
 

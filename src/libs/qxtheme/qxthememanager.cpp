@@ -6,7 +6,6 @@
 #include "qxthemepalette.h"
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QFile>
 #include <QtCore/QHash>
 #include <QtCore/QMetaType>
 #include <QtGui/QGuiApplication>
@@ -110,10 +109,14 @@ public:
     void persistAccent();
 public:
     mutable QX_CORE_PREPEND_NAMESPACE(QxSettings) * m_settings;
-    Theme m_theme = LightYellow;
+    /*! What the application registered, keyed by id and kept in the order given. */
+    QHash<QString, QxThemeInfo> m_themes;
+    QStringList m_order;
+    /*! Id of the selected theme; empty until one is registered and chosen. */
+    QString m_theme;
     bool m_followSystem = false;
-    Theme m_systemLight = LightOffice2013;
-    Theme m_systemDark = DarkOfficePlus;
+    QString m_systemLight;
+    QString m_systemDark;
     /*!
      * The platform's accent, taken once before the theme takes the application
      * palette over. Invalid when the platform never named one.
@@ -121,9 +124,13 @@ public:
     QColor m_systemAccent;
     /*! Set by setAccentColor(); invalid while the platform's colour is the answer. */
     QColor m_accentOverride;
-    bool m_warnedMissingStyleSheet = false;
-    QHash<int, QString> m_styleSheetFiles;
-    QHash<int, QString> m_styleSheetContent;
+    bool m_warnedUnknownTheme = false;
+
+    /*! The registration of the selected theme; invalid while there is none. */
+    QxThemeInfo current() const
+    {
+        return m_themes.value(m_theme);
+    }
 };
 
 void QxThemeManagerPrivate::start()
@@ -178,12 +185,13 @@ void QxThemeManagerPrivate::reload()
 {
     QX_CORE_PREPEND_NAMESPACE(QxSettings) *settings = ensureSettings();
     settings->beginGroup(QString::fromLatin1(kGroup));
-    m_theme = themeFromId(settings->stringValue(QString::fromLatin1(kThemeKey), themeId(m_theme)), m_theme);
+    // Ids are what is stored, never a position in a table: a theme the
+    // application has not registered yet still restores, and is applied the
+    // moment it is registered.
+    m_theme = settings->stringValue(QString::fromLatin1(kThemeKey), m_theme);
     m_followSystem = settings->boolValue(QString::fromLatin1(kFollowKey), m_followSystem);
-    m_systemLight =
-        themeFromId(settings->stringValue(QString::fromLatin1(kSystemLightKey), themeId(m_systemLight)), m_systemLight);
-    m_systemDark =
-        themeFromId(settings->stringValue(QString::fromLatin1(kSystemDarkKey), themeId(m_systemDark)), m_systemDark);
+    m_systemLight = settings->stringValue(QString::fromLatin1(kSystemLightKey), m_systemLight);
+    m_systemDark = settings->stringValue(QString::fromLatin1(kSystemDarkKey), m_systemDark);
     // Unparsable text is no override, which is also what a fresh installation
     // has: the platform's colour stays the answer.
     m_accentOverride = colorFromText(settings->stringValue(QString::fromLatin1(kAccentKey)));
@@ -208,7 +216,7 @@ void QxThemeManagerPrivate::persistTheme()
 {
     QX_CORE_PREPEND_NAMESPACE(QxSettings) *settings = ensureSettings();
     settings->beginGroup(QString::fromLatin1(kGroup));
-    settings->setValue(QString::fromLatin1(kThemeKey), themeId(m_theme));
+    settings->setValue(QString::fromLatin1(kThemeKey), m_theme);
     settings->endGroup();
 }
 
@@ -217,7 +225,6 @@ QxThemeManager::QxThemeManager(QObject *parent)
     , d_ptr(new QxThemeManagerPrivate())
 {
     d_ptr->setPublic(this);
-    qRegisterMetaType<QX_THEME_PREPEND_NAMESPACE(Theme)>("QxTheme::Theme");
 }
 
 QxThemeManager::~QxThemeManager()
@@ -235,15 +242,67 @@ QxThemeManager *QxThemeManager::instance()
     return s_instance;
 }
 
-Theme QxThemeManager::theme() const
+QString QxThemeManager::theme() const
 {
     Q_D(const QxThemeManager);
     return d->m_theme;
 }
 
+QString QxThemeManager::themeName() const
+{
+    return themeInfo(theme()).name;
+}
+
 bool QxThemeManager::isDark() const
 {
-    return isDarkTheme(theme());
+    return themeInfo(theme()).dark;
+}
+
+void QxThemeManager::registerTheme(const QxThemeInfo &info)
+{
+    Q_D(QxThemeManager);
+    if (!info.isValid()) {
+        return;
+    }
+
+    if (!d->m_themes.contains(info.id)) {
+        d->m_order.append(info.id);
+    }
+    d->m_themes.insert(info.id, info);
+
+    // Restoring a stored selection happens before anything is registered, so
+    // the theme that is already selected is the one to install now.
+    if (d->m_theme == info.id) {
+        apply();
+    }
+}
+
+void QxThemeManager::unregisterTheme(const QString &id)
+{
+    Q_D(QxThemeManager);
+    if (!d->m_themes.contains(id)) {
+        return;
+    }
+    d->m_themes.remove(id);
+    d->m_order.removeOne(id);
+}
+
+bool QxThemeManager::hasTheme(const QString &id) const
+{
+    Q_D(const QxThemeManager);
+    return d->m_themes.contains(id);
+}
+
+QStringList QxThemeManager::themeIds() const
+{
+    Q_D(const QxThemeManager);
+    return d->m_order;
+}
+
+QxThemeInfo QxThemeManager::themeInfo(const QString &id) const
+{
+    Q_D(const QxThemeManager);
+    return d->m_themes.value(id);
 }
 
 QColor QxThemeManager::accentColor() const
@@ -257,7 +316,7 @@ QColor QxThemeManager::accentColor() const
     }
     // The platform said nothing and nobody overrode it, so the theme's own
     // highlight is the accent - which is what the widgets are using anyway.
-    return QX_THEME_PREPEND_NAMESPACE(palette)(d->m_theme).color(QPalette::Highlight);
+    return QX_THEME_PREPEND_NAMESPACE(paletteFor)(d->current().dark).color(QPalette::Highlight);
 }
 
 void QxThemeManager::setAccentColor(const QColor &color)
@@ -312,28 +371,28 @@ void QxThemeManager::setFollowSystemTheme(bool on)
     Q_EMIT followSystemThemeChanged(on);
 }
 
-Theme QxThemeManager::systemLightTheme() const
+QString QxThemeManager::systemLightTheme() const
 {
     Q_D(const QxThemeManager);
     return d->m_systemLight;
 }
 
-Theme QxThemeManager::systemDarkTheme() const
+QString QxThemeManager::systemDarkTheme() const
 {
     Q_D(const QxThemeManager);
     return d->m_systemDark;
 }
 
-void QxThemeManager::setSystemThemePair(Theme lightTheme, Theme darkTheme)
+void QxThemeManager::setSystemThemePair(const QString &lightId, const QString &darkId)
 {
     Q_D(QxThemeManager);
-    d->m_systemLight = lightTheme;
-    d->m_systemDark = darkTheme;
+    d->m_systemLight = lightId;
+    d->m_systemDark = darkId;
 
     QX_CORE_PREPEND_NAMESPACE(QxSettings) *settings = d->ensureSettings();
     settings->beginGroup(QString::fromLatin1(kGroup));
-    settings->setValue(QString::fromLatin1(kSystemLightKey), themeId(lightTheme));
-    settings->setValue(QString::fromLatin1(kSystemDarkKey), themeId(darkTheme));
+    settings->setValue(QString::fromLatin1(kSystemLightKey), lightId);
+    settings->setValue(QString::fromLatin1(kSystemDarkKey), darkId);
     settings->endGroup();
 
     refreshSystemTheme();
@@ -360,58 +419,35 @@ void QxThemeManager::setSettings(QX_CORE_PREPEND_NAMESPACE(QxSettings) * setting
     apply();
 }
 
-QString QxThemeManager::styleSheet(Theme theme) const
+QString QxThemeManager::styleSheet(const QString &id) const
 {
-    Q_D(const QxThemeManager);
-    const int key = int(theme);
-
-    const QHash<int, QString>::const_iterator content = d->m_styleSheetContent.constFind(key);
-    if (content != d->m_styleSheetContent.constEnd()) {
-        return content.value();
-    }
-
-    const QHash<int, QString>::const_iterator file = d->m_styleSheetFiles.constFind(key);
-    if (file != d->m_styleSheetFiles.constEnd()) {
-        QFile reader(file.value());
-        if (!reader.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qWarning("QxThemeManager: cannot read style sheet '%s'", qPrintable(file.value()));
-            return QString();
-        }
-        return QString::fromUtf8(reader.readAll());
-    }
-
-    return QX_THEME_PREPEND_NAMESPACE(themeStyleSheet)(theme);
+    return themeInfo(id).styleSheet;
 }
 
-void QxThemeManager::setStyleSheetFile(Theme theme, const QString &fileName)
+void QxThemeManager::setStyleSheet(const QString &id, const QString &css)
 {
     Q_D(QxThemeManager);
-    d->m_styleSheetContent.remove(int(theme));
-    if (fileName.isEmpty()) {
-        d->m_styleSheetFiles.remove(int(theme));
-    } else {
-        d->m_styleSheetFiles.insert(int(theme), fileName);
+    const QHash<QString, QxThemeInfo>::iterator it = d->m_themes.find(id);
+    if (it == d->m_themes.end()) {
+        // There is no built-in sheet to fall back on any more, so naming an id
+        // that was never registered is a spelling mistake rather than an
+        // override of something: leave it alone instead of inventing a theme.
+        return;
+    }
+
+    it.value().styleSheet = css;
+    if (d->m_theme == id) {
+        apply();
     }
 }
 
-void QxThemeManager::setStyleSheet(Theme theme, const QString &css)
+void QxThemeManager::setTheme(const QString &id)
 {
     Q_D(QxThemeManager);
-    d->m_styleSheetFiles.remove(int(theme));
-    if (css.isEmpty()) {
-        d->m_styleSheetContent.remove(int(theme));
-    } else {
-        d->m_styleSheetContent.insert(int(theme), css);
-    }
-}
-
-void QxThemeManager::setTheme(Theme theme)
-{
-    Q_D(QxThemeManager);
-    d->m_theme = theme;
+    d->m_theme = id;
     d->persistTheme();
     apply();
-    Q_EMIT themeChanged(theme);
+    Q_EMIT themeChanged(id);
 }
 
 void QxThemeManager::apply()
@@ -423,7 +459,20 @@ void QxThemeManager::apply()
         return;
     }
 
-    QPalette palette = QX_THEME_PREPEND_NAMESPACE(palette)(d->m_theme);
+    const QxThemeInfo info = d->current();
+    if (!info.isValid()) {
+        // Nothing is registered under that id, the usual reason being a theme
+        // restored from the configuration that this build no longer registers.
+        // Installing nothing would silently wipe whatever the application set
+        // up, so leave it alone and say so once.
+        if (!d->m_warnedUnknownTheme && !d->m_theme.isEmpty()) {
+            d->m_warnedUnknownTheme = true;
+            qWarning("QxThemeManager: no theme registered under '%s'", qPrintable(d->m_theme));
+        }
+        return;
+    }
+
+    QPalette palette = QX_THEME_PREPEND_NAMESPACE(paletteFor)(info.dark);
     if (d->m_accentOverride.isValid()) {
         // Only an override is written here. A theme carries a highlight colour
         // of its own and was designed around it, so letting the platform's
@@ -439,20 +488,10 @@ void QxThemeManager::apply()
     }
     app->setPalette(palette);
 
-    const QString css = styleSheet(d->m_theme);
-    if (css.isEmpty() && d->m_theme != Custom) {
-        // The built-in style sheet could not be resolved - qxribbon is not part
-        // of the process, or the resource prefix was relocated. Installing an
-        // empty sheet would silently wipe whatever the application set up, so
-        // leave it alone and say so once.
-        if (!d->m_warnedMissingStyleSheet) {
-            d->m_warnedMissingStyleSheet = true;
-            qWarning("QxThemeManager: no style sheet available for theme '%s'; the palette was applied on its own",
-                     qPrintable(themeId(d->m_theme)));
-        }
-        return;
-    }
-    app->setStyleSheet(css);
+    // An empty sheet is a theme that paints nothing of its own, not a theme
+    // that failed to resolve: installing it is what takes the previous theme's
+    // sheet back off the widgets.
+    app->setStyleSheet(info.styleSheet);
 }
 
 void QxThemeManager::refreshSystemTheme()
@@ -461,7 +500,7 @@ void QxThemeManager::refreshSystemTheme()
     if (!d->m_followSystem) {
         return;
     }
-    const Theme target = detectSystemDark() ? d->m_systemDark : d->m_systemLight;
+    const QString target = detectSystemDark() ? d->m_systemDark : d->m_systemLight;
     if (target == d->m_theme) {
         return;
     }

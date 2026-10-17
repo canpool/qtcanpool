@@ -9,6 +9,7 @@
 #include "qxcore/qxsettings.h"
 
 #include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 QX_THEME_BEGIN_NAMESPACE
 
@@ -17,26 +18,26 @@ class QxThemeManagerPrivate;
 /*!
  * Application-wide theme engine.
  *
- * The ribbon library could already swap a style sheet, but nothing owned the
- * decision: no persistence, no palette, no reaction to the operating system
- * switching to dark mode, and no way to re-apply a theme to a window that was
- * already on screen. QxThemeManager closes that gap.
+ * The engine owns the *decision* about a theme - which one is on, that it is
+ * remembered, that the palette and the style sheet reach QApplication, that the
+ * operating system switching to dark mode is answered - but it does not own any
+ * theme. An application registers the themes it wants, each under an id of its
+ * own choosing, and addresses them by that id from then on:
  *
- * Typical use, right after QApplication is constructed:
  * @code
- * QxThemeManager::instance()->setTheme(QxTheme::DarkOfficePlus);
+ * QxThemeManager::instance()->registerTheme({"dark-wps", tr("Dark WPS"), true, css});
+ * QxThemeManager::instance()->setTheme(QStringLiteral("dark-wps"));
  * @endcode
+ *
+ * Nothing is registered until the application registers it, and an id that was
+ * never registered is simply not applied: the engine leaves the application as
+ * it is rather than clearing a style sheet somebody else installed.
  *
  * The selection is stored through QxSettings, so the next launch restores it.
  * Switching at run time calls QApplication::setPalette() and
  * QApplication::setStyleSheet(), which is enough for Qt to re-polish every
  * widget: QxRibbon and QxDock widgets pick the change up through their existing
  * QEvent::StyleChange handling.
- *
- * The engine does not link against qxribbon. The built-in style sheets are
- * looked up in the qxribbon resource bundle at run time, which only resolves
- * when that library is part of the process; use setStyleSheetFile() or
- * setStyleSheet() to supply your own.
  */
 class QX_THEME_EXPORT QxThemeManager : public QObject
 {
@@ -51,9 +52,31 @@ public:
      */
     static QxThemeManager *instance();
 
-    /*! The theme that is currently applied. */
-    Theme theme() const;
-    /*! Convenience wrapper around isDarkTheme(theme()). */
+    /*!
+     * Adds \a info to the set of themes this engine knows, replacing any theme
+     * already registered under the same id.
+     *
+     * An info without an id is ignored. Registering the id that is currently
+     * selected installs it at once, because registering after the stored
+     * selection was restored is the normal order and waiting for the next
+     * setTheme() would leave the window unthemed; no change is announced, since
+     * the selection did not change.
+     */
+    void registerTheme(const QxThemeInfo &info);
+    /*! Removes the theme registered under \a id. Selecting it afterwards does nothing. */
+    void unregisterTheme(const QString &id);
+    /*! True when \a id was registered. */
+    bool hasTheme(const QString &id) const;
+    /*! Ids of every registered theme, in the order they were registered. */
+    QStringList themeIds() const;
+    /*! The registration of \a id, or an invalid QxThemeInfo when there is none. */
+    QxThemeInfo themeInfo(const QString &id) const;
+
+    /*! Id of the theme that is currently selected; empty while none is. */
+    QString theme() const;
+    /*! Display name of the theme that is currently selected, empty while none is. */
+    QString themeName() const;
+    /*! Convenience wrapper: whether the selected theme registers itself as dark. */
     bool isDark() const;
 
     /*!
@@ -72,8 +95,8 @@ public:
      * Overrides the accent colour, for every theme, until it is cleared.
      *
      * An invalid \a color takes the override away and goes back to the
-     * platform's colour. Only an override reaches the palette: the themes carry
-     * their own highlight colour and were designed around it, so honouring the
+     * platform's colour. Only an override reaches the palette: a theme carries
+     * its own highlight colour and was designed around it, so honouring the
      * platform accent by default would repaint all of them.
      */
     void setAccentColor(const QColor &color);
@@ -87,15 +110,17 @@ public:
      * applies the matching theme immediately and keeps it in sync afterwards.
      * The flag itself is persisted; the theme it derives is not, so the stored
      * value stays the user's explicit choice.
+     *
+     * Following needs a pair to choose from, see setSystemThemePair().
      */
     void setFollowSystemTheme(bool on);
 
     /*! Theme used while following the system and the system is light. */
-    Theme systemLightTheme() const;
+    QString systemLightTheme() const;
     /*! Theme used while following the system and the system is dark. */
-    Theme systemDarkTheme() const;
-    /*! Overrides the pair used while following the system. Persisted. */
-    void setSystemThemePair(Theme lightTheme, Theme darkTheme);
+    QString systemDarkTheme() const;
+    /*! Overrides the pair of ids used while following the system. Persisted. */
+    void setSystemThemePair(const QString &lightId, const QString &darkId);
 
     /*!
      * The settings object backing persistence; created on first use from the
@@ -109,27 +134,22 @@ public:
      */
     void setSettings(QX_CORE_PREPEND_NAMESPACE(QxSettings) * settings);
 
-    /*! Style sheet that apply() would install for \a theme. */
-    QString styleSheet(Theme theme) const;
+    /*! Style sheet that apply() would install for \a id, empty when none is registered. */
+    QString styleSheet(const QString &id) const;
     /*!
-     * Points \a theme at an external style sheet. The registration lives for
-     * the lifetime of the process; pass an empty name to fall back to the
-     * built-in resource.
+     * Replaces the style sheet of the theme registered under \a id, which is
+     * how a theme is given its look after the fact - read from a file the
+     * application picked, for instance.
      */
-    void setStyleSheetFile(Theme theme, const QString &fileName);
-    /*!
-     * Supplies the style sheet of \a theme inline, which takes precedence over
-     * any file. Pass an empty string to drop the override.
-     */
-    void setStyleSheet(Theme theme, const QString &css);
+    void setStyleSheet(const QString &id, const QString &css);
 
 public Q_SLOTS:
     /*!
-     * Applies \a theme, persists it as the explicit choice and emits
+     * Applies \a id, persists it as the explicit choice and emits
      * themeChanged(). Following the system, if enabled, stays enabled and takes
      * over again on the next system change.
      */
-    void setTheme(Theme theme);
+    void setTheme(const QString &id);
     /*! Re-installs the palette and style sheet of the current theme. */
     void apply();
     /*!
@@ -141,7 +161,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     /*! Emitted after a theme has been applied. */
-    void themeChanged(Theme theme);
+    void themeChanged(const QString &id);
     /*! Emitted when following the system colour scheme is toggled. */
     void followSystemThemeChanged(bool on);
     /*!

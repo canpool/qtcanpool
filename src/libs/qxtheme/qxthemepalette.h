@@ -23,10 +23,13 @@ QX_THEME_EXPORT QPalette lightPalette();
 /*! The palette that backs the dark themes. */
 QX_THEME_EXPORT QPalette darkPalette();
 /*!
- * Palette matching \a theme: the dark palette for DarkWps / DarkOfficePlus,
- * the light one otherwise.
+ * Palette matching \a dark.
+ *
+ * The engine asks this for any registered theme that did not bring a palette of
+ * its own, which is the common case: a theme says whether it is dark, and that
+ * alone names the palette.
  */
-QX_THEME_EXPORT QPalette palette(Theme theme);
+QX_THEME_EXPORT QPalette paletteFor(bool dark);
 
 QX_THEME_END_NAMESPACE
 

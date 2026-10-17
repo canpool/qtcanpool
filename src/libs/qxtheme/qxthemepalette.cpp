@@ -105,9 +105,9 @@ QPalette darkPalette()
     return buildPalette(kDarkScheme);
 }
 
-QPalette palette(Theme theme)
+QPalette paletteFor(bool dark)
 {
-    return isDarkTheme(theme) ? darkPalette() : lightPalette();
+    return dark ? darkPalette() : lightPalette();
 }
 
 QX_THEME_END_NAMESPACE
