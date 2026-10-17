@@ -153,6 +153,7 @@ ctest --test-dir build -C Release --output-on-failure
 | [迁移指南](migration.md) | 2.x → 3.x / 4.0 迁移：命名空间、类与方法对照、构建迁移、插件条目 |
 | [已知限制](limitations.md) | 知道但不打算改的行为：现象、成因、为什么保持现状、要改变需要什么 |
 | [发布流程](release.md) | 发一次版本的全部动作：两道闸门、版本号结算、三本账、推送与 Release |
+| [管理规范](contributing.md) | 过程规范的单一权威来源：提交、文档（台账＋CHANGELOG）、编码、SPDX、构建验证、版本与进号、命名与敏感信息 |
 
 ## 环境要求
 
