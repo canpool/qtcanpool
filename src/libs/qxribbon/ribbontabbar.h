@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyleft (C) 2023-2025 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
  **/
@@ -25,12 +25,14 @@ public:
     int currentIndex() const;
     int count() const;
 
+    /// The placeholder tab that carries "no page is selected"; it is not one of count()
+    int nullTabIndex() const;
+
 public Q_SLOTS:
     void setCurrentIndex(int index);
 protected:
     virtual QSize tabSizeHint(int index) const override;
-
-    void wheelEvent(QWheelEvent *event) override;
+    virtual QSize minimumTabSizeHint(int index) const override;
 private:
     QMargins m_tabMargin;
 };

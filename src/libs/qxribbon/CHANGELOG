@@ -37,6 +37,45 @@ Interface
   multiplies the glyph size and defaults to 1.0; it used to scale the button's own
   size, which the caption style sheet overrode, so calling it changed nothing.
 
+- RibbonMdiArea: add RibbonMdiArea
+- RibbonBackstageView: add RibbonBackstageView (QWidget)
+- RibbonStatusBar: add RibbonStatusBar (QStatusBar)
+- RibbonSliderPane: add RibbonSliderPane (QWidget)
+- RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
+- RibbonGalleryGroup: add triggerCurrentItem
+- RibbonBar: add overridable addContextMenuActions
+- RibbonGroup: add setReduced and isReduced
+
+Bugfix
+- The ribbon's placeholder tab takes no width. With no page selected - the state a
+  minimized ribbon is in - the bar has to select a tab that paints nothing,
+  because QTabBar::setCurrentIndex(-1) does nothing at all: Qt stores an index only
+  when it resolves to a tab, so the current index can be -1 only while the bar
+  holds no tab. That placeholder is an empty, disabled tab at the end of the strip,
+  and its width was whatever the style sheet gives ::tab - 16 to 28 pixels in the
+  bundled themes - which the strip counted into its minimum width and the bar kept
+  as a gap. RibbonTabBar now returns zero from tabSizeHint() and
+  minimumTabSizeHint(), so the placeholder costs nothing under any theme, and
+  nothing about it rests on the theme keeping ::tab transparent - it had to keep
+  the selected state transparent too, which a theme that paints ::tab with a
+  background would not. The wheel guard that kept the wheel off the placeholder is
+  gone as well: Qt has routed the wheel through setCurrentNextEnabledIndex(), which
+  stops only at enabled and visible tabs, since 5.15.
+  tst_RibbonBar::noSelectionCostsNoRoom
+
+- RibbonBackstageView's back arrow was loaded from the light asset whatever the
+  palette, so on a dark theme it was a black glyph on a dark column. It is painted
+  from the palette now and repainted when the palette changes.
+- The KeyTip letter pool was filled with QList<QString>(int), a constructor only
+  Qt 6 has, so the ribbon did not compile against Qt 5. The list is resized
+  instead, which both versions provide.
+- RibbonScreenTip built its look from a hard-coded light style sheet (background
+  #fafafa, a 1px #adadad border, #202020/#404040/#505050 text, a #ffffff shortcut
+  box), so on a dark application theme it still painted a white box. It now reads
+  every colour from the palette - background and shortcut box from tooltipbase,
+  text from tooltiptext, borders from mid - which re-resolves when the
+  application palette changes.
+
 Cleanup
 - The scroll offset of a ribbon page is clamped in one place. The legal range
   was written down four times - a pair of hand-rolled if-chains in the wheel
@@ -169,30 +208,6 @@ Feature
   tintedIcon() rasterises the asset once per device pixel ratio QIcon may ask for,
   so a vector mask stays sharp on a high dpi screen.
 
-Interface
-- RibbonMdiArea: add RibbonMdiArea
-- RibbonBackstageView: add RibbonBackstageView (QWidget)
-- RibbonStatusBar: add RibbonStatusBar (QStatusBar)
-- RibbonSliderPane: add RibbonSliderPane (QWidget)
-- RibbonQuickAccessBar: add customizeDialogRequested and actionCustomizeDialog
-- RibbonGalleryGroup: add triggerCurrentItem
-- RibbonBar: add overridable addContextMenuActions
-- RibbonGroup: add setReduced and isReduced
-
-Bugfix
-- RibbonBackstageView's back arrow was loaded from the light asset whatever the
-  palette, so on a dark theme it was a black glyph on a dark column. It is painted
-  from the palette now and repainted when the palette changes.
-- The KeyTip letter pool was filled with QList<QString>(int), a constructor only
-  Qt 6 has, so the ribbon did not compile against Qt 5. The list is resized
-  instead, which both versions provide.
-- RibbonScreenTip built its look from a hard-coded light style sheet (background
-  #fafafa, a 1px #adadad border, #202020/#404040/#505050 text, a #ffffff shortcut
-  box), so on a dark application theme it still painted a white box. It now reads
-  every colour from the palette - background and shortcut box from tooltipbase,
-  text from tooltiptext, borders from mid - which re-resolves when the
-  application palette changes.
-
 0.12.2
 ---
 Cleanup
@@ -281,6 +296,14 @@ Bugfix
   looking at the orientation, and only setOrientation() applied the rule. Both
   paths now start from the same one (A7)
 
+- QX_RIBBON_DEPRECATED_SINCE(major, minor) never answered true for a deprecation
+  that had already happened: QX_RIBBON_DISABLE_DEPRECATED_BEFORE defaulted to
+  QX_RIBBON_VERSION, so the deprecation point was compared against the version
+  being built - (0,11,0) > (0,11,0) is false - and the answer flipped back to
+  false on every minor bump. The default is now a fixed floor, so an API stays
+  declared for as long as it is inside its removal buffer (K26), and raising the
+  cutoff is what compiles it out. tst_qxdeprecated covers all seven libraries
+
 Interface
 - FramelessHelper and RibbonWindow are removed (deprecated in 4.2, K27 / K26).
   FramelessHelper was the frameless backend RibbonWindow carried so that qxribbon
@@ -295,7 +318,6 @@ Interface
   backend does build there. Every sample moves to RibbonMainWindow. See
   doc/pages/migration.md, section "4.3 已删除"
 
-Interface
 - RibbonGalleryViewport loses QX_RIBBON_EXPORT. It lives in ribbongallery_p.h and
   was privatized on purpose; only the export macro still claimed otherwise. Every
   .h in a library's SOURCES is installed, private ones included, so the header
@@ -307,15 +329,6 @@ Cleanup
 - Remove the Qt version branch below 5.15 in FramelessWidgetDataNativeWin::devicePixelRatio,
   which K1 set as the minimum; QWidget::screen() has been the way to reach the
   screen since then
-
-Bugfix
-- QX_RIBBON_DEPRECATED_SINCE(major, minor) never answered true for a deprecation
-  that had already happened: QX_RIBBON_DISABLE_DEPRECATED_BEFORE defaulted to
-  QX_RIBBON_VERSION, so the deprecation point was compared against the version
-  being built - (0,11,0) > (0,11,0) is false - and the answer flipped back to
-  false on every minor bump. The default is now a fixed floor, so an API stays
-  declared for as long as it is inside its removal buffer (K26), and raising the
-  cutoff is what compiles it out. tst_qxdeprecated covers all seven libraries
 
 0.11.0
 ---
@@ -391,7 +404,6 @@ Optimize
 - WindowButton: use SizePolicy to control height
 - WindowButton: inherit QToolButton instead of QPushButton
 
-
 0.9.1
 ---
 Interface
@@ -427,7 +439,6 @@ Interface
 Optimize
 - Optimize RibbonStyleOption
 
-
 0.8.2
 ---
 Feature
@@ -460,7 +471,6 @@ Interface
 - Add button clicked signals in WindowButtonGroup to support custom ribbon window
 - Export WindowButtonGroup
 
-
 0.7.0
 ---
 Interface
@@ -470,7 +480,6 @@ Interface
 Other
 - Rename png files
 - Move ribbon component from qxwidget to qxribbon
-
 
 0.6.0
 ---

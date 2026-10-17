@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyleft (C) 2023 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
  **/
@@ -923,8 +923,7 @@ int RibbonBarPrivate::calcMinTabBarWidth() const
     const QMargins &mg = m_tabBar->tabMargin();
     int mintabBarWidth = 0;
 
-    int cnt = m_tabBar->count();
-    ++cnt;   // add sentry tab
+    const int cnt = m_tabBar->count();
 
     for (int i = 0; i < cnt; ++i) {
         mintabBarWidth += m_tabBar->tabRect(i).width();
@@ -1060,8 +1059,8 @@ void RibbonBarPrivate::onCurrentRibbonTabClicked(int index)
     if (index == -1) {
         return;
     }
-    if (index == m_tabBar->count()) {
-        return;   // sentry tab
+    if (index == m_tabBar->nullTabIndex()) {
+        return;   // the placeholder tab, which is not a page
     }
     if (m_minimized) {
         showPopupStack();
@@ -1074,8 +1073,8 @@ void RibbonBarPrivate::onCurrentRibbonTabDoubleClicked(int index)
     if (index == -1) {
         return;
     }
-    if (index == m_tabBar->count()) {
-        return;   // sentry tab
+    if (index == m_tabBar->nullTabIndex()) {
+        return;   // the placeholder tab, which is not a page
     }
     q->setMinimized(!m_minimized);
 }

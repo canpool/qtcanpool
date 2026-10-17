@@ -12,6 +12,7 @@
 #include <QEventLoop>
 #include <QMenu>
 #include <QScopedPointer>
+#include <QTabBar>
 #include <QToolButton>
 #include <QWidget>
 
@@ -46,6 +47,7 @@ private slots:
     void style();
     void objectNames();
     void windowButtonGroupIsPlacedBeforeTheWindowIsShown();
+    void noSelectionCostsNoRoom();
     void contextMenu();
 };
 
@@ -334,6 +336,54 @@ void tst_RibbonBar::windowButtonGroupIsPlacedBeforeTheWindowIsShown()
     const int groupWidth = group.sizeHint().width();
     QVERIFY(groupWidth > 0);
     QCOMPARE(group.geometry(), QRect(windowWidth - groupWidth, 0, groupWidth, rb.titleBarHeight()));
+}
+
+/*!
+ * A minimized ribbon shows no selected tab, and QTabBar has no state for that:
+ * setCurrentIndex(-1) does nothing, because Qt stores an index only when it
+ * resolves to a tab. The bar therefore keeps a placeholder tab - empty,
+ * disabled, always last - and selects that one instead.
+ *
+ * The placeholder must cost nothing. Leaving its width to the style made it 16
+ * to 28 pixels wide in the shipped themes, because they give ::tab its padding,
+ * and it was counted into the strip's minimum width. The padding below is what
+ * makes this test say so: it is wide enough that a placeholder sized by the
+ * theme could not pass.
+ */
+void tst_RibbonBar::noSelectionCostsNoRoom()
+{
+    QWidget window;
+    window.resize(800, 400);
+
+    RibbonBar rb(&window);
+    rb.addPage(QStringLiteral("page1"));
+    rb.addPage(QStringLiteral("page2"));
+    rb.setStyleSheet(QStringLiteral("QTabBar::tab { padding: 0 24px; }"));
+
+    QTabBar *bar = rb.findChild<QTabBar *>(QStringLiteral("qx_RibbonTabBar"));
+    QVERIFY(bar);
+    // The placeholder is a tab as far as QTabBar is concerned, so the base class
+    // count is one more than the pages the ribbon holds.
+    QCOMPARE(3, bar->QTabBar::count());
+
+    // Lay the strip out: before that every tab rect is empty, and the width
+    // asserted below would hold whatever the placeholder did.
+    window.show();
+    rb.resizeRibbon();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QVERIFY(bar->tabRect(0).width() > 48);   // the padding is in effect
+
+    QCOMPARE(0, bar->tabRect(bar->QTabBar::count() - 1).width());
+
+    // "No page is selected" is what the ribbon reports, while QTabBar itself
+    // holds the placeholder.
+    rb.setCurrentIndex(-1);
+    QCOMPARE(-1, rb.currentIndex());
+    QCOMPARE(bar->QTabBar::count() - 1, bar->QTabBar::currentIndex());
+
+    // Selecting a page again leaves the placeholder where it was.
+    rb.setCurrentIndex(1);
+    QCOMPARE(1, rb.currentIndex());
 }
 
 void tst_RibbonBar::contextMenu()
