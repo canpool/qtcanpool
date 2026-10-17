@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) 2024 maminjie <canpool@163.com>
+ * SPDX-License-Identifier: MulanPSL-2.0
+ **/
 #include "tst_global.h"
 
 #include "qxribbon/ribbonpage.h"

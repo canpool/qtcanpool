@@ -1,3 +1,8 @@
+/**
+ * Copyright (C) 2026 maminjie <canpool@163.com>
+ * SPDX-License-Identifier: MulanPSL-2.0
+ **/
+
 /*!
  * Visual regression for the demos (roadmap task B4).
  *
