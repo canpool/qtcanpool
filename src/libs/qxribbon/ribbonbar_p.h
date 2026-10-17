@@ -101,7 +101,7 @@ public:
 
     QColor getPageContextColor();
 
-    bool isOfficeStyle() const
+    bool hasOwnTabRow() const
     {
         return ((m_ribbonStyle & 0x00FF) == 0);
     }
@@ -124,23 +124,23 @@ public:
 
     void showPopupStack();
 
-    void paintInOfficeStyle(QPainter &p);
-    void paintInWpsLiteStyle(QPainter &p);
+    void paintInTabBarBelowStyle(QPainter &p);
+    void paintInTabBarInlineStyle(QPainter &p);
     void paintBackground(QPainter &painter);
     QPoint paintPageContextTabs(QPainter &painter, bool extendToWindowTop);
     void paintWindowTitle(QPainter &painter, const QString &title, const QRect &titleRegion);
     void paintPageContextTab(QPainter &painter, const QString &title, QRect contextRect, const QColor &color);
 
-    void resizeInOfficeStyle();
-    void resizeInWpsLiteStyle();
+    void resizeInTabBarBelowStyle();
+    void resizeInTabBarInlineStyle();
     void resizeStackedWidget();
     void resizeRibbon();
 
     void layoutTabBar(int x, int y, int allowedTabBarWidth, int tabH);
     void placeCornerWidget(QWidget *corner, int x, int y, int centredHeight, int stretchedHeight);
 
-    int minimumWidthInOfficeStyle() const;
-    int minimumWidthInWpsLiteStyle() const;
+    int minimumWidthInTabBarBelowStyle() const;
+    int minimumWidthInTabBarInlineStyle() const;
 
     int calcMinTabBarWidth() const;
     int mainBarHeight() const;

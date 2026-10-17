@@ -259,26 +259,26 @@ void tst_RibbonBar::style()
 {
     RibbonBar rb;
 
-    QCOMPARE(RibbonBar::OfficeStyle, rb.currentRibbonStyle());
-    QCOMPARE(true, rb.isOfficeStyle());
+    QCOMPARE(RibbonBar::TabBarBelowStyle, rb.currentRibbonStyle());
+    QCOMPARE(true, rb.hasOwnTabRow());
     QCOMPARE(false, rb.isTwoRowStyle());
 
-    rb.setRibbonStyle(RibbonBar::OfficeStyleTwoRow);
+    rb.setRibbonStyle(RibbonBar::TabBarBelowTwoRowStyle);
 
-    QCOMPARE(RibbonBar::OfficeStyleTwoRow, rb.currentRibbonStyle());
-    QCOMPARE(true, rb.isOfficeStyle());
+    QCOMPARE(RibbonBar::TabBarBelowTwoRowStyle, rb.currentRibbonStyle());
+    QCOMPARE(true, rb.hasOwnTabRow());
     QCOMPARE(true, rb.isTwoRowStyle());
 
-    rb.setRibbonStyle(RibbonBar::WpsLiteStyle);
+    rb.setRibbonStyle(RibbonBar::TabBarInlineStyle);
 
-    QCOMPARE(RibbonBar::WpsLiteStyle, rb.currentRibbonStyle());
-    QCOMPARE(false, rb.isOfficeStyle());
+    QCOMPARE(RibbonBar::TabBarInlineStyle, rb.currentRibbonStyle());
+    QCOMPARE(false, rb.hasOwnTabRow());
     QCOMPARE(false, rb.isTwoRowStyle());
 
-    rb.setRibbonStyle(RibbonBar::WpsLiteStyleTwoRow);
+    rb.setRibbonStyle(RibbonBar::TabBarInlineTwoRowStyle);
 
-    QCOMPARE(RibbonBar::WpsLiteStyleTwoRow, rb.currentRibbonStyle());
-    QCOMPARE(false, rb.isOfficeStyle());
+    QCOMPARE(RibbonBar::TabBarInlineTwoRowStyle, rb.currentRibbonStyle());
+    QCOMPARE(false, rb.hasOwnTabRow());
     QCOMPARE(true, rb.isTwoRowStyle());
 }
 

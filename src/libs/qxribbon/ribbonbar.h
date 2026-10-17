@@ -32,9 +32,9 @@ class RibbonQuickAccessBar;
  * void setRibbonStyle(RibbonStyle v);
  * @endcode
  *
- * RibbonBar follows office and wps and provides four ribbon style modes, @ref RibbonBar::RibbonStyle
+ * RibbonBar provides four ribbon style modes, @ref RibbonBar::RibbonStyle
  *
- * If the ribbon needs to be compact, WpsLiteStyleTwoRow saves 35% of the height used by OfficeStyle
+ * If the ribbon needs to be compact, TabBarInlineTwoRowStyle saves 35% of the height used by TabBarBelowStyle
  *
  * How to build a ribbon? First look at how a traditional MenuBar/ToolBar is built:
  *
@@ -83,7 +83,7 @@ class RibbonQuickAccessBar;
  *     ......
  *     // ribbonwindow is a RibbonMainWindow
  *     RibbonBar *ribbon = ribbonwindow->ribbonBar();
- *     ribbon->setRibbonStyle(RibbonBar::WpsLiteStyle);
+ *     ribbon->setRibbonStyle(RibbonBar::TabBarInlineStyle);
  *     // add a Main tab
  *     pageMain = ribbon->addPage(QStringLiteral("Main"));
  *     // add a File Group under the Main tab
@@ -107,16 +107,23 @@ class QX_RIBBON_EXPORT RibbonBar : public QMenuBar
     Q_PROPERTY(bool minimumButton READ haveShowMinimumButton WRITE showMinimumButton)
     Q_PROPERTY(Qt::Alignment windowTitleAligment READ windowTitleAligment WRITE setWindowTitleAligment)
 public:
+    /*!
+     * The four values are the combinations of two independent choices: whether the
+     * tab bar gets a row of its own below the title row, and whether a group stacks
+     * its small buttons three rows deep or two. The low byte names the first choice,
+     * so a value can be tested for it rather than compared (see hasOwnTabRow());
+     * the 0x0100 bit carries the second.
+     */
     enum RibbonStyle {
-        OfficeStyle = 0x0000,
-        WpsLiteStyle = 0x0001,
-        OfficeStyleTwoRow = 0x0100 | OfficeStyle,
-        WpsLiteStyleTwoRow = 0x0100 | WpsLiteStyle,
+        TabBarBelowStyle = 0x0000,                              ///< Tab bar on a row below the title row
+        TabBarInlineStyle = 0x0001,                             ///< Tab bar shares the title row
+        TabBarBelowTwoRowStyle = 0x0100 | TabBarBelowStyle,     ///< Also: a group holds two rows of small buttons
+        TabBarInlineTwoRowStyle = 0x0100 | TabBarInlineStyle,   ///< Also: a group holds two rows of small buttons
     };
     Q_ENUM(RibbonStyle)
 
     enum QuickAccessBarPosition {
-        // Only for WpsLiteStyle
+        // Only for TabBarInlineStyle
         QABLeftPosition = 1,
         QABRightPosition
     };
@@ -210,7 +217,8 @@ public:
     int currentIndex();
     void setCurrentIndex(int index);
 
-    bool isOfficeStyle() const;
+    /// Whether the tab bar has a row of its own below the title row, rather than sharing it.
+    bool hasOwnTabRow() const;
     bool isTwoRowStyle() const;
 
     void setWindowButtonGroup(QWidget *widget);

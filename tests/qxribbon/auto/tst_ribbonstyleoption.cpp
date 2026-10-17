@@ -22,16 +22,16 @@ void tst_RibbonStyleOption::defaultRelations()
     RibbonStyleOption opt;
     const int title = opt.titleBarHeight();
     const int tab = opt.tabBarHeight();
-    const int office3 = opt.ribbonBarHeight(RibbonBar::OfficeStyle);
-    const int wps3 = opt.ribbonBarHeight(RibbonBar::WpsLiteStyle);
-    const int office2 = opt.ribbonBarHeight(RibbonBar::OfficeStyleTwoRow);
-    const int wps2 = opt.ribbonBarHeight(RibbonBar::WpsLiteStyleTwoRow);
+    const int belowThree = opt.ribbonBarHeight(RibbonBar::TabBarBelowStyle);
+    const int inlineThree = opt.ribbonBarHeight(RibbonBar::TabBarInlineStyle);
+    const int belowTwo = opt.ribbonBarHeight(RibbonBar::TabBarBelowTwoRowStyle);
+    const int inlineTwo = opt.ribbonBarHeight(RibbonBar::TabBarInlineTwoRowStyle);
 
-    QCOMPARE(office3 - wps3, tab);
-    QCOMPARE(office3 - office2, tab);
-    QCOMPARE(office3 - wps2, tab * 2);
-    QCOMPARE(wps3 - wps2, tab);
-    QCOMPARE(office2 - wps2, tab);
+    QCOMPARE(belowThree - inlineThree, tab);
+    QCOMPARE(belowThree - belowTwo, tab);
+    QCOMPARE(belowThree - inlineTwo, tab * 2);
+    QCOMPARE(inlineThree - inlineTwo, tab);
+    QCOMPARE(belowTwo - inlineTwo, tab);
     QVERIFY(title > 0);
     QVERIFY(tab > 0);
 }
@@ -45,13 +45,13 @@ void tst_RibbonStyleOption::baseHeightScales()
 
     // deltas must still hold after scaling
     const int tab = opt.tabBarHeight();
-    const int office3 = opt.ribbonBarHeight(RibbonBar::OfficeStyle);
-    const int wps3 = opt.ribbonBarHeight(RibbonBar::WpsLiteStyle);
-    const int office2 = opt.ribbonBarHeight(RibbonBar::OfficeStyleTwoRow);
-    const int wps2 = opt.ribbonBarHeight(RibbonBar::WpsLiteStyleTwoRow);
-    QCOMPARE(office3 - wps3, tab);
-    QCOMPARE(office3 - office2, tab);
-    QCOMPARE(office3 - wps2, tab * 2);
+    const int belowThree = opt.ribbonBarHeight(RibbonBar::TabBarBelowStyle);
+    const int inlineThree = opt.ribbonBarHeight(RibbonBar::TabBarInlineStyle);
+    const int belowTwo = opt.ribbonBarHeight(RibbonBar::TabBarBelowTwoRowStyle);
+    const int inlineTwo = opt.ribbonBarHeight(RibbonBar::TabBarInlineTwoRowStyle);
+    QCOMPARE(belowThree - inlineThree, tab);
+    QCOMPARE(belowThree - belowTwo, tab);
+    QCOMPARE(belowThree - inlineTwo, tab * 2);
 }
 
 void tst_RibbonStyleOption::explicitTitleTabSurvivesRecalc()
@@ -68,13 +68,13 @@ void tst_RibbonStyleOption::explicitTitleTabSurvivesRecalc()
     QCOMPARE(opt.tabBarHeight(), 30);
 
     const int tab = opt.tabBarHeight();
-    const int office3 = opt.ribbonBarHeight(RibbonBar::OfficeStyle);
-    const int wps3 = opt.ribbonBarHeight(RibbonBar::WpsLiteStyle);
-    const int office2 = opt.ribbonBarHeight(RibbonBar::OfficeStyleTwoRow);
-    const int wps2 = opt.ribbonBarHeight(RibbonBar::WpsLiteStyleTwoRow);
-    QCOMPARE(office3 - wps3, tab);
-    QCOMPARE(office3 - office2, tab);
-    QCOMPARE(office3 - wps2, tab * 2);
+    const int belowThree = opt.ribbonBarHeight(RibbonBar::TabBarBelowStyle);
+    const int inlineThree = opt.ribbonBarHeight(RibbonBar::TabBarInlineStyle);
+    const int belowTwo = opt.ribbonBarHeight(RibbonBar::TabBarBelowTwoRowStyle);
+    const int inlineTwo = opt.ribbonBarHeight(RibbonBar::TabBarInlineTwoRowStyle);
+    QCOMPARE(belowThree - inlineThree, tab);
+    QCOMPARE(belowThree - belowTwo, tab);
+    QCOMPARE(belowThree - inlineTwo, tab * 2);
 }
 
 TEST_ADD(tst_RibbonStyleOption)

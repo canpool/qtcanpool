@@ -52,7 +52,7 @@
 要它的那条路径是 `QxApp::RibbonAppWindow::updateWindowFlags()`——唯一一个「**窗口已经在屏幕上、
 却还要改右侧按钮组与窗口按钮组**」的入口（基类实现是 `setWindowFlags()` + `show()`，
 窗口在那一刻就重新显示了）。它此前请求的是**排队**版，于是那一轮事件循环里屏幕上留的是**旧几何**：
-用户看到的那一帧就是两个组按老边界画出来的**重叠**（`WpsLiteStyle` 下最明显）。
+用户看到的那一帧就是两个组按老边界画出来的**重叠**（`TabBarInlineStyle` 下最明显）。
 改用 `resizeRibbonNow()` 后，`updateWindowFlags()` **返回的那一刻**两个组已经是新几何。
 ⚠️ 由此得到的**使用约束**写进了 `resizeRibbonNow()` 的**头文件注释**（`src/libs/qxribbon/ribbonbar.h`）：
 它只能由"**调用方已经在看**"的路径使用，**样式切换那条路径必须继续排队**——延迟的理由正是不让它中招。

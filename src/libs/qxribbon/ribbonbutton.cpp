@@ -204,7 +204,7 @@ void RibbonButtonPrivate::recalcSizeHint(QStyleOptionToolButton &opt, QSize s)
 /**
  * @brief RibbonButton::drawIconAndLabel
  *
- * With LargeButtonType == Normal the icon takes half of the large button; in wps mode the icon takes 60% and the text
+ * With LargeButtonType == Normal the icon takes half of the large button; with Lite the icon takes 60% and the text
  * 40%, with no word wrap
  * @param opt
  * @param p

@@ -17,9 +17,9 @@ class RibbonGroupPrivate;
 /**
  * @brief A group is used to group the controls in a ribbon page window
  *
- * Ribbon groups come in two-row and three-row modes; the Office-style ribbon is three-row mode,
- * while the "compact" WPS-style ribbon is two-row mode. Ribbon can specify the mode through
- * RibbonBar's @ref RibbonBar::RibbonStyle (via the function @ref RibbonBar::setRibbonStyle)
+ * Ribbon groups come in two-row and three-row modes. The ribbon asks a group for three rows in the
+ * styles without the TwoRow suffix and for two rows in the ones with it, through @ref
+ * RibbonBar::setRibbonStyle.
  *
  * Within a group, @ref setExpanding can be used to make the group expand horizontally; if the
  * group has no horizontally expandable controls, whitespace is left, so it is recommended to call
@@ -35,9 +35,8 @@ class QX_RIBBON_EXPORT RibbonGroup : public QWidget
     Q_PROPERTY(QString groupName READ groupName WRITE setGroupName)
 public:
     enum GroupLayoutMode {
-        ThreeRowMode,   ///< Three-row layout; Office uses it and a group can hold 3 rows of small toolbuttons; the
-                        ///< default
-        TwoRowMode      ///< Two-row layout; WPS's later layout, where a group can hold 2 rows of small toolbuttons
+        ThreeRowMode,   ///< Three-row layout: a group holds 3 rows of small toolbuttons; the default
+        TwoRowMode      ///< Two-row layout: a group holds 2 rows of small toolbuttons; one row shorter
     };
     enum RowProportion {
         Auto,     ///< Undefined proportion; determined from expandingDirections: Qt::Vertical means Large, otherwise

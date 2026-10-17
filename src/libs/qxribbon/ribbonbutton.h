@@ -29,10 +29,9 @@ public:
 
     enum LargeButtonType {
         Normal,   ///< the icon takes half of the large button,
-                  ///< the arrow is at the very bottom of the button and the text may wrap to one extra line;
-                  ///< corresponds to the office menu button, arrow at the button bottom (default)
-        Lite      ///< the icon takes 60% and the text 40% of the large button with no word wrap; corresponds to the wps
-                  ///< menu button, arrow beside the text
+                  ///< the arrow is at the very bottom of the button and the text may wrap to one extra line (default)
+        Lite      ///< the icon takes 60% and the text 40% of the large button with no word wrap; the arrow sits
+                  ///< beside the text; what a group asks for in RibbonGroup::TwoRowMode
     };
 public:
     explicit RibbonButton(QWidget *parent = Q_NULLPTR);

@@ -1,6 +1,20 @@
 Unreleased
 ---
 Interface
+- RibbonBar::RibbonStyle names its four values for the layout each one selects
+  rather than for the product it was modelled on: OfficeStyle is TabBarBelowStyle,
+  WpsLiteStyle is TabBarInlineStyle, OfficeStyleTwoRow is TabBarBelowTwoRowStyle
+  and WpsLiteStyleTwoRow is TabBarInlineTwoRowStyle. isOfficeStyle() is
+  hasOwnTabRow(), which is the question it was answering all along - the four
+  values are the combinations of two independent choices, whether the tab bar gets
+  a row of its own below the title row and whether a group stacks its small
+  buttons two rows deep or three. The names described neither choice, and the two
+  that promised a shorter ribbon disagreed: OfficeStyleTwoRow and WpsLiteStyle are
+  the same height, having saved their row in different places, so "Lite" read as a
+  third axis rather than as the same one. The values are unchanged (0x0000,
+  0x0001, and 0x0100 or those), so what breaks is the spelling a program writes
+  and the string QMetaEnum returns. See doc/pages/migration.md, "4.5".
+
 - The library no longer carries a theme of its own. RibbonTheme is gone - both the
   class and its ThemeStyle enumeration - and with it
   RibbonMainWindow::setRibbonTheme(), ribbonTheme() and loadTheme(), and the

@@ -178,7 +178,7 @@ QSize WindowButtonGroupPrivate::sizeHint() const
 
 int WindowButtonGroupPrivate::groupHeight() const
 {
-    // In the WpsLiteStyle style, tabBarHeight may be smaller than titleBarHeight,
+    // In TabBarInlineStyle, tabBarHeight may be smaller than titleBarHeight,
     // which causes the window buttons to cover the ribbon area, so use the smallest one
     return qMin(RibbonElementStyleOpt.titleBarHeight(), RibbonElementStyleOpt.tabBarHeight());
 }

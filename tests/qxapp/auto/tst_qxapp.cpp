@@ -1116,7 +1116,7 @@ private slots:
  * one path that changes them while the window is already on screen - the base
  * implementation calls setWindowFlags() and then show(). A re-layout that waits
  * leaves the previous geometry visible for that pass, which is the transient
- * overlap doc/pages/limitations.md records under "WpsLiteStyle button group
+ * overlap doc/pages/limitations.md records under "TabBarInlineStyle button group
  * overlap".
  *
  * What is asserted is the ordering rather than a picture: whatever geometry the
@@ -1133,7 +1133,7 @@ void tst_RibbonAppWindow::flagsChangeLaysTheGroupsOutImmediately()
 
     RibbonBar *ribbon = window.ribbonBar();
     QVERIFY(ribbon != Q_NULLPTR);
-    ribbon->setRibbonStyle(RibbonBar::WpsLiteStyle);
+    ribbon->setRibbonStyle(RibbonBar::TabBarInlineStyle);
 
     // Give the ribbon's own right-hand group something to hold, so that the two
     // groups really are placed side by side rather than one of them being empty

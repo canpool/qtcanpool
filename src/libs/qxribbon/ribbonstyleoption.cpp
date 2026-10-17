@@ -23,10 +23,10 @@ public:
     int m_baseHeight = 17;
     int m_titleBarHeight = 0;
     int m_tabBarHeight = 0;
-    int m_ribbonBarHeightOfficeStyleThreeRow = 0;
-    int m_ribbonBarHeightWpsLiteStyleThreeRow = 0;
-    int m_ribbonBarHeightOfficeStyleTwoRow = 0;
-    int m_ribbonBarHeightWpsLiteStyleTwoRow = 0;
+    int m_heightTabBarBelowThreeRow = 0;
+    int m_heightTabBarInlineThreeRow = 0;
+    int m_heightTabBarBelowTwoRow = 0;
+    int m_heightTabBarInlineTwoRow = 0;
     // true = title/tab are still derived from baseHeight (recomputed in recalc); false = explicitly overridden by a
     // setter
     bool m_titleTabAuto = true;
@@ -69,10 +69,10 @@ void RibbonStyleOptionPrivate::calc(int baseHeight)
 
 void RibbonStyleOptionPrivate::recalcRibbonHeights()
 {
-    m_ribbonBarHeightOfficeStyleThreeRow = m_titleBarHeight + m_tabBarHeight + m_tabBarHeight * 3 + groupOtherHeight();
-    m_ribbonBarHeightWpsLiteStyleThreeRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
-    m_ribbonBarHeightOfficeStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight;
-    m_ribbonBarHeightWpsLiteStyleTwoRow = m_ribbonBarHeightOfficeStyleThreeRow - m_tabBarHeight - m_tabBarHeight;
+    m_heightTabBarBelowThreeRow = m_titleBarHeight + m_tabBarHeight + m_tabBarHeight * 3 + groupOtherHeight();
+    m_heightTabBarInlineThreeRow = m_heightTabBarBelowThreeRow - m_tabBarHeight;
+    m_heightTabBarBelowTwoRow = m_heightTabBarBelowThreeRow - m_tabBarHeight;
+    m_heightTabBarInlineTwoRow = m_heightTabBarBelowThreeRow - m_tabBarHeight - m_tabBarHeight;
 }
 
 RibbonStyleOption::RibbonStyleOption()
@@ -89,18 +89,18 @@ int RibbonStyleOption::ribbonBarHeight(RibbonBar::RibbonStyle s) const
 {
     Q_D(const RibbonStyleOption);
     switch (s) {
-    case RibbonBar::OfficeStyle:
-        return d->m_ribbonBarHeightOfficeStyleThreeRow;
-    case RibbonBar::WpsLiteStyle:
-        return d->m_ribbonBarHeightWpsLiteStyleThreeRow;
-    case RibbonBar::OfficeStyleTwoRow:
-        return d->m_ribbonBarHeightOfficeStyleTwoRow;
-    case RibbonBar::WpsLiteStyleTwoRow:
-        return d->m_ribbonBarHeightWpsLiteStyleTwoRow;
+    case RibbonBar::TabBarBelowStyle:
+        return d->m_heightTabBarBelowThreeRow;
+    case RibbonBar::TabBarInlineStyle:
+        return d->m_heightTabBarInlineThreeRow;
+    case RibbonBar::TabBarBelowTwoRowStyle:
+        return d->m_heightTabBarBelowTwoRow;
+    case RibbonBar::TabBarInlineTwoRowStyle:
+        return d->m_heightTabBarInlineTwoRow;
     default:
         break;
     }
-    return d->m_ribbonBarHeightOfficeStyleThreeRow;
+    return d->m_heightTabBarBelowThreeRow;
 }
 
 int RibbonStyleOption::titleBarHeight() const
@@ -165,10 +165,12 @@ QDebug operator<<(QDebug debug, const RibbonStyleOption &c)
     debug.nospace() << "fontMetrics.lineSpacing=" << lineSpacing
                     << ",RibbonStyleOption(titleBarHeight=" << c.titleBarHeight()
                     << ",tabBarHeight=" << c.tabBarHeight()
-                    << "\n,ribbonBarHeight(OfficeStyle)=" << c.ribbonBarHeight(RibbonBar::OfficeStyle)
-                    << "\n,ribbonBarHeight(OfficeStyleTwoRow)=" << c.ribbonBarHeight(RibbonBar::OfficeStyleTwoRow)
-                    << "\n,ribbonBarHeight(WpsLiteStyle)=" << c.ribbonBarHeight(RibbonBar::WpsLiteStyle)
-                    << "\n,ribbonBarHeight(WpsLiteStyleTwoRow)=" << c.ribbonBarHeight(RibbonBar::WpsLiteStyleTwoRow);
+                    << "\n,ribbonBarHeight(TabBarBelowStyle)=" << c.ribbonBarHeight(RibbonBar::TabBarBelowStyle)
+                    << "\n,ribbonBarHeight(TabBarBelowTwoRowStyle)="
+                    << c.ribbonBarHeight(RibbonBar::TabBarBelowTwoRowStyle)
+                    << "\n,ribbonBarHeight(TabBarInlineStyle)=" << c.ribbonBarHeight(RibbonBar::TabBarInlineStyle)
+                    << "\n,ribbonBarHeight(TabBarInlineTwoRowStyle)="
+                    << c.ribbonBarHeight(RibbonBar::TabBarInlineTwoRowStyle);
     return debug;
 }
 

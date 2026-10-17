@@ -131,7 +131,7 @@ MainWindow::MainWindow(QWidget *par, bool screenshotMode)
     qDebug() << RibbonElementStyleOpt;
 
 #if defined(Q_OS_LINUX)
-    QRadioButton *r = findChild<QRadioButton *>("use wps style");
+    QRadioButton *r = findChild<QRadioButton *>("tab bar inline");
     if (r) {
         r->click();
     }
@@ -288,36 +288,36 @@ void MainWindow::createPageHome()
     QButtonGroup *g = new QButtonGroup(page);
 
     QRadioButton *r = new QRadioButton();
-    r->setText(tr("use office style"));
+    r->setText(tr("tab bar below"));
     r->setWindowTitle(r->text());
-    r->setObjectName(("use office style"));
+    r->setObjectName(("tab bar below"));
     r->setChecked(true);
     groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::OfficeStyle);
+    g->addButton(r, RibbonBar::TabBarBelowStyle);
 
     r = new QRadioButton();
-    r->setObjectName(("use wps style"));
-    r->setText(tr("use wps style"));
+    r->setObjectName(("tab bar inline"));
+    r->setText(tr("tab bar inline"));
     r->setWindowTitle(r->text());
     r->setChecked(false);
     groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::WpsLiteStyle);
+    g->addButton(r, RibbonBar::TabBarInlineStyle);
 
     r = new QRadioButton();
-    r->setObjectName(("use office 2row style"));
-    r->setText(tr("use office 2 row style"));
+    r->setObjectName(("tab bar below, 2 rows"));
+    r->setText(tr("tab bar below, 2 rows"));
     r->setWindowTitle(r->text());
     r->setChecked(false);
     groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::OfficeStyleTwoRow);
+    g->addButton(r, RibbonBar::TabBarBelowTwoRowStyle);
 
     r = new QRadioButton();
-    r->setObjectName(("use wps 2row style"));
-    r->setText(tr("use wps 2row style"));
+    r->setObjectName(("tab bar inline, 2 rows"));
+    r->setText(tr("tab bar inline, 2 rows"));
     r->setWindowTitle(r->text());
     r->setChecked(false);
     groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::WpsLiteStyleTwoRow);
+    g->addButton(r, RibbonBar::TabBarInlineTwoRowStyle);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(g, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::idClicked), this, &MainWindow::onStyleClicked);
@@ -329,8 +329,8 @@ void MainWindow::createPageHome()
     QCheckBox *cb = nullptr;
 
     cb = new QCheckBox();
-    cb->setObjectName(QStringLiteral("left QAB in wps style"));
-    cb->setText(tr("left QAB in wps style"));
+    cb->setObjectName(QStringLiteral("left QAB in inline style"));
+    cb->setText(tr("left QAB in inline style"));
     cb->setWindowTitle(cb->text());
     cb->setChecked(false);
     groupStyle->addSmallWidget(cb);

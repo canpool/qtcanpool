@@ -55,7 +55,7 @@ w->ribbonBar()->setRibbonStyle(RibbonBar::ClassicStyle);
 #include "qxribbon/ribbonmainwindow.h"
 using namespace QxRibbon;
 RibbonMainWindow *w = new RibbonMainWindow;
-w->ribbonBar()->setRibbonStyle(RibbonBar::OfficeStyle);
+w->ribbonBar()->setRibbonStyle(RibbonBar::OfficeStyle);   // 4.5 起为 TabBarBelowStyle
 ```
 
 导出宏由 `QCANPOOL_SHARED_EXPORT` 拆分为 `QX_RIBBON_EXPORT` / `QX_WINDOW_EXPORT` / `QX_APP_EXPORT`。
@@ -72,8 +72,9 @@ w->ribbonBar()->setRibbonStyle(RibbonBar::OfficeStyle);
 | `RibbonContainer` 等四个容器 | `RibbonGridContainer` / `RibbonCtrlContainer` | **语义不同，需重写** |
 | `QuickAccessBar` | `RibbonQuickAccessBar` | 由 `RibbonBar::quickAccessBar()` 获取 |
 
-`RibbonStyle` 枚举映射：`ClassicStyle` → `OfficeStyle`，`MergedStyle` → `WpsLiteStyle`；
-另新增 `OfficeStyleTwoRow`、`WpsLiteStyleTwoRow`。
+`RibbonStyle` 枚举映射：`ClassicStyle` → `OfficeStyle`（4.5 起 `TabBarBelowStyle`），
+`MergedStyle` → `WpsLiteStyle`（4.5 起 `TabBarInlineStyle`）；另新增 `OfficeStyleTwoRow`、
+`WpsLiteStyleTwoRow`（4.5 起 `TabBarBelowTwoRowStyle`、`TabBarInlineTwoRowStyle`）。
 
 `RibbonGroup` 的尺寸枚举由 `GroupSize{GroupLarge,GroupMedium,GroupSmall}`
 改为 `RowProportion{Auto,Large,Medium,Small}`，并新增
@@ -363,7 +364,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 2. 全局替换 include：`qcanpool/ribbon*.h` → `qxribbon/*.h`（或 `qxapp/ribbonappwindow.h`）。
 3. 替换命名空间：`QCanpool` → `QxRibbon` / `QxApp`；`QxWidget` → `QxApp`。
 4. 主窗口基类：`QMainWindow` → `RibbonMainWindow`（无边框用 `RibbonWindow`）。
-5. 按需 `setRibbonStyle(OfficeStyle | WpsLiteStyle | ...TwoRow)`。
+5. 按需 `setRibbonStyle(TabBarBelowStyle | TabBarInlineStyle | ...TwoRowStyle)`。
 6. `RibbonGroup`：`addAction(icon, text, size)` → 先建 `QAction`，再用 `addLargeAction` 一族。
 7. option 按钮：`setOptionButtonVisible` → `addOptionAction(QAction *)`。
 8. 容器类：改用 `RibbonGroup::addWidget` / `addGallery` / `addSeparator`。
@@ -396,6 +397,18 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   以消除歧义；`QxNavigationBar` 保持不变。
   - 迁移：全局替换 `QxNavBar` → `QxNavTabBar`，include `qxapp/qxnavbar.h` → `qxapp/qxnavtabbar.h`。
   - 旧名无转发别名、无弃用缓冲期（4.5 起直接不存在），需一次性改完。
+- **`RibbonStyle` 的四个取值改名**（库 `qxribbon`，破坏源码 / 元对象）：`OfficeStyle` →
+  `TabBarBelowStyle`、`WpsLiteStyle` → `TabBarInlineStyle`、`OfficeStyleTwoRow` →
+  `TabBarBelowTwoRowStyle`、`WpsLiteStyleTwoRow` → `TabBarInlineTwoRowStyle`；谓词
+  `isOfficeStyle()` → `hasOwnTabRow()`。**数值不变**（`0x0000` / `0x0001` / `0x0100 | …`）。
+  - 为什么：这四个值本来就是两个正交选择的 2×2 组合——页签条是**独占标题行下方一行**还是
+    **并入标题行**，以及组内小按钮摆三行还是两行。产品名既不描述这两件事，还让 `Lite` 与
+    `TwoRow` 两个都表示「更小」的词互相打架：`OfficeStyleTwoRow` 与 `WpsLiteStyle` 的总高
+    其实**完全相等**（差的那一行都来自「少一行内容」或「少一行页签」，只是来源不同）。
+  - 迁移：全局替换四个枚举名与谓词名。存**数字**的配置（`QSettings` 的 int、`.ui` 的整型
+    属性）照旧可用；存**字符串**的（QML、`QMetaEnum` 名、序列化的枚举名）需一并改。
+  - 这也是**布局**风格（标题行与页签行怎么排、组内几行），与 `qxtheme` 的配色主题
+    （`QxThemeInfo`）是两个层级，不要混为一谈。
 - **`RibbonGallery` 的 `pageUp` / `pageDown` / `showMoreDetail` 保留**：原计划标为「空转虚函数」
   拟删除，核查后确认三者均有真实实现（驱动滚动视口 / 弹出详情）并已连到按钮，且类带导出宏，
   删除会同时破坏行为与 ABI，故 4.5 不做此变更。

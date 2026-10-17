@@ -75,28 +75,28 @@ void tst_RibbonGroup::mode()
     RibbonPage *page = rb.addPage(tr("page"));
     RibbonGroup *rg = page->addGroup(tr("group"));
 
-    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::OfficeStyle);
+    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::TabBarBelowStyle);
     QCOMPARE(rg->groupLayoutMode(), RibbonGroup::ThreeRowMode);
     QCOMPARE(rg->isTwoRow(), false);
     QCOMPARE(rg->optionActionButtonSize(), QSize(16, 16));
 
-    rb.setRibbonStyle(RibbonBar::OfficeStyleTwoRow);
+    rb.setRibbonStyle(RibbonBar::TabBarBelowTwoRowStyle);
 
-    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::OfficeStyleTwoRow);
+    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::TabBarBelowTwoRowStyle);
     QCOMPARE(rg->groupLayoutMode(), RibbonGroup::TwoRowMode);
     QCOMPARE(rg->isTwoRow(), true);
     QCOMPARE(rg->optionActionButtonSize(), QSize(12, 12));
 
-    rb.setRibbonStyle(RibbonBar::WpsLiteStyle);
+    rb.setRibbonStyle(RibbonBar::TabBarInlineStyle);
 
-    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::WpsLiteStyle);
+    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::TabBarInlineStyle);
     QCOMPARE(rg->groupLayoutMode(), RibbonGroup::ThreeRowMode);
     QCOMPARE(rg->isTwoRow(), false);
     QCOMPARE(rg->optionActionButtonSize(), QSize(16, 16));
 
-    rb.setRibbonStyle(RibbonBar::WpsLiteStyleTwoRow);
+    rb.setRibbonStyle(RibbonBar::TabBarInlineTwoRowStyle);
 
-    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::WpsLiteStyleTwoRow);
+    QCOMPARE(rb.currentRibbonStyle(), RibbonBar::TabBarInlineTwoRowStyle);
     QCOMPARE(rg->groupLayoutMode(), RibbonGroup::TwoRowMode);
     QCOMPARE(rg->isTwoRow(), true);
     QCOMPARE(rg->optionActionButtonSize(), QSize(12, 12));
@@ -212,7 +212,7 @@ void tst_RibbonGroup::layoutGeometry()
     checkShape("three-row");
 
     // Two-row mode must lay out the same sequence the same way.
-    rb.setRibbonStyle(RibbonBar::OfficeStyleTwoRow);
+    rb.setRibbonStyle(RibbonBar::TabBarBelowTwoRowStyle);
     QCOMPARE(grp->groupLayoutMode(), RibbonGroup::TwoRowMode);
     relayout();
     checkShape("two-row");

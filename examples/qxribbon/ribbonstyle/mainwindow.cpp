@@ -85,10 +85,12 @@ MainWindow::MainWindow(QWidget *parent)
     QAction *actionStyle = new QAction(icon, tr("style"), this);
     RibbonMenu *styleMenu = new RibbonMenu(tr("style"), this);
     actionStyle->setMenu(styleMenu);
-    styleGroup->addAction(addStyleAction(styleMenu->addAction(tr("office style")), RibbonBar::OfficeStyle));
-    styleGroup->addAction(addStyleAction(styleMenu->addAction(tr("wps style")), RibbonBar::WpsLiteStyle));
-    styleGroup->addAction(addStyleAction(styleMenu->addAction(tr("office 2row style")), RibbonBar::OfficeStyleTwoRow));
-    styleGroup->addAction(addStyleAction(styleMenu->addAction(tr("wps 2row style")), RibbonBar::WpsLiteStyleTwoRow));
+    styleGroup->addAction(addStyleAction(styleMenu->addAction(tr("tab bar below")), RibbonBar::TabBarBelowStyle));
+    styleGroup->addAction(addStyleAction(styleMenu->addAction(tr("tab bar inline")), RibbonBar::TabBarInlineStyle));
+    styleGroup->addAction(
+        addStyleAction(styleMenu->addAction(tr("tab bar below, 2 rows")), RibbonBar::TabBarBelowTwoRowStyle));
+    styleGroup->addAction(
+        addStyleAction(styleMenu->addAction(tr("tab bar inline, 2 rows")), RibbonBar::TabBarInlineTwoRowStyle));
     rightBar->addAction(actionStyle);
     styleGroup->actions().at(2)->trigger();
 

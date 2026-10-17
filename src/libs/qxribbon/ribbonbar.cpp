@@ -157,8 +157,8 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_windowButtonGroup(Q_NULLPTR)
     , m_quickAccessBarPosition(RibbonBar::QABRightPosition)
     , m_tabBarPosition(RibbonBar::TBLeftPosition)
-    , m_ribbonStyle(RibbonBar::OfficeStyle)
-    , m_lastShowStyle(RibbonBar::OfficeStyle)
+    , m_ribbonStyle(RibbonBar::TabBarBelowStyle)
+    , m_lastShowStyle(RibbonBar::TabBarBelowStyle)
     , m_pageContextColorListIndex(-1)
     , m_titleAligment(Qt::AlignCenter)
     , m_minimized(true)
@@ -379,7 +379,7 @@ void RibbonBarPrivate::showPopupStack()
     m_stack->show();
 }
 
-void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
+void RibbonBarPrivate::paintInTabBarBelowStyle(QPainter &p)
 {
     Q_Q(RibbonBar);
     paintBackground(p);
@@ -435,7 +435,7 @@ void RibbonBarPrivate::paintInOfficeStyle(QPainter &p)
     }
 }
 
-void RibbonBarPrivate::paintInWpsLiteStyle(QPainter &p)
+void RibbonBarPrivate::paintInTabBarInlineStyle(QPainter &p)
 {
     Q_Q(RibbonBar);
     paintBackground(p);
@@ -496,11 +496,12 @@ void RibbonBarPrivate::paintBackground(QPainter &painter)
  * @brief Paints the currently visible context tabs and returns the horizontal range they cover
  *
  * The returned x is the left edge and y is the right edge; y < 0 means no context tab is shown (caller convention).
- * The tab text is drawn only in office style (decided inside paintPageContextTab), so the title is always passed here.
+ * The tab text is drawn only when the tab bar has a row of its own (decided inside paintPageContextTab), so the title
+ * is always passed here.
  *
- * @param extendToWindowTop office raises the top of each visible rect to the window top (the tab strip sits above the
- * tab bar); in wps style the tab bar is already on the first row with the same top edge, so pass false to keep it
- * unchanged.
+ * @param extendToWindowTop with an own tab row the top of each visible rect is raised to the window top (the tab
+ * strip sits above the tab bar); with the tab bar on the title row it already shares that top edge, so pass false to
+ * keep it unchanged.
  */
 QPoint RibbonBarPrivate::paintPageContextTabs(QPainter &painter, bool extendToWindowTop)
 {
@@ -582,8 +583,8 @@ void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &tit
     }
     painter.fillRect(contextRect, gColor);
 
-    // The title is only drawn in office mode
-    if (q->isOfficeStyle()) {
+    // The title is only drawn when the tab bar has a row of its own
+    if (q->hasOwnTabRow()) {
         if (!title.isEmpty()) {
             contextRect.setBottom(m_tabBar->geometry().top());
             painter.setPen(color);
@@ -604,7 +605,7 @@ void RibbonBarPrivate::paintPageContextTab(QPainter &painter, const QString &tit
     }
 }
 
-void RibbonBarPrivate::resizeInOfficeStyle()
+void RibbonBarPrivate::resizeInTabBarBelowStyle()
 {
     Q_Q(RibbonBar);
     updateRibbonElementGeometry();
@@ -676,7 +677,7 @@ void RibbonBarPrivate::resizeInOfficeStyle()
     resizeStackedWidget();
 }
 
-void RibbonBarPrivate::resizeInWpsLiteStyle()
+void RibbonBarPrivate::resizeInTabBarInlineStyle()
 {
     Q_Q(RibbonBar);
     updateRibbonElementGeometry();
@@ -813,14 +814,14 @@ void RibbonBarPrivate::resizeStackedWidget()
 
 void RibbonBarPrivate::resizeRibbon()
 {
-    if (isOfficeStyle()) {
-        resizeInOfficeStyle();
+    if (hasOwnTabRow()) {
+        resizeInTabBarBelowStyle();
     } else {
-        resizeInWpsLiteStyle();
+        resizeInTabBarInlineStyle();
     }
 }
 
-int RibbonBarPrivate::minimumWidthInOfficeStyle() const
+int RibbonBarPrivate::minimumWidthInTabBarBelowStyle() const
 {
     Q_Q(const RibbonBar);
     QMargins border = q->contentsMargins();
@@ -869,7 +870,7 @@ int RibbonBarPrivate::minimumWidthInOfficeStyle() const
     return qMax(w1, w2) + border.left() + border.right();
 }
 
-int RibbonBarPrivate::minimumWidthInWpsLiteStyle() const
+int RibbonBarPrivate::minimumWidthInTabBarInlineStyle() const
 {
     Q_Q(const RibbonBar);
     QMargins border = q->contentsMargins();
@@ -915,7 +916,7 @@ int RibbonBarPrivate::minimumWidthInWpsLiteStyle() const
 }
 
 /**
- * @brief Resets the tabbar width as needed, mainly for the wps style
+ * @brief Resets the tabbar width as needed, mainly for TabBarInlineStyle
  */
 int RibbonBarPrivate::calcMinTabBarWidth() const
 {
@@ -1105,7 +1106,7 @@ RibbonBar::RibbonBar(QWidget *parent)
         connect(parent, &QWidget::windowTitleChanged, d, &RibbonBarPrivate::onWindowTitleChanged);
         connect(parent, &QWidget::windowIconChanged, d, &RibbonBarPrivate::onWindowIconChanged);
     }
-    setRibbonStyle(OfficeStyle);
+    setRibbonStyle(TabBarBelowStyle);
     // Accessibility (B2): a stable accessible name for the ribbon container.
     setAccessibleName(QStringLiteral("Ribbon"));
     installRibbonAccessibility();
@@ -1437,7 +1438,8 @@ int RibbonBar::pageIndex(RibbonPage *page) const
  *
  * Call @ref RibbonPageContext::addPage to add a RibbonPage to the context tab;
  * a RibbonPage added to a context tab is shown only while the context tab is shown
- * @param title the context tab title, shown in Office mode but not in wps mode. By default the RibbonPageContext's
+ * @param title the context tab title, shown with an own tab row but not with the tab bar on the title row. By default
+ * the RibbonPageContext's
  * object name is also set to title
  * @param color the context tab color; if an invalid QColor() is given, the RibbonBar default color set is used
  * @return the context tab pointer
@@ -1465,8 +1467,8 @@ void RibbonBar::addPageContext(RibbonPageContext *context)
     connect(context, &RibbonPageContext::pageAdded, d, &RibbonBarPrivate::onPageContextAdded);
     // remove is not connected: after remove the page is not shown in the stacked widget either, and remove followed by
     // delete also deletes it from the stacked widget
-    if (currentRibbonStyle() == WpsLiteStyle) {
-        d->resizeInWpsLiteStyle();
+    if (currentRibbonStyle() == TabBarInlineStyle) {
+        d->resizeInTabBarInlineStyle();
     }
     d->m_pageContextList.append(context);
 }
@@ -1707,7 +1709,7 @@ void RibbonBar::setQuickAccessBarPosition(QuickAccessBarPosition position)
         return;
     }
     d->m_quickAccessBarPosition = position;
-    if (!d->isOfficeStyle()) {
+    if (!d->hasOwnTabRow()) {
         resizeRibbon();
     }
 }
@@ -1751,7 +1753,7 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     Q_D(RibbonBar);
     d->m_ribbonStyle = v;
     d->m_lastShowStyle = v;
-    d->m_quickAccessBar->setIconVisible(isOfficeStyle() && d->m_titleVisible);
+    d->m_quickAccessBar->setIconVisible(hasOwnTabRow() && d->m_titleVisible);
     d->updateRibbonElementGeometry();
 
     /*
@@ -1764,10 +1766,10 @@ void RibbonBar::setRibbonStyle(RibbonBar::RibbonStyle v)
     // resizeRibbon();
 
     // NOTE: resizeRibbon() defers its work with postEvent(), and that delay is
-    // observable here. Coming from the WPS style while the bar is minimized,
-    // the switch to the OFFICE style reads m_tabBar->geometry().bottom() for
+    // observable here. Coming from TabBarInlineStyle while the bar is minimized,
+    // the switch to TabBarBelowStyle reads m_tabBar->geometry().bottom() for
     // setFixedHeight() below before the tab bar has been resized, so the height
-    // stays at the WPS value and the horizontal strip holding the tab bar does
+    // stays at the inline value and the horizontal strip holding the tab bar does
     // not display. Calling the resize directly is the workaround: the widget
     // style change needs the new geometry now, not next event loop pass.
     // See doc/pages/limitations.md, "RibbonBar resize is deferred".
@@ -1795,10 +1797,10 @@ void RibbonBar::setCurrentIndex(int index)
     d->m_tabBar->setCurrentIndex(index);
 }
 
-bool RibbonBar::isOfficeStyle() const
+bool RibbonBar::hasOwnTabRow() const
 {
     Q_D(const RibbonBar);
-    return d->isOfficeStyle();
+    return d->hasOwnTabRow();
 }
 
 bool RibbonBar::isTwoRowStyle() const
@@ -1837,7 +1839,7 @@ void RibbonBar::updateRibbonTheme()
 void RibbonBar::resizeRibbon()
 {
     // NOTE: doing this work directly instead of through postEvent() - the
-    // resizeEvent alternative that was tried first - breaks the WPS style: after
+    // resizeEvent alternative that was tried first - breaks TabBarInlineStyle: after
     // switching between frameless and framed, m_applicationButton.isVisible()
     // starts returning false and the size computation below goes wrong. The
     // event is therefore queued, which is also what makes the switch visible as
@@ -1877,7 +1879,7 @@ void RibbonBar::setWindowTitleVisible(bool visible)
 {
     Q_D(RibbonBar);
     d->m_titleVisible = visible;
-    d->m_quickAccessBar->setIconVisible(isOfficeStyle() && visible);
+    d->m_quickAccessBar->setIconVisible(hasOwnTabRow() && visible);
 }
 
 QSize RibbonBar::sizeHint() const
@@ -1885,10 +1887,10 @@ QSize RibbonBar::sizeHint() const
     Q_D(const RibbonBar);
     QSize sz = QMenuBar::sizeHint();
     int w = 0;
-    if (isOfficeStyle()) {
-        w = d->minimumWidthInOfficeStyle();
+    if (hasOwnTabRow()) {
+        w = d->minimumWidthInTabBarBelowStyle();
     } else {
-        w = d->minimumWidthInWpsLiteStyle();
+        w = d->minimumWidthInTabBarInlineStyle();
     }
     sz.setWidth(w);
     return sz;
@@ -2170,10 +2172,10 @@ void RibbonBar::paintEvent(QPaintEvent *e)
     Q_D(RibbonBar);
     Q_UNUSED(e);
     QPainter p(this);
-    if (isOfficeStyle()) {
-        d->paintInOfficeStyle(p);
+    if (hasOwnTabRow()) {
+        d->paintInTabBarBelowStyle(p);
     } else {
-        d->paintInWpsLiteStyle(p);
+        d->paintInTabBarInlineStyle(p);
     }
 #ifdef QX_RIBBON_DEBUG_HELP_DRAW
     HELP_DRAW_RECT(p, d->m_quickAccessBar->geometry());

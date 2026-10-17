@@ -607,7 +607,7 @@ void RibbonPage::setGroupLayoutMode(RibbonGroup::GroupLayoutMode m)
  * @brief Add a group
  *
  * @note Ownership of the group is managed by RibbonPage; do not destroy it externally
- * @param title Group title; shown below the group in Office/WPS three-row mode
+ * @param title Group title; shown below the group in three-row mode
  * @return The created @ref RibbonGroup pointer
  * @see For other operations on RibbonGroup, refer to @ref RibbonPage::takeGroup
  */

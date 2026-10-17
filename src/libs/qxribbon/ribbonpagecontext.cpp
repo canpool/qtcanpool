@@ -101,7 +101,8 @@ QString RibbonPageContext::contextTitle() const
 }
 
 /**
- * @brief Sets the title of the context tab; the title is only shown in office mode @ref RibbonBar::RibbonStyle
+ * @brief Sets the title of the context tab; the title is only shown when the tab bar has a row of its own, see @ref
+ * RibbonBar::hasOwnTabRow
  * @param title
  */
 void RibbonPageContext::setContextTitle(const QString &title)
