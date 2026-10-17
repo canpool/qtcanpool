@@ -4,6 +4,7 @@
  **/
 #include "ribbonquickaccessbar_p.h"
 #include "ribbonquickaccessbar.h"
+#include "ribbonutils.h"
 
 #include <QToolButton>
 #include <QAction>
@@ -20,10 +21,29 @@ RibbonQuickAccessButton::RibbonQuickAccessButton(QWidget *parent)
     : QToolButton(parent)
     , m_orientation(Qt::Horizontal)
 {
+    updateIcon();
 }
 
 RibbonQuickAccessButton::~RibbonQuickAccessButton()
 {
+}
+
+/*!
+ * The customize glyph is a mask painted in the palette's text colour, so it
+ * inverts with the theme instead of the style sheet naming a frozen file.
+ */
+void RibbonQuickAccessButton::updateIcon()
+{
+    setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/qaccess_button.png"), palette().color(QPalette::ButtonText),
+                       iconSize()));
+}
+
+void RibbonQuickAccessButton::changeEvent(QEvent *e)
+{
+    if (e->type() == QEvent::PaletteChange) {
+        updateIcon();
+    }
+    QToolButton::changeEvent(e);
 }
 
 QSize RibbonQuickAccessButton::sizeHint() const

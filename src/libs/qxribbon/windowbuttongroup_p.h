@@ -28,6 +28,8 @@ public:
     void init();
     void updateButton(Qt::WindowFlags flags);
     void updateButtonIconSize();
+    void updateButtonIcons();
+    QSize glyphSize() const;
     QSize sizeHint() const;
     int groupHeight() const;
 
@@ -39,6 +41,7 @@ public:
     WindowButton *m_maximizeButton;
     qreal m_iconScale;
     bool m_signalEnabled;
+    QSize m_glyphSize;   ///< the box the current icons were rendered in
 };
 
 QX_RIBBON_END_NAMESPACE

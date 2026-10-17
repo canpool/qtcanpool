@@ -28,6 +28,10 @@ public:
     explicit RibbonGroupOptionButton(QWidget *parent = Q_NULLPTR);
     // Unlike setDefaultAction, this function only connects the action's response without setting text, icon, etc.
     void connectAction(QAction *action);
+protected:
+    void changeEvent(QEvent *e) Q_DECL_OVERRIDE;
+private:
+    void updateIcon();
 };
 
 class RibbonGroupPrivate

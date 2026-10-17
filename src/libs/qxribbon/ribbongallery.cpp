@@ -5,8 +5,10 @@
 #include "ribbongallery.h"
 #include "ribbongallery_p.h"
 #include "ribboncontrols.h"
+#include "ribbonutils.h"
 
 #include <QApplication>
+#include <QEvent>
 #include <QIcon>
 #include <QActionGroup>
 #include <QDebug>
@@ -28,6 +30,7 @@ public:
     void init();
     void setViewPort(RibbonGalleryGroup *v);
     RibbonGalleryViewport *getPopupViewPort();
+    void updateButtonIcons();
 public:
     RibbonControlButton *m_buttonUp;
     RibbonControlButton *m_buttonDown;
@@ -65,9 +68,7 @@ void RibbonGalleryPrivate::init()
     m_buttonUp->setMaximumWidth(s_galleryButtonMaximumWidth);
     m_buttonDown->setMaximumWidth(s_galleryButtonMaximumWidth);
     m_buttonMore->setMaximumWidth(s_galleryButtonMaximumWidth);
-    m_buttonUp->setIcon(QIcon(":/image/res/arrow_up.png"));
-    m_buttonDown->setIcon(QIcon(":/image/res/arrow_down.png"));
-    m_buttonMore->setIcon(QIcon(":/image/res/arrow_more.png"));
+    updateButtonIcons();
     QObject::connect(m_buttonUp, &QAbstractButton::clicked, q, &RibbonGallery::pageUp);
     QObject::connect(m_buttonDown, &QAbstractButton::clicked, q, &RibbonGallery::pageDown);
     QObject::connect(m_buttonMore, &QAbstractButton::clicked, q, &RibbonGallery::showMoreDetail);
@@ -85,6 +86,19 @@ void RibbonGalleryPrivate::init()
     m_layout->addLayout(m_btnLayout);
     m_layout->addStretch();
     q->setLayout(m_layout);
+}
+
+/*!
+ * The three scroll glyphs are masks painted in a palette colour, so they follow
+ * the application's theme without a style sheet naming a light or a dark file.
+ */
+void RibbonGalleryPrivate::updateButtonIcons()
+{
+    Q_Q(RibbonGallery);
+    const QColor color = q->palette().color(QPalette::ButtonText);
+    m_buttonUp->setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/arrow_up.png"), color, m_buttonUp->iconSize()));
+    m_buttonDown->setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/arrow_down.png"), color, m_buttonDown->iconSize()));
+    m_buttonMore->setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/arrow_more.png"), color, m_buttonMore->iconSize()));
 }
 
 void RibbonGalleryPrivate::setViewPort(RibbonGalleryGroup *v)
@@ -133,7 +147,19 @@ RibbonGallery::RibbonGallery(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
 }
 
-RibbonGallery::~RibbonGallery(){QX_FINI_PRIVATE()}
+RibbonGallery::~RibbonGallery()
+{
+    QX_FINI_PRIVATE()
+}
+
+void RibbonGallery::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::PaletteChange) {
+        Q_D(RibbonGallery);
+        d->updateButtonIcons();
+    }
+    QWidget::changeEvent(event);
+}
 
 /**
  * @brief Gets an empty RibbonGalleryGroup

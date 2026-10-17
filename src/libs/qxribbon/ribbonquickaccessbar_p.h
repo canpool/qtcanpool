@@ -36,7 +36,10 @@ public:
 
 public Q_SLOTS:
     void setOrientation(Qt::Orientation orientation);
+protected:
+    void changeEvent(QEvent *e) Q_DECL_OVERRIDE;
 private:
+    void updateIcon();
     Qt::Orientation m_orientation;
 };
 

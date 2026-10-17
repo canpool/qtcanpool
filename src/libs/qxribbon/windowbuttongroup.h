@@ -20,7 +20,10 @@ public:
 
     void updateWindowFlags(Qt::WindowFlags flags);
 
-    void setIconScale(qreal scale = 0.5);
+    /*! Multiplies the caption glyph size. It used to scale the button's own size,
+        which the style sheet overrode, so 1.0 is the size the glyphs are drawn at
+        by default. */
+    void setIconScale(qreal scale = 1.0);
     void setWindowStates(Qt::WindowStates s);
 
     virtual QSize sizeHint() const Q_DECL_OVERRIDE;
@@ -37,6 +40,9 @@ Q_SIGNALS:
     void buttonMinimizeClicked();
     void buttonMaximzieClicked();
     void buttonCloseClicked();
+protected:
+    void changeEvent(QEvent *e) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *e) Q_DECL_OVERRIDE;
 private:
     QX_DECLARE_PRIVATE(WindowButtonGroup)
 };

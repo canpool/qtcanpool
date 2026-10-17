@@ -34,6 +34,9 @@ public:
     void insertEntry(QAction *action, QWidget *entry);
     void removeEntry(QAction *action);
     void activateFirstPage();
+    // Paints the back glyph in the palette's text colour, so the panel follows
+    // the application's theme the way its stock widgets do.
+    void updateCloseIcon();
 public:
     QPointer<RibbonBar> m_ribbonBar;
     QWidget *m_menu;                               ///< the left column that holds the entries

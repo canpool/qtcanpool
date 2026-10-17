@@ -9,10 +9,12 @@
 #include "ribboncontrols.h"
 #include "ribbonbutton.h"
 #include "ribbonmanager.h"
+#include "ribbonutils.h"
 
 #include <QAction>
 #include <QApplication>
 #include <QDebug>
+#include <QEvent>
 #include <QFontMetrics>
 #include <QGridLayout>
 #include <QIcon>
@@ -50,12 +52,30 @@ RibbonGroupOptionButton::RibbonGroupOptionButton(QWidget *parent)
     setToolButtonStyle(Qt::ToolButtonIconOnly);
     setFixedSize(16, 16);
     setIconSize(QSize(10, 10));
-    setIcon(QIcon(":/image/res/group_option.png"));
+    updateIcon();
 }
 
 void RibbonGroupOptionButton::connectAction(QAction *action)
 {
     connect(this, &RibbonGroupOptionButton::clicked, action, &QAction::trigger);
+}
+
+/*!
+ * The launcher glyph is a mask, so the colour comes from the palette rather than
+ * from a style sheet: whichever theme the application installs reaches the icon.
+ */
+void RibbonGroupOptionButton::updateIcon()
+{
+    setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/group_option.png"), palette().color(QPalette::ButtonText),
+                       iconSize()));
+}
+
+void RibbonGroupOptionButton::changeEvent(QEvent *e)
+{
+    if (e->type() == QEvent::PaletteChange) {
+        updateIcon();
+    }
+    QToolButton::changeEvent(e);
 }
 
 int RibbonGroupPrivate::s_groupTitleHeight = 21;

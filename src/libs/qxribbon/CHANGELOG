@@ -14,6 +14,15 @@ Interface
   examples/qxribbon/ribbonstyle. RibbonBar::updateRibbonTheme() stays: it is what
   to call after a style change the bar has to re-read.
 
+- The ribbon's own glyphs are no longer named by a style sheet. The window caption
+  buttons, the group launcher, the quick access customize button, the gallery
+  scroll arrows and the backstage back arrow are alpha masks painted in a palette
+  role - ButtonText, or WindowText for the caption - so one asset serves light and
+  dark and an application theme reaches them through the palette alone. res/lighter/
+  is gone with the duplicate set it held. WindowButtonGroup::setIconScale() now
+  multiplies the glyph size and defaults to 1.0; it used to scale the button's own
+  size, which the caption style sheet overrode, so calling it changed nothing.
+
 Cleanup
 - The scroll offset of a ribbon page is clamped in one place. The legal range
   was written down four times - a pair of hand-rolled if-chains in the wheel
@@ -138,6 +147,14 @@ Feature
   a dark theme without one carrying icons. tst_RibbonSliderPane drives the range,
   the buttons and the forwarding of both signals.
 
+- ribbonutils: add tintedPixmap() and tintedIcon(). A monochrome asset is a
+  coverage mask, so painting it in a palette colour is a SourceIn fill: the alpha
+  keeps the glyph's shape and antialiasing while the colour is replaced, which is
+  how one asset serves every theme. The ribbon uses them for its own glyphs; an
+  application with mask art of its own can use them for the same purpose.
+  tintedIcon() rasterises the asset once per device pixel ratio QIcon may ask for,
+  so a vector mask stays sharp on a high dpi screen.
+
 Interface
 - RibbonMdiArea: add RibbonMdiArea
 - RibbonBackstageView: add RibbonBackstageView (QWidget)
@@ -149,6 +166,9 @@ Interface
 - RibbonGroup: add setReduced and isReduced
 
 Bugfix
+- RibbonBackstageView's back arrow was loaded from the light asset whatever the
+  palette, so on a dark theme it was a black glyph on a dark column. It is painted
+  from the palette now and repainted when the palette changes.
 - The KeyTip letter pool was filled with QList<QString>(int), a constructor only
   Qt 6 has, so the ribbon did not compile against Qt 5. The list is resized
   instead, which both versions provide.

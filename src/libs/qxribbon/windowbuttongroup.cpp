@@ -5,8 +5,10 @@
 #include "windowbuttongroup.h"
 #include "windowbuttongroup_p.h"
 #include "ribbonmanager.h"
+#include "ribbonutils.h"
 
 #include <QResizeEvent>
+#include <QEvent>
 #include <QScopedPointer>
 #include <QStyle>
 #include <QToolButton>
@@ -20,6 +22,10 @@ QX_RIBBON_BEGIN_NAMESPACE
 #define MAX_BUTTON_WIDTH 30
 #define CLS_BUTTON_WIDTH 40
 
+//! Used before the ribbon has published its metrics, so a group built early still
+//! gets a glyph. Once the bar is up, glyphSize() follows the caption height.
+static const int s_defaultGlyphSide = 16;
+
 WindowButton::WindowButton(QWidget *p)
     : QToolButton(p)
 {
@@ -30,8 +36,9 @@ WindowButtonGroupPrivate::WindowButtonGroupPrivate()
     : m_closeButton(Q_NULLPTR)
     , m_minimizeButton(Q_NULLPTR)
     , m_maximizeButton(Q_NULLPTR)
-    , m_iconScale(0.5)
+    , m_iconScale(1.0)
     , m_signalEnabled(false)
+    , m_glyphSize()
 {
 }
 
@@ -43,7 +50,6 @@ void WindowButtonGroupPrivate::init()
     m_minimizeButton->setObjectName(QStringLiteral("qx_MinimizeWindowButton"));
     m_minimizeButton->setFixedWidth(MIN_BUTTON_WIDTH);
     m_minimizeButton->setFocusPolicy(Qt::NoFocus);
-    m_minimizeButton->setIconSize(m_minimizeButton->size() * m_iconScale);
     m_minimizeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     connect(m_minimizeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
 
@@ -52,7 +58,6 @@ void WindowButtonGroupPrivate::init()
     m_maximizeButton->setFixedWidth(MAX_BUTTON_WIDTH);
     m_maximizeButton->setCheckable(true);
     m_maximizeButton->setFocusPolicy(Qt::NoFocus);
-    m_maximizeButton->setIconSize(m_maximizeButton->size() * m_iconScale);
     m_maximizeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     connect(m_maximizeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
 
@@ -60,7 +65,6 @@ void WindowButtonGroupPrivate::init()
     m_closeButton->setObjectName(QStringLiteral("qx_CloseWindowButton"));
     m_closeButton->setFixedWidth(CLS_BUTTON_WIDTH);
     m_closeButton->setFocusPolicy(Qt::NoFocus);
-    m_closeButton->setIconSize(m_closeButton->size() * m_iconScale);
     m_closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     connect(m_closeButton, &QAbstractButton::clicked, this, &WindowButtonGroupPrivate::buttonClicked);
 
@@ -70,6 +74,8 @@ void WindowButtonGroupPrivate::init()
     lay->addWidget(m_minimizeButton);
     lay->addWidget(m_maximizeButton);
     lay->addWidget(m_closeButton);
+
+    updateButtonIconSize();
 }
 
 void WindowButtonGroupPrivate::updateButton(Qt::WindowFlags flags)
@@ -79,11 +85,74 @@ void WindowButtonGroupPrivate::updateButton(Qt::WindowFlags flags)
     m_closeButton->setVisible(flags & Qt::WindowCloseButtonHint);
 }
 
+/*!
+ * The box a caption glyph is drawn in.
+ *
+ * The style sheet used to name the glyph files on the buttons themselves, and an
+ * image named that way is drawn in the button's contents rectangle - so the glyph
+ * measured the caption height, not a size of its own. Keeping the box at the
+ * caption height preserves that: the glyph keeps its share of the bar as the bar
+ * grows with the font, and stays sharp because the vector asset is rendered at the
+ * size it is drawn at.
+ */
+QSize WindowButtonGroupPrivate::glyphSize() const
+{
+    int side = groupHeight();
+    if (side <= 0) {
+        side = s_defaultGlyphSide;
+    }
+    return QSize(side, side) * m_iconScale;
+}
+
 void WindowButtonGroupPrivate::updateButtonIconSize()
 {
-    m_minimizeButton->setIconSize(m_minimizeButton->size() * m_iconScale);
-    m_maximizeButton->setIconSize(m_maximizeButton->size() * m_iconScale);
-    m_closeButton->setIconSize(m_closeButton->size() * m_iconScale);
+    const QSize size = glyphSize();
+    if (size == m_glyphSize) {
+        return;
+    }
+    m_glyphSize = size;
+    m_minimizeButton->setIconSize(size);
+    m_maximizeButton->setIconSize(size);
+    m_closeButton->setIconSize(size);
+    updateButtonIcons();
+}
+
+/*!
+ * The caption glyphs are masks, painted in the palette's window-text colour so
+ * they invert with the theme instead of a style sheet naming a frozen file. The
+ * close button's hover glyph uses highlighted text, the role for a glyph that
+ * sits on a filled background.
+ */
+void WindowButtonGroupPrivate::updateButtonIcons()
+{
+    Q_Q(WindowButtonGroup);
+    const QSize size = glyphSize();
+    const QColor glyph = q->palette().color(QPalette::WindowText);
+    const QColor onFilled = q->palette().color(QPalette::HighlightedText);
+
+    QIcon minimize;
+    QIcon maximize;
+    QIcon close;
+    // One pixmap per device pixel ratio, so the vector glyph is rendered at the
+    // size it is drawn at rather than upscaled from a single small bitmap.
+    for (int factor : {1, 2, 3}) {
+        const QSize s = size * factor;
+        minimize.addPixmap(tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_min.svg"), glyph, s));
+        maximize.addPixmap(tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_max.svg"), glyph, s), QIcon::Normal,
+                           QIcon::Off);
+        // A maximized window shows the restore glyph on the same button.
+        maximize.addPixmap(tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_normal.svg"), glyph, s), QIcon::Normal,
+                           QIcon::On);
+        close.addPixmap(tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_close.svg"), glyph, s), QIcon::Normal,
+                        QIcon::Off);
+        const QPixmap hover = tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_close_hover.svg"), onFilled, s);
+        close.addPixmap(hover, QIcon::Active, QIcon::Off);
+        close.addPixmap(hover, QIcon::Selected, QIcon::Off);
+    }
+
+    m_minimizeButton->setIcon(minimize);
+    m_maximizeButton->setIcon(maximize);
+    m_closeButton->setIcon(close);
 }
 
 QSize WindowButtonGroupPrivate::sizeHint() const
@@ -189,6 +258,24 @@ void WindowButtonGroup::setIconScale(qreal scale)
     }
     d->m_iconScale = scale;
     d->updateButtonIconSize();
+}
+
+void WindowButtonGroup::resizeEvent(QResizeEvent *e)
+{
+    // The caption height decides the glyph size, so a ribbon that switched style
+    // or font resizes this group and the glyphs follow it.
+    Q_D(WindowButtonGroup);
+    d->updateButtonIconSize();
+    QWidget::resizeEvent(e);
+}
+
+void WindowButtonGroup::changeEvent(QEvent *e)
+{
+    if (e->type() == QEvent::PaletteChange) {
+        Q_D(WindowButtonGroup);
+        d->updateButtonIcons();
+    }
+    QWidget::changeEvent(e);
 }
 
 void WindowButtonGroup::setWindowStates(Qt::WindowStates s)

@@ -108,10 +108,6 @@ QxRibbon--RibbonGroupOptionButton:hover {
   border: 0px;
 }
 
-QxRibbon--RibbonGroupOptionButton {
-  qproperty-icon: url(:/qxribbon/res/group_option.png);
-}
-
 /*RibbonGallery*/
 
 QxRibbon--RibbonGallery {
@@ -338,25 +334,8 @@ QxRibbon--RibbonControlButton#RibbonGalleryButtonUp, #RibbonGalleryButtonDown, #
   border: 1px solid #cee8fc;
 }
 
-QxRibbon--RibbonControlButton#RibbonGalleryButtonUp {
-  qproperty-icon: url(:/qxribbon/res/arrow_up.png);
-}
-
-QxRibbon--RibbonControlButton#RibbonGalleryButtonDown {
-  qproperty-icon: url(:/qxribbon/res/arrow_down.png);
-}
-
-QxRibbon--RibbonControlButton#RibbonGalleryButtonMore {
-  qproperty-icon: url(:/qxribbon/res/arrow_more.png);
-}
-
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
   border: 1px solid transparent;
-}
-
-QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
-  titlebar-shade-icon: url(:/qxribbon/res/lighter/titlebar_shade.svg);
-  titlebar-unshade-icon: url(:/qxribbon/res/lighter/titlebar_unshade.svg);
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton:hover {
@@ -440,10 +419,6 @@ QxRibbon--RibbonComboBox::drop-down:hover {
   background-color: #9ed2f9;
 }
 
-QxRibbon--RibbonComboBox::down-arrow {
-  image: url(:/qxribbon/res/arrow_down.png);
-}
-
 /*RibbonSeparator*/
 
 QxRibbon--RibbonSeparator {
@@ -479,18 +454,6 @@ QxRibbon--WindowButton:focus {
   outline: none;
 }
 
-QxRibbon--WindowButton#qx_MinimizeWindowButton {
-  image: url(:/qxribbon/res/lighter/titlebar_min.svg);
-}
-
-QxRibbon--WindowButton#qx_MaximizeWindowButton {
-  image: url(:/qxribbon/res/lighter/titlebar_max.svg);
-}
-
-QxRibbon--WindowButton#qx_MaximizeWindowButton:checked {
-  image: url(:/qxribbon/res/lighter/titlebar_normal.svg);
-}
-
 QxRibbon--WindowButton#qx_MinimizeWindowButton:hover,#qx_MaximizeWindowButton:hover {
   background-color: #124078;
 }
@@ -499,16 +462,10 @@ QxRibbon--WindowButton#qx_MinimizeWindowButton:pressed,#qx_MaximizeWindowButton:
   background-color: #002050;
 }
 
-QxRibbon--WindowButton#qx_CloseWindowButton {
-  image: url(:/qxribbon/res/lighter/titlebar_close.svg);
-}
-
 QxRibbon--WindowButton#qx_CloseWindowButton:hover {
   background-color: #e81123;
-  image: url(:/qxribbon/res/lighter/titlebar_close_hover.svg);
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
   background-color: #f1707a;
-  image: url(:/qxribbon/res/lighter/titlebar_close_hover.svg);
 }

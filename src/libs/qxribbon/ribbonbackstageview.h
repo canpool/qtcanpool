@@ -121,6 +121,7 @@ protected:
     virtual void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
     virtual bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
     virtual void actionEvent(QActionEvent *event) Q_DECL_OVERRIDE;
+    virtual void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
 private:
     friend class RibbonBackstageViewPrivate;
 

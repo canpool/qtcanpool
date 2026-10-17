@@ -2,6 +2,7 @@
 
 #include "qxribbon/windowbuttongroup.h"
 
+#include <QImage>
 #include <QSignalSpy>
 #include <QToolButton>
 #include <QWidget>
@@ -37,6 +38,7 @@ private slots:
     void sizeHintFollowsTheButtonsWhileTheHostIsHidden();
     void setWindowStatesChecksTheMaximizeButton();
     void widgetForMaximizeButtonIsTheOneInTheLayout();
+    void captionGlyphsFollowThePalette();
     void enabledSignalsReachTheOwner();
     void disabledSignalsActOnTheParentWindow();
 };
@@ -135,6 +137,42 @@ void tst_WindowButtonGroup::widgetForMaximizeButtonIsTheOneInTheLayout()
     QVERIFY(maximize != Q_NULLPTR);
     QCOMPARE(maximize, button(&group, QStringLiteral("qx_MaximizeWindowButton")));
     QCOMPARE(maximize->parentWidget(), &group);
+}
+
+void tst_WindowButtonGroup::captionGlyphsFollowThePalette()
+{
+    QWidget host;
+    WindowButtonGroup group(&host);
+
+    QToolButton *close = qobject_cast<QToolButton *>(button(&group, QStringLiteral("qx_CloseWindowButton")));
+    QVERIFY(close != Q_NULLPTR);
+
+    // The grey level of the glyph's opaque pixels. A mask painted in a colour has
+    // one, and its value says which colour the palette asked for.
+    const auto glyphLevel = [close]() {
+        const QImage image = close->icon().pixmap(QSize(16, 16)).toImage().convertToFormat(QImage::Format_ARGB32);
+        int level = -1;
+        for (int y = 0; y < image.height(); ++y) {
+            for (int x = 0; x < image.width(); ++x) {
+                const QRgb pixel = image.pixel(x, y);
+                if (qAlpha(pixel) > 128) {
+                    level = qMax(level, qGray(pixel));
+                }
+            }
+        }
+        return level;
+    };
+
+    QVERIFY2(glyphLevel() >= 0, "the close button carries no glyph of its own");
+    QVERIFY2(glyphLevel() < 128, "a dark glyph on the default light palette");
+
+    // Installing a palette is all a theme has to do: the glyph is repainted from
+    // the new colour as soon as the palette reaches the group.
+    QPalette dark = group.palette();
+    dark.setColor(QPalette::WindowText, QColor(0xf0, 0xf0, 0xf0));
+    group.setPalette(dark);
+
+    QVERIFY2(glyphLevel() > 128, "a light glyph once the palette went dark");
 }
 
 void tst_WindowButtonGroup::enabledSignalsReachTheOwner()

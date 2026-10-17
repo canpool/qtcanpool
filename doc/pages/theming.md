@@ -64,10 +64,6 @@ QxThemeManager::instance()->registerTheme(dark);
 ```cpp
 QxThemeManager *themes = QxThemeManager::instance();
 themes->setTheme(QStringLiteral("dark-officeplus"));
-
-if (themes->isDark()) {
-    // 例如切换图标集
-}
 ```
 
 `setTheme()` 会立即应用并发出 `themeChanged()`；`apply()` 用于把当前主题重新装一遍
@@ -131,3 +127,7 @@ themes->setStyleSheet(QStringLiteral("dark-officeplus"), myCss);
 2. 调色板只由「深色 / 浅色」决定（@ref QxTheme::paletteFor），
    因此新增一套主题只需要注册时给对 `dark`，不需要改库。
 3. 只想换样式表而不动注册，用 `setStyleSheet(id, css)` 即可，无需改库。
+4. **样式表里不要再写图标**。`qxribbon` 自带的箭头、窗口按钮、对话框启动器等
+   都是**单色掩膜**，颜色取自 @ref QPalette（如 `ButtonText`、`WindowText`），
+   换主题时随调色板重绘；库只给一份资产，不再有明暗两套。
+   应用自己若有单色掩膜资产，可以用 @ref QxRibbon::tintedIcon 按同一个规则着色。

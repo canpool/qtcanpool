@@ -5,6 +5,7 @@
 #include "ribbonbackstageview.h"
 #include "ribbonbackstageview_p.h"
 #include "ribbonbar.h"
+#include "ribbonutils.h"
 
 #include <QAction>
 #include <QActionEvent>
@@ -70,7 +71,7 @@ void RibbonBackstageViewPrivate::init(RibbonBar *ribbonBar)
 
     m_closeButton = new QToolButton(m_menu);
     m_closeButton->setObjectName(QStringLiteral("qx_RibbonBackstageCloseButton"));
-    m_closeButton->setIcon(QIcon(QStringLiteral(":/qxribbon/res/arrow_left.png")));
+    updateCloseIcon();
     m_closeButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     m_closeButton->setAutoRaise(true);
     m_closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -204,6 +205,13 @@ void RibbonBackstageViewPrivate::activateFirstPage()
             return;
         }
     }
+}
+
+void RibbonBackstageViewPrivate::updateCloseIcon()
+{
+    Q_Q(RibbonBackstageView);
+    m_closeButton->setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/arrow_left.png"),
+                                      q->palette().color(QPalette::ButtonText), m_closeButton->iconSize()));
 }
 
 RibbonBackstageView::RibbonBackstageView(RibbonBar *ribbonBar)
@@ -372,6 +380,15 @@ void RibbonBackstageView::actionEvent(QActionEvent *event)
     default:
         break;
     }
+}
+
+void RibbonBackstageView::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::PaletteChange) {
+        Q_D(RibbonBackstageView);
+        d->updateCloseIcon();
+    }
+    QWidget::changeEvent(event);
 }
 
 QX_RIBBON_END_NAMESPACE
