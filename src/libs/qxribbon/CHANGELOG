@@ -152,6 +152,12 @@ Bugfix
 - The KeyTip letter pool was filled with QList<QString>(int), a constructor only
   Qt 6 has, so the ribbon did not compile against Qt 5. The list is resized
   instead, which both versions provide.
+- RibbonScreenTip built its look from a hard-coded light style sheet (background
+  #fafafa, a 1px #adadad border, #202020/#404040/#505050 text, a #ffffff shortcut
+  box), so on a dark application theme it still painted a white box. It now reads
+  every colour from the palette - background and shortcut box from tooltipbase,
+  text from tooltiptext, borders from mid - which re-resolves when the
+  application palette changes.
 
 0.12.2
 ---

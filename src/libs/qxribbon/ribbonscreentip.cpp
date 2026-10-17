@@ -41,12 +41,17 @@ RibbonScreenTip::RibbonScreenTip()
     layout->addWidget(m_descriptionLabel);
     layout->addLayout(shortcutRow);
 
-    setStyleSheet(QStringLiteral("QFrame#RibbonScreenTip { background: #fafafa; border: 1px solid #adadad; }"
+    // No hardcoded colours: a tooltip is drawn with the application palette, so it
+    // follows whatever theme reaches the application - a dark theme used to leave a
+    // white box because every colour here was written down as a light hex. The
+    // palette() references re-resolve when the palette changes.
+    setStyleSheet(QStringLiteral("QFrame#RibbonScreenTip { background: palette(tooltipbase); border: 1px solid "
+                                 "palette(mid); }"
                                  "QLabel { background: transparent; }"
-                                 "QLabel#RibbonScreenTipTitle { font-weight: bold; color: #202020; }"
-                                 "QLabel#RibbonScreenTipDescription { color: #404040; }"
-                                 "QLabel#RibbonScreenTipShortcut { color: #505050; border: 1px solid #c0c0c0; "
-                                 "background: #ffffff; padding: 1px 4px; }"));
+                                 "QLabel#RibbonScreenTipTitle { font-weight: bold; color: palette(tooltiptext); }"
+                                 "QLabel#RibbonScreenTipDescription { color: palette(tooltiptext); }"
+                                 "QLabel#RibbonScreenTipShortcut { color: palette(tooltiptext); border: 1px solid "
+                                 "palette(mid); background: palette(tooltipbase); padding: 1px 4px; }"));
 }
 
 QString RibbonScreenTip::title() const
