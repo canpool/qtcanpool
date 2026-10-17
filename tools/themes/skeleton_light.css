@@ -124,7 +124,7 @@ QxRibbon--RibbonGalleryGroup {
 
 QxRibbon--RibbonGalleryGroup::item:selected {
   background-color: {{accent-fill}};
-  color: {{text}};
+  color: {{text-on-fill}};
 }
 
 QxRibbon--RibbonGalleryGroup::item:hover {
@@ -223,7 +223,7 @@ QToolButton#qx_RibbonBackstageCloseButton:hover {
 
 QToolButton#qx_RibbonBackstageButton:pressed,
 QToolButton#qx_RibbonBackstageCloseButton:pressed {
-  color: {{text}};
+  color: {{text-on-fill}};
   border: 1px solid {{accent}};
   background-color: {{accent-fill}};
 }
@@ -257,7 +257,7 @@ QxRibbon--RibbonButton:focus {
 }
 
 QxRibbon--RibbonButton:pressed {
-  color: {{text}};
+  color: {{text-on-fill}};
   border: 1px solid{{accent}};
   background-color: {{accent-fill}};
 }
@@ -283,6 +283,7 @@ QxRibbon--RibbonControlButton {
 }
 
 QxRibbon--RibbonControlButton:pressed {
+  color: {{text-on-fill}};
   border: 1px solid {{accent}};
   background-color: {{accent-fill}};
 }
@@ -373,6 +374,7 @@ QxRibbon--RibbonComboBox::drop-down {
 }
 
 QxRibbon--RibbonComboBox::drop-down:hover {
+  color: {{text-on-fill}};
   border: 1px solid {{highlight}};
   background-color: {{accent-fill}};
 }

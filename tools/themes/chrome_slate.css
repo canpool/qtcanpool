@@ -109,7 +109,7 @@ QxRibbon--RibbonMenu::item:hover {
    closed by the same rule the active tab uses */
 QAbstractButton#qx_RibbonApplicationButton {
   background-color: transparent;
-  color: {{accent}};
+  color: {{accent-text}};
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   border-bottom: 2px solid {{accent}};

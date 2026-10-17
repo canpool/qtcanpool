@@ -40,7 +40,7 @@ QxRibbon--RibbonTabBar::tab:selected {
   border: 0px;
   border-bottom: 2px solid {{accent}};
   background: {{body}};
-  color: {{accent}};
+  color: {{accent-text}};
 }
 
 QxRibbon--RibbonTabBar::tab:hover:!selected {

@@ -18,7 +18,7 @@ QWidget:disabled {
 }
 
 QPushButton, QToolButton {
-  background: {{state-hover}};
+  background: {{state-rest}};
   min-height: 18px;
 }
 
@@ -64,7 +64,7 @@ QProgressBar::chunk {
   width: 2px;
   margin: 0px;
   border: none;
-  background: {{accent}};
+  background: {{accent-fill-strong}};
 }
 
 QScrollBar:vertical {
@@ -75,7 +75,7 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-  background: {{state-hover}};
+  background: {{state-rest}};
   min-height: 25px;
   margin: 0px 2px;
   border-radius: 3px;
@@ -109,7 +109,7 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-  background: {{state-hover}};
+  background: {{state-rest}};
   min-width: 25px;
   margin: 2px 0px;
   border-radius: 3px;
@@ -155,7 +155,7 @@ QScrollArea {
 QTreeView::pane, QListView, QTableView::pane, QTabWidget::pane {
   border: 0px solid {{border}};
   selection-color: {{text-on-fill}};
-  selection-background-color: {{border}};
+  selection-background-color: {{accent-fill-strong}};
   alternate-background-color: {{border}};
   gridline-color: {{accent}};
 }
@@ -171,7 +171,7 @@ QTreeView, QListView, QTableView, QSplitter::handle {
 
 QTableView::item:selected, QListView::item:selected, QTreeView::item:selected {
   color: {{text-on-fill}};
-  background: {{border}};
+  background: {{accent-fill-strong}};
 }
 
 QTableView::item:hover:!selected, QListView::item:hover:!selected, QTreeView::item:hover:!selected {
@@ -456,7 +456,7 @@ QComboBox QAbstractItemView {
   border: 0px solid {{border}};
   border-radius: 2px;
   selection-color: {{text-on-fill}};
-  selection-background-color: {{border}};
+  selection-background-color: {{accent-fill-strong}};
 }
 
 QComboBox QAbstractItemView::item {
@@ -546,7 +546,7 @@ QCalendarWidget QTableView {
   background-color: {{surface}};
   selection-color: {{text-on-fill}};
   alternate-background-color: {{border}};
-  selection-background-color: {{border}};
+  selection-background-color: {{accent-fill-strong}};
 }
 
 QCalendarWidget QAbsractItemView:enabled {
@@ -956,7 +956,7 @@ QxRibbon--RibbonMenu::icon {
 QLineEdit {
   border: 1px solid {{border}};
   background-color: {{surface}};
-  selection-background-color: {{border}};
+  selection-background-color: {{accent-fill-strong}};
   selection-color: {{text-on-fill}};
 }
 
@@ -973,7 +973,7 @@ QComboBox:hover {
 
 QComboBox:editable {
   background-color: {{surface}};
-  selection-background-color: {{border}};
+  selection-background-color: {{accent-fill-strong}};
   selection-color: {{text-on-fill}};
 }
 

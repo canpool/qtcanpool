@@ -30,7 +30,7 @@ QWidget:disabled {
 }
 
 QPushButton, QToolButton {
-  background: #3a3f42;
+  background: #2a2e30;
   min-height: 18px;
 }
 
@@ -76,7 +76,7 @@ QProgressBar::chunk {
   width: 2px;
   margin: 0px;
   border: none;
-  background: #00a0e6;
+  background: #0a5f90;
 }
 
 QScrollBar:vertical {
@@ -87,7 +87,7 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-  background: #3a3f42;
+  background: #2a2e30;
   min-height: 25px;
   margin: 0px 2px;
   border-radius: 3px;
@@ -121,7 +121,7 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-  background: #3a3f42;
+  background: #2a2e30;
   min-width: 25px;
   margin: 2px 0px;
   border-radius: 3px;
@@ -167,7 +167,7 @@ QScrollArea {
 QTreeView::pane, QListView, QTableView::pane, QTabWidget::pane {
   border: 0px solid #33383a;
   selection-color: #ffffff;
-  selection-background-color: #33383a;
+  selection-background-color: #0a5f90;
   alternate-background-color: #33383a;
   gridline-color: #00a0e6;
 }
@@ -183,7 +183,7 @@ QTreeView, QListView, QTableView, QSplitter::handle {
 
 QTableView::item:selected, QListView::item:selected, QTreeView::item:selected {
   color: #ffffff;
-  background: #33383a;
+  background: #0a5f90;
 }
 
 QTableView::item:hover:!selected, QListView::item:hover:!selected, QTreeView::item:hover:!selected {
@@ -468,7 +468,7 @@ QComboBox QAbstractItemView {
   border: 0px solid #33383a;
   border-radius: 2px;
   selection-color: #ffffff;
-  selection-background-color: #33383a;
+  selection-background-color: #0a5f90;
 }
 
 QComboBox QAbstractItemView::item {
@@ -558,7 +558,7 @@ QCalendarWidget QTableView {
   background-color: #202324;
   selection-color: #ffffff;
   alternate-background-color: #33383a;
-  selection-background-color: #33383a;
+  selection-background-color: #0a5f90;
 }
 
 QCalendarWidget QAbsractItemView:enabled {
@@ -968,7 +968,7 @@ QxRibbon--RibbonMenu::icon {
 QLineEdit {
   border: 1px solid #33383a;
   background-color: #202324;
-  selection-background-color: #33383a;
+  selection-background-color: #0a5f90;
   selection-color: #ffffff;
 }
 
@@ -985,7 +985,7 @@ QComboBox:hover {
 
 QComboBox:editable {
   background-color: #202324;
-  selection-background-color: #33383a;
+  selection-background-color: #0a5f90;
   selection-color: #ffffff;
 }
 
@@ -1059,7 +1059,7 @@ QxRibbon--WindowButton#qx_CloseWindowButton:hover {
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
-  background-color: #f1707a;
+  background-color: #e8636e;
 }
 
 /*

@@ -136,7 +136,7 @@ QxRibbon--RibbonGalleryGroup {
 
 QxRibbon--RibbonGalleryGroup::item:selected {
   background-color: #007acc;
-  color: #333333;
+  color: #ffffff;
 }
 
 QxRibbon--RibbonGalleryGroup::item:hover {
@@ -235,7 +235,7 @@ QToolButton#qx_RibbonBackstageCloseButton:hover {
 
 QToolButton#qx_RibbonBackstageButton:pressed,
 QToolButton#qx_RibbonBackstageCloseButton:pressed {
-  color: #333333;
+  color: #ffffff;
   border: 1px solid #007acc;
   background-color: #007acc;
 }
@@ -269,7 +269,7 @@ QxRibbon--RibbonButton:focus {
 }
 
 QxRibbon--RibbonButton:pressed {
-  color: #333333;
+  color: #ffffff;
   border: 1px solid#007acc;
   background-color: #007acc;
 }
@@ -295,6 +295,7 @@ QxRibbon--RibbonControlButton {
 }
 
 QxRibbon--RibbonControlButton:pressed {
+  color: #ffffff;
   border: 1px solid #007acc;
   background-color: #007acc;
 }
@@ -385,6 +386,7 @@ QxRibbon--RibbonComboBox::drop-down {
 }
 
 QxRibbon--RibbonComboBox::drop-down:hover {
+  color: #ffffff;
   border: 1px solid #fff1b6;
   background-color: #007acc;
 }
@@ -437,7 +439,7 @@ QxRibbon--WindowButton#qx_CloseWindowButton:hover {
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
-  background-color: #f1707a;
+  background-color: #e8636e;
 }
 
 /*
@@ -551,7 +553,7 @@ QxRibbon--RibbonMenu::item:hover {
    closed by the same rule the active tab uses */
 QAbstractButton#qx_RibbonApplicationButton {
   background-color: transparent;
-  color: #007acc;
+  color: #005293;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   border-bottom: 2px solid #007acc;

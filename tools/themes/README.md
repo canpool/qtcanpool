@@ -50,13 +50,30 @@ flat / slate / accent）× 明暗两套 = 10 个文件。
 | `text` / `text-muted` / `text-on-fill` | 主文字 / 次要文字 / 压在强调色块上的文字 |
 | `surface` / `surface-alt` / `surface-sub` | Ribbon 条（chrome，页签坐在上面）/ 次级面 / 更次一级（子控件） |
 | `body` | **正文档位**：页签下方的 ribbon 页面。与 `surface` 分开，才可能让某些家族"条浅页深"、另一些"条深页浅" |
-| `state-hover` / `state-pressed` / `state-pressed-deep` | 悬停 / 按下 / 按到底 |
+| `state-rest` / `state-hover` / `state-pressed` / `state-pressed-deep` | 常态填充 / 悬停 / 按下 / 按到底 |
 | `border` / `border-strong` | 发丝线 / 需要看清的边（分隔线、输入框边） |
-| `accent` / `accent-hover` | 强调色：焦点边、下划线、选中文字 |
+| `accent` / `accent-hover` | 强调色：焦点边、下划线、悬停加深 |
+| `accent-text` | 强调色当**文字或字形**压在中性面上（选中页签的字、文件键的字形）。亮色取深一端、暗色取亮一端，否则 4.5:1 不够 |
 | `accent-fill` / `accent-fill-strong` | 强调色**填充**面（选中项底、标题栏按钮悬停） |
 | `accent-faint` / `accent-soft` | 强调色的极淡/淡色洗（悬停底色、淡边框） |
 | `highlight` | 提示性黄（下拉框悬停边） |
 | `close-hover` / `close-pressed` | 关闭按钮悬停/按下（微软系红，通常不改） |
+
+## 门禁（写文件之前自动跑）
+
+`build_themes.py` 先过三道检查，有任何一条不过就整体退出、一个文件都不写。
+改色板改出问题，在这里就会报出来，而不是等十份样式表都生成完：
+
+| 检查 | 判据 |
+| :--- | :--- |
+| 对比度 | 每条规则的「字 on 填充」要够 WCAG AA 的 4.5:1（这些样式表画的是 12–13px 小字，不吃大字 3:1 的宽待）；渐变逐色标取最差。字色按「本条声明 → 所属常态规则 → 调色板 `text`」继承——平台在样式表沉默时画的就是 `text`。`:disabled` 豁免，它本来就该退后 |
+| 状态 | 常态填充用**状态色**（`state-*`）的规则，`:hover` / `:selected` / `:checked` 必须换一个填充；常态用面色（`surface*` / `border` / `body`）的可以只靠边——输入框悬停只变边是正常设计。两者都不画填充的（页签悬停只加下划线）不管 |
+| 选中 | `::item:selected` 的填充不能和所在视图的填充一样，否则选中行在视图里找不到 |
+
+两处猜不到的地方写死在脚本里，也有注释说明：标题栏窗口按钮的字形是 C++ 按调色板
+角色染的（`windowbuttongroup.cpp`：关闭键悬停/按下用 `HighlightedText`，其余用
+`WindowText`），样式表选不了那个色，所以这些填充按 WCAG 非文字的 3:1 校；规则不画
+填充时门禁什么都不查——它不知道控件后面坐着谁。
 
 ## 两条约定
 
