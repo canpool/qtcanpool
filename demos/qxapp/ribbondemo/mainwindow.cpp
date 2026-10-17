@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 
 #include "qxribbon/ribbonapplicationbutton.h"
 #include "qxribbon/ribbonbar.h"

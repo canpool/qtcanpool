@@ -109,6 +109,20 @@ endif()
 # with other compilers
 if(MSVC)
   add_compile_options(/wd4573)
+
+  # Every source file here is UTF-8 and carries no byte order mark. Those three
+  # bytes are the only other way to tell MSVC the encoding, and they mean nothing
+  # to GCC and Clang; without either, MSVC decodes the file with the system code
+  # page, which turns u"..." - and therefore QStringLiteral - into whatever that
+  # code page made of those bytes, silently. /utf-8 declares both the source and
+  # the execution charset UTF-8, so a wide literal is right and a narrow one holds
+  # the bytes GCC and Clang produce, which is what Qt's const char* -> QString
+  # expects. /source-charset:utf-8 alone fixes only the first half and leaves a
+  # narrow literal in the system code page. Available since Visual Studio 2015
+  # Update 2; the tree needs 2017 anyway.
+  if(MSVC_VERSION GREATER_EQUAL 1910)
+    add_compile_options(/utf-8)
+  endif()
 endif()
 # Qt for WebAssembly is built without QtConcurrent: it needs threads, and the
 # single-threaded WebAssembly build has none. Nothing in this tree uses it, so it
