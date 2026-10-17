@@ -66,6 +66,47 @@ QX_RIBBON_USE_NAMESPACE
         costLast = costNow;                                                                                            \
     } while (0)
 
+namespace
+{
+
+struct DemoTheme {
+    QString id;
+    QString name;
+    bool dark;   // Drives the context page tab; see MainWindow::applyTheme().
+    QString file;
+};
+
+/*
+ * The themes this demo offers, and they are the demo's own to offer: the ribbon
+ * library ships no style sheet of its own, so what a ribbon looks like is decided
+ * here. Everything but Office 2016 Blue comes from res/themes.qrc, which this
+ * demo builds in alongside any other application that wants the same set.
+ */
+QVector<DemoTheme> demoThemes()
+{
+    return {
+        {QStringLiteral("light-yellow"), MainWindow::tr("LightYellow"), false,
+         QStringLiteral(":/themes/light_yellow.css")},
+        {QStringLiteral("light-office2013"), MainWindow::tr("LightOffice2013"), false,
+         QStringLiteral(":/themes/light_office2013.css")},
+        {QStringLiteral("light-classic"), MainWindow::tr("LightClassic"), false,
+         QStringLiteral(":/themes/light_classic.css")},
+        {QStringLiteral("light-fancy"), MainWindow::tr("LightFancy"), false,
+         QStringLiteral(":/themes/light_fancy.css")},
+        {QStringLiteral("dark-wps"), MainWindow::tr("DarkWps"), true, QStringLiteral(":/themes/dark_wps.css")},
+        {QStringLiteral("dark-officeplus"), MainWindow::tr("DarkOfficePlus"), true,
+         QStringLiteral(":/themes/dark_officeplus.css")},
+        {QStringLiteral("light-fluent2016"), MainWindow::tr("LightFluent2016"), false,
+         QStringLiteral(":/themes/light_fluent2016.css")},
+        {QStringLiteral("light-fluent2019"), MainWindow::tr("LightFluent2019"), false,
+         QStringLiteral(":/themes/light_fluent2019.css")},
+        {QStringLiteral("office2016blue"), MainWindow::tr("Office2016Blue"), true,
+         QStringLiteral(":/theme/res/office2016blue.css")},
+    };
+}
+
+}   // namespace
+
 MainWindow::MainWindow(QWidget *par, bool screenshotMode)
     : MyRibbonWindow(par)
     , m_screenshotMode(screenshotMode)
@@ -114,16 +155,26 @@ MainWindow::~MainWindow()
     }
 }
 
-void MainWindow::setRibbonTheme(int theme)
+void MainWindow::applyTheme(const QString &themeId)
 {
-    switch (theme) {
-    case Office2016BlueTheme:
-        loadTheme(":/theme/res/office2016blue.css");
-        break;
-    default:
-        break;
+    const QVector<DemoTheme> themes = demoThemes();
+    for (const DemoTheme &theme : themes) {
+        if (theme.id != themeId) {
+            continue;
+        }
+        QFile file(theme.file);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return;
+        }
+        // One sheet for the whole application. Putting it on the window instead would
+        // make it win over the application's wherever both describe the same widget,
+        // which is how the ribbon used to stay light while the rest went dark.
+        qApp->setStyleSheet(QString::fromUtf8(file.readAll()));
+        // A dark ribbon needs the context page to leave its tab alone; a light one
+        // draws over it. Office 2016 Blue is dark enough to count.
+        ribbonBar()->setPageContextCoverTab(!theme.dark);
+        return;
     }
-    RibbonMainWindow::setRibbonTheme(theme);
 }
 
 void MainWindow::createCentralWidget()
@@ -995,15 +1046,10 @@ void MainWindow::createRightButtonGroup()
     QAction *actionTheme = createAction(tr("theme"), ":/icon/res/theme.svg");
     RibbonMenu *menu = new RibbonMenu(tr("theme"), this);
     actionTheme->setMenu(menu);
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightYellow")), RibbonTheme::LightYellowTheme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightOffice2013")), RibbonTheme::LightOffice2013Theme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightClassic")), RibbonTheme::LightClassicTheme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFancy")), RibbonTheme::LightFancyTheme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkWps")), RibbonTheme::DarkWpsTheme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("DarkOfficePlus")), RibbonTheme::DarkOfficePlusTheme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFluent2016")), RibbonTheme::LightFluent2016Theme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("LightFluent2019")), RibbonTheme::LightFluent2019Theme));
-    m_themeGroup->addAction(addThemeAction(menu->addAction(tr("Office2016Blue")), MainWindow::Office2016BlueTheme));
+    // One entry per theme the demo offers, in the order they are listed above.
+    for (const DemoTheme &theme : demoThemes()) {
+        m_themeGroup->addAction(addThemeAction(menu->addAction(theme.name), theme.id));
+    }
     rightBar->addAction(actionTheme);
 
     QAction *actionHelp = createAction(tr("help"), ":/icon/res/help.svg");
@@ -1180,7 +1226,7 @@ QAction *MainWindow::createAction(const QString &text, const QString &iconurl)
     return createAction(text, iconurl, text);
 }
 
-QAction *MainWindow::addThemeAction(QAction *action, int themeId)
+QAction *MainWindow::addThemeAction(QAction *action, const QString &themeId)
 {
     action->setCheckable(true);
     action->setData(QVariant(themeId));
@@ -1203,8 +1249,9 @@ void MainWindow::changeRibbonTheme(int index)
 
 void MainWindow::applyStyleSheet(const QString &styleSheet)
 {
-    this->setStyleSheet(styleSheet);
-    setRibbonTheme(UserCustomTheme);
+    // Same reasoning as in applyTheme(): a sheet picked from a file belongs to the
+    // application, not to this window, or it would shadow the application's own.
+    qApp->setStyleSheet(styleSheet);
     // NOTE: the theme menu does not reflect the custom theme - there is no "Custom" entry in it, and
     // adding one only to track this state is not worth it for a demo. Known imperfection, not a bug.
 }
@@ -1324,16 +1371,7 @@ void MainWindow::onActionChangeThemeTriggered()
 {
     QAction *action = qobject_cast<QAction *>(sender());
     if (action) {
-        int theme = action->data().toInt();
-        // dark themes
-        if (theme == RibbonTheme::DarkWpsTheme || theme == MainWindow::Office2016BlueTheme ||
-            theme == RibbonTheme::DarkOfficePlusTheme) {
-            ribbonBar()->setPageContextCoverTab(false);
-        } else {
-            // light themes
-            ribbonBar()->setPageContextCoverTab(true);
-        }
-        setRibbonTheme(theme);
+        applyTheme(action->data().toString());
     }
 }
 

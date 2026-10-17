@@ -17,12 +17,10 @@ public:
     void updateMinimumWidth();
 public:
     RibbonBar *m_ribbonBar;
-    int m_theme;
 };
 
 RibbonMainWindowPrivate::RibbonMainWindowPrivate()
     : m_ribbonBar(Q_NULLPTR)
-    , m_theme(RibbonTheme::LightOffice2013Theme)
 {
 }
 
@@ -88,7 +86,6 @@ RibbonMainWindow::RibbonMainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     QX_INIT_PRIVATE(RibbonMainWindow)
-    setRibbonTheme(ribbonTheme());
     setMenuWidget(new RibbonBar(this));
     resizeRibbon();
 }
@@ -120,24 +117,6 @@ void RibbonMainWindow::resizeRibbonNow()
     }
 }
 
-void RibbonMainWindow::setRibbonTheme(int theme)
-{
-    Q_D(RibbonMainWindow);
-    RibbonTheme::setTheme(theme, this);
-    d->m_theme = theme;
-
-    if (d->m_ribbonBar) {
-        d->m_ribbonBar->updateRibbonTheme();
-        d->m_ribbonBar->resizeRibbon();
-    }
-}
-
-int RibbonMainWindow::ribbonTheme() const
-{
-    Q_D(const RibbonMainWindow);
-    return d->m_theme;
-}
-
 void RibbonMainWindow::updateWindowFlags(Qt::WindowFlags flags)
 {
     setWindowFlags(flags);
@@ -156,11 +135,6 @@ void RibbonMainWindow::setMenuWidget(QWidget *menuBar)
 void RibbonMainWindow::setMenuBar(QMenuBar *menuBar)
 {
     setMenuWidget(menuBar);
-}
-
-void RibbonMainWindow::loadTheme(const QString &themeFile)
-{
-    RibbonTheme::loadTheme(themeFile, this);
 }
 
 bool RibbonMainWindow::event(QEvent *e)

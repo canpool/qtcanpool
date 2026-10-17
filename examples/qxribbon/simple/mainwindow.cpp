@@ -42,7 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
     RibbonGalleryGroup *galleryGrp = gallery->addGalleryGroup();
     galleryGrp->addItem(tr("item1"), icon);
 
-    // setRibbonTheme(RibbonTheme::DarkWpsTheme);   // see RibbonTheme::ThemeStyle
+    // A theme is the application's to pick, not the ribbon's: register one with
+    // QxThemeManager and name its id. See examples/qxribbon/ribbonstyle.
 
     resize(800, 400);
 }

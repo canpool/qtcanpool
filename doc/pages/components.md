@@ -131,9 +131,8 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组；4.5 起内建 KeyTips（B1）、富提示（B6）、右键上下文菜单（B10） |
 | `RibbonBackstageView` | 应用按钮打开的整屏后台视图（4.5 新增，B4）：覆盖 RibbonBar 所在宿主、左侧命令列（addAction/addSeparator/addPage）+ 右侧页面（setActivePage/activePage）；Esc 与返回按钮关闭，除非 setClosePrevented()；列/按钮/分隔符带 qx_RibbonBackstage* 对象名供主题着色，见 `Example_Ribbon_Backstage` |
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单；页面变窄时先逐组缩放、缩不动才出滚动条（B11） |
-| `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口 |
+| `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口。**不带主题**（4.5 起 `RibbonTheme` 与主题三件套已移除）：Ribbon 长什么样由下发到应用的那张样式表决定，见 @ref QxTheme::QxThemeManager 与 `Example_RibbonStyle` |
 | `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
-| `RibbonTheme` | widget 级样式表加载器（6 套内置 + 4.5 的 Fluent 2016/2019，B7）。新代码请优先使用 @ref QxTheme::QxThemeManager |
 | `RibbonGallery` / `RibbonGalleryGroup` | 选项板及其分组；4.5 起可聚焦并用方向键 / Enter / PageUp 导航（B9） |
 | `RibbonCustomizeDialog` / `RibbonActionsManager` | 自定义对话框，及其背后按标签管理 action 的管理器 |
 | `RibbonButton` | Ribbon 标准按钮（大 / 中 / 小三种尺寸，可带弹出菜单） |
@@ -148,8 +147,7 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonPageContext` | 把一组页作为上下文整体显隐（如「表格工具」上下文页签） |
 | `RibbonMdiArea` | 标签式文档 MDI 区（`QMdiArea` 派生，4.5 新增）：文档以标签页呈现，切换活动文档时自动换掉其登记的 `RibbonPage`；见 `Example_Ribbon_MdiTabs` |
 
-样式表资源位于 `:/qxribbon/res/stylesheets/*.css`，是**进程级**资源；
-`QxThemeManager` 正是按路径从这里取内置主题。
+`qxribbon` 本身**不带主题**：库不再内置任何样式表，也不提供主题枚举或切换 API（`RibbonTheme` 已删，B12）。一个 ribbon 用什么配色，由**到达应用的样式表**决定——通常是通过 `QxThemeManager` 注册并以 id 选取（见 @ref QxTheme::QxThemeManager）。仓库根的 `res/themes/` 提供 8 套现成样式表（`light_yellow` / `light_office2013` / `light_classic` / `light_fancy` / `dark_wps` / `dark_officeplus` / `light_fluent2016` / `light_fluent2019`），被 `res/themes.qrc`（前缀 `:/themes/`）打包，由各应用自行编入并注册，没有副本散落在库里。
 
 ## qxdock — 可停靠窗口
 

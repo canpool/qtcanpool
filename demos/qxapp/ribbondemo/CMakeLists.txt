@@ -28,4 +28,6 @@ add_qtc_executable(RibbonDemo
     mainwindow.cpp mainwindow.h
     ribbondemo.qrc
     ribbondemo.rc
+    # The style sheets the demo offers as themes (:/themes/*.css).
+    ${CMAKE_SOURCE_DIR}/res/themes.qrc
 )

@@ -34,6 +34,7 @@ class tst_RibbonMainWindow : public QObject
 private slots:
     void minimumWidthCoversRibbonContent();
     void minimumWidthSurvivesMaximizeRoundTrip();
+    void windowCarriesNoStyleSheetOfItsOwn();
 };
 
 static void addRibbonContent(RibbonBar *bar)
@@ -116,6 +117,32 @@ void tst_RibbonMainWindow::minimumWidthSurvivesMaximizeRoundTrip()
     const int needed = window.ribbonBar()->sizeHint().width();
     QCOMPARE(window.minimumWidth(), needed);
     QVERIFY(window.width() >= needed);
+}
+
+/*
+ * The window used to install a stylesheet on itself in its constructor, and a sheet on a
+ * widget wins over the one the application installed - Qt merges the two and the widget's
+ * own rule takes precedence when both match. A dark application theme therefore left the
+ * ribbon light no matter what the application asked for, because the bundled sheet only
+ * ever described ribbon widgets and so the rest of the window went dark while the ribbon
+ * did not. The window now has no theme of its own: whatever reaches the application is
+ * what a ribbon is drawn with.
+ */
+void tst_RibbonMainWindow::windowCarriesNoStyleSheetOfItsOwn()
+{
+    const QString saved = qApp->styleSheet();
+    qApp->setStyleSheet(QStringLiteral("QWidget { background: #010203; }"));
+
+    RibbonMainWindow window;
+    addRibbonContent(window.ribbonBar());
+    window.show();
+    QApplication::processEvents();
+
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { background: #010203; }"));
+    QVERIFY(window.styleSheet().isEmpty());
+    QVERIFY(window.ribbonBar()->styleSheet().isEmpty());
+
+    qApp->setStyleSheet(saved);
 }
 
 TEST_ADD(tst_RibbonMainWindow)

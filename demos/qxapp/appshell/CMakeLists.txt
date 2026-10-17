@@ -19,4 +19,7 @@ add_qtc_executable(AppShellDemo
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
+    # The style sheets this demo offers as themes; res/themes.qrc is shared with
+    # any other application that wants to offer the same set.
+    ${CMAKE_SOURCE_DIR}/res/themes.qrc
 )

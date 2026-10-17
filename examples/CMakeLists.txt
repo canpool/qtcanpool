@@ -27,7 +27,8 @@
 # definitions - and it has to be the same header the sample's own mainwindow.cpp
 # sees, or main() builds an object of the wrong size on the stack.
 #
-# The resource file is shared by all of them - /logo is its only alias.
+# The resource file is shared by all of them - /logo is its only alias. A sample
+# that needs resources beyond that one lists them after the four fixed arguments.
 
 function(add_qtc_example name library directory window)
     file(GLOB _sample_sources CONFIGURE_DEPENDS
@@ -55,6 +56,8 @@ function(add_qtc_example name library directory window)
     else()
         message(FATAL_ERROR "add_qtc_example(${name}): unknown window kind '${window}'")
     endif()
+
+    list(APPEND _sources ${ARGN})
 
     add_qtc_executable(${name}
         # Samples are built here and stay here; none of them belongs in an
@@ -91,7 +94,10 @@ add_qtc_example(Example_Ribbon_Gallery qxribbon qxribbon/ribbongallery ribbon)
 # 4.5: group-level shrink on resize (B11), with a live isReduced() readout.
 add_qtc_example(Example_Ribbon_GroupShrink qxribbon qxribbon/groupshrink sample)
 add_qtc_example(Example_Ribbon_MdiTabs qxribbon qxribbon/mditabs sample)
-add_qtc_example(Example_RibbonStyle qxribbon qxribbon/ribbonstyle sample)
+# Carries its own themes: the style sheets live in res/themes.qrc, the sample
+# registers them with the engine, and qxapp is what pulls qxtheme in.
+add_qtc_example(Example_RibbonStyle qxapp qxribbon/ribbonstyle sample
+    "${CMAKE_SOURCE_DIR}/res/themes.qrc")
 # 4.5: the full-takeover backstage the application button opens (B4).
 add_qtc_example(Example_Ribbon_Backstage qxribbon qxribbon/backstage sample)
 # Segments on the left, view switches on the right, in a themed status bar.

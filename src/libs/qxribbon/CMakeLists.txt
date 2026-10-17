@@ -36,7 +36,6 @@ add_qtc_library(qxribbon
     ribbonstatusbar.cpp ribbonstatusbar.h ribbonstatusbar_p.h
     ribbonstyleoption.cpp ribbonstyleoption.h
     ribbontabbar.cpp ribbontabbar.h
-    ribbontheme.cpp ribbontheme.h
     ribbonutils.cpp ribbonutils.h
     windowbuttongroup.cpp windowbuttongroup.h windowbuttongroup_p.h
 )

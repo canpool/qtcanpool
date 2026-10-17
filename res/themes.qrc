@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/themes">
+        <file>themes/light_yellow.css</file>
+        <file>themes/light_office2013.css</file>
+        <file>themes/light_classic.css</file>
+        <file>themes/light_fancy.css</file>
+        <file>themes/dark_wps.css</file>
+        <file>themes/dark_officeplus.css</file>
+        <file>themes/light_fluent2016.css</file>
+        <file>themes/light_fluent2019.css</file>
+    </qresource>
+</RCC>

@@ -1,5 +1,19 @@
 Unreleased
 ---
+Interface
+- The library no longer carries a theme of its own. RibbonTheme is gone - both the
+  class and its ThemeStyle enumeration - and with it
+  RibbonMainWindow::setRibbonTheme(), ribbonTheme() and loadTheme(), and the
+  ribbonTheme Q_PROPERTY. What a ribbon looks like is decided by the style sheet
+  that reaches the application: the window used to install one on itself in its
+  constructor, and a sheet on a widget wins over the application's wherever both
+  describe the same widget, so an application that asked for a dark theme kept a
+  light ribbon while the rest of its window went dark. The eight bundled style
+  sheets left with the class and now live outside the library, in res/themes/, for
+  an application to build in and register under ids of its choosing - see
+  examples/qxribbon/ribbonstyle. RibbonBar::updateRibbonTheme() stays: it is what
+  to call after a style change the bar has to re-read.
+
 Cleanup
 - The scroll offset of a ribbon page is clamped in one place. The legal range
   was written down four times - a pair of hand-rolled if-chains in the wheel
@@ -50,11 +64,6 @@ Feature
   mnemonic, its statusTip, and its shortcut, in a shared frameless tool window
   that follows the pointer. An action with neither a statusTip nor a shortcut
   keeps the plain tooltip.
-- Add the LightFluent2016Theme and LightFluent2019Theme ribbon themes. They reuse
-  the Office 2013 selectors with the palette remapped to the Fluent accent and
-  neutral colours (2019 the lighter chrome). The two enumerators are appended
-  after CustomTheme so the existing theme values do not shift, because
-  RibbonMainWindow exposes the theme as an int.
 - RibbonQuickAccessBar: the customize menu now ends with the Office-style
   "Customize Quick Access Toolbar..." entry, after a separator, which emits the
   new customizeDialogRequested() signal for the host to open its dialog. The entry

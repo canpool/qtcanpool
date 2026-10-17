@@ -35,10 +35,10 @@ QX_THEME_USE_NAMESPACE
 namespace
 {
 
-/*! Reads one of the style sheets the ribbon ships. */
+/*! Reads one of the style sheets this demo builds in (res/themes.qrc). */
 QxThemeInfo bundledTheme(const QString &id, const QString &name, bool dark, const QString &fileName)
 {
-    QFile file(QStringLiteral(":/qxribbon/res/stylesheets/") + fileName);
+    QFile file(QStringLiteral(":/themes/") + fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return QxThemeInfo();
     }

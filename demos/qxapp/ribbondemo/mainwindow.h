@@ -29,13 +29,6 @@ class MainWindow : public MyRibbonWindow
 {
     Q_OBJECT
 public:
-    enum RibbonThemeCustom {
-        // B7 added LightFluent2016/2019 right after CustomTheme, so CustomTheme + 1/2 now
-        // collide with them. Keep the demo's custom ids above the library's full range.
-        Office2016BlueTheme = RibbonTheme::LightFluent2019Theme + 1,
-        UserCustomTheme,
-    };
-public:
     /*!
      * @param screenshotMode keeps the construction log out of the central
      * editor. The log carries elapsed milliseconds, so its text - and with it
@@ -45,7 +38,6 @@ public:
      */
     MainWindow(QWidget *par = nullptr, bool screenshotMode = false);
     ~MainWindow();
-    void setRibbonTheme(int theme);
 private:
     void createCentralWidget();
     void createStatusBar();
@@ -69,7 +61,8 @@ private:
 
     QAction *createAction(const QString &text, const QString &iconurl, const QString &objName);
     QAction *createAction(const QString &text, const QString &iconurl);
-    QAction *addThemeAction(QAction *action, int themeId);
+    QAction *addThemeAction(QAction *action, const QString &themeId);
+    void applyTheme(const QString &themeId);
 
     void changeRibbonTheme(int index);
 

@@ -251,12 +251,12 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 
 | 类 | 基类 | 比基类多出来的东西 |
 | :--- | :--- | :--- |
-| `RibbonMainWindow` | `QMainWindow` | `ribbonBar()` / `resizeRibbon()` / 主题（`setRibbonTheme`、`loadTheme`）/ `windowStateChanged` |
+| `RibbonMainWindow` | `QMainWindow` | `ribbonBar()` / `resizeRibbon()` / `windowStateChanged`（主题三件套 `setRibbonTheme`、`ribbonTheme`、`loadTheme` **4.5 已删除**，见「4.x 破坏性变更 → 4.5」） |
 | `RibbonWindow` | `RibbonMainWindow` | **只有无边框**：`isFrameless` / `setFrameless`，实现是 `FramelessHelper` + `WindowButtonGroup` |
 | `RibbonAppWindow`（`qxapp`） | `RibbonMainWindow` | **只有无边框**：实现是 qxwindow 的 `WindowAgentWidget` |
 
 ⇒ 后两者是**兄弟不是父子**：同一个 `RibbonMainWindow` 基类，换的只是无边框后端。
-**`RibbonWindow` 去掉无边框之后就等于 `RibbonMainWindow`**——主题与 `ribbonBar()` 全在基类里，
+**`RibbonWindow` 去掉无边框之后就等于 `RibbonMainWindow`**——`ribbonBar()` 全在基类里，
 它自己一点都没多。
 
 **为什么当初要在 `qxribbon` 里自带一份无边框实现**，而不是直接用 `qxwindow`：为了让 `qxribbon`
@@ -368,7 +368,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 7. option 按钮：`setOptionButtonVisible` → `addOptionAction(QAction *)`。
 8. 容器类：改用 `RibbonGroup::addWidget` / `addGallery` / `addSeparator`。
 9. `QuickAccessBar` → `RibbonBar::quickAccessBar()`。
-10. 主题：接入 @ref QxTheme::QxThemeManager 主题引擎（或 `RibbonTheme::loadTheme`）。
+10. 主题：接入 @ref QxTheme::QxThemeManager 主题引擎（4.5 起 `RibbonTheme` 已删除，见下）。
 11. 清理 `fancy*` 遗留调用。
 12. 编译告警清零 —— deprecated 提示即迁移点。
 13. **（3.1）** 7 个改名控件换成 `QxApp::Qx*`；注意 `TinyTabBar` 现在是独立类型。
@@ -399,3 +399,25 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 - **`RibbonGallery` 的 `pageUp` / `pageDown` / `showMoreDetail` 保留**：原计划标为「空转虚函数」
   拟删除，核查后确认三者均有真实实现（驱动滚动视口 / 弹出详情）并已连到按钮，且类带导出宏，
   删除会同时破坏行为与 ABI，故 4.5 不做此变更。
+- **`qxtheme` 不再内置主题**（库 `qxtheme`，破坏 API）：`Theme` 枚举与
+  `themeId` / `themeName` / `themeFromId` / `isDarkTheme` / `themeStyleSheetPath` /
+  `themeStyleSheet` 一族自由函数删除，`setStyleSheetFile()` 删除，
+  `palette(Theme)` → `paletteFor(bool dark)`。主题改由**应用注册**：
+  `QxThemeInfo{id, name, dark, styleSheet}` + `QxThemeManager::registerTheme()`，
+  全库按 **id 字符串**寻址（`setTheme(QString)`、`themeInfo(id)`、`themeIds()`）。
+  引擎保留调色板下发、持久化、系统跟随与强调色。
+  - 迁移：删掉枚举与那几个自由函数的使用；把「选哪个主题」改成注册 + 报 id。
+  - **持久化本就存 id**，沿用旧 id（`dark-wps`、`dark-officeplus` …）即可让老配置继续生效。
+- **`RibbonTheme` 与窗口主题三件套删除**（库 `qxribbon`，破坏 API / ABI）：`RibbonTheme`
+  类（含 `ThemeStyle` 枚举）、`RibbonMainWindow::setRibbonTheme()` / `ribbonTheme()` /
+  `loadTheme()` 与 `ribbonTheme` Q_PROPERTY 全部移除；`RibbonMainWindow` 构造时
+  **不再给自己装样式表**。库自带的 8 套 CSS 移出 `src/libs/qxribbon/res/stylesheets/`，
+  落到仓库的 `res/themes/`（`res/themes.qrc` 挂到 `:/themes/`），由应用自行注册使用。
+  - 为什么：窗口自带的那张是 **widget 级**的，而 Qt 样式表两边都匹配时 widget 级的赢，
+    于是应用选了深色主题、Ribbon 区仍锁在浅色。窗口不带主题，应用下发的才到得了 Ribbon。
+  - 迁移：`w->setRibbonTheme(RibbonTheme::DarkOfficePlusTheme)` →
+    注册该主题后 `QxThemeManager::instance()->setTheme(QStringLiteral("dark-officeplus"))`；
+    `RibbonTheme::loadTheme(file, w)` → 读文件后 `qApp->setStyleSheet(css)`。
+    样式表换手后（widget → application）**Ribbon 区外观应保持一致**：这些 CSS 只描述
+    Ribbon 部件，改到应用级不影响命中范围。
+  - 参见 `examples/qxribbon/ribbonstyle`（应用侧注册 + 按 id 切换的完整示例）。

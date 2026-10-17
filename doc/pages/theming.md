@@ -4,52 +4,66 @@
 
 ## 它解决什么问题
 
-在引擎出现之前，主题能力是互不相干的两半：
+一个应用的外观是两件事：一块调色板，和一张样式表。只做其中一件，表面就对不齐 ——
+菜单、原生对话框、工具提示、禁用态文字这些样式表覆盖不到的地方仍停在平台默认色，
+和一张深色样式表明显不搭。`QxThemeManager` 把两者作为一件事一起应用，并补上持久化与系统跟随。
 
-- `RibbonTheme`（qxribbon）能装载样式表，但**没有调色板**、**不持久化**、**不跟随系统**；
-- `WindowStyleAgent`（qxwindow，4.3 已删除）只能**探测**系统明暗，并不负责应用。
+引擎**不带任何主题**。主题是应用的：应用把「一个 id、一个显示名、是否深色、一张样式表」
+注册进来，引擎只负责记住选择、下发、持久化与跟随系统。这样 `qxtheme` 不必知道
+`qxribbon` 存在，也不必知道一套外观叫什么名字。
 
-结果是菜单、原生对话框、工具提示、禁用态文字这些样式表覆盖不到的表面停留在平台默认色，
-和深色样式表明显不搭。`QxThemeManager` 把「调色板」与「样式表」作为一件事一起应用，
-并补上持久化与系统跟随。
+> 4.5 之前 `qxribbon` 自带一套 `RibbonTheme`（widget 级样式表加载器，8 套内置 CSS），
+> 与引擎互不相干。两套并存时 widget 级那张会赢：应用选了深色，Ribbon 区仍是浅的。
+> 4.5 起 `RibbonTheme` 已删除，8 套 CSS 移到仓库的 `res/themes/`，由应用自行注册。
 
-## 内置主题
+## 注册主题
 
-| 枚举 | 配置 id | 显示名 | 深色 |
-| :--- | :--- | :--- | :---: |
-| `LightYellow` | `light-yellow` | Light Yellow | |
-| `LightOffice2013` | `light-office2013` | Light Office 2013 | |
-| `LightClassic` | `light-classic` | Light Classic | |
-| `LightFancy` | `light-fancy` | Light Fancy | |
-| `DarkWps` | `dark-wps` | Dark WPS | ✓ |
-| `DarkOfficePlus` | `dark-officeplus` | Dark Office Plus | ✓ |
-| `Custom` | `custom` | Custom | |
+```cpp
+#include "qxtheme/qxtheme.h"
+#include "qxtheme/qxthememanager.h"
 
-枚举顺序与 `RibbonTheme::ThemeStyle` 一致，两者无需转换表即可对应。
+using namespace QxTheme;
+
+QxThemeInfo dark(QStringLiteral("dark-officeplus"), QStringLiteral("Dark Office Plus"), true);
+dark.styleSheet = readFile(QStringLiteral(":/themes/dark_officeplus.css"));
+
+QxThemeManager::instance()->registerTheme(dark);
+```
+
+`res/themes.qrc` 把仓库 `res/themes/` 下的样式表挂到 `:/themes/` 上，需要它们的应用
+在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的这几套，约定 id 如下：
+
+| 配置 id | 显示名 | 深色 |
+| :--- | :--- | :---: |
+| `light-yellow` | Light Yellow | |
+| `light-office2013` | Light Office 2013 | |
+| `light-classic` | Light Classic | |
+| `light-fancy` | Light Fancy | |
+| `dark-wps` | Dark WPS | ✓ |
+| `dark-officeplus` | Dark Office Plus | ✓ |
+| `light-fluent2016` | Light Fluent 2016 | |
+| `light-fluent2019` | Light Fluent 2019 | |
+
 **配置 id 是对外契约**：它被写进配置文件，改动需要配合配置迁移。
+沿用上表 id 还有一个好处 —— 老版本存下的选择，在新版本重新注册同名 id 之后仍然有效。
 
-辅助函数：
+查询已注册的主题：
 
 | 函数 | 说明 |
 | :--- | :--- |
-| @ref QxTheme::themeId | 取稳定 id |
-| @ref QxTheme::themeName | 取显示名，适合放进设置对话框 |
-| @ref QxTheme::themeFromId | 由 id 反查枚举，未知 id 返回给定的回退值 |
-| @ref QxTheme::isDarkTheme | 是否为深色主题 |
-| @ref QxTheme::themeStyleSheetPath | 内置样式表的资源路径（`Custom` 为空） |
-| @ref QxTheme::themeStyleSheet | 内置样式表的内容，资源缺失时为空 |
+| @ref QxTheme::QxThemeManager::registerTheme | 注册（同 id 覆盖）。注册到「当前选中」的那个 id 时立即下发，但不广播 |
+| @ref QxTheme::QxThemeManager::unregisterTheme | 按 id 注销 |
+| @ref QxTheme::QxThemeManager::hasTheme | 该 id 是否已注册 |
+| @ref QxTheme::QxThemeManager::themeIds | 全部 id，按注册顺序 |
+| @ref QxTheme::QxThemeManager::themeInfo | 取某个 id 的注册信息（含显示名、是否深色） |
 
 ## 基本用法
 
 在 `QApplication` 构造完成之后取得单例即可，选择会被持久化，下次启动自动恢复：
 
 ```cpp
-#include "qxtheme/qxthememanager.h"
-
-using namespace QxTheme;
-
 QxThemeManager *themes = QxThemeManager::instance();
-themes->setTheme(DarkOfficePlus);
+themes->setTheme(QStringLiteral("dark-officeplus"));
 
 if (themes->isDark()) {
     // 例如切换图标集
@@ -58,22 +72,28 @@ if (themes->isDark()) {
 
 `setTheme()` 会立即应用并发出 `themeChanged()`；`apply()` 用于把当前主题重新装一遍
 （比如在外部改动了样式表之后）。
+选中一个**未注册**的 id 时引擎保持原样并告警一次，而不是装一张空样式表 ——
+清空会抹掉调用方自己设置的样式。
 
 ## 运行时切换为什么不需要遍历控件
 
 应用主题只做两件事：`QApplication::setPalette()` 与 `QApplication::setStyleSheet()`。
 Qt 随后会向所有部件派发 `QEvent::StyleChange`，而 `qxribbon` 与 `qxdock` 早已有为该事件
-准备的既有处理（例如 `RibbonBar` 重新读取主题、`DockTab` 重刷样式）。
+准备的既有处理（例如 `RibbonBar::updateRibbonTheme()` 重新读取主题、`DockTab` 重刷样式）。
 因此引擎不需要知道有哪些窗口存在。
+
+也正因为是 **应用级**下发：把样式表贴在窗口自己身上会盖掉应用的那张，
+这正是 4.5 之前 Ribbon 区不跟随主题的原因。窗口不带主题，应用下发的才到得了 Ribbon。
 
 ## 跟随系统深浅色
 
 ```cpp
-themes->setSystemThemePair(LightOffice2013, DarkOfficePlus);  // 可选，覆盖默认配对
+themes->setSystemThemePair(QStringLiteral("light-office2013"),
+                          QStringLiteral("dark-officeplus"));   // 可选，覆盖默认配对
 themes->setFollowSystemTheme(true);
 ```
 
-默认配对是 `LightOffice2013` / `DarkOfficePlus`。开启跟随之后：
+默认配对是 `light-office2013` / `dark-officeplus`。开启跟随之后：
 
 - 立即应用与当前系统匹配的主题；
 - 之后系统切换时自动跟随（Qt 6.5+ 通过 `QStyleHints::colorSchemeChanged`）；
@@ -82,25 +102,14 @@ themes->setFollowSystemTheme(true);
 
 ## 自定义样式表
 
-内置样式表位于 `:/qxribbon/res/stylesheets/*.css`，是 qxribbon 的资源。
-引擎**不链接 qxribbon**：资源是进程级注册的，只要 qxribbon 被链接进进程，按路径就能读到。
-所以 qxribbon 一侧零改动，非 Ribbon 应用也可以使用主题引擎。
-
-资源不可用时（例如没链接 qxribbon），引擎**只应用调色板并告警一次**，
-而不会清空样式表 —— 清空会抹掉调用方自己设置的样式。
-
-要提供自己的样式表，两种方式：
+样式表是注册信息的一部分，也可以事后替换：
 
 ```cpp
-// 指向一个外部文件（会持久化）
-themes->setStyleSheetFile(DarkOfficePlus, QStringLiteral(":/myapp/dark.css"));
+// 直接给出内容（传空串可撤销）
+themes->setStyleSheet(QStringLiteral("dark-officeplus"), myCss);
 
-// 直接给出内容，优先级高于文件（传空串可撤销覆盖）
-themes->setStyleSheet(Custom, myCss);
+// styleSheet(id) 可以查看 apply() 实际会装载的内容
 ```
-
-`Custom` 主题没有内置资源，配合上面两种方式使用最合适。
-`styleSheet(theme)` 可以查看 `apply()` 实际会装载的内容。
 
 ## 持久化
 
@@ -117,10 +126,8 @@ themes->setStyleSheet(Custom, myCss);
 
 ## 写自己的主题
 
-1. 参照 `qxribbon/res/stylesheets/` 下的样式表，其顶部注释块列出了该主题的
+1. 参照 `res/themes/` 下的样式表，其顶部注释块列出了该主题的
    `qtcanpool-qss` 设计令牌（背景、前景、强调色、边框等）。
-2. 调色板取自同一组令牌，因此新增内置主题时需要同步在 `qxthemepalette.cpp` 中补上色值。
-3. 只想换样式表而不改调色板时，用 `Custom` + `setStyleSheetFile()` 即可，无需改库。
-
-> **注意**：`RibbonTheme` 仍然存在，是 widget 级的样式表加载器。
-> 让它转发到引擎会引入 `qxribbon → qxtheme` 的库依赖，需要先确认这一决策。
+2. 调色板只由「深色 / 浅色」决定（@ref QxTheme::paletteFor），
+   因此新增一套主题只需要注册时给对 `dark`，不需要改库。
+3. 只想换样式表而不动注册，用 `setStyleSheet(id, css)` 即可，无需改库。

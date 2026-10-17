@@ -7,16 +7,24 @@
 #include "qxribbon_global.h"
 #include <QMainWindow>
 #include "ribbonbar.h"
-#include "ribbontheme.h"
 
 QX_RIBBON_BEGIN_NAMESPACE
 
 class RibbonMainWindowPrivate;
 
+/**
+ * A QMainWindow that carries a RibbonBar as its menu widget.
+ *
+ * The window has no opinion about looks: it never installs a style sheet, and it
+ * offers no theme property. A ribbon is drawn by whatever style sheet reaches the
+ * application, so picking one is the application's job - QxThemeManager in
+ * qxtheme applies one for the whole application, which is the level a ribbon
+ * needs it at. RibbonBar::updateRibbonTheme() is what to call after a style
+ * change that the bar has to re-read (see there).
+ */
 class QX_RIBBON_EXPORT RibbonMainWindow : public QMainWindow
 {
     Q_OBJECT
-    Q_PROPERTY(int ribbonTheme READ ribbonTheme WRITE setRibbonTheme)
 public:
     explicit RibbonMainWindow(QWidget *parent = Q_NULLPTR);
     virtual ~RibbonMainWindow() Q_DECL_OVERRIDE;
@@ -26,11 +34,6 @@ public:
     void resizeRibbon();
     /*! Forwards to RibbonBar::resizeRibbonNow(); see there for when to use it. */
     void resizeRibbonNow();
-
-    /** theme, see to RibbonTheme::ThemeStyle */
-    void setRibbonTheme(int theme);
-    int ribbonTheme() const;
-    void loadTheme(const QString &themeFile);
 
     virtual void updateWindowFlags(Qt::WindowFlags flags);
 
