@@ -5,6 +5,7 @@
 
 #include "mainwindow.h"
 
+#include "qxapp/qxthemebundle.h"
 #include "qxapp/qxworkspacemanager.h"
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpage.h"
@@ -16,7 +17,6 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QMenu>
-#include <QtCore/QFile>
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
 #include <QtGui/QFont>
@@ -32,50 +32,6 @@
 QX_RIBBON_USE_NAMESPACE
 QX_THEME_USE_NAMESPACE
 
-namespace
-{
-
-/*! Reads one of the style sheets this demo builds in (res/themes.qrc). */
-QxThemeInfo bundledTheme(const QString &id, const QString &name, bool dark, const QString &fileName)
-{
-    QFile file(QStringLiteral(":/themes/") + fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return QxThemeInfo();
-    }
-
-    QxThemeInfo info(id, name, dark);
-    info.styleSheet = QString::fromUtf8(file.readAll());
-    return info;
-}
-
-/*!
- * The themes this demo offers.
- *
- * The engine ships none of its own, so offering a theme means registering it:
- * an id, a name for the menu, whether it is dark, and what it paints with.
- */
-void registerDemoThemes(QxThemeManager *engine)
-{
-    engine->registerTheme(bundledTheme(QStringLiteral("soft-light"), MainWindow::tr("Soft Light"), false,
-                                       QStringLiteral("soft_light.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("soft-dark"), MainWindow::tr("Soft Dark"), true, QStringLiteral("soft_dark.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("classic-light"), MainWindow::tr("Classic Light"), false,
-                                       QStringLiteral("classic_light.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("classic-dark"), MainWindow::tr("Classic Dark"), true,
-                                       QStringLiteral("classic_dark.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("flat-light"), MainWindow::tr("Flat Light"), false,
-                                       QStringLiteral("flat_light.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("flat-dark"), MainWindow::tr("Flat Dark"), true, QStringLiteral("flat_dark.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("slate-light"), MainWindow::tr("Slate Light"), false,
-                                       QStringLiteral("slate_light.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("slate-dark"), MainWindow::tr("Slate Dark"), true,
-                                       QStringLiteral("slate_dark.css")));
-}
-
-}   // namespace
-
 MainWindow::MainWindow(QWidget *parent)
     : QxAppShell(parent)
 {
@@ -85,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Installing the engine first restores the theme the user picked last time
     // and polishes the widgets once, before the window is even shown.
     QxThemeManager *engine = QxThemeManager::instance();
-    registerDemoThemes(engine);
+    QxApp::registerBundledThemes(engine);
 
     // The ribbon brings the status message with it, so nothing to say here.
     createRibbon();

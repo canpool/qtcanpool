@@ -24,6 +24,14 @@ Feature
   needs a page for, which every application was assembling in the same order.
   tst_QxAppShell::standardShell
 
+- qxapp offers the bundled theme registration as a one-liner. The four families -
+  soft, classic, flat and slate - each in its light and dark variant, were
+  registered by hand in every demo that ships res/themes.qrc, each with its own
+  private file reader; qxthemebundle.h now provides readBundledTheme() (the file
+  reader) and registerBundledThemes(engine) (the eight themes in one call), which
+  AppShellDemo and Example_RibbonStyle use. A theme whose .css is missing is
+  skipped rather than throwing, so a partial resource tree is safe
+
 Interface
 - Rename QxNavBar to QxNavTabBar. The class is a QxTabBar-derived tab navigation
   bar with a show/hide-tabs customize menu, but its name sat one letter from

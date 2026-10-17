@@ -4,6 +4,7 @@
  **/
 #include "mainwindow.h"
 
+#include "qxapp/qxthemebundle.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonbuttongroup.h"
 #include "qxribbon/ribbonmenu.h"
@@ -13,29 +14,10 @@
 
 #include <QAction>
 #include <QActionGroup>
-#include <QFile>
 #include <QStatusBar>
 
 QX_RIBBON_USE_NAMESPACE
 QX_THEME_USE_NAMESPACE
-
-namespace
-{
-
-/*! Reads one of the style sheets this example builds in (res/themes.qrc). */
-QxThemeInfo bundledTheme(const QString &id, const QString &name, bool dark, const QString &fileName)
-{
-    QFile file(QStringLiteral(":/themes/") + fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return QxThemeInfo();
-    }
-
-    QxThemeInfo info(id, name, dark);
-    info.styleSheet = QString::fromUtf8(file.readAll());
-    return info;
-}
-
-}   // namespace
 
 /*
  * Two different things are switched here, and they are switched at two different
@@ -57,23 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
     QIcon icon(":/logo");
 
     QxThemeManager *engine = QxThemeManager::instance();
-    // Four families, each in its light and dark scheme (res/themes.qrc).
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("soft-light"), tr("Soft Light"), false, QStringLiteral("soft_light.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("soft-dark"), tr("Soft Dark"), true, QStringLiteral("soft_dark.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("classic-light"), tr("Classic Light"), false, QStringLiteral("classic_light.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("classic-dark"), tr("Classic Dark"), true, QStringLiteral("classic_dark.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("flat-light"), tr("Flat Light"), false, QStringLiteral("flat_light.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("flat-dark"), tr("Flat Dark"), true, QStringLiteral("flat_dark.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("slate-light"), tr("Slate Light"), false, QStringLiteral("slate_light.css")));
-    engine->registerTheme(
-        bundledTheme(QStringLiteral("slate-dark"), tr("Slate Dark"), true, QStringLiteral("slate_dark.css")));
+    // The four families, each in its light and dark scheme, come from
+    // :/themes/<family>_<light|dark>.css (res/themes.qrc); one call registers
+    // all eight.
+    QxApp::registerBundledThemes(engine);
     connect(engine, &QxThemeManager::themeChanged, this, &MainWindow::onThemeChanged);
 
     RibbonBar *rb = ribbonBar();
