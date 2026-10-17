@@ -47,6 +47,16 @@ Interface
 - RibbonGroup: add setReduced and isReduced
 
 Bugfix
+- The tab strip follows a theme change. Its width is not laid out but added up by
+  the bar from the tabs' own widths, and nothing re-ran that sum when a style
+  sheet arrived: switching from a theme that pads ::tab by 8 pixels to one that
+  pads by 12 left the strip as wide as the previous theme asked for, the wider
+  tabs no longer fit, and QTabBar did what it does with tabs it cannot show - it
+  scrolled them, so a pair of arrows appeared on the right of the strip. RibbonBar
+  now lays itself out again on QEvent::StyleChange, queued so that the tabs are
+  measured under the new sheet rather than the old one.
+  tst_RibbonBar::tabBarFollowsTheTheme
+
 - The ribbon's placeholder tab takes no width. With no page selected - the state a
   minimized ribbon is in - the bar has to select a tab that paints nothing,
   because QTabBar::setCurrentIndex(-1) does nothing at all: Qt stores an index only

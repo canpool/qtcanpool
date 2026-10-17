@@ -1920,6 +1920,20 @@ bool RibbonBar::event(QEvent *event)
     case QEvent::ApplicationFontChange: {
         d->onFontChanged();
     } break;
+    case QEvent::StyleChange: {
+        // A style sheet decides how wide a tab is - the shipped themes pad
+        // ::tab by 8 to 12 pixels - and the strip gets its width from adding
+        // those tabs up (calcMinTabBarWidth, then layoutTabBar), not from a
+        // layout that would follow the style on its own. So a theme switch has
+        // to re-run that sum: without this the bar keeps the width the previous
+        // sheet asked for, the wider tabs no longer fit, and QTabBar answers by
+        // scrolling - a pair of arrows appears on the right of the strip.
+        //
+        // Queued, like every other resize in this class, and for one more
+        // reason here: the style change reaches the tab bar after it reaches
+        // this widget, and the tabs report their new width only once it has.
+        d->resizeRibbon();
+    } break;
     case QEvent::LayoutRequest: {
         // NOTE: reacting to LayoutRequest by re-running the ribbon resize can
         // cost more than one resize pass per event, and the conditions that

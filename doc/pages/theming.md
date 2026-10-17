@@ -81,7 +81,8 @@ themes->setTheme(QStringLiteral("soft-dark"));
 
 应用主题只做两件事：`QApplication::setPalette()` 与 `QApplication::setStyleSheet()`。
 Qt 随后会向所有部件派发 `QEvent::StyleChange`，而 `qxribbon` 与 `qxdock` 早已有为该事件
-准备的既有处理（例如 `RibbonBar::updateRibbonTheme()` 重新读取主题、`DockTab` 重刷样式）。
+准备的既有处理（例如 `RibbonBar` 收到后重排整条 Ribbon —— 标签条的宽度是把它自己的标签
+加起来算出来的，换一张表标签变宽了就得重算；`DockTab` 重刷样式）。
 因此引擎不需要知道有哪些窗口存在。
 
 也正因为是 **应用级**下发：把样式表贴在窗口自己身上会盖掉应用的那张，

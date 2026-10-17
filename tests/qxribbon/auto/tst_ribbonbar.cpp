@@ -48,6 +48,7 @@ private slots:
     void objectNames();
     void windowButtonGroupIsPlacedBeforeTheWindowIsShown();
     void noSelectionCostsNoRoom();
+    void tabBarFollowsTheTheme();
     void contextMenu();
 };
 
@@ -384,6 +385,57 @@ void tst_RibbonBar::noSelectionCostsNoRoom()
     // Selecting a page again leaves the placeholder where it was.
     rb.setCurrentIndex(1);
     QCOMPARE(1, rb.currentIndex());
+}
+
+/*!
+ * A theme decides how wide a tab is: the shipped sheets pad ::tab by 8 to 12
+ * pixels, and the tab bar's own width comes from adding those tabs up (see
+ * RibbonBarPrivate::calcMinTabBarWidth and layoutTabBar). A stylesheet change
+ * therefore has to reach the layout as well as the style, or the bar keeps the
+ * width the previous theme asked for and the wider tabs no longer fit - QTabBar
+ * answers that by scrolling, so the strip grows a pair of arrows on its right.
+ */
+void tst_RibbonBar::tabBarFollowsTheTheme()
+{
+    QWidget window;
+    window.resize(1200, 400);
+
+    RibbonBar rb(&window);
+    for (int i = 0; i < 4; ++i) {
+        rb.addPage(QStringLiteral("page%1").arg(i));
+    }
+    rb.setStyleSheet(QStringLiteral("QTabBar::tab { padding: 0 4px; }"));
+
+    QTabBar *bar = rb.findChild<QTabBar *>(QStringLiteral("qx_RibbonTabBar"));
+    QVERIFY(bar);
+
+    window.show();
+    rb.resizeRibbon();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    const int narrowWidth = bar->width();
+    QVERIFY(narrowWidth > 0);
+
+    // The same thing a theme switch does, only narrower in scope: a new sheet
+    // with wider tabs. Nothing calls resizeRibbon() here on purpose - an
+    // application that switches a theme calls setStyleSheet and nothing else,
+    // so the bar has to notice the change itself.
+    rb.setStyleSheet(QStringLiteral("QTabBar::tab { padding: 0 24px; }"));
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    QVERIFY(bar->width() > narrowWidth);
+
+    // The tabs fit: the last one ends inside the strip, so QTabBar has no reason
+    // to put its scroll buttons up. Both widths are checked because a bar that
+    // grew by less than the tabs did would still scroll.
+    const int last = bar->QTabBar::count() - 1;
+    QVERIFY(bar->tabRect(last - 1).right() < bar->width());
+
+    // And back: the width is recomputed from the tabs each time, not grown
+    // monotonically, so a narrower theme has to give the space up again.
+    rb.setStyleSheet(QStringLiteral("QTabBar::tab { padding: 0 4px; }"));
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QCOMPARE(narrowWidth, bar->width());
 }
 
 void tst_RibbonBar::contextMenu()
