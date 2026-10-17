@@ -101,24 +101,32 @@ jobs:
     # MSVC is the one compiler here that has to be told what encoding the
     # sources are in. Without /utf-8 it decodes them with the system code page,
     # so a u"..." literal - and therefore every QStringLiteral - ends up holding
-    # whatever that code page made of those bytes. Nothing fails to build; the
-    # text is just wrong at run time, which is the part a gate has to catch. The
-    # top-level CMakeLists.txt adds the switch, and this job is what says it is
-    # still there and still reaching the compiler.
+    # whatever that code page made of those bytes. The build succeeds; the text
+    # is wrong at run time. The top-level CMakeLists.txt adds the switch, and
+    # this job is what keeps it there: deleting it, moving it below the targets
+    # and breaking the if(MSVC) guard are all silent otherwise.
     #
-    # Qt 5.15.2 on Windows, and no other leg, because this is the only
-    # combination in which the switch is load-bearing: Qt 6 hands -utf-8 to its
-    # consumers through Qt6::Platform's interface compile options, so a Qt 6 leg
-    # would stay green with the switch deleted, and GCC and Clang never had the
-    # problem at all. The 5.15.2 leg in `build` above runs on Linux, where
-    # /utf-8 means nothing.
+    # It cannot be a "build and run the suite" job, which is what it was first:
+    # Qt 6 hands -utf-8 to its consumers through Qt6::Platform's interface
+    # compile options, so the literals survive with the switch deleted and the
+    # suite stays green; Qt 5.15.2 would be the leg where the switch is the whole
+    # story, but its headers no longer compile with the toolset the runners ship
+    # - the one attempt failed in qvector.h on stdext::checked_array_iterator,
+    # which VS 2026 removed.
     #
-    # One target rather than the tree: add_compile_options is directory scoped,
-    # so any target proves the switch arrives, and tst_qxcore is the one that
-    # notices when it does not - tst_QxTranslator compares literals that only
-    # survive an encoding-aware MSVC. Building the tree to learn the same thing
-    # would pay for every demo this job has no opinion about.
-    name: source encoding / windows / Qt 5.15.2
+    # What is left is the compiler command line, which is where the switch has to
+    # arrive anyway. scripts/check-utf8-source.py takes the command the build
+    # generates for the one translation unit in the tree that holds Chinese
+    # literals and includes no .moc, re-runs it with Qt's own -utf-8 taken out -
+    # which reproduces the Qt 5 situation - and reads the literal back out of the
+    # object file. A third run with no UTF-8 switch at all is the control: there
+    # the literal has to be gone, or the check could pass without meaning it.
+    #
+    # Ninja rather than the default Visual Studio generator, because only Ninja
+    # writes compile_commands.json. Ninja also needs cl.exe on PATH, which the
+    # image does not provide - hence the step that asks Visual Studio for its
+    # environment.
+    name: source encoding / windows / Qt 6.8.1
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -126,80 +134,37 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '5.15.2'
-          # The MSVC build of 5.15.2 rather than the MinGW one: the switch under
-          # test belongs to cl, and 5.15.2's msvc2019 libraries link against the
-          # 2022 toolchain that windows-latest provides.
-          arch: win64_msvc2019_64
+          version: '6.8.1'
           cache: true
 
+      - name: Set up the compiler
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $root = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $root) {
+            Write-Error "no Visual Studio with the C++ tools was found"
+            exit 1
+          }
+          cmd /c "`"$root\VC\Auxiliary\Build\vcvars64.bat`" >nul 2>&1 && set" |
+            Where-Object { $_ -match '^([^=]+)=(.*)$' } |
+            ForEach-Object { "$($matches[1])=$($matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8 }
+
       - name: Configure
-        # Demos and examples off. Neither is compiled by the target below, and
-        # they are most of the tree.
+        # Configure only: the check compiles one file itself, so there is no
+        # target to build. Demos stay on - the subject is one of them, and it is
+        # the only source in the tree with Chinese literals that compiles on its
+        # own. Tests and examples off, since nothing here reads them.
         run: >
           cmake -S . -B build-encoding
+          -G Ninja
           -DCMAKE_BUILD_TYPE=Release
-          -DWITH_DEMOS=OFF
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           -DWITH_EXAMPLES=OFF
-          -DWITH_TESTS=ON
+          -DWITH_TESTS=OFF
 
-      - name: Build
-        run: cmake --build build-encoding --config Release --parallel --target tst_qxcore
-
-      - name: Test
-        shell: bash
-        env:
-          QT_QPA_PLATFORM: offscreen
-          # One class of the suite: it is the only one whose cases carry
-          # non-ASCII literals, and pinning it also pins what the report below
-          # has to contain. A name that matches nothing exits non-zero (see
-          # tests/common/tst_global.cpp), so a typo here cannot pass silently.
-          QTC_ONLY_TEST: tst_QxTranslator
-        run: |
-          set -u
-          # -e is wrong here for the same reason as in the native job: every
-          # command below probes something and a non-zero status is an answer.
-          set +e
-
-          EXE=$(find build-encoding -name 'tst_qxcore.exe' -type f | head -n 1)
-          if [ -z "${EXE}" ]; then
-            echo "::error::the test binary was not built"
-            exit 1
-          fi
-
-          # -o writes a file rather than stdout because on Windows this binary's
-          # stdout goes nowhere (GUI subsystem): redirecting it produces a zero
-          # byte log, which is easy to mistake for a silent failure.
-          if timeout 120 "${EXE}" -o encoding-report.txt,txt; then
-            STATUS=0
-          else
-            STATUS=$?
-          fi
-
-          # An empty report is the quiet failure mode: a binary that died before
-          # QtTest started writes nothing, the skip count below reads zero, and
-          # an empty log looks like a clean run.
-          if [ ! -s encoding-report.txt ]; then
-            echo "::error::the test wrote no report, so it did not start (exit ${STATUS})"
-            exit 1
-          fi
-
-          cat encoding-report.txt
-          SKIP=$(grep -cE '^SKIP ' encoding-report.txt)
-          PASSED=$(grep -cE '^(PASS|FAIL|XFAIL|XPASS) ' encoding-report.txt)
-          echo "::notice title=source encoding digest::${PASSED} result(s), ${SKIP} skipped, exit ${STATUS}"
-
-          # The cases that compare a Chinese literal live behind
-          # QXCORE_TEST_TRANSLATIONS, which CMake defines only when lrelease is
-          # there to compile the catalogues. So "the test passed" is not yet
-          # "the literals were compared": without the catalogues those cases
-          # skip and a corrupted literal would go unnoticed - the skip count is
-          # the number that has to be zero.
-          if [ "${SKIP}" -gt 0 ]; then
-            echo "::error::a case skipped, and the ones that can skip are the ones that read a Chinese literal: no catalogue was built, so this run compared nothing"
-            exit 1
-          fi
-          exit "${STATUS}"
+      - name: Check how the compiler reads the sources
+        run: python scripts/check-utf8-source.py build-encoding
 
   native:
     # The Windows window procedure, driven through a real window. Report only

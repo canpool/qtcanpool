@@ -26,10 +26,14 @@
 
 这条约定有两处门禁，各守一半：
 
-- `encoding` 作业（`windows-latest` + **Qt 5.15.2** + MSVC）只构建并运行 `tst_qxcore`。
-  之所以偏偏是 Qt 5：Qt 6 会自己把 `-utf-8` 传给下游消费者，GCC / Clang 从来不需要，
-  只有 Qt 5 + MSVC 这条腿上那个开关是**唯一**的保障——少了它，`tst_QxTranslator`
-  会把 `你好` 比成 `\u6D63\u72B2\u30BD`，作业变红。
+- `encoding` 作业（`windows-latest` + MSVC + Qt 6.8.1）只 configure、不编译，交给
+  `scripts/check-utf8-source.py`：它取出构建系统为「树里唯一一个带中文字面量、又不 include `.moc`
+  的源文件」生成的那条编译命令，**去掉 Qt 自己带的 `-utf-8`**（也就是把它还原成 Qt 5 的情形）再跑一遍，
+  然后把字面量从 `.obj` 里读回来——还在，就说明树自己的开关真的生效了。第三次运行把**所有** UTF-8
+  开关都去掉，字面量必须消失，否则这项检查就是在空转。
+  不直接跑测试的原因：Qt 6 会把 `-utf-8` 传给消费方，删掉我们的开关测试照样绿；Qt 5.15.2 本该是
+  「开关是唯一保障」的那条腿，但它的头文件已经不能在当前 runner 的工具集上编译
+  （`stdext::checked_array_iterator` 被 VS 2026 移除，首版作业正是这样红的）。
 - `scripts/check-encoding.py` 在 `clang-format` 作业里扫一遍所有被 Git 跟踪的文件，
   非 UTF-8 或带 BOM 都算失败（构建目录与其它未跟踪内容不在范围内）。它守的是另一半：
   源文件本身得是那个开关所假设的样子。
