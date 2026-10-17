@@ -472,7 +472,7 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 wasm 腿，钉 **6.8.3**，不门禁）。6.12 那条是 4.4.2 的 **A1**（`b6f1b1f2`）加的，先是报告态独立作业，
 跑绿后于 2026-10-15 并回矩阵、**成为门禁腿**——但**仍然只有 Linux 一条**。
 ⚠️ 其中 macOS 那条腿的覆盖范围**比看上去小**，见
-[macOS 只构建 qxwindow](#macos-builds-qxwindow-only)。
+[macOS 只构建 qxwindow 与 qxdock](#macos-builds-qxwindow-and-qxdock-only)。
 
 **影响**：6.12 的门禁证据**只覆盖 Linux**；Windows 与 macOS 上没有 6.12 的构建证据。
 这不是空谈——A8 已经付过一次学费：Qt 6.12 把私有模块拆成了独立的包（`Qt6CorePrivate`），
@@ -495,38 +495,53 @@ wasm 腿，钉 **6.8.3**，不门禁）。6.12 那条是 4.4.2 的 **A1**（`b6f
 
 ---
 
-## macOS 只构建 qxwindow（macOS builds qxwindow only）
+## macOS 只构建 qxwindow 与 qxdock（macOS builds qxwindow and qxdock only）
 
 > **（4.5）2026-10-17 定**：CI 矩阵里 macOS 那条腿原先是「整棵树 + 跑测试」。
-> 作者要求收窄成只构建 `qxwindow`，理由与代价核对于下。
+> 作者要求收窄为「只构建涉及 macOS 的目标」，理由、边界与所失覆盖核对于下。
+> ⚠️ 定稿前踩过一次：只按「谁有原生后端」筛，得出「只有 `qxwindow`」的结论，
+> 漏掉了 `qxdock` 的三处 `#ifdef Q_OS_MACOS`。**判据是「哪些文件里有 `#ifdef Q_OS_MAC`」，
+> 不是「谁实现了平台后端」**——后者会漏掉在别人家代码里做平台分支的库。
 
 **事实**：`ci.yml` 的 `build` 矩阵里 `{ os: macos-latest, qt: '6.8.1' }` 那条腿，
-**只构建 `qxwindow` 一个目标**，且**不跑测试**——`WITH_DEMOS` / `WITH_EXAMPLES` / `WITH_TESTS`
-三条全 `OFF`，构建命令末尾按平台拼 `--target qxwindow`，`Test` 步骤对这条腿跳过。
+**只构建 `qxwindow` 与 `qxdock` 两个目标**，且**不跑测试**——`WITH_DEMOS` / `WITH_EXAMPLES` /
+`WITH_TESTS` 三条全 `OFF`，构建命令末尾按平台拼 `--target qxwindow qxdock`，
+`Test` 步骤对这条腿跳过。实测（本机 MinGW 同参配置 + 构建）：产物只有
+`libqxwindow.dll` 与 `libqxdock.dll`，未拖进第三个库。
 
-**理由**：本树里**每一行 macOS 专属代码都在 `qxwindow` 里**——`windowcontext_cocoa.mm`（唯一的
-Objective-C++ 文件）、`windowagentwidget_mac.cpp`，外加 `windowcontext.cpp` /
-`windowagentbase.cpp` / `windowkit_p.h` 那几处 `Q_OS_MAC` 分支。其余六个库在 macOS 上编的是
-**与 Linux、Windows 完全相同的源文件**（`qxdock` 的 `QX_DOCK_X11` 在 macOS 上本就为假，
-`qxwindow` 的 `windowcontext_qt.cpp` 也只在 `UNIX AND NOT APPLE` 下才进库），
-而那两边已有两条腿覆盖。所以在最慢的 runner 上重编一遍它们，是**纯粹的墙钟**，
-换不来任何门禁覆盖。改之前那条腿的额外成本是：整棵树 + 18 个测试，
-换来的是「已被另外两条腿证明过」的那些结论。
+**理由**：七 个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
+- **`qxwindow`**（8 个文件）：原生后端。`windowcontext_cocoa.mm`（全树唯一的 Objective-C++ 文件）、
+  `windowagentwidget_mac.cpp`，外加 `windowcontext.cpp` / `windowcontext_p.h` /
+  `windowagentbase.cpp` / `windowagentwidget{,_p}.h` / `windowcontext_qt.cpp` /
+  `windowsystem_p.h` 里的 `Q_OS_MAC` 分支。
+- **`qxdock`**（3 个文件）：`dockfloatingcontainer.cpp:600` 的 `activateWindow()`
+  （`updateDropOverlays()` 之后）、`:780` 起**整个 `event()` 重载**（约 45 行，
+  处理 `NonClientAreaMouseButtonPress` 与「拖拽把最大化窗口拖下来」的冲突），
+  以及 `dockfloatingcontainer.h:83` 的对应声明。
 
-**影响**：那条腿如今只回答**一个**问题——**Cocoa 后端还能不能编过**。
+其余五个库——`qxcore` / `qxtheme` / `qxribbon` / `qxplugin` / `qxapp`——**一个 `Q_OS_MAC` 都没有**，
+在 macOS 上编的是与 Linux、Windows **完全相同的源文件**，而那两边已有两条腿覆盖。
+在最慢的 runner 上重编它们是**纯墙钟**，换不来任何门禁覆盖。
+
+**影响**：那条腿如今只回答一个问题——**两个平台分支还能不能编过**。
 它**不再**回答「整棵树在 macOS 上能不能编过」「测试在 macOS 上过不过」。
-⚠️ **代价要写明**：`qxdock/dockfloatingcontainer.cpp` 里那两处 `#ifdef Q_OS_MACOS`
-（`updateDropOverlays()` 之后的 `activateWindow()`，以及整个 `event()` 重载，
-配 `dockfloatingcontainer.h` 里的对应声明）**现在没有任何腿在编译**——
-它们只在 macOS 上存在，而 macOS 这条腿不再构建 `qxdock`。
-`demos/qxwindow/mainwindow.cpp` 的 `#ifndef Q_OS_MAC` 分支同理（demo 本来就在这条腿上关着）。
 
-**为什么保持现状**：墙钟换覆盖在这里是划算的，因为丢掉的正是**唯一没有其它腿覆盖的那部分**的
-邻居——真要保留 `qxdock` 的 macOS 分支，正确的做法是把它并进这个目标，而不是把整棵树搬回来。
+⚠️ **所失的覆盖**（有意接受，据下）：
+- `tst_qxwindow` / `tst_qxdock` 在 macOS 上不再跑。两个套件本身是可移植的，
+  在另外两条腿上照跑。`tests/qxwindow/auto/tst_qxwindowgeometry.cpp` 里唯一的
+  `#ifdef Q_OS_MACOS`（`:297`）是个 **`QSKIP`**——它在 macOS 上把该用例整个**跳过**，
+  而非做 macOS 专属断言，所以在这里跑它本来也拿不到 macOS 上的检查结果。
+- `demos/qxwindow/mainwindow.cpp` 的 `#ifndef Q_OS_MAC` 分支（系统按钮那几段）不在 macOS 腿上编。
+  ⚠️ 这**不是本次收窄造成的**：macOS 腿的 `WITH_DEMOS=OFF` 在此之前就已如此，
+  那些分支此前也没有任何腿在编。且 demo 不被任何测试执行、其 macOS 分支里的也只是通用 Qt 代码。
 
-**要改变它需要什么**：若要恢复 `qxdock` 那两处分支的编译覆盖，把 `--target qxwindow` 改成
-`--target qxwindow qxdock`（`qxdock` 只依赖 `Qt5::Core` 与 `Qt5::Widgets`，代价很小）；
-若要恢复整树与测试，把三条 `WITH_*` 改回 `ON` 并去掉 `Test` 步骤的 `if`——也就是本条记录之前的状态。
+**为什么保持现状**：省掉的是**已被另外两条腿证明过**的那部分重复编译，
+保留的是**只有这一条腿能证明**的那部分。两者按「文件里有没有 `#ifdef Q_OS_MAC`」划开，
+不按「库看起来重不重要」划。
+
+**要改变它需要什么**：把三个 `WITH_*` 改回 `ON` 并去掉 `Test` 步骤的 `if`，即本条记录之前的状态。
+若只想再加回某个库，往 `--target` 后追加即可——但请先用
+`grep -rl Q_OS_MAC src/libs/<lib>` 确认它确实含有 macOS 分支，否则是白付墙钟。
 
 ---
 
