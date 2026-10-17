@@ -240,3 +240,42 @@ add_qtc_library(qxcore
  */
 void addPage(const QString &id, const QIcon &icon, const QString &title, QWidget *page);
 ```
+
+## 新增库的约定（Adding a new library）
+
+新库范式：
+
+- `<lib>/<name>_global.h`：命名空间 / `QX_<NAME>_EXPORT` / 版本宏、`QX_DECLARE_PRIVATE` 宏族。
+- `add_qtc_library(<name> ... DEFINES QX_<NAME>_LIBRARY)` + d-pointer（见上文）。
+- 顶层 `option(WITH_<NAME>)` + `add_subdirectory`；该宏把 PUBLIC include 设为 `src/libs`，
+  故可直接 `#include "qxribbon/xxx.h"`。
+
+未带 `QX_<LIB>_EXPORT` 的类不是公开 API（详见[上文](architecture.md#命名空间)「未带导出宏 ⇒ 非公开 API」）。
+
+## QxAppShell 内部结构
+
+- 中央部件 = `QHBoxLayout[ QxNavigationBar | DockWindow ]`；**页面栈 `QStackedWidget` 是 DockWindow 的
+  中央 dock**（qxdock 要求中央 dock 先加入，构造时装好并隐藏标题栏），其余 dock 环绕其外。
+- 页面 id 是持久化契约（不存索引/标题）；键在组 `ui`：`windowGeometry` / `windowState` / `dockState` /
+  `currentPage`。`setSettings()` **故意不自动恢复布局**，需显式 `restoreLayout()`。
+
+## 主题样式表资源归属
+
+- 样式表资源仍属 `qxribbon`（`:/qxribbon/res/stylesheets/*.css`），引擎按路径运行时读取；缺失降级为
+  仅调色板 + 告警一次。
+- 前缀可用 `QX_THEME_STYLESHEET_PREFIX` 覆盖（让非 ribbon 应用也能用自己的样式表路径）。
+
+## 布局判据：`isVisible()` vs `isHidden()`
+
+⚠️ **布局 / 尺寸判据一律用 `!isHidden()`，绝不用 `isVisible()`**。
+
+- `isVisible()` 在**祖先窗口还没 show** 时对整棵树都是 false；而「窗口隐藏期的首次布局」在真实应用里
+  **必然发生**（ribbon 的 `resizeRibbon()` 排队 `QResizeEvent`；demo 的 `QxSplashScreen::step()` →
+  `processEvents` 会在 show 之前把它抽干）。
+- 该次布局一旦「跳过」某控件，之后没有任何东西重跑布局（尺寸没变 ⇒ 无 resizeEvent）⇒ 缺陷一直留到
+  用户手动 resize。
+- 两层病灶都会犯：① ribbon 的四个布局函数（resize / minimumWidth）⇒ 组整个被跳过；②
+  `WindowButtonGroupPrivate::sizeHint()` 累加按钮宽 ⇒ 隐藏期 hint=0，**只修①会把组摆成 0 宽**。
+- **paint 函数保持 `isVisible()`**：只在窗口可见时才画，问的是另一个问题。
+- 排查口径：`QAction::isVisible()` 是另一套语义；qxdock 的鼠标 / 拖拽处理器窗口隐藏时不可能触发。
+  改动布局相关代码时逐处确认判据。

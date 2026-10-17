@@ -144,14 +144,16 @@ ctest --test-dir build -C Release --output-on-failure
 
 | 页面 | 内容 |
 | :--- | :--- |
-| [构建与安装](build.md) | 环境要求、CMake 构建、开关、测试与文档站点构建 |
-| [架构与约定](architecture.md) | 库分层、命名空间与 d-pointer 约定、CMake API、编码规范 |
+| [构建与安装](build.md) | 环境要求、CMake 构建、开关、测试与文档站点构建（含贡献者构建须知） |
+| [架构与约定](architecture.md) | 库分层、命名空间与 d-pointer 约定、CMake API、编码规范、新增库约定、布局判据 |
+| [CI 与在线站点](ci.md) | 两条工作流的结构、格式/SDK/质量/tidy 门禁、平台坑与查看 CI 结果 |
 | [组件全览](components.md) | 各组件的能力范围、主要类与最小用法 |
 | [主题引擎](theming.md) | 主题引擎：内置主题、运行时切换、跟随系统、自定义主题 |
 | [应用外壳](appshell.md) | 应用外壳：页面、停靠区、状态栏、布局持久化、启动屏 |
 | [插件体系](plugins.md) | 插件开发指南：元数据、三种依赖、生命周期、对象池、失败隔离 |
 | [迁移指南](migration.md) | 2.x → 3.x / 4.0 迁移：命名空间、类与方法对照、构建迁移、插件条目 |
 | [已知限制](limitations.md) | 知道但不打算改的行为：现象、成因、为什么保持现状、要改变需要什么 |
+| [文档站点（Doxygen）](doxygen.md) | 独立 Doxygen 工程：构建、Doxyfile 关键项、样式表与 `Q_OS_*` 坑 |
 | [发布流程](release.md) | 发一次版本的全部动作：两道闸门、版本号结算、三本账、推送与 Release |
 | [管理规范](contributing.md) | 过程规范的单一权威来源：提交、文档（台账＋CHANGELOG）、编码、SPDX、构建验证、版本与进号、命名与敏感信息 |
 

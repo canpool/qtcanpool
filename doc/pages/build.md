@@ -329,3 +329,49 @@ K13 决定在 4.0 将其删除，而不是继续留着一批会腐烂的文件�
 > **迁移**：qmake 工程请改走 CMake——安装 SDK 后 `find_package(QtCanpool)` 再
 > 链接 `QtCanpool::qxapp` 等目标即可，见 [`projects/consume`](https://github.com/canpool/qtcanpool/tree/master/projects/consume)
 > 与 [`projects/template`](https://github.com/canpool/qtcanpool/tree/master/projects/template)。
+
+## 贡献者构建须知（Contributor build notes）
+
+> 提交前的硬性前置见 [管理规范](contributing.md)：改完必须重新构建 + ctest 全绿 + clang-format 过
+> 改动文件，再提交。
+
+### clang-format 版本与取清单
+
+- 工具**固定 `clang-format 21.1.8`**（CI `pip install 'clang-format==21.1.8'`），勿升级——CI 与本地
+  版本不一致会让 `dry-run` 结果对不上。
+- 取清单**必须用 `git ls-files`**（`find` 会纳入被忽略的构建产物）：
+
+```bash
+FILES=$(git ls-files 'src/**/*.h' 'src/**/*.cpp' 'demos/**/*.h' 'demos/**/*.cpp' \
+  'examples/**/*.h' 'examples/**/*.cpp' 'tests/**/*.h' 'tests/**/*.cpp' \
+  'projects/**/*.h' 'projects/**/*.cpp')
+clang-format --style=file --dry-run --Werror $FILES
+```
+
+### 构建一律带 `--parallel`
+
+`qt6` / `qt5` CMake preset 是 MinGW Makefiles 且未设 `jobs` ⇒ 不带 `--parallel` 就是单核串行
+（实测同一次全量构建 119s vs 39s；更早一次 6 分钟 vs 28 秒）。**一律写
+`cmake --build --preset qt6 --parallel`**（项目约定，CI 全篇也带）。
+
+### 新增源文件「不生效」的两层原因
+
+往 `tests/**/auto/` 或 `src/libs/*` 里丢一个新文件后构建可能完全看不见它（典型：
+`#include "xxx.moc": No such file or directory`），因为两个独立机制各自缓存了清单：
+
+1. **`file(GLOB ...)` 在 configure 时定结果** → 必须加 `CONFIGURE_DEPENDS`。位置极敏感：写在表达式
+   **之后** CMake 4 直接报错；写在**最前面**不报错但 glob 为空（实测 examples 的 `mainwindow.cpp`
+   凭空消失、链接报 `undefined reference to MainWindow::MainWindow`）。是否生效：configure 后看
+   `<build>/CMakeFiles/VerifyGlobs.cmake` 在不在。
+2. **AUTOMOC 不重扫**：它把上次扫过的清单写进自己的依赖文件，`<target>_autogen/timestamp` 这条规则
+   不含源文件列表 → 新文件进不了扫描范围。修法是 `qtc_autogen_rescan()`（`cmake/QtCanpoolAPI.cmake`）
+   在 `add_qtc_{library,plugin,executable,test}` 四个入口 configure 时删掉 `<target>_autogen/timestamp`
+   逼它重扫。
+   ⚠️ **`AUTOGEN_TARGET_DEPENDS` 不是修法**：它只加依赖边，timestamp 规则仍用上一次运行的清单 →
+   第一个新文件能过、再加第二个仍失败。
+
+### CMakePresets 缓存变量陷阱
+
+`WITH_COVERAGE` / `WITH_SANITIZE` 这类**全局编译开关用普通变量**（子目录里遮蔽 cache、并被下级继承；
+`qtc_enable_sanitize` 只作用于自身目录）。`CMakePresets.json` 里它们经 `environment` + `$env{...}`
+注入；缓存变量首次 configure 即固化，故不能用 cache 变量传全局开关。
