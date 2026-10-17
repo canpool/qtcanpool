@@ -63,6 +63,22 @@ Feature
   calls them gets the platform style icons, which were already theme-aware; the
   docking library imposes no look of its own, it only hands out helpers.
 
+Bugfix
+- An auto hide overlay jumped into place instead of sliding. collapseView()
+  opened the container, put it at its final geometry through updateSize(), then
+  slid it in from the side bar it belongs to - but the slide drives the widget's
+  own geometry, and every frame posted a QResizeEvent that the container's own
+  qApp event filter caught. That filter's Resize branch never checked which
+  widget had resized, so it called updateSize() on the container's own resize,
+  and updateSize() stops any running slide; the first frame therefore killed the
+  animation and the container snapped to its final position. The branch now
+  reacts only to a resize of the dock container (the parent) - the case that
+  means the window was resized and the overlay must be realigned - and ignores
+  resizes of the overlay and its children, which are slide- or layout-driven and
+  must not restart the layout computation. tst_DockAutoHideContainer::
+  collapseSlidesIntoPlace still holds the end state; the interruption was a
+  runtime feedback loop the geometry assertion could not see.
+
 0.2.3
 ---
 Bugfix

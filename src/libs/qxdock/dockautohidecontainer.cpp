@@ -530,6 +530,17 @@ bool DockAutoHideContainer::eventFilter(QObject *watched, QEvent *event)
     // A switch case statement would be nicer here, but we cannot use
     // internal::FloatingWidgetDragStartEvent in a switch case
     if (event->type() == QEvent::Resize) {
+        // Only react to the resize of our own dock container (the parent).
+        // Resizes of this container or its children are geometry changes driven
+        // either by the slide animation or by the layout. Acting on them here
+        // would call updateSize(), which stops the running slide and snaps the
+        // container straight to its final position - the "jumpy" appearance
+        // when an auto hide overlay is opened. The parent resize is the only
+        // case that should re-run updateSize(): the window got resized and the
+        // overlay must be realigned.
+        if (watched != dockContainer()) {
+            return Super::eventFilter(watched, event);
+        }
         if (!d->m_resizeHandle->isResizing()) {
             updateSize();
         }
