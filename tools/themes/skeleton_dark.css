@@ -296,7 +296,7 @@ QMenu::indicator {
 
 QMenu::item:selected {
   color: {{text-on-fill}};
-  background: {{border}};
+  background: {{surface}};
 }
 
 QMenu::item:disabled {

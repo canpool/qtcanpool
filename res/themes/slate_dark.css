@@ -308,7 +308,7 @@ QMenu::indicator {
 
 QMenu::item:selected {
   color: #ffffff;
-  background: #3c3c3c;
+  background: #1e1e1e;
 }
 
 QMenu::item:disabled {
