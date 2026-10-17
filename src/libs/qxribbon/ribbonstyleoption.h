@@ -24,7 +24,8 @@ class RibbonStyleOptionPrivate;
  * @note This class defines the height information of the ribbonbar and groups, and precomputes some layout information
  * from the font
  *
- * @note The size layout is replaceable: either approach works:/n *   - subclass this class, override a few virtuals, then pass it to RibbonFactory::setRibbonStyleOption;
+ * @note The size layout is replaceable: either approach works:
+ *   - subclass this class, override a few virtuals, then pass it to RibbonFactory::setRibbonStyleOption;
  *   - or use this class directly and call setBaseHeight() / setTitleBarHeight() / setTabBarHeight()
  *     to fine-tune the sizes (reading/writing the config file belongs to the caller, not this layer - the caller just
  * maps its settings to these setters). The two approaches do not conflict: the setter changes the base height, and
