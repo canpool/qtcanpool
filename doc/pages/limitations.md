@@ -471,6 +471,8 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 **Qt 6.8.1**，加 `ubuntu` 的 **Qt 5.15.2** 与 `ubuntu` 的 **Qt 6.12.0**（`pages.yml` 里另有一条
 wasm 腿，钉 **6.8.3**，不门禁）。6.12 那条是 4.4.2 的 **A1**（`b6f1b1f2`）加的，先是报告态独立作业，
 跑绿后于 2026-10-15 并回矩阵、**成为门禁腿**——但**仍然只有 Linux 一条**。
+⚠️ 其中 macOS 那条腿的覆盖范围**比看上去小**，见
+[macOS 只构建 qxwindow](#macos-builds-qxwindow-only)。
 
 **影响**：6.12 的门禁证据**只覆盖 Linux**；Windows 与 macOS 上没有 6.12 的构建证据。
 这不是空谈——A8 已经付过一次学费：Qt 6.12 把私有模块拆成了独立的包（`Qt6CorePrivate`），
@@ -490,6 +492,41 @@ wasm 腿，钉 **6.8.3**，不门禁）。6.12 那条是 4.4.2 的 **A1**（`b6f
 
 > 相关：Qt 5 那条腿的去向（以及你该提前准备什么）见
 > [迁移指南](migration.md) 的「5.0.0 将移除 Qt 5 支持」一节。
+
+---
+
+## macOS 只构建 qxwindow（macOS builds qxwindow only）
+
+> **（4.5）2026-10-17 定**：CI 矩阵里 macOS 那条腿原先是「整棵树 + 跑测试」。
+> 作者要求收窄成只构建 `qxwindow`，理由与代价核对于下。
+
+**事实**：`ci.yml` 的 `build` 矩阵里 `{ os: macos-latest, qt: '6.8.1' }` 那条腿，
+**只构建 `qxwindow` 一个目标**，且**不跑测试**——`WITH_DEMOS` / `WITH_EXAMPLES` / `WITH_TESTS`
+三条全 `OFF`，构建命令末尾按平台拼 `--target qxwindow`，`Test` 步骤对这条腿跳过。
+
+**理由**：本树里**每一行 macOS 专属代码都在 `qxwindow` 里**——`windowcontext_cocoa.mm`（唯一的
+Objective-C++ 文件）、`windowagentwidget_mac.cpp`，外加 `windowcontext.cpp` /
+`windowagentbase.cpp` / `windowkit_p.h` 那几处 `Q_OS_MAC` 分支。其余六个库在 macOS 上编的是
+**与 Linux、Windows 完全相同的源文件**（`qxdock` 的 `QX_DOCK_X11` 在 macOS 上本就为假，
+`qxwindow` 的 `windowcontext_qt.cpp` 也只在 `UNIX AND NOT APPLE` 下才进库），
+而那两边已有两条腿覆盖。所以在最慢的 runner 上重编一遍它们，是**纯粹的墙钟**，
+换不来任何门禁覆盖。改之前那条腿的额外成本是：整棵树 + 18 个测试，
+换来的是「已被另外两条腿证明过」的那些结论。
+
+**影响**：那条腿如今只回答**一个**问题——**Cocoa 后端还能不能编过**。
+它**不再**回答「整棵树在 macOS 上能不能编过」「测试在 macOS 上过不过」。
+⚠️ **代价要写明**：`qxdock/dockfloatingcontainer.cpp` 里那两处 `#ifdef Q_OS_MACOS`
+（`updateDropOverlays()` 之后的 `activateWindow()`，以及整个 `event()` 重载，
+配 `dockfloatingcontainer.h` 里的对应声明）**现在没有任何腿在编译**——
+它们只在 macOS 上存在，而 macOS 这条腿不再构建 `qxdock`。
+`demos/qxwindow/mainwindow.cpp` 的 `#ifndef Q_OS_MAC` 分支同理（demo 本来就在这条腿上关着）。
+
+**为什么保持现状**：墙钟换覆盖在这里是划算的，因为丢掉的正是**唯一没有其它腿覆盖的那部分**的
+邻居——真要保留 `qxdock` 的 macOS 分支，正确的做法是把它并进这个目标，而不是把整棵树搬回来。
+
+**要改变它需要什么**：若要恢复 `qxdock` 那两处分支的编译覆盖，把 `--target qxwindow` 改成
+`--target qxwindow qxdock`（`qxdock` 只依赖 `Qt5::Core` 与 `Qt5::Widgets`，代价很小）；
+若要恢复整树与测试，把三条 `WITH_*` 改回 `ON` 并去掉 `Test` 步骤的 `if`——也就是本条记录之前的状态。
 
 ---
 

@@ -17,6 +17,21 @@ jobs:
         include:
           - { os: ubuntu-latest,  qt: '6.8.1' }
           - { os: windows-latest, qt: '6.8.1' }
+          # The Cocoa leg, and the reason it is the short one: every line of
+          # macOS-only code in this tree that a library owns lives in qxwindow -
+          # windowcontext_cocoa.mm and windowagentwidget_mac.cpp, plus the Q_OS_MAC
+          # arms of windowcontext.cpp, windowagentbase.cpp and the windowkit_p.h
+          # hierarchy. No other library has a native backend for this platform, so
+          # no other leg compiles any of it. The other six build the same sources
+          # here as they do on Linux and Windows, where two legs already cover them,
+          # so building them again on the slowest runner in the matrix is wall clock
+          # with nothing to show for it.
+          #
+          # What this gives up, recorded rather than left to be discovered: the
+          # #ifdef Q_OS_MACOS arms of qxdock/dockfloatingcontainer.cpp are compiled
+          # on no leg any more. That is the one place where "only qxwindow" reaches
+          # past the library it was named after; doc/pages/limitations.md has the
+          # entry, and the fix if it ever matters is --target qxwindow qxdock.
           - { os: macos-latest,   qt: '6.8.1' }
           - { os: ubuntu-latest,  qt: '5.15.2' }
           # 6.12 LTS, gating. One Linux leg and not three: what it answers is
@@ -37,21 +52,31 @@ jobs:
           cache: true
 
       - name: Configure
-        # macOS is the slowest leg and adds no demos-only signal: the other four
-        # legs already compile every demo, and demos are exercised by no test, so
-        # building them here is pure wall-clock with zero extra gate coverage.
-        # Same "don't pay for the whole tree" reasoning the qxwindow native job
-        # uses. Tests stay on - they are the macOS signal.
+        # macOS is the slowest leg and the only one with a platform of its own to
+        # answer, so it is configured for the single target that has one: demos,
+        # examples and tests off, because the target below is a library and every
+        # one of those is configure-time work for a build that will not include it.
         run: >
           cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Release
           -DWITH_DEMOS=${{ matrix.os == 'macos-latest' && 'OFF' || 'ON' }}
-          -DWITH_TESTS=ON
+          -DWITH_EXAMPLES=${{ matrix.os == 'macos-latest' && 'OFF' || 'ON' }}
+          -DWITH_TESTS=${{ matrix.os == 'macos-latest' && 'OFF' || 'ON' }}
 
       - name: Build
-        run: cmake --build build --config Release --parallel
+        # The target is part of the command rather than a step of its own, so the
+        # four legs that build everything stay one step and one log section. The
+        # empty expansion on those four leaves a trailing space and no argument:
+        # --parallel is last when it is empty, which is the one position where it
+        # cannot swallow what follows it.
+        run: cmake --build build --config Release --parallel ${{ matrix.os == 'macos-latest' && '--target qxwindow' || '' }}
 
       - name: Test
+        # Nothing to run on macOS: the only target built there is a library. The
+        # suite that would have covered it - tst_qxwindow, which is where the
+        # Q_OS_MACOS skip in tst_qxwindowgeometry.cpp lives - is portable and runs
+        # on the other legs, so nothing is lost but the wall clock.
+        if: matrix.os != 'macos-latest'
         env:
           # Headless CI runner: use the offscreen platform to avoid GUI test failures.
           QT_QPA_PLATFORM: offscreen
