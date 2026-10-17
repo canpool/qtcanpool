@@ -119,7 +119,11 @@ def main():
     build_dir = sys.argv[1] if len(sys.argv) > 1 else "build"
     entry = find_entry(build_dir)
 
-    scratch = os.path.join(build_dir, "encoding-check")
+    # Absolute, because the compiler runs in the entry's directory and would
+    # resolve a relative output path against that instead of against ours - on
+    # CI, where the build directory is named relative to the checkout, that put
+    # the object in build-encoding/build-encoding.
+    scratch = os.path.abspath(os.path.join(build_dir, "encoding-check"))
     os.makedirs(scratch, exist_ok=True)
 
     # (label, flag to take out, what the run has to show). The last one is the
