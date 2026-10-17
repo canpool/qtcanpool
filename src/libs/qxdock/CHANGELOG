@@ -52,6 +52,17 @@ Feature
   tst_DockWindow::carriesNoStyleSheetOfItsOwn
   tst_DockWindow::styleSheetIsReadFromTheApplication
 
+- The built-in icons follow the application palette. The dock's SVG icons shipped
+  with a hard-coded black, so on a dark system theme the buttons stayed black on
+  a dark title bar - only the platform style icons, which the library fell back to
+  when no custom icon was registered, were theme-aware. The four style sheets no
+  longer set the icons through qproperty-icon, and the library offers
+  qxdock::applyDockIcons(palette) and qxdock::refreshDockIcons(root) so an
+  application can tint the SVGs to any palette and re-apply them when the palette
+  changes - the same opt-in shape as dockStyleSheet(). An application that never
+  calls them gets the platform style icons, which were already theme-aware; the
+  docking library imposes no look of its own, it only hands out helpers.
+
 0.2.3
 ---
 Bugfix

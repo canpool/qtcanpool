@@ -2,14 +2,12 @@
  * Default style sheet on Windows Platforms with focus highlighting flag enabled
  */
 
-
 /*****************************************************************************
  * DockContainer
  *****************************************************************************/
 QxDock--DockContainer {
     background: palette(window);
 }
-
 
 /*****************************************************************************
  * DockSplitter
@@ -18,7 +16,6 @@ QxDock--DockContainer>QSplitter {
     padding: 1 0 1 0;
 }
 
-
 QxDock--DockSplitter::handle {
     background-color: palette(dark);
     /* uncomment the following line if you would like to change the size of
@@ -26,14 +23,12 @@ QxDock--DockSplitter::handle {
     /* height: 1px; */
 }
 
-
 /*****************************************************************************
  * DockPanel
  *****************************************************************************/
 QxDock--DockPanel {
     background: palette(window);
 }
-
 
 QxDock--DockTitleBar {
     background: transparent;
@@ -49,25 +44,17 @@ QxDock--TitleBarButton {
     padding: 0px 0px;
 }
 
-
 #dockTabsMenuButton::menu-indicator {
     image: none;
 }
 
-
 #dockPanelCloseButton {
-    qproperty-icon: url(:/qxdock/res/images/close-button.svg),
-        url(:/qxdock/res/images/close-button-disabled.svg) disabled;
     qproperty-iconSize: 16px;
 }
 
 #dockDetachGroupButton {
-    qproperty-icon: url(:/qxdock/res/images/detach-button.svg),
-        url(:/qxdock/res/images/detach-button-disabled.svg) disabled;
     qproperty-iconSize: 16px;
 }
-
-
 
 /*****************************************************************************
  * DockTab
@@ -95,14 +82,11 @@ QxDock--DockTab[activeTab="true"] QLabel {
     color: palette(foreground);
 }
 
-
 #dockTabCloseButton {
     margin-top: 2px;
     background: none;
     border: none;
     padding: 0px -2px;
-    qproperty-icon: url(:/qxdock/res/images/close-button.svg),
-        url(:/qxdock/res/images/close-button-disabled.svg) disabled;
     qproperty-iconSize: 16px;
 }
 
@@ -121,14 +105,6 @@ QxDock--DockTab[focused="true"] {
     border-color: palette(highlight);
 }
 
-QxDock--DockTab[focused="true"]>#dockTabCloseButton {
-    qproperty-icon: url(:/qxdock/res/images/close-button-focused.svg)
-}
-
-QxDock--DockTab[focused="true"]>#dockTabCloseButton:hover {
-    background: rgba(255, 255, 255, 48);
-}
-
 QxDock--DockTab[focused="true"]>#dockTabCloseButton:pressed {
     background: rgba(255, 255, 255, 92);
 }
@@ -136,8 +112,6 @@ QxDock--DockTab[focused="true"]>#dockTabCloseButton:pressed {
 QxDock--DockTab[focused="true"] QLabel {
     color: palette(light);
 }
-
-
 
 /*****************************************************************************
  * DockWidget
@@ -149,20 +123,16 @@ QxDock--DockWidget {
     border-width: 1px 0 0 0;
 }
 
-
 QScrollArea#dockWidgetScrollArea {
     padding: 0px;
     border: none;
 }
-
-
 
 /*****************************************************************************
  *
  * Styling of auto hide functionality
  *
  *****************************************************************************/
-
 
 /*****************************************************************************
  * DockSideTab
@@ -179,24 +149,19 @@ QxDock--DockSideTab {
     padding-bottom: 2px;
 }
 
-
 QxDock--DockSideTab:hover {
     color: palette(highlight);
 }
-
 
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="0"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="2"] {
     border-top: 6px solid rgba(0, 0, 0, 48);
 }
 
-
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="1"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="3"] {
     border-bottom: 6px solid rgba(0, 0, 0, 48);
 }
-
-
 
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="0"],
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="2"],
@@ -205,14 +170,12 @@ QxDock--DockSideTab[iconOnly="false"][sideBarArea="2"][activeTab="true"] {
     border-top: 6px solid palette(highlight);
 }
 
-
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="1"],
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="3"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="1"][activeTab="true"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="3"][activeTab="true"] {
     border-bottom: 6px solid palette(highlight);
 }
-
 
 /**
  * Auto hide tabs with icon only
@@ -232,7 +195,6 @@ QxDock--DockSideTab[iconOnly="true"][sideBarArea="2"] {
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="3"] {
     border-bottom: 6px solid rgba(0, 0, 0, 48);
 }
-
 
 /**
  * Auto hide tabs with icon only hover
@@ -257,8 +219,6 @@ QxDock--DockSideTab[iconOnly="true"][sideBarArea="3"][activeTab="true"] {
     border-bottom: 6px solid palette(highlight);
 }
 
-
-
 /*****************************************************************************
  * DockSideBar
  *****************************************************************************/
@@ -271,7 +231,6 @@ QxDock--DockSideBar {
 #sideTabsContainerWidget {
     background: transparent;
 }
-
 
 QxDock--DockSideBar[sideBarArea="0"] {
     border-bottom: 1px solid palette(dark);
@@ -289,7 +248,6 @@ QxDock--DockSideBar[sideBarArea="3"] {
     border-top: 1px solid palette(dark);
 }
 
-
 /*****************************************************************************
  * DockAutoHideContainer
  *****************************************************************************/
@@ -297,13 +255,11 @@ QxDock--DockAutoHideContainer {
     background: palette(window);
 }
 
-
 QxDock--DockAutoHideContainer QxDock--DockTitleBar {
     background: palette(highlight);
     padding: 0px;
     border: none;
 }
-
 
 /*
  * This is required because the QxDock--DockPanel[focused="true"] will
@@ -315,42 +271,24 @@ QxDock--DockAutoHideContainer QxDock--DockPanel[focused="true"] QxDock--DockTitl
     border: none;
 }
 
-
 #dockAutoHideTitleLabel {
     padding-left: 4px;
     color: palette(light);
 }
 
-
 /*****************************************************************************
  * DockAutoHideContainer titlebar buttons
  *****************************************************************************/
 #dockPanelAutoHideButton {
-    qproperty-icon: url(:/qxdock/res/images/vs-pin-button.svg),
-        url(:/qxdock/res/images/vs-pin-button-disabled.svg) disabled;
     qproperty-iconSize: 16px;
 }
-
 
 QxDock--DockAutoHideContainer #dockPanelAutoHideButton {
-    qproperty-icon: url(:/qxdock/res/images/vs-pin-button-pinned-focused.svg);
     qproperty-iconSize: 16px;
 }
-
 
 QxDock--DockAutoHideContainer #dockPanelMinimizeButton {
-    qproperty-icon: url(:/qxdock/res/images/minimize-button-focused.svg);
     qproperty-iconSize: 16px;
-}
-
-
-QxDock--DockAutoHideContainer #dockPanelCloseButton {
-    qproperty-icon: url(:/qxdock/res/images/close-button-focused.svg)
-}
-
-
-QxDock--DockAutoHideContainer QxDock--TitleBarButton:hover {
-    background: rgba(255, 255, 255, 48);
 }
 
 QxDock--DockAutoHideContainer QxDock--TitleBarButton:pressed {
@@ -361,14 +299,12 @@ QxDock--DockAutoHideContainer QxDock--TitleBarButton:pressed {
  * DockAutoHideContainer Titlebar and Buttons
  *****************************************************************************/
 
-
 /*****************************************************************************
  * DockResizeHandle
  *****************************************************************************/
 QxDock--DockResizeHandle {
     background: palette(window);
 }
-
 
 QxDock--DockAutoHideContainer[sideBarArea="0"] QxDock--DockResizeHandle {
     border-top: 1px solid palette(dark);

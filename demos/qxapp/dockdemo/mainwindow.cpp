@@ -9,6 +9,7 @@
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockstylesheet.h"
+#include "qxdock/dockiconprovider.h"
 
 #include <QMenuBar>
 #include <QMenu>
@@ -35,6 +36,13 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     // styles the DockWindow for us. The flag is set just above and is what picks
     // the sheet, so the two lines are one decision read in two places.
     qApp->setStyleSheet(dockStyleSheet(true));
+    // Step 2 of the theme work: tint the dock's built-in SVG icons to the
+    // application palette so they follow light/dark instead of staying the
+    // hard-coded black the SVGs ship with. The library only provides the helper;
+    // this demo opts in, the same way it installs the stylesheet. A palette
+    // change re-tints and re-applies them (see eventFilter).
+    applyDockIcons(qApp->palette(), this);
+    qApp->installEventFilter(this);
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
     // C5: also enable the auto-hide slide animation.
@@ -158,4 +166,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
         saveToSettings();
     }
     QMainWindow::closeEvent(event);
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    // The OS/theme palette changed (e.g. Windows light<->dark). Re-tint the dock
+    // icons to the new palette and re-apply them to every existing dock button.
+    if (watched == qApp && event->type() == QEvent::ApplicationPaletteChange) {
+        applyDockIcons(qApp->palette(), this);
+    }
+    return QMainWindow::eventFilter(watched, event);
 }

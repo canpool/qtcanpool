@@ -7,6 +7,7 @@
 
 #include "qxdock/qxdock_global.h"
 #include <QMainWindow>
+#include <QEvent>
 
 QX_DOCK_BEGIN_NAMESPACE
 class DockWindow;
@@ -40,6 +41,7 @@ public:
     void restoreFromSettings();
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
 private:
     DockWindow *m_dockWindow = nullptr;
     bool m_screenshotMode = false;

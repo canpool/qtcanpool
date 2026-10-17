@@ -94,6 +94,10 @@ void drawHighlightFrame(QPainter &painter, const QRect &rect, const QPalette &pa
  */
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId)
 {
+    // Tag the button with its dock-icon id so a palette change can re-apply its
+    // (possibly tinted) icon later: refreshDockIcons() looks this property up.
+    b->setProperty("qxdock.iconId", static_cast<int>(iconId));
+
     // First we try to use custom icons if available
     QIcon Icon = DockManager::iconProvider().customIcon(iconId);
     if (!Icon.isNull()) {
