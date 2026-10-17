@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (C) 2023-2024 maminjie <canpool@163.com>
  * SPDX-License-Identifier: Apache-2.0
  **/
@@ -1757,7 +1757,7 @@ bool WindowContextWin::nonClientCalcSizeHandler(HWND hWnd, UINT message, WPARAM 
 
     // Windows uses the return value of this message to set the range of the window's client area (the content actually
     // displayed in the window) and non-client area (the parts provided by the Windows system itself, such as the title
-    // bar, window border, menu bar and status bar — though for Qt, apart from the title bar and window border, the
+    // bar, window border, menu bar and status bar - though for Qt, apart from the title bar and window border, the
     // non-client area is basically all custom-drawn). lParam holds the geometry of the new client area, which by
     // default is the size of the whole window. A normal program needs to modify this parameter to tell the system the
     // range of the window's client and non-client areas (generally it can be left entirely to Windows to handle by

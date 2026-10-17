@@ -722,7 +722,7 @@ DockWidget::DockWidgetFeatures DockWindow::globallyLockedDockWidgetFeatures() co
  * Globally Lock features of all dock widgets to "freeze" the current
  * workspace layout.
  * For example, it is now possible to lock the workspace to avoid
- * accidentally dragging a docked view. Locking wasn’t possible before.
+ * accidentally dragging a docked view. Locking wasn't possible before.
  * So, users had to manually dock it back to the desired place after
  * each accidental undock.
  * You can use a combination of the following feature flags:

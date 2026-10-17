@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyleft (C) 2026 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MIT
  **/
