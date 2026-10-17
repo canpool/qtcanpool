@@ -10,17 +10,6 @@ Feature
   placing it in a child widget, so the message is mirrored into the accessible
   name. tst_AppAccessible
 
-Interface
-- Rename QxNavBar to QxNavTabBar. The class is a QxTabBar-derived tab navigation
-  bar with a show/hide-tabs customize menu, but its name sat one letter from
-  QxNavigationBar - a QWidget, the QxAppShell vertical rail, sharing neither a
-  base nor a purpose with it. The two read as variants of one another while being
-  unrelated, so the tab bar is renamed and the rail keeps its name. Breaking, and
-  it lands in this minor; no forward-compatibility alias is kept, because the
-  point of the rename is to stop the two names from looking like siblings.
-  See doc/pages/migration.md.
-
-Feature
 - QxAppShell::addLayoutGroup() adds the layout group every ribbon shell carries:
   a Save and a Restore action, both wired to saveLayout()/restoreLayout() and
   both reporting through the status bar. A shell persists its layout whether or
@@ -34,6 +23,16 @@ Feature
   wired to each other; what was missing was the scaffolding the layout group
   needs a page for, which every application was assembling in the same order.
   tst_QxAppShell::standardShell
+
+Interface
+- Rename QxNavBar to QxNavTabBar. The class is a QxTabBar-derived tab navigation
+  bar with a show/hide-tabs customize menu, but its name sat one letter from
+  QxNavigationBar - a QWidget, the QxAppShell vertical rail, sharing neither a
+  base nor a purpose with it. The two read as variants of one another while being
+  unrelated, so the tab bar is renamed and the rail keeps its name. Breaking, and
+  it lands in this minor; no forward-compatibility alias is kept, because the
+  point of the rename is to stop the two names from looking like siblings.
+  See doc/pages/migration.md.
 
 0.1.2
 ---
