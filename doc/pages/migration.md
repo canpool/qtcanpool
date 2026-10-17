@@ -444,3 +444,19 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
     样式表换手后（widget → application）**Ribbon 区外观应保持一致**：这些 CSS 只描述
     Ribbon 部件，改到应用级不影响命中范围。
   - 参见 `examples/qxribbon/ribbonstyle`（应用侧注册 + 按 id 切换的完整示例）。
+- **`DockWindow` 不再自带样式表**（库 `qxdock`，破坏「开箱即可见样式」）：`DockWindow`
+  构造时不再读取并 `setStyleSheet()` 到自己身上。原来的 4 张 dock 样式表（default /
+  focus_highlighting / 二者各带 `_linux`）从 `src/libs/qxdock/res.qrc` 移出，落到仓库
+  `res/dockstyle/`（`res/dockstyle.qrc` 挂到 `:/dockstyle/`），由**应用自行编入并安装**。
+  读取入口改为新增的 `qxdock::dockStyleSheet(bool focusHighlighting)`：它按
+  `DockManager::FocusHighlighting` 与 `QX_DOCK_X11` 选好那张、读成文本返回，由应用
+  `qApp->setStyleSheet(...)` 装上去——库只出文本、不替应用做决定。
+  - 为什么：与 `RibbonTheme` 同形病灶——库自带的是 **widget 级**样式表，Qt 样式表两边都匹配时
+    widget 级的赢，于是应用选了深色主题、Dock 区仍被库锁成浅色。样式表换手到 application
+    后，Dock 外观跟随应用主题（CSS 内颜色本来就是 `palette(...)`，换深色 palette 自动跟着变；
+    唯一不跟随的是内置单色 SVG 图标，属另一独立议题）。
+  - 迁移：使用 qxdock 的应用需把 `res/dockstyle.qrc` 编入并安装——
+    `qApp->setStyleSheet(qxdock::dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)))`。
+    仓库已替你接好两处：`demos/qxapp/dockdemo`（显式编入并 `setStyleSheet`）与
+    `examples/CMakeLists.txt`（凡是 `add_qtc_example(..., qxdock, ...)` 的样本自动附加
+    `res/dockstyle.qrc`）。库里删掉的 `DockWindowPrivate::loadStylesheet()` 无需任何替换。
