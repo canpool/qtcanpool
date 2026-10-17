@@ -97,6 +97,110 @@ jobs:
           cmake --build "$RUNNER_TEMP/plugin" --parallel
           "$RUNNER_TEMP/plugin/qxpluginhost"
 
+  encoding:
+    # MSVC is the one compiler here that has to be told what encoding the
+    # sources are in. Without /utf-8 it decodes them with the system code page,
+    # so a u"..." literal - and therefore every QStringLiteral - ends up holding
+    # whatever that code page made of those bytes. Nothing fails to build; the
+    # text is just wrong at run time, which is the part a gate has to catch. The
+    # top-level CMakeLists.txt adds the switch, and this job is what says it is
+    # still there and still reaching the compiler.
+    #
+    # Qt 5.15.2 on Windows, and no other leg, because this is the only
+    # combination in which the switch is load-bearing: Qt 6 hands -utf-8 to its
+    # consumers through Qt6::Platform's interface compile options, so a Qt 6 leg
+    # would stay green with the switch deleted, and GCC and Clang never had the
+    # problem at all. The 5.15.2 leg in `build` above runs on Linux, where
+    # /utf-8 means nothing.
+    #
+    # One target rather than the tree: add_compile_options is directory scoped,
+    # so any target proves the switch arrives, and tst_qxcore is the one that
+    # notices when it does not - tst_QxTranslator compares literals that only
+    # survive an encoding-aware MSVC. Building the tree to learn the same thing
+    # would pay for every demo this job has no opinion about.
+    name: source encoding / windows / Qt 5.15.2
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          # The MSVC build of 5.15.2 rather than the MinGW one: the switch under
+          # test belongs to cl, and 5.15.2's msvc2019 libraries link against the
+          # 2022 toolchain that windows-latest provides.
+          arch: win64_msvc2019_64
+          cache: true
+
+      - name: Configure
+        # Demos and examples off. Neither is compiled by the target below, and
+        # they are most of the tree.
+        run: >
+          cmake -S . -B build-encoding
+          -DCMAKE_BUILD_TYPE=Release
+          -DWITH_DEMOS=OFF
+          -DWITH_EXAMPLES=OFF
+          -DWITH_TESTS=ON
+
+      - name: Build
+        run: cmake --build build-encoding --config Release --parallel --target tst_qxcore
+
+      - name: Test
+        shell: bash
+        env:
+          QT_QPA_PLATFORM: offscreen
+          # One class of the suite: it is the only one whose cases carry
+          # non-ASCII literals, and pinning it also pins what the report below
+          # has to contain. A name that matches nothing exits non-zero (see
+          # tests/common/tst_global.cpp), so a typo here cannot pass silently.
+          QTC_ONLY_TEST: tst_QxTranslator
+        run: |
+          set -u
+          # -e is wrong here for the same reason as in the native job: every
+          # command below probes something and a non-zero status is an answer.
+          set +e
+
+          EXE=$(find build-encoding -name 'tst_qxcore.exe' -type f | head -n 1)
+          if [ -z "${EXE}" ]; then
+            echo "::error::the test binary was not built"
+            exit 1
+          fi
+
+          # -o writes a file rather than stdout because on Windows this binary's
+          # stdout goes nowhere (GUI subsystem): redirecting it produces a zero
+          # byte log, which is easy to mistake for a silent failure.
+          if timeout 120 "${EXE}" -o encoding-report.txt,txt; then
+            STATUS=0
+          else
+            STATUS=$?
+          fi
+
+          # An empty report is the quiet failure mode: a binary that died before
+          # QtTest started writes nothing, the skip count below reads zero, and
+          # an empty log looks like a clean run.
+          if [ ! -s encoding-report.txt ]; then
+            echo "::error::the test wrote no report, so it did not start (exit ${STATUS})"
+            exit 1
+          fi
+
+          cat encoding-report.txt
+          SKIP=$(grep -cE '^SKIP ' encoding-report.txt)
+          PASSED=$(grep -cE '^(PASS|FAIL|XFAIL|XPASS) ' encoding-report.txt)
+          echo "::notice title=source encoding digest::${PASSED} result(s), ${SKIP} skipped, exit ${STATUS}"
+
+          # The cases that compare a Chinese literal live behind
+          # QXCORE_TEST_TRANSLATIONS, which CMake defines only when lrelease is
+          # there to compile the catalogues. So "the test passed" is not yet
+          # "the literals were compared": without the catalogues those cases
+          # skip and a corrupted literal would go unnoticed - the skip count is
+          # the number that has to be zero.
+          if [ "${SKIP}" -gt 0 ]; then
+            echo "::error::a case skipped, and the ones that can skip are the ones that read a Chinese literal: no catalogue was built, so this run compared nothing"
+            exit 1
+          fi
+          exit "${STATUS}"
+
   native:
     # The Windows window procedure, driven through a real window. Report only
     # (K8): this is the first time any of windowcontext_win.cpp has been executed
@@ -251,6 +355,16 @@ jobs:
         # than behind the SDK checks in build: those are reachable only after a
         # full build, and this one should say so in seconds.
         run: python3 scripts/check-template-sync.py
+
+      - name: Check the sources are UTF-8 with no byte order mark
+        # The other half of the encoding argument, and the half that needs no
+        # toolchain. The `encoding` job proves MSVC reads the files right; this
+        # one proves the files are what that switch assumes. A file saved in the
+        # system code page builds everywhere and is mojibake at run time, and no
+        # test notices unless it happens to compare that exact string, so the
+        # bytes are the only witness. It sits here with formatting because both
+        # are properties of the text rather than of a build.
+        run: python3 scripts/check-encoding.py
 
   quality:
     # Coverage and sanitizers. Both need a full configure and a compiler, so
