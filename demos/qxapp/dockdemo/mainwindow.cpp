@@ -8,6 +8,7 @@
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockmanager.h"
+#include "qxdock/dockstylesheet.h"
 
 #include <QMenuBar>
 #include <QMenu>
@@ -29,6 +30,11 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     QMenu *viewMenu = mb->addMenu(tr("View"));
 
     DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
+    // The dock look is the application's to install, and res/dockstyle.qrc is where
+    // this demo carries it - the library no longer holds a copy and no longer
+    // styles the DockWindow for us. The flag is set just above and is what picks
+    // the sheet, so the two lines are one decision read in two places.
+    qApp->setStyleSheet(dockStyleSheet(true));
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
     // C5: also enable the auto-hide slide animation.

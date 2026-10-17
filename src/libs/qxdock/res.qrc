@@ -19,9 +19,7 @@
         <file>res/images/vs-pin-button-disabled.svg</file>
         <file>res/images/vs-pin-button-pinned.svg</file>
         <file>res/images/vs-pin-button-pinned-focused.svg</file>
-        <file>res/stylesheets/default.css</file>
-        <file>res/stylesheets/focus_highlighting.css</file>
-        <file>res/stylesheets/default_linux.css</file>
-        <file>res/stylesheets/focus_highlighting_linux.css</file>
+        <!-- The style sheets moved to res/dockstyle.qrc: the dock look is the
+             application's to install, not the library's to impose. -->
     </qresource>
 </RCC>

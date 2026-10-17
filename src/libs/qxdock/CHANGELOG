@@ -40,6 +40,18 @@ Feature
   tab bar and the side bar as PageTabList - the same treatment the ribbon gave its
   painted page and group. tst_DockAccessible
 
+- DockWindow no longer styles itself. The four dock style sheets used to be
+  compiled into the library and applied to the DockWindow on construction, which
+  put the dock's appearance beyond the application's reach: a widget-level sheet
+  outranks the application-level one, so an application that set a dark theme
+  still received a DockWindow the library had already styled. The sheets moved to
+  res/dockstyle.qrc, which the application builds in, and are handed out by the
+  new qxdock::dockStyleSheet() - the application reads the text it wants and
+  applies it through setStyleSheet(), the same move the ribbon themes made in
+  B12. DockWindow carries and applies no stylesheet of its own.
+  tst_DockWindow::carriesNoStyleSheetOfItsOwn
+  tst_DockWindow::styleSheetIsReadFromTheApplication
+
 0.2.3
 ---
 Bugfix

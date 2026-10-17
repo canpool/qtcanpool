@@ -25,7 +25,6 @@
 #include <QXmlStreamWriter>
 #include <QFile>
 #include <QSettings>
-#include <QTextStream>
 #include <QPointer>
 #include <QDebug>
 #include <QApplication>
@@ -51,7 +50,6 @@ public:
     DockWindowPrivate();
 
     void init();
-    void loadStylesheet();
 
     void mapDockWidget(DockWidget *w);
 
@@ -99,35 +97,6 @@ void DockWindowPrivate::init()
     if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
         m_focusController = new DockFocusController(q);
     }
-
-#ifndef QX_DOCK_DEBUG
-    loadStylesheet();
-#endif
-}
-
-void DockWindowPrivate::loadStylesheet()
-{
-    Q_Q(DockWindow);
-    QString result;
-    QString fileName = ":/qxdock/res/stylesheets/";
-    fileName += DockManager::testConfigFlag(DockManager::FocusHighlighting) ? "focus_highlighting" : "default";
-#if QX_DOCK_X11
-    fileName += "_linux";
-#endif
-    fileName += ".css";
-    QFile styleSheetFile(fileName);
-    if (!styleSheetFile.open(QIODevice::ReadOnly)) {
-        // The stylesheet is compiled into the library, so a correct build always
-        // finds it. What must not happen is what the code used to do: read
-        // nothing and hand that empty string to setStyleSheet(), which would
-        // wipe whatever stylesheet the application had put there.
-        qWarning("DockWindow: cannot open the built-in stylesheet %s", qPrintable(fileName));
-        return;
-    }
-    QTextStream styleSheetStream(&styleSheetFile);
-    result = styleSheetStream.readAll();
-    styleSheetFile.close();
-    q->setStyleSheet(result);
 }
 
 void DockWindowPrivate::mapDockWidget(DockWidget *w)

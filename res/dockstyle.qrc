@@ -1,0 +1,31 @@
+<RCC>
+    <!--
+        The dock's own appearance, offered the way res/themes.qrc offers the
+        ribbon themes: built in by the applications that want it rather than
+        carried by the library. The images these sheets point at stay in qxdock,
+        which is why the url(:/qxdock/res/images/...) paths need no rewriting.
+
+        Four files, and picking between them is not the application's choice:
+        the _linux pair carries the extra rules an X11 desktop needs, and
+        QX_DOCK_X11 is the only thing in the tree that knows which desktop that
+        is. The focus_highlighting pair draws a frame around the focused dock
+        widget. dockStyleSheet() takes both decisions as arguments - see it for
+        why it hands the text out instead of applying it.
+
+        Named dockstyle rather than dock so it does not read as a theme family
+        beside res/themes/: these four are one look in four variants, not four
+        looks to choose from, and a DockWindow without them is unstyled rather
+        than differently styled.
+
+        prefix="/" with the directory inside each <file>, which is how
+        res/themes.qrc does it and why the paths come out as
+        :/dockstyle/default.css. Putting "dockstyle" in the prefix as well would
+        find them at :/dockstyle/dockstyle/default.css.
+    -->
+    <qresource prefix="/">
+        <file>dockstyle/default.css</file>
+        <file>dockstyle/focus_highlighting.css</file>
+        <file>dockstyle/default_linux.css</file>
+        <file>dockstyle/focus_highlighting_linux.css</file>
+    </qresource>
+</RCC>

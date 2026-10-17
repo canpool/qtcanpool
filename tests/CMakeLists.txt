@@ -177,6 +177,13 @@ add_qtc_test(tst_qxdock
     DEPENDS qxdock
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
+        # The dock style sheet is the application's to build in, so this suite has
+        # to be one: tst_DockWindow::styleSheetIsReadFromTheApplication reads it
+        # through the public entry point, and without the resource there would be
+        # nothing to read and a DockWindow would look unstyled without anything
+        # failing. In SOURCES rather than a keyword of its own because
+        # add_qtc_test() takes none - AUTORCC picks the .qrc up from here.
+        "${PROJECT_SOURCE_DIR}/res/dockstyle.qrc"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
         "${QTCANPOOL_TESTS_DIR}/qxdock/auto/main.cpp"

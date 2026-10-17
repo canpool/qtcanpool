@@ -13,11 +13,15 @@
 #include "qxdock/dockfloatingcontainer.h"
 #include "qxdock/docksidebar.h"
 #include "qxdock/docksidetab.h"
+#include "qxdock/dockstylesheet.h"
 
 #include <QLabel>
 #include <QDebug>
 #include <QFile>
 #include <QTemporaryDir>
+#include <QApplication>
+#include <QImage>
+#include <QTest>
 
 QX_DOCK_USE_NAMESPACE
 
@@ -38,15 +42,10 @@ private slots:
     void stateFile();
     void perspective();
     void framelessHost();
-    void builtInStylesheetIsApplied();
+    void carriesNoStyleSheetOfItsOwn();
+    void styleSheetIsReadFromTheApplication();
 };
 
-/*!
- * DockWindow loads its stylesheet from the library's own resources while it is
- * being constructed. Pinned because the load used to hand an empty string to
- * setStyleSheet() when the resource could not be opened, which would have wiped
- * whatever stylesheet the application had set, and nothing would have said so.
- */
 /*!
  * The window a DockWindow lives in may be frameless - the main window this
  * release was asked to work with is one. Nothing in the docking machinery asks
@@ -100,11 +99,90 @@ void tst_DockWindow::framelessHost()
     QCOMPARE(dw2->dockFloatingContainer(), fc);
 }
 
-void tst_DockWindow::builtInStylesheetIsApplied()
+/*!
+ * The window carries no style sheet of its own, and an application-level one
+ * reaches the dock through it.
+ *
+ * The first half is the change: DockWindow used to read a sheet out of the
+ * library's own resources while being constructed, which put the dock's
+ * appearance beyond the application's reach - a widget-level sheet outranks the
+ * application-level one, so a dark theme the application had set still left a
+ * DockWindow the library had already styled. That is the same shape of problem
+ * the ribbon window had, and it was fixed the same way (see qxdock::dockStyleSheet
+ * for who installs the dock look now).
+ *
+ * The second half is the part that makes the first worth anything: a sheet set
+ * on the application has to arrive at the widgets inside the dock. Asserting
+ * only that the window's own sheet is empty would pass just as well with the
+ * dock unable to be styled at all, which is not what was asked for.
+ *
+ * "Arrived" is measured by whether the sheet changed what gets painted, not by
+ * what styleSheet() returns: Qt keeps an application-level sheet in the
+ * internal QStyleSheetStyle and styleSheet() reports only a widget's own, so a
+ * QCOMPARE against the accessor would fail on a dock that is being styled
+ * perfectly well. A border wide enough to colour the edge is what tells the
+ * two apart.
+ */
+void tst_DockWindow::carriesNoStyleSheetOfItsOwn()
 {
     DockWindow window;
 
-    QVERIFY(!window.styleSheet().isEmpty());
+    QVERIFY2(window.styleSheet().isEmpty(), "the dock window still styles itself");
+
+    DockWidget *w = new DockWidget("dw");
+    DockPanel *panel = window.addDockWidget(Qx::CenterDockWidgetArea, w);
+    QVERIFY(panel != nullptr);
+    DockContainer *container = panel->dockContainer();
+    QVERIFY(container != nullptr);
+
+    // The dock's own widgets, not the window: the sheet has to have reached
+    // something a DockWindow is made of. DockContainer is the outermost of them.
+    container->resize(200, 120);
+    container->show();
+    QVERIFY(QTest::qWaitForWindowExposed(container));
+
+    const QString applicationSheet = QStringLiteral("QFrame { border: 7px solid red; }");
+    qApp->setStyleSheet(applicationSheet);
+
+    // Left edge, first seven columns: the sheet asks for a border there and the
+    // rest of the widget is not painted that colour by anything else.
+    const QImage painted = container->grab().toImage();
+    int redEdge = 0;
+    for (int y = 0; y < painted.height(); ++y) {
+        for (int x = 0; x < 7 && x < painted.width(); ++x) {
+            const QColor pixel = painted.pixelColor(x, y);
+            if (pixel.red() > 120 && pixel.green() < 90 && pixel.blue() < 90) {
+                ++redEdge;
+            }
+        }
+    }
+    QVERIFY2(redEdge > 0, "the application style sheet did not reach the dock: a DockWindow that nothing can "
+                          "style is not what removing the built-in sheet was supposed to leave behind");
+
+    qApp->setStyleSheet(QString());
+}
+
+/*!
+ * The dock style sheet is the application's to build in, and the library only
+ * reads it - so what this pins is that reading it is possible at all and that
+ * the two halves of the pair are actually different sheets.
+ *
+ * The test links qxdock and builds res/dockstyle.qrc in, exactly as an application
+ * does; see tests/qxdock/CMakeLists.txt. Without that resource the library has
+ * nothing to hand out, which is the case this guards against going unnoticed:
+ * a DockWindow would simply look unstyled, and nothing anywhere would fail.
+ */
+void tst_DockWindow::styleSheetIsReadFromTheApplication()
+{
+    const QString plain = dockStyleSheet(false);
+    const QString focused = dockStyleSheet(true);
+
+    QVERIFY2(!plain.isEmpty(), "res/dockstyle.qrc is not built in, or the sheet is empty");
+    QVERIFY(!focused.isEmpty());
+    // FocusHighlighting has to select between two sheets rather than decorate
+    // one: a sheet that ignored the flag would leave the frame around the
+    // focused dock widget un-drawn and say nothing.
+    QVERIFY2(plain != focused, "the focus highlighting flag does not select a sheet");
 }
 
 void tst_DockWindow::addDockWidget_other()

@@ -59,6 +59,16 @@ function(add_qtc_example name library directory window)
 
     list(APPEND _sources ${ARGN})
 
+    # A sample built against qxdock needs the dock style sheet, because the
+    # library no longer ships one: without it a DockWindow is a row of unstyled
+    # widgets. It lives in res/dockstyle.qrc and is offered the way res/themes.qrc is
+    # - built in by whoever wants it. Doing it here rather than in twelve sample
+    # directories is what keeps "add a new dock sample" from being a two-step
+    # affair, where the second step is the one nobody does.
+    if (library STREQUAL "qxdock")
+        list(APPEND _sources "${PROJECT_SOURCE_DIR}/res/dockstyle.qrc")
+    endif()
+
     add_qtc_executable(${name}
         # Samples are built here and stay here; none of them belongs in an
         # installed SDK tree next to the libraries.
