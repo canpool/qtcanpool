@@ -20,7 +20,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | 组件 | 命名空间 | 说明 |
 | :--- | :------- | :--- |
 | **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`），仅依赖 Qt Core |
-| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（Office / WPS / Dark）、运行时切换、选择持久化、跟随系统深浅色 |
+| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（classic / soft / flat / slate 四族，均跟随系统深浅色）、运行时切换、选择持久化 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
@@ -124,17 +124,9 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ## 路线图
 
-- [3.0 开发规划](./doc/ROADMAP-3.0.md)
-- [3.x 开发规划（历史）+ 决策索引与库版本规则](./doc/ROADMAP-3.x.md)
-- [4.0 任务清单](./doc/design/4.0-TASKS.md)
-- [4.1 任务清单](./doc/design/4.1-TASKS.md)
-- [4.2 任务清单](./doc/design/4.2-TASKS.md)
-- [**4.3 任务清单（当前）**](./doc/design/4.3-TASKS.md)
-- [2.x → 3.0 迁移指南](./doc/design/3.0-MIGRATION.md)
-- [M1 任务清单](./doc/design/3.0-M1-TASKS.md)
-- [M2 任务清单](./doc/design/3.0-M2-TASKS.md)
-- [M3 任务清单](./doc/design/3.0-M3-TASKS.md)
-- [M4 任务清单](./doc/design/3.0-M4-TASKS.md)
+- 总路线、决策索引与库版本规则见 [ROADMAP-3.x](./doc/ROADMAP-3.x.md)。
+- 每个开发版本的任务清单位于 [`doc/design/`](./doc/design/)，按 `<版本>-TASKS.md`（如 `4.5-TASKS.md`）命名，随版本推进新增，不构成此处固定列表。
+- 2.x → 3.0 迁移指南见 [3.0-MIGRATION](./doc/design/3.0-MIGRATION.md)。
 
 ## 版本
 
@@ -182,17 +174,8 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ## 示例
 
-**dockdemo**
-
-![dockdemo](./doc/pics/dockdemo.png)
-
-**ribbondemo**
-
-![ribbondemo](./doc/pics/ribbondemo.gif)
-
-最新版本效果图：
-
-![ribbondemo](./doc/pics/ribbondemo.png)
+- **dockdemo** —— 可停靠窗口示例：多种停靠布局、自动隐藏、拖拽重组、XML 布局存取，以及深浅主题下自动着色的内置图标。
+- **ribbondemo** —— Ribbon 风格界面示例：菜单栏 / 页 / 分组与主题切换。
 
 **ideshell** —— 插件化外壳示例：宿主不认识任何模块（构建目标 `IdeShellDemo`）。
 
@@ -202,12 +185,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ## 应用案例
 
-**MyCAD**
-
-![qcanpool](./doc/pics/mycad.png)
-![qcanpool](./doc/pics/mycad2.png)
-
-MyCAD 是基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成 QxRibbon 组件的作品，旨在实现 FreeCAD 的现代化界面（Ribbon 风格）。
+**MyCAD** —— 基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成 QxRibbon 组件的作品，旨在实现 FreeCAD 的现代化界面（Ribbon 风格）。
 
 ## 快速体验
 
