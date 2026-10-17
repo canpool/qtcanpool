@@ -25,8 +25,8 @@ class QxThemeManagerPrivate;
  * own choosing, and addresses them by that id from then on:
  *
  * @code
- * QxThemeManager::instance()->registerTheme({"dark-wps", tr("Dark WPS"), true, css});
- * QxThemeManager::instance()->setTheme(QStringLiteral("dark-wps"));
+ * QxThemeManager::instance()->registerTheme({"fluent-dark", tr("Fluent Dark"), true, css});
+ * QxThemeManager::instance()->setTheme(QStringLiteral("fluent-dark"));
  * @endcode
  *
  * Nothing is registered until the application registers it, and an id that was

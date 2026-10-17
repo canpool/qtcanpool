@@ -71,7 +71,4 @@
         <file>res/gallery/Adobe.svg</file>
         <file>res/gallery/Word.svg</file>
     </qresource>
-    <qresource prefix="/theme">
-        <file>res/office2016blue.css</file>
-    </qresource>
 </RCC>

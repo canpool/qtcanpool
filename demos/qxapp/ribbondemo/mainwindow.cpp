@@ -79,29 +79,24 @@ struct DemoTheme {
 /*
  * The themes this demo offers, and they are the demo's own to offer: the ribbon
  * library ships no style sheet of its own, so what a ribbon looks like is decided
- * here. Everything but Office 2016 Blue comes from res/themes.qrc, which this
- * demo builds in alongside any other application that wants the same set.
+ * here. Four families, each in its light and dark scheme, all of them from
+ * res/themes.qrc - which this demo builds in like any other application that
+ * wants the same set.
  */
 QVector<DemoTheme> demoThemes()
 {
     return {
-        {QStringLiteral("light-yellow"), MainWindow::tr("LightYellow"), false,
-         QStringLiteral(":/themes/light_yellow.css")},
-        {QStringLiteral("light-office2013"), MainWindow::tr("LightOffice2013"), false,
-         QStringLiteral(":/themes/light_office2013.css")},
-        {QStringLiteral("light-classic"), MainWindow::tr("LightClassic"), false,
-         QStringLiteral(":/themes/light_classic.css")},
-        {QStringLiteral("light-fancy"), MainWindow::tr("LightFancy"), false,
-         QStringLiteral(":/themes/light_fancy.css")},
-        {QStringLiteral("dark-wps"), MainWindow::tr("DarkWps"), true, QStringLiteral(":/themes/dark_wps.css")},
-        {QStringLiteral("dark-officeplus"), MainWindow::tr("DarkOfficePlus"), true,
-         QStringLiteral(":/themes/dark_officeplus.css")},
-        {QStringLiteral("light-fluent2016"), MainWindow::tr("LightFluent2016"), false,
-         QStringLiteral(":/themes/light_fluent2016.css")},
-        {QStringLiteral("light-fluent2019"), MainWindow::tr("LightFluent2019"), false,
-         QStringLiteral(":/themes/light_fluent2019.css")},
-        {QStringLiteral("office2016blue"), MainWindow::tr("Office2016Blue"), true,
-         QStringLiteral(":/theme/res/office2016blue.css")},
+        {QStringLiteral("fluent-light"), MainWindow::tr("FluentLight"), false,
+         QStringLiteral(":/themes/fluent_light.css")},
+        {QStringLiteral("fluent-dark"), MainWindow::tr("FluentDark"), true, QStringLiteral(":/themes/fluent_dark.css")},
+        {QStringLiteral("office-light"), MainWindow::tr("OfficeLight"), false,
+         QStringLiteral(":/themes/office_light.css")},
+        {QStringLiteral("office-dark"), MainWindow::tr("OfficeDark"), true, QStringLiteral(":/themes/office_dark.css")},
+        {QStringLiteral("wps-light"), MainWindow::tr("WpsLight"), false, QStringLiteral(":/themes/wps_light.css")},
+        {QStringLiteral("wps-dark"), MainWindow::tr("WpsDark"), true, QStringLiteral(":/themes/wps_dark.css")},
+        {QStringLiteral("vscode-light"), MainWindow::tr("VsCodeLight"), false,
+         QStringLiteral(":/themes/vscode_light.css")},
+        {QStringLiteral("vscode-dark"), MainWindow::tr("VsCodeDark"), true, QStringLiteral(":/themes/vscode_dark.css")},
     };
 }
 
@@ -130,7 +125,7 @@ MainWindow::MainWindow(QWidget *par, bool screenshotMode)
     setMinimumWidth(500);
 
     QTimer::singleShot(0, this, [this]() {
-        changeRibbonTheme(2);
+        changeRibbonTheme(0);
     });
 
     qDebug() << RibbonElementStyleOpt;

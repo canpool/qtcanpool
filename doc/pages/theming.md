@@ -24,28 +24,30 @@
 
 using namespace QxTheme;
 
-QxThemeInfo dark(QStringLiteral("dark-officeplus"), QStringLiteral("Dark Office Plus"), true);
-dark.styleSheet = readFile(QStringLiteral(":/themes/dark_officeplus.css"));
+QxThemeInfo dark(QStringLiteral("fluent-dark"), QStringLiteral("Fluent Dark"), true);
+dark.styleSheet = readFile(QStringLiteral(":/themes/fluent_dark.css"));
 
 QxThemeManager::instance()->registerTheme(dark);
 ```
 
 `res/themes.qrc` 把仓库 `res/themes/` 下的样式表挂到 `:/themes/` 上，需要它们的应用
-在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的这几套，约定 id 如下：
+在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的是 **4 套家族 × 明暗**，约定 id 如下：
 
 | 配置 id | 显示名 | 深色 |
 | :--- | :--- | :---: |
-| `light-yellow` | Light Yellow | |
-| `light-office2013` | Light Office 2013 | |
-| `light-classic` | Light Classic | |
-| `light-fancy` | Light Fancy | |
-| `dark-wps` | Dark WPS | ✓ |
-| `dark-officeplus` | Dark Office Plus | ✓ |
-| `light-fluent2016` | Light Fluent 2016 | |
-| `light-fluent2019` | Light Fluent 2019 | |
+| `fluent-light` | Fluent Light | |
+| `fluent-dark` | Fluent Dark | ✓ |
+| `office-light` | Office Light | |
+| `office-dark` | Office Dark | ✓ |
+| `wps-light` | WPS Light | |
+| `wps-dark` | WPS Dark | ✓ |
+| `vscode-light` | VS Code Light | |
+| `vscode-dark` | VS Code Dark | ✓ |
 
 **配置 id 是对外契约**：它被写进配置文件，改动需要配合配置迁移。
-沿用上表 id 还有一个好处 —— 老版本存下的选择，在新版本重新注册同名 id 之后仍然有效。
+4.5 换掉了整套预置主题（旧 id `light-office2013` / `dark-wps` 等已不存在），
+因此从 4.4 升上来的用户存下的 id 会取不到——引擎对未注册 id 保持原样并告警一次。
+想保留老选择的应用，可以自己把旧 id 重新注册到某套新样式表上。
 
 查询已注册的主题：
 
@@ -63,7 +65,7 @@ QxThemeManager::instance()->registerTheme(dark);
 
 ```cpp
 QxThemeManager *themes = QxThemeManager::instance();
-themes->setTheme(QStringLiteral("dark-officeplus"));
+themes->setTheme(QStringLiteral("fluent-dark"));
 ```
 
 `setTheme()` 会立即应用并发出 `themeChanged()`；`apply()` 用于把当前主题重新装一遍
@@ -122,8 +124,9 @@ themes->setStyleSheet(QStringLiteral("dark-officeplus"), myCss);
 
 ## 写自己的主题
 
-1. 参照 `res/themes/` 下的样式表，其顶部注释块列出了该主题的
-   `qtcanpool-qss` 设计令牌（背景、前景、强调色、边框等）。
+1. 参照 `res/themes/` 下的样式表：同样是**一套骨架 + 一份调色板**——浅色主题只描述
+   Ribbon，暗色主题额外把标准控件也重画（暗色下平台样式会忽略调色板）。
+   顶点注释块写明了该主题取自哪套设计语言的调色板。
 2. 调色板只由「深色 / 浅色」决定（@ref QxTheme::paletteFor），
    因此新增一套主题只需要注册时给对 `dark`，不需要改库。
 3. 只想换样式表而不动注册，用 `setStyleSheet(id, css)` 即可，无需改库。

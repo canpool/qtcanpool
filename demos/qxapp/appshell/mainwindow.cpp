@@ -56,16 +56,22 @@ QxThemeInfo bundledTheme(const QString &id, const QString &name, bool dark, cons
  */
 void registerDemoThemes(QxThemeManager *engine)
 {
-    engine->registerTheme(bundledTheme(QStringLiteral("light-office2013"), MainWindow::tr("Light Office 2013"), false,
-                                       QStringLiteral("light_office2013.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("light-classic"), MainWindow::tr("Light Classic"), false,
-                                       QStringLiteral("light_classic.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("light-fancy"), MainWindow::tr("Light Fancy"), false,
-                                       QStringLiteral("light_fancy.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("fluent-light"), MainWindow::tr("Fluent Light"), false,
+                                       QStringLiteral("fluent_light.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("fluent-dark"), MainWindow::tr("Fluent Dark"), true,
+                                       QStringLiteral("fluent_dark.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("office-light"), MainWindow::tr("Office Light"), false,
+                                       QStringLiteral("office_light.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("office-dark"), MainWindow::tr("Office Dark"), true,
+                                       QStringLiteral("office_dark.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("dark-wps"), MainWindow::tr("Dark WPS"), true, QStringLiteral("dark_wps.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("dark-officeplus"), MainWindow::tr("Dark Office Plus"), true,
-                                       QStringLiteral("dark_officeplus.css")));
+        bundledTheme(QStringLiteral("wps-light"), MainWindow::tr("WPS Light"), false, QStringLiteral("wps_light.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("wps-dark"), MainWindow::tr("WPS Dark"), true, QStringLiteral("wps_dark.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("vscode-light"), MainWindow::tr("VS Code Light"), false,
+                                       QStringLiteral("vscode_light.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("vscode-dark"), MainWindow::tr("VS Code Dark"), true,
+                                       QStringLiteral("vscode_dark.css")));
 }
 
 }   // namespace
@@ -330,7 +336,7 @@ QWidget *MainWindow::createLogPage()
     QPlainTextEdit *log = new QPlainTextEdit;
     log->setReadOnly(true);
     log->setPlainText(QStringLiteral("13:59:12  shell      ready\n"
-                                     "13:59:12  theme      dark-officeplus\n"
+                                     "13:59:12  theme      fluent-dark\n"
                                      "13:59:13  layout     restored\n"));
     return log;
 }

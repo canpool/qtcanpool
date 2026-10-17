@@ -1,0 +1,47 @@
+/*
+ * VS Code: a light-grey strip over white pages, the active tab marked by a thin
+ * accent rule along its top edge, and hover in plain grey. The accent is used for
+ * state, never for decoration, and nothing is rounded.
+ */
+
+QxRibbon--RibbonTabBar {
+  background-color: {{surface-alt}};
+}
+
+QxRibbon--RibbonPage,
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonGroup {
+  background-color: {{surface}};
+  border: 0px;
+}
+
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{surface-alt}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton {
+  background-color: {{surface-alt}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: {{state-hover}};
+}
+
+QxRibbon--RibbonTabBar::tab {
+  border: 0px;
+  border-top: 1px solid transparent;
+  margin-left: 0px;
+}
+
+QxRibbon--RibbonTabBar::tab:selected {
+  border: 0px;
+  border-top: 1px solid {{accent}};
+  background: {{surface}};
+  color: {{text}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  border: 0px;
+  border-top: 1px solid transparent;
+  background: {{state-hover}};
+}

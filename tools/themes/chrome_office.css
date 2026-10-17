@@ -1,0 +1,40 @@
+/*
+ * Office: a grey strip holding the tabs, white pages under it, square corners,
+ * and the selected tab reads as a card lifted out of the strip. The strip and
+ * the page are two different tones - that step is what makes it Office.
+ */
+
+QxRibbon--RibbonTabBar {
+  background-color: {{surface-alt}};
+}
+
+QxRibbon--RibbonTabBar::tab,
+QxRibbon--RibbonTabBar::tab:selected,
+QxRibbon--RibbonTabBar::tab:hover {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-left: 0px;
+}
+
+QxRibbon--RibbonTabBar::tab:selected {
+  background: {{surface}};
+  border: 1px solid {{border}};
+  border-bottom-color: {{surface}};
+  color: {{text}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  background: {{surface-sub}};
+  border: 1px solid transparent;
+}
+
+/* the strip under the tabs stays drawn: Office separates chrome from content */
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{border}};
+}
+
+QxRibbon--RibbonPage,
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonGroup {
+  background-color: {{surface}};
+}

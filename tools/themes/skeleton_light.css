@@ -1,10 +1,9 @@
-﻿/* start ribbon set*/
+/* start ribbon set*/
 
 /*RibbonBar*/
 
 QxRibbon--RibbonBar {
-  color: white;
-  background-color: #2B579A;
+  background-color: {{surface}};
 }
 
 /*RibbonTabBar*/
@@ -14,20 +13,19 @@ QxRibbon--RibbonTabBar {
 }
 
 QxRibbon--RibbonTabBar QAbstractButton {
-  color: white;
-  background-color: #2b579a;
+  background-color: {{surface-alt}};
 }
 
 QxRibbon--RibbonTabBar QAbstractButton:hover {
-  background-color: #124078;
+  background-color: {{accent-faint}};
 }
 
 QxRibbon--RibbonTabBar QAbstractButton:pressed {
-  background-color: #002050;
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonTabBar::tab {
-  color: #f0f0f0;
+  color: {{text-muted}};
   border: 1px solid transparent;
   background: transparent;
   margin-left: 2px;
@@ -42,10 +40,10 @@ QxRibbon--RibbonTabBar::tab:hover {
 }
 
 QxRibbon--RibbonTabBar::tab:selected {
-  color: #000000;
-  border: 1px solid #c5d2e0;
-  background: white;
-  border-bottom-color: #FFFFFF;
+  color: {{text-muted}};
+  border: 1px solid {{border}};
+  background: {{surface}};
+  border-bottom-color: {{surface}};
 }
 
 QxRibbon--RibbonTabBar::tab:selected:disabled {
@@ -54,9 +52,8 @@ QxRibbon--RibbonTabBar::tab:selected:disabled {
 }
 
 QxRibbon--RibbonTabBar::tab:hover:!selected {
-  border:1px solid #c5d2e0;
-  border-bottom-color: #FFFFFF;
-  color: #ffffff;
+  border: 1px solid {{border}};
+  color: {{text-muted}};
 }
 
 QxRibbon--RibbonTabBar::tab:!selected {
@@ -64,14 +61,14 @@ QxRibbon--RibbonTabBar::tab:!selected {
 }
 
 QWidget#qx_RibbonTabBarBaseLine {
-  background-color: #c5d2e0;
+  background-color: {{border}};
 }
 
 /*RibbonStackedWidget*/
 
 QxRibbon--RibbonStackedWidget {
-  background-color: white;
-  border: 1px solid #c5d2e0;
+  background-color: {{surface}};
+  border: 1px solid {{border}};
   border-top-width: 0px;
 }
 
@@ -86,13 +83,13 @@ QxRibbon--RibbonPage:focus {
 }
 
 QxRibbon--RibbonPage {
-  background-color: #fcfdfe;
+  background-color: {{surface-alt}};
 }
 
 /*RibbonGroup*/
 
 QxRibbon--RibbonGroup {
-  background-color: white;
+  background-color: {{surface}};
   border: 0px;
 }
 
@@ -100,20 +97,20 @@ QxRibbon--RibbonGroup {
 
 QxRibbon--RibbonGroupOptionButton {
   background-color: transparent;
-  color: #333;
+  color: {{text}};
 }
 
 QxRibbon--RibbonGroupOptionButton:hover {
-  background-color: #cee7fc;
+  background-color: {{accent-faint}};
   border: 0px;
 }
 
 /*RibbonGallery*/
 
 QxRibbon--RibbonGallery {
-  border: 1px solid #c2d0df;
+  border: 1px solid {{border}};
   background-color: transparent;
-  color: #333;
+  color: {{text}};
 }
 
 /*RibbonGalleryGroup*/
@@ -121,24 +118,24 @@ QxRibbon--RibbonGallery {
 QxRibbon--RibbonGalleryGroup {
   show-decoration-selected: 1;
   background-color: transparent;
-  color: #333;
-  border: 1px solid #c2d0df;
+  color: {{text}};
+  border: 1px solid {{border}};
 }
 
 QxRibbon--RibbonGalleryGroup::item:selected {
-  background-color: #9ed2f9;
-  color: black;
+  background-color: {{accent-fill}};
+  color: {{text}};
 }
 
 QxRibbon--RibbonGalleryGroup::item:hover {
-  border: 1px solid #badffa;
-  background-color: #cee7fc;
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
 }
 
 /*RibbonGalleryViewport*/
 
 QxRibbon--RibbonGalleryViewport {
-  background-color: white;
+  background-color: {{surface}};
 }
 
 /*RibbonButtonGroup*/
@@ -147,99 +144,22 @@ QxRibbon--RibbonButtonGroup {
   background-color: transparent;
 }
 
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QWidget {
-  color: white;
-  background-color: #2B579A;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton {
-  color: white;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:hover,
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:focus {
-  border: 1px solid #124078;
-  background-color: #124078;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:pressed,
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QxRibbon--RibbonButton:checked {
-  border: 1px solid #002050;
-  background-color: #002050;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QLineEdit {
-  border: 1px solid #124078;
-  background-color: #2B579A;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QLineEdit:hover {
-  border: 1px solid #0075d1;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QComboBox {
-  border: 1px solid #124078;
-}
-
-QxRibbon--RibbonButtonGroup#qx_RibbonButtonGroup QComboBox:hover {
-  border: 1px solid #0075d1;
-}
-
 QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
-  border: 1pt solid #c2d0df;
+  border: 1pt solid {{border}};
 }
 
 /*RibbonQuickAccessBar*/
 
 QxRibbon--RibbonQuickAccessBar {
-  background-color: #cee8fc;
-}
-
-QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
 }
 
-QxRibbon--RibbonQuickAccessBar QToolButton {
-  border: none;
-  color: white;
-}
-
-QxRibbon--RibbonQuickAccessBar QToolButton::menu-button {
-  background: transparent;
-}
-
-QxRibbon--RibbonQuickAccessBar QToolButton:hover,
-QxRibbon--RibbonQuickAccessBar QToolButton:focus {
-  background-color: #124078;
-}
-
-QxRibbon--RibbonQuickAccessBar QToolButton:pressed,
-QxRibbon--RibbonQuickAccessBar QToolButton:checked {
-  background-color: #002050;
-}
-
-QxRibbon--RibbonQuickAccessBar QToolButton {
-  width: 20px;
-  height: 20px;
-}
-
-QxRibbon--RibbonQuickAccessBar QToolButton[popupMode="1"] {
-  padding-right: 12px;
-}
-
-QxRibbon--RibbonQuickAccessBar QAbstractButton {
-  padding: 0px;
-}
-
 QxRibbon--RibbonQuickAccessButton {
-  qproperty-icon: none;
+  width: 22px;
 }
 
 QxRibbon--RibbonQuickAccessButton::menu-indicator {
-  width: 6px;
-  height: 6px;
-  padding-right: 3px;
-  padding-bottom: 5px;
+  image: none;
 }
 
 /*RibbonCtrlContainer*/
@@ -252,59 +172,106 @@ QxRibbon--RibbonCtrlContainer {
 
 QAbstractButton#qx_RibbonApplicationButton {
   margin: 0px;
-  color: white;
+  color: {{text-on-fill}};
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
-  background-color: #2b579a;
+  background-color: {{accent-fill-strong}};
 }
 
 QAbstractButton#qx_RibbonApplicationButton:hover {
-  background-color: #124078;
+  background-color: {{accent-fill}};
 }
 
-QAbstractButton#qx_RibbonApplicationButton:pressed,
-QAbstractButton#qx_RibbonApplicationButton:checked {
-  background-color: #002050;
+QAbstractButton#qx_RibbonApplicationButton:pressed {
+  background-color: {{accent-fill-strong}};
 }
 
 QAbstractButton#qx_RibbonApplicationButton:focus {
   outline: none;
 }
 
-/* QAbstractButton#qx_RibbonApplicationButton::menu-indicator {
+QAbstractButton#qx_RibbonApplicationButton::menu-indicator {
   image: none;
-} */
+}
+
+/*RibbonBackstageView*/
+
+QWidget#qx_RibbonBackstageView {
+  background-color: {{surface}};
+}
+
+QWidget#qx_RibbonBackstageMenu {
+  background-color: {{surface}};
+  border-right: 1px solid {{border-strong}};
+}
+
+QToolButton#qx_RibbonBackstageButton,
+QToolButton#qx_RibbonBackstageCloseButton {
+  border: 1px solid transparent;
+  color: {{text}};
+  background-color: transparent;
+  text-align: left;
+  padding: 4px 8px;
+}
+
+QToolButton#qx_RibbonBackstageButton:hover,
+QToolButton#qx_RibbonBackstageCloseButton:hover {
+  color: {{text}};
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
+}
+
+QToolButton#qx_RibbonBackstageButton:pressed,
+QToolButton#qx_RibbonBackstageCloseButton:pressed {
+  color: {{text}};
+  border: 1px solid {{accent}};
+  background-color: {{accent-fill}};
+}
+
+QToolButton#qx_RibbonBackstageButton:checked,
+QToolButton#qx_RibbonBackstageCloseButton:checked {
+  color: {{text}};
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
+}
+
+QFrame#qx_RibbonBackstageSeparator {
+  background-color: {{border-strong}};
+  border: none;
+  min-height: 1px;
+  max-height: 1px;
+}
 
 /*RibbonButton*/
 
 QxRibbon--RibbonButton {
   border: 1px solid transparent;
-  color: #333;
-  background-color: white;
+  color: {{text}};
+  background-color: {{surface}};
 }
 
 QxRibbon--RibbonButton:focus {
-  border: 1px solid #b9defa;
-  color: #333;
-  background-color: #fcfdfe;
+  border: 1px solid {{accent-soft}};
+  color: {{text}};
+  background-color: {{surface-alt}};
 }
 
 QxRibbon--RibbonButton:pressed {
-  color: #000;
-  border: 1px solid#269bf4;
-  background-color: #9ed2f9;
+  color: {{text}};
+  border: 1px solid{{accent}};
+  background-color: {{accent-fill}};
 }
 
 QxRibbon--RibbonButton:checked {
-  color: #333;
-  border: 1px solid #b9defa;
-  background-color: #cee8fc;
+  color: {{text}};
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
 }
 
 QxRibbon--RibbonButton:hover {
-  color: #000;
-  border: 1px solid #badffa;
-  background-color: #cee7fc;
+  color: {{text}};
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
 }
 
 /*RibbonControlButton*/
@@ -312,47 +279,38 @@ QxRibbon--RibbonButton:hover {
 QxRibbon--RibbonControlButton {
   background-color: transparent;
   border: 1px solid transparent;
-  color: #333;
+  color: {{text}};
 }
 
 QxRibbon--RibbonControlButton:pressed {
-  border: 1px solid #269bf4;
-  background-color: #9ed2f9;
+  border: 1px solid {{accent}};
+  background-color: {{accent-fill}};
 }
 
 QxRibbon--RibbonControlButton:checked {
-  border: 1px solid #b9defa;
-  background-color: #cee8fc;
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
 }
 
 QxRibbon--RibbonControlButton:hover {
-  border: 1px solid #badffa;
-  background-color: #cee7fc;
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonUp, #RibbonGalleryButtonDown, #RibbonGalleryButtonMore {
-  border: 1px solid #cee8fc;
+  border: 1px solid {{accent-faint}};
 }
 
 QxRibbon--RibbonControlButton#RibbonBarHideGroupButton {
   border: 1px solid transparent;
 }
 
-QxRibbon--RibbonControlButton#RibbonBarHideGroupButton:hover {
-  background-color: #124078;
-}
-
-QxRibbon--RibbonControlButton#RibbonBarHideGroupButton:pressed,
-QxRibbon--RibbonControlButton#RibbonBarHideGroupButton:checked {
-  background-color: #002050;
-}
-
 /*RibbonMenu*/
 
 QxRibbon--RibbonMenu {
-  color: #333;
-  background-color: #FCFCFC;
-  border: 1px solid #c2d0df;
+  color: {{text}};
+  background-color: {{surface-alt}};
+  border: 1px solid {{border}};
 }
 
 QxRibbon--RibbonMenu::item {
@@ -365,13 +323,13 @@ QxRibbon--RibbonMenu#qx_compatible::item {
 }
 
 QxRibbon--RibbonMenu::item:selected {
-  background-color: #cee8fc;
+  background-color: {{accent-faint}};
 }
 
 QxRibbon--RibbonMenu::item:hover {
-  color: #000;
-  background-color: #cee7fc;
-  border: 1px solid #badffa;
+  color: {{text}};
+  background-color: {{accent-faint}};
+  border: 1px solid {{accent-soft}};
 }
 
 QxRibbon--RibbonMenu::icon {
@@ -381,28 +339,28 @@ QxRibbon--RibbonMenu::icon {
 /*RibbonLineEdit*/
 
 QxRibbon--RibbonLineEdit {
-  border: 1px solid #C0C2C4;
-  background: #FFF;
-  selection-background-color: #9BBBF7;
-  selection-color: #000;
+  border: 1px solid {{border-strong}};
+  background: {{surface}};
+  selection-background-color: {{accent}};
+  selection-color: {{text}};
 }
 
 /*RibbonComboBox*/
 
 QxRibbon--RibbonComboBox {
-  border: 1px solid #c2d0df;
+  border: 1px solid {{border}};
 }
 
 QxRibbon--RibbonComboBox:hover {
-  border: 1px solid #269bf4;
-  color: #000;
+  border: 1px solid {{accent}};
+  color: {{text}};
 }
 
 QxRibbon--RibbonComboBox:editable {
-  color: #000;
-  background: white;
-  selection-background-color: #9BBBF7;
-  selection-color: #000;
+  color: {{text}};
+  background: {{surface}};
+  selection-background-color: {{accent}};
+  selection-color: {{text}};
 }
 
 QxRibbon--RibbonComboBox::drop-down {
@@ -415,21 +373,21 @@ QxRibbon--RibbonComboBox::drop-down {
 }
 
 QxRibbon--RibbonComboBox::drop-down:hover {
-  border: 1px solid #FDEEB3;
-  background-color: #9ed2f9;
+  border: 1px solid {{highlight}};
+  background-color: {{accent-fill}};
 }
 
 /*RibbonSeparator*/
 
 QxRibbon--RibbonSeparator {
   /*background-color: transparent;*/
-  background-color: white;
+  background-color: {{surface}};
 }
 
 QxRibbon--RibbonPageScrollButton {
-  border: 0px solid #c5d2e0;
-  color: #333;
-  background-color: white;
+  border: 0px solid {{border}};
+  color: {{text}};
+  background-color: {{surface}};
 }
 
 QxRibbon--RibbonPageScrollButton[arrowType="3"] {
@@ -441,8 +399,8 @@ QxRibbon--RibbonPageScrollButton[arrowType="4"] {
 }
 
 QxRibbon--RibbonPageScrollButton:hover {
-  color: #000000;
-  background-color: #cee7fc;
+  color: {{text}};
+  background-color: {{accent-faint}};
 }
 
 QxRibbon--WindowButton {
@@ -455,17 +413,17 @@ QxRibbon--WindowButton:focus {
 }
 
 QxRibbon--WindowButton#qx_MinimizeWindowButton:hover,#qx_MaximizeWindowButton:hover {
-  background-color: #124078;
+  background-color: {{surface-sub}};
 }
 
 QxRibbon--WindowButton#qx_MinimizeWindowButton:pressed,#qx_MaximizeWindowButton:pressed {
-  background-color: #002050;
+  background-color: {{border-strong}};
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:hover {
-  background-color: #e81123;
+  background-color: {{close-hover}};
 }
 
 QxRibbon--WindowButton#qx_CloseWindowButton:pressed {
-  background-color: #f1707a;
+  background-color: {{close-pressed}};
 }

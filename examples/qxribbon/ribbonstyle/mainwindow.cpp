@@ -53,16 +53,23 @@ MainWindow::MainWindow(QWidget *parent)
     QIcon icon(":/logo");
 
     QxThemeManager *engine = QxThemeManager::instance();
-    engine->registerTheme(bundledTheme(QStringLiteral("light-office2013"), tr("Office 2013"), false,
-                                       QStringLiteral("light_office2013.css")));
+    // Four families, each in its light and dark scheme (res/themes.qrc).
     engine->registerTheme(
-        bundledTheme(QStringLiteral("light-fancy"), tr("Fancy"), false, QStringLiteral("light_fancy.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("dark-officeplus"), tr("Dark Office Plus"), true,
-                                       QStringLiteral("dark_officeplus.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("light-fluent2016"), tr("Fluent 2016"), false,
-                                       QStringLiteral("light_fluent2016.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("light-fluent2019"), tr("Fluent 2019"), false,
-                                       QStringLiteral("light_fluent2019.css")));
+        bundledTheme(QStringLiteral("fluent-light"), tr("Fluent Light"), false, QStringLiteral("fluent_light.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("fluent-dark"), tr("Fluent Dark"), true, QStringLiteral("fluent_dark.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("office-light"), tr("Office Light"), false, QStringLiteral("office_light.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("office-dark"), tr("Office Dark"), true, QStringLiteral("office_dark.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("wps-light"), tr("WPS Light"), false, QStringLiteral("wps_light.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("wps-dark"), tr("WPS Dark"), true, QStringLiteral("wps_dark.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("vscode-light"), tr("VS Code Light"), false, QStringLiteral("vscode_light.css")));
+    engine->registerTheme(
+        bundledTheme(QStringLiteral("vscode-dark"), tr("VS Code Dark"), true, QStringLiteral("vscode_dark.css")));
     connect(engine, &QxThemeManager::themeChanged, this, &MainWindow::onThemeChanged);
 
     RibbonBar *rb = ribbonBar();
