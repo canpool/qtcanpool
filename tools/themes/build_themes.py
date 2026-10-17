@@ -26,23 +26,29 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 OUT = ROOT / "res" / "themes"
 
-FAMILIES = ("fluent", "office", "wps", "vscode")
+FAMILIES = ("classic", "soft", "flat", "slate")
 
 FAMILY_NOTES = {
-    "fluent": "Microsoft Fluent UI (formerly Office UI Fabric): flat white or "
-              "nearly black surfaces, hairline strokes, a muted accent.",
-    "office": "Office 2013/2016: a grey strip holding the tabs over white pages, "
-              "square corners, an #0072c6 accent.",
-    "wps": "WPS Office: one flat surface, no separators, the selection carried by "
-           "an accent rule under the tab.",
-    "vscode": "VS Code: a single editor-grey surface, no chrome separation, the "
-              "active tab marked by an accent rule along its top.",
+    "classic": "A grey shelf holds the tabs and the selected one is a taller white "
+               "card lifted out of it, with a rule closing the shelf off. Square "
+               "corners, a box around the large buttons and a rule between groups.",
+    "soft": "An inverse step: the body carries the tone and the selected tab opens "
+            "into it, rounded and with no border at all, so nothing is drawn "
+            "between tab and page. Hover is a wash of the accent.",
+    "flat": "One flat surface from shelf to page, divided by nothing. The selection "
+            "is an accent rule under the tab and an accent label, and the accent is "
+            "used nowhere else - everything else hovers in plain grey.",
+    "slate": "A deeper grey shelf over a white body. The active tab does not leave "
+             "the shelf: only an accent rule along its top edge marks it. The accent "
+             "appears there and on focus, nowhere else; groups are divided by "
+             "hairlines.",
 }
 
 # role -> colour. Every palette fills every role the two skeletons and the four
 # chrome files can name, so a file never emits an unfilled placeholder.
 PALETTES = {
-    ("fluent", "light"): {
+    ("soft", "light"): {
+        "body": "#edebe9",
         "text": "#323130", "text-muted": "#605e5c", "text-on-fill": "#ffffff",
         "surface": "#ffffff", "surface-alt": "#faf9f8", "surface-sub": "#f3f2f1",
         "state-hover": "#f3f2f1", "state-pressed": "#e1dfdd",
@@ -54,7 +60,8 @@ PALETTES = {
         "highlight": "#fff4ce",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("fluent", "dark"): {
+    ("soft", "dark"): {
+        "body": "#3a3a3a",
         "text": "#f3f2f1", "text-muted": "#c8c8c8", "text-on-fill": "#ffffff",
         "surface": "#1f1f1f", "surface-alt": "#282828", "surface-sub": "#313131",
         "state-hover": "#313131", "state-pressed": "#484848",
@@ -66,7 +73,8 @@ PALETTES = {
         "highlight": "#fff4ce",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("office", "light"): {
+    ("classic", "light"): {
+        "body": "#ffffff",
         "text": "#333333", "text-muted": "#666666", "text-on-fill": "#ffffff",
         "surface": "#ffffff", "surface-alt": "#f4f4f4", "surface-sub": "#eaeaea",
         "state-hover": "#eaeaea", "state-pressed": "#d6d6d6",
@@ -78,7 +86,8 @@ PALETTES = {
         "highlight": "#fff1b6",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("office", "dark"): {
+    ("classic", "dark"): {
+        "body": "#1b1b1b",
         "text": "#f2f2f2", "text-muted": "#b0b0b0", "text-on-fill": "#ffffff",
         "surface": "#1b1b1b", "surface-alt": "#242424", "surface-sub": "#2e2e2e",
         "state-hover": "#333333", "state-pressed": "#454545",
@@ -90,7 +99,8 @@ PALETTES = {
         "highlight": "#fff1b6",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("wps", "light"): {
+    ("flat", "light"): {
+        "body": "#ffffff",
         "text": "#333333", "text-muted": "#757575", "text-on-fill": "#ffffff",
         "surface": "#ffffff", "surface-alt": "#f7f7f7", "surface-sub": "#efefef",
         "state-hover": "#efefef", "state-pressed": "#dedede",
@@ -102,7 +112,8 @@ PALETTES = {
         "highlight": "#fff1b6",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("wps", "dark"): {
+    ("flat", "dark"): {
+        "body": "#202324",
         "text": "#f0f0f0", "text-muted": "#a0a0a0", "text-on-fill": "#ffffff",
         "surface": "#202324", "surface-alt": "#2a2e30", "surface-sub": "#35393b",
         "state-hover": "#3a3f42", "state-pressed": "#474d50",
@@ -114,7 +125,8 @@ PALETTES = {
         "highlight": "#ffe08a",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("vscode", "light"): {
+    ("slate", "light"): {
+        "body": "#ffffff",
         "text": "#333333", "text-muted": "#616161", "text-on-fill": "#ffffff",
         "surface": "#ffffff", "surface-alt": "#f3f3f3", "surface-sub": "#e5e5e5",
         "state-hover": "#e5e5e5", "state-pressed": "#d6d6d6",
@@ -126,7 +138,8 @@ PALETTES = {
         "highlight": "#fff1b6",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
-    ("vscode", "dark"): {
+    ("slate", "dark"): {
+        "body": "#1e1e1e",
         "text": "#cccccc", "text-muted": "#9d9d9d", "text-on-fill": "#ffffff",
         "surface": "#1e1e1e", "surface-alt": "#252526", "surface-sub": "#2d2d30",
         "state-hover": "#2a2d2e", "state-pressed": "#37373d",

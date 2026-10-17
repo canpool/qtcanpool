@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>themes/fluent_light.css</file>
-        <file>themes/fluent_dark.css</file>
-        <file>themes/office_light.css</file>
-        <file>themes/office_dark.css</file>
-        <file>themes/wps_light.css</file>
-        <file>themes/wps_dark.css</file>
-        <file>themes/vscode_light.css</file>
-        <file>themes/vscode_dark.css</file>
+        <file>themes/classic_light.css</file>
+        <file>themes/classic_dark.css</file>
+        <file>themes/soft_light.css</file>
+        <file>themes/soft_dark.css</file>
+        <file>themes/flat_light.css</file>
+        <file>themes/flat_dark.css</file>
+        <file>themes/slate_light.css</file>
+        <file>themes/slate_dark.css</file>
     </qresource>
 </RCC>

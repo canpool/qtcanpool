@@ -411,11 +411,11 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
 - **预置主题整套换掉**（仓库 `res/themes/`，破坏配置 id）：原来的 8 套历史样式表
   （`light_yellow` / `light_office2013` / `light_classic` / `light_fancy` / `dark_wps` /
   `dark_officeplus`）与 `ribbondemo` 自带的 `office2016blue` 全部删除，改为 **4 套家族 × 明暗**：
-  `fluent_light` / `fluent_dark` / `office_light` / `office_dark` / `wps_light` / `wps_dark` /
-  `vscode_light` / `vscode_dark`，配置 id 为 `fluent-light` … `vscode-dark`。
+  `classic_light` / `classic_dark` / `soft_light` / `soft_dark` / `flat_light` / `flat_dark` /
+  `slate_light` / `slate_dark`，配置 id 为 `classic-light` … `slate-dark`。
   - 为什么：旧集是逐年手改攒出来的，其中两套「Fluent 2016/2019」只是在同一色阶上取相邻一档，
     肉眼分辨不出；且浅色主题只有 ribbon 规则、暗色主题才有整套标准控件规则，风格并不成对。
-  - 迁移：把 `setTheme("dark-officeplus")` 换成新 id（如 `fluent-dark`）。
+  - 迁移：把 `setTheme("dark-officeplus")` 换成新 id（如 `soft-dark`）。
     从 4.4 升上来的旧配置 id 取不到，引擎会保持原样并告警一次；需要延续老选择的应用
     可自行把旧 id 注册到新的样式表上。
 - **`RibbonTheme` 与窗口主题三件套删除**（库 `qxribbon`，破坏 API / ABI）：`RibbonTheme`
@@ -426,7 +426,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   - 为什么：窗口自带的那张是 **widget 级**的，而 Qt 样式表两边都匹配时 widget 级的赢，
     于是应用选了深色主题、Ribbon 区仍锁在浅色。窗口不带主题，应用下发的才到得了 Ribbon。
   - 迁移：`w->setRibbonTheme(RibbonTheme::DarkOfficePlusTheme)` →
-    注册该主题后 `QxThemeManager::instance()->setTheme(QStringLiteral("fluent-dark"))`；
+    注册该主题后 `QxThemeManager::instance()->setTheme(QStringLiteral("soft-dark"))`；
     `RibbonTheme::loadTheme(file, w)` → 读文件后 `qApp->setStyleSheet(css)`。
     样式表换手后（widget → application）**Ribbon 区外观应保持一致**：这些 CSS 只描述
     Ribbon 部件，改到应用级不影响命中范围。

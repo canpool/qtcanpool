@@ -86,17 +86,17 @@ struct DemoTheme {
 QVector<DemoTheme> demoThemes()
 {
     return {
-        {QStringLiteral("fluent-light"), MainWindow::tr("FluentLight"), false,
-         QStringLiteral(":/themes/fluent_light.css")},
-        {QStringLiteral("fluent-dark"), MainWindow::tr("FluentDark"), true, QStringLiteral(":/themes/fluent_dark.css")},
-        {QStringLiteral("office-light"), MainWindow::tr("OfficeLight"), false,
-         QStringLiteral(":/themes/office_light.css")},
-        {QStringLiteral("office-dark"), MainWindow::tr("OfficeDark"), true, QStringLiteral(":/themes/office_dark.css")},
-        {QStringLiteral("wps-light"), MainWindow::tr("WpsLight"), false, QStringLiteral(":/themes/wps_light.css")},
-        {QStringLiteral("wps-dark"), MainWindow::tr("WpsDark"), true, QStringLiteral(":/themes/wps_dark.css")},
-        {QStringLiteral("vscode-light"), MainWindow::tr("VsCodeLight"), false,
-         QStringLiteral(":/themes/vscode_light.css")},
-        {QStringLiteral("vscode-dark"), MainWindow::tr("VsCodeDark"), true, QStringLiteral(":/themes/vscode_dark.css")},
+        {QStringLiteral("soft-light"), MainWindow::tr("SoftLight"), false, QStringLiteral(":/themes/soft_light.css")},
+        {QStringLiteral("soft-dark"), MainWindow::tr("SoftDark"), true, QStringLiteral(":/themes/soft_dark.css")},
+        {QStringLiteral("classic-light"), MainWindow::tr("ClassicLight"), false,
+         QStringLiteral(":/themes/classic_light.css")},
+        {QStringLiteral("classic-dark"), MainWindow::tr("ClassicDark"), true,
+         QStringLiteral(":/themes/classic_dark.css")},
+        {QStringLiteral("flat-light"), MainWindow::tr("FlatLight"), false, QStringLiteral(":/themes/flat_light.css")},
+        {QStringLiteral("flat-dark"), MainWindow::tr("FlatDark"), true, QStringLiteral(":/themes/flat_dark.css")},
+        {QStringLiteral("slate-light"), MainWindow::tr("SlateLight"), false,
+         QStringLiteral(":/themes/slate_light.css")},
+        {QStringLiteral("slate-dark"), MainWindow::tr("SlateDark"), true, QStringLiteral(":/themes/slate_dark.css")},
     };
 }
 

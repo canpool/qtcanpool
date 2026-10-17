@@ -55,21 +55,21 @@ MainWindow::MainWindow(QWidget *parent)
     QxThemeManager *engine = QxThemeManager::instance();
     // Four families, each in its light and dark scheme (res/themes.qrc).
     engine->registerTheme(
-        bundledTheme(QStringLiteral("fluent-light"), tr("Fluent Light"), false, QStringLiteral("fluent_light.css")));
+        bundledTheme(QStringLiteral("soft-light"), tr("Soft Light"), false, QStringLiteral("soft_light.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("fluent-dark"), tr("Fluent Dark"), true, QStringLiteral("fluent_dark.css")));
+        bundledTheme(QStringLiteral("soft-dark"), tr("Soft Dark"), true, QStringLiteral("soft_dark.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("office-light"), tr("Office Light"), false, QStringLiteral("office_light.css")));
+        bundledTheme(QStringLiteral("classic-light"), tr("Classic Light"), false, QStringLiteral("classic_light.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("office-dark"), tr("Office Dark"), true, QStringLiteral("office_dark.css")));
+        bundledTheme(QStringLiteral("classic-dark"), tr("Classic Dark"), true, QStringLiteral("classic_dark.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("wps-light"), tr("WPS Light"), false, QStringLiteral("wps_light.css")));
+        bundledTheme(QStringLiteral("flat-light"), tr("Flat Light"), false, QStringLiteral("flat_light.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("wps-dark"), tr("WPS Dark"), true, QStringLiteral("wps_dark.css")));
+        bundledTheme(QStringLiteral("flat-dark"), tr("Flat Dark"), true, QStringLiteral("flat_dark.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("vscode-light"), tr("VS Code Light"), false, QStringLiteral("vscode_light.css")));
+        bundledTheme(QStringLiteral("slate-light"), tr("Slate Light"), false, QStringLiteral("slate_light.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("vscode-dark"), tr("VS Code Dark"), true, QStringLiteral("vscode_dark.css")));
+        bundledTheme(QStringLiteral("slate-dark"), tr("Slate Dark"), true, QStringLiteral("slate_dark.css")));
     connect(engine, &QxThemeManager::themeChanged, this, &MainWindow::onThemeChanged);
 
     RibbonBar *rb = ribbonBar();

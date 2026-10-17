@@ -632,7 +632,7 @@ QWidget#qx_RibbonTabBarBaseLine {
 /*RibbonStackedWidget*/
 
 QxRibbon--RibbonStackedWidget {
-  background-color: {{surface}};
+  background-color: {{body}};
   border: 0px solid {{border}};
   border-top-width: 0px;
 }
@@ -648,18 +648,18 @@ QxRibbon--RibbonPage:focus {
 }
 
 QxRibbon--RibbonPage {
-  background-color: {{surface}};
+  background-color: {{body}};
 }
 
 /*RibbonGroup*/
 
 QxRibbon--RibbonGroup {
-  background-color: {{surface}};
+  background-color: {{body}};
   border: 0px;
 }
 
 QxRibbon--RibbonGroup QAbstractButton {
-  background-color: {{surface}};
+  background-color: {{body}};
   padding: 0px;
 }
 
@@ -994,12 +994,12 @@ QComboBox::drop-down:hover {
 /*RibbonSeparator*/
 
 QxRibbon--RibbonSeparator {
-  background-color: {{surface}};
+  background-color: {{body}};
 }
 
 QxRibbon--RibbonPageScrollButton {
   border: 0px solid {{border}};
-  background-color: {{surface}};
+  background-color: {{body}};
 }
 
 QxRibbon--RibbonPageScrollButton[arrowType="3"] {

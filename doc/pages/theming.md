@@ -24,8 +24,8 @@
 
 using namespace QxTheme;
 
-QxThemeInfo dark(QStringLiteral("fluent-dark"), QStringLiteral("Fluent Dark"), true);
-dark.styleSheet = readFile(QStringLiteral(":/themes/fluent_dark.css"));
+QxThemeInfo dark(QStringLiteral("soft-dark"), QStringLiteral("Fluent Dark"), true);
+dark.styleSheet = readFile(QStringLiteral(":/themes/soft_dark.css"));
 
 QxThemeManager::instance()->registerTheme(dark);
 ```
@@ -35,14 +35,18 @@ QxThemeManager::instance()->registerTheme(dark);
 
 | 配置 id | 显示名 | 深色 |
 | :--- | :--- | :---: |
-| `fluent-light` | Fluent Light | |
-| `fluent-dark` | Fluent Dark | ✓ |
-| `office-light` | Office Light | |
-| `office-dark` | Office Dark | ✓ |
-| `wps-light` | WPS Light | |
-| `wps-dark` | WPS Dark | ✓ |
-| `vscode-light` | VS Code Light | |
-| `vscode-dark` | VS Code Dark | ✓ |
+| `classic-light` | Classic Light | |
+| `classic-dark` | Classic Dark | ✓ |
+| `soft-light` | Soft Light | |
+| `soft-dark` | Soft Dark | ✓ |
+| `flat-light` | Flat Light | |
+| `flat-dark` | Flat Dark | ✓ |
+| `slate-light` | Slate Light | |
+| `slate-dark` | Slate Dark | ✓ |
+
+家族名描述的是**界面骨架的形状**，不是谁的产品：`classic` 是抬高纸牌的灰条，
+`soft` 是把明暗层次反过来的圆角开口，`flat` 是只用强调色下划线标选中的单层面，
+`slate` 是深灰条上靠顶部强调线分选中的界面。
 
 **配置 id 是对外契约**：它被写进配置文件，改动需要配合配置迁移。
 4.5 换掉了整套预置主题（旧 id `light-office2013` / `dark-wps` 等已不存在），
@@ -65,7 +69,7 @@ QxThemeManager::instance()->registerTheme(dark);
 
 ```cpp
 QxThemeManager *themes = QxThemeManager::instance();
-themes->setTheme(QStringLiteral("fluent-dark"));
+themes->setTheme(QStringLiteral("soft-dark"));
 ```
 
 `setTheme()` 会立即应用并发出 `themeChanged()`；`apply()` 用于把当前主题重新装一遍
@@ -86,12 +90,13 @@ Qt 随后会向所有部件派发 `QEvent::StyleChange`，而 `qxribbon` 与 `qx
 ## 跟随系统深浅色
 
 ```cpp
-themes->setSystemThemePair(QStringLiteral("light-office2013"),
-                          QStringLiteral("dark-officeplus"));   // 可选，覆盖默认配对
+themes->setSystemThemePair(QStringLiteral("soft-light"),
+                          QStringLiteral("soft-dark"));
 themes->setFollowSystemTheme(true);
 ```
 
-默认配对是 `light-office2013` / `dark-officeplus`。开启跟随之后：
+引擎**不自带**默认配对（它不知道应用注册了哪些 id），因此开启跟随之前必须先给出这一对。
+开启跟随之后：
 
 - 立即应用与当前系统匹配的主题；
 - 之后系统切换时自动跟随（Qt 6.5+ 通过 `QStyleHints::colorSchemeChanged`）；

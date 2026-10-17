@@ -1,0 +1,124 @@
+/*
+ * Slate: a deeper grey shelf over a white body, and the active tab does not leave
+ * the shelf - it keeps the shelf's tone and is marked only by a one-pixel accent
+ * rule along its top edge, the way an editor marks a tab. The accent appears there
+ * and on focus, nowhere else; hover is plain grey, groups are separated by
+ * hairlines, and corners are barely rounded.
+ */
+
+QxRibbon--RibbonBar {
+  background-color: {{surface-sub}};
+}
+
+QxRibbon--RibbonTabBar {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: {{state-pressed}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:pressed {
+  background-color: {{state-pressed-deep}};
+}
+
+QxRibbon--RibbonTabBar::tab {
+  color: {{text-muted}};
+  border: 0px;
+  border-top: 1px solid transparent;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 0px;
+}
+
+/* the tab stays on the shelf: only the rule on top changes */
+QxRibbon--RibbonTabBar::tab:selected {
+  border: 0px;
+  border-top: 1px solid {{accent}};
+  background: transparent;
+  color: {{text}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  border: 0px;
+  border-top: 1px solid transparent;
+  background: {{state-pressed}};
+  color: {{text}};
+}
+
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{border}};
+}
+
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonPage,
+QxRibbon--RibbonGroup {
+  background-color: {{body}};
+  border: 0px;
+}
+
+/* hairline between groups, none around them */
+QxRibbon--RibbonGroup {
+  border-right: 1px solid {{border}};
+}
+
+QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
+  border: 0px;
+}
+
+QxRibbon--RibbonButton,
+QxRibbon--RibbonControlButton,
+QxRibbon--RibbonGallery,
+QxRibbon--RibbonGalleryGroup,
+QxRibbon--RibbonComboBox,
+QxRibbon--RibbonLineEdit {
+  border-radius: 2px;
+}
+
+QxRibbon--RibbonButton:hover,
+QxRibbon--RibbonControlButton:hover {
+  border: 1px solid transparent;
+  background-color: {{state-hover}};
+}
+
+QxRibbon--RibbonButton:focus,
+QxRibbon--RibbonControlButton:focus {
+  border: 1px solid {{accent}};
+  background-color: {{state-hover}};
+}
+
+QxRibbon--RibbonGalleryGroup::item:hover {
+  border: 1px solid transparent;
+  background-color: {{state-hover}};
+}
+
+QxRibbon--RibbonMenu {
+  border-radius: 2px;
+}
+
+QxRibbon--RibbonMenu::item:hover {
+  border: 1px solid transparent;
+  background-color: {{state-hover}};
+}
+
+/* the file button is not a coloured block here: an accent glyph over the shelf,
+   closed by the same rule the active tab uses */
+QAbstractButton#qx_RibbonApplicationButton {
+  background-color: transparent;
+  color: {{accent}};
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom: 2px solid {{accent}};
+}
+
+QAbstractButton#qx_RibbonApplicationButton:hover {
+  background-color: {{state-pressed}};
+}
+
+QAbstractButton#qx_RibbonApplicationButton:pressed {
+  background-color: {{state-pressed-deep}};
+}

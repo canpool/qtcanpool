@@ -56,22 +56,22 @@ QxThemeInfo bundledTheme(const QString &id, const QString &name, bool dark, cons
  */
 void registerDemoThemes(QxThemeManager *engine)
 {
-    engine->registerTheme(bundledTheme(QStringLiteral("fluent-light"), MainWindow::tr("Fluent Light"), false,
-                                       QStringLiteral("fluent_light.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("fluent-dark"), MainWindow::tr("Fluent Dark"), true,
-                                       QStringLiteral("fluent_dark.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("office-light"), MainWindow::tr("Office Light"), false,
-                                       QStringLiteral("office_light.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("office-dark"), MainWindow::tr("Office Dark"), true,
-                                       QStringLiteral("office_dark.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("soft-light"), MainWindow::tr("Soft Light"), false,
+                                       QStringLiteral("soft_light.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("wps-light"), MainWindow::tr("WPS Light"), false, QStringLiteral("wps_light.css")));
+        bundledTheme(QStringLiteral("soft-dark"), MainWindow::tr("Soft Dark"), true, QStringLiteral("soft_dark.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("classic-light"), MainWindow::tr("Classic Light"), false,
+                                       QStringLiteral("classic_light.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("classic-dark"), MainWindow::tr("Classic Dark"), true,
+                                       QStringLiteral("classic_dark.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("flat-light"), MainWindow::tr("Flat Light"), false,
+                                       QStringLiteral("flat_light.css")));
     engine->registerTheme(
-        bundledTheme(QStringLiteral("wps-dark"), MainWindow::tr("WPS Dark"), true, QStringLiteral("wps_dark.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("vscode-light"), MainWindow::tr("VS Code Light"), false,
-                                       QStringLiteral("vscode_light.css")));
-    engine->registerTheme(bundledTheme(QStringLiteral("vscode-dark"), MainWindow::tr("VS Code Dark"), true,
-                                       QStringLiteral("vscode_dark.css")));
+        bundledTheme(QStringLiteral("flat-dark"), MainWindow::tr("Flat Dark"), true, QStringLiteral("flat_dark.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("slate-light"), MainWindow::tr("Slate Light"), false,
+                                       QStringLiteral("slate_light.css")));
+    engine->registerTheme(bundledTheme(QStringLiteral("slate-dark"), MainWindow::tr("Slate Dark"), true,
+                                       QStringLiteral("slate_dark.css")));
 }
 
 }   // namespace
@@ -336,7 +336,7 @@ QWidget *MainWindow::createLogPage()
     QPlainTextEdit *log = new QPlainTextEdit;
     log->setReadOnly(true);
     log->setPlainText(QStringLiteral("13:59:12  shell      ready\n"
-                                     "13:59:12  theme      fluent-dark\n"
+                                     "13:59:12  theme      soft-dark\n"
                                      "13:59:13  layout     restored\n"));
     return log;
 }

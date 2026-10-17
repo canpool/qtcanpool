@@ -1,0 +1,106 @@
+/*
+ * Soft: the body is the coloured surface and the chrome is the plain one - the
+ * inverse of classic's step. The selected tab is not a card laid on the shelf but
+ * an opening into the body: it takes the body's tone, is rounded, and carries no
+ * border, so nothing at all is drawn between the tab and the page. Separators and
+ * boxes are gone; the only colour is a wash of the accent under the pointer.
+ */
+
+QxRibbon--RibbonBar {
+  background-color: {{surface}};
+}
+
+QxRibbon--RibbonTabBar {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: {{accent-faint}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:pressed {
+  background-color: {{accent-soft}};
+}
+
+QxRibbon--RibbonTabBar::tab {
+  color: {{text-muted}};
+  border: 0px;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-top: 2px;
+}
+
+QxRibbon--RibbonTabBar::tab,
+QxRibbon--RibbonTabBar::tab:selected,
+QxRibbon--RibbonTabBar::tab:hover {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+/* the opening, not the card: the page's tone, no border */
+QxRibbon--RibbonTabBar::tab:selected {
+  margin-top: 0px;
+  background: {{body}};
+  border: 0px;
+  color: {{text}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  border: 0px;
+  background: {{accent-faint}};
+  color: {{text}};
+}
+
+/* the chrome and the body differ by tone, so no line is needed */
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{body}};
+}
+
+QxRibbon--RibbonStackedWidget {
+  border: 0px;
+}
+
+QxRibbon--RibbonPage,
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonGroup {
+  background-color: {{body}};
+  border: 0px;
+}
+
+/* no box around the large buttons and no separators between groups */
+QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
+  border: 0px;
+}
+
+QxRibbon--RibbonButton,
+QxRibbon--RibbonControlButton,
+QxRibbon--RibbonGallery,
+QxRibbon--RibbonGalleryGroup,
+QxRibbon--RibbonComboBox,
+QxRibbon--RibbonLineEdit {
+  border-radius: 3px;
+}
+
+QxRibbon--RibbonButton {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonButton:hover,
+QxRibbon--RibbonControlButton:hover {
+  border: 1px solid transparent;
+  background-color: {{accent-faint}};
+}
+
+QxRibbon--RibbonGalleryGroup::item:hover {
+  border: 1px solid transparent;
+  background-color: {{accent-faint}};
+}
+
+QAbstractButton#qx_RibbonApplicationButton {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}

@@ -1,0 +1,85 @@
+/*
+ * Flat: one surface from the chrome to the page, with nothing drawn between them -
+ * no shelf, no separator, no box. The selection is carried by a two-pixel accent
+ * rule under the tab and by the label turning accent, and the accent is used
+ * nowhere else: everything else hovers in plain grey, which keeps the sheet calm.
+ * Square corners throughout.
+ */
+
+QxRibbon--RibbonBar,
+QxRibbon--RibbonTabBar,
+QxRibbon--RibbonPage,
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonGroup {
+  background-color: {{body}};
+  border: 0px;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: {{surface-sub}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:pressed {
+  background-color: {{state-pressed}};
+}
+
+QxRibbon--RibbonTabBar::tab {
+  color: {{text}};
+  border: 0px;
+  border-bottom: 2px solid transparent;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 0px;
+}
+
+QxRibbon--RibbonTabBar::tab:selected {
+  border: 0px;
+  border-bottom: 2px solid {{accent}};
+  background: {{body}};
+  color: {{accent}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  border: 0px;
+  border-bottom: 2px solid {{accent-soft}};
+  background: {{surface-sub}};
+  color: {{text}};
+}
+
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{body}};
+}
+
+QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
+  border: 0px;
+}
+
+QxRibbon--RibbonButton,
+QxRibbon--RibbonControlButton,
+QxRibbon--RibbonGallery,
+QxRibbon--RibbonGalleryGroup,
+QxRibbon--RibbonComboBox,
+QxRibbon--RibbonLineEdit {
+  border-radius: 0px;
+}
+
+/* grey, not accent: the accent belongs to the selected tab alone */
+QxRibbon--RibbonButton:hover,
+QxRibbon--RibbonControlButton:hover {
+  border: 1px solid transparent;
+  background-color: {{surface-sub}};
+}
+
+QxRibbon--RibbonGalleryGroup::item:hover {
+  border: 1px solid transparent;
+  background-color: {{surface-sub}};
+}
+
+QxRibbon--RibbonMenu::item:hover {
+  border: 1px solid transparent;
+  background-color: {{surface-sub}};
+}

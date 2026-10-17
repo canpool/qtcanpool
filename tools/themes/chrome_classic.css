@@ -1,0 +1,109 @@
+/*
+ * Classic: the chrome is a separate, greyer shelf. A gradient runs down the whole
+ * bar, the selected tab is a taller white card lifted out of it, and a visible
+ * baseline closes the shelf off. The body keeps vertical rules between groups and
+ * its large buttons sit in their boxes. Nothing is rounded and the accent is only
+ * ever a fill.
+ */
+
+QxRibbon--RibbonBar {
+  background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                              stop: 0 {{surface-alt}}, stop: 1 {{surface-sub}});
+}
+
+QxRibbon--RibbonTabBar {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: {{state-pressed}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:pressed {
+  background-color: {{state-pressed-deep}};
+}
+
+QxRibbon--RibbonTabBar::tab {
+  color: {{text}};
+  border: 1px solid transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 2px;
+}
+
+QxRibbon--RibbonTabBar::tab,
+QxRibbon--RibbonTabBar::tab:selected,
+QxRibbon--RibbonTabBar::tab:hover {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+/* the card: square, bordered on three sides, and taller than its neighbours
+   because it starts higher up in the shelf */
+QxRibbon--RibbonTabBar::tab:selected {
+  margin-top: 0px;
+  background: {{body}};
+  border: 1px solid {{border}};
+  border-bottom-color: {{body}};
+  color: {{text}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  background: {{state-hover}};
+  border: 1px solid {{border}};
+  border-bottom-color: transparent;
+  color: {{text}};
+}
+
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{border}};
+}
+
+QxRibbon--RibbonStackedWidget {
+  border: 1px solid {{border}};
+  border-top-width: 0px;
+}
+
+QxRibbon--RibbonPage,
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonGroup {
+  background-color: {{body}};
+}
+
+QxRibbon--RibbonGroup {
+  border: 0px;
+  border-right: 1px solid {{border}};
+}
+
+/* the large buttons keep their box */
+QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
+  border: 1px solid {{border}};
+}
+
+QxRibbon--RibbonButton,
+QxRibbon--RibbonControlButton {
+  border-radius: 0px;
+  background-color: transparent;
+}
+
+QxRibbon--RibbonButton:hover,
+QxRibbon--RibbonControlButton:hover {
+  border: 1px solid {{accent-soft}};
+  background-color: {{accent-faint}};
+}
+
+QxRibbon--RibbonGallery,
+QxRibbon--RibbonGalleryGroup,
+QxRibbon--RibbonComboBox,
+QxRibbon--RibbonLineEdit {
+  border-radius: 0px;
+}
+
+QAbstractButton#qx_RibbonApplicationButton {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
