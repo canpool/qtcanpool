@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/themes">
+    <qresource prefix="/">
         <file>themes/light_yellow.css</file>
         <file>themes/light_office2013.css</file>
         <file>themes/light_classic.css</file>
