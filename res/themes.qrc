@@ -8,5 +8,7 @@
         <file>themes/flat_dark.css</file>
         <file>themes/slate_light.css</file>
         <file>themes/slate_dark.css</file>
+        <file>themes/accent_light.css</file>
+        <file>themes/accent_dark.css</file>
     </qresource>
 </RCC>

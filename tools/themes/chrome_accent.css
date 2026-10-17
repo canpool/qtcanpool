@@ -1,0 +1,102 @@
+/*
+ * Accent: the active tab is the only colour on the bar - a solid block of the
+ * accent with a white label, while the rest stay transparent in grey and a
+ * hover is merely washed in the palest accent. Barely rounded, a thin baseline
+ * closing the strip off. The only family that fills the tab.
+ */
+
+QxRibbon--RibbonBar {
+  background-color: {{surface}};
+}
+
+QxRibbon--RibbonTabBar {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:hover {
+  background-color: {{accent-faint}};
+}
+
+QxRibbon--RibbonTabBar QAbstractButton:pressed {
+  background-color: {{accent-soft}};
+}
+
+QxRibbon--RibbonTabBar::tab {
+  color: {{text-muted}};
+  border: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 2px;
+}
+
+QxRibbon--RibbonTabBar::tab,
+QxRibbon--RibbonTabBar::tab:selected,
+QxRibbon--RibbonTabBar::tab:hover {
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+/* the solid block: the accent fills the tab and the label goes white */
+QxRibbon--RibbonTabBar::tab:selected {
+  margin-top: 0px;
+  background: {{accent-fill}};
+  border: 0px;
+  color: {{text-on-fill}};
+}
+
+QxRibbon--RibbonTabBar::tab:hover:!selected {
+  border: 0px;
+  background: {{accent-faint}};
+  color: {{text}};
+}
+
+/* a thin baseline closes the strip off */
+QWidget#qx_RibbonTabBarBaseLine {
+  background-color: {{border}};
+}
+
+QxRibbon--RibbonStackedWidget {
+  border: 0px;
+}
+
+QxRibbon--RibbonPage,
+QxRibbon--RibbonStackedWidget,
+QxRibbon--RibbonGroup {
+  background-color: {{body}};
+  border: 0px;
+}
+
+/* no box around the large buttons and no separators between groups */
+QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
+  border: 0px;
+}
+
+QxRibbon--RibbonButton,
+QxRibbon--RibbonControlButton,
+QxRibbon--RibbonGallery,
+QxRibbon--RibbonGalleryGroup,
+QxRibbon--RibbonComboBox,
+QxRibbon--RibbonLineEdit {
+  border-radius: 2px;
+}
+
+/* the hover wash is the palest accent, matching the bar */
+QxRibbon--RibbonButton:hover,
+QxRibbon--RibbonControlButton:hover {
+  border: 1px solid transparent;
+  background-color: {{accent-faint}};
+}
+
+QxRibbon--RibbonGalleryGroup::item:hover {
+  border: 1px solid transparent;
+  background-color: {{accent-faint}};
+}
+
+QxRibbon--RibbonMenu::item:hover {
+  border: 1px solid transparent;
+  background-color: {{accent-faint}};
+}

@@ -26,7 +26,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 OUT = ROOT / "res" / "themes"
 
-FAMILIES = ("classic", "soft", "flat", "slate")
+FAMILIES = ("classic", "soft", "flat", "slate", "accent")
 
 FAMILY_NOTES = {
     "classic": "A grey shelf holds the tabs and the selected one is a taller white "
@@ -42,6 +42,9 @@ FAMILY_NOTES = {
              "the shelf: only an accent rule along its top edge marks it. The accent "
              "appears there and on focus, nowhere else; groups are divided by "
              "hairlines.",
+    "accent": "The active tab is the only colour on the bar - a solid block of the "
+              "accent with a white label, since no other family fills the tab. The "
+              "rest stay transparent in grey, a hover washed in the palest accent.",
 }
 
 # role -> colour. Every palette fills every role the two skeletons and the four
@@ -149,6 +152,32 @@ PALETTES = {
         "accent-fill": "#0e639c", "accent-fill-strong": "#094771",
         "accent-faint": "#04395e", "accent-soft": "#0e639c",
         "highlight": "#cca700",
+        "close-hover": "#e81123", "close-pressed": "#f1707a",
+    },
+    ("accent", "light"): {
+        "body": "#ffffff",
+        "text": "#323130", "text-muted": "#605e5c", "text-on-fill": "#ffffff",
+        "surface": "#ffffff", "surface-alt": "#faf9f8", "surface-sub": "#f3f2f1",
+        "state-hover": "#f3f2f1", "state-pressed": "#e1dfdd",
+        "state-pressed-deep": "#c8c6c4",
+        "border": "#e1dfdd", "border-strong": "#c8c6c4",
+        "accent": "#0078d4", "accent-hover": "#106ebe",
+        "accent-fill": "#106ebe", "accent-fill-strong": "#005a9e",
+        "accent-faint": "#eff6fc", "accent-soft": "#c7e0f4",
+        "highlight": "#fff4ce",
+        "close-hover": "#e81123", "close-pressed": "#f1707a",
+    },
+    ("accent", "dark"): {
+        "body": "#3a3a3a",
+        "text": "#f3f2f1", "text-muted": "#c8c8c8", "text-on-fill": "#ffffff",
+        "surface": "#1f1f1f", "surface-alt": "#282828", "surface-sub": "#313131",
+        "state-hover": "#313131", "state-pressed": "#484848",
+        "state-pressed-deep": "#4f4f4f",
+        "border": "#3f3f3f", "border-strong": "#6d6d6d",
+        "accent": "#3a96dd", "accent-hover": "#4ba0e1",
+        "accent-fill": "#3385c3", "accent-fill-strong": "#235a85",
+        "accent-faint": "#112d43", "accent-soft": "#235a85",
+        "highlight": "#fff4ce",
         "close-hover": "#e81123", "close-pressed": "#f1707a",
     },
 }

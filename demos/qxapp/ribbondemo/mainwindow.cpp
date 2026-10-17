@@ -83,7 +83,7 @@ struct DemoTheme {
 /*
  * The themes this demo offers, and they are the demo's own to offer: the ribbon
  * library ships no style sheet of its own, so what a ribbon looks like is decided
- * here. Four families, each in its light and dark scheme, all of them from
+ * here. Five families, each in its light and dark scheme, all of them from
  * res/themes.qrc - which this demo builds in like any other application that
  * wants the same set.
  */
@@ -101,6 +101,9 @@ QVector<DemoTheme> demoThemes()
         {QStringLiteral("slate-light"), MainWindow::tr("SlateLight"), false,
          QStringLiteral(":/themes/slate_light.css")},
         {QStringLiteral("slate-dark"), MainWindow::tr("SlateDark"), true, QStringLiteral(":/themes/slate_dark.css")},
+        {QStringLiteral("accent-light"), MainWindow::tr("AccentLight"), false,
+         QStringLiteral(":/themes/accent_light.css")},
+        {QStringLiteral("accent-dark"), MainWindow::tr("AccentDark"), true, QStringLiteral(":/themes/accent_dark.css")},
     };
 }
 

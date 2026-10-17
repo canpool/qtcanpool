@@ -26,10 +26,10 @@ void registerBundledThemes(QxTheme::QxThemeManager *engine)
         return;
     }
 
-    // Four families, each in a light and a dark scheme, read from
+    // Five families, each in a light and a dark scheme, read from
     // :/themes/<family>_<light|dark>.css. The ids and the file names follow
     // the canonical set in res/themes.qrc; an application that ships those
-    // files gets all eight themes from this one call.
+    // files gets all ten themes from this one call.
     struct Entry {
         const char *id;
         const char *name;
@@ -45,6 +45,8 @@ void registerBundledThemes(QxTheme::QxThemeManager *engine)
         {"flat-dark", "Flat Dark", true, "flat_dark.css"},
         {"slate-light", "Slate Light", false, "slate_light.css"},
         {"slate-dark", "Slate Dark", true, "slate_dark.css"},
+        {"accent-light", "Accent Light", false, "accent_light.css"},
+        {"accent-dark", "Accent Dark", true, "accent_dark.css"},
     };
 
     for (const Entry &entry : entries) {
