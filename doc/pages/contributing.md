@@ -9,7 +9,7 @@
 
 - **格式**：Conventional Commits —— `type(scope): subject`。**提交信息与代码注释一律英文**（`.md` 不限）。
 - **type**：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`。
-- **scope**：`qxcore` / `qxtheme` / `qwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `modules` / `project` / `ci` / `test` / `docs`。
+- **scope**：`qxcore` / `qxtheme` / `qwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库。
 - **原子提交**：一笔一件事。
 - **每笔提交前必做**：重新构建 + ctest 全绿 + clang-format 过改动文件。
 - **两远程**：`origin` = gitee、`github`；一笔推两远程。
@@ -90,7 +90,7 @@
 
 ## 10. 命名与敏感信息
 
-- 公共 API / 枚举 / 主题 id 按「**形态或几何**」命名、不用产品名（主题族 `classic` / `soft` / `flat` / `slate`；`RibbonStyle` 四值 `TabBar…Style`）。改名先查新词是否被占用。
+- 公共 API / 枚举 / 主题 id 按「**形态或几何**」命名、不用产品名（主题族 `classic` / `soft` / `flat` / `slate` / `accent`；`RibbonStyle` 四值 `TabBar…Style`）。改名先查新词是否被占用。
 - **敏感信息**：某商用 Ribbon 组件名属敏感信息，提交 / 注释 / 文档 / 台账一律不得出现（连厂商类名也不列）；历史存量不动，新增必须干净。
 
 ## 11. 架构纠偏判据（K 组）

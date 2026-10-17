@@ -423,9 +423,10 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   - **持久化本就存 id**，沿用旧 id（在应用侧重新注册到某套新样式表上）即可让老配置继续生效。
 - **预置主题整套换掉**（仓库 `res/themes/`，破坏配置 id）：原来的 8 套历史样式表
   （`light_yellow` / `light_office2013` / `light_classic` / `light_fancy` / `dark_wps` /
-  `dark_officeplus`）与 `ribbondemo` 自带的 `office2016blue` 全部删除，改为 **4 套家族 × 明暗**：
+  `dark_officeplus`）与 `ribbondemo` 自带的 `office2016blue` 全部删除，改为 **5 套家族 × 明暗**：
   `classic_light` / `classic_dark` / `soft_light` / `soft_dark` / `flat_light` / `flat_dark` /
-  `slate_light` / `slate_dark`，配置 id 为 `classic-light` … `slate-dark`。
+  `slate_light` / `slate_dark` / `accent_light` / `accent_dark`，配置 id 为 `classic-light` …
+  `accent-dark`。
   - 为什么：旧集是逐年手改攒出来的，其中两套「Fluent 2016/2019」只是在同一色阶上取相邻一档，
     肉眼分辨不出；且浅色主题只有 ribbon 规则、暗色主题才有整套标准控件规则，风格并不成对。
   - 迁移：把 `setTheme("dark-officeplus")` 换成新 id（如 `soft-dark`）。

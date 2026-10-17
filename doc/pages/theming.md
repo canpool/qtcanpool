@@ -31,7 +31,7 @@ QxThemeManager::instance()->registerTheme(dark);
 ```
 
 `res/themes.qrc` 把仓库 `res/themes/` 下的样式表挂到 `:/themes/` 上，需要它们的应用
-在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的是 **4 套家族 × 明暗**，约定 id 如下：
+在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的是 **5 套家族 × 明暗**，约定 id 如下：
 
 | 配置 id | 显示名 | 深色 |
 | :--- | :--- | :---: |
@@ -43,10 +43,12 @@ QxThemeManager::instance()->registerTheme(dark);
 | `flat-dark` | Flat Dark | ✓ |
 | `slate-light` | Slate Light | |
 | `slate-dark` | Slate Dark | ✓ |
+| `accent-light` | Accent Light | |
+| `accent-dark` | Accent Dark | ✓ |
 
 家族名描述的是**界面骨架的形状**，不是谁的产品：`classic` 是抬高纸牌的灰条，
 `soft` 是把明暗层次反过来的圆角开口，`flat` 是只用强调色下划线标选中的单层面，
-`slate` 是深灰条上靠顶部强调线分选中的界面。
+`slate` 是深灰条上靠顶部强调线分选中的界面，`accent` 直接用强调色实填选中标签。
 
 **配置 id 是对外契约**：它被写进配置文件，改动需要配合配置迁移。
 4.5 换掉了整套预置主题（旧 id `light-office2013` / `dark-wps` 等已不存在），
