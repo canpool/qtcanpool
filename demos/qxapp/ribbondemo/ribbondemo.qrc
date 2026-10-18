@@ -77,15 +77,23 @@
         <file>res/tabler/align-left.svg</file>
         <file>res/tabler/align-right.svg</file>
         <file>res/tabler/bold.svg</file>
+        <file>res/tabler/ban.svg</file>
         <file>res/tabler/circle-minus.svg</file>
         <file>res/tabler/circle-plus.svg</file>
+        <file>res/tabler/circle.svg</file>
+        <file>res/tabler/eye-off.svg</file>
+        <file>res/tabler/eye.svg</file>
         <file>res/tabler/file-import.svg</file>
         <file>res/tabler/file.svg</file>
         <file>res/tabler/italic.svg</file>
+        <file>res/tabler/lock-open.svg</file>
         <file>res/tabler/paint.svg</file>
+        <file>res/tabler/pencil.svg</file>
+        <file>res/tabler/square.svg</file>
         <file>res/tabler/star.svg</file>
         <file>res/tabler/text-decrease.svg</file>
         <file>res/tabler/text-increase.svg</file>
         <file>res/tabler/trash.svg</file>
+        <file>res/tabler/triangle.svg</file>
     </qresource>
 </RCC>

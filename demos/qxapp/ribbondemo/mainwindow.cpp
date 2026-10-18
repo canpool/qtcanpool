@@ -24,6 +24,7 @@
 #include "qxribbon/ribbonstatusbar.h"
 
 #include "applypage.h"
+#include "contextpage1.h"
 #include "contextpage2.h"
 #include "custompage.h"
 #include "qxtheme/qxthemeicon.h"
@@ -772,8 +773,9 @@ void MainWindow::createPageContext1()
     RibbonBar *ribbon = ribbonBar();
     m_pageContext = ribbon->addPageContext(tr("context"), QColor());
 
-    RibbonPage *page1 = m_pageContext->addPage(tr("Page1"));
-    createPageContext1(page1);
+    auto *contextPage1 = new ContextPage1(m_icons, this);
+    contextPage1->setPageName(tr("Page1"));
+    m_pageContext->addPage(contextPage1);
 
     auto *contextPage2 = new ContextPage2(m_icons, this);
     contextPage2->setPageName(tr("Page2"));
@@ -786,116 +788,6 @@ void MainWindow::createPageContext2()
     m_pageContext2 = ribbon->addPageContext(tr("context2"), QColor());
     m_pageContext2->addPage(tr("context2 Page1"));
     m_pageContext2->addPage(tr("context2 Page2"));
-}
-
-void MainWindow::createPageContext1(RibbonPage *page)
-{
-    RibbonGroup *group = page->addGroup(tr("show and hide test"));
-
-    QAction *actionHideGroup = createAction(tr("hide group"), ":/icon/res/hide.svg");
-    actionHideGroup->setCheckable(true);
-    group->addLargeAction(actionHideGroup);
-
-    QAction *actionDisable = createAction(tr("Disable"), ":/icon/res/enableTest.svg");
-
-    actionDisable->setDisabled(true);
-    group->addLargeAction(actionDisable);
-    connect(actionDisable, &QAction::triggered, this, [actionDisable](bool b) {
-        Q_UNUSED(b);
-        actionDisable->setDisabled(true);
-    });
-
-    QAction *actionUnlock = createAction(tr("unlock"), ":/icon/res/unlock.svg");
-    actionUnlock->setShortcut(QKeySequence(QLatin1String("Ctrl+E")));
-    group->addLargeAction(actionUnlock);
-    connect(actionUnlock, &QAction::triggered, this, [actionDisable](bool b) {
-        Q_UNUSED(b);
-        actionDisable->setEnabled(true);
-        actionDisable->setText(tr("Enabled"));
-    });
-
-    QAction *actionSetTextTest = createAction(tr("set text"), ":/icon/res/setText.svg");
-
-    actionSetTextTest->setCheckable(true);
-    actionSetTextTest->setShortcut(QKeySequence(QLatin1String("Ctrl+D")));
-    group->addLargeAction(actionSetTextTest);
-
-    connect(actionSetTextTest, &QAction::toggled, this, [actionSetTextTest](bool b) {
-        if (b) {
-            actionSetTextTest->setText(QStringLiteral(u"setText测试"));
-        } else {
-            actionSetTextTest->setText(QStringLiteral(u"set text"));
-        }
-    });
-    // hide the group
-    QAction *actionShowTest = createAction(tr("show beside group"), ":/icon/res/show.svg");
-
-    actionShowTest->setCheckable(true);
-    group->addLargeAction(actionShowTest);
-
-    RibbonGroup *group2 = page->addGroup(tr("show/hide"));
-
-    group2->addLargeAction(actionSetTextTest);
-
-    connect(actionShowTest, &QAction::toggled, this, [actionShowTest, group2, this](bool b) {
-        group2->setVisible(!b);
-        if (b) {
-            actionShowTest->setText(tr("hide beside group"));
-        } else {
-            actionShowTest->setText(tr("show beside group"));
-        }
-        ribbonBar()->repaint();
-    });
-
-    RibbonGroup *group3 = page->addGroup(tr("show/hide action test"));
-
-    QAction *actionHideAction2 = createAction(tr("hide action 2"), ":/icon/res/action.svg");
-    QAction *actionHideAction4 = createAction(tr("hide action 4"), ":/icon/res/action.svg");
-    actionHideAction2->setCheckable(true);
-    actionHideAction2->setChecked(true);
-    actionHideAction4->setCheckable(true);
-    actionHideAction4->setChecked(true);
-    QAction *act2 = createAction(tr("action2"), ":/icon/res/action2.svg");
-    QAction *act3 = createAction(tr("action3"), ":/icon/res/action3.svg");
-    QAction *act4 = createAction(tr("action4"), ":/icon/res/action4.svg");
-    group3->addLargeAction(actionHideAction2);
-    group3->addLargeAction(actionHideAction4);
-    group3->addSmallAction(act2);
-    group3->addSmallAction(act3);
-    group3->addSmallAction(act4);
-    connect(actionHideAction2, &QAction::triggered, this, [actionHideAction2, act2](bool b) {
-        if (b) {
-            act2->setVisible(true);
-            actionHideAction2->setText(tr("hide action2"));
-        } else {
-            act2->setVisible(false);
-            actionHideAction2->setText(tr("show action2"));
-        }
-    });
-    connect(actionHideAction4, &QAction::triggered, this, [actionHideAction4, act4](bool b) {
-        if (b) {
-            act4->setVisible(true);
-            actionHideAction4->setText(tr("hide action4"));
-        } else {
-            act4->setVisible(false);
-            actionHideAction4->setText(tr("show action4"));
-        }
-    });
-
-    RibbonGroup *group4 = page->addGroup(tr("widget"));
-    QSpinBox *spinbox = new QSpinBox(this);
-    RibbonCtrlContainer *ctrlContainer1 = new RibbonCtrlContainer(group4);
-    ctrlContainer1->setWidget(spinbox);
-    ctrlContainer1->setText(tr("spinbox:"));
-    ctrlContainer1->setIconVisible(false);
-    group4->addMediumWidget(ctrlContainer1);
-
-    QLineEdit *linedit = new QLineEdit(this);
-    RibbonCtrlContainer *ctrlContainer2 = new RibbonCtrlContainer(group4);
-    ctrlContainer2->setWidget(linedit);
-    ctrlContainer2->setText(tr("linedit:"));
-    ctrlContainer2->setIconVisible(false);
-    group4->addMediumWidget(ctrlContainer2);
 }
 
 void MainWindow::createQuickAccessBar()
