@@ -28,6 +28,7 @@ add_qtc_executable(RibbonDemo
     contextpage1.cpp contextpage1.h
     contextpage2.cpp contextpage2.h
     custompage.cpp custompage.h
+    otherpage.cpp otherpage.h
     main.cpp
     mainwindow.cpp mainwindow.h
     ribbondemo.qrc

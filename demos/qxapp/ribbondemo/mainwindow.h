@@ -97,7 +97,6 @@ private slots:
     void onFontComWidgetCurrentFontChanged(const QFont &f);
     void onActionFontLargerTriggered();
     void onActionFontSmallerTriggered();
-    void onButtonGroupActionTriggered(QAction *act);
 private:
     QX_THEME_PREPEND_NAMESPACE(QxThemeIcons) *m_icons = nullptr;
     RibbonPageContext *m_pageContext = nullptr;

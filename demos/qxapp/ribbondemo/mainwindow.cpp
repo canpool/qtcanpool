@@ -26,6 +26,7 @@
 #include "applypage.h"
 #include "contextpage1.h"
 #include "contextpage2.h"
+#include "otherpage.h"
 #include "custompage.h"
 #include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthemepalette.h"
@@ -239,7 +240,13 @@ void MainWindow::createRibbon()
 
     createPageHome();
     COST_PRINT("createPageHome");
-    createPageOther();
+    auto *otherPage = new OtherPage(m_icons, this);
+    connect(otherPage, &OtherPage::messageRequested, this, [this](const QString &message) {
+        if (m_edit) {
+            m_edit->append(message);
+        }
+    });
+    ribbonBar()->addPage(otherPage);
     COST_PRINT("createPageOther");
     createPageCustom();
     COST_PRINT("createPageCustom");
@@ -554,187 +561,6 @@ void MainWindow::createPageHome()
         }
     });
     groupPageContext->addLargeAction(actShowContext2);
-}
-
-void MainWindow::createPageOther()
-{
-    // Another page, built by hand and handed to the bar.
-    RibbonPage *page = new RibbonPage();
-    page->setPageName(tr("&Other"));
-    page->setObjectName(("pageOther"));
-    ribbonBar()->addPage(page);
-
-    //! 1
-    //! group 1 start
-    //!
-
-    RibbonGroup *group1 = new RibbonGroup(tr("button group and gallery"));
-    group1->setObjectName("PageOther-group1");
-    page->addGroup(group1);
-
-    // button group
-    RibbonButtonGroup *btnGroup1 = new RibbonButtonGroup(group1);
-    btnGroup1->addAction(createAction(tr("Copy"), ":/icon/res/copy.svg"));
-    btnGroup1->addAction(createAction(tr("Cut"), ":/icon/res/cut.svg"));
-    btnGroup1->addAction(createAction(tr("Paste"), ":/icon/res/clipboard.svg"));
-    QAction *printerAction = createAction(tr("Printer"), ":/icon/res/printer.svg");
-    QMenu *printerMenu = new QMenu();
-    printerMenu->addAction(tr("test1"));
-    printerMenu->addAction(tr("test2"));
-    printerAction->setMenu(printerMenu);
-    btnGroup1->addAction(printerAction);
-    group1->addWidget(btnGroup1, RibbonGroup::Medium);
-
-    RibbonButtonGroup *btnGroup2 = new RibbonButtonGroup(group1);
-    QAction *titleAlgnment = createAction(tr("Title Align Left"), ":/icon/res/align-left.svg");
-    titleAlgnment->setProperty("align", (int)Qt::AlignLeft | Qt::AlignVCenter);
-    btnGroup2->addAction(titleAlgnment);
-    titleAlgnment = createAction(tr("Title Align Center"), ":/icon/res/align-center.svg");
-    titleAlgnment->setProperty("align", (int)Qt::AlignCenter);
-    btnGroup2->addAction(titleAlgnment);
-    titleAlgnment = createAction(tr("Title Align Right"), ":/icon/res/align-right.svg");
-    titleAlgnment->setProperty("align", (int)Qt::AlignRight | Qt::AlignVCenter);
-    btnGroup2->addAction(titleAlgnment);
-    group1->addWidget(btnGroup2, RibbonGroup::Medium);
-    connect(btnGroup2, &RibbonButtonGroup::actionTriggered, this, &MainWindow::onButtonGroupActionTriggered);
-
-    // Gallery
-    RibbonGallery *gallery = group1->addGallery();
-    QList<QAction *> galleryActions;
-    auto lambdaCreateGalleryAction = [this](const QString &text, const QString &iconurl) -> QAction * {
-        QAction *act = this->createAction(text, iconurl);
-        this->connect(act, &QAction::triggered, this, [this, text]() {
-            if (this->m_edit) {
-                this->m_edit->append(tr("%1 triggered").arg(text));
-            }
-        });
-        return act;
-    };
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("Document File"), ":/gallery-icon/res/gallery/Document-File.svg"));
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("Download File"), ":/gallery-icon/res/gallery/Download-File.svg"));
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("Drive File Four Word"), ":/gallery-icon/res/gallery/Drive-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Dropbox File"), ":/gallery-icon/res/gallery/Dropbox-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Email File"), ":/gallery-icon/res/gallery/Email-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Encode File"), ":/gallery-icon/res/gallery/Encode-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Favorit File"), ":/gallery-icon/res/gallery/Favorit-File.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("File Error"), ":/gallery-icon/res/gallery/File-Error.svg"));
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("File Read Only"), ":/gallery-icon/res/gallery/File-Readonly.svg"));
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("File Settings"), ":/gallery-icon/res/gallery/File-Settings.svg"));
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("Presentation File"), ":/gallery-icon/res/gallery/Presentation-File.svg"));
-    RibbonGalleryGroup *galleryGroup1 = gallery->addGalleryGroup(tr("Files"), galleryActions);
-    galleryGroup1->setGalleryGroupStyle(RibbonGalleryGroup::IconWithWordWrapText);
-    galleryGroup1->setGridMinimumWidth(80);
-    galleryActions.clear();
-    galleryActions.append(lambdaCreateGalleryAction(tr("Photoshop"), ":/gallery-icon/res/gallery/Photoshop.svg"));
-    galleryActions.append(
-        lambdaCreateGalleryAction(tr("Internet-Explorer"), ":/gallery-icon/res/gallery/Internet-Explorer.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Illustrator"), ":/gallery-icon/res/gallery/Illustrator.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Google-Maps"), ":/gallery-icon/res/gallery/Google-Maps.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Adobe"), ":/gallery-icon/res/gallery/Adobe.svg"));
-    galleryActions.append(lambdaCreateGalleryAction(tr("Word"), ":/gallery-icon/res/gallery/Word.svg"));
-    RibbonGalleryGroup *galleryGroup2 = gallery->addGalleryGroup(tr("Apps"), galleryActions);
-    galleryGroup2->setGridMinimumWidth(80);
-    gallery->setCurrentViewGroup(galleryGroup1);
-
-    QAction *optAct = new QAction(this);
-    optAct->setObjectName(("debug"));
-    group1->addOptionAction(optAct);
-
-    //! 2
-    //! group 2 start -> widget test
-    //!
-
-    RibbonGroup *group2 = new RibbonGroup(tr("widget test"));
-    group2->setObjectName("PageOther-group2");
-    page->addGroup(group2);
-
-    RibbonComboBox *com = new RibbonComboBox(this);
-    com->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    com->setWindowTitle(tr("RibbonComboBox Editable"));
-    for (int i = 0; i < 15; ++i) {
-        com->addItem(QString("RibbonComboBox test%1").arg(i + 1));
-    }
-    com->setEditable(true);
-    group2->addSmallWidget(com);
-
-    com = new RibbonComboBox(this);
-    com->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    com->setWindowTitle(tr("RibbonComboBox"));
-    for (int i = 0; i < 15; ++i) {
-        com->addItem(QString("item %1").arg(i + 1));
-    }
-    group2->addSmallWidget(com);
-
-    RibbonLineEdit *lineEdit = new RibbonLineEdit(this);
-    lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lineEdit->setText(tr("RibbonLineEdit"));
-    lineEdit->setWindowTitle(lineEdit->text());
-    group2->addSmallWidget(lineEdit);
-    QWidget *w = lineEdit->parentWidget();
-    while (w) {
-        qDebug() << w->metaObject()->className();
-        w = w->parentWidget();
-    }
-
-    RibbonCheckBox *checkBox = new RibbonCheckBox(this);
-    checkBox->setText(tr("RibbonCheckBox"));
-    checkBox->setWindowTitle(checkBox->text());
-    group2->addSmallWidget(checkBox);
-
-    QRadioButton *radioButton = new QRadioButton(this);
-    radioButton->setText(tr("QRadioButton"));
-    radioButton->setWindowTitle(radioButton->text());
-    group2->addSmallWidget(radioButton);
-
-    QSpinBox *spinBox = new QSpinBox(this);
-    spinBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    group2->addSmallWidget(spinBox);
-
-    group2->addSeparator();
-
-    QCalendarWidget *calendarWidget = new QCalendarWidget(this);
-    calendarWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    calendarWidget->setObjectName(("calendarWidget"));
-    group2->addLargeWidget(calendarWidget);
-    // group2->setExpanding();
-
-    optAct = new QAction(this);
-    connect(optAct, &QAction::triggered, this, [this](bool on) {
-        Q_UNUSED(on);
-        QMessageBox::information(this, tr("Option Action Triggered"), tr("Option Action Triggered"));
-    });
-    group2->addOptionAction(optAct);
-
-    group2->setVisible(true);
-
-    //!
-    //! \brief groupUtf8
-    //!
-
-    RibbonGroup *groupUtf8 = new RibbonGroup(QStringLiteral(u"中文显示测试"));
-    groupUtf8->setObjectName("PageOther-groupUtf8");
-    page->addGroup(groupUtf8);
-
-    QAction *actionChangeText =
-        createAction(QStringLiteral(u"改变显示为英文"), ":/icon/res/chinese-char.svg", "actionChangeText");
-    actionChangeText->setCheckable(true);
-    actionChangeText->setChecked(false);
-    groupUtf8->addLargeAction(actionChangeText);
-    connect(actionChangeText, &QAction::triggered, this, [groupUtf8, actionChangeText](bool on) {
-        if (on) {
-            groupUtf8->setGroupName(QStringLiteral(u"show chinese char"));
-            actionChangeText->setText(QStringLiteral(u"show in chinese"));
-        } else {
-            groupUtf8->setGroupName(QStringLiteral(u"中文显示测试"));
-            actionChangeText->setText(QStringLiteral(u"改变显示为英文"));
-        }
-    });
 }
 
 /**
@@ -1191,23 +1017,6 @@ void MainWindow::onActionFontSmallerTriggered()
     ribbonBar()->setFont(f);
     update();
     qDebug() << "set font:" << f;
-}
-
-/**
- * @brief Exercises RibbonButtonGroup and the title alignment.
- * @param act
- */
-void MainWindow::onButtonGroupActionTriggered(QAction *act)
-{
-    QVariant v = act->property("align");
-    if (v.isValid()) {
-        Qt::Alignment al = static_cast<Qt::Alignment>(v.toInt());
-        if (!ribbonBar()) {
-            return;
-        }
-        ribbonBar()->setWindowTitleAligment(al);
-        ribbonBar()->repaint();
-    }
 }
 
 void MainWindow::onMenuButtonPopupCheckableTest(bool b)

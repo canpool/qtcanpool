@@ -95,5 +95,22 @@
         <file>res/tabler/text-increase.svg</file>
         <file>res/tabler/trash.svg</file>
         <file>res/tabler/triangle.svg</file>
+        <!-- gallery + button group of the "Other" page -->
+        <file>res/tabler/arrow-down.svg</file>
+        <file>res/tabler/arrow-left.svg</file>
+        <file>res/tabler/arrow-right.svg</file>
+        <file>res/tabler/arrow-up.svg</file>
+        <file>res/tabler/arrows-maximize.svg</file>
+        <file>res/tabler/clipboard.svg</file>
+        <file>res/tabler/copy.svg</file>
+        <file>res/tabler/diamond.svg</file>
+        <file>res/tabler/heart.svg</file>
+        <file>res/tabler/hexagon.svg</file>
+        <file>res/tabler/language.svg</file>
+        <file>res/tabler/line.svg</file>
+        <file>res/tabler/octagon.svg</file>
+        <file>res/tabler/pentagon.svg</file>
+        <file>res/tabler/printer.svg</file>
+        <file>res/tabler/scissors.svg</file>
     </qresource>
 </RCC>
