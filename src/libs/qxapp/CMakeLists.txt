@@ -7,6 +7,7 @@ add_qtc_library(qxapp
     appaccessible.cpp
     qxapp_global.h
     qxappshell.cpp qxappshell.h
+    qxdockstyle.cpp qxdockstyle.h
     qxextensionbutton.cpp qxextensionbutton.h
     qxmenuaccessbutton.cpp qxmenuaccessbutton.h
     qxmenubutton.cpp qxmenubutton.h

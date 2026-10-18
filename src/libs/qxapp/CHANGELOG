@@ -1,6 +1,22 @@
 0.2.0
 ---
 Feature
+- readBundledTheme() reads the colour roles that travel beside each sheet, now
+  that res/themes/<family>_<scheme>.json exists: the sheet has the roles
+  substituted in, so the values are no longer recoverable from it, and a library
+  painting outside the sheet needs them (qxdock's fragments are the first
+  consumer). A theme without that file is still registered, with an empty colour
+  map, because leaving everything to the palette remains a legitimate theme.
+  tst_QxThemeBundle::bundledThemesCarryTheirRoles
+- dockStyleColors() maps a theme's roles onto the dock's colour set, in
+  qxdockstyle.h. The two sets answer different questions - a theme describes the
+  ribbon's layering, the dock describes its own - so they stay separate types and
+  this function is the only place they meet. qxapp is the only library that can
+  see both, which is why the mapping lives here rather than in either of them.
+  A theme registered without roles yields an all-invalid set, which the dock
+  fills from the palette, so an application that never adopted theme roles keeps
+  the colours it had.
+  tst_QxThemeBundle::rolesReachTheDock
 - QxToast is reported as a Notification and QxSplashScreen names its message. A
   toast is a transient notification, but a plain QWidget as far as the default
   accessibility is concerned, so it was announced as a Client - or not at all,

@@ -5,6 +5,9 @@
 #include "qxthemebundle.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 
 QX_APP_BEGIN_NAMESPACE
 
@@ -17,6 +20,21 @@ QxTheme::QxThemeInfo readBundledTheme(const QString &id, const QString &name, bo
 
     QxTheme::QxThemeInfo info(id, name, dark);
     info.styleSheet = QString::fromUtf8(file.readAll());
+
+    // The sheet has the roles substituted in, so the values are gone from it;
+    // the same roles travel beside it as data for a library that paints its own
+    // surface. A theme without them is still a theme, only one that leaves
+    // everything to the palette.
+    QFile roles(QStringLiteral(":/themes/") + QFileInfo(fileName).completeBaseName() + QStringLiteral(".json"));
+    if (roles.open(QIODevice::ReadOnly)) {
+        const QJsonObject object = QJsonDocument::fromJson(roles.readAll()).object();
+        for (auto it = object.constBegin(); it != object.constEnd(); ++it) {
+            const QColor color(it.value().toString());
+            if (color.isValid()) {
+                info.colors.insert(it.key(), color);
+            }
+        }
+    }
     return info;
 }
 

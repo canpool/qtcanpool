@@ -7,6 +7,7 @@
 
 #include "qxtheme_global.h"
 
+#include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtGui/QColor>
 #include <QtGui/QPalette>
@@ -43,6 +44,20 @@ public:
     QString name;       /*!< Human readable name, for a settings dialog. */
     bool dark;          /*!< True for a theme that draws on a dark background. */
     QString styleSheet; /*!< The style sheet to install; empty means none. */
+
+    /*!
+     * The colour roles the style sheet was built from, keyed the way the sheet
+     * names them ("surface", "accent", "text-on-fill", ...).
+     *
+     * A style sheet only says what a control looks like, and only for the
+     * controls it names. A library that paints outside it - qxdock builds its
+     * own style sheet and needs the same colours - can otherwise get at these
+     * values only by parsing CSS, or by taking whatever the palette happens to
+     * hold, which knows about light and dark but not about a theme family.
+     * Empty for a theme registered without colours, which is a legitimate
+     * registration: such a theme leaves the palette in charge.
+     */
+    QMap<QString, QColor> colors;
 };
 
 /*! The palette behind the light themes: light surfaces, dark text. */

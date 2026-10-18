@@ -5,9 +5,11 @@
 #include "tst_global.h"
 
 #include "qxapp/qxappshell.h"
+#include "qxapp/qxdockstyle.h"
 #include "qxapp/qxnavigationbar.h"
 #include "qxapp/qxpluginmanagerdialog.h"
 #include "qxapp/qxsplashscreen.h"
+#include "qxapp/qxthemebundle.h"
 #include "qxapp/ribbonappwindow.h"
 
 #include "qxcore/qxsettings.h"
@@ -1192,6 +1194,81 @@ void tst_RibbonAppWindow::flagsChangeLaysTheGroupsOutImmediately()
     QCOMPARE(rightGroup->geometry(), rightNow);
     QCOMPARE(windowButtons->geometry(), buttonsNow);
 }
+
+/*!
+ * The bundled themes carry their colour roles beside their sheets.
+ *
+ * The sheet has the roles substituted in, so a library that paints outside the
+ * sheet cannot read them back from it; qxdock's fragment set is the first
+ * consumer. What is pinned here is that every registered theme has them, and
+ * that the accent in the data is the one the sheet was filled with - both come
+ * from one palette, and a generator change that stopped emitting one of them
+ * would otherwise only show up as a wrong dock colour.
+ */
+class tst_QxThemeBundle : public QObject
+{
+    Q_OBJECT
+private slots:
+    void bundledThemesCarryTheirRoles();
+    void rolesReachTheDock();
+};
+
+void tst_QxThemeBundle::bundledThemesCarryTheirRoles()
+{
+    QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
+    QVERIFY(engine);
+    registerBundledThemes(engine);
+
+    // The canonical ids from res/themes.qrc, spelled out rather than taken from
+    // themeIds(): the point is that this bundle registers each of them, not that
+    // the engine happens to be empty when the test starts.
+    const QStringList ids = {
+        QStringLiteral("classic-light"), QStringLiteral("classic-dark"), QStringLiteral("soft-light"),
+        QStringLiteral("soft-dark"),     QStringLiteral("flat-light"),   QStringLiteral("flat-dark"),
+        QStringLiteral("slate-light"),   QStringLiteral("slate-dark"),   QStringLiteral("accent-light"),
+        QStringLiteral("accent-dark"),
+    };
+    for (const QString &id : ids) {
+        const QxTheme::QxThemeInfo info = engine->themeInfo(id);
+        QVERIFY2(info.isValid(), qPrintable(id));
+        QVERIFY2(!info.colors.isEmpty(), qPrintable(id));
+        const QColor accent = info.colors.value(QStringLiteral("accent"));
+        QVERIFY2(accent.isValid(), qPrintable(id));
+        QVERIFY2(info.styleSheet.contains(accent.name()), qPrintable(id));
+    }
+}
+
+void tst_QxThemeBundle::rolesReachTheDock()
+{
+    QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
+    QVERIFY(engine);
+    registerBundledThemes(engine);
+
+    const QxTheme::QxThemeInfo info = engine->themeInfo(QStringLiteral("accent-dark"));
+    QVERIFY(info.isValid());
+    const DockStyleColors colors = dockStyleColors(info);
+
+    // The mapping is the only place the two role sets meet, so what it promises
+    // is checked by name: changing one side without the other fails here rather
+    // than showing up as a dock in the wrong colour.
+    QCOMPARE(colors.accent, info.colors.value(QStringLiteral("accent")));
+    QCOMPARE(colors.surface, info.colors.value(QStringLiteral("surface-sub")));
+    QCOMPARE(colors.surfaceRaised, info.colors.value(QStringLiteral("surface")));
+    QCOMPARE(colors.divider, info.colors.value(QStringLiteral("border")));
+    QCOMPARE(colors.onAccent, info.colors.value(QStringLiteral("text-on-fill")));
+    QCOMPARE(colors.onAccentHover.alpha(), 60);
+    QCOMPARE(colors.onAccentPressed.alpha(), 92);
+
+    // A theme registered without roles maps to an all-invalid set, which the
+    // renderer fills from the palette - the behaviour the dock had before
+    // themes carried roles at all.
+    const DockStyleColors empty =
+        dockStyleColors(QxTheme::QxThemeInfo(QStringLiteral("no-roles"), QStringLiteral("No Roles")));
+    QVERIFY(!empty.accent.isValid());
+    QVERIFY(!empty.surface.isValid());
+}
+
+TEST_ADD(tst_QxThemeBundle)
 
 TEST_ADD(tst_RibbonAppWindow)
 

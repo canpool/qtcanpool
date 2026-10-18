@@ -1,6 +1,9 @@
 # 主题生成
 
 `res/themes/*.css` 是**生成物**，不要手改 —— 跑一遍脚本就会被覆盖。
+`res/themes/<family>_<scheme>.json` 同样是生成物：**同一个 `PALETTES` 条目的数据版**，
+随 css 一起写出。css 里角色已经被替换成具体色值，读不回来；json 留给「画在样式表之外」
+的库（qxdock 的自有片段就是第一个消费者），经 `QxThemeInfo::colors` 送到应用层。
 一套主题由三部分相加而成：
 
 | 文件 | 作用 |

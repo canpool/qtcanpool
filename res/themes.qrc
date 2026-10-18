@@ -10,5 +10,17 @@
         <file>themes/slate_dark.css</file>
         <file>themes/accent_light.css</file>
         <file>themes/accent_dark.css</file>
+        <!-- The roles each sheet was filled from, for an application that has
+             to paint something the sheet does not (qxdock's own fragments). -->
+        <file>themes/classic_light.json</file>
+        <file>themes/classic_dark.json</file>
+        <file>themes/soft_light.json</file>
+        <file>themes/soft_dark.json</file>
+        <file>themes/flat_light.json</file>
+        <file>themes/flat_dark.json</file>
+        <file>themes/slate_light.json</file>
+        <file>themes/slate_dark.json</file>
+        <file>themes/accent_light.json</file>
+        <file>themes/accent_dark.json</file>
     </qresource>
 </RCC>

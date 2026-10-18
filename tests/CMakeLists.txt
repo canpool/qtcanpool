@@ -83,6 +83,9 @@ add_qtc_test(tst_qxapp
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
         "${QTCANPOOL_TESTS_DIR}/qxapp/auto/main.cpp"
         ${QXAPP_TEST_SOURCES}
+        # The bundled themes, so registerBundledThemes() has something to read
+        # and the roles that travel beside each sheet can be checked.
+        ${CMAKE_SOURCE_DIR}/res/themes.qrc
 )
 
 # ----------------------------------------------------- qxapp examples --

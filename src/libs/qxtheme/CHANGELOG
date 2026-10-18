@@ -1,6 +1,15 @@
 Unreleased
 ---
 Feature
+- QxThemeInfo::colors carries the colour roles a theme's sheet was built from.
+  A sheet only says what the controls it names look like; a library that paints
+  its own surface (qxdock builds a separate sheet for the widgets Qt has no style
+  for) could otherwise get the same values only by parsing CSS, or by reading the
+  palette, which knows light and dark but not a theme family - the five bundled
+  families use five different accents. The map is keyed the way the sheets name
+  the roles, and empty for a theme registered without colours, which stays a
+  legitimate registration: that theme leaves the palette in charge.
+  tst_QxThemeBundle::bundledThemesCarryTheirRoles
 - QxTheme::applyColorScheme(bool dark) / followSystemColorScheme(), in qxtheme.h:
   the third thing a theme has to say about an application, next to the palette and
   the sheet. A palette describes what the application draws; the color scheme

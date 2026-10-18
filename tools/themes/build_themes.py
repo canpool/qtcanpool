@@ -21,6 +21,7 @@ palette fails the build instead of being repeated ten times.
 Run:  python3 tools/themes/build_themes.py
 """
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -465,7 +466,15 @@ def main():
                          "fix the skeleton, the chrome file or the palette and run again")
     for family, scheme, raw, filled, palette in sheets:
         (OUT / f"{family}_{scheme}.css").write_bytes(filled.encode("utf-8"))
+        # The same roles, as data. The sheet has them substituted in, where an
+        # application can only read them back by parsing CSS; the dock's own
+        # sheets need the values to colour themselves, so each theme ships its
+        # roles beside its sheet and QxThemeInfo carries them (QX_APP's
+        # registerBundledThemes() reads this file).
+        (OUT / f"{family}_{scheme}.json").write_bytes(
+            (json.dumps(palette, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     print("wrote:", ", ".join(f"{f}_{s}.css" for f, s, _, _, _ in sheets))
+    print("roles:", ", ".join(f"{f}_{s}.json" for f, s, _, _, _ in sheets))
     print(f"gates: {len(sheets)} sheets pass contrast and state checks")
 
 
