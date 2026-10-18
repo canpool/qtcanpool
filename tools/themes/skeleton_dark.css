@@ -767,6 +767,12 @@ QxRibbon--RibbonQuickAccessBar QToolButton {
   height: 20px;
 }
 
+/* See the light skeleton: the bar answers the platform style's menu triangle with
+ * InstantPopup, and this is the same answer for the buttons this table draws. */
+QxRibbon--RibbonQuickAccessBar QToolButton::menu-indicator {
+  image: none;
+}
+
 QxRibbon--RibbonQuickAccessBar QAbstractButton {
   padding: 0px;
 }

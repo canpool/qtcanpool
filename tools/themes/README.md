@@ -80,6 +80,9 @@ slate / accent）。
 
 1. **样式表里不写图标**。Ribbon 的箭头、窗口按钮、对话框启动器都是单色掩膜，
    颜色由 `QPalette` 决定（`qxribbon` 用 `QxRibbon::tintedIcon()` 画），换主题时自动重绘。
+   样式表能做的只有**去掉**一个形状，不是换成另一张图：`::menu-indicator` 里的 `image:` 是
+   原样贴上去的、不跟调色板，所以快速访问栏那个平台三角是靠 `QxRibbon--RibbonQuickAccessBar
+   QToolButton::menu-indicator { image: none }` 删掉的，不是换成小箭头。
 2. 调色板只由**明暗**决定（`QxTheme::paletteFor(bool)`），所以一个家族只要给对
    `dark` 就不用碰库；样式表负责"这套设计语言长什么样"，调色板负责"没被样式表
    描述到的控件取什么色"。

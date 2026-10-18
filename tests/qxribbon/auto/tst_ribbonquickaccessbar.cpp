@@ -8,6 +8,9 @@
 
 #include <QAction>
 #include <QMenu>
+#include <QPainter>
+#include <QPixmap>
+#include <QToolButton>
 
 QX_RIBBON_USE_NAMESPACE
 
@@ -18,6 +21,7 @@ private slots:
     void visibleCount();
     void addAction();
     void customizeDialogEntry();
+    void menuItemTakesNoMoreRoom();
 };
 
 void tst_RibbonQuickAccessBar::visibleCount()
@@ -68,6 +72,60 @@ void tst_RibbonQuickAccessBar::customizeDialogEntry()
 
     entry->trigger();
     QCOMPARE(spy.count(), 1);
+}
+
+/*!
+ * An item whose action has a menu takes no more room than one whose action has
+ * none.
+ *
+ * Two things make that happen and both are needed. The bar opens the menu on the
+ * click (InstantPopup) instead of leaving the button something of its own to
+ * trigger, which is the condition the platform style asks for before it reserves a
+ * twelve-pixel PM_MenuButtonIndicator beside a 16-pixel glyph. And the tables drop
+ * the indicator where they describe the buttons themselves, which is what hands
+ * the drawing to the style sheet - the rule below is that half, the one the shipped
+ * themes carry (skeleton_light.css, skeleton_dark.css).
+ *
+ * The room is the check: with a triangle the menu item is twelve pixels wider, so
+ * comparing the two size hints catches a bar that stopped asking for InstantPopup.
+ */
+void tst_RibbonQuickAccessBar::menuItemTakesNoMoreRoom()
+{
+    RibbonQuickAccessBar qab;
+
+    QPixmap glyph(16, 16);
+    glyph.fill(Qt::transparent);
+    QPainter painter(&glyph);
+    painter.setPen(QPen(Qt::black, 1.5));
+    painter.drawRect(4, 2, 8, 12);
+    painter.end();
+
+    QAction plain(QIcon(glyph), QStringLiteral("plain"), &qab);
+    QAction withMenu(QIcon(glyph), QStringLiteral("menu"), &qab);
+    QMenu menu;
+    menu.addAction(QStringLiteral("entry"));
+    withMenu.setMenu(&menu);
+
+    qab.addAction(&plain);
+    qab.addAction(&withMenu);
+    qab.show();
+    QCoreApplication::processEvents();
+
+    // The sheet lands after the bar is up, the way an application installs its theme.
+    qApp->setStyleSheet(QStringLiteral("QxRibbon--RibbonQuickAccessBar QToolButton::menu-indicator {"
+                                       " image: none; }"));
+    QCoreApplication::processEvents();
+
+    auto *plainButton = qobject_cast<QToolButton *>(qab.widgetForAction(&plain));
+    auto *menuButton = qobject_cast<QToolButton *>(qab.widgetForAction(&withMenu));
+    QVERIFY(plainButton != nullptr);
+    QVERIFY(menuButton != nullptr);
+
+    QCOMPARE(menuButton->popupMode(), QToolButton::InstantPopup);
+    QCOMPARE(plainButton->popupMode(), QToolButton::DelayedPopup);
+    QCOMPARE(menuButton->sizeHint(), plainButton->sizeHint());
+
+    qApp->setStyleSheet(QString());
 }
 
 TEST_ADD(tst_RibbonQuickAccessBar)

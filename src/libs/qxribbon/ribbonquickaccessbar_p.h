@@ -79,6 +79,7 @@ public:
     void init();
     QuickAccessAction *findQuickAccessAction(QAction *action) const;
     void updateAction(QAction *action);
+    void updateActionPopupMode(QAction *action);
     void setActionVisible(QAction *action, bool visible);
     void setActionVisible(QuickAccessAction *wrapper, QAction *action, bool visible);
     void setActionShown(QuickAccessAction *action, QAction *srcAction, bool visible);

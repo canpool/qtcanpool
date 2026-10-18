@@ -130,6 +130,42 @@ void RibbonQuickAccessBarPrivate::updateAction(QAction *action)
     }
 }
 
+/*!
+ * An item whose action carries a menu pops that menu up on a click, and carries no
+ * menu triangle.
+ *
+ * The triangle is twelve pixels of a control twenty-two wide: the largest shape in
+ * a row of 16-pixel glyphs, and far enough right of the glyph to read as a mark of
+ * its own. A style sheet cannot drop it - ::menu-indicator takes an image, but a
+ * sheet draws that image as it stands, so it cannot follow the palette, and a rule
+ * that names only the sub-control is passed over while the platform style draws the
+ * button. What does turn it off is InstantPopup: the style asks for an indicator on
+ * a button that carries a menu *and* still triggers something of its own, and an
+ * item here has nothing of its own to trigger - a click used to fire an action
+ * whose only content is that menu. The one dropdown sign the row keeps is the
+ * customize button at the end, which draws a chevron of its own
+ * (RibbonQuickAccessButton paints it from a mask).
+ */
+void RibbonQuickAccessBarPrivate::updateActionPopupMode(QAction *action)
+{
+    Q_Q(RibbonQuickAccessBar);
+    // The customize popup is a widget action with a menu on the button, not on the
+    // action, and it is InstantPopup already; asking it to follow this rule would
+    // turn it back into a delayed popup.
+    if (Q_UNLIKELY(!action || action == m_actionAccessPopup)) {
+        return;
+    }
+    QToolButton *button = qobject_cast<QToolButton *>(q->widgetForAction(action));
+    if (Q_UNLIKELY(!button)) {
+        return;
+    }
+    const QToolButton::ToolButtonPopupMode mode =
+        action->menu() ? QToolButton::InstantPopup : QToolButton::DelayedPopup;
+    if (button->popupMode() != mode) {
+        button->setPopupMode(mode);
+    }
+}
+
 void RibbonQuickAccessBarPrivate::setActionVisible(QAction *action, bool visible)
 {
     if (QuickAccessAction *wrapper = findQuickAccessAction(action)) {
@@ -337,6 +373,7 @@ void RibbonQuickAccessBar::actionEvent(QActionEvent *event)
             } else if (quickAccessAction) {
                 quickAccessAction->update();
             }
+            d->updateActionPopupMode(event->action());
         } else if (event->type() == QEvent::ActionRemoved) {
             if (event->action() == d->m_actionAccessPopup) {
                 d->m_removingAction = true;
@@ -360,6 +397,10 @@ void RibbonQuickAccessBar::actionEvent(QActionEvent *event)
             } else if (!dynamic_cast<QuickAccessAction *>(event->action())) {
                 d->updateAction(event->action());
             }
+            // The menu may arrive after the action does - setMenu() on an action that
+            // is already in the bar - and that is the change that decides the popup
+            // mode.
+            d->updateActionPopupMode(event->action());
         }
     }
 }

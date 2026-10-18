@@ -164,6 +164,16 @@ QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
 }
 
+/* A quick access item that opens a menu is drawn without the style's menu
+ * triangle: the platform style only asks for one on a button that carries a menu
+ * and still triggers something of its own, and the bar answers that with
+ * InstantPopup. This rule covers the other route - a table that describes the
+ * buttons themselves, which is what makes Qt draw them from here instead of from
+ * the platform style, and then the triangle is this table's to drop. */
+QxRibbon--RibbonQuickAccessBar QToolButton::menu-indicator {
+  image: none;
+}
+
 QxRibbon--RibbonQuickAccessButton {
   width: 22px;
 }

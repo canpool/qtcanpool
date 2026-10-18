@@ -15,6 +15,19 @@ Fixed
   a pixel above every title beside it - a File button that visibly does not sit on
   the tabs' line. tst_RibbonBar::applicationButtonSharesTheTabRow is the check, in
   both tab-row styles.
+- A quick access item whose action carries a menu pops that menu up on a click and
+  no longer shows the platform style's menu triangle. The triangle is
+  PM_MenuButtonIndicator wide - twelve pixels of a control twenty-two wide, the
+  largest shape in a row of 16-pixel glyphs and far enough right of the glyph to
+  read as a mark of its own. It cannot be dropped from a style sheet: ::menu-indicator
+  takes an image, but a sheet draws that image as it stands and so cannot follow the
+  palette, and a rule that names only the sub-control is passed over while the
+  platform style draws the button. InstantPopup is what turns it off, and an item
+  whose action has a menu has nothing of its own to trigger anyway - a click used to
+  fire the action, which for a menu-only action did nothing visible, and the menu
+  needed a press-and-hold. The shipped themes drop the indicator too, which is what
+  covers the tables that describe these buttons themselves.
+  tst_RibbonQuickAccessBar::menuItemTakesNoMoreRoom is the check.
 - The ribbon's minimize button is painted from the palette, and says what it does.
   It asked the style for SP_TitleBarShadeButton, and a platform style draws that
   standard icon in black whatever the palette says, so on a dark sheet it was the
