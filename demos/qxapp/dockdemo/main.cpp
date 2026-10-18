@@ -80,8 +80,13 @@ int main(int argc, char *argv[])
                                    QStringLiteral("Wait <ms> after showing the window before "
                                                   "capturing."),
                                    QStringLiteral("ms"), QStringLiteral("2000"));
+    QCommandLineOption themeOption(
+        QStringLiteral("theme"),
+        QStringLiteral("Start on theme <id>, one of the registered theme ids (soft-light, soft-dark, ...)."),
+        QStringLiteral("id"));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
+    parser.addOption(themeOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
     // switches (-platform, -style, ...), which the parser would reject as
@@ -92,6 +97,12 @@ int main(int argc, char *argv[])
     }
 
     const QString screenshotFile = parser.value(screenshotOption);
+    // An interactive run keeps whatever theme the engine restored from last time,
+    // so the demo opens on the one the user left it on. A capture names one: the
+    // golden has to be the same picture whatever the machine's last run picked.
+    const QString themeId = parser.isSet(QStringLiteral("theme"))
+                                ? parser.value(themeOption)
+                                : (screenshotFile.isEmpty() ? QString() : QStringLiteral("soft-light"));
 
     if (!screenshotFile.isEmpty()) {
         // A focused text edit blinks its cursor, and a capture that lands on the
@@ -111,7 +122,7 @@ int main(int argc, char *argv[])
     // The settings file is what makes the demo remember its arrangement between
     // runs; a screenshot must neither read one nor write one, so that the
     // capture is the demo's own layout on every machine.
-    MainWindow w(nullptr, !screenshotFile.isEmpty());
+    MainWindow w(nullptr, !screenshotFile.isEmpty(), themeId);
 
     if (screenshotFile.isEmpty()) {
         w.show();

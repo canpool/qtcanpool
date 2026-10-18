@@ -8,6 +8,7 @@
 #include "qxdock/qxdock_global.h"
 #include <QMainWindow>
 #include <QEvent>
+#include <QString>
 
 QX_DOCK_BEGIN_NAMESPACE
 class DockWindow;
@@ -27,8 +28,11 @@ public:
      * Settings.ini, and it must not write one into the working directory
      * either - the capture has to be the same on every machine for the golden
      * to stay comparable.
+     * @param themeId the theme to start on, empty to keep whichever one the
+     * engine restored. A screenshot always names one: the golden has to be
+     * the same capture whatever the machine's last interactive run picked.
      */
-    MainWindow(QWidget *parent = nullptr, bool screenshotMode = false);
+    MainWindow(QWidget *parent = nullptr, bool screenshotMode = false, const QString &themeId = QString());
 
     /*!
      * The demo's arrangement goes in and out of a settings file, and the two
@@ -43,7 +47,16 @@ protected:
     virtual void closeEvent(QCloseEvent *event) override;
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
 private:
+    /*!
+     * Registers the bundled themes, puts the window on one of them and opens the
+     * Theme menu over whatever the engine knows.
+     */
+    void createTheme(const QString &themeId);
+    void createThemeMenu();
+    void installApplicationStyleSheet();
+
     DockWindow *m_dockWindow = nullptr;
     bool m_screenshotMode = false;
+    QString m_dockSheet;
 };
 #endif   // MAINWINDOW_H

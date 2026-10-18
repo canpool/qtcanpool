@@ -78,6 +78,36 @@ Bugfix
   must not restart the layout computation. tst_DockAutoHideContainer::
   collapseSlidesIntoPlace still holds the end state; the interruption was a
   runtime feedback loop the geometry assertion could not see.
+- The dock's own text and its state fills followed the dark scheme. The four
+  style sheets had only ever been seen against one scheme - the demo carried no
+  theme of its own until now - and four rules in them turned out to say
+  something that is only true of a light one.
+  An inactive tab's label was palette(dark): QPalette::Dark is derived from the
+  window colour, so on a dark palette it is a near black and the label vanished
+  into its own tab. It reads palette(placeholder) now, the role Qt gives to
+  "this text, but quieter", which is dimmed from the scheme's own text colour.
+  The text that sits on a highlight fill - the focused tab, the auto hide title,
+  the title of an active floating window - was palette(light), which describes
+  the surface rather than the fill: a dark grey label on the accent in a dark
+  scheme, and in a light one the rule lost entirely, because [focused="true"]
+  ties with the [activeTab="true"] rule above it on specificity and Qt keeps the
+  earlier of two equally specific rules - so a light dock showed its selected
+  tab in black on the accent. The selector now names both attributes, and the
+  colour is #ffffff: the role that would say it (palette(highlightedtext),
+  palette(brighttext) being the same value) is not among the names a style
+  sheet's palette() lookup accepts, so the declaration would be dropped, and the
+  accent fill is #0078d4 in both schemes anyway - which is how the ribbon themes
+  write their text-on-fill.
+  A label matched by a style sheet rule also has its box painted, and with no
+  background to paint it the style sheet fell back on the style's own window
+  colour - #1f1f1f for windows11 in dark, neither the tab's nor the panel's -
+  so every tab wore a darker panel down its middle. The rule says transparent
+  and the pixel goes back to the tab.
+  The close button's hover and press fills were rgba(0, 0, 0, 16/24/48), a
+  black wash: four levels of difference over a dark tab, which is no feedback at
+  all, and a grey blob over a light one. They read palette(midlight) and
+  palette(light) now, both derived from the window colour, so the button reads
+  the same way in either scheme.
 
 0.2.3
 ---

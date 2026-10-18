@@ -10,7 +10,11 @@
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockstylesheet.h"
 #include "qxdock/dockiconprovider.h"
+#include "qxapp/qxthemebundle.h"
+#include "qxtheme/qxtheme.h"
+#include "qxtheme/qxthememanager.h"
 
+#include <QActionGroup>
 #include <QMenuBar>
 #include <QMenu>
 #include <QToolBar>
@@ -20,10 +24,12 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
+#include <QStringList>
 
 QX_DOCK_USE_NAMESPACE
+QX_THEME_USE_NAMESPACE
 
-MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
+MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &themeId)
     : QMainWindow(parent)
     , m_screenshotMode(screenshotMode)
 {
@@ -35,7 +41,12 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     // this demo carries it - the library no longer holds a copy and no longer
     // styles the DockWindow for us. The flag is set just above and is what picks
     // the sheet, so the two lines are one decision read in two places.
-    qApp->setStyleSheet(dockStyleSheet(true));
+    m_dockSheet = dockStyleSheet(true);
+    // A theme decides the palette and the style sheet the whole application
+    // wears, and the dock's sheet is a second application-level one. That is a
+    // single string, so installing the theme's takes the dock's with it - the
+    // two are joined here and rejoined on every theme change.
+    createTheme(themeId);
     // Step 2 of the theme work: tint the dock's built-in SVG icons to the
     // application palette so they follow light/dark instead of staying the
     // hard-coded black the SVGs ship with. The library only provides the helper;
@@ -142,6 +153,93 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode)
     if (!m_screenshotMode) {
         restoreFromSettings();
     }
+}
+
+void MainWindow::createTheme(const QString &themeId)
+{
+    QxThemeManager *engine = QxThemeManager::instance();
+    // The bundle is registered here rather than in main(), so the window is the
+    // one place that decides what this demo offers.
+    QxApp::registerBundledThemes(engine);
+    // Following the desktop is worth showing in a dock demo above all: the
+    // engine swaps between these two ids on the system's own light/dark, and
+    // hands the color scheme back to the platform while it does, which is what
+    // keeps the window frame agreeing with the dock.
+    engine->setSystemThemePair(QStringLiteral("soft-light"), QStringLiteral("soft-dark"));
+    // The engine has already applied whatever it restored. A named theme
+    // replaces it; without one, a demo that has neither a restored theme nor a
+    // command-line one would sit on the palette Qt came up with - the system's,
+    // not one of ours.
+    if (!themeId.isEmpty()) {
+        engine->setTheme(themeId);
+    } else if (!engine->hasTheme(engine->theme())) {
+        engine->setTheme(QStringLiteral("soft-light"));
+    }
+
+    connect(engine, &QxThemeManager::themeChanged, this, [this](const QString &) {
+        // The engine has just put the palette and the new theme's sheet in
+        // place; the dock's sheet has to go back on top of it.
+        installApplicationStyleSheet();
+        // The dock icons follow the palette, and the palette has just changed.
+        // The eventFilter further down does this too once it is installed;
+        // this call covers the changes that happen before it is.
+        applyDockIcons(qApp->palette(), this);
+    });
+
+    installApplicationStyleSheet();
+    createThemeMenu();
+}
+
+void MainWindow::installApplicationStyleSheet()
+{
+    QxThemeManager *engine = QxThemeManager::instance();
+    // Theme first, dock second: the dock's sheet describes the dock's own
+    // widgets by class name and cannot outrank a rule the theme states about
+    // one of them, while the reverse order would let the dock's plain
+    // background win over the theme's.
+    qApp->setStyleSheet(engine->styleSheet(engine->theme()) + m_dockSheet);
+}
+
+void MainWindow::createThemeMenu()
+{
+    QxThemeManager *engine = QxThemeManager::instance();
+    QMenu *menu = menuBar()->addMenu(tr("Theme"));
+
+    QActionGroup *group = new QActionGroup(this);
+    group->setExclusive(true);
+    // One entry per registration: the ids are the engine's, the names are what
+    // was registered under them, so a family added to res/themes.qrc appears
+    // here without this file being told about it.
+    const QStringList ids = engine->themeIds();
+    for (const QString &id : ids) {
+        QAction *entry = menu->addAction(engine->themeInfo(id).name);
+        entry->setCheckable(true);
+        entry->setChecked(engine->theme() == id);
+        entry->setData(id);
+        group->addAction(entry);
+    }
+
+    QAction *followSystem = menu->addAction(tr("Follow system"));
+    followSystem->setCheckable(true);
+    followSystem->setChecked(engine->followSystemTheme());
+    menu->addSeparator();
+    menu->addAction(followSystem);
+
+    connect(group, &QActionGroup::triggered, this, [](QAction *entry) {
+        QxThemeManager::instance()->setTheme(entry->data().toString());
+    });
+    connect(engine, &QxThemeManager::themeChanged, this, [group](const QString &id) {
+        // Following the system swaps the theme without the menu being clicked,
+        // so the check marks are read back from the engine rather than left
+        // where the last click put them.
+        const QList<QAction *> entries = group->actions();
+        for (QAction *entry : entries) {
+            entry->setChecked(entry->data().toString() == id);
+        }
+    });
+    connect(followSystem, &QAction::toggled, this, [engine](bool on) {
+        engine->setFollowSystemTheme(on);
+    });
 }
 
 void MainWindow::saveToSettings()

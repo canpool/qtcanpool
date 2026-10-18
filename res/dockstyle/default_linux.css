@@ -63,8 +63,22 @@ QxDock--DockTab[activeTab="true"] {
     /*background: palette(highlight);*/
 }
 
+/* The label of an inactive tab: the same text, dimmed. palette(dark) used to
+   say that, and it says it the wrong way round in a dark scheme - QPalette::Dark
+   is derived from the window colour (window.darker(150)), so on a dark surface
+   it is a near-black that the label disappears into. palette(placeholder) is
+   the role Qt gives to "this text, but quieter", and it is dimmed from the
+   scheme's own text colour, so it reads as muted in both.
+
+   The transparent background is not decoration. A rule that matches a widget
+   makes the style sheet paint that widget's box, and with no background to
+   paint it falls back on the style's own window colour - which is not the tab's
+   (windows11 draws its dark window #1f1f1f, the tab is palette(window)). In a
+   dark scheme that showed up as a darker panel down the middle of every tab;
+   handing the pixel back to the tab is what removes it. */
 QxDock--DockTab QLabel {
-    color: palette(dark);
+    background: transparent;
+    color: palette(placeholder);
 }
 
 QxDock--DockTab[activeTab="true"] QLabel {
@@ -79,9 +93,16 @@ QxDock--DockTab[activeTab="true"] QLabel {
     qproperty-iconSize: 16px;
 }
 
+/* The hover and press fills were rgba(0, 0, 0, 16/24/48) - a black wash. Over
+   a dark tab that is 9 percent of black on #292929, four levels of difference:
+   the button gives no feedback at all, and over a light one it is a grey blob.
+   A palette role is used instead, and the two steps are "one step off the
+   surface, then two": palette(midlight) and palette(light) are both derived from
+   the window colour, so the button reads the same way in either scheme without
+   the sheet having to know which one is in force. */
 #dockTabCloseButton:hover {
     border: 1px solid rgba(0, 0, 0, 32);
-    background: rgba(0, 0, 0, 16);
+    background: palette(midlight);
 }
 
 #dockTabCloseButton:pressed {
@@ -271,7 +292,9 @@ QxDock--DockAutoHideContainer QxDock--DockPanel[focused="true"] QxDock--DockTitl
 
 #dockAutoHideTitleLabel {
     padding-left: 4px;
-    color: palette(light);
+    /* On the highlight fill, so the text has to be the one that reads on it -
+       see the focused tab label above for why that is not a palette() role. */
+    color: #ffffff;
 }
 
 /*****************************************************************************
