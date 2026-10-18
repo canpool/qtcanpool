@@ -1211,13 +1211,20 @@ class tst_QxThemeBundle : public QObject
 {
     Q_OBJECT
 private slots:
-    void bundledThemesCarryTheirRoles();
-    void rolesReachTheDock();
+    void bundledThemesCarryTheirAccent();
+    void accentReachesThePalette();
     void applicationSheetKeepsTheThemeOnTop();
     void installerFollowsTheTheme();
 };
 
-void tst_QxThemeBundle::bundledThemesCarryTheirRoles()
+/*!
+ * Every bundled theme says what it emphasizes with.
+ *
+ * The sheet cannot be asked: it has the accent substituted in, and there is no
+ * QSS lookup for the role whose value this is. So the value travels beside the
+ * sheet, and what it is for is the palette - see accentReachesThePalette().
+ */
+void tst_QxThemeBundle::bundledThemesCarryTheirAccent()
 {
     QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
     QVERIFY(engine);
@@ -1235,46 +1242,56 @@ void tst_QxThemeBundle::bundledThemesCarryTheirRoles()
     for (const QString &id : ids) {
         const QxTheme::QxThemeInfo info = engine->themeInfo(id);
         QVERIFY2(info.isValid(), qPrintable(id));
-        QVERIFY2(!info.colors.isEmpty(), qPrintable(id));
-        const QColor accent = info.colors.value(QStringLiteral("accent"));
-        QVERIFY2(accent.isValid(), qPrintable(id));
-        QVERIFY2(info.styleSheet.contains(accent.name()), qPrintable(id));
+        QVERIFY2(info.accent.isValid(), qPrintable(id));
+        QVERIFY2(info.styleSheet.contains(info.accent.name()), qPrintable(id));
     }
 }
 
-void tst_QxThemeBundle::rolesReachTheDock()
+/*!
+ * A theme's accent is what the application emphasizes with: apply() puts it in
+ * the palette as QPalette::Highlight, and a glyph on an emphasized surface is
+ * painted in the pair of that role.
+ *
+ * The pair is the point. A dock label under the pointer, or the whole title bar
+ * of a collapsed dock, sits on the accent; the glyph on it asks
+ * QPalette::HighlightedText, and gets a colour that was computed from whatever
+ * was in Highlight - so the two have to be filled from the same value, which is
+ * what this asserts.
+ */
+void tst_QxThemeBundle::accentReachesThePalette()
 {
     QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
     QVERIFY(engine);
     registerBundledThemes(engine);
 
+    // The palette outlives this test and every later widget test measures
+    // against it.
+    const QPalette savedPalette = qApp->palette();
+    const QString savedTheme = engine->theme();
+
     const QxTheme::QxThemeInfo info = engine->themeInfo(QStringLiteral("accent-dark"));
     QVERIFY(info.isValid());
-    const DockStyleColors colors = dockStyleColors(info);
+    engine->setTheme(QStringLiteral("accent-dark"));
 
-    // The mapping is the only place the two role sets meet, so what it promises
-    // is checked by name: changing one side without the other fails here rather
-    // than showing up as a dock in the wrong colour.
-    QCOMPARE(colors.accent, info.colors.value(QStringLiteral("accent")));
-    QCOMPARE(colors.surface, info.colors.value(QStringLiteral("surface-sub")));
-    QCOMPARE(colors.surfaceRaised, info.colors.value(QStringLiteral("surface")));
-    QCOMPARE(colors.divider, info.colors.value(QStringLiteral("border")));
-    QCOMPARE(colors.onAccent, info.colors.value(QStringLiteral("text-on-fill")));
-    QCOMPARE(colors.onAccentHover.alpha(), 60);
-    QCOMPARE(colors.onAccentPressed.alpha(), 92);
+    QCOMPARE(qApp->palette().color(QPalette::Highlight), info.accent);
+    // What accentColor() reports has to be what apply() installed, or an
+    // application that asks is told a colour nothing is painted with.
+    QCOMPARE(engine->accentColor(), info.accent);
 
-    // A theme registered without roles maps to an all-invalid set, which the
-    // renderer fills from the palette - the behaviour the dock had before
-    // themes carried roles at all.
-    const DockStyleColors empty =
-        dockStyleColors(QxTheme::QxThemeInfo(QStringLiteral("no-roles"), QStringLiteral("No Roles")));
-    QVERIFY(!empty.accent.isValid());
-    QVERIFY(!empty.surface.isValid());
+    // The pair, not the colour: this accent is light enough to be read on with
+    // dark glyphs, which is the whole reason the pair is computed rather than
+    // left to whoever painted the fill.
+    const QColor onAccent = qApp->palette().color(QPalette::HighlightedText);
+    QVERIFY(onAccent.isValid());
+    QVERIFY2(onAccent != info.accent, "the pair of the accent is the accent itself");
+
+    engine->setTheme(savedTheme);
+    qApp->setPalette(savedPalette);
 }
 
 /*!
  * The application sheet is the theme's rules with the dock's appended, in that
- * order, and the dock's half is rendered from the theme's roles.
+ * order.
  *
  * The order is the assertion worth writing down: at equal specificity the rule
  * declared first wins, so a dock fragment placed in front of the theme would take
@@ -1286,19 +1303,27 @@ void tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop()
     QVERIFY(engine);
     registerBundledThemes(engine);
 
+    const QString savedTheme = engine->theme();
+    const QPalette savedPalette = qApp->palette();
+
     const QxTheme::QxThemeInfo info = engine->themeInfo(QStringLiteral("accent-dark"));
     QVERIFY(info.isValid());
     QVERIFY(!info.styleSheet.isEmpty());
+    // The dock's half is rendered from the palette, so it only carries this
+    // theme's accent once the theme has been applied.
+    engine->setTheme(QStringLiteral("accent-dark"));
 
-    const QString sheet = applicationStyleSheet(info);
+    const QString sheet = applicationStyleSheet(engine);
     QVERIFY2(sheet.startsWith(info.styleSheet), "the dock's fragment was put in front of the theme's sheet");
 
     const QString dockPart = sheet.mid(info.styleSheet.size());
     QVERIFY(!dockPart.isEmpty());
-    // What the mapping above is for: the palette fallback cannot carry this
-    // accent, so its presence says the fragment was rendered from the roles.
-    QVERIFY2(dockPart.contains(info.colors.value(QStringLiteral("accent")).name()),
-             "the dock's fragment was rendered from the palette, not from the theme's roles");
+    // The dock's fragment asks the palette, and the engine put this accent in it;
+    // before that, this assertion passed on the palette's own highlight.
+    QVERIFY2(dockPart.contains(info.accent.name()), "the dock's fragment does not carry the theme's accent");
+
+    engine->setTheme(savedTheme);
+    qApp->setPalette(savedPalette);
 }
 
 /*!
@@ -1312,15 +1337,16 @@ void tst_QxThemeBundle::installerFollowsTheTheme()
     QVERIFY(engine);
     registerBundledThemes(engine);
 
-    // Both are put back at the end: the application sheet outlives this test, and
-    // a dock's rules left on it would change the geometry every later widget test
-    // measures.
+    // All three are put back at the end: the application sheet outlives this
+    // test, and a dock's rules left on it would change the geometry every later
+    // widget test measures.
     const QString savedSheet = qApp->styleSheet();
     const QString savedTheme = engine->theme();
+    const QPalette savedPalette = qApp->palette();
 
     {
         ThemeInstaller installer(engine);
-        QVERIFY2(qApp->styleSheet() == applicationStyleSheet(engine->themeInfo(engine->theme())),
+        QVERIFY2(qApp->styleSheet() == applicationStyleSheet(engine),
                  "construction did not install the theme in force");
 
         // A switch goes through the engine, which puts the new theme's own sheet
@@ -1328,11 +1354,13 @@ void tst_QxThemeBundle::installerFollowsTheTheme()
         engine->setTheme(QStringLiteral("flat-dark"));
         const QxTheme::QxThemeInfo flat = engine->themeInfo(QStringLiteral("flat-dark"));
         QVERIFY(flat.isValid());
-        QVERIFY2(qApp->styleSheet() == applicationStyleSheet(flat), "the dock's fragment did not follow the theme");
-        QVERIFY(qApp->styleSheet().contains(flat.colors.value(QStringLiteral("accent")).name()));
+        QVERIFY2(qApp->styleSheet() == applicationStyleSheet(engine), "the dock's fragment did not follow the theme");
+        QVERIFY2(qApp->styleSheet().contains(flat.accent.name()),
+                 "the dock's fragment does not carry the new theme's accent");
     }
 
     engine->setTheme(savedTheme);
+    qApp->setPalette(savedPalette);
     qApp->setStyleSheet(savedSheet);
 }
 

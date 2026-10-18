@@ -54,17 +54,17 @@ void ThemeInstaller::install()
         return;
     }
 
-    // Read the theme rather than the palette: which colours the sheet carries
-    // depends on which theme is in force, and the engine's palette has only the
-    // two cases while the bundle has ten families.
-    const QxTheme::QxThemeInfo theme = m_engine->themeInfo(m_engine->theme());
-    qApp->setStyleSheet(applicationStyleSheet(theme));
+    qApp->setStyleSheet(applicationStyleSheet(m_engine));
     installIcons();
 }
 
 void ThemeInstaller::installIcons()
 {
-    QX_DOCK_PREPEND_NAMESPACE(applyDockIcons)(dockStyleColors(m_engine->themeInfo(m_engine->theme())), m_iconRoot);
+    // The palette, which the engine filled from the theme in force: the accent a
+    // dock paints is QPalette::Highlight and the colour of a glyph on it is that
+    // role's pair, so one source serves the sheet and the glyphs and they cannot
+    // disagree.
+    QX_DOCK_PREPEND_NAMESPACE(applyDockIcons)(qApp->palette(), m_iconRoot);
 }
 
 bool ThemeInstaller::eventFilter(QObject *watched, QEvent *event)

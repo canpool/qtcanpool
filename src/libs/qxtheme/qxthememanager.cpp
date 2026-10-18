@@ -311,11 +311,19 @@ QColor QxThemeManager::accentColor() const
     if (d->m_accentOverride.isValid()) {
         return d->m_accentOverride;
     }
+    // The theme's own, before the platform's: this has to answer the same
+    // question apply() answered when it filled QPalette::Highlight, and that
+    // one consults the theme before the platform - a theme that declares an
+    // accent and then gets told a different one is a theme that changed its
+    // mind halfway through being installed.
+    if (d->current().accent.isValid()) {
+        return d->current().accent;
+    }
     if (d->m_systemAccent.isValid()) {
         return d->m_systemAccent;
     }
-    // The platform said nothing and nobody overrode it, so the theme's own
-    // highlight is the accent - which is what the widgets are using anyway.
+    // The theme said nothing about emphasis and nobody overrode it, so the
+    // highlight the widgets are using anyway is the accent.
     return QX_THEME_PREPEND_NAMESPACE(paletteFor)(d->current().dark).color(QPalette::Highlight);
 }
 
@@ -473,17 +481,26 @@ void QxThemeManager::apply()
     }
 
     QPalette palette = QX_THEME_PREPEND_NAMESPACE(paletteFor)(info.dark);
-    if (d->m_accentOverride.isValid()) {
-        // Only an override is written here. A theme carries a highlight colour
-        // of its own and was designed around it, so letting the platform's
-        // accent through by default would repaint every one of them.
-        palette.setColor(QPalette::Highlight, d->m_accentOverride);
-        palette.setColor(QPalette::HighlightedText, readableOn(d->m_accentOverride));
+    // An override wins over the theme's own: it is the answer to "paint with
+    // this", given by the application or by the user, and a theme is a look
+    // someone picked. The platform's accent is deliberately *not* consulted
+    // here - a theme carries a highlight of its own and was designed around it,
+    // so letting the desktop's through by default would repaint every one of
+    // them.
+    const QColor accent = d->m_accentOverride.isValid() ? d->m_accentOverride : info.accent;
+    if (accent.isValid()) {
+        // The emphasis is a pair, not a colour: what sits on the fill is
+        // HighlightedText, and readableOn() is what keeps the two legible on
+        // each other - a glyph on the emphasized surface asks that role and
+        // needs it to have been computed from *this* fill, not from the
+        // palette's own highlight.
+        palette.setColor(QPalette::Highlight, accent);
+        palette.setColor(QPalette::HighlightedText, readableOn(accent));
         // QPalette has no accent text role: the pair of a highlight is
         // HighlightedText, and that is the one set above, so the accent role is
         // the only one to add - and it only exists from 6.6 on.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-        palette.setColor(QPalette::Accent, d->m_accentOverride);
+        palette.setColor(QPalette::Accent, accent);
 #endif
     }
     // The scheme has to be settled before the palette: it decides what the platform

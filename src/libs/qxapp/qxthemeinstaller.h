@@ -21,8 +21,8 @@ QX_APP_BEGIN_NAMESPACE
 
 /*!
  * Keeps the whole theme in force on the application: the theme's sheet with the
- * dock's appended to it, and the dock's glyphs tinted from the same colour roles
- * - once when it is constructed and again on every change.
+ * dock's appended to it, and the dock's glyphs painted from the palette the theme
+ * installed - once when it is constructed and again on every change.
  *
  * Why a class rather than a pair of calls: the theme has two sources of change
  * and only one of them is a signal. A theme switch arrives as

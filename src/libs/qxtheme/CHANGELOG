@@ -1,15 +1,20 @@
 Unreleased
 ---
 Feature
-- QxThemeInfo::colors carries the colour roles a theme's sheet was built from.
-  A sheet only says what the controls it names look like; a library that paints
-  its own surface (qxdock builds a separate sheet for the widgets Qt has no style
-  for) could otherwise get the same values only by parsing CSS, or by reading the
-  palette, which knows light and dark but not a theme family - the five bundled
-  families use five different accents. The map is keyed the way the sheets name
-  the roles, and empty for a theme registered without colours, which stays a
-  legitimate registration: that theme leaves the palette in charge.
-  tst_QxThemeBundle::bundledThemesCarryTheirRoles
+- QxThemeInfo::accent carries the colour the theme emphasizes with, and
+  apply() installs it as QPalette::Highlight with HighlightedText as its pair.
+  An emphasis is a pair, not a colour: what sits on the fill is painted from
+  HighlightedText, and a glyph that asks that role has to find it computed from
+  the fill it is actually on - which the palette's own highlight is not, since
+  the bundled families emphasize with five different colours. A sheet cannot
+  publish the value: it has the accent substituted in, and QSS does not accept
+  highlightedtext in a palette() lookup at all. Invalid for a theme that says
+  nothing about emphasis, which stays a legitimate registration: that theme gets
+  the engine's own highlight, the same answer an application with no registered
+  theme gets. accentColor() answers with the theme's accent before the
+  platform's, so it cannot disagree with the palette apply() just installed.
+  tst_QxThemeBundle::bundledThemesCarryTheirAccent,
+  tst_QxTheme::theAccentReachesThePalette
 - QxTheme::applyColorScheme(bool dark) / followSystemColorScheme(), in qxtheme.h:
   the third thing a theme has to say about an application, next to the palette and
   the sheet. A palette describes what the application draws; the color scheme

@@ -402,9 +402,10 @@ def gate(raw, palette, where):
         if not is_fill(resolve(bg, palette)):
             continue
         if base.startswith(GLYPH_ON_FILL):
-            # the close button paints its hover and pressed glyph in the
-            # highlighted-text role; the others keep the window-text one
-            fg = "{{text-on-fill}}" if "CloseWindowButton" in base else "{{text}}"
+            # The close button's hover and pressed glyph is white: it sits on the
+            # button's own fill, not on the application's emphasis, so it does
+            # not take the pair of it. The others keep the window-text one.
+            fg = "#ffffff" if "CloseWindowButton" in base else "{{text}}"
             floor = WCAG_GLYPH_MIN
         else:
             floor = WCAG_MIN
@@ -464,17 +465,22 @@ def main():
             print(line, file=sys.stderr)
         raise SystemExit(f"{len(problems)} gate violation(s); no sheet was written - "
                          "fix the skeleton, the chrome file or the palette and run again")
+    accents = {}
     for family, scheme, raw, filled, palette in sheets:
         (OUT / f"{family}_{scheme}.css").write_bytes(filled.encode("utf-8"))
-        # The same roles, as data. The sheet has them substituted in, where an
-        # application can only read them back by parsing CSS; the dock's own
-        # sheets need the values to colour themselves, so each theme ships its
-        # roles beside its sheet and QxThemeInfo carries them (QX_APP's
-        # registerBundledThemes() reads this file).
-        (OUT / f"{family}_{scheme}.json").write_bytes(
-            (json.dumps(palette, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+        accents[f"{family}-{scheme}"] = palette["accent"]
+    # The one colour a sheet cannot publish: the sheet has it substituted in,
+    # where an application can only read it back by parsing CSS, and what needs
+    # it is the palette - QPalette::Highlight, whose pair HighlightedText is
+    # what a glyph on an emphasized surface is painted with. One table, keyed
+    # by theme id, rather than one file per theme: a lone key/value pair does
+    # not carry the weight of ten files, and a table lets the ten be read at
+    # once - an accent out of step with its family is visible next to the
+    # others. QX_APP's registerBundledThemes() reads this file.
+    (OUT / "accents.json").write_bytes(
+        (json.dumps(accents, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     print("wrote:", ", ".join(f"{f}_{s}.css" for f, s, _, _, _ in sheets))
-    print("roles:", ", ".join(f"{f}_{s}.json" for f, s, _, _, _ in sheets))
+    print("accents: accents.json")
     print(f"gates: {len(sheets)} sheets pass contrast and state checks")
 
 

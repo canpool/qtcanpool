@@ -11,6 +11,30 @@
 
 QX_APP_BEGIN_NAMESPACE
 
+namespace
+{
+/*!
+ * The one value the sheets cannot publish, for every bundled theme: the sheet
+ * has its accent substituted in, where nothing can read it back, and what needs
+ * it is the palette - a glyph on an emphasized surface is painted in the pair of
+ * QPalette::Highlight, and only the theme knows what that fill is.
+ *
+ * Read once: the table is one small file and every bundled theme is registered
+ * from it.
+ */
+const QJsonObject &bundledAccents()
+{
+    static const QJsonObject table = [] {
+        QFile file(QStringLiteral(":/themes/accents.json"));
+        if (!file.open(QIODevice::ReadOnly)) {
+            return QJsonObject();
+        }
+        return QJsonDocument::fromJson(file.readAll()).object();
+    }();
+    return table;
+}
+}   // namespace
+
 QxTheme::QxThemeInfo readBundledTheme(const QString &id, const QString &name, bool dark, const QString &fileName)
 {
     QFile file(QStringLiteral(":/themes/") + fileName);
@@ -21,19 +45,9 @@ QxTheme::QxThemeInfo readBundledTheme(const QString &id, const QString &name, bo
     QxTheme::QxThemeInfo info(id, name, dark);
     info.styleSheet = QString::fromUtf8(file.readAll());
 
-    // The sheet has the roles substituted in, so the values are gone from it;
-    // the same roles travel beside it as data for a library that paints its own
-    // surface. A theme without them is still a theme, only one that leaves
-    // everything to the palette.
-    QFile roles(QStringLiteral(":/themes/") + QFileInfo(fileName).completeBaseName() + QStringLiteral(".json"));
-    if (roles.open(QIODevice::ReadOnly)) {
-        const QJsonObject object = QJsonDocument::fromJson(roles.readAll()).object();
-        for (auto it = object.constBegin(); it != object.constEnd(); ++it) {
-            const QColor color(it.value().toString());
-            if (color.isValid()) {
-                info.colors.insert(it.key(), color);
-            }
-        }
+    const QColor accent(bundledAccents().value(id).toString());
+    if (accent.isValid()) {
+        info.accent = accent;
     }
     return info;
 }

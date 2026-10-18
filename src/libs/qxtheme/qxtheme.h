@@ -7,7 +7,6 @@
 
 #include "qxtheme_global.h"
 
-#include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtGui/QColor>
 #include <QtGui/QPalette>
@@ -46,18 +45,18 @@ public:
     QString styleSheet; /*!< The style sheet to install; empty means none. */
 
     /*!
-     * The colour roles the style sheet was built from, keyed the way the sheet
-     * names them ("surface", "accent", "text-on-fill", ...).
+     * The colour the theme emphasizes with: the fill under a selected tab, under
+     * a focused dock label, under a window button the pointer is on - and the
+     * one the engine puts in the palette as QPalette::Highlight.
      *
-     * A style sheet only says what a control looks like, and only for the
-     * controls it names. A library that paints outside it - qxdock builds its
-     * own style sheet and needs the same colours - can otherwise get at these
-     * values only by parsing CSS, or by taking whatever the palette happens to
-     * hold, which knows about light and dark but not about a theme family.
-     * Empty for a theme registered without colours, which is a legitimate
-     * registration: such a theme leaves the palette in charge.
+     * A sheet cannot publish it. QPalette::Highlight is what a control asks for
+     * when it wants to know what this application emphasizes with, and a glyph
+     * painted on an emphasized surface asks QPalette::HighlightedText - the pair
+     * of that highlight, not a colour of its own. A theme that leaves the field
+     * invalid says nothing about emphasis and gets the engine's own highlight,
+     * which is the answer an application with no registered theme gets too.
      */
-    QMap<QString, QColor> colors;
+    QColor accent;
 };
 
 /*! The palette behind the light themes: light surfaces, dark text. */
