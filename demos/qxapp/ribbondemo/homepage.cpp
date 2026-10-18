@@ -210,10 +210,13 @@ HomePage::HomePage(QxThemeIcons *icons, QWidget *parent)
     RibbonMenu *menu = new RibbonMenu(this);
     QAction *itemAction = nullptr;
     {
-        QIcon itemIcon = QIcon(glyphPath(QStringLiteral(u"file")));
+        // The entries are built by the same helper as everything else on the page: a menu
+        // item is still an action, and a bare QIcon here would be the one thing on the
+        // ribbon that stayed black when the theme went dark.
         for (int i = 0; i < 3; ++i) {
-            itemAction = menu->addAction(itemIcon, tr("item %1").arg(i + 1));
-            itemAction->setObjectName(QStringLiteral("item %1").arg(i + 1));
+            const QString name = tr("item %1").arg(i + 1);
+            itemAction = createAction(name, QStringLiteral("file"), name);
+            menu->addAction(itemAction);
         }
     }
 
