@@ -99,8 +99,12 @@ int main(int argc, char *argv[])
                                    QStringLiteral("Wait <ms> after showing the window before "
                                                   "capturing."),
                                    QStringLiteral("ms"), QStringLiteral("1500"));
+    QCommandLineOption themeOption(QStringLiteral("theme"),
+                                   QStringLiteral("Start with the theme <id>, for example accent-dark."),
+                                   QStringLiteral("id"));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
+    parser.addOption(themeOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
     // switches (-platform, -style, ...), which the parser would reject as
@@ -143,6 +147,15 @@ int main(int argc, char *argv[])
     }
 
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
+
+    if (parser.isSet(themeOption)) {
+        // The window installs its default theme on the first turn of the event loop, so
+        // ask for this one behind that rather than racing it.
+        const QString themeId = parser.value(themeOption);
+        QTimer::singleShot(0, &w, [&w, themeId]() {
+            w.applyTheme(themeId);
+        });
+    }
 
     if (!screenshotFile.isEmpty()) {
         const int delay = parser.value(delayOption).toInt();

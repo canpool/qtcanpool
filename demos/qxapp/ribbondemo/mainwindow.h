@@ -49,6 +49,9 @@ public:
      */
     MainWindow(QWidget *par = nullptr, bool screenshotMode = false);
     ~MainWindow();
+
+    /*! Installs the theme \a themeId names, as picking it from the theme menu does. */
+    void applyTheme(const QString &themeId);
 private:
     void createCentralWidget();
     void createStatusBar();
@@ -67,7 +70,6 @@ private:
     QAction *createAction(const QString &text, const QString &iconurl, const QString &objName);
     QAction *createAction(const QString &text, const QString &iconurl);
     QAction *addThemeAction(QAction *action, const QString &themeId);
-    void applyTheme(const QString &themeId);
 
     void changeRibbonTheme(int index);
 
