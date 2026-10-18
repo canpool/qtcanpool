@@ -20,7 +20,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | 组件 | 命名空间 | 说明 |
 | :--- | :------- | :--- |
 | **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`），仅依赖 Qt Core |
-| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（classic / soft / flat / slate 四族，均跟随系统深浅色）、运行时切换、选择持久化 |
+| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（预置主题族见 [`res/themes/`](./res/themes)，每族明暗各一套、均跟随系统深浅色）、运行时切换、选择持久化 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
@@ -47,7 +47,7 @@ cmake -S doc -B build-docs
 cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 ```
 
-- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、组件、主题、AppShell、插件、迁移），与 API 一同发布
+- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、CI、组件、主题、AppShell、插件、迁移、贡献、发布、Doxygen、已知限制），与 API 一同发布
 
 ## 在线体验
 
@@ -68,7 +68,7 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 | `demos` | | 综合示例程序 |
 | `doc` | | 文档：Doxygen 站点源码（`Doxyfile.in`、`pages/` 指南、`qtcanpool-doxygen.css`）与设计文档 |
 | `examples` | | 控件级示例（`WITH_EXAMPLES`，默认随构建编译） |
-| `projects` | | 项目示例：`template` 最小应用模板、`consume` SDK 消费验证 |
+| `projects` | | 项目示例：`template` 最小应用模板、`consume` SDK 消费验证、`plugin` 外部插件验收 |
 | `scripts` | | 辅助脚本：`new-project` 生成新工程骨架、`push` 推送双远程 |
 | `src` | `libs` | 基础类库 |
 | | `modules` | 插件样板模块：`output` / `notebook` / `filetree`（K16 样板定位） |
@@ -80,13 +80,13 @@ cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 
 **自 3.0 起的基线：**
 
-- Qt **5.15** 及以上（主推 Qt 6.5 / 6.8 LTS）
+- Qt **5.15** 及以上（主推 Qt 6.8 / 6.12 LTS）
 - C++17
 - CMake 3.16+（推荐最新版本）
 
-**历史测试环境**（2.x 时期验证，3.0 不再保证）：
+**已验证环境**（本地与 CI 构建矩阵，随 CI 演进）：
 
-- Qt 6.8.1 / 6.5.3 / 5.15.2（MinGW / MSVC，64bit）；**最低支持 Qt 5.15**（决策 K1，4.3 起 5.14 及更早的兼容分支已删除）
+- Qt 6.12.0 / 6.8.1 / 5.15.2（MinGW / MSVC，64bit）；**最低支持 Qt 5.15**（决策 K1，4.3 起 5.14 及更早的兼容分支已删除）
 - 其它环境未测试，推荐使用 [Qt LTS](https://download.qt.io/official_releases/qt/) 版本
 
 ## 构建
@@ -109,7 +109,7 @@ ctest --test-dir build -C Release --output-on-failure
 - 各功能开关（`WITH_DEMOS`、`WITH_TESTS`、`WITH_DOCS` 等）可通过 `cmake -S . -B build -LH` 查看
 - `-DWITH_DOCS=ON` 会把文档站点目标 `docs` 一并加入主构建（只需 Doxygen）；只想要文档时用上面的 `cmake -S doc -B build-docs`
 - 亦可使用 Qt Creator 直接打开根目录 `CMakeLists.txt`
-- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）、`QxWindowDemo`（无边框窗口：自绘标题栏 + 窗口材质）、`IdeShellDemo`（插件化外壳：宿主不认识任何模块）
+- 编译出的 demo 位于构建目录的 `bin/`（Windows）或 `libexec/qtproject/`（其它平台），例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`（应用外壳：导航 + 页面 + 停靠 + 主题 + 布局持久化）、`QxWindowDemo`（无边框窗口：自绘标题栏 + 窗口材质）、`IdeShellDemo`（插件化外壳：宿主不认识任何模块）；其中 `IdeShellDemo` 显式指定了输出目录，各平台都在 `bin/`
 
 安装与下游消费：
 
@@ -120,7 +120,7 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 ```
 
 下游工程 `find_package(QtCanpool)` 后可直接链接 `QtCanpool::qxcore` / `QtCanpool::qxribbon` / `QtCanpool::qxapp` 等目标；
-仓库内 `projects/consume` 是最小下游示例，vcpkg / Conan 骨架见 `ports/`（未经 CI 验证）。
+仓库内 `projects/consume` 是最小下游示例，打包骨架见 `ports/qtcanpool/`（vcpkg）与根目录 `conanfile.py`（Conan）（未经 CI 验证）。
 
 ## 路线图
 
@@ -148,13 +148,13 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 ## 开发规范
 
 - C++ 风格：[Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html)、[Qt 编程风格与规范](https://blog.csdn.net/qq_35488967/article/details/70055490)
-- 源文件编码：全英文源文件采用 UTF-8；包含中文的采用 UTF-8 with BOM
+- 源文件编码：一律**不带 BOM 的 UTF-8**（含中文的同样不带 BOM；MSVC 侧由根 `CMakeLists.txt` 的 `/utf-8` 开关保证按 UTF-8 解码，细节见 [贡献指南](doc/pages/contributing.md)）
 - **代码中的注释一律使用英文**（文档等 `.md` 文件不拘）
 - 代码格式化：随仓库提供 [`.clang-format`](./.clang-format)（C++17），CI 中作为强制门禁
 - Git 提交格式（**自 3.0 起**）：`type(scope): subject`，以区分早期提交格式
   - 提交信息一律使用**英文**（subject 与正文）
   - `type`：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`
-  - `scope`：受影响范围，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qxplugin` / `project` / `ci` / `test` / `docs`
+  - `scope`：受影响范围，完整清单见 [贡献指南](doc/pages/contributing.md)，如 `qxcore` / `qxtheme` / `qxribbon` / `qxdock` / `qxwindow` / `qxapp` / `qxplugin` / `themes` / `modules` / `project` / `ci` / `test` / `docs`
   - 示例：`feat(qxribbon): add ribbon gallery group`、`fix(qxwindow): fix taskbar coverage on secondary screen`
   - 早期提交格式参考：[git 知：提交格式](https://blog.csdn.net/canpool/article/details/126005367)
 
@@ -174,28 +174,17 @@ cmake --install build --config Release --prefix <安装目录> --component Devel
 
 ## 示例
 
-- **dockdemo** —— 可停靠窗口示例：多种停靠布局、自动隐藏、拖拽重组、XML 布局存取，以及深浅主题下自动着色的内置图标。
-- **ribbondemo** —— Ribbon 风格界面示例：菜单栏 / 页 / 分组与主题切换。
+综合示例在 [`demos/`](./demos)（`WITH_DEMOS`，默认随构建编译），控件级示例在 [`examples/`](./examples)（`WITH_EXAMPLES`，默认随构建编译），构建与运行见上文「构建」一节。
 
-**ideshell** —— 插件化外壳示例：宿主不认识任何模块（构建目标 `IdeShellDemo`）。
-
-**appshell** —— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（<https://canpool.github.io/qtcanpool/demo/>），构建：`cmake --preset qt6 && cmake --build --preset qt6`。
-
-**qxwindow** —— 无边框窗口示例（构建目标 `QxWindowDemo`）：窗口代理 `setup` 装到窗口上，标题栏、菜单栏与四个系统按钮全部由示例自己搭，并演示整套窗口材质（Windows 的 DWM blur / acrylic / mica / mica alt，macOS 的毛玻璃）。
-
-## 应用案例
-
-**MyCAD** —— 基于 [FreeCAD](https://github.com/FreeCAD/FreeCAD)-1.0.0 源码集成 QxRibbon 组件的作品，旨在实现 FreeCAD 的现代化界面（Ribbon 风格）。
+- **RibbonDemo**（`demos/qxapp/ribbondemo`）—— Ribbon 风格界面示例：菜单栏 / 页 / 分组与主题切换。
+- **DockDemo**（`demos/qxapp/dockdemo`）—— 可停靠窗口示例：多种停靠布局、自动隐藏、拖拽重组、XML 布局存取，以及深浅主题下自动着色的内置图标。
+- **AppShellDemo**（`demos/qxapp/appshell`）—— 应用外壳示例（导航轨 + 页面栈 + 停靠区 + 状态栏 + 布局持久化），也是 WebAssembly 在线演示的载体（见「在线体验」）。
+- **IdeShellDemo**（`demos/qxapp/ideshell`）—— 插件化外壳示例：宿主不认识任何模块。
+- **QxWindowDemo**（`demos/qxwindow`）—— 无边框窗口示例：窗口代理 `setup` 装到窗口上，标题栏、菜单栏与四个系统按钮全部由示例自己搭，并演示整套窗口材质（Windows 的 DWM blur / acrylic / mica / mica alt，macOS 的毛玻璃）。
 
 ## 快速体验
 
 下载源码，使用 Qt Creator 打开根目录 `CMakeLists.txt`，在目标中选择 `RibbonDemo`、`DockDemo`、`AppShellDemo`、`QxWindowDemo` 或 `IdeShellDemo` 运行即可体验（命令行构建见上文「构建」一节）。
-
-## 扩展
-
-本仓库未来将只维护核心库，其它库将以独立的 `qtcanpool-LIBNAME` 仓库维护，可通过 `qtcanpool` 标签检索：
-
-![extend](./doc/pics/extend.png)
 
 ## 赞助
 

@@ -9,7 +9,7 @@
 
 - **格式**：Conventional Commits —— `type(scope): subject`。**提交信息与代码注释一律英文**（`.md` 不限）。
 - **type**：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`。
-- **scope**：`qxcore` / `qxtheme` / `qwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库。
+- **scope**：`qxcore` / `qxtheme` / `qxwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库。
 - **原子提交**：一笔一件事。
 - **每笔提交前必做**：重新构建 + ctest 全绿 + clang-format 过改动文件。
 - **两远程**：`origin` = gitee、`github`；一笔推两远程。
