@@ -218,6 +218,15 @@ Feature
   tintedIcon() rasterises the asset once per device pixel ratio QIcon may ask for,
   so a vector mask stays sharp on a high dpi screen.
 
+- RibbonManager::setupFactory() never leaves the manager without a factory.
+  Passing null used to store null, and every ribbon element created after that
+  goes through the RibbonElementFactory macro - which dereferences what
+  factory() returns - so uninstalling the factory crashed the next element the
+  library made, WindowButtonGroup included. Null now puts the default factory
+  back, and passing the factory that is already installed is a no-op rather
+  than deleting the one it was about to store.
+  tst_RibbonFactoryAndManager::setupFactoryNullPutsTheDefaultBack
+
 0.12.2
 ---
 Cleanup

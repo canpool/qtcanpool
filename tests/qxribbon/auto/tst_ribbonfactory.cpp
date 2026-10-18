@@ -33,6 +33,7 @@ private slots:
     void createHideGroupButton();
     void managerIsASingleton();
     void setupFactoryInstallsAndReplaces();
+    void setupFactoryNullPutsTheDefaultBack();
 };
 
 void tst_RibbonFactoryAndManager::factoryStartsWithADefaultStyleOption()
@@ -101,6 +102,32 @@ void tst_RibbonFactoryAndManager::setupFactoryInstallsAndReplaces()
     // `installed` is dangling from here on and must not be touched again.
     manager->setupFactory(new RibbonFactory());
     QVERIFY(manager->factory() != installed);
+    QVERIFY(manager->factory()->getRibbonStyleOption().titleBarHeight() > 0);
+}
+
+void tst_RibbonFactoryAndManager::setupFactoryNullPutsTheDefaultBack()
+{
+    RibbonManager *manager = RibbonManager::instance();
+
+    RibbonFactory *installed = new RibbonFactory();
+    installed->getRibbonStyleOption().setTitleBarHeight(50);
+    manager->setupFactory(installed);
+
+    // Uninstalling puts the default factory back rather than leaving the manager
+    // without one: RibbonElementFactory and RibbonElementStyleOpt are macros that
+    // walk through factory(), so a null there would crash the next ribbon element
+    // the library creates - WindowButtonGroup included.
+    manager->setupFactory(Q_NULLPTR);
+    QVERIFY(manager->factory() != Q_NULLPTR);
+    QVERIFY(manager->factory() != installed);
+    QVERIFY(manager->factory()->getRibbonStyleOption().titleBarHeight() > 0);
+    QVERIFY(RibbonElementStyleOpt.titleBarHeight() > 0);
+
+    // Reinstalling the factory that is already installed is a no-op, not a
+    // use-after-free: setupFactory() deletes the factory it replaces.
+    RibbonFactory *current = manager->factory();
+    manager->setupFactory(current);
+    QCOMPARE(manager->factory(), current);
     QVERIFY(manager->factory()->getRibbonStyleOption().titleBarHeight() > 0);
 }
 

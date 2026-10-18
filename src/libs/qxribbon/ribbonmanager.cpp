@@ -33,10 +33,13 @@ RibbonFactory *RibbonManager::factory()
 
 void RibbonManager::setupFactory(RibbonFactory *factory)
 {
+    if (factory == m_factory) {
+        return;
+    }
     if (m_factory) {
         delete m_factory;
     }
-    m_factory = factory;
+    m_factory = factory ? factory : new RibbonFactory();
 }
 
 QX_RIBBON_END_NAMESPACE
