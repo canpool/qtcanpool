@@ -15,6 +15,18 @@ Fixed
   a pixel above every title beside it - a File button that visibly does not sit on
   the tabs' line. tst_RibbonBar::applicationButtonSharesTheTabRow is the check, in
   both tab-row styles.
+- The ribbon's minimize button is painted from the palette, and says what it does.
+  It asked the style for SP_TitleBarShadeButton, and a platform style draws that
+  standard icon in black whatever the palette says, so on a dark sheet it was the
+  one glyph left black on black; it also carried no tooltip, being an icon and
+  nothing else. updateMinimumButtonIcon() paints the mask in ButtonText now, the
+  way the gallery's scroll arrows and the group's option button already did, and
+  RibbonBar::event() repaints it on PaletteChange so that a theme switch reaches it
+  too. The tooltip is "Minimize the Ribbon", or "Pin the Ribbon" while minimized.
+  It reads the bar's palette rather than the button's: the repaint runs from the
+  bar's PaletteChange, where the bar already carries the new palette and the button
+  may not have inherited it yet. tst_RibbonBar::minimumButtonFollowsThePalette is
+  the check, in both directions of a palette change.
 - RibbonScreenTip resolves its colours again every time it is shown, instead of
   naming palette() roles inside its style sheet. A style sheet resolves those
   roles when the widget is polished, and the tip is one instance that lives for

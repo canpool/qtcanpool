@@ -12,6 +12,7 @@
 #include "ribbonmanager.h"
 #include "ribbontabbar.h"
 #include "ribbonquickaccessbar.h"
+#include "ribbonutils.h"
 
 #include <QAbstractButton>
 #include <QAction>
@@ -268,9 +269,23 @@ void RibbonBarPrivate::updateMinimumButtonIcon()
     if (m_minimumPageButton) {
         QAction *action = m_minimumPageButton->defaultAction();
         if (action) {
-            action->setIcon(q->style()->standardIcon(m_minimized ? QStyle::SP_TitleBarUnshadeButton
-                                                                 : QStyle::SP_TitleBarShadeButton,
-                                                     0, m_minimumPageButton));
+            // A mask painted in the palette's text colour, like the gallery's scroll
+            // arrows and the group's option button. The stock SP_TitleBarShadeButton
+            // this used to ask for is black whatever the palette says, so on a dark
+            // sheet the button was the one glyph that stayed invisible; painted from
+            // the palette it follows a theme switch, which the PaletteChange arm of
+            // RibbonBar::event() re-runs this for.
+            //
+            // The bar's palette and not the button's: this runs from the bar's own
+            // PaletteChange, where the bar already carries the new palette and the
+            // button may not have inherited it yet.
+            const QColor color = q->palette().color(QPalette::ButtonText);
+            action->setIcon(tintedIcon(m_minimized ? QStringLiteral(":/qxribbon/res/arrow_down.png")
+                                                   : QStringLiteral(":/qxribbon/res/arrow_up.png"),
+                                       color));
+            // The button is an icon and nothing else, so the tooltip is the only place
+            // that says what it does.
+            action->setToolTip(m_minimized ? RibbonBar::tr("Pin the Ribbon") : RibbonBar::tr("Minimize the Ribbon"));
         }
     }
 }
@@ -1923,6 +1938,13 @@ bool RibbonBar::event(QEvent *event)
     // notification arrives as an event on every widget instead.
     case QEvent::ApplicationFontChange: {
         d->onFontChanged();
+    } break;
+    case QEvent::PaletteChange: {
+        // The minimize button is the only glyph this class paints from a mask, so it
+        // is the only one that has to be repainted here; the gallery, the group
+        // option button and the quick access bar all re-tint their own icons from
+        // their own changeEvent().
+        d->updateMinimumButtonIcon();
     } break;
     case QEvent::StyleChange: {
         // A style sheet decides how wide a tab is - the shipped themes pad

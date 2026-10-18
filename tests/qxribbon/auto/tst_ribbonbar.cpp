@@ -5,6 +5,7 @@
 #include "tst_global.h"
 
 #include "qxribbon/ribbonbar.h"
+#include "qxribbon/ribbonbuttongroup.h"
 #include "qxribbon/ribbonpage.h"
 #include "qxribbon/ribbonpagecontext.h"
 #include "qxribbon/ribbonquickaccessbar.h"
@@ -12,7 +13,10 @@
 
 #include <QAbstractButton>
 #include <QAction>
+#include <QColor>
 #include <QCoreApplication>
+#include <QImage>
+#include <QPalette>
 #include <QEventLoop>
 #include <QMenu>
 #include <QScopedPointer>
@@ -55,6 +59,7 @@ private slots:
     void noSelectionCostsNoRoom();
     void tabBarFollowsTheTheme();
     void contextMenu();
+    void minimumButtonFollowsThePalette();
 };
 
 void tst_RibbonBar::applicationButton()
@@ -505,6 +510,59 @@ void tst_RibbonBar::contextMenu()
     QSignalSpy spy(rb.quickAccessBar(), &RibbonQuickAccessBar::customizeDialogRequested);
     customizeAction->trigger();
     QCOMPARE(spy.count(), 1);
+}
+
+/*!
+ * The button that folds the ribbon away.
+ *
+ * It is an icon-only button, so its glyph is the palette's: the stock style icon
+ * this used to ask for is black whatever the palette says, which made it the one
+ * glyph that disappeared on a dark sheet. The tooltip is asserted with it because
+ * an icon-only button has nothing else to name it.
+ */
+void tst_RibbonBar::minimumButtonFollowsThePalette()
+{
+    RibbonBar rb;
+    QVERIFY(!rb.haveShowMinimumButton());
+
+    rb.showMinimumButton(true);
+    QVERIFY(rb.haveShowMinimumButton());
+
+    QToolButton *button = rb.cornerButtonGroup(Qt::BottomRightCorner)->findChild<QToolButton *>();
+    QVERIFY(button);
+    QAction *action = button->defaultAction();
+    QVERIFY(action);
+
+    // Both states name what a click does, and the two names differ.
+    QVERIFY(!action->toolTip().isEmpty());
+    const QString expandedTip = action->toolTip();
+    const QImage expandedGlyph = action->icon().pixmap(16, 16).toImage();
+    QVERIFY(!expandedGlyph.isNull());
+
+    rb.setMinimized(true);
+    QVERIFY(!action->toolTip().isEmpty());
+    QVERIFY(action->toolTip() != expandedTip);
+    const QImage foldedGlyph = action->icon().pixmap(16, 16).toImage();
+    QVERIFY(!foldedGlyph.isNull());
+    // Folded and unfolded point opposite ways, so they cannot be the same raster.
+    QVERIFY(foldedGlyph != expandedGlyph);
+
+    // The same state painted from a light and from a dark palette: only the tint
+    // differs, which is the whole point of drawing the glyph from the palette.
+    QPalette dark = rb.palette();
+    dark.setColor(QPalette::ButtonText, QColor(Qt::white));
+    rb.setPalette(dark);
+    const QImage onDark = action->icon().pixmap(16, 16).toImage();
+    QVERIFY(onDark != foldedGlyph);
+
+    QPalette light = rb.palette();
+    light.setColor(QPalette::ButtonText, QColor(Qt::black));
+    rb.setPalette(light);
+    QVERIFY(action->icon().pixmap(16, 16).toImage() != onDark);
+
+    // Hide it again: the corner group goes back to having no minimum button.
+    rb.showMinimumButton(false);
+    QVERIFY(!rb.haveShowMinimumButton());
 }
 
 TEST_ADD(tst_RibbonBar)
