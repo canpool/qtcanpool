@@ -7,9 +7,14 @@
 
 #include "qxtheme.h"
 
+#include <QtCore/QObject>
+#include <QtCore/QSize>
+#include <QtCore/QString>
 #include <QtGui/QIcon>
 #include <QtGui/QPalette>
 #include <QtGui/QPixmap>
+
+class QAction;
 
 QX_THEME_BEGIN_NAMESPACE
 
@@ -68,6 +73,66 @@ QX_THEME_EXPORT QPixmap themedPixmap(const QString &filePath, QPalette::ColorRol
 /*! themedPixmap() at several sizes, as one icon. */
 QX_THEME_EXPORT QIcon themedIcon(const QString &filePath, QPalette::ColorRole role = QPalette::WindowText,
                                  const QSize &size = QSize());
+
+class QxThemeIconsPrivate;
+
+/*!
+ * The other half of the job: painting the icons again once the palette moved.
+ *
+ * themedIcon() answers with the colour in force at the moment it is called, and
+ * an answer given once is a fixed colour from then on - which is no better than
+ * shipping a black glyph when the theme can change under it. This object keeps
+ * what it would need to answer again: it takes the actions an application hands
+ * it, paints each one's icon from the palette, and repaints them when the
+ * application palette changes, which is what a theme switch does.
+ *
+ * Nothing is repainted unless an application asks for it to be, so a program
+ * that never changes theme pays nothing. Watching for the change is automatic -
+ * QApplication::setPalette() announces it, and the application object is where
+ * this object listens - while refresh() is there for a palette replaced in a way
+ * Qt does not announce, or for an icon file that changed underneath.
+ *
+ * @code
+ * auto *icons = new QxThemeIcons(this);
+ * icons->add(saveAction, QStringLiteral(":/icons/save.svg"), QPalette::ButtonText);
+ * @endcode
+ */
+class QX_THEME_EXPORT QxThemeIcons : public QObject
+{
+    Q_OBJECT
+public:
+    /*! Listens for palette changes on the application object, which has to exist. */
+    explicit QxThemeIcons(QObject *parent = Q_NULLPTR);
+    ~QxThemeIcons() override;
+
+    /*!
+     * Paints \a action's icon from \a filePath in the colour \a role names now,
+     * and remembers all of it so refresh() can do the same again.
+     *
+     * Adding an action that is already known replaces what was remembered for it
+     * rather than binding it twice. A null \a action is ignored.
+     */
+    void add(QAction *action, const QString &filePath, QPalette::ColorRole role = QPalette::WindowText,
+             const QSize &size = QSize());
+    /*!
+     * Stops keeping \a action up to date; its icon is left as it is. True when
+     * it was bound.
+     */
+    bool remove(QAction *action);
+    /*! How many actions are being kept up to date. */
+    int count() const;
+    /*! Forgets every action; the icons are left as they are. */
+    void clear();
+
+public Q_SLOTS:
+    /*! Repaints every remembered action's icon from the palette now in force. */
+    void refresh();
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+private:
+    Q_DISABLE_COPY(QxThemeIcons)
+    QX_DECLARE_PRIVATE(QxThemeIcons)
+};
 
 QX_THEME_END_NAMESPACE
 

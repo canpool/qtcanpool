@@ -9,8 +9,11 @@
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthemepalette.h"
 
+#include <QAction>
 #include <QApplication>
 #include <QColor>
+#include <QCoreApplication>
+#include <QEvent>
 #include <QIcon>
 #include <QImage>
 #include <QPalette>
@@ -52,6 +55,16 @@ QString writeGlyph(const QTemporaryDir &dir, const QString &name)
     return path;
 }
 
+/*! The colour an action's icon is actually painted in, taken from its middle. */
+QColor iconColor(const QAction *action, const QSize &size = QSize(24, 24))
+{
+    const QPixmap pixmap = action->icon().pixmap(size);
+    if (pixmap.isNull()) {
+        return QColor();
+    }
+    return pixmap.toImage().pixelColor(size.width() / 2, size.height() / 2);
+}
+
 }   // namespace
 
 /*!
@@ -90,6 +103,9 @@ private slots:
     void tintedIconIsEmptyForAFileThatIsNotThere();
     void themedPixmapTakesTheColourFromThePalette();
     void themedIconFollowsThePalette();
+    void iconsFollowThePalette();
+    void iconsCanBeRefreshedOnRequest();
+    void iconsForgetAnActionThatIsGone();
 private:
     void resetSettings();
 
@@ -527,6 +543,99 @@ void tst_QxTheme::themedPixmapTakesTheColourFromThePalette()
 
     QCOMPARE(glyph.toImage().pixelColor(12, 12), role);
     QCOMPARE(other.toImage().pixelColor(12, 12), QApplication::palette().color(QPalette::Highlight));
+}
+
+/*!
+ * Painting an icon once fixes its colour, and a fixed colour is exactly what a
+ * theme switch breaks. QxThemeIcons is the piece that answers again: it has to
+ * repaint on the palette change an application announces by replacing its
+ * palette, without the application naming the icons a second time.
+ */
+void tst_QxTheme::iconsFollowThePalette()
+{
+    const QString path = writeGlyph(m_dir, QStringLiteral("glyph-bound.png"));
+    QVERIFY(!path.isEmpty());
+
+    const QColor before(0x11, 0x22, 0x33);
+    const QColor after(0xaa, 0xbb, 0xcc);
+    const QPalette saved = QApplication::palette();
+
+    QPalette palette = saved;
+    palette.setColor(QPalette::ButtonText, before);
+    QApplication::setPalette(palette);
+
+    QxThemeIcons icons;
+    QAction action(nullptr);
+    icons.add(&action, path, QPalette::ButtonText, QSize(24, 24));
+    const QColor painted = iconColor(&action);
+
+    palette.setColor(QPalette::ButtonText, after);
+    QApplication::setPalette(palette);
+    // What QApplication::setPalette() announces. Sent here explicitly so the
+    // case says something about the filter and not about which widget tree
+    // happens to be on screen.
+    QEvent change(QEvent::ApplicationPaletteChange);
+    QCoreApplication::sendEvent(QCoreApplication::instance(), &change);
+    const QColor repainted = iconColor(&action);
+    QApplication::setPalette(saved);
+
+    QCOMPARE(painted, before);
+    QCOMPARE(repainted, after);
+}
+
+/*! refresh() is the way out when the palette was replaced without an announcement. */
+void tst_QxTheme::iconsCanBeRefreshedOnRequest()
+{
+    const QString path = writeGlyph(m_dir, QStringLiteral("glyph-refresh.png"));
+    QVERIFY(!path.isEmpty());
+
+    const QColor after(0x0a, 0x0b, 0x0c);
+    const QPalette saved = QApplication::palette();
+    QPalette palette = saved;
+    palette.setColor(QPalette::ButtonText, after);
+
+    QxThemeIcons icons;
+    QAction first(nullptr);
+    QAction second(nullptr);
+    icons.add(&first, path, QPalette::ButtonText, QSize(24, 24));
+    icons.add(&second, path, QPalette::ButtonText, QSize(24, 24));
+    QCOMPARE(icons.count(), 2);
+
+    QApplication::setPalette(palette);
+    icons.refresh();
+    const QColor firstColor = iconColor(&first);
+    const QColor secondColor = iconColor(&second);
+    QApplication::setPalette(saved);
+
+    QCOMPARE(firstColor, after);
+    QCOMPARE(secondColor, after);
+}
+
+/*!
+ * A binding is not a reference the application has to manage: an action deleted
+ * while its icon is being kept up to date must not be painted again, and must
+ * not be counted.
+ */
+void tst_QxTheme::iconsForgetAnActionThatIsGone()
+{
+    const QString path = writeGlyph(m_dir, QStringLiteral("glyph-dropped.png"));
+    QVERIFY(!path.isEmpty());
+
+    QxThemeIcons icons;
+    auto *action = new QAction(nullptr);
+    icons.add(action, path, QPalette::WindowText, QSize(24, 24));
+    QCOMPARE(icons.count(), 1);
+
+    delete action;
+    icons.refresh();
+    QCOMPARE(icons.count(), 0);
+
+    // Forgetting on purpose leaves the icon alone but stops keeping it current.
+    QAction other(nullptr);
+    icons.add(&other, path, QPalette::WindowText, QSize(24, 24));
+    QVERIFY(icons.remove(&other));
+    QCOMPARE(icons.count(), 0);
+    QVERIFY(!icons.remove(&other));
 }
 
 /*! The icon is the same answer at several sizes, and follows the role as well. */

@@ -12,7 +12,18 @@ Feature
   than by tracking one. QxRibbon and QxDock keep the routines they already had -
   neither library depends on this one, and pointing them at qxtheme would put it
   under both - so what the three share is the rule in doc/pages/icons.md and the
-  gate that checks it, not an implementation. tst_QxTheme::tintedPixmapRepaintsTheGlyph
+  gate   that checks it, not an implementation. tst_QxTheme::tintedPixmapRepaintsTheGlyph
+- QxThemeIcons: keeps the actions an application hands it painted from the
+  palette, and repaints them when the palette is replaced - which is what a
+  theme switch does. Painting an icon once fixes its colour, and a fixed colour
+  is exactly what a theme switch breaks, so an application that asked once and
+  stopped asking was no better off than one that shipped a black glyph. add()
+  paints immediately and remembers what it would need to answer again; the
+  palette change is watched on the application object, so nothing has to be
+  announced by hand, and refresh() is there for a palette replaced in a way Qt
+  does not announce. An action destroyed while its icon is being kept up to date
+  is dropped rather than painted into. Nothing is repainted unless an
+  application asked for it to be. tst_QxTheme::iconsFollowThePalette
 
 0.2.0
 ---

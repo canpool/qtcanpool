@@ -4,9 +4,13 @@
  **/
 #include "qxthemeicon.h"
 
-#include <QtGui/QGuiApplication>
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
+#include <QAction>
+#include <QCoreApplication>
+#include <QEvent>
+#include <QGuiApplication>
+#include <QImage>
+#include <QPainter>
+#include <QPointer>
 
 QX_THEME_BEGIN_NAMESPACE
 
@@ -94,6 +98,114 @@ QPixmap themedPixmap(const QString &filePath, QPalette::ColorRole role, const QS
 QIcon themedIcon(const QString &filePath, QPalette::ColorRole role, const QSize &size)
 {
     return tintedIcon(filePath, roleColor(role), size);
+}
+
+/*! What has to be remembered to paint one action's icon again. */
+struct IconBinding {
+    QPointer<QAction> action;
+    QString filePath;
+    QPalette::ColorRole role;
+    QSize size;
+};
+
+class QxThemeIconsPrivate
+{
+public:
+    QX_DECLARE_PUBLIC(QxThemeIcons)
+
+    QList<IconBinding> bindings;
+};
+
+QxThemeIcons::QxThemeIcons(QObject *parent)
+    : QObject(parent)
+{
+    QX_INIT_PRIVATE(QxThemeIcons)
+
+    // The application object is the one place a palette change is announced
+    // regardless of which widget tree is on screen, which is why the filter goes
+    // there rather than on the actions: an action is not an event target at all.
+    if (QCoreApplication::instance()) {
+        QCoreApplication::instance()->installEventFilter(this);
+    }
+}
+
+QxThemeIcons::~QxThemeIcons()
+{
+    if (QCoreApplication::instance()) {
+        QCoreApplication::instance()->removeEventFilter(this);
+    }
+    QX_FINI_PRIVATE()
+}
+
+void QxThemeIcons::add(QAction *action, const QString &filePath, QPalette::ColorRole role, const QSize &size)
+{
+    Q_D(QxThemeIcons);
+    if (!action) {
+        return;
+    }
+    remove(action);
+
+    IconBinding binding;
+    binding.action = action;
+    binding.filePath = filePath;
+    binding.role = role;
+    binding.size = size;
+    d->bindings.append(binding);
+
+    action->setIcon(themedIcon(filePath, role, size));
+}
+
+bool QxThemeIcons::remove(QAction *action)
+{
+    Q_D(QxThemeIcons);
+    for (int i = 0; i < d->bindings.size(); ++i) {
+        if (d->bindings.at(i).action == action) {
+            d->bindings.removeAt(i);
+            return true;
+        }
+    }
+    return false;
+}
+
+int QxThemeIcons::count() const
+{
+    Q_D(const QxThemeIcons);
+    int live = 0;
+    for (const IconBinding &binding : d->bindings) {
+        if (!binding.action.isNull()) {
+            ++live;
+        }
+    }
+    return live;
+}
+
+void QxThemeIcons::clear()
+{
+    Q_D(QxThemeIcons);
+    d->bindings.clear();
+}
+
+void QxThemeIcons::refresh()
+{
+    Q_D(QxThemeIcons);
+    // Walking backwards so that dropping a binding for an action that was
+    // destroyed does not skip the one behind it.
+    for (int i = d->bindings.size() - 1; i >= 0; --i) {
+        const IconBinding binding = d->bindings.at(i);
+        if (binding.action.isNull()) {
+            d->bindings.removeAt(i);
+            continue;
+        }
+        binding.action->setIcon(themedIcon(binding.filePath, binding.role, binding.size));
+    }
+}
+
+bool QxThemeIcons::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == QCoreApplication::instance() && event->type() == QEvent::ApplicationPaletteChange) {
+        refresh();
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 QX_THEME_END_NAMESPACE
