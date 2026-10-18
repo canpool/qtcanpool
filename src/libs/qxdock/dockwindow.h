@@ -136,6 +136,12 @@ protected:
     void notifyDockAreaRelocation(QWidget *droppedWidget);
     void notifyFloatingWidgetDrop(DockFloatingContainer *floatingWidget);
 
+    /*!
+     * The window's focus controller, or null when DockManager::FocusHighlighting
+     * is off - the controller is the only thing that sets the "focused" property
+     * the sheet's focused rules ask for, so it is not constructed at all when
+     * nothing is going to read it.
+     */
     DockFocusController *dockFocusController() const;
 
     void restoreHiddenFloatingWidgets();

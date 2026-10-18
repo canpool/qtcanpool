@@ -5,16 +5,18 @@
         carried by the library. The images these sheets point at stay in qxdock,
         which is why the url(:/qxdock/res/images/...) paths need no rewriting.
 
-        Three fragments, not four sheets. One look has two independent
-        modifiers - DockManager::FocusHighlighting, and QX_DOCK_X11 (the only
-        thing in the tree that knows which desktop this is) - and writing the
-        four combinations out separately meant four copies of the same rules,
-        which had already drifted apart where a modifier replaces a rule instead
-        of adding one. base.css is the look; focus.css and x11.css are appended
-        by dockStyleSheet().
+        Two fragments, not four sheets. One look has one modifier left that a
+        sheet cannot decide for itself: QX_DOCK_X11 (the only thing in the tree
+        that knows which desktop this is). FocusHighlighting used to be the
+        second, and cost a fragment because it is a C++ fact a style sheet
+        cannot ask about - it is now a dynamic property on the widgets the rules
+        name ("focused" on the panel and the tab, "focusHighlighting" on the
+        title bar), so those rules travel in base.css and simply do not match
+        when the flag is off. base.css is the look; x11.css is appended by
+        dockStyleSheet().
 
         Named dockstyle rather than dock so it does not read as a theme family
-        beside res/themes/: this is one look in three pieces, not three looks to
+        beside res/themes/: this is one look in two pieces, not two looks to
         choose from, and a DockWindow without them is unstyled rather than
         differently styled.
 
@@ -25,7 +27,6 @@
     -->
     <qresource prefix="/">
         <file>dockstyle/base.css</file>
-        <file>dockstyle/focus.css</file>
         <file>dockstyle/x11.css</file>
     </qresource>
 </RCC>

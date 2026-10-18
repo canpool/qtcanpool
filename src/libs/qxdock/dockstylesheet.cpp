@@ -173,20 +173,22 @@ DockStyleColors DockStyleColors::resolved() const
 
 QString dockStyleSheet(const DockStyleColors &colors, bool focusHighlighting)
 {
-    // Three fragments in a fixed order: the look, then the two modifiers. The
-    // order is not cosmetic - where a modifier restates a rule instead of adding
-    // one, it has to come after the rule it restates.
+    // The focus treatment used to be a second fragment, appended or not
+    // according to this flag. It is part of base.css now: every one of those
+    // rules asks for an attribute that only exists when the flag is on, so the
+    // flag decides at match time instead of at assembly time and the parameter
+    // no longer changes the string. It is kept rather than dropped because this
+    // signature is published, and kept honest by the note in dockstylesheet.h:
+    // an application that does not want the focus treatment leaves the flag off,
+    // which is what turns both the rules and the focus controller off.
+    Q_UNUSED(focusHighlighting);
+
+    // Two fragments in a fixed order: the look, then the pieces an X11 desktop
+    // needs. The order is not cosmetic - where the fragment restates a rule
+    // instead of adding one, it has to come after the rule it restates.
     QString result = readFragment(QStringLiteral("base.css"));
     if (result.isEmpty()) {
         return QString();
-    }
-
-    if (focusHighlighting) {
-        const QString focus = readFragment(QStringLiteral("focus.css"));
-        if (focus.isEmpty()) {
-            return QString();
-        }
-        result += focus;
     }
 
 #if QX_DOCK_X11

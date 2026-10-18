@@ -2,9 +2,11 @@
  * The dock's structure: which widget owns which border, how a dynamic property
  * or a pseudo state changes that, and the sizes those decisions need.
  *
- * This is the part every build gets. focus.css adds the focused-tab treatment
- * and x11.css the desktop-specific pieces; see res/dockstyle.qrc for why the
- * three are fragments rather than four complete sheets.
+ * This is the part every build gets, and it carries the focused treatment too:
+ * every one of those rules asks for an attribute that only exists when
+ * DockManager::FocusHighlighting is on, so they simply never match without it.
+ * x11.css adds the desktop-specific pieces; see res/dockstyle.qrc for why the
+ * two are fragments rather than a sheet per combination.
  */
 
 /*****************************************************************************
@@ -366,4 +368,73 @@ QxDock--DockResizeHandle {
 
 #autoHideDockContainer[sideBarArea="3"] QxDock--DockResizeHandle {
     border-top: 1px solid {{divider}};
+}
+
+/*****************************************************************************
+ * Focus highlighting
+ *****************************************************************************/
+/*
+ * The focused treatment, in the same fragment as the rest because none of it can
+ * fire without DockManager::FocusHighlighting: the focus controller, which is
+ * the only thing that sets "focused", is constructed only when the flag is on,
+ * and DockTitleBar sets "focusHighlighting" on itself under the same condition.
+ * A flag that selects a *sheet* would need the sheet to be assembled by whoever
+ * knows the flag; a flag that selects a *property* lets the rules travel with
+ * the look they belong to - which is what a theme needs, since a style sheet
+ * cannot ask C++ anything.
+ */
+
+/* The two pixels the rule below paints are reserved on every title bar, so that
+   gaining the focus changes a colour rather than moving the panel's content
+   down by two pixels. */
+QxDock--DockTitleBar[focusHighlighting="true"] {
+    background: transparent;
+    border-bottom: 2px solid {{divider}};
+    padding-bottom: 0px;
+}
+
+QxDock--DockPanel[focused="true"] QxDock--DockTitleBar[focusHighlighting="true"] {
+    border-bottom: 2px solid {{accent}};
+}
+
+/* Focus related styling */
+QxDock--DockTab[focused="true"] {
+    background: {{accent}};
+    border-color: {{accent}};
+}
+
+/* The focused tab is filled with the highlight colour, so the two steps that
+   lift the button off the *window* colour would put a white block and then a
+   grey one on top of the accent. Over the accent the step goes the other way
+   round - a white wash, deeper on press - which is the same relationship the
+   pair in base.css has, with the surface swapped. */
+QxDock--DockTab[focused="true"]>#dockTabCloseButton:hover {
+    background: {{on-accent-hover}};
+}
+
+QxDock--DockTab[focused="true"]>#dockTabCloseButton:pressed {
+    background: {{on-accent-pressed}};
+}
+
+/* The focused tab wears the accent fill, so its label needs the text that goes
+   with that fill - and it takes two things to get it.
+
+   The selector: the [focused="true"] form ties with the [activeTab="true"] rule
+   in base.css on specificity (one attribute each, the same two type selectors)
+   and loses to it on order, Qt keeping the earlier of two equally specific
+   rules, so the label came out in the window text colour - black on the accent
+   in a light scheme. Naming both attributes outranks one; writing the two forms
+   as one comma-separated rule does not, because the list counts as its least
+   specific member and lands right back where it started.
+
+   The colour is a token rather than a palette role because QPalette cannot say
+   it through a style sheet: palette(highlightedtext) and palette(brighttext)
+   are the roles that mean "text on a highlight fill", and neither is among the
+   names a sheet's palette() lookup accepts - the declaration is dropped and the
+   label keeps whatever colour it had. on-accent is the dock's name for it, and
+   fromPalette() fills it from QPalette::HighlightedText, asked in C++ where the
+   role is available. The theme supplies the same colour the ribbon writes as
+   text-on-fill, which is how both surfaces end up agreeing. */
+QxDock--DockTab[activeTab="true"][focused="true"] QLabel {
+    color: {{on-accent}};
 }

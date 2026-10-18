@@ -32,6 +32,25 @@ Feature
   DockStyleColors are unrelated, so a caller either keeps the old call or names
   the set.
   tst_DockIconProvider::colorsReachTheGlyph
+- The focused treatment is selected by a dynamic property instead of by which
+  fragment the sheet was assembled from, so it lives in base.css with the rest of
+  the look. It had to be a fragment of its own because one of its rules is not
+  about focus at all: every title bar reserves the two pixels the focused one
+  paints in the accent, so that gaining the focus moves a colour and not the
+  panel's content - and that reservation is for every panel, focused or not,
+  which the focus state cannot express (a panel that has not been in focus yet
+  has no "focused" property at all, and would be the one panel that jumps).
+  DockTitleBar now sets "focusHighlighting" on itself when
+  DockManager::FocusHighlighting is on, and the sheet asks for it; the flag is
+  still what turns both that and the focus controller off, so an application that
+  never sets it gets none of the treatment, exactly as before.
+  What this buys is that the rules can travel with the look they belong to - a
+  theme can carry them, which a fragment chosen in C++ cannot be. The
+  focusHighlighting parameter of dockStyleSheet() no longer selects anything and
+  both values return the same sheet; it stays because the signature is published,
+  and its documentation says so.
+  tst_DockWindow::styleSheetIsReadFromTheApplication,
+  tst_DockTitleBar::reservesTheFocusRuleOnlyWhenTheFlagIsOn
 
 Bugfix
 - The buttons on an auto hide container's title bar kept the surface glyph
@@ -46,7 +65,7 @@ Bugfix
   tst_DockAutoHideContainer::glyphsFollowTheSurfaceOnShow
 
 Cleanup
-- The four dock style sheets became three fragments. They had been four complete
+- The four dock style sheets became two fragments. They had been four complete
   copies of one look - default, focus_highlighting, and the _linux pair - because
   the look has two independent modifiers (FocusHighlighting and the X11 desktop)
   and the four combinations were written out separately. Four copies of the same
@@ -54,10 +73,9 @@ Cleanup
   in the narrower of two selectors, the tabs-menu indicator and the tab icon size
   disagreed between variants, and the auto hide buttons' border was cleared on
   one platform only. The look is now res/dockstyle/base.css, appended by
-  focus.css when the flag is set and by x11.css on an X11 build, and
-  dockStyleSheet() joins them in that order. An application that listed the old
-  file names in its own .qrc - rather than building in res/dockstyle.qrc -
-  needs the three new ones.
+  x11.css on an X11 build, and dockStyleSheet() joins them in that order. An
+  application that listed the old file names in its own .qrc - rather than
+  building in res/dockstyle.qrc - needs the two new ones.
   Two differences are deliberate: the close button keeps its 1px hover border
   under focus highlighting, and the tab icon size is 16px in every variant (it
   used to be set in the focus sheets only). Both are the same rule stated once

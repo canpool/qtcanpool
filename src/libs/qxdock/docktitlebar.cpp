@@ -359,6 +359,20 @@ DockTitleBar::DockTitleBar(DockPanel *parent)
     setObjectName("dockTitleBar");
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setFocusPolicy(Qt::NoFocus);
+
+    // The sheet gives every title bar the two-pixel rule that the focused
+    // panel's title bar then paints in the accent, so that gaining the focus
+    // moves a colour and not the panel's content. That has to be reserved for
+    // every panel and only when focus is highlighted at all - and "focus is
+    // highlighted" is a fact about the configuration, not about this panel, so
+    // the sheet cannot read it off the focus state: a panel that has not been
+    // in focus yet carries no "focused" property at all and would be the one
+    // panel without the reservation. The dock states it here instead, which is
+    // also what lets the focus treatment sit in the same fragment as the rest
+    // of the look rather than in a sheet of its own.
+    if (DockManager::testConfigFlag(DockManager::FocusHighlighting)) {
+        setProperty("focusHighlighting", true);
+    }
 }
 
 DockTitleBar::~DockTitleBar()

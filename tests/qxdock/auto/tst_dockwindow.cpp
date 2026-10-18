@@ -164,8 +164,7 @@ void tst_DockWindow::carriesNoStyleSheetOfItsOwn()
 
 /*!
  * The dock style sheet is the application's to build in, and the library only
- * reads it - so what this pins is that reading it is possible at all and that
- * the focus modifier is actually read.
+ * reads it - so what this pins is that reading it is possible at all.
  *
  * The test links qxdock and builds res/dockstyle.qrc in, exactly as an application
  * does; see tests/qxdock/CMakeLists.txt. Without that resource the library has
@@ -175,29 +174,29 @@ void tst_DockWindow::carriesNoStyleSheetOfItsOwn()
 void tst_DockWindow::styleSheetIsReadFromTheApplication()
 {
     const QString plain = dockStyleSheet(false);
-    const QString focused = dockStyleSheet(true);
 
     QVERIFY2(!plain.isEmpty(), "res/dockstyle.qrc is not built in, or the sheet is empty");
-    QVERIFY(!focused.isEmpty());
-    // FocusHighlighting has to select between two sheets rather than decorate
-    // one: a sheet that ignored the flag would leave the frame around the
-    // focused dock widget un-drawn and say nothing.
-    QVERIFY2(plain != focused, "the focus highlighting flag does not select a sheet");
-
-    // The sheet is one base fragment plus the modifiers, not two copies of the
-    // same three hundred rules. That is what makes the pair worth reading as a
-    // pair: whatever the flag adds starts exactly where the base ends.
-    QVERIFY2(focused.startsWith(plain), "the focused sheet is not the base sheet plus a fragment");
     QVERIFY(plain.contains(QStringLiteral("QxDock--DockSplitter::handle")));
-    QVERIFY2(!plain.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")),
-             "the base fragment already carries the focused-tab rules");
-    QVERIFY(focused.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")));
+
+    // The focused treatment is no longer a fragment the flag appends, so both
+    // values are the same sheet - what the flag does now is decide at match
+    // time, through properties the dock sets only when it is on.
+    QCOMPARE(dockStyleSheet(true), plain);
+
+    // ...which is only true while every one of those rules asks for a property.
+    // A rule that fired on the class alone would dress an application that
+    // never asked for focus highlighting in the focused look.
+    QVERIFY(plain.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")));
+    QVERIFY(plain.contains(QStringLiteral("QxDock--DockTitleBar[focusHighlighting=\"true\"]")));
+    // The line-anchored form, because "#autoHideDockContainer QxDock--DockTitleBar"
+    // ends in the same characters and is a rule of its own.
+    QVERIFY2(!plain.contains(QStringLiteral("\nQxDock--DockTitleBar {")),
+             "the focused title bar rule is not guarded by a property");
 
     // Every placeholder in the fragments is resolved: an unresolved one makes
     // Qt drop the declaration without a word, which is the one failure this
     // sheet cannot show by looking at it.
     QVERIFY2(!plain.contains(QStringLiteral("{{")), "a dock sheet placeholder was left unresolved");
-    QVERIFY2(!focused.contains(QStringLiteral("{{")), "a dock sheet placeholder was left unresolved");
 
     // A field the caller sets reaches the sheet, and one left invalid falls
     // back to the palette rather than becoming an empty declaration.

@@ -19,9 +19,9 @@ QX_DOCK_BEGIN_NAMESPACE
  * what colour anything is. Every declaration that used to name a palette role
  * or a literal now carries a placeholder, and dockStyleSheet() substitutes one
  * of these fields for it. That is what lets a theme decide the dock's colours
- * without restating the dock's three hundred rules: the application maps its
- * theme's roles onto this set (qxapp::dockStyleColors() does it for the bundled
- * themes) and hands the result in.
+ * without restating the dock's three hundred rules: the application fills in
+ * the fields it cares about and hands the result in, and the rest fall back to
+ * fromPalette().
  *
  * Two kinds of field look alike but are not:
  *
@@ -89,10 +89,14 @@ public:
  * ribbon themes and are now built in by the applications that want them - see
  * res/dockstyle.qrc, which is to the dock what res/themes.qrc is to the ribbon.
  *
- * What comes back is three fragments joined: base.css always, focus.css when
- * \a focusHighlighting is set, and x11.css on an X11 build. They are fragments
- * rather than four complete sheets because the two modifiers are independent
- * and the four hand-written combinations had already drifted apart.
+ * What comes back is two fragments joined: base.css always, and x11.css on an
+ * X11 build. The focused treatment belongs to base.css rather than to a
+ * fragment of its own, because every rule in it asks for a dynamic property -
+ * "focused" on a panel or a tab, "focusHighlighting" on the title bar - and
+ * none of those is ever set unless DockManager::FocusHighlighting is on. The
+ * rules therefore travel with the look they belong to and fail to match when
+ * the flag is off, which is what a theme needs: a style sheet cannot ask C++
+ * what the flag is.
  *
  * They are handed out rather than applied on purpose. A sheet can only be read
  * from the executable that carries it, so which fragments are right is a
@@ -104,11 +108,13 @@ public:
  * specific rules, and the dock's rules are single type selectors - the same
  * specificity as a theme's QWidget rule - so the dock has to come last to win.
  *
- * \a focusHighlighting picks whether the focused dock widget gets a frame and
- * its tab the accent fill; it is the same DockManager::FocusHighlighting the
- * library used to read for itself. QX_DOCK_X11 picks the x11 fragment, which
- * carries the extra rules an X11 desktop needs and is the only thing in the
- * library that knows which desktop that is.
+ * \a focusHighlighting no longer selects anything, and both values return the
+ * same sheet - see above. It is kept because this signature is published. The
+ * way to get a dock without the focus treatment is to leave
+ * DockManager::FocusHighlighting off, which is also what keeps the focus
+ * controller from being constructed at all. QX_DOCK_X11 picks the x11 fragment,
+ * which carries the extra rules an X11 desktop needs and is the only thing in
+ * the library that knows which desktop that is.
  *
  * Returns an empty string when a fragment is missing or a placeholder is left
  * unresolved - a correct build always has both - and says so on stderr. An

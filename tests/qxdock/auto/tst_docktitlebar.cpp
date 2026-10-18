@@ -19,6 +19,7 @@
  */
 #include "tst_global.h"
 
+#include "qxdock/dockmanager.h"
 #include "qxdock/dockpanel.h"
 // docktitlebar.h only forward declares DockTabBar, and the parent check below
 // needs the real type.
@@ -36,6 +37,7 @@ class tst_DockTitleBar : public QObject
 private slots:
     void everyPartExistsWhateverTheConfiguration();
     void belongsToItsPanel();
+    void reservesTheFocusRuleOnlyWhenTheFlagIsOn();
 };
 
 void tst_DockTitleBar::everyPartExistsWhateverTheConfiguration()
@@ -76,6 +78,43 @@ void tst_DockTitleBar::belongsToItsPanel()
     // The tab bar is built for that panel - the constructor argument, not the
     // QWidget parent: the layout takes ownership, so the parent is the title bar.
     QCOMPARE(bar.tabBar()->parentWidget(), &bar);
+}
+
+/*!
+ * The sheet reserves the two pixels the focused title bar paints in the accent,
+ * and it can only ask about that through a property: the reservation is for
+ * every panel, focused or not, so the focus state cannot be what selects it -
+ * a panel that has not been in focus yet carries no "focused" property at all,
+ * and would be the one panel whose content jumps when it gains the focus.
+ *
+ * So the property has to follow the flag, and only the flag. An application
+ * that never asks for focus highlighting gets none of it.
+ */
+void tst_DockTitleBar::reservesTheFocusRuleOnlyWhenTheFlagIsOn()
+{
+    DockWindow window;
+    DockWidget *dw = new DockWidget(QStringLiteral("focus rule"));
+    QVERIFY(window.addDockWidget(Qx::CenterDockWidgetArea, dw));
+
+    DockPanel *panel = dw->dockPanel();
+    QVERIFY(panel);
+
+    const bool wasOn = DockManager::testConfigFlag(DockManager::FocusHighlighting);
+
+    DockManager::setConfigFlag(DockManager::FocusHighlighting, false);
+    {
+        DockTitleBar bar(panel);
+        QVERIFY2(!bar.property("focusHighlighting").isValid(),
+                 "the focus rule is reserved without DockManager::FocusHighlighting");
+    }
+
+    DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
+    {
+        DockTitleBar bar(panel);
+        QCOMPARE(bar.property("focusHighlighting").toBool(), true);
+    }
+
+    DockManager::setConfigFlag(DockManager::FocusHighlighting, wasOn);
 }
 
 TEST_ADD(tst_DockTitleBar)
