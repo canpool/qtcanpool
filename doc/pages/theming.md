@@ -82,13 +82,14 @@ themes->setTheme(QStringLiteral("soft-dark"));
 
 ## 运行时切换为什么不需要遍历控件
 
-应用主题只做两件事：`QApplication::setPalette()` 与 `QApplication::setStyleSheet()`。
+应用主题做三件事：色方案（见下一节）、`QApplication::setPalette()` 与
+`QApplication::setStyleSheet()`。
 Qt 随后会向所有部件派发 `QEvent::StyleChange`，而 `qxribbon` 与 `qxdock` 早已有为该事件
 准备的既有处理（例如 `RibbonBar` 收到后重排整条 Ribbon —— 标签条的宽度是把它自己的标签
 加起来算出来的，换一张表标签变宽了就得重算；`DockTab` 重刷样式）。
 因此引擎不需要知道有哪些窗口存在。
 
-⚠️ **这两步的顺序是调色板先、样式表后，不能反过来**。应用级样式表会让 Qt 给被它命中的
+⚠️ **这三步的顺序是色方案先、调色板次之、样式表最后，不能反过来**。应用级样式表会让 Qt 给被它命中的
 每个部件换上**该部件自己的**调色板，此后 `QApplication::setPalette()` 就再也到不了它们；
 样式表最后落下，装它的这一步同时就是让这些部件按新调色板重新 polish 的时刻。
 先表后板在「亮 → 暗」时往往看不出来（样式表本身把颜色写成了暗色），在「暗 → 亮」时就会
@@ -97,6 +98,33 @@ Qt 随后会向所有部件派发 `QEvent::StyleChange`，而 `qxribbon` 与 `qx
 
 也正因为是 **应用级**下发：把样式表贴在窗口自己身上会盖掉应用的那张，
 这正是 4.5 之前 Ribbon 区不跟随主题的原因。窗口不带主题，应用下发的才到得了 Ribbon。
+
+## 调色板之外：平台色方案
+
+调色板和样式表说的是**应用画什么**；另一半是**平台替应用画什么**——窗口边框、非客户区，
+以及 Win11 上 `windows11` 样式自己那套控件。这一半由 `QStyleHints::colorScheme()` 决定，
+和调色板**没有关系**：
+
+> Qt 6.7 起，Win11 上的默认样式是 `windows11`。它按**系统**的深浅色从自己的明、暗两张表取色
+> （`WINUI3ColorsDark` 那一组），**从不读调色板**；窗口边框也看色方案
+> （`QWindowsWindow::setDarkBorder`）。于是在暗色桌面上装一套浅色主题，得到的是浅色的 Ribbon
+> 配深色的输入框、深色的滚动条和深色的标题栏——而且没有任何调色板条目能改到它们。
+
+主题本来就回答了这个问题（注册项的 `dark`），引擎只是把同一句话也说给平台听：
+
+```cpp
+QxTheme::applyColorScheme(true);      // 这套主题按暗色画
+QxTheme::followSystemColorScheme();   // 或者：交还给系统
+```
+
+`QxThemeManager` 自己会调：`setTheme()` 时按主题的 `dark` 下发；**跟随系统时不覆盖**，而是交还
+平台——跟随靠的正是 `colorSchemeChanged`，钉死色方案等于把这条信号掐掉。
+
+- 只有 Qt 6.8+ 有 `QStyleHints::setColorScheme()`。6.8 以下（以及不接受这个请求的平台）这两个
+  函数是空实现，那时唯一的口子是整条换掉样式：`windowsvista` 按调色板画，`ribbondemo` 就是这么
+  兼容 6.7 的。
+- 手写 `setPalette` + `setStyleSheet` 的应用照上面的顺序加一行即可，不必用引擎。
+- 色方案也要在**窗口显示之前**定下来：它是窗口第一次绘制就用到的值，装晚了会先画一帧系统色。
 
 ## 跟随系统深浅色
 
@@ -113,6 +141,8 @@ themes->setFollowSystemTheme(true);
 - 之后系统切换时自动跟随（Qt 6.5+ 通过 `QStyleHints::colorSchemeChanged`）；
 - **持久化的是"跟随"这个开关本身，而不是它推导出的主题**，因此用户此后仍能显式选一个主题；
 - 在不报告系统色方案的平台上，可以手动调用 `refreshSystemTheme()` 重新评估。
+- 跟随期间引擎**不钉死色方案**，而是把它交还平台（见上一节）；钉死等于让
+  `colorSchemeChanged` 不再触发，跟随会停在原地。
 
 ## 自定义样式表
 

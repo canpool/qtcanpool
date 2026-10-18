@@ -615,3 +615,29 @@ plain `QMainWindow` + 同一个样式表可以复现（与 ribbon 无关），ri
 **要改变它需要什么**：Qt 侧统一 `QMdi::ControllerWidget` 的 `sizeHint()` 与
 `PM_TitleBarHeight` 的口径（Qt 6 已经不再画这套标题栏按钮，所以只在 5.15 上体现）；
 或在宿主里替换 `QMdiArea` 的那套角标（自绘 + 失去 Qt 的窗口菜单联动）。
+
+---
+
+## 样式表在窗口显示之后才装上，快速访问栏会少一次布局（a late style sheet leaves the quick access bar one pass behind）
+
+> **（4.6 C1e）新增记录**：查「Win11 暗色桌面上主题与系统色不一致」时撞见的布局时序问题，
+> 与主题无关，是 `qxribbon` 自己的。
+
+**现象**：窗口先 `show()`、应用级样式表之后才装时，`RibbonQuickAccessBar` 的宽度停在
+**装表之前**的 `sizeHint()` 上，比它装表后的 `sizeHint()` 小几个像素，不足的部分由父控件裁掉。
+`windows11` 样式下实测容器 173 / hint 176（内层 153 / 156），最后一个按钮（customize and save）
+在图上直接消失；`windowsvista` 下装表前后 hint 恰好相同，于是这一路一直看不出来。
+
+**成因**：`RibbonBarPrivate::resizeInTabBarBelowStyle()` 给 QAB 的宽度就是它的 `sizeHint()`，而
+QToolBar 的 `sizeHint()` 依赖它**当前**的宽度（放不下的项进溢出菜单后 hint 变小），所以用旧 hint
+摆完之后不会再自动算一轮。样式表落地时本类确实排了一次重排（`RibbonBar::event()` 的
+`StyleChange` 分支），但那次跑在子控件按新样式 polish **之前**，拿到的还是旧 hint。
+
+**现状**：`ribbondemo` 把默认主题改到构造期装（显示之前），因此不再出现；运行中切主题实测正常。
+要把「任何时候装表都稳」补上，需要一个「hint 变了就再来一轮」的判据——与角控件那道闸门同一类，
+但要把 `LayoutRequest` 分支从「只看角控件」扩成「看所有尺寸不由本类决定的子控件」，并先证明不会
+自激（QToolBar 的 hint 依赖当前宽度，正是自激的典型形状）。
+
+**要改变它需要什么**：给 `RibbonQuickAccessBarContainer` 一个不依赖当前宽度的 `preferredWidth()`
+（内容宽度 + 容器自身留白），让 `resizeInTabBar*Style()` 用它而不是 `sizeHint()`；或在 QAB 的
+`LayoutRequest` 上单独加一条闸门，与角控件那条并列。
