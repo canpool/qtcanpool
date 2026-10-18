@@ -11,7 +11,7 @@
  * DockContainer
  *****************************************************************************/
 QxDock--DockContainer {
-    background: palette(window);
+    background: {{surface}};
 }
 
 /*****************************************************************************
@@ -25,14 +25,14 @@ QxDock--DockContainer>QSplitter {
    stands, and the narrower form dropped the fill for one that stood elsewhere
    (the focus sheets used it, and the two variants disagreed on this rule only). */
 QxDock--DockSplitter::handle {
-    background-color: palette(dark);
+    background-color: {{divider}};
 }
 
 /*****************************************************************************
  * DockPanel
  *****************************************************************************/
 QxDock--DockPanel {
-    background: palette(window);
+    background: {{surface}};
 }
 
 QxDock--TitleBarButton {
@@ -59,8 +59,8 @@ QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
  * DockTab and close button styling
  *****************************************************************************/
 QxDock--DockTab {
-    background: palette(window);
-    border-color: palette(light);
+    background: {{surface}};
+    border-color: {{divider}};
     border-style: solid;
     border-width: 0 1px 0 0;
     padding: 0 0px;
@@ -68,30 +68,29 @@ QxDock--DockTab {
 }
 
 QxDock--DockTab[activeTab="true"] {
-    background: qlineargradient(spread : pad, x1 : 0, y1 : 0, x2 : 0, y2 : 0.5, stop : 0 palette(window), stop:1 palette(light));
-    /*background: palette(highlight);*/
+    background: qlineargradient(spread : pad, x1 : 0, y1 : 0, x2 : 0, y2 : 0.5, stop : 0 {{tab-active-top}}, stop:1 {{tab-active-bottom}});
 }
 
-/* The label of an inactive tab: the same text, dimmed. palette(dark) used to
-   say that, and it says it the wrong way round in a dark scheme - QPalette::Dark
-   is derived from the window colour (window.darker(150)), so on a dark surface
-   it is a near-black that the label disappears into. palette(placeholder) is
-   the role Qt gives to "this text, but quieter", and it is dimmed from the
-   scheme's own text colour, so it reads as muted in both.
+/* The label of an inactive tab: the same text, dimmed. This used to be
+   palette(dark), which says it the wrong way round in a dark scheme -
+   QPalette::Dark is derived from the window colour (window.darker(150)), so on
+   a dark surface it is a near-black the label disappears into. muted-text is
+   the dock's own name for "this text, but quieter"; the theme fills it from the
+   scheme's disabled text colour, so it reads as muted in both.
 
    The transparent background is not decoration. A rule that matches a widget
    makes the style sheet paint that widget's box, and with no background to
    paint it falls back on the style's own window colour - which is not the tab's
-   (windows11 draws its dark window #1f1f1f, the tab is palette(window)). In a
+   (windows11 draws its dark window #1f1f1f, the tab is the surface token). In a
    dark scheme that showed up as a darker panel down the middle of every tab;
    handing the pixel back to the tab is what removes it. */
 QxDock--DockTab QLabel {
     background: transparent;
-    color: palette(placeholder);
+    color: {{muted-text}};
 }
 
 QxDock--DockTab[activeTab="true"] QLabel {
-    color: palette(foreground);
+    color: {{text}};
 }
 
 #dockTabCloseButton {
@@ -102,34 +101,28 @@ QxDock--DockTab[activeTab="true"] QLabel {
     qproperty-iconSize: 16px;
 }
 
-/* The hover and press fills were rgba(0, 0, 0, 16/24/48) - a black wash. Over
-   a dark tab that is 9 percent of black on #292929, four levels of difference:
-   the button gives no feedback at all. Two palette roles are used instead, and
-   they step in opposite directions, which is what lets the two states tell each
-   other apart without the sheet knowing which scheme is in force: hover lifts
-   the button off the surface, press settles it back in.
-
-   palette(light) is one step further out than palette(midlight), and on a
-   near-white window the two are the same colour anyway - lighter() clamps both
-   to #ffffff - so the further one costs nothing there and gives a dark scheme
-   twice the step. palette(light) used to be the *press* fill, which was wrong
-   the other way round: it steps towards the light like the hover fill does, so
-   press and hover came out identical. */
+/* The hover and press fills used to be rgba(0, 0, 0, 16/24/48) - a black wash
+   that over a dark tab is 9 percent of black, four levels of difference, and so
+   gave no feedback at all. They are the hover and pressed tokens now, and the
+   relationship the theme has to keep is that they step in opposite directions:
+   hover lifts the button off the surface, press settles it back in. Naming them
+   also stops the sheet from having to know which scheme is in force, which is
+   what the palette roles it used before were standing in for. */
 #dockTabCloseButton:hover {
-    border: 1px solid rgba(0, 0, 0, 32);
-    background: palette(light);
+    border: 1px solid {{divider}};
+    background: {{hover}};
 }
 
 #dockTabCloseButton:pressed {
-    background: palette(mid);
+    background: {{pressed}};
 }
 
 /*****************************************************************************
  * DockWidget
  *****************************************************************************/
 QxDock--DockWidget {
-    background: palette(light);
-    border-color: palette(light);
+    background: {{surface-raised}};
+    border-color: {{surface-raised}};
     border-style: solid;
     border-width: 1px 0 0 0;
 }
@@ -161,50 +154,50 @@ QxDock--DockSideTab {
 }
 
 QxDock--DockSideTab:hover {
-    color: palette(highlight);
+    color: {{accent-text}};
 }
 
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="0"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="2"] {
-    border-top: 6px solid rgba(0, 0, 0, 48);
+    border-top: 6px solid {{subtle}};
 }
 
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="1"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="3"] {
-    border-bottom: 6px solid rgba(0, 0, 0, 48);
+    border-bottom: 6px solid {{subtle}};
 }
 
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="0"],
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="2"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="0"][activeTab="true"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="2"][activeTab="true"] {
-    border-top: 6px solid palette(highlight);
+    border-top: 6px solid {{accent}};
 }
 
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="1"],
 QxDock--DockSideTab:hover[iconOnly="false"][sideBarArea="3"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="1"][activeTab="true"],
 QxDock--DockSideTab[iconOnly="false"][sideBarArea="3"][activeTab="true"] {
-    border-bottom: 6px solid palette(highlight);
+    border-bottom: 6px solid {{accent}};
 }
 
 /**
  * Auto hide tabs with icon only
  */
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="0"] {
-    border-top: 6px solid rgba(0, 0, 0, 48);
+    border-top: 6px solid {{subtle}};
 }
 
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="1"] {
-    border-left: 6px solid rgba(0, 0, 0, 48);
+    border-left: 6px solid {{subtle}};
 }
 
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="2"] {
-    border-right: 6px solid rgba(0, 0, 0, 48);
+    border-right: 6px solid {{subtle}};
 }
 
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="3"] {
-    border-bottom: 6px solid rgba(0, 0, 0, 48);
+    border-bottom: 6px solid {{subtle}};
 }
 
 /**
@@ -212,29 +205,29 @@ QxDock--DockSideTab[iconOnly="true"][sideBarArea="3"] {
  */
 QxDock--DockSideTab:hover[iconOnly="true"][sideBarArea="0"],
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="0"][activeTab="true"] {
-    border-top: 6px solid palette(highlight);
+    border-top: 6px solid {{accent}};
 }
 
 QxDock--DockSideTab:hover[iconOnly="true"][sideBarArea="1"],
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="1"][activeTab="true"] {
-    border-left: 6px solid palette(highlight);
+    border-left: 6px solid {{accent}};
 }
 
 QxDock--DockSideTab:hover[iconOnly="true"][sideBarArea="2"],
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="2"][activeTab="true"] {
-    border-right: 6px solid palette(highlight);
+    border-right: 6px solid {{accent}};
 }
 
 QxDock--DockSideTab:hover[iconOnly="true"][sideBarArea="3"],
 QxDock--DockSideTab[iconOnly="true"][sideBarArea="3"][activeTab="true"] {
-    border-bottom: 6px solid palette(highlight);
+    border-bottom: 6px solid {{accent}};
 }
 
 /*****************************************************************************
  * DockSideBar
  *****************************************************************************/
 QxDock--DockSideBar {
-    background: palette(window);
+    background: {{surface}};
     border: none;
     qproperty-spacing: 12;
 }
@@ -244,30 +237,30 @@ QxDock--DockSideBar {
 }
 
 QxDock--DockSideBar[sideBarArea="0"] {
-    border-bottom: 1px solid palette(dark);
+    border-bottom: 1px solid {{divider}};
 }
 
 QxDock--DockSideBar[sideBarArea="1"] {
-    border-right: 1px solid palette(dark);
+    border-right: 1px solid {{divider}};
 }
 
 QxDock--DockSideBar[sideBarArea="2"] {
-    border-left: 1px solid palette(dark);
+    border-left: 1px solid {{divider}};
 }
 
 QxDock--DockSideBar[sideBarArea="3"] {
-    border-top: 1px solid palette(dark);
+    border-top: 1px solid {{divider}};
 }
 
 /*****************************************************************************
  * DockAutoHideContainer
  *****************************************************************************/
 #autoHideDockContainer {
-    background: palette(window);
+    background: {{surface}};
 }
 
 #autoHideDockContainer QxDock--DockTitleBar {
-    background: palette(highlight);
+    background: {{accent}};
     padding: 0px;
     border: none;
 }
@@ -289,22 +282,22 @@ QxDock--DockSideBar[sideBarArea="3"] {
 }
 
 #autoHideDockContainer QxDock--DockTab QLabel {
-    color: #ffffff;
+    color: {{on-accent}};
 }
 
 #autoHideDockContainer QxDock--DockTab[activeTab="true"] QLabel {
-    color: #ffffff;
+    color: {{on-accent}};
 }
 
 /* White washes on the accent, the same relationship the focused tab's close
    button has: the two palette steps that lift the button off the window colour
    would read as grey blocks here. */
 #autoHideDockContainer QxDock--DockTab>#dockTabCloseButton:hover {
-    background: rgba(255, 255, 255, 60);
+    background: {{on-accent-hover}};
 }
 
 #autoHideDockContainer QxDock--DockTab>#dockTabCloseButton:pressed {
-    background: rgba(255, 255, 255, 92);
+    background: {{on-accent-pressed}};
 }
 
 /*
@@ -312,16 +305,17 @@ QxDock--DockSideBar[sideBarArea="3"] {
  * overwrite the #autoHideDockContainer QxDock--DockTitleBar rule
  */
 #autoHideDockContainer QxDock--DockPanel[focused="true"] QxDock--DockTitleBar {
-    background: palette(highlight);
+    background: {{accent}};
     padding: 0px;
     border: none;
 }
 
 #dockAutoHideTitleLabel {
     padding-left: 4px;
-    /* On the highlight fill, so the text has to be the one that reads on it -
-       see the focused tab label above for why that is not a palette() role. */
-    color: #ffffff;
+    /* On the accent fill, so the text has to be the colour that reads there -
+       see the focused tab label above for why the dock names that colour
+       itself. */
+    color: {{on-accent}};
 }
 
 /*****************************************************************************
@@ -340,11 +334,11 @@ QxDock--DockSideBar[sideBarArea="3"] {
 }
 
 #autoHideDockContainer QxDock--TitleBarButton:hover {
-    background: rgba(255, 255, 255, 60);
+    background: {{on-accent-hover}};
 }
 
 #autoHideDockContainer QxDock--TitleBarButton:pressed {
-    background: rgba(255, 255, 255, 96);
+    background: {{on-accent-pressed}};
 }
 
 /*****************************************************************************
@@ -355,21 +349,21 @@ QxDock--DockSideBar[sideBarArea="3"] {
  * DockResizeHandle
  *****************************************************************************/
 QxDock--DockResizeHandle {
-    background: palette(window);
+    background: {{surface}};
 }
 
 #autoHideDockContainer[sideBarArea="0"] QxDock--DockResizeHandle {
-    border-top: 1px solid palette(dark);
+    border-top: 1px solid {{divider}};
 }
 
 #autoHideDockContainer[sideBarArea="1"] QxDock--DockResizeHandle {
-    border-left: 1px solid palette(dark);
+    border-left: 1px solid {{divider}};
 }
 
 #autoHideDockContainer[sideBarArea="2"] QxDock--DockResizeHandle {
-    border-right: 1px solid palette(dark);
+    border-right: 1px solid {{divider}};
 }
 
 #autoHideDockContainer[sideBarArea="3"] QxDock--DockResizeHandle {
-    border-top: 1px solid palette(dark);
+    border-top: 1px solid {{divider}};
 }

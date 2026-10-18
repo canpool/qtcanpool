@@ -1,5 +1,28 @@
 0.4.0
 ---
+Feature
+- The dock sheets take their colours from a DockStyleColors instead of reading
+  palette() roles and literals inside the sheet. Every declaration that named a
+  colour now carries a placeholder, and the new overload
+  dockStyleSheet(const DockStyleColors &, bool) substitutes them; the existing
+  dockStyleSheet(bool) stays and renders with DockStyleColors::fromPalette() of
+  the application palette, which is what the sheet used to resolve to. An
+  application that maps a theme's roles onto the set gets the dock painted in
+  that theme; one that does not gets exactly what it had.
+  The set separates two things the sheet had been conflating: where a colour
+  sits in the dock (surface, divider, text, ...) and what goes on top of the
+  accent (onAccent and its two washes). The second is why #ffffff was a literal:
+  palette(highlightedtext) is not a name a style sheet's palette() lookup
+  accepts, but QPalette::HighlightedText is reachable from C++, which is where
+  fromPalette() asks for it. Two values flip direction on a dark window instead
+  of being a straight role lookup: the divider (a separator has to move away
+  from the surface) and the low contrast step under the side tab marks (a black
+  wash on a dark surface is no wash at all).
+  A field left invalid falls back per field, so a partial mapping still yields a
+  complete sheet; an unresolved placeholder refuses the whole sheet and says so,
+  rather than letting Qt drop the declaration silently.
+  tst_DockWindow::styleSheetIsReadFromTheApplication
+
 Cleanup
 - The four dock style sheets became three fragments. They had been four complete
   copies of one look - default, focus_highlighting, and the _linux pair - because

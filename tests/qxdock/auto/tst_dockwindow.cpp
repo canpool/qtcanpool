@@ -192,6 +192,42 @@ void tst_DockWindow::styleSheetIsReadFromTheApplication()
     QVERIFY2(!plain.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")),
              "the base fragment already carries the focused-tab rules");
     QVERIFY(focused.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")));
+
+    // Every placeholder in the fragments is resolved: an unresolved one makes
+    // Qt drop the declaration without a word, which is the one failure this
+    // sheet cannot show by looking at it.
+    QVERIFY2(!plain.contains(QStringLiteral("{{")), "a dock sheet placeholder was left unresolved");
+    QVERIFY2(!focused.contains(QStringLiteral("{{")), "a dock sheet placeholder was left unresolved");
+
+    // A field the caller sets reaches the sheet, and one left invalid falls
+    // back to the palette rather than becoming an empty declaration.
+    DockStyleColors colors;
+    colors.accent = QColor(1, 2, 3);
+    const QString custom = dockStyleSheet(colors, true);
+    QVERIFY(custom.contains(QStringLiteral("#010203")));
+    QVERIFY(!custom.contains(QStringLiteral(": ;")));
+    QVERIFY(!custom.contains(QStringLiteral(":;")));
+    QVERIFY(custom.contains(QStringLiteral("rgba(")));
+
+    // Two values fromPalette() does not take straight from a role: the text on
+    // an accent fill, which a style sheet cannot ask for, and the low contrast
+    // step, which has to flip direction on a dark window to stay visible.
+    QPalette dark;
+    dark.setColor(QPalette::Window, QColor(41, 41, 41));
+    dark.setColor(QPalette::Light, QColor(64, 64, 64));
+    dark.setColor(QPalette::Dark, QColor(16, 16, 16));
+    dark.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
+    QCOMPARE(DockStyleColors::fromPalette(dark).subtle, QColor(255, 255, 255, 48));
+    QCOMPARE(DockStyleColors::fromPalette(dark).onAccent, QColor(255, 255, 255));
+    // The separator steps away from the surface, whichever way that is.
+    QCOMPARE(DockStyleColors::fromPalette(dark).divider, QColor(64, 64, 64));
+
+    QPalette light;
+    light.setColor(QPalette::Window, QColor(245, 245, 245));
+    light.setColor(QPalette::Light, QColor(255, 255, 255));
+    light.setColor(QPalette::Dark, QColor(208, 208, 208));
+    QCOMPARE(DockStyleColors::fromPalette(light).subtle, QColor(0, 0, 0, 48));
+    QCOMPARE(DockStyleColors::fromPalette(light).divider, QColor(208, 208, 208));
 }
 
 void tst_DockWindow::addDockWidget_other()
