@@ -49,6 +49,22 @@ RibbonPageContext::RibbonPageContext(QWidget *parent)
     return page;
 }
 
+void RibbonPageContext::addPage(RibbonPage *page)
+{
+    Q_D(RibbonPageContext);
+    if (Q_NULLPTR == page) {
+        return;
+    }
+    // Everything addPage(title) does to the page it built, minus building it:
+    // the ribbon listens for pageAdded and shows what is announced.
+    page->markIsPageContext(true);
+    RibbonPageData pageData;
+    pageData.page = page;
+    d->pageDataList.append(pageData);
+    page->installEventFilter(this);
+    Q_EMIT pageAdded(page);
+}
+
 int RibbonPageContext::pageCount() const
 {
     Q_D(const RibbonPageContext);

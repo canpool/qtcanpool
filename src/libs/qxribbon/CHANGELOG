@@ -1,3 +1,13 @@
+Unreleased
+---
+Addition
+- RibbonPageContext::addPage(RibbonPage *) takes a page it did not build, the
+  counterpart of RibbonBar::addPage(RibbonPage *). Until now a context page could
+  only be the plain RibbonPage addPage(title) constructs, so a caller with its own
+  RibbonPage subclass had no way into a context tab. The overload does not take
+  ownership: the caller still decides when the page dies. tst_RibbonPageContext::
+  builtPage is the check.
+
 0.13.0
 ---
 Interface

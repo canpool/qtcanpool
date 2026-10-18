@@ -24,6 +24,18 @@ public:
     ~RibbonPageContext();
 
     RibbonPage *addPage(const QString &title);
+
+    /**
+     * @brief Takes a page that is already built into this context.
+     * @param page The page to take. A null page is ignored. The context does not
+     * take ownership, which is what lets a caller hand over a page of its own
+     * subclass and keep managing its lifetime exactly as it did before.
+     * @note The counterpart of RibbonBar::addPage(RibbonPage *). It marks the
+     * page as belonging to a context and announces it, exactly as addPage(title)
+     * does for the page it builds.
+     */
+    void addPage(RibbonPage *page);
+
     RibbonPage *page(int index);
 
     int pageCount() const;

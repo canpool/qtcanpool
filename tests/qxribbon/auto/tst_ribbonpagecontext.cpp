@@ -7,6 +7,8 @@
 #include "qxribbon/ribbonpagecontext.h"
 #include "qxribbon/ribbonpage.h"
 
+#include <QScopedPointer>
+
 QX_RIBBON_USE_NAMESPACE
 
 class tst_RibbonPageContext : public QObject
@@ -14,6 +16,7 @@ class tst_RibbonPageContext : public QObject
     Q_OBJECT
 private slots:
     void page();
+    void builtPage();
     void context();
     void signal();
 };
@@ -51,6 +54,37 @@ void tst_RibbonPageContext::page()
         titles += page->pageName() + ",";
     }
     QCOMPARE("page1,page3,", titles);
+}
+
+/*! addPage(RibbonPage *) is what lets a caller build the page - a subclass of its
+ * own, say - and still have the context show it. */
+void tst_RibbonPageContext::builtPage()
+{
+    RibbonPageContext pc;
+
+    // The caller keeps owning the page, so this is the caller deleting it.
+    QScopedPointer<RibbonPage> owned(new RibbonPage());
+    owned->setPageName(tr("built"));
+    pc.addPage(owned.data());
+    QCOMPARE(1, pc.pageCount());
+    QCOMPARE(owned.data(), pc.page(0));
+    QCOMPARE(true, owned->isPageContext());
+    QCOMPARE(tr("built"), pc.page(0)->pageName());
+
+    // A null page is ignored rather than counted, as elsewhere in the ribbon.
+    pc.addPage(nullptr);
+    QCOMPARE(1, pc.pageCount());
+
+    // The ribbon learns about pages through pageAdded, so the overload has to
+    // announce them exactly as addPage(title) does.
+    int added = 0;
+    connect(&pc, &RibbonPageContext::pageAdded, this, [&added, &owned](RibbonPage *page) {
+        ++added;
+        QCOMPARE(owned.data(), page);
+    });
+    pc.addPage(owned.data());
+    QCOMPARE(1, added);
+    QCOMPARE(2, pc.pageCount());
 }
 
 void tst_RibbonPageContext::context()
