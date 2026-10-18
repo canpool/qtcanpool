@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     // Read and order every plugin's metadata, start none of them. The window can
     // come up now, and the load order is already known for a manager UI.
     manager.resolvePlugins();
-    std::printf("after resolvePlugins(): started %d plugin(s)\n", log.size());
+    std::printf("after resolvePlugins(): started %d plugin(s)\n", static_cast<int>(log.size()));
 
     QStringList order;
     for (QxPluginSpec *s : manager.specs())

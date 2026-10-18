@@ -157,7 +157,10 @@ bool runDemo(const QString &executable, const QString &screenshotPath, const QSt
     }
 
     QFile logFile(logPath);
-    logFile.open(QIODevice::ReadOnly);
+    if (!logFile.open(QIODevice::ReadOnly)) {
+        error = QStringLiteral("the demo log could not be read (log at %1)").arg(logPath);
+        return false;
+    }
     const QString output = QString::fromLocal8Bit(logFile.readAll());
 
     if (process.exitStatus() != QProcess::NormalExit) {

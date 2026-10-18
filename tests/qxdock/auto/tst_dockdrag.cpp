@@ -25,6 +25,18 @@ public:
     using DockWindow::handleDockWidgetDrop;
 };
 
+// Qt 6.12's headers added the QPointF constructor and forward-deprecated the
+// QPoint one (removal scheduled for 6.16); the 6.8 leg has neither. So the
+// test builds whichever its Qt offers, and both legs stay warning-free.
+static QDragEnterEvent makeDragEnterEvent(const QPoint &pos, Qt::DropActions actions, const QMimeData *data)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
+    return QDragEnterEvent(QPointF(pos), actions, data, Qt::LeftButton, Qt::NoModifier);
+#else
+    return QDragEnterEvent(pos, actions, data, Qt::LeftButton, Qt::NoModifier);
+#endif
+}
+
 class tst_DockDrag : public QObject
 {
     Q_OBJECT
@@ -121,13 +133,13 @@ void tst_DockDrag::drop()
     // A drag is only let in when it carries one of our payloads.
     {
         QSharedPointer<QMimeData> data(DockDrag::createMimeData("dw2", "Dock 2"));
-        QDragEnterEvent enter(QPoint(5, 5), Qt::MoveAction, data.data(), Qt::LeftButton, Qt::NoModifier);
+        QDragEnterEvent enter = makeDragEnterEvent(QPoint(5, 5), Qt::MoveAction, data.data());
         wd.dragEnterEvent(&enter);
         QCOMPARE(enter.isAccepted(), true);
 
         QMimeData text;
         text.setText("nothing to do with docking");
-        QDragEnterEvent foreign(QPoint(5, 5), Qt::MoveAction, &text, Qt::LeftButton, Qt::NoModifier);
+        QDragEnterEvent foreign = makeDragEnterEvent(QPoint(5, 5), Qt::MoveAction, &text);
         wd.dragEnterEvent(&foreign);
         QCOMPARE(foreign.isAccepted(), false);
 
