@@ -15,6 +15,12 @@
 
 qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的控件。
 
+## 界面预览
+
+同一份 RibbonDemo 界面，在 `soft-light` 与 `soft-dark` 两套主题下（其它主题族见 [`res/themes/`](./res/themes)）：
+
+![RibbonDemo 的亮暗主题](./doc/pics/ribbondemo.png)
+
 ## 主要组件
 
 | 组件 | 命名空间 | 说明 |
