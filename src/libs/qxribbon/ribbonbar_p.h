@@ -142,6 +142,8 @@ public:
     int minimumWidthInTabBarBelowStyle() const;
     int minimumWidthInTabBarInlineStyle() const;
 
+    bool cornerWidgetsNeedLayout() const;
+
     int calcMinTabBarWidth() const;
     int mainBarHeight() const;
 
@@ -187,7 +189,6 @@ public:
     bool m_minimized;
     bool m_titleVisible;
     bool m_pageContextCoverTab;
-    bool m_layoutRequest;
     bool m_blockResize;
 
     bool m_keyTipMode;                 ///< Whether keytip badge mode is active

@@ -6,6 +6,7 @@
 
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonbuttongroup.h"
+#include "qxribbon/ribbonmainwindow.h"
 #include "qxribbon/ribbonpage.h"
 #include "qxribbon/ribbonpagecontext.h"
 #include "qxribbon/ribbonquickaccessbar.h"
@@ -16,12 +17,15 @@
 #include <QColor>
 #include <QCoreApplication>
 #include <QImage>
+#include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QPalette>
 #include <QEventLoop>
 #include <QMenu>
 #include <QScopedPointer>
 #include <QTabBar>
 #include <QToolButton>
+#include <QTextEdit>
 #include <QWidget>
 
 QX_RIBBON_USE_NAMESPACE
@@ -60,6 +64,10 @@ private slots:
     void tabBarFollowsTheTheme();
     void contextMenu();
     void minimumButtonFollowsThePalette();
+    void cornerWidgetTakesItsRoom();
+    void cornerWidgetArrivesAfterTheBarIsUp();
+    void cornerWidgetInstalledThroughTheMenuBar();
+    void maximizedMdiChildUsesTheCorners();
 };
 
 void tst_RibbonBar::applicationButton()
@@ -563,6 +571,227 @@ void tst_RibbonBar::minimumButtonFollowsThePalette()
     // Hide it again: the corner group goes back to having no minimum button.
     rb.showMinimumButton(false);
     QVERIFY(!rb.haveShowMinimumButton());
+}
+
+/*!
+ * The corner widgets are QMenuBar's, and both layout functions place them: the
+ * left one on the title row, the right one on the tab row in TabBarBelowStyle (the
+ * ribbon shares nothing with the title there) and on the title row in
+ * TabBarInlineStyle.
+ *
+ * Nothing in this tree sets one - what sets them in practice is Qt: while an MDI
+ * child is maximized, QMainWindow moves the child's icon and its window buttons
+ * into the menu bar, which for a ribbon window is this bar. The geometry below is
+ * the contract those widgets get: the width they ask for, inside the bar, on the
+ * row the style puts them on, and clear of the tab strip.
+ */
+void tst_RibbonBar::cornerWidgetTakesItsRoom()
+{
+    for (RibbonBar::RibbonStyle style : {RibbonBar::TabBarBelowStyle, RibbonBar::TabBarInlineStyle}) {
+        QWidget window;
+        window.resize(900, 400);
+
+        RibbonBar rb(&window);
+        rb.addPage(QStringLiteral("page1"));
+        rb.addPage(QStringLiteral("page2"));
+        rb.setRibbonStyle(style);
+
+        // Created without a parent, the way a caller writes it: the setter has to
+        // show them, or a hidden widget takes no part in the layout.
+        QToolButton *left = new QToolButton();
+        left->setText(QStringLiteral("L"));
+        QToolButton *right = new QToolButton();
+        right->setText(QStringLiteral("R"));
+        rb.setCornerWidget(left, Qt::TopLeftCorner);
+        rb.setCornerWidget(right, Qt::TopRightCorner);
+
+        window.show();
+        rb.resizeRibbonNow();
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+        QVERIFY(left->isVisible());
+        QVERIFY(right->isVisible());
+        QCOMPARE(left->width(), left->sizeHint().width());
+        QCOMPARE(right->width(), right->sizeHint().width());
+
+        QVERIFY(rb.rect().contains(left->geometry()));
+        QVERIFY(rb.rect().contains(right->geometry()));
+        QVERIFY(left->geometry().right() < right->geometry().left());
+
+        QTabBar *bar = rb.findChild<QTabBar *>(QStringLiteral("qx_RibbonTabBar"));
+        QVERIFY(bar);
+        QVERIFY(!left->geometry().intersects(bar->geometry()));
+        QVERIFY(!right->geometry().intersects(bar->geometry()));
+
+        // The right corner ends where the bar's margin does, on both styles.
+        QCOMPARE(right->geometry().right(), rb.width() - 1 - rb.contentsMargins().right());
+
+        if (style == RibbonBar::TabBarBelowStyle) {
+            // Two rows: left shares the title row with the icon and the quick access
+            // bar, right shares the tab row with the application button.
+            QVERIFY(left->geometry().top() < rb.titleBarHeight());
+            QVERIFY(right->geometry().top() >= rb.titleBarHeight());
+
+            // The quick access bar follows the left corner widget in that row.
+            QWidget *quickAccess = rb.quickAccessBar()->parentWidget();
+            if (quickAccess && !quickAccess->isHidden()) {
+                QVERIFY(left->geometry().right() < quickAccess->geometry().left());
+            }
+        } else {
+            // One row: both sit in it, and the left one is put right of the tabs.
+            QVERIFY(left->geometry().top() < rb.titleBarHeight());
+            QVERIFY(right->geometry().top() < rb.titleBarHeight());
+            QVERIFY(left->geometry().left() > bar->geometry().right());
+        }
+    }
+}
+
+/*!
+ * A corner widget installed after the bar is up, and one that changes its size
+ * later on.
+ *
+ * setCornerWidget() is QMenuBar's and not virtual, so there are two things it
+ * cannot do for this bar: a widget created without a parent arrives hidden (a
+ * hidden widget takes no part in the layout), and nothing asks the bar to lay
+ * itself out again. Both leave the widget at the position and size it was born
+ * with until something else resizes the bar.
+ *
+ * A size change is the same defect one step later: the ribbon gives a corner
+ * widget the width it asks for, so a new size hint makes that placement stale
+ * without any resize of the bar at all.
+ */
+void tst_RibbonBar::cornerWidgetArrivesAfterTheBarIsUp()
+{
+    RibbonBar rb;
+    rb.addPage(QStringLiteral("page"));
+    rb.resize(700, rb.height());
+    rb.show();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    QToolButton *corner = new QToolButton();
+    corner->setText(QStringLiteral("A"));
+    rb.setCornerWidget(corner, Qt::TopLeftCorner);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    QVERIFY(corner->isVisible());
+    QVERIFY(corner->x() < 100);   // at the left end, not left where a new child sits
+    QCOMPARE(corner->width(), corner->sizeHint().width());
+
+    const int narrow = corner->sizeHint().width();
+    corner->setText(QStringLiteral("a much longer label"));
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QVERIFY(corner->sizeHint().width() > narrow);
+    QCOMPARE(corner->width(), corner->sizeHint().width());
+}
+
+/*!
+ * A corner widget installed the way Qt installs one - through QMenuBar.
+ *
+ * setCornerWidget() is not virtual, so QMdiArea, and anything else that treats a
+ * ribbon window as a QMainWindow, reaches QMenuBar's implementation. That one lays
+ * the widget out itself: across the whole height of the menu bar, centred on the
+ * left and top-aligned on the right (Qt 5 and 6, QMenuBarPrivate::updateGeometries).
+ * A menu bar can use both placements - its corners own its whole height - and a
+ * ribbon cannot, because its rows are shorter than the bar. The widget keeps that
+ * placement too: it equals the size the widget asks for, so a check on the size
+ * alone says nothing is wrong.
+ *
+ * What this checks is that the bar takes the placement back, on the strength of the
+ * LayoutRequest Qt posts after placing them: the widget has to end up on the title
+ * row instead of centred in the middle of the ribbon.
+ */
+void tst_RibbonBar::cornerWidgetInstalledThroughTheMenuBar()
+{
+    QWidget window;
+    window.resize(900, 400);
+
+    RibbonBar rb(&window);
+    rb.addPage(QStringLiteral("page"));
+    rb.resizeRibbonNow();
+    window.show();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    QToolButton *corner = new QToolButton();
+    corner->setText(QStringLiteral("L"));
+    static_cast<QMenuBar *>(&rb)->setCornerWidget(corner, Qt::TopLeftCorner);
+    // Reparenting hides a widget, and QMenuBar never shows a corner widget it is given.
+    corner->show();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    QVERIFY(corner->isVisible());
+    QCOMPARE(corner->width(), corner->sizeHint().width());
+    QVERIFY(corner->geometry().bottom() < rb.titleBarHeight());
+}
+
+/*!
+ * A maximized MDI child is what exercises the corner widgets in a running
+ * application: QMdiArea installs the child's icon (TopLeftCorner) and its
+ * minimize / restore / close buttons (TopRightCorner) on the host window's menu
+ * bar, and for a ribbon window that is this bar. They are Qt's widgets, drawn by
+ * the platform style, so what is checked here is the part the ribbon owns: they
+ * get the room they ask for, on the row the style puts them on, clear of the strip.
+ *
+ * The row is the half of that which QMenuBar gets wrong when it places them itself,
+ * so the assertions below are also what keeps the bar from leaving them there.
+ *
+ * On Qt 5 the glyphs inside those buttons are clipped even when the room is
+ * right - see doc/pages/limitations.md, "the MDI child's window buttons on Qt 5".
+ * That is why this asserts geometry and not pixels.
+ */
+void tst_RibbonBar::maximizedMdiChildUsesTheCorners()
+{
+    RibbonMainWindow window;
+    RibbonBar *ribbon = window.ribbonBar();
+    QVERIFY(ribbon);
+    ribbon->addPage(QStringLiteral("page"));
+
+    QMdiArea *area = new QMdiArea(&window);
+    window.setCentralWidget(area);
+    QMdiSubWindow *child = area->addSubWindow(new QTextEdit(QStringLiteral("child")));
+    child->resize(300, 200);
+    window.resize(900, 500);
+    window.show();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    // A child that is a window of its own puts nothing on the bar.
+    QCOMPARE(nullptr, ribbon->cornerWidget(Qt::TopLeftCorner));
+    QCOMPARE(nullptr, ribbon->cornerWidget(Qt::TopRightCorner));
+
+    child->showMaximized();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    QWidget *icon = ribbon->cornerWidget(Qt::TopLeftCorner);
+    QWidget *buttons = ribbon->cornerWidget(Qt::TopRightCorner);
+    QVERIFY(icon);
+    QVERIFY(buttons);
+    QVERIFY(icon->isVisible());
+    QVERIFY(buttons->isVisible());
+
+    QCOMPARE(icon->width(), icon->sizeHint().width());
+    QCOMPARE(buttons->width(), buttons->sizeHint().width());
+    QVERIFY(ribbon->rect().contains(icon->geometry()));
+    QVERIFY(ribbon->rect().contains(buttons->geometry()));
+    QCOMPARE(buttons->geometry().right(), ribbon->width() - 1 - ribbon->contentsMargins().right());
+
+    // The icon on the title row, the buttons on the tab row when the style has one.
+    QVERIFY(icon->geometry().bottom() < ribbon->titleBarHeight());
+    if (ribbon->hasOwnTabRow()) {
+        QVERIFY(buttons->geometry().top() >= ribbon->titleBarHeight());
+    } else {
+        QVERIFY(buttons->geometry().bottom() < ribbon->titleBarHeight());
+    }
+
+    QTabBar *bar = ribbon->findChild<QTabBar *>(QStringLiteral("qx_RibbonTabBar"));
+    QVERIFY(bar);
+    QVERIFY(!icon->geometry().intersects(bar->geometry()));
+    QVERIFY(!buttons->geometry().intersects(bar->geometry()));
+
+    // Restoring the child takes them away again; Qt removes them from the bar.
+    child->showNormal();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QCOMPARE(nullptr, ribbon->cornerWidget(Qt::TopLeftCorner));
+    QCOMPARE(nullptr, ribbon->cornerWidget(Qt::TopRightCorner));
 }
 
 TEST_ADD(tst_RibbonBar)

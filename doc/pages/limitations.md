@@ -67,6 +67,21 @@
 > 行号因此整体错位（20~40 行），现已按当前代码逐条更正；顺手把散在 6 个内容入口里逐字重复的
 > `postEvent(this, new QResizeEvent(size(), size()))` 并回 `RibbonBar::resizeRibbon()`（恒等变换）。
 > 结论不变：仍维持现状。
+>
+> **（4.6 C1d）闸门改写，行号再次失效**：原先写的「`m_layoutRequest` 闸门，只在 corner widget 收到
+> `ShowToParent` / `MouseButtonRelease` 时置位」**从来没生效过**——那个分支在 `RibbonBar::eventFilter()`
+> 里，而全仓库没有把 bar 装成角控件的事件过滤器，`m_layoutRequest` 恒为 `false`，`LayoutRequest`
+> 分支等于死代码（这也是「corner widget 从来没被验证过」的另一面）。`m_layoutRequest` 与那个分支一并
+> 删除，闸门换成一条可测的条件（`RibbonBarPrivate::cornerWidgetsNeedLayout()`）：**角控件不在布局给
+> 它的位置上**——宽度 ≠ 它的 `sizeHint()` 宽度，**或**纵向范围 ≠ 它所在的那一行带。
+>
+> 两半各有来由。宽度那一半：角控件是这块 bar 里唯一「尺寸不由本类决定」的子控件，布局给它的宽度就是
+> 它当时要的宽度，所以宽度一变就说明摆过的位置过期了。行带那一半：`QMenuBar` **自己也会摆角控件**
+> （Qt 5/6 的 `QMenuBarPrivate::updateGeometries()`：左角在整条 bar 的高度里垂直居中、右角贴
+> `PM_MenuBarVMargin` 顶对齐），那是菜单栏的摆法而不是 ribbon 的；它给的宽度又正好是 `sizeHint()`
+> 宽度，所以只看宽度的话，MDI 子窗口最大化那一幕会被判成「位置没问题」，而实际图标被摆到了标题行
+> 下方。`LayoutRequest`（Qt 摆完自己会 `updateGeometry()`）是这一刻唯一的信号，也正是本类唯一收得到
+> 的那次。多花的轮次仍被限制在「角控件与布局的约定不符」这一种情形里，比原来的条件更窄。
 
 **现象**：`RibbonBar` 收到 `QEvent::LayoutRequest` 时会重跑一次 ribbon resize，
 所以一次操作可能触发不止一轮 resize。
@@ -78,7 +93,7 @@
 | :--- | :--- | :--- | :--- |
 | 1 | `RibbonGroup` **主动投递** | `ribbongroup.cpp:785` / `794` / `808` | `ActionAdded` / `ActionChanged` / `ActionRemoved` 三个分支各投一次，投给 `parentWidget()`（即 page）。源码注释写的是"group 的尺寸变了，要让 page 也调整"。**这是本库唯一的 `LayoutRequest` 生产者**，是有意设计 |
 | 2 | **Qt 自己投递** | 任意子部件的 `QWidget::updateGeometry()` → 投给它的 parent | `setLayout()`、`QLayout::invalidate()`、`addWidget` / `removeWidget`、`setSizePolicy`、样式与字体变化、子部件 show / hide、最小最大尺寸变化都会走到这里。本库既控制不了，也数不完 |
-| 3 | **三个消费者** | `RibbonBar::event`（`ribbonbar.cpp:1834`）、`RibbonPage::event`（`ribbonpage.cpp:757` → `updateItemGeometry()`）、`RibbonMainWindow::eventFilter`（`ribbonmainwindow.cpp:189` → `updateMinimumWidth()`） | 同一份事件有三个接收者。只有 `RibbonBar` 那处会"多跑一轮 resize"，而它**带 `m_layoutRequest` 闸门**（读在 `ribbonbar.cpp:1847`，只在 corner widget 收到 `ShowToParent` / `MouseButtonRelease` 时于 `:1867` 置位），所以多花的轮次被限制在那一种情形里
+| 3 | **三个消费者** | `RibbonBar::event`、`RibbonPage::event` → `updateItemGeometry()`、`RibbonMainWindow::eventFilter` → `updateMinimumWidth()` | 同一份事件有三个接收者。只有 `RibbonBar` 那处会"多跑一轮 resize"，而它**带闸门**（4.6 C1d 起是 `cornerWidgetsNeedLayout()`：某个角控件不在布局给它的位置上——宽度或所在行带不符——才重排），所以多花的轮次被限制在「角控件与布局的约定不符」这一种情形里 |
 
 **为什么没继续做**：这是性能问题不是正确性问题，没有观察到的故障，也没有可测量的回归基线
 （离屏截图测试测的不是这个）。
@@ -568,3 +583,34 @@ wasm 腿，钉 **6.8.3**，不门禁）。6.12 那条是 4.4.2 的 **A1**（`b6f
 
 **要改变它需要什么**：绕开 `QMdiArea` 自绘文档标签栏（自绘即引入不可视验证的视觉语义，
 与本库既有取舍冲突），或等 Qt 修掉"首个标签自动选中但不激活"这一不对称。
+
+---
+
+## Qt 5 上 MDI 子窗口最大化后系统按钮的图标看不到（the MDI child's window buttons on Qt 5）
+
+> **（4.6）新增记录**：这条和 ribbon 的 `cornerWidget` 布局是同一处——`QMdiArea` 把最大化
+> 子窗口的窗口图标与最小/还原/关闭按钮装到宿主窗口的菜单栏上（`QMenuBar::setCornerWidget`），
+> ribbon 窗口里那个菜单栏就是 `RibbonBar`，于是由
+> `RibbonBarPrivate::resizeInTabBarBelowStyle` / `resizeInTabBarInlineStyle` 摆放。
+> 布局这边是对的（几何有测试 `tst_RibbonBar::maximizedMdiChildUsesTheCorners`），坏在
+> Qt 自己那三个按钮的画法上。
+
+**现象**：Qt 5 下，主题样式表生效时，MDI 子窗口最大化后出现在标签行右端的三个系统按钮
+**字形基本看不到**——只在按钮底边留一点残影；100% 缩放下图标整体偏下、贴着底边，
+高分屏（125% / 200%）下因为偏差同样被放大，看上去就是"图标没显示"。Qt 6 不受影响。
+
+**成因**：这三个按钮是 Qt 的私有部件 `QMdi::ControllerWidget`，它**自己不算尺寸**，
+`sizeHint()` 按菜单栏的字体给出（实测 9pt 字体 ⇒ 67x23），而平台样式按
+`QStyle::PM_TitleBarHeight` 画标题栏按钮，`QStyleSheetStyle` 报告的该值是 **30**
+（高分屏下按倍数放大），按钮字形因此画在这个高度矩形的底部，超出部件矩形被裁掉。
+两者口径不同是 Qt 5 的问题：`QMdi::ControllerWidget` 用字体算高度、样式用像素度量画。
+plain `QMainWindow` + 同一个样式表可以复现（与 ribbon 无关），ribbon 只是给了它一个
+22~23 像素高的矩形。探针记录：部件 67x23、`PM_TitleBarHeight=30`、偏移随缩放倍数增大。
+
+**为什么保持现状**：`QMdi::ControllerWidget` 是 Qt 私有类，画法是样式的事，`qxribbon`
+只能决定给它的矩形。给得再高也没用（探针：把它拉到 30 高之后反而整个不画），
+要"修"只能自绘这三个按钮——那是引入不可视验证的视觉语义，还要与 Qt 的 MDI 行为脱钩。
+
+**要改变它需要什么**：Qt 侧统一 `QMdi::ControllerWidget` 的 `sizeHint()` 与
+`PM_TitleBarHeight` 的口径（Qt 6 已经不再画这套标题栏按钮，所以只在 5.15 上体现）；
+或在宿主里替换 `QMdiArea` 的那套角标（自绘 + 失去 Qt 的窗口菜单联动）。

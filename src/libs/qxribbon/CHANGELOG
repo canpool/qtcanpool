@@ -7,8 +7,34 @@ Addition
   RibbonPage subclass had no way into a context tab. The overload does not take
   ownership: the caller still decides when the page dies. tst_RibbonPageContext::
   builtPage is the check.
+- RibbonBar::setCornerWidget(QWidget *, Qt::Corner) is the ribbon-aware way to put a
+  widget in one of the bar's top corners. QMenuBar's own function cannot do it for
+  this bar: a widget created without a parent arrives hidden and a hidden widget
+  takes no part in the ribbon layout, and nothing asks the bar to lay itself out
+  again, so the widget keeps the position and size it was born with. The ribbon's
+  entry point shows it and re-runs the layout. Those corners are the ones Qt uses
+  while an MDI child is maximized, for the child's icon and its window buttons.
 
 Fixed
+- Corner widgets keep the room and the row the ribbon gives them. Both are outside this
+  class's control - Qt installs an MDI child's icon and window buttons there, and an
+  application may install anything - and the placement computed by the last layout went
+  stale in two ways. The widget can ask for a different size, so a longer label, a
+  different font or a show/hide left it holding the width it had while its size hint had
+  moved on. And QMenuBar lays corner widgets out itself, across the full height of the
+  menu bar (Qt 5 and 6, QMenuBarPrivate::updateGeometries), which is where a menu bar's
+  corners belong and not where a ribbon's rows are: a maximized MDI child's icon ended up
+  centred in the middle of the ribbon, well below the title row it belongs on, and the
+  buttons dropped to the bar's top edge instead of the tab row. That placement gives them
+  their size hint width as well, so a check on the width alone saw nothing wrong - and
+  setCornerWidget() is not virtual, so QMdiArea reaches QMenuBar's implementation and
+  this class never got a chance to place them first. The LayoutRequest handler now re-runs
+  the placement when a corner widget is not where the ribbon put it, width or band, with
+  the vertical rule shared with placeCornerWidget(). The request QMenuBar posts after
+  placing them is the signal the bar gets for it. tst_RibbonBar::cornerWidgetTakesItsRoom,
+  cornerWidgetArrivesAfterTheBarIsUp, cornerWidgetInstalledThroughTheMenuBar and
+  maximizedMdiChildUsesTheCorners are the checks; corner widget support had no test at all
+  until now, although both layout functions have always placed them.
 - The application button is laid out at the tab strip's full height instead of one
   pixel less. A tab title is centred in its tab rect, and so is a label the button
   carries of its own, so a button one baseline row shorter centred that label half

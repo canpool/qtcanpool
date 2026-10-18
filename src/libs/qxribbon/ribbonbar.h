@@ -204,6 +204,25 @@ public:
 
     RibbonButtonGroup *cornerButtonGroup(Qt::Corner corner = Qt::BottomRightCorner);
 
+    /*!
+     * Installs a widget in one of the bar's top corners.
+     *
+     * The corners are QMenuBar's, and Qt itself puts something there: while an MDI
+     * child is maximized, Qt moves the child's window icon and its minimize /
+     * restore / close buttons into the menu bar of the host window, which for a
+     * ribbon window is this bar. The ribbon lays those out with the rest of the
+     * title row (see RibbonBarPrivate::resizeInTabBarBelowStyle), which is what
+     * makes a corner widget appear where the ribbon puts it rather than where
+     * QMenuBar does.
+     *
+     * This entry point differs from QMenuBar::setCornerWidget() in two ways that a
+     * widget created without a parent needs: it shows the widget (a hidden one
+     * takes no part in the ribbon layout) and it lays the bar out. Calling the
+     * base-class function through a QMenuBar pointer skips both, and the widget
+     * then stays wherever it happened to be until something else resizes the bar.
+     */
+    void setCornerWidget(QWidget *widget, Qt::Corner corner = Qt::TopRightCorner);
+
     RibbonQuickAccessBar *quickAccessBar() const;
     void setQuickAccessBarPosition(QuickAccessBarPosition position);
     QuickAccessBarPosition quickAccessBarPosition() const;

@@ -52,6 +52,25 @@ static bool takesPartInLayout(const QWidget *w)
     return w && !w->isHidden();
 }
 
+// The vertical half of the rule placeCornerWidget() follows: a corner widget that
+// fits in the band reserved for it is centred in that band, one that does not is
+// stretched over the band's shorter row. Only this half is shared, with the
+// staleness check in cornerWidgetsNeedLayout(): the horizontal position of a corner
+// widget is what the layout is computing at the time, so a check that runs outside
+// that layout cannot know it.
+struct CornerBand {
+    int top;
+    int height;
+};
+
+static CornerBand cornerBandGeometry(int bandTop, int centredHeight, int stretchedHeight, int hintHeight)
+{
+    if (hintHeight < centredHeight) {
+        return {bandTop + (centredHeight - hintHeight) / 2, hintHeight};
+    }
+    return {bandTop, stretchedHeight};
+}
+
 #define HELP_DRAW_RECT(p, rect)                                                                                        \
     do {                                                                                                               \
         p.save();                                                                                                      \
@@ -165,7 +184,6 @@ RibbonBarPrivate::RibbonBarPrivate()
     , m_minimized(true)
     , m_titleVisible(true)
     , m_pageContextCoverTab(false)
-    , m_layoutRequest(false)
     , m_blockResize(false)
     , m_keyTipMode(false)
 {
@@ -789,11 +807,8 @@ void RibbonBarPrivate::resizeInTabBarInlineStyle()
 void RibbonBarPrivate::placeCornerWidget(QWidget *corner, int x, int y, int centredHeight, int stretchedHeight)
 {
     const QSize cornerSize = corner->sizeHint();
-    if (cornerSize.height() < centredHeight) {
-        corner->setGeometry(x, y + (centredHeight - cornerSize.height()) / 2, cornerSize.width(), cornerSize.height());
-    } else {
-        corner->setGeometry(x, y, cornerSize.width(), stretchedHeight);
-    }
+    const CornerBand band = cornerBandGeometry(y, centredHeight, stretchedHeight, cornerSize.height());
+    corner->setGeometry(x, band.top, cornerSize.width(), band.height);
 }
 
 /**
@@ -932,6 +947,67 @@ int RibbonBarPrivate::minimumWidthInTabBarInlineStyle() const
     w += dragAreaMinimumWidth;
 
     return w + tabBarMinimumWidth + border.left() + border.right();
+}
+
+/**
+ * Whether a corner widget no longer sits where the ribbon put it.
+ *
+ * The corner widgets are the only children this class does not create: Qt puts an
+ * MDI child's icon and window buttons there while that child is maximized, and an
+ * application may put anything else. Two things move them behind this class's back.
+ *
+ * The widget itself can ask for a different size long after the bar was last laid
+ * out - a longer label, a theme font, a widget that was hidden and is now shown - so
+ * the placement computed by resizeRibbon() is stale from then on.
+ *
+ * QMenuBar can also place them itself, which is the case the width alone does not
+ * catch. setCornerWidget() is not virtual, so the widgets Qt installs arrive through
+ * the base class, and the base class lays corner widgets out on its own terms: across
+ * the full height of the menu bar, centred on the left and top-aligned on the right
+ * (Qt 5 and 6, QMenuBarPrivate::updateGeometries). That is where a menu bar's corners
+ * belong - they own its whole height - and not where a ribbon's are, whose rows are
+ * shorter than the bar; and Qt does it after this class last ran, because it is
+ * reacting to the widget becoming visible. It gives them their size hint width while
+ * it is at it, so only the row they end up on tells the two placements apart.
+ *
+ * This is the question the LayoutRequest handler asks, to re-run that placement
+ * without paying for a pass on every layout request the bar's own widgets post.
+ */
+bool RibbonBarPrivate::cornerWidgetsNeedLayout() const
+{
+    Q_Q(const RibbonBar);
+    const QMargins border = q->contentsMargins();
+    const int titleH = q->titleBarHeight();
+    const int tabH = q->tabBarHeight();
+    const bool ownTabRow = hasOwnTabRow();
+
+    // The bands the two resize functions hand to placeCornerWidget(): the below style
+    // keeps the title row for the left corner and gives the tab row to the right one,
+    // the inline style has a single row and uses it for both.
+    struct CornerWidget {
+        QWidget *widget;
+        int top;
+        int centredHeight;
+        int stretchedHeight;
+    };
+    const CornerWidget corners[] = {
+        {q->cornerWidget(Qt::TopLeftCorner), border.top(), titleH, titleH},
+        {q->cornerWidget(Qt::TopRightCorner), ownTabRow ? border.top() + titleH : border.top(),
+         ownTabRow ? tabH : titleH, ownTabRow ? tabH - tabBarBaseLineHeight : titleH},
+    };
+    for (const CornerWidget &corner : corners) {
+        if (!takesPartInLayout(corner.widget)) {
+            continue;
+        }
+        const QSize hint = corner.widget->sizeHint();
+        const CornerBand band =
+            cornerBandGeometry(corner.top, corner.centredHeight, corner.stretchedHeight, hint.height());
+        const QRect placed = corner.widget->geometry();
+        if (placed.width() != hint.width() || placed.top() != band.top || placed.height() != band.height) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -1714,6 +1790,22 @@ RibbonButtonGroup *RibbonBar::cornerButtonGroup(Qt::Corner corner)
     return buttonGroup;
 }
 
+void RibbonBar::setCornerWidget(QWidget *widget, Qt::Corner corner)
+{
+    Q_D(RibbonBar);
+    QMenuBar::setCornerWidget(widget, corner);
+    if (widget) {
+        // QMenuBar reparents a widget that has no parent yet, but a widget created
+        // without one is hidden and stays hidden: setParent() does not make it
+        // visible. A hidden widget takes no part in the ribbon layout
+        // (takesPartInLayout), so without this it would keep the position and size it
+        // was born with. QMenuBar shows the widgets it installs itself - an MDI
+        // child's buttons - which is why those appear on their own.
+        widget->show();
+    }
+    d->resizeRibbon();
+}
+
 RibbonQuickAccessBar *RibbonBar::quickAccessBar() const
 {
     Q_D(const RibbonBar);
@@ -1965,13 +2057,15 @@ bool RibbonBar::event(QEvent *event)
         // cost more than one resize pass per event, and the conditions that
         // produce a LayoutRequest here have never been enumerated - nor has
         // which of the postEvent()/sendEvent() calls elsewhere could be
-        // replaced by one. The handler is therefore gated on m_layoutRequest,
-        // which is only set while the corner widget is a QMdiArea, so the cost
-        // stays bounded by that case. See doc/pages/limitations.md,
-        // "LayoutRequest can add resize passes".
-        if (d->m_layoutRequest) {
+        // replaced by one. The handler is therefore gated, and the gate is
+        // about corner widgets only: they are the one part of this bar whose
+        // size and position this class does not decide, so a request from them
+        // is the one that can leave the placement stale - including the request
+        // QMenuBar posts right after it placed them on its own terms, which is
+        // the only signal this bar gets for that (cornerWidgetsNeedLayout).
+        // See doc/pages/limitations.md, "LayoutRequest can add resize passes".
+        if (d->cornerWidgetsNeedLayout()) {
             d->resizeRibbon();
-            d->m_layoutRequest = false;
         }
     } break;
     default:
@@ -1985,14 +2079,7 @@ bool RibbonBar::eventFilter(QObject *obj, QEvent *e)
 {
     Q_D(RibbonBar);
     if (obj) {
-        // Adjust button updates in window mode for multi-document setups
-        if ((obj == cornerWidget(Qt::TopLeftCorner)) || (obj == cornerWidget(Qt::TopRightCorner))) {
-            // For QMdiArea, maximizing produces a ShowToParent event, after which effective clicks on buttons (logo,
-            // max/min, close) produce MouseButtonRelease events
-            if ((QEvent::ShowToParent == e->type()) || (QEvent::MouseButtonRelease == e->type())) {
-                d->m_layoutRequest = true;
-            }
-        } else if (obj == d->m_stack && d->m_stack->isPopup()) {
+        if (obj == d->m_stack && d->m_stack->isPopup()) {
             // When the stack is in popup mode and the click is outside the stack area, if it is on the ribbonTabBar,
             // ignore this click Forward the click to the ribbonTabBar to avoid flicker from the stack hiding and
             // showing again after clicking the ribbonTabBar
