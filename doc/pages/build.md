@@ -100,6 +100,7 @@ QTCANPOOL_QT_PREFIX=/opt/Qt/6.8.3/gcc_64 cmake --preset qt6
 | 开关 | 默认 | 说明 |
 | :--- | :--- | :--- |
 | `WITH_DEMOS` | `ON` | 构建 `demos/` 下的综合示例 |
+| `WITH_EXAMPLES` | `ON` | 构建 `examples/` 下按库分组的细粒度控件示例（参与构建，但不安装） |
 | `WITH_TESTS` | `OFF` | 构建 `tests/` 下的单元测试并注册到 CTest |
 | `WITH_DOCS` | `OFF` | 生成 Doxygen 文档站点（需要 Doxygen） |
 | `WITH_ONLINE_DOCS` | `OFF` | 生成在线文档（qdoc 通道，遗留开关） |
@@ -361,6 +362,13 @@ cmake --build --preset qt6 --parallel 16   # 全量构建；增量随 Ninja 默�
 ```
 
 只有**手动配置 MinGW Makefiles** 时才必须带 `--parallel`——该生成器默认单核串行。
+
+### 编译器缓存（可选）
+
+`WITH_CCACHE_SUPPORT=ON` 会把找到的 `ccache` 设为 `CMAKE_{C,CXX}_COMPILER_LAUNCHER`
+（`WITH_SCCACHE_SUPPORT` 是它的 MSVC 搭档，只负责把 `/Zi` 换成 `/Z7`），configure 时即生效，
+前提是 `ccache` 在 `PATH` 里。它对**重复的干净重建与 CI** 有效；对「版本宏改了、所有 TU 都要重编」
+这种全量重编无效——缓存全 miss，还多付一次查找开销。
 
 ### 新增源文件「不生效」的两层原因
 
