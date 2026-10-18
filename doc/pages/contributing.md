@@ -9,7 +9,7 @@
 
 - **格式**：Conventional Commits —— `type(scope): subject`。**提交信息与代码注释一律英文**（`.md` 不限）。
 - **type**：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`。
-- **scope**：`qxcore` / `qxtheme` / `qxwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库。
+- **scope**：`qxcore` / `qxtheme` / `qxwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `icons` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库；`icons` 专指图标规范与它的门禁（`scripts/icons-policy.txt`、`scripts/check-icons.py`、`doc/pages/icons.md`），同样不属于任何库。
 - **原子提交**：一笔一件事。
 - **每笔提交前必做**：重新构建 + ctest 全绿 + clang-format 过改动文件。
 - **两远程**：`origin` = gitee、`github`；一笔推两远程。
@@ -112,5 +112,5 @@
 
 ## 引用
 
-- 技术细节：[架构与约定](architecture.md) · [构建与安装](build.md) · [发布流程](release.md) · [已知限制](limitations.md) · [迁移指南](migration.md) · [主题引擎](theming.md)
+- 技术细节：[架构与约定](architecture.md) · [构建与安装](build.md) · [发布流程](release.md) · [已知限制](limitations.md) · [迁移指南](migration.md) · [主题引擎](theming.md) · [图标规范](icons.md)
 - 任务台账：`doc/design/<ver>-TASKS.md`（如 `4.5-TASKS.md`）；路线：`doc/ROADMAP-3.x.md`

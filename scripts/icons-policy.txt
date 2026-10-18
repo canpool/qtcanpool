@@ -1,0 +1,43 @@
+# The icon policy: how every managed icon is classified, and - for the ones that
+# are tinted - which of the two tinting mechanisms consumes it.
+#
+#     <kind> <path> [<consumer>]
+#
+#   kind      tinted (follows the theme) | multicolor (exempt) | plain (fixed)
+#   path      a directory (applies to every svg under it) or a single file,
+#             relative to the root of the repository
+#   consumer  alpha (qxribbon recolours the rasterised alpha) or dock (qxdock
+#             replaces colour literals in the svg text); alpha by default, and
+#             only meaningful for tinted
+#
+# A file entry wins over the directory it lives in, and the longest directory
+# prefix wins over a shorter one, so demos/qxapp/ribbondemo/res/gallery can stay
+# plain while the rest of that tree is something else.
+#
+# See doc/pages/icons.md for what the kinds mean and why the colours matter.
+
+# The dock buttons: qxdock replaces colour literals in these files, so every
+# colour they paint has to be one the replacement table covers.
+tinted      src/libs/qxdock/res/images              dock
+
+# Exceptions inside that directory. DockIconProvider only builds icons from its
+# own spec table; these seven are reached by url() out of a dock style sheet, or
+# by nothing at all, so their colours are never rewritten and none is asserted
+# on them. They are listed one by one rather than left unclassified because an
+# unclassified icon is reported, and "forgotten" is not what any of them is.
+plain       src/libs/qxdock/res/images/maximize-button-focused.svg
+plain       src/libs/qxdock/res/images/restore-button-focused.svg
+plain       src/libs/qxdock/res/images/maximize-button.svg
+plain       src/libs/qxdock/res/images/restore-button.svg
+plain       src/libs/qxdock/res/images/pin-button.svg
+plain       src/libs/qxdock/res/images/pin-button-big.svg
+plain       src/libs/qxdock/res/images/vs-pin-button_45.svg
+
+# Legacy icon sets. They are classified rather than left out - an unclassified
+# icon is reported - but nothing is asserted about their colours until they are
+# replaced and their entry is flipped to tinted.
+plain       src/libs/qxribbon/res
+plain       demos/qxapp/ribbondemo/res
+plain       demos/qxapp/ribbondemo/res/gallery
+plain       demos/qxapp/dockdemo/res
+plain       demos/qxwindow/res/window-bar

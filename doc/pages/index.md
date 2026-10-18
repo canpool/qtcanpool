@@ -92,6 +92,7 @@ ctest --test-dir build -C Release --output-on-failure
 | [CI 与在线站点](ci.md) | 两条工作流的结构、格式/SDK/质量/tidy 门禁、平台坑与查看 CI 结果 |
 | [组件全览](components.md) | 各组件的能力范围、主要类与最小用法 |
 | [主题引擎](theming.md) | 主题引擎：应用侧注册、运行时切换、跟随系统、平台强调色与自定义主题 |
+| [图标规范](icons.md) | 图标为什么必须分类登记、两套着色机制的差别、规范色与 `scripts/check-icons.py` 门禁 |
 | [应用外壳](appshell.md) | 应用外壳：页面、停靠区、状态栏、布局持久化、启动屏 |
 | [插件体系](plugins.md) | 插件开发指南：元数据、三种依赖、生命周期、对象池、失败隔离 |
 | [迁移指南](migration.md) | 2.x → 3.x / 4.0 迁移：命名空间、类与方法对照、构建迁移、插件条目 |
