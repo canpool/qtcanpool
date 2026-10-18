@@ -53,6 +53,42 @@ QX_THEME_EXPORT QPalette darkPalette();
 QX_THEME_EXPORT QPalette paletteFor(bool dark);
 
 /*!
+ * Tells the platform which way the application paints: \a dark is the same flag a
+ * theme is registered with.
+ *
+ * A palette and a style sheet describe what the application draws; they say
+ * nothing about what the platform draws for it. The windows11 style that Qt 6.7
+ * made the default on Windows 11 paints from its own light and dark table picked
+ * by the system color scheme and never consults the palette, and the window frame
+ * follows the scheme as well - so on a dark desktop a light application ends up
+ * with light scroll bars next to a dark title bar, or the other way round,
+ * whichever half the theme does not paint itself.
+ *
+ * From Qt 6.8 an application can ask for a scheme (QStyleHints::setColorScheme),
+ * and this is that call spelled with the flag the engine already uses. Below 6.8
+ * there is no way to ask and the platform stays in charge, so this does nothing;
+ * it also does nothing on platforms whose theme ignores the request.
+ *
+ * Call it before setPalette(): the colour scheme decides what the platform
+ * supplies, the palette decides what replaces it. An application that follows the
+ * system rather than pinning a theme wants followSystemColorScheme() instead.
+ */
+QX_THEME_EXPORT void applyColorScheme(bool dark);
+
+/*!
+ * Hands the color scheme back to the platform, undoing applyColorScheme().
+ *
+ * This is the right call for an application that follows the system
+ * (QxThemeManager::setFollowSystemTheme): the platform is already telling the
+ * truth there, and a pinned scheme would do more than contradict it - it also
+ * stops QStyleHints::colorSchemeChanged from reporting the next system change,
+ * which is the signal following is built on.
+ *
+ * No-op below 6.8, where no scheme can be pinned in the first place.
+ */
+QX_THEME_EXPORT void followSystemColorScheme();
+
+/*!
  * The accent colour the platform uses, or an invalid QColor when it does not
  * name one.
  *

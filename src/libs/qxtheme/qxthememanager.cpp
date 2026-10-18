@@ -486,6 +486,18 @@ void QxThemeManager::apply()
         palette.setColor(QPalette::Accent, d->m_accentOverride);
 #endif
     }
+    // The scheme has to be settled before the palette: it decides what the platform
+    // paints for itself (the windows11 style on Windows 11 draws from its own light or
+    // dark table and never reads the palette, and the window frame follows the scheme
+    // too), while the palette decides what replaces the platform's colours. Following
+    // the system is the one case where the platform is already right - and pinning a
+    // scheme there would also silence colorSchemeChanged, which is what tells this class
+    // to switch, so that case hands the scheme back instead.
+    if (d->m_followSystem) {
+        QX_THEME_PREPEND_NAMESPACE(followSystemColorScheme)();
+    } else {
+        QX_THEME_PREPEND_NAMESPACE(applyColorScheme)(info.dark);
+    }
     app->setPalette(palette);
 
     // An empty sheet is a theme that paints nothing of its own, not a theme

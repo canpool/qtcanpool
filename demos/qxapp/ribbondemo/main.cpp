@@ -72,18 +72,21 @@ int main(int argc, char *argv[])
     QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
-#ifdef Q_OS_WINDOWS
-    // When tested on Windows11 and Qt6.8.1, the default style is windows11,
-    // and the qss of ribbon does not work well, so for compatibility, set the style to windowsvista
-    QApplication::setStyle("windowsvista");
-    qDebug() << "Current style: " << QApplication::style()->objectName();
-    qDebug() << "Supported styles: " << QStyleFactory::keys();
-#endif
+#if defined(Q_OS_WINDOWS) && (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)) && (QT_VERSION < QT_VERSION_CHECK(6, 8, 0))
+    // Qt 6.7 made windows11 the default style on Windows 11, and that style paints from
+    // its own light and dark table chosen by the *system* color scheme: it never consults
+    // the palette. On a dark desktop this demo, which starts on a light theme, came out
+    // with dark input fields, dark scroll bars and a dark title bar. From 6.8 the scheme
+    // can be told which way the theme paints (QxTheme::applyColorScheme, called when a
+    // theme is installed), so the native style can stay; 6.7 has no such lever, and
+    // windowsvista is the only style there that paints what the palette says.
+    QApplication::setStyle(QStringLiteral("windowsvista"));
 #endif
 
     QApplication a(argc, argv);
     qInstallMessageHandler(log_out_put);
+    qDebug() << "Current style: " << QApplication::style()->objectName();
+    qDebug() << "Supported styles: " << QStyleFactory::keys();
     QFont f = a.font();
 
     f.setFamily("Microsoft YaHei");

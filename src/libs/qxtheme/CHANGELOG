@@ -1,6 +1,21 @@
 Unreleased
 ---
 Feature
+- QxTheme::applyColorScheme(bool dark) / followSystemColorScheme(), in qxtheme.h:
+  the third thing a theme has to say about an application, next to the palette and
+  the sheet. A palette describes what the application draws; the color scheme
+  describes what the *platform* draws for it, and on Windows 11 the two can
+  disagree - the windows11 style that Qt 6.7 made the default paints from its own
+  light and dark table chosen by the system scheme and never reads the palette, so
+  a light theme on a dark desktop came out with dark input fields, dark scroll
+  bars and a dark title bar, and setting a light palette could not reach any of
+  it. From Qt 6.8 the scheme can be set (QStyleHints::setColorScheme) and these
+  two functions are that call, spelled with the flag a theme is registered with;
+  below 6.8, and on platforms that ignore the request, they do nothing. The engine
+  installs the scheme before the palette on every apply(), and hands it back to
+  the platform while following the system, because a pinned scheme would also
+  silence the colorSchemeChanged signal following is built on.
+  tst_QxTheme::colorSchemeHintLeavesThePaletteAlone
 - QxTheme::tintedPixmap() / tintedIcon() / themedPixmap() / themedIcon(), in
   qxthemeicon.h: a single-colour glyph repainted from the palette the theme
   installed - by role for the themed pair, by an explicit colour for the tinted

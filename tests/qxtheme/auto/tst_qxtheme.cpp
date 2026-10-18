@@ -89,6 +89,7 @@ private slots:
     void registering();
     void unknownThemeIsLeftAlone();
     void palettes();
+    void colorSchemeHintLeavesThePaletteAlone();
     void styleSheetOfARegisteredTheme();
     void applyTheme();
     void persistence();
@@ -220,6 +221,43 @@ void tst_QxTheme::palettes()
     QCOMPARE(qApp->palette().color(QPalette::Window), dark.color(QPalette::Window));
     manager->setTheme(QString::fromLatin1(kLight));
     QCOMPARE(qApp->palette().color(QPalette::Window), light.color(QPalette::Window));
+}
+
+/*!
+ * The color scheme is a different question from the palette: it tells the platform
+ * which way the application paints so the parts the platform draws itself - the
+ * window frame, the windows11 style's own table - can follow. Asking for one must
+ * never turn into a second opinion about the application's colours.
+ *
+ * The platform behind these cases ignores the request, which is why the call has to
+ * be harmless rather than load-bearing: a theme's palette has to survive it either
+ * way, and on the platforms that do honour it, the entries a theme set explicitly are
+ * the ones Qt is documented not to overwrite.
+ */
+void tst_QxTheme::colorSchemeHintLeavesThePaletteAlone()
+{
+    QxThemeManager *manager = QxThemeManager::instance();
+    manager->setTheme(QString::fromLatin1(kDark));
+    const QPalette installed = qApp->palette();
+
+    const QPalette::ColorRole roles[] = {QPalette::Window, QPalette::Base, QPalette::Text, QPalette::ButtonText};
+    const auto paletteIsStillTheThemes = [&installed, &roles]() {
+        for (QPalette::ColorRole role : roles) {
+            if (qApp->palette().color(role) != installed.color(role)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    applyColorScheme(false);
+    QVERIFY(paletteIsStillTheThemes());
+
+    applyColorScheme(true);
+    QVERIFY(paletteIsStillTheThemes());
+
+    followSystemColorScheme();
+    QVERIFY(paletteIsStillTheThemes());
 }
 
 void tst_QxTheme::styleSheetOfARegisteredTheme()

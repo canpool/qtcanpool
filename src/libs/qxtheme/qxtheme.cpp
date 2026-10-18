@@ -4,7 +4,9 @@
  **/
 #include "qxtheme.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtGui/QGuiApplication>
+#include <QtGui/QStyleHints>
 
 #if defined(Q_OS_WIN) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
 // Only the Windows branch below needs these, and only below 6.6: from 6.6 on
@@ -78,5 +80,46 @@ QColor systemAccentColor()
     return QColor();
 #endif
 }
+
+/*!
+ * The color scheme, where the platform lets an application set one.
+ *
+ * Qt 6.8 is the first version with a setter: QStyleHints::setColorScheme() hands a
+ * request to the platform theme, and Qt's own Windows and macOS plugins carry it out -
+ * Windows re-reads its palette, repaints the window frame and tells the style, whose
+ * windows11 half then draws from the light table instead of the dark one. 6.5-6.7 know
+ * the scheme (Qt::ColorScheme, colorSchemeChanged) but cannot override it, so there the
+ * platform stays the authority and these two functions are empty.
+ */
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+void applyColorScheme(bool dark)
+{
+    // The hint is read off the application, and the engine is documented to be used
+    // after one exists; asking earlier is a no-op here rather than a warning of its own.
+    QGuiApplication *app = qobject_cast<QGuiApplication *>(QCoreApplication::instance());
+    if (app == nullptr) {
+        return;
+    }
+    app->styleHints()->setColorScheme(dark ? Qt::ColorScheme::Dark : Qt::ColorScheme::Light);
+}
+
+void followSystemColorScheme()
+{
+    QGuiApplication *app = qobject_cast<QGuiApplication *>(QCoreApplication::instance());
+    if (app == nullptr) {
+        return;
+    }
+    app->styleHints()->unsetColorScheme();
+}
+#else
+void applyColorScheme(bool dark)
+{
+    Q_UNUSED(dark);
+}
+
+void followSystemColorScheme()
+{
+}
+#endif
 
 QX_THEME_END_NAMESPACE

@@ -23,6 +23,7 @@
 #include "custompage.h"
 #include "homepage.h"
 #include "otherpage.h"
+#include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthemepalette.h"
 
@@ -51,7 +52,6 @@
 #include <QXmlStreamWriter>
 #include <QDialog>
 #include <QActionGroup>
-#include <QTimer>
 
 #include "aboutdialog.h"
 
@@ -136,9 +136,15 @@ MainWindow::MainWindow(QWidget *par, bool screenshotMode)
 
     setMinimumWidth(500);
 
-    QTimer::singleShot(0, this, [this]() {
-        changeRibbonTheme(0);
-    });
+    // The default theme goes on here, in the constructor, instead of on the first turn of
+    // the event loop where it used to wait. Three things are installed by it - the color
+    // scheme, the palette and the sheet - and all three describe how the window is drawn,
+    // so installing them after show() meant one frame in the system's colors (a dark frame
+    // around a light theme) and a ribbon laid out from the hints it had before the sheet
+    // landed: with the windows11 style that alone left the quick access bar three pixels
+    // short of its own size hint, and the bar clips what does not fit, so one button
+    // disappeared from the strip.
+    changeRibbonTheme(0);
 
     qDebug() << RibbonElementStyleOpt;
 
@@ -172,18 +178,24 @@ void MainWindow::applyTheme(const QString &themeId)
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return;
         }
-        // Two things have to happen and their order matters. One sheet for the whole
-        // application, because a sheet on the window would win over the application's
-        // wherever both describe the same widget - which is how the ribbon used to stay
-        // light while the rest went dark. And the matching palette, because a style
-        // sheet cannot repaint an icon: every glyph would keep the colour it was drawn
-        // in, black on a dark ribbon.
+        // Three things have to happen and their order matters. The color scheme first,
+        // because it is what the platform reads for the parts it draws itself: the
+        // windows11 style on Windows 11 paints from a light or dark table chosen by the
+        // scheme and never looks at the palette, and the window frame follows the scheme
+        // too - a light theme under a dark system would otherwise come out with a dark
+        // title bar and dark scroll bars. Then one sheet for the whole application,
+        // because a sheet on the window would win over the application's wherever both
+        // describe the same widget - which is how the ribbon used to stay light while the
+        // rest went dark. And the matching palette, because a style sheet cannot repaint
+        // an icon: every glyph would keep the colour it was drawn in, black on a dark
+        // ribbon.
         //
         // The palette goes in *before* the sheet. An application style sheet makes Qt
         // hand each widget a palette of its own, and from then on application palette
         // changes no longer reach those widgets; installing the sheet is also what
         // re-polishes them, so it has to be the last thing to land. The other way round
         // left the editor and every other styled control in the previous theme.
+        QxTheme::applyColorScheme(theme.dark);
         qApp->setPalette(QxTheme::paletteFor(theme.dark));
         qApp->setStyleSheet(QString::fromUtf8(file.readAll()));
         m_icons->refresh();
