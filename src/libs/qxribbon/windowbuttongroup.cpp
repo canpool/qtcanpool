@@ -119,16 +119,22 @@ void WindowButtonGroupPrivate::updateButtonIconSize()
 
 /*!
  * The caption glyphs are masks, painted in the palette's window-text colour so
- * they invert with the theme instead of a style sheet naming a frozen file. The
- * close button's hover glyph uses highlighted text, the role for a glyph that
- * sits on a filled background.
+ * they invert with the theme instead of a style sheet naming a frozen file.
+ *
+ * The close button's hover glyph is the one that does not ask the palette, and
+ * the reason is that the fill it sits on is not the palette's. A glyph on the
+ * application's emphasis asks HighlightedText, which is the pair of
+ * QPalette::Highlight; the close button's fill is its own, and white is what
+ * reads on it. Asking HighlightedText here gave the right answer for as long as
+ * every theme emphasized with a dark colour - a theme emphasizing with a light
+ * one makes that pair dark, which put a dark glyph on this button's red.
  */
 void WindowButtonGroupPrivate::updateButtonIcons()
 {
     Q_Q(WindowButtonGroup);
     const QSize size = glyphSize();
     const QColor glyph = q->palette().color(QPalette::WindowText);
-    const QColor onFilled = q->palette().color(QPalette::HighlightedText);
+    const QColor onClose = QColor(Qt::white);
 
     QIcon minimize;
     QIcon maximize;
@@ -145,7 +151,7 @@ void WindowButtonGroupPrivate::updateButtonIcons()
                            QIcon::On);
         close.addPixmap(tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_close.svg"), glyph, s), QIcon::Normal,
                         QIcon::Off);
-        const QPixmap hover = tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_close_hover.svg"), onFilled, s);
+        const QPixmap hover = tintedPixmap(QStringLiteral(":/qxribbon/res/titlebar_close_hover.svg"), onClose, s);
         close.addPixmap(hover, QIcon::Active, QIcon::Off);
         close.addPixmap(hover, QIcon::Selected, QIcon::Off);
     }

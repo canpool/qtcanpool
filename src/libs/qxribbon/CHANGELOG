@@ -73,6 +73,12 @@ Fixed
   the first time a tip was shown": after a switch to a dark theme the tip kept
   the light theme's black text. tst_RibbonButton::screenTipFollowsThePalette is
   the check.
+- The close button's hover glyph no longer reads QPalette::HighlightedText. That
+  role is the pair of QPalette::Highlight - what sits on the application's
+  emphasis - and a theme that emphasizes with a light colour makes it dark,
+  which painted a dark glyph on this button's own fill. The fill here is not the
+  emphasis but the close button's, so the glyph is white, which is what the
+  button's file was drawn in and what reads on it.
 
 0.13.0
 ---
