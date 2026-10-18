@@ -106,24 +106,39 @@ QxDock--DockTab[activeTab="true"] QLabel {
 
 /* The hover and press fills were rgba(0, 0, 0, 16/24/48) - a black wash. Over
    a dark tab that is 9 percent of black on #292929, four levels of difference:
-   the button gives no feedback at all, and over a light one it is a grey blob.
-   A palette role is used instead, and the two steps are "one step off the
-   surface, then two": palette(midlight) and palette(light) are both derived from
-   the window colour, so the button reads the same way in either scheme without
-   the sheet having to know which one is in force. */
+   the button gives no feedback at all. Two palette roles are used instead, and
+   they step in opposite directions, which is what lets the two states tell each
+   other apart without the sheet knowing which scheme is in force: hover lifts
+   the button off the surface, press settles it back in.
+
+   palette(light) is one step further out than palette(midlight), and on a
+   near-white window the two are the same colour anyway - lighter() clamps both
+   to #ffffff - so the further one costs nothing there and gives a dark scheme
+   twice the step. palette(light) used to be the *press* fill, which was wrong
+   the other way round: it steps towards the light like the hover fill does, so
+   press and hover came out identical. */
 #dockTabCloseButton:hover {
     /*border: 1px solid rgba(0, 0, 0, 32);*/
-    background: palette(midlight);
+    background: palette(light);
 }
 
 #dockTabCloseButton:pressed {
-    background: palette(light);
+    background: palette(mid);
 }
 
 /* Focus related styling */
 QxDock--DockTab[focused="true"] {
     background: palette(highlight);
     border-color: palette(highlight);
+}
+
+/* The focused tab is filled with the highlight colour, so the two steps that
+   lift the button off the *window* colour would put a white block and then a
+   grey one on top of the accent. Over the accent the step goes the other way
+   round - a white wash, deeper on press - which is the same relationship the
+   pair above has, with the surface swapped. */
+QxDock--DockTab[focused="true"]>#dockTabCloseButton:hover {
+    background: rgba(255, 255, 255, 60);
 }
 
 QxDock--DockTab[focused="true"]>#dockTabCloseButton:pressed {

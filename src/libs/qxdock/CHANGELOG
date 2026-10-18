@@ -105,9 +105,21 @@ Bugfix
   and the pixel goes back to the tab.
   The close button's hover and press fills were rgba(0, 0, 0, 16/24/48), a
   black wash: four levels of difference over a dark tab, which is no feedback at
-  all, and a grey blob over a light one. They read palette(midlight) and
-  palette(light) now, both derived from the window colour, so the button reads
-  the same way in either scheme.
+  all. They read palette(light) and palette(mid) now - hover lifts the button
+  off the surface, press settles it back in, opposite directions so the two
+  states tell each other apart. palette(light) used to be the press fill, which
+  was wrong the other way round: it steps towards the light like the hover fill
+  does, and on a near-white window lighter() clamps it to #ffffff, the same
+  colour the hover fill has there. On a focused tab the accent is the surface,
+  so those two steps do not apply; there hover and press are white washes,
+  deeper on press.
+  The tinted icons turned white on hover. The focused variants of the SVGs are
+  white copies of the normal shape, and applyDockIcons() mapped their white to
+  BrightText - which is the highlight text, white in either scheme, so hover
+  left the glyph white while the hover fill it now sits on is #ffffff in a light
+  scheme: the button was there, the picture of closing was not. Both states are
+  drawn over the window colour, so the white maps to the window text colour now
+  and the glyph reads the same on hover as it does at rest, whatever the theme.
 
 0.2.3
 ---
