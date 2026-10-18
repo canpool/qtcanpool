@@ -91,44 +91,56 @@ void tst_RibbonFactoryAndManager::managerIsASingleton()
 void tst_RibbonFactoryAndManager::setupFactoryInstallsAndReplaces()
 {
     RibbonManager *manager = RibbonManager::instance();
+    // A default factory is what every case here puts back, so the height it reports
+    // is the value the manager has to return to. Read it from a fresh one rather than
+    // writing the number down: it is derived from the font metrics in force.
+    const int defaultHeight = RibbonFactory().getRibbonStyleOption().titleBarHeight();
 
     RibbonFactory *installed = new RibbonFactory();
-    installed->getRibbonStyleOption().setTitleBarHeight(50);
+    installed->getRibbonStyleOption().setTitleBarHeight(defaultHeight + 1);
     manager->setupFactory(installed);
     QCOMPARE(manager->factory(), installed);
-    QCOMPARE(RibbonElementStyleOpt.titleBarHeight(), 50);
+    QCOMPARE(RibbonElementStyleOpt.titleBarHeight(), defaultHeight + 1);
 
     // Put a default factory back. setupFactory() deletes the one it replaces, so
-    // `installed` is dangling from here on and must not be touched again.
+    // `installed` is dangling from here on and must not be touched again - and the
+    // check has to be about what the new factory reports rather than about that
+    // pointer, because a freed pointer compares equal to whatever is allocated on
+    // its block next.
     manager->setupFactory(new RibbonFactory());
-    QVERIFY(manager->factory() != installed);
-    QVERIFY(manager->factory()->getRibbonStyleOption().titleBarHeight() > 0);
+    QCOMPARE(manager->factory()->getRibbonStyleOption().titleBarHeight(), defaultHeight);
+    QCOMPARE(RibbonElementStyleOpt.titleBarHeight(), defaultHeight);
 }
 
 void tst_RibbonFactoryAndManager::setupFactoryNullPutsTheDefaultBack()
 {
     RibbonManager *manager = RibbonManager::instance();
+    const int defaultHeight = RibbonFactory().getRibbonStyleOption().titleBarHeight();
 
     RibbonFactory *installed = new RibbonFactory();
-    installed->getRibbonStyleOption().setTitleBarHeight(50);
+    installed->getRibbonStyleOption().setTitleBarHeight(defaultHeight + 1);
     manager->setupFactory(installed);
+    QCOMPARE(RibbonElementStyleOpt.titleBarHeight(), defaultHeight + 1);
 
     // Uninstalling puts the default factory back rather than leaving the manager
     // without one: RibbonElementFactory and RibbonElementStyleOpt are macros that
     // walk through factory(), so a null there would crash the next ribbon element
-    // the library creates - WindowButtonGroup included.
+    // the library creates - WindowButtonGroup included. It has to be a *new* default
+    // and not the one being uninstalled, which is why the case marks it with a height
+    // the default does not have: `installed` is deleted by the call, and comparing
+    // against that pointer afterwards is a comparison against a freed block, which
+    // the allocator is free to hand straight back.
     manager->setupFactory(Q_NULLPTR);
     QVERIFY(manager->factory() != Q_NULLPTR);
-    QVERIFY(manager->factory() != installed);
-    QVERIFY(manager->factory()->getRibbonStyleOption().titleBarHeight() > 0);
-    QVERIFY(RibbonElementStyleOpt.titleBarHeight() > 0);
+    QCOMPARE(manager->factory()->getRibbonStyleOption().titleBarHeight(), defaultHeight);
+    QCOMPARE(RibbonElementStyleOpt.titleBarHeight(), defaultHeight);
 
     // Reinstalling the factory that is already installed is a no-op, not a
     // use-after-free: setupFactory() deletes the factory it replaces.
     RibbonFactory *current = manager->factory();
     manager->setupFactory(current);
     QCOMPARE(manager->factory(), current);
-    QVERIFY(manager->factory()->getRibbonStyleOption().titleBarHeight() > 0);
+    QCOMPARE(current->getRibbonStyleOption().titleBarHeight(), defaultHeight);
 }
 
 TEST_ADD(tst_RibbonFactoryAndManager)
