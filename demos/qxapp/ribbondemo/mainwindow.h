@@ -17,6 +17,7 @@ QX_APP_USE_NAMESPACE
 class QTextEdit;
 class QActionGroup;
 class QAbstractButton;
+class CustomPage;
 
 #include "qxtheme/qxtheme_global.h"
 

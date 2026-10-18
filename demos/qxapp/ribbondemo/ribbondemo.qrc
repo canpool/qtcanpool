@@ -77,7 +77,12 @@
         <file>res/tabler/align-left.svg</file>
         <file>res/tabler/align-right.svg</file>
         <file>res/tabler/bold.svg</file>
+        <file>res/tabler/circle-minus.svg</file>
+        <file>res/tabler/circle-plus.svg</file>
+        <file>res/tabler/file-import.svg</file>
         <file>res/tabler/italic.svg</file>
+        <file>res/tabler/paint.svg</file>
+        <file>res/tabler/star.svg</file>
         <file>res/tabler/text-decrease.svg</file>
         <file>res/tabler/text-increase.svg</file>
     </qresource>

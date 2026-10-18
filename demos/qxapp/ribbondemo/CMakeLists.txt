@@ -25,6 +25,7 @@ add_qtc_executable(RibbonDemo
   SOURCES
     aboutdialog.cpp aboutdialog.h
     applypage.cpp applypage.h
+    custompage.cpp custompage.h
     main.cpp
     mainwindow.cpp mainwindow.h
     ribbondemo.qrc

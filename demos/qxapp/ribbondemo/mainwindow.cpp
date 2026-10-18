@@ -56,6 +56,7 @@
 #include <QTimer>
 
 #include "aboutdialog.h"
+#include "custompage.h"
 
 QX_RIBBON_USE_NAMESPACE
 QX_THEME_USE_NAMESPACE
@@ -734,45 +735,17 @@ void MainWindow::createPageOther()
     });
 }
 
+/**
+ * @brief Builds the "Custom" page.
+ *
+ * The page builds itself; the window only connects what it wants to hear about.
+ */
 void MainWindow::createPageCustom()
 {
-    RibbonPage *page = ribbonBar()->addPage(tr("&Custom"));
-    page->setObjectName(("pageCustom"));
-
-    // group1
-    RibbonGroup *group1 = new RibbonGroup(tr("quick access bar"));
-    QAction *addAct = createAction(tr("add action"), ":/icon/res/action2.svg");
-    QAction *removeAct = createAction(tr("remove action"), ":/icon/res/action4.svg");
-    group1->addLargeAction(addAct);
-    group1->addLargeAction(removeAct);
-    removeAct->setDisabled(true);
-    QAction *testAct = createAction(tr("custom action"), ":/icon/res/action2.svg");
-    connect(addAct, &QAction::triggered, this, [this, addAct, removeAct, testAct]() {
-        this->ribbonBar()->quickAccessBar()->addAction(testAct);
-        this->ribbonBar()->resizeRibbon();
-        addAct->setDisabled(true);
-        removeAct->setDisabled(false);
-    });
-    connect(removeAct, &QAction::triggered, this, [this, addAct, removeAct, testAct]() {
-        this->ribbonBar()->quickAccessBar()->removeAction(testAct);
-        this->ribbonBar()->resizeRibbon();
-        addAct->setDisabled(false);
-        removeAct->setDisabled(true);
-    });
-    page->addGroup(group1);
-
-    // groupStyle
-    RibbonGroup *groupStyle = new RibbonGroup(tr("config file"));
-    page->addGroup(groupStyle);
-
-    QAction *actionUseQss = createAction(tr("use qss"), ":/icon/res/useqss.svg");
-    connect(actionUseQss, &QAction::triggered, this, &MainWindow::onActionUseQssTriggered);
-    groupStyle->addSmallAction(actionUseQss);
-
-    QAction *actionLoadCustomizeXmlFile =
-        createAction(tr("load customize from xml file"), ":/icon/res/useCustomize.svg");
-    connect(actionLoadCustomizeXmlFile, &QAction::triggered, this, &MainWindow::onActionLoadCustomizeXmlFileTriggered);
-    groupStyle->addSmallAction(actionLoadCustomizeXmlFile);
+    auto *page = new CustomPage(m_icons, this);
+    connect(page, &CustomPage::useQssRequested, this, &MainWindow::onActionUseQssTriggered);
+    connect(page, &CustomPage::loadCustomizeRequested, this, &MainWindow::onActionLoadCustomizeXmlFileTriggered);
+    ribbonBar()->addPage(page);
 }
 
 /**
