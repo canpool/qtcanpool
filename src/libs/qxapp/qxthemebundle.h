@@ -18,20 +18,19 @@ QX_APP_BEGIN_NAMESPACE
  * (\c{:/themes/<fileName>}) and returns it as a QxThemeInfo named \a id,
  * displayed as \a name, drawing on a dark background when \a dark is true.
  *
- * An application that bundles its themes as \c{:/themes/*.css} reuses this
- * instead of writing its own file reader; registerBundledThemes() is the
- * one-call version for the canonical four-family set.
+ * An application that bundles its themes under \c{:/themes/} reuses this
+ * instead of writing its own file reader; registerBundledThemes() does the
+ * same for every theme the bundle ships.
  */
 QX_APP_EXPORT QxTheme::QxThemeInfo readBundledTheme(const QString &id, const QString &name, bool dark,
                                                     const QString &fileName);
 
 /*!
- * Registers the four bundled theme families - soft, classic, flat and slate -
- * each in its light and dark variant, reading their style sheets from
- * \c{:/themes/<family>_<light|dark>.css}. The ids and file names follow the
- * canonical set in \c{res/themes.qrc}, so an application that ships those
- * files gets all eight themes from this single call, made once before the
- * first setTheme().
+ * Registers every theme bundled in \c{res/themes.qrc}, each family in its
+ * light and dark variant, reading their style sheets from
+ * \c{:/themes/<family>_<light|dark>.css}. The ids and file names follow that
+ * canonical set, so an application that ships those files gets the whole
+ * bundle from this single call, made once before the first setTheme().
  *
  * A registration whose file is missing is simply skipped: the engine ignores
  * a QxThemeInfo without an id, so a half-populated resource tree never throws.

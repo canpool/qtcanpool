@@ -403,13 +403,13 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 
 **为什么保持现状**：objectName 是调用方的属性，库不能为了套主题而改掉它。要抹掉这个边界，
 只能把全部主题样式表的选择器从 `#qx_RibbonApplicationButton` 换成（或加上）一个由
-`setApplicationButton()` 维护的动态属性——本库 8 份 + demo 1 份共 9 份样式表加一处代码，
+`setApplicationButton()` 维护的动态属性——每份样式表各加一处、再加一处代码，
 而收益只落在"调用方主动给应用按钮起了名字"这一个分支上；主动命名本就意味着调用方要自己
 接管这块外观。保持现状的同时，契约已经**写进头文件**（`setApplicationButton()` 的注释）
 并被测试钉住：无名按钮获得主题覆盖、有名按钮保留自己的名字
 （`tst_RibbonBar::applicationButton` 两支都断言）。
 
-**要改变它需要什么**：即上面的动态属性方案（9 份样式表 + `setApplicationButton()` 一处）。
+**要改变它需要什么**：即上面的动态属性方案（全部主题样式表 + `setApplicationButton()` 一处）。
 在此之前，想要主题观感的调用方**让按钮保持无名**即可；想要自己的观感的调用方给自己的按钮
 命名（或按自己的 objectName 写样式）。
 

@@ -147,7 +147,7 @@ themes->setTheme(DarkOfficePlus);
 | `RibbonPageContext` | 把一组页作为上下文整体显隐（如「表格工具」上下文页签） |
 | `RibbonMdiArea` | 标签式文档 MDI 区（`QMdiArea` 派生，4.5 新增）：文档以标签页呈现，切换活动文档时自动换掉其登记的 `RibbonPage`；见 `Example_Ribbon_MdiTabs` |
 
-`qxribbon` 本身**不带主题**：库不再内置任何样式表，也不提供主题枚举或切换 API（`RibbonTheme` 已删，B12）。一个 ribbon 用什么配色，由**到达应用的样式表**决定——通常是通过 `QxThemeManager` 注册并以 id 选取（见 @ref QxTheme::QxThemeManager）。仓库根的 `res/themes/` 提供 4 套家族 × 明暗＝8 套现成样式表（`soft_light` / `soft_dark` / `classic_light` / `classic_dark` / `flat_light` / `flat_dark` / `slate_light` / `slate_dark`），被 `res/themes.qrc`（前缀 `:/themes/`）打包，由各应用自行编入并注册，没有副本散落在库里。
+`qxribbon` 本身**不带主题**：库不再内置任何样式表，也不提供主题枚举或切换 API（`RibbonTheme` 已删，B12）。一个 ribbon 用什么配色，由**到达应用的样式表**决定——通常是通过 `QxThemeManager` 注册并以 id 选取（见 @ref QxTheme::QxThemeManager）。仓库根的 `res/themes/` 提供现成的家族样式表（每族明暗各一套，清单与 id 约定见[主题引擎](theming.md)），被 `res/themes.qrc`（前缀 `:/themes/`）打包，由各应用自行编入并注册，没有副本散落在库里。
 
 ## qxdock — 可停靠窗口
 

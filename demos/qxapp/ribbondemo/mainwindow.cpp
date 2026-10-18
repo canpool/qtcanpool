@@ -83,7 +83,7 @@ struct DemoTheme {
 /*
  * The themes this demo offers, and they are the demo's own to offer: the ribbon
  * library ships no style sheet of its own, so what a ribbon looks like is decided
- * here. Five families, each in its light and dark scheme, all of them from
+ * here. Every family comes in a light and a dark scheme, all of them from
  * res/themes.qrc - which this demo builds in like any other application that
  * wants the same set.
  */

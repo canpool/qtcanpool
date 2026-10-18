@@ -46,7 +46,12 @@
 - **已推送的不追溯**：事后发现库 CHANGELOG / 台账漏写，只能补一笔（与代码同笔补，scope 用 `docs(changelog)` / `docs(design)`），不改写历史。
 - **台账纪律**：在研版本任务动态规划，中途不存在「收口」一说；按「当前已落地条目」写，新工作照常追加，版本未结算前开放。归因标签（`stretch` / 可延后）一律标「助手建议」，不得写成「原定 / 既定 / 原留」，不得命名具体后续版本号。
 
-## 3. 库 CHANGELOG 活文档（K24）
+## 3. 注释与文档的写法
+
+- **不写活数据的基数**（主题数 / 文件数 / 条目数 / 库数……）。数字是派生事实：改了数据不会有人回来改注释——实例是新增 accent 家族时 `qxthemebundle.cpp` 的注释更新了、同名头文件的「four families / eight themes」没有，`architecture.md` 的「当前 6 个库」也已过期。写法改为**指向唯一事实源**（qrc、生成器的 `FAMILIES`、紧挨数据的枚举）或**写结构**（「每族明暗各一套」）。
+- **例外**：历史留档（库 CHANGELOG 条目、migration、限制页里的测量记录、台账）记的就是某个时点的事实，可以带数字。
+
+## 4. 库 CHANGELOG 活文档（K24）
 
 - 改动**落地时就写**进该库 `CHANGELOG` 顶端 `Unreleased` 分节（`Feature`/`Interface`/`Optimize`/`Bugfix` 体例），含**不动号的行为修复**。
 - 该库**落号时**把 `Unreleased` 改名成新版本号，与改号同一笔提交。
@@ -54,52 +59,52 @@
 - `qxcore` / `qxtheme` / `qxapp` / `qxplugin` **首次有改动时才建**文件。
 - 一个版本块里每种小节只留一个：追加并进已有同名小节、别另起同名小节；合并只搬条目不重写，小节顺序按首次出现。
 
-## 4. 编码与行尾
+## 5. 编码与行尾
 
 - 全仓行尾统一 **LF**；Python 写文件一律二进制模式（否则 `\n` → CRLF）。
 - 源文件一律**不带 BOM 的 UTF-8**；MSVC 编码问题由根 `CMakeLists.txt` 对 `MSVC_VERSION >= 1910` 加 `/utf-8` 解决（只加 `/source-charset:utf-8` 是错的：窄字面量会变系统代码页）。改写时别顺手保留 BOM；散文 em dash / 弯引号换 ASCII。
 
-## 5. SPDX
+## 6. SPDX
 
 - 新文件 / 补头写在文件最顶部：
   `/** … Copyright (C) <年> maminjie <canpool@163.com> … SPDX-License-Identifier: MulanPSL-2.0 … **/`。
 - 两类存量不改：`qxwindow` 整库 `Apache-2.0`、`qtproject{,_gui}_pch.h` 的 `GPL-3.0`。
 
-## 6. clang-format 门禁
+## 7. clang-format 门禁
 
 - 版本 **21.1.8**，`--style=file`（根 `.clang-format`）。CI 强制门禁；提交前对改动文件跑一遍，**勿升级**。
 
-## 7. 构建与验证
+## 8. 构建与验证
 
 - 构建一律带 `--parallel`（MinGW Makefiles，不带即串行）。
 - **两腿都要跑**：Qt 5.15 与 Qt 6 各 100% 构建 + ctest（`QT_QPA_PLATFORM=offscreen`），别只跑 qt6（教训：Qt 6 独有 API 在 Qt 5 侧连编不过）。新增 / 改写代码先问「有没有 Qt 6 独有 API？」。
 - 覆盖基线含 demos 截图判定；视觉回归（demo 截图）为 opt-in，不影响门禁。
 
-## 8. 分支、版本与进号
+## 9. 分支、版本与进号
 
 - `master` 是主线（K18）；不建 `release-4.x`。
 - **版本序（K34）**：4.3 `qxwindow` → 4.4 不破坏 API 的内部重构 → 4.5 功能升级（可破坏 API）→ … → 5.0 移除 Qt 5。4.x 长生命周期主版本（类 Qt 5.0→5.15）。4.5 不定位 LTS（LTS 留到 4.6+ 之后才定）。
 - **进号判据（附录 B / K11）**：看「这个库本期有没有修复 / 增量」，不是看「头文件动没动」。构建接线（删版本守卫 / 删 `header.list`）不进号；纯 `.cpp` 修复照样进 patch。结算时逐库问「本期有没有修复」。
 - 版本号在「新版本开发刚开始」时前进：`QtCanpoolBranding.cmake` + `qtproject.pri` + `vcpkg.json` + `conanfile.py` 三处齐升、值相等（`COMPAT_VERSION` = 项目版本）。
 
-## 9. tag 与发布
+## 10. tag 与发布
 
 - tag **无 `v` 前缀**、附注 `release <ver>`、显式钉 SHA。
 - GitHub Release 标题 `QtCanpool <ver>`、正文**英文**（不贴中文 `CHANGELOG` 原文；要么改写为英文，要么另写英文摘要）。
 - 两远程推送；完整步骤见 [发布流程](release.md)。
 
-## 10. 命名与敏感信息
+## 11. 命名与敏感信息
 
 - 公共 API / 枚举 / 主题 id 按「**形态或几何**」命名、不用产品名（主题族 `classic` / `soft` / `flat` / `slate` / `accent`；`RibbonStyle` 四值 `TabBar…Style`）。改名先查新词是否被占用。
 - **敏感信息**：某商用 Ribbon 组件名属敏感信息，提交 / 注释 / 文档 / 台账一律不得出现（连厂商类名也不列）；历史存量不动，新增必须干净。
 
-## 11. 架构纠偏判据（K 组）
+## 12. 架构纠偏判据（K 组）
 
 - 四条值得推翻的设计判据：**越界**（库把本属应用层的职责打包进自己，使应用无从替换）/ **双轨**（同一件事在库里有两套互不相干实现且彼此不通气）/ **隐式压制**（库的行为在没有对外 API 表达的前提下压过应用的设置）/ **开关错配**（非外观的开关改变外观或行为）。
 - **「未导出 ⇒ 非 API」**：有无 `QX_<LIB>_EXPORT` 才是判据；磁盘上有 `_p.h` ≠ 可用。
 - 详细台账与条目见 `doc/design/<ver>-TASKS.md` 的 K 组（如 `4.5-TASKS.md`）。
 
-## 12. CI 概览
+## 13. CI 概览
 
 - GitHub Actions：门禁作业（`clang-format` / `source encoding` / `clang-tidy` / `quality` / 各平台 `build` + `ctest`）与非门禁步骤分离，互不共用作业。
 - 改 workflow 后本机 PyYAML 解析 + 桩跑该步骤（PyYAML 只在系统 Python 3.12）。

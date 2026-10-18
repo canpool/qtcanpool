@@ -31,7 +31,8 @@ QxThemeManager::instance()->registerTheme(dark);
 ```
 
 `res/themes.qrc` 把仓库 `res/themes/` 下的样式表挂到 `:/themes/` 上，需要它们的应用
-在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的是 **5 套家族 × 明暗**，约定 id 如下：
+在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的主题与约定 id 如下（每族明暗各一套，
+生成方式见 `tools/themes/README.md`）：
 
 | 配置 id | 显示名 | 深色 |
 | :--- | :--- | :---: |

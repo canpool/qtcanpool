@@ -46,7 +46,7 @@ qxapp      应用框架
 | 目录 | 说明 |
 | :--- | :--- |
 | `cmake/` | CMake 构建框架（`QtCanpoolAPI.cmake` 是核心，提供下面那套函数） |
-| `src/libs/` | 基础类库，每个库一个子目录，一个库一个命名空间（当前 6 个，见上） |
+| `src/libs/` | 基础类库，每个库一个子目录，一个库一个命名空间（清单见上） |
 | `src/modules/` | 可拔插业务模块的**样板**与时兴能力的收容所（K16）。正式、稳定的能力进 `src/libs` |
 | `src/plugins/` | 框架**自己的**功能插件（分层规则见 `src/plugins/CMakeLists.txt`）；业务插件写在自己的工程里 |
 | `src/shared/` | 跨模块共享代码 |

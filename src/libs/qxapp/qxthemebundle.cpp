@@ -26,10 +26,10 @@ void registerBundledThemes(QxTheme::QxThemeManager *engine)
         return;
     }
 
-    // Five families, each in a light and a dark scheme, read from
+    // One entry per bundled theme, read from
     // :/themes/<family>_<light|dark>.css. The ids and the file names follow
-    // the canonical set in res/themes.qrc; an application that ships those
-    // files gets all ten themes from this one call.
+    // the canonical set in res/themes.qrc, so an application that ships those
+    // files gets the whole bundle from this one call.
     struct Entry {
         const char *id;
         const char *name;

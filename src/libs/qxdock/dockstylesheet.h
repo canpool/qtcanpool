@@ -14,7 +14,7 @@ QX_DOCK_BEGIN_NAMESPACE
  * Reads the dock style sheet an application has to install for a DockWindow to
  * look like a dock rather than a row of unstyled widgets.
  *
- * The four sheets behind this used to live in the library and were applied by
+ * The sheets behind this used to live in the library and were applied by
  * DockWindow's own constructor. That put the dock's appearance beyond the reach
  * of the application: a widget-level style sheet outranks the application-level
  * one, so an application that set a dark theme still got a DockWindow the
