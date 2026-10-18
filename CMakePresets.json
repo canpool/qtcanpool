@@ -19,9 +19,9 @@
     {
       "name": "qt6",
       "inherits": "base",
-      "displayName": "Qt 6 (MinGW Makefiles)",
+      "displayName": "Qt 6 (Ninja)",
       "description": "Default local configuration: Qt 6 with the MinGW kit that ships alongside it.",
-      "generator": "MinGW Makefiles",
+      "generator": "Ninja",
       "environment": {
         "QTCANPOOL_QT_PREFIX": "C:/Qt/6.8.3/mingw_64",
         "PATH": "C:/Qt/Tools/mingw1310_64/bin;$penv{PATH}"
@@ -31,18 +31,11 @@
       }
     },
     {
-      "name": "qt6-ninja",
-      "inherits": "qt6",
-      "displayName": "Qt 6 (Ninja)",
-      "description": "Same as qt6 but with Ninja instead of MinGW Makefiles.",
-      "generator": "Ninja"
-    },
-    {
       "name": "qt5",
       "inherits": "base",
       "displayName": "Qt 5.15 (best effort)",
       "description": "Qt 5.15 is only a best-effort target and needs the matching MinGW kit (mingw810_64), not the Qt 6 one.",
-      "generator": "MinGW Makefiles",
+      "generator": "Ninja",
       "environment": {
         "QTCANPOOL_QT_PREFIX": "C:/Qt/5.15.2/mingw81_64",
         "PATH": "C:/Qt/Tools/mingw810_64/bin;$penv{PATH}"
@@ -53,7 +46,7 @@
     },
     {
       "name": "coverage",
-      "inherits": "qt6-ninja",
+      "inherits": "qt6",
       "displayName": "Coverage (GCC/Clang)",
       "description": "Debug build instrumented with --coverage; feed the result to lcov.",
       "cacheVariables": {
@@ -63,7 +56,7 @@
     },
     {
       "name": "sanitize",
-      "inherits": "qt6-ninja",
+      "inherits": "qt6",
       "displayName": "ASan + UBSan (GCC/Clang)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -99,10 +92,6 @@
       "configurePreset": "qt6"
     },
     {
-      "name": "qt6-ninja",
-      "configurePreset": "qt6-ninja"
-    },
-    {
       "name": "qt5",
       "configurePreset": "qt5"
     },
@@ -134,11 +123,6 @@
       "name": "qt6",
       "inherits": "base",
       "configurePreset": "qt6"
-    },
-    {
-      "name": "qt6-ninja",
-      "inherits": "base",
-      "configurePreset": "qt6-ninja"
     },
     {
       "name": "qt5",
