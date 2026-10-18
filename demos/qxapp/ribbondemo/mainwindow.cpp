@@ -172,16 +172,20 @@ void MainWindow::applyTheme(const QString &themeId)
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return;
         }
-        // One sheet for the whole application. Putting it on the window instead would
-        // make it win over the application's wherever both describe the same widget,
-        // which is how the ribbon used to stay light while the rest went dark.
-        qApp->setStyleSheet(QString::fromUtf8(file.readAll()));
-        // The style sheet cannot repaint an icon, so a theme that only installed
-        // one left every glyph in the colour it was drawn in - black on a dark
-        // ribbon. Installing the matching palette is what the glyphs are painted
-        // from, and refreshing is what makes them painted again: the same call
-        // that answers for a light theme answers differently for a dark one.
+        // Two things have to happen and their order matters. One sheet for the whole
+        // application, because a sheet on the window would win over the application's
+        // wherever both describe the same widget - which is how the ribbon used to stay
+        // light while the rest went dark. And the matching palette, because a style
+        // sheet cannot repaint an icon: every glyph would keep the colour it was drawn
+        // in, black on a dark ribbon.
+        //
+        // The palette goes in *before* the sheet. An application style sheet makes Qt
+        // hand each widget a palette of its own, and from then on application palette
+        // changes no longer reach those widgets; installing the sheet is also what
+        // re-polishes them, so it has to be the last thing to land. The other way round
+        // left the editor and every other styled control in the previous theme.
         qApp->setPalette(QxTheme::paletteFor(theme.dark));
+        qApp->setStyleSheet(QString::fromUtf8(file.readAll()));
         m_icons->refresh();
         // A dark ribbon needs the context page to leave its tab alone; a light one
         // draws over it. Office 2016 Blue is dark enough to count.

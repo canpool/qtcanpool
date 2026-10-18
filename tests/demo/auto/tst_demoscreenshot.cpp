@@ -24,6 +24,13 @@
  * deterministic - which is exactly what a golden wants. Set QT_QPA_PLATFORM to
  * compare against a real desktop session instead.
  *
+ * The third check does not use a golden at all. A window that switched from one theme
+ * to another has to look exactly like a window started in that theme, so the two
+ * captures are compared against each other: same build, same machine, seconds apart.
+ * Whatever the switch failed to re-colour shows up as a difference, which is how a
+ * control left behind in the previous theme gets caught without anybody listing the
+ * controls - see themeSwitchMatchesAFreshStart().
+ *
  * Paths arrive as compile definitions from tests/CMakeLists.txt; there is no
  * reasonable way to guess them at runtime (the demos and the test do not share
  * an output directory on every platform). A demo whose definition is missing
@@ -37,6 +44,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QProcess>
 #include <QtCore/QProcessEnvironment>
+#include <QtCore/QStringList>
 #include <QtGui/QImage>
 #include <QtTest/QtTest>
 
@@ -77,6 +85,21 @@ constexpr double kMaxDiffPercent = 0.5;
  */
 const char *const kScreenshotDelay = "2000";
 
+/*!
+ * A theme switch is judged by comparing two captures of the same build on the same
+ * machine, seconds apart - no committed golden, no second machine's fonts - so there is
+ * no reason for a pixel to move. The budget is therefore almost nothing: enough for a
+ * stray pixel, while a control that kept the previous theme moves thousands.
+ */
+constexpr double kMaxSwitchDiffPercent = 0.05;
+
+/*!
+ * The two themes a switch is made between have to differ enough for the comparison to
+ * mean anything: if the demo ignored the theme switch entirely, both captures would be
+ * the same picture and "the switch left nothing behind" would pass for the wrong reason.
+ */
+constexpr double kMinThemeDiffPercent = 1.0;
+
 QImage loadAsArgb32(const QString &path)
 {
     // Both sides are converted to the same format before they are compared:
@@ -86,7 +109,7 @@ QImage loadAsArgb32(const QString &path)
     return QImage(path).convertToFormat(QImage::Format_ARGB32);
 }
 
-int countDifferingPixels(const QImage &lhs, const QImage &rhs)
+int countDifferingPixels(const QImage &lhs, const QImage &rhs, int tolerance = kChannelTolerance)
 {
     int differing = 0;
 
@@ -95,9 +118,8 @@ int countDifferingPixels(const QImage &lhs, const QImage &rhs)
         const QRgb *b = reinterpret_cast<const QRgb *>(rhs.constScanLine(y));
 
         for (int x = 0; x < lhs.width(); ++x) {
-            if (qAbs(qRed(a[x]) - qRed(b[x])) > kChannelTolerance ||
-                qAbs(qGreen(a[x]) - qGreen(b[x])) > kChannelTolerance ||
-                qAbs(qBlue(a[x]) - qBlue(b[x])) > kChannelTolerance) {
+            if (qAbs(qRed(a[x]) - qRed(b[x])) > tolerance || qAbs(qGreen(a[x]) - qGreen(b[x])) > tolerance ||
+                qAbs(qBlue(a[x]) - qBlue(b[x])) > tolerance) {
                 ++differing;
             }
         }
@@ -109,8 +131,12 @@ int countDifferingPixels(const QImage &lhs, const QImage &rhs)
 /*!
  * Runs one demo to completion and leaves its capture at @p screenshotPath.
  * Returns false with a message in @p error that is meant to be shown as is.
+ *
+ * @p extraArguments are appended after the screenshot switches, which is how the
+ * theme checks below ask for a theme or a sequence of them.
  */
-bool runDemo(const QString &executable, const QString &screenshotPath, const QString &logName, QString &error)
+bool runDemo(const QString &executable, const QString &screenshotPath, const QString &logName, QString &error,
+             const QStringList &extraArguments = QStringList())
 {
     const QFileInfo demo(executable);
     if (!demo.exists()) {
@@ -130,11 +156,14 @@ bool runDemo(const QString &executable, const QString &screenshotPath, const QSt
         environment.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("offscreen"));
     }
 
+    QStringList arguments{QStringLiteral("--screenshot"), screenshotPath, QStringLiteral("--screenshot-delay"),
+                          QString::fromLatin1(kScreenshotDelay)};
+    arguments.append(extraArguments);
+
     QProcess process;
     process.setProcessEnvironment(environment);
     process.setProgram(demo.absoluteFilePath());
-    process.setArguments(QStringList{QStringLiteral("--screenshot"), screenshotPath,
-                                     QStringLiteral("--screenshot-delay"), QString::fromLatin1(kScreenshotDelay)});
+    process.setArguments(arguments);
     // The demos are chatty (hundreds of style warnings per run), so their output
     // goes to files instead of pipes: nothing can fill up and block the child,
     // and the log survives for the failure messages below. This also keeps the
@@ -291,12 +320,23 @@ private slots:
 
     void ribbonDemoRenders();
     void ribbonDemoMatchesGolden();
+    void themeSwitchMatchesAFreshStart();
 #ifdef DEMO_DOCK_EXECUTABLE
     void dockDemoRenders();
     void dockDemoMatchesGolden();
 #endif
 private:
+    /*!
+     * The ribbon as it looks when started straight into @p themeId; empty when the demo
+     * could not produce it, with @p error saying why. Cached, because the switch pairs
+     * below reuse the same themes.
+     */
+    QImage captureFreshTheme(const QString &themeId, QString &error);
+    /*! The ribbon after switching from @p fromId to @p toId, caught at the end. */
+    QImage captureAfterSwitch(const QString &fromId, const QString &toId, QString &error);
+
     QImage m_ribbonScreenshot;
+    QHash<QString, QImage> m_themeScreenshots;
 #ifdef DEMO_DOCK_EXECUTABLE
     QImage m_dockScreenshot;
 #endif
@@ -338,6 +378,118 @@ void tst_DemoScreenshot::ribbonDemoMatchesGolden()
 {
     checkGolden(m_ribbonScreenshot, QStringLiteral(DEMO_GOLDEN_PATH), QStringLiteral(DEMO_SCREENSHOT_PATH),
                 QStringLiteral("ribbondemo"));
+}
+
+namespace
+{
+/*! Where the theme captures are written: beside the demo's own screenshot. */
+QString themeCaptureDirectory()
+{
+    return QFileInfo(QStringLiteral(DEMO_SCREENSHOT_PATH)).absolutePath();
+}
+}   // namespace
+
+QImage tst_DemoScreenshot::captureFreshTheme(const QString &themeId, QString &error)
+{
+    if (m_themeScreenshots.contains(themeId)) {
+        return m_themeScreenshots.value(themeId);
+    }
+
+    const QString name = QStringLiteral("theme-%1").arg(themeId);
+    const QString path = themeCaptureDirectory() + QLatin1Char('/') + name + QStringLiteral(".png");
+    QImage shot;
+    if (runDemo(QStringLiteral(DEMO_RIBBON_EXECUTABLE), path, name + QStringLiteral(".log"), error,
+                QStringList{QStringLiteral("--theme"), themeId})) {
+        shot = loadAsArgb32(path);
+    }
+
+    // Cached either way: a failure here is not worth repeating for the next pair.
+    m_themeScreenshots.insert(themeId, shot);
+    return shot;
+}
+
+QImage tst_DemoScreenshot::captureAfterSwitch(const QString &fromId, const QString &toId, QString &error)
+{
+    const QString name = QStringLiteral("switch-%1-to-%2").arg(fromId, toId);
+    const QString path = themeCaptureDirectory() + QLatin1Char('/') + name + QStringLiteral(".png");
+    // One build, one process, one run: the demo applies the themes in the order given and
+    // captures after the last one has settled.
+    const QString sequence = fromId + QLatin1Char(',') + toId;
+    if (!runDemo(QStringLiteral(DEMO_RIBBON_EXECUTABLE), path, name + QStringLiteral(".log"), error,
+                 QStringList{QStringLiteral("--theme"), sequence})) {
+        return QImage();
+    }
+    return loadAsArgb32(path);
+}
+
+void tst_DemoScreenshot::themeSwitchMatchesAFreshStart()
+{
+    // A ThemeSwitch is checked by comparing pixels, and what it compares them against is
+    // not a commit: it is the same build started straight into the theme it switched to.
+    // Anything the switch failed to re-colour is a difference, so the check names the
+    // defect instead of describing it - "the editor kept the dark background" is the
+    // difference between two captures, not a property anybody has to assert one by one.
+    struct ThemeSwitch {
+        const char *from;
+        const char *to;
+    };
+    // The reported case was dark to light; the reverse runs the same code path and has
+    // the same mistake available to it. The third pair crosses theme families, where a
+    // sheet and a palette disagreeing shows up first.
+    const ThemeSwitch pairs[] = {
+        {"classic-dark", "classic-light"},
+        {"classic-light", "classic-dark"},
+        {"accent-dark", "soft-light"},
+    };
+
+    QString error;
+    for (const ThemeSwitch &pair : pairs) {
+        const QString from = QString::fromLatin1(pair.from);
+        const QString to = QString::fromLatin1(pair.to);
+        const QString name = QStringLiteral("%1 -> %2").arg(from, to);
+
+        const QImage freshFrom = captureFreshTheme(from, error);
+        QVERIFY2(!freshFrom.isNull(), qPrintable(QStringLiteral("%1: %2").arg(name, error)));
+        const QImage freshTo = captureFreshTheme(to, error);
+        QVERIFY2(!freshTo.isNull(), qPrintable(QStringLiteral("%1: %2").arg(name, error)));
+
+        const double pixels = freshTo.width() * freshTo.height();
+        if (pixels <= 0) {
+            QFAIL(qPrintable(QStringLiteral("%1: the capture is empty").arg(name)));
+        }
+
+        // The comparison below only means something when the two themes look different:
+        // a demo that ignored --theme would produce the same picture twice and pass.
+        const double themesDiffer = 100.0 * countDifferingPixels(freshFrom, freshTo, 0) / pixels;
+        QVERIFY2(themesDiffer >= kMinThemeDiffPercent,
+                 qPrintable(QStringLiteral("%1: the two themes differ in only %2% of the pixels - "
+                                           "the captures are not telling the themes apart")
+                                .arg(name)
+                                .arg(themesDiffer, 0, 'f', 2)));
+
+        const QImage switched = captureAfterSwitch(from, to, error);
+        QVERIFY2(!switched.isNull(), qPrintable(QStringLiteral("%1: %2").arg(name, error)));
+        QVERIFY2(switched.size() == freshTo.size(),
+                 qPrintable(QStringLiteral("%1: the window is %2x%3 after the switch but %4x%5 when "
+                                           "started in that theme")
+                                .arg(name)
+                                .arg(switched.width())
+                                .arg(switched.height())
+                                .arg(freshTo.width())
+                                .arg(freshTo.height())));
+
+        const double leftBehind = 100.0 * countDifferingPixels(switched, freshTo, 0) / pixels;
+        QVERIFY2(
+            leftBehind <= kMaxSwitchDiffPercent,
+            qPrintable(QStringLiteral("%1: %2% of the pixels still show the old theme (budget %3%) - "
+                                      "something the switch did not re-colour; compare %4 with %5")
+                           .arg(name)
+                           .arg(leftBehind, 0, 'f', 3)
+                           .arg(kMaxSwitchDiffPercent)
+                           .arg(themeCaptureDirectory() + QStringLiteral("/switch-") + from + QStringLiteral("-to-") +
+                                to + QStringLiteral(".png"))
+                           .arg(themeCaptureDirectory() + QStringLiteral("/theme-") + to + QStringLiteral(".png"))));
+    }
 }
 
 #ifdef DEMO_DOCK_EXECUTABLE
