@@ -28,6 +28,7 @@ qtcanpool 集成了一些第三方组件，这些组件具有自己的许可协�
 ### MIT
 
 - src/libs/qxribbon
+- demos/qxapp/ribbondemo/res（图标取自 [Tabler Icons](https://github.com/tabler/tabler-icons) 3.49.0，许可全文见该目录的 `icons-LICENSE.txt`）
 
 ### Apache-2.0
 
