@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
 #include "mainwindow.h"
+#include "qxribbon/ribbonpage.h"
+
 #include <QApplication>
 #include <QCommandLineOption>
 #include <QCommandLineParser>
@@ -10,6 +12,7 @@
 #include <QElapsedTimer>
 #include <QGuiApplication>
 #include <QPixmap>
+#include <QStringList>
 #include <QStyle>
 #include <QStyleFactory>
 #include <QStyleHints>
@@ -144,6 +147,23 @@ int main(int argc, char *argv[])
     if (!screenshotFile.isEmpty()) {
         const int delay = parser.value(delayOption).toInt();
         QTimer::singleShot(delay, &w, [&w, &a, screenshotFile]() {
+            // A page with no name renders as an empty tab, and no pixel check can
+            // tell that apart from a narrow one. Rebuilding a page is where the
+            // name gets lost, so the screenshot mode - the test's way in - refuses
+            // to write a capture of a ribbon that has unlabelled tabs.
+            QStringList unnamed;
+            const QList<RibbonPage *> pages = w.findChildren<RibbonPage *>();
+            for (RibbonPage *page : pages) {
+                if (page->pageName().isEmpty()) {
+                    unnamed << page->objectName();
+                }
+            }
+            if (!unnamed.isEmpty()) {
+                qCritical() << "ribbon pages without a name:" << unnamed;
+                a.exit(1);
+                return;
+            }
+
             const QPixmap shot = w.grab();
             const bool saved = shot.save(screenshotFile);
             qInfo() << "screenshot:" << screenshotFile << shot.size() << (saved ? "ok" : "FAILED");

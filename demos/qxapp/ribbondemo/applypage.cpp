@@ -30,6 +30,7 @@ ApplyPage::ApplyPage(QxThemeIcons *icons, QWidget *parent)
     : RibbonPage(parent)
     , m_icons(icons)
 {
+    setPageName(tr("&Apply(example long page)"));
     setObjectName(QStringLiteral("pageApply"));
 
     RibbonGroup *group = addGroup(tr("Font"));

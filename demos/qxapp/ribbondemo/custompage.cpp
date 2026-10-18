@@ -29,6 +29,7 @@ CustomPage::CustomPage(QxThemeIcons *icons, QWidget *parent)
     : RibbonPage(parent)
     , m_icons(icons)
 {
+    setPageName(tr("&Custom"));
     setObjectName(QStringLiteral("pageCustom"));
 
     RibbonGroup *group = new RibbonGroup(tr("quick access bar"));
