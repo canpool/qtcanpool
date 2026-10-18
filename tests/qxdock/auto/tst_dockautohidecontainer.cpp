@@ -183,10 +183,11 @@ void tst_DockAutoHideContainer::collapseSlidesIntoPlace()
 void tst_DockAutoHideContainer::glyphsFollowTheSurfaceOnShow()
 {
     // A colour nothing else in the test uses, so a pixel carrying it is the
-    // glyph, not the fill behind it.
-    DockStyleColors colors;
-    colors.onAccent = QColor(9, 8, 7);
-    applyDockIcons(colors);
+    // glyph, not the fill behind it. It goes in as the palette's pair of the
+    // accent fill, which is how the dock asks what to paint on that surface.
+    QPalette palette;
+    palette.setColor(QPalette::HighlightedText, QColor(9, 8, 7));
+    applyDockIcons(palette);
 
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
     DockWindow window;

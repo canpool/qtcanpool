@@ -22,15 +22,18 @@ Feature
   complete sheet; an unresolved placeholder refuses the whole sheet and says so,
   rather than letting Qt drop the declaration silently.
   tst_DockWindow::styleSheetIsReadFromTheApplication
-- applyDockIcons() takes the same DockStyleColors as the sheet. An application
-  that maps a theme onto a colour set now hands one object to both, so the glyph
-  on an accent fill is the set's on-accent colour instead of whatever the
-  palette calls HighlightedText - the last place where the sheet and the icons
-  could disagree about which surface they are on. A field left invalid falls back
-  the same way it does in the sheet.
-  The two argument types cannot be confused silently: QPalette and
-  DockStyleColors are unrelated, so a caller either keeps the old call or names
-  the set.
+- The glyphs say which of two surfaces they are on rather than which colours to
+  use: the ordinary one is painted in QPalette::WindowText and the emphasized
+  one - a focused tab, everything on an auto hide title bar - in
+  QPalette::HighlightedText, the pair of the accent fill. Both are asked in C++
+  because a style sheet cannot ask for them: palette() accepts neither
+  highlightedtext nor brighttext, and drops the declaration without a word.
+  The dock had an overload that took a DockStyleColors instead, so that an
+  application could hand the icons the same set it handed the sheet. It is gone
+  again, unreleased: a glyph that takes a colour from anywhere but the palette is
+  not the ribbon's model, and the set's on-accent was the last place where the
+  sheet and the icons could disagree about the surface they were on. The palette
+  overload is the one that shipped in 4.5.0 and the only one now.
   tst_DockIconProvider::colorsReachTheGlyph
 - The focused treatment is selected by a dynamic property instead of by which
   fragment the sheet was assembled from, so it lives in base.css with the rest of

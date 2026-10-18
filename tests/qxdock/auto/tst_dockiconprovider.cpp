@@ -85,15 +85,16 @@ void tst_DockIconProvider::registeringAgainReplaces()
 }
 
 /*!
- * The tint follows the colour set, not the palette. The glyph is checked on a
- * pixel rather than on the icon's identity because the point is what is drawn:
- * an icon that kept the palette's colour would still be a valid, non-null QIcon.
+ * A glyph on the ordinary surface is painted in the palette's window text,
+ * whatever colour that happens to be. The glyph is checked on a pixel rather
+ * than on the icon's identity because the point is what is drawn: an icon that
+ * kept some other colour would still be a valid, non-null QIcon.
  */
 void tst_DockIconProvider::colorsReachTheGlyph()
 {
-    DockStyleColors colors;
-    colors.text = QColor(1, 2, 3);
-    applyDockIcons(colors);
+    QPalette palette;
+    palette.setColor(QPalette::WindowText, QColor(1, 2, 3));
+    applyDockIcons(palette);
 
     const QImage image = DockManager::iconProvider().customIcon(Qx::DockPanelCloseIcon).pixmap(QSize(16, 16)).toImage();
     QVERIFY(!image.isNull());

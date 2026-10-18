@@ -216,9 +216,9 @@ bool isOnHighlightSurface(const QAbstractButton *button)
     return false;
 }
 
-void applyDockIcons(const DockStyleColors &colors, QWidget *root)
+void applyDockIcons(const QPalette &palette, QWidget *root)
 {
-    s_activeColors = colors.resolved();
+    s_activeColors = DockStyleColors::fromPalette(palette).resolved();
     internal::resetHighlightSurfaceIconCache();
 
     QHash<Qx::DockIcon, QIcon> icons;
@@ -235,11 +235,6 @@ void applyDockIcons(const DockStyleColors &colors, QWidget *root)
 
     if (root)
         refreshDockIcons(root);
-}
-
-void applyDockIcons(const QPalette &palette, QWidget *root)
-{
-    applyDockIcons(DockStyleColors::fromPalette(palette), root);
 }
 
 void refreshDockIcons(QWidget *root)

@@ -36,22 +36,19 @@ private:
  * calls it, the buttons fall back to the platform style icons, which are already
  * theme-aware.
  *
+ * A glyph knows two surfaces and nothing else: the ordinary one takes
+ * QPalette::WindowText and the emphasized one - a focused tab, an auto hide
+ * title bar - takes QPalette::HighlightedText, which is the pair of the accent
+ * fill those surfaces are painted with. Both are asked in C++ because a style
+ * sheet cannot: palette() accepts neither highlightedtext nor brighttext. That
+ * is the whole of the dock's icon story, and it is the same one the ribbon's
+ * caption buttons tell - the colours of everything else come from the sheet.
+ *
  * Pass \a root (the dock window) to also re-apply the freshly registered icons to
  * buttons that already exist; call applyDockIcons() again with \a root on a
  * palette change so already-created buttons pick up the new colours.
  */
 QX_DOCK_EXPORT void applyDockIcons(const QPalette &palette, QWidget *root = nullptr);
-
-/*!
- * The same re-tint, with the colours the dock sheet is rendered with.
- *
- * This is the entry point that keeps the glyphs and the sheet in step: an
- * application that maps a theme onto a DockStyleColors hands the same set to
- * both, so the glyph on an accent fill is the sheet's on-accent colour rather
- * than whatever the palette happens to call HighlightedText. A field left
- * invalid falls back the same way it does in the sheet.
- */
-QX_DOCK_EXPORT void applyDockIcons(const DockStyleColors &colors, QWidget *root = nullptr);
 
 /*!
  * Re-applies the provider's icons to any dock button beneath \a root. Call it
