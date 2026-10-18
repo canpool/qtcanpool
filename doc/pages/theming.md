@@ -150,3 +150,10 @@ themes->setStyleSheet(QStringLiteral("dark-officeplus"), myCss);
    都是**单色掩膜**，颜色取自 @ref QPalette（如 `ButtonText`、`WindowText`），
    换主题时随调色板重绘；库只给一份资产，不再有明暗两套。
    应用自己若有单色掩膜资产，可以用 @ref QxRibbon::tintedIcon 按同一个规则着色。
+5. **浅色主题的「按下」不填实色**。浅色主题的字形和文字都是深色（图标按 `text` 上色），
+   把 `:pressed` 填成 `accent-fill` 就成了「深色字形压在中间蓝上」，既不是看不清的文字，
+   也不是看得清的图标。浅色骨架因此把按下态做成比 hover 深一档的浅色填充、用 `accent` 描边，
+   实色填充只留给内容本身是浅色的地方（应用按钮、gallery 选中项）；暗色骨架正相反——
+   那里的字形本来就是浅色。这条不是约定而是门禁：`tools/themes/build_themes.py` 会对每张表
+   的每个状态算前景/背景对比度，选错颜色时**生成直接失败**，不会写出表来。
+

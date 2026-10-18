@@ -12,6 +12,16 @@ name: flat light
 
 /* start ribbon set*/
 
+/*
+ * A light scheme keeps every state fill light. Its glyphs and labels are dark -
+ * an icon is painted in the sheet's text colour - so a pressed state filled with
+ * accent-fill would put a black glyph on a mid-blue box and leave it unreadable.
+ * Pressed is therefore one step deeper than hover, with the accent as the
+ * outline, and the solid fills stay where the content is light too: the
+ * application button and a selected gallery item. The dark skeleton does the
+ * opposite, because there every glyph is light already.
+ */
+
 /*RibbonBar*/
 
 QxRibbon--RibbonBar {
@@ -235,9 +245,9 @@ QToolButton#qx_RibbonBackstageCloseButton:hover {
 
 QToolButton#qx_RibbonBackstageButton:pressed,
 QToolButton#qx_RibbonBackstageCloseButton:pressed {
-  color: #ffffff;
+  color: #333333;
   border: 1px solid #2b7de9;
-  background-color: #1c6fd0;
+  background-color: #d6e8ff;
 }
 
 QToolButton#qx_RibbonBackstageButton:checked,
@@ -269,9 +279,9 @@ QxRibbon--RibbonButton:focus {
 }
 
 QxRibbon--RibbonButton:pressed {
-  color: #ffffff;
-  border: 1px solid#2b7de9;
-  background-color: #1c6fd0;
+  color: #333333;
+  border: 1px solid #2b7de9;
+  background-color: #d6e8ff;
 }
 
 QxRibbon--RibbonButton:checked {
@@ -295,9 +305,9 @@ QxRibbon--RibbonControlButton {
 }
 
 QxRibbon--RibbonControlButton:pressed {
-  color: #ffffff;
+  color: #333333;
   border: 1px solid #2b7de9;
-  background-color: #1c6fd0;
+  background-color: #d6e8ff;
 }
 
 QxRibbon--RibbonControlButton:checked {
@@ -386,9 +396,9 @@ QxRibbon--RibbonComboBox::drop-down {
 }
 
 QxRibbon--RibbonComboBox::drop-down:hover {
-  color: #ffffff;
+  color: #333333;
   border: 1px solid #fff1b6;
-  background-color: #1c6fd0;
+  background-color: #d6e8ff;
 }
 
 /*RibbonSeparator*/
