@@ -30,6 +30,6 @@ cmake -S doc -B build-docs && cmake --build build-docs --target docs
 
 ## 现状
 
-- **968 页、警告 0**（计数用 `grep -cE ': (warning|error):'`，别数日志行数，续行会虚高约三成）。
+- **警告 0**（计数用 `grep -cE ': (warning|error):'`，别数日志行数，续行会虚高约三成）。
 - 本机 Doxygen（MSYS2 手工拼装）退出时崩溃（`std::system_error`，码 3）但产物完整；CI 发行版无此问题。
 - 线上：<https://canpool.github.io/qtcanpool/>（GitHub Pages）。

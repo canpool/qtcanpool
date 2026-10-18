@@ -423,8 +423,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   - 迁移：删掉枚举与那几个自由函数的使用；把「选哪个主题」改成注册 + 报 id。
   - **持久化本就存 id**，沿用旧 id（在应用侧重新注册到某套新样式表上）即可让老配置继续生效。
 - **预置主题整套换掉**（仓库 `res/themes/`，破坏配置 id）：原来的 8 套历史样式表
-  （`light_yellow` / `light_office2013` / `light_classic` / `light_fancy` / `dark_wps` /
-  `dark_officeplus`）与 `ribbondemo` 自带的 `office2016blue` 全部删除，改为 **5 套家族 × 明暗**：
+  （`light_yellow` / `light_office2013` / `light_classic` / `light_fancy` / `light_fluent2016` /
+  `light_fluent2019` / `dark_wps` / `dark_officeplus`）与 `ribbondemo` 自带的 `office2016blue`
+  全部删除，改为 **5 套家族 × 明暗**：
   `classic_light` / `classic_dark` / `soft_light` / `soft_dark` / `flat_light` / `flat_dark` /
   `slate_light` / `slate_dark` / `accent_light` / `accent_dark`，配置 id 为 `classic-light` …
   `accent-dark`。

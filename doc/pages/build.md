@@ -6,7 +6,7 @@
 
 | 项目 | 要求 |
 | :--- | :--- |
-| Qt | **5.15 及以上**，主推 Qt 6.5 / 6.8 LTS |
+| Qt | **5.15 及以上**，主推 Qt 6.8 / 6.12 LTS |
 | C++ | C++17（构建框架强制 `CMAKE_CXX_STANDARD 17`，且不允许编译器扩展） |
 | CMake | 3.16 及以上 |
 | 编译器 | MinGW（随 Qt 分发）、MSVC 2019+、GCC 9+、Apple Clang |
@@ -56,11 +56,10 @@ cmake --build build --config Release --parallel
 根目录的 `CMakePresets.json` 固化了常用配置，省掉一长串 `-D`：
 
 ```bash
-cmake --preset qt6           # Qt 6 + MinGW Makefiles
+cmake --preset qt6           # Qt 6（Ninja 生成器）
 cmake --build --preset qt6
 ctest --preset qt6           # 已带 QT_QPA_PLATFORM=offscreen
 
-cmake --preset qt6-ninja     # 同上，但用 Ninja，构建更快
 cmake --preset qt5           # Qt 5.15（尽力兼容）
 cmake --preset coverage      # 覆盖率构建
 cmake --preset sanitize      # ASan + UBSan
@@ -257,7 +256,7 @@ cmake --build build --target docs
 | `appshell` | `AppShellDemo` | 应用外壳：导航轨 + 页面栈 + 停靠区 + 主题 + 启动屏 + 布局持久化 |
 | `qxwindow` | `QxWindowDemo` | 无边框窗口：自绘标题栏 + 四个系统按钮 + 整套窗口材质（DWM blur / acrylic / mica，macOS 毛玻璃） |
 
-`examples/` 下另有 27 个更细粒度的控件示例，同样由 CMake 构建，可用
+`examples/` 下另有按库分组的细粒度控件示例，同样由 CMake 构建，可用
 `-DWITH_EXAMPLES=OFF` 关掉（默认随构建一起编译，但不安装）。
 
 ## 安装与消费
@@ -348,11 +347,20 @@ FILES=$(git ls-files 'src/**/*.h' 'src/**/*.cpp' 'demos/**/*.h' 'demos/**/*.cpp'
 clang-format --style=file --dry-run --Werror $FILES
 ```
 
-### 构建一律带 `--parallel`
+### 并行度：Ninja 自动并行，全量约定 `--parallel 16`
 
-`qt6` / `qt5` CMake preset 是 MinGW Makefiles 且未设 `jobs` ⇒ 不带 `--parallel` 就是单核串行
-（实测同一次全量构建 119s vs 39s；更早一次 6 分钟 vs 28 秒）。**一律写
-`cmake --build --preset qt6 --parallel`**（项目约定，CI 全篇也带）。
+所有 preset 都用 **Ninja**：按核数自动并行，空跑只剩毫秒级依赖检查（MinGW Makefiles 空跑要一分多钟
+纯扫依赖）——「不带 `--parallel` 就是单核串行」的旧规则对 preset 不再适用。
+
+但自动并行不等于越多越好。g++ 编译 Qt 重模板头时单进程常驻 1GB 以上，作者本机（32 核 /
+31.7GB，2026-10-18 实测）：`-j 16` 全量构建的编译进程工作集峰值约 6GB、可用内存从未低于
+7.8GB；按核数满载工作集翻倍到 11GB 以上、可用内存跌到 3GB 上下，且并没有更快。因此项目约定：
+
+```bash
+cmake --build --preset qt6 --parallel 16   # 全量构建；增量随 Ninja 默认即可
+```
+
+只有**手动配置 MinGW Makefiles** 时才必须带 `--parallel`——该生成器默认单核串行。
 
 ### 新增源文件「不生效」的两层原因
 

@@ -11,7 +11,7 @@
 
 </div>
 
-一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库基于 QtWidgets 构建，集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件，并自带插件体系（qxplugin）与第三方类库。
+一套总结自 Qt Creator 源码结构的通用项目管理模板，核心库基于 QtWidgets 构建，集成了 Ribbon、可停靠窗口（Dock）、自定义窗口（Window）等常用界面组件，并自带插件体系（qxplugin）。
 
 qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的控件。
 
@@ -20,7 +20,7 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | 组件 | 命名空间 | 说明 |
 | :--- | :------- | :--- |
 | **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`），仅依赖 Qt Core |
-| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（预置主题族见 [`res/themes/`](./res/themes)，每族明暗各一套、均跟随系统深浅色）、运行时切换、选择持久化 |
+| **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（预置主题族见 [`res/themes/`](./res/themes)，每族明暗各一套）、运行时切换、选择持久化、可跟随系统深浅色 |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |
@@ -47,7 +47,7 @@ cmake -S doc -B build-docs
 cmake --build build-docs --target docs   # 产物在 build-docs/html/index.html
 ```
 
-- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、CI、组件、主题、AppShell、插件、迁移、贡献、发布、Doxygen、已知限制），与 API 一同发布
+- 指南源码在 [`doc/pages`](./doc/pages)（构建、架构、CI、组件、主题、AppShell、插件、迁移、贡献、发布、Doxygen、已知限制、版本对照），与 API 一同发布
 
 ## 在线体验
 

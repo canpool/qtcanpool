@@ -95,11 +95,10 @@ translator.setLanguage(settings.stringValue(QStringLiteral("ui/language"), QLoca
 
 | 类 / 函数 | 说明 |
 | :--- | :--- |
-| @ref QxTheme::QxThemeManager | 进程级单例：应用主题、持久化选择、跟随系统深浅色 |
-| @ref QxTheme::Theme | 内置主题枚举 |
-| @ref QxTheme::themeId / themeName / themeFromId | 稳定 id、显示名与相互转换 |
-| @ref QxTheme::isDarkTheme | 判断主题是否为深色 |
-| @ref QxTheme::themeStyleSheetPath / themeStyleSheet | 内置样式表的资源路径与内容 |
+| @ref QxTheme::QxThemeManager | 进程级单例：注册 / 应用主题、持久化选择、跟随系统深浅色 |
+| @ref QxTheme::QxThemeInfo | 一条主题注册：id、显示名、是否深色、样式表内容 |
+| @ref QxTheme::lightPalette / darkPalette / paletteFor | 平台底色：明、暗、按布尔取 |
+| @ref QxTheme::systemAccentColor | 平台强调色 |
 
 ```cpp
 #include "qxtheme/qxthememanager.h"
@@ -107,7 +106,10 @@ translator.setLanguage(settings.stringValue(QStringLiteral("ui/language"), QLoca
 using namespace QxTheme;
 
 QxThemeManager *themes = QxThemeManager::instance();
-themes->setTheme(DarkOfficePlus);
+QxThemeInfo info(QStringLiteral("fluent-dark"), tr("Fluent Dark"), true);
+info.styleSheet = css;   // 文件读来的内容即可
+themes->registerTheme(info);
+themes->setTheme(QStringLiteral("fluent-dark"));
 ```
 
 ## qxwindow — 自定义窗口
@@ -351,7 +353,7 @@ for (const QString &name : shell.workspaceNames()) {   // 菜单按保存顺序�
 - **改名发两个信号**（`workspaceRemoved(旧)` + `workspaceSaved(新)`），不另设 `renamed`，
   否则每个消费者都要为同一个结果多写一个分支。
 
-详见 [应用外壳 · 工作区](appshell.md#autotoc_md*)，可运行的入口在 `demos/qxapp/appshell`
+详见 [应用外壳 · 工作区](appshell.md#工作区（3.3）)，可运行的入口在 `demos/qxapp/appshell`
 的 `Workspaces` 分组。
 
 ## qtcompat — 跨版本兼容

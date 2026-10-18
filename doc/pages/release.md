@@ -13,7 +13,7 @@
 
 ### 1. CI 全绿
 
-推送要发布的那个提交，等 `ci.yml`（`build` × 4、`format`、`quality`、`tidy`）与
+推送要发布的那个提交，等 `ci.yml`（`build` × 5、`format`、`quality`、`tidy`）与
 `pages.yml`（`docs`、`wasm`、`deploy`）全部 `success`。
 
 ⚠️ **不要看「最近一次 CI 绿了」就发**——要看**那一个提交**的检查项。发布期间别的工作合并进来，
@@ -105,7 +105,7 @@ git diff --name-only <上次tag>..HEAD -- src/libs/qxdock/ | grep '\.h$'
 | :--- | :--- | :--- | :--- |
 | 根 `CHANGELOG` | 项目 | **发版时一次性写**（打 tag 那笔提交；版本号已在开发起点前进，不在这一笔） | 这一版用户要改什么 |
 | 库级 `src/libs/<lib>/CHANGELOG` | 库 | **跟着改动走**（决策 K24） | 这个库动了什么 |
-| [`doc/pages/index.md`](index.md) 的版本对照表 | 项目 × 库 | 发版时补一行 | 这一版各库是什么号 |
+| [`doc/pages/versions.md`](versions.md) 的版本对照表 | 项目 × 库 | 发版时补一行 | 这一版各库是什么号 |
 
 **库级 `CHANGELOG` 的三条记法**（K24）：
 

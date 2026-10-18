@@ -509,15 +509,16 @@ wasm 腿，钉 **6.8.3**，不门禁）。6.12 那条是 4.4.2 的 **A1**（`b6f
 `Test` 步骤对这条腿跳过。实测（本机 MinGW 同参配置 + 构建）：产物只有
 `libqxwindow.dll` 与 `libqxdock.dll`，未拖进第三个库。
 
-**理由**：七 个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
-- **`qxwindow`**（8 个文件）：原生后端。`windowcontext_cocoa.mm`（全树唯一的 Objective-C++ 文件）、
-  `windowagentwidget_mac.cpp`，外加 `windowcontext.cpp` / `windowcontext_p.h` /
-  `windowagentbase.cpp` / `windowagentwidget{,_p}.h` / `windowcontext_qt.cpp` /
-  `windowsystem_p.h` 里的 `Q_OS_MAC` 分支。
-- **`qxdock`**（3 个文件）：`dockfloatingcontainer.cpp:600` 的 `activateWindow()`
-  （`updateDropOverlays()` 之后）、`:780` 起**整个 `event()` 重载**（约 45 行，
-  处理 `NonClientAreaMouseButtonPress` 与「拖拽把最大化窗口拖下来」的冲突），
-  以及 `dockfloatingcontainer.h:83` 的对应声明。
+**理由**：七个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
+- **`qxwindow`**（8 个文件含 `Q_OS_MAC` 分支）：`windowagentbase.cpp` /
+  `windowagentwidget.{cpp,h,_p.h}` / `windowcontext.{cpp,_p.h}` / `windowcontext_qt.cpp` /
+  `windowsystem_p.h`；另有**两个整文件的 Mac 实现**（整文件只在 macOS 编，内部无需分支）：
+  `windowcontext_cocoa.mm`（全树唯一的 Objective-C++ 文件）与 `windowagentwidget_mac.cpp`。
+- **`qxdock`**（3 个文件）：`dockfloatingcontainer.cpp:605` 的 `activateWindow()`
+  （`updateDropOverlays()` 之后）、`:782` 起**整个 `event()` 重载**（约 45 行，
+  处理 `NonClientAreaMouseButtonPress` 与「拖拽把最大化窗口拖下来」的冲突）、
+  `dockfloatingcontainer.h:83` 的对应声明，以及 `qxdock_global.h` 的 `QX_DOCK_X11`
+  平台卫哨（`!defined(Q_OS_MACOS)`，与 Windows / wasm 并列排除 X11）。
 
 其余五个库——`qxcore` / `qxtheme` / `qxribbon` / `qxplugin` / `qxapp`——**一个 `Q_OS_MAC` 都没有**，
 在 macOS 上编的是与 Linux、Windows **完全相同的源文件**，而那两边已有两条腿覆盖。

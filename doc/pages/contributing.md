@@ -76,7 +76,7 @@
 
 ## 8. 构建与验证
 
-- 构建一律带 `--parallel`（MinGW Makefiles，不带即串行）。
+- 构建走 CMake preset（`qt6` / `qt5`，Ninja 生成器，自动并行）；**全量构建带 `--parallel 16`**——作者本机 32 核按核数满载会撞 g++ 内存墙（症状是测试无输出失败一类 flaky）。手动 MinGW Makefiles 才必须带 `--parallel`：不带即单核串行。
 - **两腿都要跑**：Qt 5.15 与 Qt 6 各 100% 构建 + ctest（`QT_QPA_PLATFORM=offscreen`），别只跑 qt6（教训：Qt 6 独有 API 在 Qt 5 侧连编不过）。新增 / 改写代码先问「有没有 Qt 6 独有 API？」。
 - 覆盖基线含 demos 截图判定；视觉回归（demo 截图）为 opt-in，不影响门禁。
 

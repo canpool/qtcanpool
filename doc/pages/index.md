@@ -105,11 +105,12 @@ ctest --test-dir build -C Release --output-on-failure
 
 | 项目 | 要求 |
 | :--- | :--- |
-| Qt | **5.15 及以上**（主推 Qt 6.5 / 6.8 LTS） |
+| Qt | **5.15 及以上**（主推 Qt 6.8 / 6.12 LTS；CI 矩阵覆盖 5.15.2 / 6.8.1 / 6.12.0） |
 | C++ | C++17 |
-| CMake | 3.16 及以上（推荐使用最新版本） |
+| CMake | 3.16 及以上（推荐最新版本；使用 CMakePresets 需 3.25+） |
 | 编译器 | 随 Qt 分发的 MinGW；MSVC 2019+；GCC 9+；Apple Clang |
 | Doxygen（可选） | 1.9 及以上，仅构建文档站点时需要 |
+| Graphviz（可选） | 提供 `dot` 后类继承图才会生成 |
 
 ## 仓库与许可
 

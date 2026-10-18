@@ -100,9 +100,10 @@ clang-format --style=file --dry-run --Werror $FILES
 
 ## 本地构建速度
 
-⚠️ **本地构建一律带 `--parallel`**：`qt5`/`qt6` CMake preset 是 MinGW Makefiles，不带 `--parallel`
-就是串行（实测同一次构建 119s vs 39s）。项目约定就是 `cmake --build <dir> --parallel`。**别为了证明它
-有用去跑串行 / 并行对照实验**——并行是默认动作，不是待证结论。
+`qt5` / `qt6` CMake preset 已切 **Ninja**（2026-10-18）：空跑从 MinGW Makefiles 的近两分钟纯依赖
+扫描降到毫秒级，且按核数自动并行——「本地构建一律带 `--parallel`」的旧规则随之作废。全量构建
+约定 `--parallel 16`（作者本机 32 核 / 31.7GB，避开 g++ 内存墙，理由见
+[构建与安装](build.md)）；手动 MinGW Makefiles 才必须带 `--parallel`（不带即串行）。
 
 ## 平台坑
 

@@ -24,8 +24,9 @@ qxapp      应用框架
 
 - `qxcore` 只依赖 Qt Core，因此任何库都可以用它，包括不涉及界面的模块——
   i18n（@ref QxCore::QxTranslator）正因此放在这一层，而不是放在 `qxapp`。
-- `qxtheme` **刻意不依赖 `qxribbon`**：内置样式表位于 qxribbon 的资源包中，靠 Qt 的进程级资源
-  在运行时按路径读取。这样 qxribbon 一侧零改动，非 Ribbon 应用也能使用主题引擎。
+- `qxtheme` **刻意不依赖 `qxribbon`**：引擎只认应用注册进来的主题（id + 显示名 + 深浅 +
+  样式表内容），不认识任何部件，也不自带任何样式表——仓库预置主题在 `res/themes/`
+  （挂到 `:/themes/`），由应用自行编入并注册（见[主题引擎](theming.md)）。
 - 设置界面被**切成两半**：@ref QxApp::QxPropertyEditor 只管值、不知道值从哪来，
   @ref QxApp::QxSettingsDialog 才知道读写的是 @ref QxCore::QxSettings。
   于是同一张表单可以脱离配置单独用（例如对象属性面板）。
@@ -213,7 +214,7 @@ add_qtc_library(qxcore
 ## 编码与格式规范
 
 - **代码中的注释一律使用英文**；`.md` 等文档文件不受此限
-- 源文件编码：全英文文件使用 UTF-8；包含中文的源文件使用 UTF-8 with BOM
+- 源文件编码：一律**不带 BOM 的 UTF-8**（MSVC 侧由根 `CMakeLists.txt` 的 `/utf-8` 保障，见[构建](build.md#源文件编码)）
 - C++ 风格遵循 [Google C++ Style Guide](http://google.github.io/styleguide/cppguide.html) 与 Qt 风格
 - 格式化由仓库根目录的 `.clang-format` 定义，**CI 中作为强制门禁**：
 
@@ -261,9 +262,10 @@ void addPage(const QString &id, const QIcon &icon, const QString &title, QWidget
 
 ## 主题样式表资源归属
 
-- 样式表资源仍属 `qxribbon`（`:/qxribbon/res/stylesheets/*.css`），引擎按路径运行时读取；缺失降级为
-  仅调色板 + 告警一次。
-- 前缀可用 `QX_THEME_STYLESHEET_PREFIX` 覆盖（让非 ribbon 应用也能用自己的样式表路径）。
+- 引擎**不持有任何样式表资源**（4.5 起，E7）：样式表内容随 `QxThemeInfo` 注册进来，
+  选中时才由引擎下发；`qxribbon` 的资源包里只剩图标，不再有 `stylesheets/`。
+- 仓库预置主题在 `res/themes/`（`res/themes.qrc` 挂到 `:/themes/`），由应用自行编入并注册，
+  `qxapp` 的 `registerBundledThemes()` 是一键注册入口（见[主题引擎](theming.md)）。
 
 ## 布局判据：`isVisible()` vs `isHidden()`
 
