@@ -1,3 +1,19 @@
+Unreleased
+---
+Feature
+- QxTheme::tintedPixmap() / tintedIcon() / themedPixmap() / themedIcon(), in
+  qxthemeicon.h: a single-colour glyph repainted from the palette the theme
+  installed - by role for the themed pair, by an explicit colour for the tinted
+  pair. The glyph is rasterised and then repainted through its alpha, so the
+  colour the file was drawn in is replaced outright and the antialiased edges
+  keep their coverage. Asking by role is the point of the themed pair: the same
+  call answers differently on a light theme and a dark one, so an application
+  that hands its icons through it follows a theme change by re-asking rather
+  than by tracking one. QxRibbon and QxDock keep the routines they already had -
+  neither library depends on this one, and pointing them at qxtheme would put it
+  under both - so what the three share is the rule in doc/pages/icons.md and the
+  gate that checks it, not an implementation. tst_QxTheme::tintedPixmapRepaintsTheGlyph
+
 0.2.0
 ---
 Feature

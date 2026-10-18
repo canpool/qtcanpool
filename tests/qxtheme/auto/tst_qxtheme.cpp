@@ -5,12 +5,16 @@
 #include "tst_global.h"
 
 #include "qxtheme/qxtheme.h"
+#include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthemepalette.h"
 
 #include <QApplication>
 #include <QColor>
+#include <QIcon>
+#include <QImage>
 #include <QPalette>
+#include <QPixmap>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 
@@ -29,6 +33,23 @@ QxThemeInfo makeTheme(const QString &id, const QString &name, bool dark, const Q
     QxThemeInfo info(id, name, dark);
     info.styleSheet = css;
     return info;
+}
+
+/*!
+ * A glyph to repaint: one solid square, which is all a colour assertion needs -
+ * what is being tested is the colour that comes out, not the drawing. PNG
+ * rather than SVG on purpose, so the case says something about the tinting and
+ * not about whether the SVG plugin happens to be installed.
+ */
+QString writeGlyph(const QTemporaryDir &dir, const QString &name)
+{
+    const QString path = dir.filePath(name);
+    QImage image(24, 24, QImage::Format_ARGB32);
+    image.fill(Qt::black);
+    if (!image.save(path)) {
+        return QString();
+    }
+    return path;
 }
 
 }   // namespace
@@ -64,6 +85,11 @@ private slots:
     void applyReinstallsWithoutAnnouncing();
     void refreshSystemThemeIsANoOpWhileNotFollowing();
     void settingsIsTheObjectSetSettingsTook();
+
+    void tintedPixmapRepaintsTheGlyph();
+    void tintedIconIsEmptyForAFileThatIsNotThere();
+    void themedPixmapTakesTheColourFromThePalette();
+    void themedIconFollowsThePalette();
 private:
     void resetSettings();
 
@@ -450,6 +476,76 @@ void tst_QxTheme::settingsIsTheObjectSetSettingsTook()
     reader->beginGroup(QStringLiteral("ui"));
     QCOMPARE(reader->stringValue(QStringLiteral("theme")), QString::fromLatin1(kDark));
     reader->endGroup();
+}
+
+/*!
+ * Repainting works on the glyph's alpha, so the colour the file was drawn in is
+ * replaced outright and the coverage - the antialiased edges included - is kept.
+ * Asking for an invalid colour has to hand the raster back rather than nothing:
+ * without an application there is no palette to read, and an unthemed glyph is
+ * still a glyph.
+ */
+void tst_QxTheme::tintedPixmapRepaintsTheGlyph()
+{
+    const QString path = writeGlyph(m_dir, QStringLiteral("glyph-tinted.png"));
+    QVERIFY(!path.isEmpty());
+
+    const QPixmap glyph = tintedPixmap(path, Qt::red, QSize(24, 24));
+    const QPixmap untouched = tintedPixmap(path, QColor(), QSize(24, 24));
+
+    QVERIFY(!glyph.isNull());
+    QCOMPARE(glyph.size(), QSize(24, 24));
+    QCOMPARE(glyph.toImage().pixelColor(12, 12), QColor(Qt::red));
+    QCOMPARE(untouched.toImage().pixelColor(12, 12), QColor(Qt::black));
+}
+
+/*! A file that cannot be loaded is reported as such instead of an empty box. */
+void tst_QxTheme::tintedIconIsEmptyForAFileThatIsNotThere()
+{
+    const QIcon icon = tintedIcon(m_dir.filePath(QStringLiteral("no-such-glyph.png")), Qt::red, QSize(16, 16));
+    QVERIFY(icon.isNull());
+}
+
+/*!
+ * The colour comes from the palette in force, by role: the same call has to
+ * answer differently on a light theme and a dark one, which is the whole reason
+ * an application hands its icons through here instead of naming a colour.
+ */
+void tst_QxTheme::themedPixmapTakesTheColourFromThePalette()
+{
+    const QString path = writeGlyph(m_dir, QStringLiteral("glyph-themed.png"));
+    QVERIFY(!path.isEmpty());
+
+    const QColor role(0x11, 0x22, 0x33);
+    const QPalette saved = QApplication::palette();
+    QPalette palette = saved;
+    palette.setColor(QPalette::WindowText, role);
+    QApplication::setPalette(palette);
+    const QPixmap glyph = themedPixmap(path, QPalette::WindowText, QSize(24, 24));
+    const QPixmap other = themedPixmap(path, QPalette::Highlight, QSize(24, 24));
+    QApplication::setPalette(saved);
+
+    QCOMPARE(glyph.toImage().pixelColor(12, 12), role);
+    QCOMPARE(other.toImage().pixelColor(12, 12), QApplication::palette().color(QPalette::Highlight));
+}
+
+/*! The icon is the same answer at several sizes, and follows the role as well. */
+void tst_QxTheme::themedIconFollowsThePalette()
+{
+    const QString path = writeGlyph(m_dir, QStringLiteral("glyph-themed-icon.png"));
+    QVERIFY(!path.isEmpty());
+
+    const QColor role(0x40, 0x80, 0xc0);
+    const QPalette saved = QApplication::palette();
+    QPalette palette = saved;
+    palette.setColor(QPalette::WindowText, role);
+    QApplication::setPalette(palette);
+    const QIcon icon = themedIcon(path, QPalette::WindowText, QSize(16, 16));
+    QApplication::setPalette(saved);
+
+    QVERIFY(!icon.isNull());
+    const QPixmap pixmap = icon.pixmap(QSize(16, 16));
+    QCOMPARE(pixmap.toImage().pixelColor(pixmap.width() / 2, pixmap.height() / 2), role);
 }
 
 TEST_ADD(tst_QxTheme)

@@ -7,6 +7,7 @@ add_qtc_library(qxtheme
     qxtheme.cpp qxtheme.h
     qxthememanager.cpp qxthememanager.h
     qxthemepalette.cpp qxthemepalette.h
+    qxthemeicon.cpp qxthemeicon.h
 )
 
 # The Windows branch of systemAccentColor() reads the DWM key of the registry.
