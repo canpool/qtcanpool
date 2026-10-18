@@ -6,8 +6,8 @@
 #define MAINWINDOW_H
 
 #include "qxdock/qxdock_global.h"
+#include "qxapp/qxapp_global.h"
 #include <QMainWindow>
-#include <QEvent>
 #include <QString>
 
 QX_DOCK_BEGIN_NAMESPACE
@@ -16,6 +16,12 @@ class DockWidget;
 QX_DOCK_END_NAMESPACE
 
 QX_DOCK_USE_NAMESPACE
+
+QX_APP_BEGIN_NAMESPACE
+class ThemeInstaller;
+QX_APP_END_NAMESPACE
+
+QX_APP_USE_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -54,7 +60,6 @@ public:
     void expandAutoHidePanel();
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
-    virtual bool eventFilter(QObject *watched, QEvent *event) override;
 private:
     /*!
      * Registers the bundled themes, puts the window on one of them and opens the
@@ -62,11 +67,17 @@ private:
      */
     void createTheme(const QString &themeId);
     void createThemeMenu();
-    void installApplicationStyleSheet();
-    void applyDockColors();
 
     DockWindow *m_dockWindow = nullptr;
     DockWidget *m_autoHideDockWidget = nullptr;
     bool m_screenshotMode = false;
+    /*!
+     * Everything the theme consists of for this application: the sheet, the
+     * dock's sheet after it and the dock's icons - installed once and redone on
+     * every theme switch or platform palette change. The dock's own wiring used
+     * to be this class's; the shared installer is the one implementation of it
+     * now, shared with the two shell demos.
+     */
+    ThemeInstaller *m_theme = nullptr;
 };
 #endif   // MAINWINDOW_H

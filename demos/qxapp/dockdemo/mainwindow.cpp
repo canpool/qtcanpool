@@ -8,11 +8,9 @@
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockmanager.h"
-#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockautohidecontainer.h"
-#include "qxdock/dockiconprovider.h"
-#include "qxapp/qxdockstyle.h"
 #include "qxapp/qxthemebundle.h"
+#include "qxapp/qxthemeinstaller.h"
 #include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthememanager.h"
 
@@ -42,17 +40,11 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     // The dock look is the application's to install, and res/dockstyle.qrc is where
     // this demo carries it - the library no longer holds a copy and no longer
     // styles the DockWindow for us. The flag is set just above and is what picks
-    // the sheet, so the two lines are one decision read in two places.
-    // A theme decides the palette and the style sheet the whole application
-    // wears, and the dock's sheet is a second application-level one. That is a
-    // single string, so installing the theme's takes the dock's with it - the
-    // two are joined here and rejoined on every theme change.
+    // the sheet's focus fragment, so the two lines are one decision read in two
+    // places. A theme decides the palette and the style sheet the whole
+    // application wears, and the dock's sheet is a second application-level one:
+    // that is a single string, so installing the theme's takes the dock's with it.
     createTheme(themeId);
-    // The dock's icons and its sheet take the same colour set, mapped from the
-    // theme just installed: a family that paints the focused tab one accent and
-    // its glyph another would be a theme that did not say what it meant.
-    applyDockColors();
-    qApp->installEventFilter(this);
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
     // C5: also enable the auto-hide slide animation.
@@ -176,40 +168,13 @@ void MainWindow::createTheme(const QString &themeId)
         engine->setTheme(QStringLiteral("soft-light"));
     }
 
-    connect(engine, &QxThemeManager::themeChanged, this, [this](const QString &) {
-        // The engine has just put the palette and the new theme's sheet in
-        // place; the dock's sheet has to go back on top of it.
-        installApplicationStyleSheet();
-        // The dock icons follow the same colour set as the sheet, and the theme
-        // has just changed which set that is. The eventFilter further down does
-        // this too once it is installed; this call covers the changes that
-        // happen before it is.
-        applyDockColors();
-    });
+    // The one place the theme is installed from: its sheet, the dock's sheet
+    // after it and the dock's icons, redone on a theme switch or a platform
+    // palette change. Built before the docks exist on purpose - the icon set it
+    // installs is what they take their glyphs from as they are built.
+    m_theme = new QxApp::ThemeInstaller(engine, this, this);
 
-    installApplicationStyleSheet();
     createThemeMenu();
-}
-
-void MainWindow::installApplicationStyleSheet()
-{
-    QxThemeManager *engine = QxThemeManager::instance();
-    // Theme first, dock second: the dock's sheet describes the dock's own
-    // widgets by class name and cannot outrank a rule the theme states about
-    // one of them, while the reverse order would let the dock's plain
-    // background win over the theme's.
-    //
-    // The dock's text is rendered here rather than kept as a string, because
-    // which colours it wants depends on which theme is in force - the theme's
-    // roles, not the palette's two cases.
-    const QxThemeInfo theme = engine->themeInfo(engine->theme());
-    qApp->setStyleSheet(engine->styleSheet(engine->theme()) + dockStyleSheet(QxApp::dockStyleColors(theme), true));
-}
-
-void MainWindow::applyDockColors()
-{
-    QxThemeManager *engine = QxThemeManager::instance();
-    applyDockIcons(QxApp::dockStyleColors(engine->themeInfo(engine->theme())), this);
 }
 
 void MainWindow::createThemeMenu()
@@ -287,15 +252,4 @@ void MainWindow::closeEvent(QCloseEvent *event)
         saveToSettings();
     }
     QMainWindow::closeEvent(event);
-}
-
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-{
-    // The OS/theme palette changed (e.g. Windows light<->dark). Re-tint the dock
-    // icons to the new theme's colours and re-apply them to every existing dock
-    // button.
-    if (watched == qApp && event->type() == QEvent::ApplicationPaletteChange) {
-        applyDockColors();
-    }
-    return QMainWindow::eventFilter(watched, event);
 }
