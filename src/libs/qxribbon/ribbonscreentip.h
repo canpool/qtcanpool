@@ -37,6 +37,8 @@ private:
     static RibbonScreenTip *instance();
 
     void setContent(const QString &title, const QString &description, const QString &shortcut);
+    /*! Rebuilds the style sheet from the palette in force now. */
+    void updateStyle();
 
     QLabel *m_titleLabel;
     QLabel *m_descriptionLabel;

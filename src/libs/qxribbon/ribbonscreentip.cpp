@@ -5,6 +5,7 @@
 
 #include "ribbonscreentip.h"
 
+#include <QApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QScreen>
@@ -41,17 +42,29 @@ RibbonScreenTip::RibbonScreenTip()
     layout->addWidget(m_descriptionLabel);
     layout->addLayout(shortcutRow);
 
-    // No hardcoded colours: a tooltip is drawn with the application palette, so it
-    // follows whatever theme reaches the application - a dark theme used to leave a
-    // white box because every colour here was written down as a light hex. The
-    // palette() references re-resolve when the palette changes.
-    setStyleSheet(QStringLiteral("QFrame#RibbonScreenTip { background: palette(tooltipbase); border: 1px solid "
-                                 "palette(mid); }"
-                                 "QLabel { background: transparent; }"
-                                 "QLabel#RibbonScreenTipTitle { font-weight: bold; color: palette(tooltiptext); }"
-                                 "QLabel#RibbonScreenTipDescription { color: palette(tooltiptext); }"
-                                 "QLabel#RibbonScreenTipShortcut { color: palette(tooltiptext); border: 1px solid "
-                                 "palette(mid); background: palette(tooltipbase); padding: 1px 4px; }"));
+    // No hardcoded colours, but no palette(role) references either: see updateStyle().
+    updateStyle();
+}
+
+void RibbonScreenTip::updateStyle()
+{
+    // A tip is a top-level window of its own, so it is painted from the application
+    // palette. Naming a role (palette(tooltiptext)) inside a style sheet would look like
+    // the same thing, but a style sheet resolves it once, when the widget is polished -
+    // and this instance lives for the whole run, so "once" means "in whatever theme was
+    // up the first time a tip appeared". After a switch to a dark theme the tip kept the
+    // light theme's black text. The colours are resolved here instead, every time the
+    // tip is about to be shown.
+    const QPalette pal = QApplication::palette();
+    const QString base = pal.color(QPalette::ToolTipBase).name();
+    const QString text = pal.color(QPalette::ToolTipText).name();
+    const QString edge = pal.color(QPalette::Mid).name();
+
+    QString sheet = QStringLiteral("QFrame#RibbonScreenTip { background: %1; border: 1px solid %2; }"
+                                   "QLabel { background: transparent; color: %3; }"
+                                   "QLabel#RibbonScreenTipTitle { font-weight: bold; }"
+                                   "QLabel#RibbonScreenTipShortcut { border: 1px solid %4; padding: 1px 4px; }");
+    setStyleSheet(sheet.arg(base).arg(edge).arg(text).arg(edge));
 }
 
 QString RibbonScreenTip::title() const
@@ -99,6 +112,9 @@ void RibbonScreenTip::showTip(QWidget *anchor, const QString &title, const QStri
         return;
     }
     RibbonScreenTip *tip = instance();
+    // The theme may have changed since the last tip, and the palette is the only thing
+    // that says so for a window nobody re-polishes.
+    tip->updateStyle();
     tip->setContent(title, description, shortcut);
     tip->adjustSize();
 

@@ -15,6 +15,13 @@ Fixed
   a pixel above every title beside it - a File button that visibly does not sit on
   the tabs' line. tst_RibbonBar::applicationButtonSharesTheTabRow is the check, in
   both tab-row styles.
+- RibbonScreenTip resolves its colours again every time it is shown, instead of
+  naming palette() roles inside its style sheet. A style sheet resolves those
+  roles when the widget is polished, and the tip is one instance that lives for
+  the whole run, so "polished once" meant "in whatever theme happened to be up
+  the first time a tip was shown": after a switch to a dark theme the tip kept
+  the light theme's black text. tst_RibbonButton::screenTipFollowsThePalette is
+  the check.
 
 0.13.0
 ---
