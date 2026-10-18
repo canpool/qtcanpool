@@ -1,0 +1,50 @@
+/*
+ * The pieces an X11 desktop needs and the other platforms do not. Appended only
+ * when QX_DOCK_X11 is defined - the one place that knows which desktop this is.
+ *
+ * The floating window block lives here rather than in base.css because only the
+ * X11 build reaches it: on Windows the platform style already paints the frame
+ * buttons with a hover of its own, and repeating the wash there made the two
+ * fight.
+ */
+
+/*****************************************************************************
+ * Floating widget styling
+ *****************************************************************************/
+QxDock--DockFloatingTitleBar {
+    background: palette(midlight);
+}
+
+#dockFloatingTitleCloseButton,
+#dockFloatingTitleMaximizeButton {
+    qproperty-iconSize: 16px;
+    border: none;
+    margin: 6px 3px 6px 3px;
+}
+
+#dockFloatingTitleCloseButton:hover,
+#dockFloatingTitleMaximizeButton:hover {
+    background: rgba(0, 0, 0, 24);
+    border: none;
+}
+
+#dockFloatingTitleCloseButton:pressed,
+#dockFloatingTitleMaximizeButton:pressed {
+    background: rgba(0, 0, 0, 48);
+    border: none;
+}
+
+QxDock--DockFloatingContainer[isActiveWindow="true"] #dockFloatingTitleMaximizeButton {
+    qproperty-iconSize: 16px;
+}
+
+/*****************************************************************************
+ * DockAutoHideContainer titlebar buttons
+ *****************************************************************************/
+#autoHideDockContainer #dockPanelCloseButton {
+    border: none;
+}
+
+#autoHideDockContainer QxDock--TitleBarButton:pressed {
+    border: none;
+}

@@ -22,17 +22,22 @@ QX_DOCK_BEGIN_NAMESPACE
  * ribbon themes and are now built in by the applications that want them - see
  * res/dockstyle.qrc, which is to the dock what res/themes.qrc is to the ribbon.
  *
- * They are handed out rather than applied on purpose. A sheet can only be read
- * from the executable that carries it, so which of the four is right is a
- * question only the application can answer, and it answers it by building the
- * one in and asking here for its text.
+ * What comes back is three fragments joined: base.css always, focus.css when
+ * \a focusHighlighting is set, and x11.css on an X11 build. They are fragments
+ * rather than four complete sheets because the two modifiers are independent
+ * and the four hand-written combinations had already drifted apart. A build
+ * that cannot read a fragment it needs returns an empty string.
  *
- * \a focusHighlighting picks between the pair that draws a frame around the
- * focused dock widget and the pair that does not; it is the same
- * DockManager::FocusHighlighting the library used to read for itself.
- * QX_DOCK_X11 picks the _linux pair, which carries the extra rules an X11
- * desktop needs and is the only thing in the library that knows which desktop
- * that is.
+ * They are handed out rather than applied on purpose. A sheet can only be read
+ * from the executable that carries it, so which fragments are right is a
+ * question only the application can answer, and it answers it by building them
+ * in and asking here for their text.
+ *
+ * \a focusHighlighting picks whether the focused dock widget gets a frame and
+ * its tab the highlight fill; it is the same DockManager::FocusHighlighting the
+ * library used to read for itself. QX_DOCK_X11 picks the x11 fragment, which
+ * carries the extra rules an X11 desktop needs and is the only thing in the
+ * library that knows which desktop that is.
  *
  * Returns an empty string when the resource is missing - a correct build always
  * has it - and says so on stderr. An empty string is deliberately not applied to

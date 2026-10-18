@@ -1,3 +1,24 @@
+0.4.0
+---
+Cleanup
+- The four dock style sheets became three fragments. They had been four complete
+  copies of one look - default, focus_highlighting, and the _linux pair - because
+  the look has two independent modifiers (FocusHighlighting and the X11 desktop)
+  and the four combinations were written out separately. Four copies of the same
+  366 to 485 lines drift, and these had: the splitter handle kept its fill only
+  in the narrower of two selectors, the tabs-menu indicator and the tab icon size
+  disagreed between variants, and the auto hide buttons' border was cleared on
+  one platform only. The look is now res/dockstyle/base.css, appended by
+  focus.css when the flag is set and by x11.css on an X11 build, and
+  dockStyleSheet() joins them in that order. An application that listed the old
+  file names in its own .qrc - rather than building in res/dockstyle.qrc -
+  needs the three new ones.
+  Two differences are deliberate: the close button keeps its 1px hover border
+  under focus highlighting, and the tab icon size is 16px in every variant (it
+  used to be set in the focus sheets only). Both are the same rule stated once
+  instead of twice with a difference nobody meant.
+  tst_DockWindow::styleSheetIsReadFromTheApplication
+
 0.3.0
 ---
 Feature

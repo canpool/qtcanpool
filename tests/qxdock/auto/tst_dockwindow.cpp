@@ -165,7 +165,7 @@ void tst_DockWindow::carriesNoStyleSheetOfItsOwn()
 /*!
  * The dock style sheet is the application's to build in, and the library only
  * reads it - so what this pins is that reading it is possible at all and that
- * the two halves of the pair are actually different sheets.
+ * the focus modifier is actually read.
  *
  * The test links qxdock and builds res/dockstyle.qrc in, exactly as an application
  * does; see tests/qxdock/CMakeLists.txt. Without that resource the library has
@@ -183,6 +183,15 @@ void tst_DockWindow::styleSheetIsReadFromTheApplication()
     // one: a sheet that ignored the flag would leave the frame around the
     // focused dock widget un-drawn and say nothing.
     QVERIFY2(plain != focused, "the focus highlighting flag does not select a sheet");
+
+    // The sheet is one base fragment plus the modifiers, not two copies of the
+    // same three hundred rules. That is what makes the pair worth reading as a
+    // pair: whatever the flag adds starts exactly where the base ends.
+    QVERIFY2(focused.startsWith(plain), "the focused sheet is not the base sheet plus a fragment");
+    QVERIFY(plain.contains(QStringLiteral("QxDock--DockSplitter::handle")));
+    QVERIFY2(!plain.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")),
+             "the base fragment already carries the focused-tab rules");
+    QVERIFY(focused.contains(QStringLiteral("QxDock--DockTab[focused=\"true\"]")));
 }
 
 void tst_DockWindow::addDockWidget_other()

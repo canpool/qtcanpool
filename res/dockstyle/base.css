@@ -1,5 +1,10 @@
 /*
- * Default style sheet on Linux Platforms
+ * The dock's structure: which widget owns which border, how a dynamic property
+ * or a pseudo state changes that, and the sizes those decisions need.
+ *
+ * This is the part every build gets. focus.css adds the focused-tab treatment
+ * and x11.css the desktop-specific pieces; see res/dockstyle.qrc for why the
+ * three are fragments rather than four complete sheets.
  */
 
 /*****************************************************************************
@@ -16,8 +21,11 @@ QxDock--DockContainer>QSplitter {
     padding: 1 0 1 0;
 }
 
-QxDock--DockContainer QxDock--DockSplitter::handle {
-    background: palette(dark);
+/* No DockContainer prefix: the modifier is the dock's own splitter wherever it
+   stands, and the narrower form dropped the fill for one that stood elsewhere
+   (the focus sheets used it, and the two variants disagreed on this rule only). */
+QxDock--DockSplitter::handle {
+    background-color: palette(dark);
 }
 
 /*****************************************************************************
@@ -27,12 +35,12 @@ QxDock--DockPanel {
     background: palette(window);
 }
 
-QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
-    image: none;
-}
-
 QxDock--TitleBarButton {
     padding: 0px 0px;
+}
+
+QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
+    image: none;
 }
 
 #dockTabsMenuButton {
@@ -56,6 +64,7 @@ QxDock--DockTab {
     border-style: solid;
     border-width: 0 1px 0 0;
     padding: 0 0px;
+    qproperty-iconSize: 16px 16px;
 }
 
 QxDock--DockTab[activeTab="true"] {
@@ -128,29 +137,6 @@ QxDock--DockWidget {
 QScrollArea#dockWidgetScrollArea {
     padding: 0px;
     border: none;
-}
-
-/*****************************************************************************
- * Floating widget styling
- *****************************************************************************/
-QxDock--DockFloatingTitleBar {
-    background: palette(midlight);
-}
-
-#dockFloatingTitleCloseButton,
-#dockFloatingTitleMaximizeButton {
-    qproperty-iconSize: 16px;
-    border: none;
-    margin: 3px;
-}
-
-#dockFloatingTitleCloseButton:hover {
-    background: rgba(0, 0, 0, 24);
-    border: none;
-}
-
-#dockFloatingTitleCloseButton:pressed {
-    background: rgba(0, 0, 0, 48);
 }
 
 /*****************************************************************************
@@ -286,16 +272,6 @@ QxDock--DockSideBar[sideBarArea="3"] {
     border: none;
 }
 
-/*
- * This is required because the QxDock--DockPanel[focused="true"] will
- * overwrite the #autoHideDockContainer QxDock--DockTitleBar rule
- */
-#autoHideDockContainer QxDock--DockPanel[focused="true"] QxDock--DockTitleBar {
-    background: palette(highlight);
-    padding: 0px;
-    border: none;
-}
-
 /* The auto hide title bar wears the highlight fill, and the tab bar lives
    inside it - the tab's own active fill (the window gradient) would paint a
    grey patch over that accent, which is what "the tab covers the title bar"
@@ -331,6 +307,16 @@ QxDock--DockSideBar[sideBarArea="3"] {
     background: rgba(255, 255, 255, 92);
 }
 
+/*
+ * This is required because the QxDock--DockPanel[focused="true"] will
+ * overwrite the #autoHideDockContainer QxDock--DockTitleBar rule
+ */
+#autoHideDockContainer QxDock--DockPanel[focused="true"] QxDock--DockTitleBar {
+    background: palette(highlight);
+    padding: 0px;
+    border: none;
+}
+
 #dockAutoHideTitleLabel {
     padding-left: 4px;
     /* On the highlight fill, so the text has to be the one that reads on it -
@@ -353,17 +339,12 @@ QxDock--DockSideBar[sideBarArea="3"] {
     qproperty-iconSize: 16px;
 }
 
-#autoHideDockContainer #dockPanelCloseButton {
-    border: none;
-}
-
 #autoHideDockContainer QxDock--TitleBarButton:hover {
     background: rgba(255, 255, 255, 60);
 }
 
 #autoHideDockContainer QxDock--TitleBarButton:pressed {
     background: rgba(255, 255, 255, 96);
-    border: none;
 }
 
 /*****************************************************************************
