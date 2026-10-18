@@ -400,10 +400,6 @@ QRadioButton::indicator:unchecked {
 QRadioButton::indicator:checked {
 }
 
-QCheckBox:checked, QRadioButton:checked {
-  color: #ffffff;
-}
-
 QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QTimeEdit, QDateEdit, QDateTimeEdit {
   border: 1px solid #33383a;
   background: #33383a;
@@ -591,13 +587,15 @@ QxRibbon--RibbonBar {
 
 /*RibbonTabBar*/
 
+/* The light skeleton never gave the tab bar a weight of its own, and a bold tab
+ * measures wider than a regular one: the ribbon adds the tab widths up to size
+ * itself, so a weight that only one scheme has makes the same window measure
+ * differently in the two. The selection is a fill and an outline in both. */
 QxRibbon--RibbonTabBar {
-  font-weight: bold;
   background-color: transparent;
 }
 
 QxRibbon--RibbonTabBar::tab {
-  font-weight: normal;
   color: #f0f0f0;
   border: 0px solid transparent;
   background: transparent;
@@ -613,7 +611,6 @@ QxRibbon--RibbonTabBar::tab:selected, QxRibbon--RibbonTabBar::tab:hover {
 }
 
 QxRibbon--RibbonTabBar::tab:selected {
-  font-weight: bold;
   color: #ffffff;
   border-bottom-color: #0f7fbf;
 }
@@ -819,7 +816,6 @@ QAbstractButton#qx_RibbonApplicationButton:hover {
 }
 
 QAbstractButton#qx_RibbonApplicationButton:pressed {
-  font-weight: bold;
   border-bottom-color: #0f7fbf;
 }
 

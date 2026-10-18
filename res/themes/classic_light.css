@@ -115,6 +115,14 @@ QxRibbon--RibbonGroup {
   border: 0px;
 }
 
+/* Buttons inside a group carry no padding of their own: the ribbon decides where
+ * they sit, and a style's default padding would shrink the room it computed. The
+ * dark skeleton has always said so; this one did not, which is why the same group
+ * measured differently in the two schemes. */
+QxRibbon--RibbonGroup QAbstractButton {
+  padding: 0px;
+}
+
 /*RibbonGroupOptionButton*/
 
 QxRibbon--RibbonGroupOptionButton {
@@ -125,6 +133,29 @@ QxRibbon--RibbonGroupOptionButton {
 QxRibbon--RibbonGroupOptionButton:hover {
   background-color: #e8f1fb;
   border: 0px;
+}
+
+/* A checked option button is the one state this scheme used to paint nothing in:
+ * the dark skeleton fills it with the accent, so the same button looked chosen
+ * there and untouched here. These three follow RibbonButton, which is the same
+ * kind of control - a light fill, the accent as the outline, the label dark
+ * because everything in this scheme is. */
+QxRibbon--RibbonGroupOptionButton:focus {
+  border: 1px solid #cfe4f7;
+  background-color: #f4f4f4;
+  color: #333333;
+}
+
+QxRibbon--RibbonGroupOptionButton:pressed {
+  border: 1px solid #0072c6;
+  background-color: #cfe4f7;
+  color: #333333;
+}
+
+QxRibbon--RibbonGroupOptionButton:checked {
+  border: 1px solid #cfe4f7;
+  background-color: #e8f1fb;
+  color: #333333;
 }
 
 /*RibbonGallery*/
@@ -166,6 +197,10 @@ QxRibbon--RibbonButtonGroup {
   background-color: transparent;
 }
 
+QxRibbon--RibbonButtonGroup QAbstractButton {
+  padding: 0px;
+}
+
 QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
   border: 1pt solid #d6d6d6;
 }
@@ -174,6 +209,24 @@ QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
 
 QxRibbon--RibbonQuickAccessBar {
   background-color: transparent;
+}
+
+/* The bar sizes its own buttons, and the ribbon asks it for that size when it
+ * places the bar, so the size has to come from a rule rather than from whatever
+ * padding the style happens to hand out. Both skeletons say this now: the light
+ * one used to leave it to the style, and the bar came out a few pixels wider in
+ * this scheme than in the other. */
+QWidget#qx_RibbonQuickAccessBar QLabel {
+  background-color: transparent;
+}
+
+QxRibbon--RibbonQuickAccessBar QToolButton {
+  width: 20px;
+  height: 20px;
+}
+
+QxRibbon--RibbonQuickAccessBar QAbstractButton {
+  padding: 0px;
 }
 
 /* A quick access item that opens a menu is drawn without the style's menu
@@ -280,6 +333,12 @@ QxRibbon--RibbonButton {
   border: 1px solid transparent;
   color: #333333;
   background-color: transparent;
+}
+
+/* The arrow half of a split button sits against the right edge; a style's padding
+ * would push it away from that edge. Said in both skeletons since 4.6. */
+QxRibbon--RibbonButton[popupMode="1"] {
+  padding-right: 0px;
 }
 
 QxRibbon--RibbonButton:focus {
