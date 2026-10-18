@@ -1,4 +1,4 @@
-Unreleased
+0.2.0
 ---
 Feature
 - QxToast is reported as a Notification and QxSplashScreen names its message. A

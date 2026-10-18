@@ -1,5 +1,5 @@
 add_qtc_library(qxtheme
-  VERSION 0.1.1
+  VERSION 0.2.0
   DEFINES QX_THEME_LIBRARY
   PUBLIC_DEPENDS qxcore Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES

@@ -1,4 +1,4 @@
-Unreleased
+0.2.0
 ---
 Feature
 - QxTranslator::translate() looks a string up in the catalogues this object

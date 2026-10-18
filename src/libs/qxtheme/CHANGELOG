@@ -1,4 +1,4 @@
-Unreleased
+0.2.0
 ---
 Feature
 - systemAccentColor() reports the accent colour the platform uses, or an

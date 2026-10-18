@@ -1,5 +1,5 @@
 add_qtc_library(qxplugin
-  VERSION 0.2.1
+  VERSION 0.3.0
   DEFINES QX_PLUGIN_LIBRARY
   PUBLIC_DEPENDS Qt5::Core Qt5::Widgets qxcore
   SOURCES

@@ -414,7 +414,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   删除会同时破坏行为与 ABI，故 4.5 不做此变更。
 - **`qxtheme` 不再内置主题**（库 `qxtheme`，破坏 API）：`Theme` 枚举与
   `themeId` / `themeName` / `themeFromId` / `isDarkTheme` / `themeStyleSheetPath` /
-  `themeStyleSheet` 一族自由函数删除，`setStyleSheetFile()` 删除，
+  `themeStyleSheet` 一族自由函数删除，`setStyleSheetFile()` 删除、
+  `setStyleSheet()` 改为 `setStyleSheet(id, css)`（替换指定 id 那份注册的样式表），
   `palette(Theme)` → `paletteFor(bool dark)`。主题改由**应用注册**：
   `QxThemeInfo{id, name, dark, styleSheet}` + `QxThemeManager::registerTheme()`，
   全库按 **id 字符串**寻址（`setTheme(QString)`、`themeInfo(id)`、`themeIds()`）。
@@ -455,7 +456,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   - 为什么：与 `RibbonTheme` 同形病灶——库自带的是 **widget 级**样式表，Qt 样式表两边都匹配时
     widget 级的赢，于是应用选了深色主题、Dock 区仍被库锁成浅色。样式表换手到 application
     后，Dock 外观跟随应用主题（CSS 内颜色本来就是 `palette(...)`，换深色 palette 自动跟着变；
-    唯一不跟随的是内置单色 SVG 图标，属另一独立议题）。
+    内置单色 SVG 图标另有 opt-in 着色助手 `qxdock::applyDockIcons(palette)` /
+    `qxdock::refreshDockIcons(root)`，不调用则回落到本来就跟随主题的平台样式图标）。
   - 迁移：使用 qxdock 的应用需把 `res/dockstyle.qrc` 编入并安装——
     `qApp->setStyleSheet(qxdock::dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)))`。
     仓库已替你接好两处：`demos/qxapp/dockdemo`（显式编入并 `setStyleSheet`）与

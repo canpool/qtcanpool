@@ -72,8 +72,8 @@
 #endif   // QX_PLUGIN_LIBRARY_STATIC
 
 #define QX_PLUGIN_VERSION_MAJOR 0
-#define QX_PLUGIN_VERSION_MINOR 2
-#define QX_PLUGIN_VERSION_PATCH 1
+#define QX_PLUGIN_VERSION_MINOR 3
+#define QX_PLUGIN_VERSION_PATCH 0
 /*
    QX_PLUGIN_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_PLUGIN_VERSION >= QT_VERSION_CHECK(0, 5, 3))

@@ -1,5 +1,5 @@
 add_qtc_library(qxcore
-  VERSION 0.1.3
+  VERSION 0.2.0
   DEFINES QX_CORE_LIBRARY
   PUBLIC_DEPENDS Qt5::Core
   SOURCES

@@ -81,8 +81,8 @@
 #endif   // QX_THEME_LIBRARY_STATIC
 
 #define QX_THEME_VERSION_MAJOR 0
-#define QX_THEME_VERSION_MINOR 1
-#define QX_THEME_VERSION_PATCH 1
+#define QX_THEME_VERSION_MINOR 2
+#define QX_THEME_VERSION_PATCH 0
 /*
    QX_THEME_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_THEME_VERSION >= QT_VERSION_CHECK(0, 5, 3))
