@@ -4,52 +4,43 @@
  **/
 #include "mainwindow.h"
 
-#include "qxribbon/ribbonapplicationbutton.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonbutton.h"
-#include "qxribbon/ribboncolorbutton.h"
 #include "qxribbon/ribbonbuttongroup.h"
-#include "qxribbon/ribboncontrols.h"
 #include "qxribbon/ribbonmenu.h"
 #include "qxribbon/ribboncustomizedialog.h"
 #include "qxribbon/ribbonactionsmanager.h"
 #include "qxribbon/ribbonmanager.h"
-#include "qxribbon/ribbongallery.h"
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpage.h"
-#include "qxribbon/ribboncontainers.h"
 #include "qxribbon/ribbonquickaccessbar.h"
-#include "qxribbon/ribbonutils.h"
 #include "qxribbon/ribbonbackstageview.h"
 #include "qxribbon/ribbonstatusbar.h"
 
 #include "applypage.h"
 #include "contextpage1.h"
 #include "contextpage2.h"
-#include "otherpage.h"
 #include "custompage.h"
+#include "homepage.h"
+#include "otherpage.h"
 #include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthemepalette.h"
 
 #include <QAbstractButton>
 #include <QAction>
 #include <QApplication>
-#include <QButtonGroup>
-#include <QCalendarWidget>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QFileDialog>
-#include <QFontComboBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QToolButton>
-#include <QRadioButton>
 #include <QCheckBox>
-#include <QSpinBox>
+#include <QComboBox>
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QVBoxLayout>
@@ -149,10 +140,9 @@ MainWindow::MainWindow(QWidget *par, bool screenshotMode)
     qDebug() << RibbonElementStyleOpt;
 
 #if defined(Q_OS_LINUX)
-    QRadioButton *r = findChild<QRadioButton *>("tab bar inline");
-    if (r) {
-        r->click();
-    }
+    // The inline tab bar is the layout that fits Linux window chrome. Ask the bar;
+    // the Home page's radios follow through RibbonBar::ribbonStyleChanged.
+    ribbonBar()->setRibbonStyle(RibbonBar::TabBarInlineStyle);
 #endif
 
     QxRibbonCustomizeApplyFromXmlFile(m_customizeXml, ribbonBar(), m_actMgr);
@@ -238,7 +228,38 @@ void MainWindow::createRibbon()
 
     ribbonBar()->setContentsMargins(0, 0, 0, 0);
 
-    createPageHome();
+    // The "Home" page builds itself; the window only wires the few things that
+    // leave the page - the context tabs it owns, and the lines logged to the editor.
+    auto *homePage = new HomePage(m_icons, this);
+    connect(homePage, &HomePage::contextPageVisibleRequested, this, [this](bool on) {
+        // The first context tab can be torn down from the page, so it is rebuilt
+        // lazily here if it is gone.
+        if (m_pageContext == nullptr) {
+            createPageContext1();
+        }
+        if (on) {
+            ribbonBar()->showPageContext(m_pageContext);
+        } else {
+            ribbonBar()->hidePageContext(m_pageContext);
+        }
+    });
+    connect(homePage, &HomePage::contextPageDestroyRequested, this, [this]() {
+        if (m_pageContext) {
+            ribbonBar()->destroyPageContext(m_pageContext);
+            m_pageContext = nullptr;
+        }
+    });
+    connect(homePage, &HomePage::context2VisibleRequested, this, [this](bool on) {
+        if (m_pageContext2) {
+            ribbonBar()->setPageContextVisible(m_pageContext2, on);
+        }
+    });
+    connect(homePage, &HomePage::messageRequested, this, [this](const QString &message) {
+        if (m_edit) {
+            m_edit->append(message);
+        }
+    });
+    ribbonBar()->addPage(homePage);
     COST_PRINT("createPageHome");
     auto *otherPage = new OtherPage(m_icons, this);
     connect(otherPage, &OtherPage::messageRequested, this, [this](const QString &message) {
@@ -265,302 +286,6 @@ void MainWindow::createRibbon()
 
     addSomeOtherAction();
     COST_PRINT("addSomeOtherAction");
-}
-
-void MainWindow::createPageHome()
-{
-    // The page is added through the bar's own addPage().
-    RibbonPage *page = ribbonBar()->addPage(tr("&Home"));
-    page->setObjectName(("pageHome"));
-
-    //! 1
-    //! group 1 start
-    //!
-
-    // addGroup() builds the group; new RibbonGroup + addGroup() does the same thing.
-    RibbonGroup *groupStyle = page->addGroup(("ribbon style"));
-
-    QAction *actHideRibbon = createAction(tr("hide ribbon"), ":/icon/res/hideRibbon.svg", "actHideRibbon");
-    actHideRibbon->setCheckable(true);
-    actHideRibbon->setStatusTip(tr("Collapse the ribbon down to just the tab row"));
-    groupStyle->addLargeAction(actHideRibbon);
-    connect(actHideRibbon, &QAction::triggered, this, [this](bool b) {
-        this->ribbonBar()->setMinimized(b);
-    });
-    connect(ribbonBar(), &RibbonBar::minimizationChanged, this, [actHideRibbon](bool minimized) {
-        actHideRibbon->setChecked(minimized);
-    });
-
-    QAction *actShowMinimumButton =
-        createAction(tr("show minimum button"), ":/icon/res/show.svg", "show minimum button");
-    actShowMinimumButton->setCheckable(true);
-    groupStyle->addSmallAction(actShowMinimumButton);
-    connect(actShowMinimumButton, &QAction::triggered, this, [this](bool b) {
-        this->ribbonBar()->showMinimumButton(b);   // show the ribbon's minimize button
-    });
-    actShowMinimumButton->trigger();
-
-    QAction *actRemoveAppBtn = createAction(tr("remove application"), ":/icon/res/remove-app-btn.svg");
-    actRemoveAppBtn->setCheckable(true);
-    groupStyle->addSmallAction(actRemoveAppBtn);
-    connect(actRemoveAppBtn, &QAction::toggled, this, &MainWindow::onActionRemoveAppBtnTriggered);
-
-    QAction *actWindowFlagNormalButton = createAction(tr("window maximizable"), ":/icon/res/windowsflag-normal.svg");
-    actWindowFlagNormalButton->setCheckable(true);
-    actWindowFlagNormalButton->setChecked(true);
-    groupStyle->addSmallAction(actWindowFlagNormalButton);
-    connect(actWindowFlagNormalButton, &QAction::triggered, this, &MainWindow::onActionWindowFlagNormalButtonTriggered);
-    // NOTE: this used to be disabled on Windows unless the window came from qxapp: the frameless
-    // backend qxribbon carried itself left the window misplaced and unresizable after a
-    // maximize/unmaximize toggle. Both that backend and the window class on top of it went away in
-    // 4.3, so nothing is left to guard against here.
-    actWindowFlagNormalButton->setEnabled(true);
-
-    QButtonGroup *g = new QButtonGroup(page);
-
-    QRadioButton *r = new QRadioButton();
-    r->setText(tr("tab bar below"));
-    r->setWindowTitle(r->text());
-    r->setObjectName(("tab bar below"));
-    r->setChecked(true);
-    groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::TabBarBelowStyle);
-
-    r = new QRadioButton();
-    r->setObjectName(("tab bar inline"));
-    r->setText(tr("tab bar inline"));
-    r->setWindowTitle(r->text());
-    r->setChecked(false);
-    groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::TabBarInlineStyle);
-
-    r = new QRadioButton();
-    r->setObjectName(("tab bar below, 2 rows"));
-    r->setText(tr("tab bar below, 2 rows"));
-    r->setWindowTitle(r->text());
-    r->setChecked(false);
-    groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::TabBarBelowTwoRowStyle);
-
-    r = new QRadioButton();
-    r->setObjectName(("tab bar inline, 2 rows"));
-    r->setText(tr("tab bar inline, 2 rows"));
-    r->setWindowTitle(r->text());
-    r->setChecked(false);
-    groupStyle->addSmallWidget(r);
-    g->addButton(r, RibbonBar::TabBarInlineTwoRowStyle);
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-    connect(g, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::idClicked), this, &MainWindow::onStyleClicked);
-#else
-    connect(g, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this,
-            &MainWindow::onStyleClicked);
-#endif
-
-    QCheckBox *cb = nullptr;
-
-    cb = new QCheckBox();
-    cb->setObjectName(QStringLiteral("left QAB in inline style"));
-    cb->setText(tr("left QAB in inline style"));
-    cb->setWindowTitle(cb->text());
-    cb->setChecked(false);
-    groupStyle->addSmallWidget(cb);
-    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-        this->ribbonBar()->setQuickAccessBarPosition(checked ? RibbonBar::QABLeftPosition
-                                                             : RibbonBar::QABRightPosition);
-    });
-
-    cb = new QCheckBox();
-    cb->setObjectName(QStringLiteral("center tab bar"));
-    cb->setText(tr("center tab bar"));
-    cb->setWindowTitle(cb->text());
-    cb->setChecked(false);
-    groupStyle->addSmallWidget(cb);
-    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-        this->ribbonBar()->setTabBarPosition(checked ? RibbonBar::TBCenterPosition : RibbonBar::TBLeftPosition);
-    });
-
-    cb = new QCheckBox();
-    cb->setObjectName(QStringLiteral("show group title"));
-    cb->setText(tr("show group title"));
-    cb->setWindowTitle(cb->text());
-    cb->setChecked(true);
-    groupStyle->addSmallWidget(cb);
-    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-        RibbonGroup::setTitleVisible(checked);
-        this->ribbonBar()->updateRibbonGeometry();
-    });
-
-    cb = new QCheckBox();
-    cb->setObjectName(QStringLiteral("show full screen"));
-    cb->setText(tr("show full screen"));
-    cb->setWindowTitle(cb->text());
-    cb->setChecked(false);
-    groupStyle->addSmallWidget(cb);
-    connect(cb, &QCheckBox::clicked, this, [this](bool checked) {
-        if (checked) {
-            this->showFullScreen();
-        } else {
-            this->showNormal();
-        }
-    });
-    connect(this, &MainWindow::windowStateChanged, cb, [cb](Qt::WindowStates s) {
-        cb->setChecked(s.testFlag(Qt::WindowFullScreen));
-    });
-
-    RibbonGroup *groupToolButtonStyle = page->addGroup(tr("ribbon toolbutton style"));
-
-    RibbonButton *btn;
-    RibbonMenu *menu = new RibbonMenu(this);
-    QAction *a = nullptr;
-    {
-        QIcon itemicon = QIcon(":/icon/res/file.svg");
-        for (int i = 0; i < 3; ++i) {
-            a = menu->addAction(itemicon, tr("item %1").arg(i + 1));
-            a->setObjectName(QStringLiteral("item %1").arg(i + 1));
-        }
-    }
-
-    QAction *act = createAction(tr("test 1"), ":/icon/res/file.svg");
-    act->setMenu(menu);
-    act->setToolTip(tr("use QToolButton::MenuButtonPopup mode"));
-    btn = groupToolButtonStyle->addSmallAction(act);
-    btn->setPopupMode(QToolButton::MenuButtonPopup);
-
-    act = createAction(tr("test 2"), ":/icon/res/file.svg");
-    act->setMenu(menu);
-    act->setToolTip(tr("use QToolButton::InstantPopup mode"));
-    btn = groupToolButtonStyle->addSmallAction(act);
-    btn->setPopupMode(QToolButton::InstantPopup);
-
-    groupToolButtonStyle->addSeparator();
-
-    act = createAction(tr("test 3"), ":/icon/res/file.svg");
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addSmallAction(act);
-    btn->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    act = createAction(tr("test 4"), ":/icon/res/file.svg");
-    groupToolButtonStyle->addSmallAction(act);
-    groupToolButtonStyle->ribbonButtonForAction(act)->setToolButtonStyle(Qt::ToolButtonIconOnly);
-
-    groupToolButtonStyle->addSeparator();
-
-    act = createAction(tr("test 5"), ":/icon/res/file.svg");
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addSmallAction(act);
-    btn->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    act = createAction(tr("test 6"), ":/icon/res/file.svg");
-    groupToolButtonStyle->addSmallAction(act);
-    groupToolButtonStyle->ribbonButtonForAction(act)->setToolButtonStyle(Qt::ToolButtonTextOnly);
-
-    groupToolButtonStyle->addSeparator();
-
-    act = createAction(tr("Delayed Popup"), ":/icon/res/folder-cog.svg");
-    act->setMenu(menu);
-    groupToolButtonStyle->addAction(act);
-    btn = groupToolButtonStyle->ribbonButtonForAction(act);
-    btn->setPopupMode(QToolButton::DelayedPopup);
-    connect(act, &QAction::triggered, this, &MainWindow::onDelayedPopupCheckabletriggered);
-
-    act = createAction(tr("Menu Button Popup"), ":/icon/res/folder-star.svg");
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addLargeAction(act);
-    btn->setPopupMode(QToolButton::MenuButtonPopup);
-    connect(act, &QAction::triggered, this, &MainWindow::onMenuButtonPopupCheckabletriggered);
-
-    act = createAction(tr("Instant Popup"), ":/icon/res/folder-stats.svg");
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addLargeAction(act);
-    btn->setPopupMode(QToolButton::InstantPopup);
-    connect(act, &QAction::triggered, this, &MainWindow::onInstantPopupCheckabletriggered);
-
-    act = createAction(tr("Delayed Popup checkable"), ":/icon/res/folder-table.svg");
-    act->setCheckable(true);
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addLargeAction(act);
-    btn->setPopupMode(QToolButton::DelayedPopup);
-    connect(act, &QAction::triggered, this, &MainWindow::onDelayedPopupCheckableTest);
-
-    act = createAction(tr("Menu Button Popup checkable"), ":/icon/res/folder-checkmark.svg");
-    act->setCheckable(true);
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addLargeAction(act);
-    btn->setPopupMode(QToolButton::MenuButtonPopup);
-    connect(act, &QAction::triggered, this, &MainWindow::onMenuButtonPopupCheckableTest);
-
-    act = createAction(tr("Menu"), ":/icon/res/folder-add.svg");
-    act->setMenu(menu);
-    btn = groupToolButtonStyle->addLargeAction(act);
-    btn->setPopupMode(QToolButton::InstantPopup);
-
-    act = createAction(tr("Action"), ":/icon/res/folder.svg");
-    groupToolButtonStyle->addLargeAction(act);
-
-    act = createAction(tr("Disable Action"), ":/icon/res/disable.svg");
-    act->setCheckable(true);
-    act->setMenu(menu);
-    act->setEnabled(false);
-    groupToolButtonStyle->addLargeAction(act);
-
-    act = new QAction(tr("Arrow Button"), this);
-    btn = groupToolButtonStyle->addLargeAction(act);
-    btn->setArrowType(Qt::DownArrow);
-
-    act = new QAction(QxRibbon::colorIcon(Qt::red, QSize(32, 32)), tr("Color Action"), this);
-    groupToolButtonStyle->addLargeAction(act);
-
-    act = createAction(tr("Color Button"), ":/icon/res/long-text.svg");
-    RibbonColorButton *colorButton = new RibbonColorButton(this);
-    colorButton->setDefaultAction(act);
-    colorButton->setButtonType(RibbonButton::LargeButton);
-    colorButton->setColor(Qt::blue);
-    groupToolButtonStyle->addLargeWidget(colorButton);
-
-    QAction *actionShortText = createAction(tr("Qx"), ":/icon/res/long-text.svg", "short-text");
-    groupToolButtonStyle->addLargeAction(actionShortText);
-    actionShortText = createAction(tr("Q\nx"), ":/icon/res/long-text.svg", "short-wordwrap-text");
-    groupToolButtonStyle->addLargeAction(actionShortText);
-
-    QAction *actionLongText =
-        createAction(tr("show very long text in a button,balabalabala etc"), ":/icon/res/long-text.svg", "long-text");
-    groupToolButtonStyle->addLargeAction(actionLongText);
-
-    QAction *optAct = new QAction(this);
-    connect(optAct, &QAction::triggered, this, [this](bool on) {
-        Q_UNUSED(on);
-        QMessageBox::information(this, tr("Option Action Triggered"), tr("Option Action Triggered"));
-    });
-    groupToolButtonStyle->addOptionAction(optAct);
-
-    //! 2
-    //! group 2 start
-    //!
-    RibbonGroup *groupPageContext = page->addGroup(tr("page context"));
-
-    QAction *actShowContext = createAction(tr("show Context1"), ":/icon/res/showContext.svg");
-    actShowContext->setCheckable(true);
-    groupPageContext->addLargeAction(actShowContext);
-    connect(actShowContext, &QAction::triggered, this, &MainWindow::onShowContextPage);
-
-    QAction *actDeleteContext = createAction(tr("delete Context1"), ":/icon/res/deleteContext.svg");
-    groupPageContext->addLargeAction(actDeleteContext);
-    connect(actDeleteContext, &QAction::triggered, this, [this, actShowContext](bool on) {
-        Q_UNUSED(on);
-        if (this->m_pageContext) {
-            this->ribbonBar()->destroyPageContext(this->m_pageContext);
-            this->m_pageContext = nullptr;
-            actShowContext->setChecked(false);
-        }
-    });
-
-    QAction *actShowContext2 = createAction(tr("show Context2"), ":/icon/res/showContext.svg");
-    actShowContext2->setCheckable(true);
-    connect(actShowContext2, &QAction::triggered, this, [this](bool c) {
-        if (m_pageContext2) {
-            this->ribbonBar()->setPageContextVisible(m_pageContext2, c);
-        }
-    });
-    groupPageContext->addLargeAction(actShowContext2);
 }
 
 /**
@@ -822,14 +547,6 @@ void MainWindow::addSomeOtherAction()
     m_actMgr->setTagName(m_actionTagWithIcon, tr("have icon action"));
 }
 
-void MainWindow::setApplicationButton(QAbstractButton *btn)
-{
-    btn->setText(tr("&File"));
-    btn->setCheckable(true);
-    // B4: the Backstage view (created in createBackstage) owns the application-button click
-    // through RibbonBar::applicationButtonClicked; no extra popup is needed here.
-}
-
 QAction *MainWindow::createAction(const QString &text, const QString &iconurl, const QString &objName)
 {
     QAction *act = new QAction(this);
@@ -873,23 +590,6 @@ void MainWindow::applyStyleSheet(const QString &styleSheet)
     qApp->setStyleSheet(styleSheet);
     // NOTE: the theme menu does not reflect the custom theme - there is no "Custom" entry in it, and
     // adding one only to track this state is not worth it for a demo. Known imperfection, not a bug.
-}
-
-void MainWindow::onShowContextPage(bool on)
-{
-    if (m_pageContext == nullptr) {
-        createPageContext1();
-    }
-    if (on) {
-        ribbonBar()->showPageContext(m_pageContext);
-    } else {
-        ribbonBar()->hidePageContext(m_pageContext);
-    }
-}
-
-void MainWindow::onStyleClicked(int id)
-{
-    ribbonBar()->setRibbonStyle(static_cast<RibbonBar::RibbonStyle>(id));
 }
 
 void MainWindow::onActionCustomizeAndSaveTriggered(bool b)
@@ -938,17 +638,6 @@ void MainWindow::onActionHelpTriggered()
     ad.exec();
 }
 
-void MainWindow::onActionRemoveAppBtnTriggered(bool b)
-{
-    if (b) {
-        ribbonBar()->setApplicationButton(nullptr);
-    } else {
-        RibbonApplicationButton *actionRemoveAppBtn = new RibbonApplicationButton();
-        ribbonBar()->setApplicationButton(actionRemoveAppBtn);
-        setApplicationButton(actionRemoveAppBtn);
-    }
-}
-
 void MainWindow::onActionUseQssTriggered()
 {
     QFile f("ribbon.qss");
@@ -974,15 +663,6 @@ void MainWindow::onActionLoadCustomizeXmlFileTriggered()
     static bool has_call = false;
     if (!has_call) {
         has_call = QxRibbonCustomizeApplyFromXmlFile("customize.xml", this->ribbonBar(), m_actMgr);
-    }
-}
-
-void MainWindow::onActionWindowFlagNormalButtonTriggered(bool b)
-{
-    if (b) {
-        updateWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
-    } else {
-        updateWindowFlags(windowFlags() & ~Qt::WindowMaximizeButtonHint);
     }
 }
 
@@ -1017,29 +697,4 @@ void MainWindow::onActionFontSmallerTriggered()
     ribbonBar()->setFont(f);
     update();
     qDebug() << "set font:" << f;
-}
-
-void MainWindow::onMenuButtonPopupCheckableTest(bool b)
-{
-    m_edit->append(QString("MenuButtonPopupCheckableTest : %1").arg(b));
-}
-
-void MainWindow::onDelayedPopupCheckableTest(bool b)
-{
-    m_edit->append(QString("DelayedPopupCheckableTest : %1").arg(b));
-}
-
-void MainWindow::onMenuButtonPopupCheckabletriggered(bool b)
-{
-    m_edit->append(QString("MenuButtonPopupCheckabletriggered : %1").arg(b));
-}
-
-void MainWindow::onInstantPopupCheckabletriggered(bool b)
-{
-    m_edit->append(QString("InstantPopupCheckabletriggered : %1").arg(b));
-}
-
-void MainWindow::onDelayedPopupCheckabletriggered(bool b)
-{
-    m_edit->append(QString("DelayedPopupCheckabletriggered : %1").arg(b));
 }

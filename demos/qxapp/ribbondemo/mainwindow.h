@@ -54,8 +54,6 @@ private:
     void createStatusBar();
     void createRibbon();
 
-    void createPageHome();
-    void createPageOther();
     void createPageCustom();
     void createPageApply();
     void createPageContext1();
@@ -65,8 +63,6 @@ private:
     void createApplicationButton();
     void createBackstage();
     void addSomeOtherAction();
-
-    void setApplicationButton(QAbstractButton *btn);
 
     QAction *createAction(const QString &text, const QString &iconurl, const QString &objName);
     QAction *createAction(const QString &text, const QString &iconurl);
@@ -79,19 +75,10 @@ public slots:
     void applyStyleSheet(const QString &styleSheet);
 
 private slots:
-    void onMenuButtonPopupCheckableTest(bool b);
-    void onDelayedPopupCheckableTest(bool b);
-    void onMenuButtonPopupCheckabletriggered(bool b);
-    void onInstantPopupCheckabletriggered(bool b);
-    void onDelayedPopupCheckabletriggered(bool b);
-    void onShowContextPage(bool on);
-    void onStyleClicked(int id);
     void onActionCustomizeAndSaveTriggered(bool b);
     void onActionHelpTriggered();
-    void onActionRemoveAppBtnTriggered(bool b);
     void onActionUseQssTriggered();
     void onActionLoadCustomizeXmlFileTriggered();
-    void onActionWindowFlagNormalButtonTriggered(bool b);
     void onActionChangeThemeTriggered();
 
     void onFontComWidgetCurrentFontChanged(const QFont &f);

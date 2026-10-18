@@ -51,8 +51,66 @@
         <file>res/copy.svg</file>
         <file>res/cut.svg</file>
         <file>res/printer.svg</file>
+        <!-- Single-colour Tabler glyphs, repainted from the palette at run time; the
+             set they come from is named in res/tabler/LICENSE.txt. Registered under
+             /icon so the demo pages' :/icon/res/tabler/... glyph paths resolve. -->
+        <file>res/tabler/align-center.svg</file>
+        <file>res/tabler/align-justified.svg</file>
+        <file>res/tabler/align-left.svg</file>
+        <file>res/tabler/align-right.svg</file>
+        <file>res/tabler/app-window.svg</file>
+        <file>res/tabler/arrow-down.svg</file>
+        <file>res/tabler/arrow-left.svg</file>
+        <file>res/tabler/arrow-right.svg</file>
+        <file>res/tabler/arrow-up.svg</file>
+        <file>res/tabler/arrows-maximize.svg</file>
+        <file>res/tabler/ban.svg</file>
+        <file>res/tabler/bold.svg</file>
+        <file>res/tabler/circle-minus.svg</file>
+        <file>res/tabler/circle-plus.svg</file>
+        <file>res/tabler/circle.svg</file>
+        <file>res/tabler/clipboard.svg</file>
+        <file>res/tabler/copy.svg</file>
+        <file>res/tabler/diamond.svg</file>
+        <file>res/tabler/eye-off.svg</file>
+        <file>res/tabler/eye.svg</file>
+        <file>res/tabler/file-import.svg</file>
+        <file>res/tabler/file.svg</file>
+        <file>res/tabler/forbid.svg</file>
+        <file>res/tabler/folder-check.svg</file>
+        <file>res/tabler/folder-cog.svg</file>
+        <file>res/tabler/folder-plus.svg</file>
+        <file>res/tabler/folder-star.svg</file>
+        <file>res/tabler/folder-stats.svg</file>
+        <file>res/tabler/folder.svg</file>
+        <file>res/tabler/heart.svg</file>
+        <file>res/tabler/hexagon.svg</file>
+        <file>res/tabler/italic.svg</file>
+        <file>res/tabler/language.svg</file>
+        <file>res/tabler/layout-grid-remove.svg</file>
+        <file>res/tabler/layout-grid.svg</file>
+        <file>res/tabler/line.svg</file>
+        <file>res/tabler/lock-open.svg</file>
+        <file>res/tabler/maximize.svg</file>
+        <file>res/tabler/octagon.svg</file>
+        <file>res/tabler/paint.svg</file>
+        <file>res/tabler/pencil.svg</file>
+        <file>res/tabler/pentagon.svg</file>
+        <file>res/tabler/printer.svg</file>
+        <file>res/tabler/scissors.svg</file>
+        <file>res/tabler/square-minus.svg</file>
+        <file>res/tabler/square.svg</file>
+        <file>res/tabler/star.svg</file>
+        <file>res/tabler/table.svg</file>
+        <file>res/tabler/text-decrease.svg</file>
+        <file>res/tabler/text-increase.svg</file>
+        <file>res/tabler/triangle.svg</file>
+        <file>res/tabler/trash.svg</file>
+        <file>res/tabler/typography.svg</file>
     </qresource>
     <qresource prefix="/gallery-icon">
+        <!-- Legacy multi-colour gallery images; superseded by the Tabler shapes on
+             the "Other" page. Kept here until the old icon cleanup removes them. -->
         <file>res/gallery/Document-File.svg</file>
         <file>res/gallery/Download-File.svg</file>
         <file>res/gallery/Drive-File.svg</file>
@@ -70,47 +128,5 @@
         <file>res/gallery/Google-Maps.svg</file>
         <file>res/gallery/Adobe.svg</file>
         <file>res/gallery/Word.svg</file>
-        <!-- Single-colour glyphs, repainted from the palette at run time; the
-             set they come from is named in res/tabler/LICENSE.txt. -->
-        <file>res/tabler/align-center.svg</file>
-        <file>res/tabler/align-justified.svg</file>
-        <file>res/tabler/align-left.svg</file>
-        <file>res/tabler/align-right.svg</file>
-        <file>res/tabler/bold.svg</file>
-        <file>res/tabler/ban.svg</file>
-        <file>res/tabler/circle-minus.svg</file>
-        <file>res/tabler/circle-plus.svg</file>
-        <file>res/tabler/circle.svg</file>
-        <file>res/tabler/eye-off.svg</file>
-        <file>res/tabler/eye.svg</file>
-        <file>res/tabler/file-import.svg</file>
-        <file>res/tabler/file.svg</file>
-        <file>res/tabler/italic.svg</file>
-        <file>res/tabler/lock-open.svg</file>
-        <file>res/tabler/paint.svg</file>
-        <file>res/tabler/pencil.svg</file>
-        <file>res/tabler/square.svg</file>
-        <file>res/tabler/star.svg</file>
-        <file>res/tabler/text-decrease.svg</file>
-        <file>res/tabler/text-increase.svg</file>
-        <file>res/tabler/trash.svg</file>
-        <file>res/tabler/triangle.svg</file>
-        <!-- gallery + button group of the "Other" page -->
-        <file>res/tabler/arrow-down.svg</file>
-        <file>res/tabler/arrow-left.svg</file>
-        <file>res/tabler/arrow-right.svg</file>
-        <file>res/tabler/arrow-up.svg</file>
-        <file>res/tabler/arrows-maximize.svg</file>
-        <file>res/tabler/clipboard.svg</file>
-        <file>res/tabler/copy.svg</file>
-        <file>res/tabler/diamond.svg</file>
-        <file>res/tabler/heart.svg</file>
-        <file>res/tabler/hexagon.svg</file>
-        <file>res/tabler/language.svg</file>
-        <file>res/tabler/line.svg</file>
-        <file>res/tabler/octagon.svg</file>
-        <file>res/tabler/pentagon.svg</file>
-        <file>res/tabler/printer.svg</file>
-        <file>res/tabler/scissors.svg</file>
     </qresource>
 </RCC>
