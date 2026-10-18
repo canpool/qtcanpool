@@ -8,8 +8,10 @@
 #include <QApplication>
 #include <QCommandLineOption>
 #include <QCommandLineParser>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QEventLoop>
 #include <QGuiApplication>
 #include <QPixmap>
 #include <QStringList>
@@ -149,11 +151,18 @@ int main(int argc, char *argv[])
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
 
     if (parser.isSet(themeOption)) {
+        // A comma-separated list switches through the themes in order, so a capture can
+        // show what the window looks like after a switch and not only after a start.
+        const QStringList themeIds = parser.value(themeOption).split(QLatin1Char(','), Qt::SkipEmptyParts);
         // The window installs its default theme on the first turn of the event loop, so
-        // ask for this one behind that rather than racing it.
-        const QString themeId = parser.value(themeOption);
-        QTimer::singleShot(0, &w, [&w, themeId]() {
-            w.applyTheme(themeId);
+        // ask for these behind that rather than racing it.
+        QTimer::singleShot(0, &w, [&w, themeIds]() {
+            for (const QString &themeId : themeIds) {
+                w.applyTheme(themeId.trimmed());
+                // A switch is a stack of palette and style sheet changes; let them land
+                // before the next one, and before the capture.
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            }
         });
     }
 
