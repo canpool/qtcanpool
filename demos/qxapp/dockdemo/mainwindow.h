@@ -12,6 +12,7 @@
 
 QX_DOCK_BEGIN_NAMESPACE
 class DockWindow;
+class DockWidget;
 QX_DOCK_END_NAMESPACE
 
 QX_DOCK_USE_NAMESPACE
@@ -43,6 +44,14 @@ public:
      */
     void saveToSettings();
     void restoreFromSettings();
+
+    /*!
+     * Opens the auto hide panel the demo owns, as if its side tab had been
+     * clicked. A capture needs it: the auto hide title bar is filled with the
+     * highlight and the tabs sit inside it, and a screenshot that only ever
+     * shows the collapsed state never looks at that arrangement.
+     */
+    void expandAutoHidePanel();
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
     virtual bool eventFilter(QObject *watched, QEvent *event) override;
@@ -56,6 +65,7 @@ private:
     void installApplicationStyleSheet();
 
     DockWindow *m_dockWindow = nullptr;
+    DockWidget *m_autoHideDockWidget = nullptr;
     bool m_screenshotMode = false;
     QString m_dockSheet;
 };

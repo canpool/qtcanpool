@@ -84,9 +84,16 @@ int main(int argc, char *argv[])
         QStringLiteral("theme"),
         QStringLiteral("Start on theme <id>, one of the registered theme ids (soft-light, soft-dark, ...)."),
         QStringLiteral("id"));
+    // The auto hide panel is collapsed in the demo's own arrangement, so a
+    // capture of it needs this switch: its title bar is filled with the
+    // highlight and the tabs sit on that fill, which is a different surface
+    // from a docked tab's.
+    QCommandLineOption autoHideOption(QStringLiteral("autohide"),
+                                      QStringLiteral("Open the auto hide panel before capturing."));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
     parser.addOption(themeOption);
+    parser.addOption(autoHideOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
     // switches (-platform, -style, ...), which the parser would reject as
@@ -137,7 +144,14 @@ int main(int argc, char *argv[])
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
 
     if (!screenshotFile.isEmpty()) {
+        const bool autoHide = parser.isSet(autoHideOption);
         const int delay = parser.value(delayOption).toInt();
+        if (autoHide) {
+            // Open early and let the slide animation settle before the grab.
+            QTimer::singleShot(50, &w, [&w]() {
+                w.expandAutoHidePanel();
+            });
+        }
         QTimer::singleShot(delay, &w, [&w, &a, screenshotFile]() {
             const QPixmap shot = w.grab();
             const bool saved = shot.save(screenshotFile);

@@ -21,6 +21,7 @@
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QDynamicPropertyChangeEvent>
 #include <QLabel>
 #include <QMenu>
 #include <QAction>
@@ -49,6 +50,7 @@ public:
     DockFocusController *focusController() const;
 
     void updateIcon();
+    void updateCloseButtonIcon();
     QAction *createAutoHideToAction(const QString &title, Qx::DockSideBarArea area, QMenu *menu);
 public:
     DockWidget *m_dockWidget = nullptr;
@@ -148,6 +150,24 @@ void DockTabPrivate::updateCloseButtonSizePolicy()
     sizePolicy.setRetainSizeWhenHidden(features.testFlag(DockWidget::DockWidgetClosable) &&
                                        testConfigFlag(DockManager::RetainTabSizeWhenCloseButtonHidden));
     m_closeButton->setSizePolicy(sizePolicy);
+}
+
+/**
+ * Picks the close button's icon for the surface the tab currently paints on.
+ * The focused tab wears the highlight fill (the focus_highlighting sheet), and
+ * the window text tint the regular icon carries disappears into that accent -
+ * the highlight-surface variant is white instead. Both variants carry every
+ * state, and an application that never tinted the icons (applyDockIcons()
+ * never called) gets an empty icon from both lookups, in which case the
+ * platform icon set at creation time stays in place.
+ */
+void DockTabPrivate::updateCloseButtonIcon()
+{
+    Q_Q(DockTab);
+    const QIcon icon = q->property("focused").toBool() ? internal::highlightSurfaceIcon(Qx::DockTabCloseIcon)
+                                                       : DockManager::iconProvider().customIcon(Qx::DockTabCloseIcon);
+    if (!icon.isNull())
+        m_closeButton->setIcon(icon);
 }
 
 void DockTabPrivate::updateCloseButtonVisibility(bool active)
@@ -505,6 +525,16 @@ bool DockTab::event(QEvent *e)
         }
     }
 #endif
+    // The focus controller marks this tab with the dynamic "focused" property
+    // (the style sheet keys on the same property); follow it so the close
+    // button's glyph switches to the variant that reads on the highlight fill
+    // while the tab wears it.
+    if (e->type() == QEvent::DynamicPropertyChange) {
+        auto *pe = static_cast<QDynamicPropertyChangeEvent *>(e);
+        if (pe->propertyName() == QByteArrayLiteral("focused")) {
+            d->updateCloseButtonIcon();
+        }
+    }
     if (e->type() == QEvent::StyleChange) {
         d->updateIcon();
     }

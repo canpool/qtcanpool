@@ -5,9 +5,12 @@
 
 #include "dockiconprovider.h"
 #include "dockmanager.h"
+#include "docktab.h"
+#include "dockutils.h"
 
 #include <QAbstractButton>
 #include <QFile>
+#include <QGuiApplication>
 #include <QHash>
 #include <QIcon>
 #include <QPaintDevice>
@@ -69,8 +72,8 @@ struct IconSpec {
 // The dock's built-in icons are single-colour SVGs. Each file ships with one
 // hard-coded colour: black on the normal and the focused state, a grey on the
 // disabled one - the focused files are white copies of the normal shape, and
-// tintedIcon() maps that white onto the same colour the black gets, because both
-// states are drawn over the window colour. Tinting swaps the shipped colour for
+// tintedIcon() maps every painted colour onto one target, because all of the
+// states sit on a single known surface. Tinting swaps the shipped colour for
 // the palette's, so the icon follows the theme instead of staying black on a
 // dark background.
 const IconSpec kIconSpecs[] = {
@@ -91,35 +94,37 @@ const IconSpec kIconSpecs[] = {
     {Qx::DockAutoHideIcon, "vs-pin-button-pinned-focused.svg", QIcon::Active, QIcon::On},
 };
 
-QIcon tintedIcon(const QString &fileName, const QPalette &palette, QIcon::Mode mode)
+// An SVG colour value for the replacement pass: opaque colours go out as hex,
+// translucent ones as rgba(), which is the form the SVG renderer accepts.
+QString svgColor(const QColor &color)
+{
+    if (color.alpha() == 255)
+        return color.name();
+    return QStringLiteral("rgba(%1, %2, %3, %4)")
+        .arg(color.red())
+        .arg(color.green())
+        .arg(color.blue())
+        .arg(color.alphaF(), 0, 'f', 2);
+}
+
+QIcon tintedIcon(const QString &fileName, const QColor &glyph, const QColor &glyphDisabled)
 {
     QFile file(QStringLiteral(":/qxdock/res/images/") + fileName);
     if (!file.open(QIODevice::ReadOnly))
         return QIcon();
     QString text = QString::fromUtf8(file.readAll());
 
-    // The white files are the *-focused variants: the same shape as their normal
-    // counterpart, drawn in white because they were meant to sit on the highlight
-    // fill. Hover and press no longer paint that fill - the sheets use
-    // palette(midlight) and palette(mid), which belong to the window colour's
-    // family - so on those the glyph has to read like the normal one. Mapping the
-    // white to BrightText, as this did, left it #ffffff in *both* schemes
-    // (BrightText is the highlight text and that is white in either), which is why
-    // a light dock's close button vanished the moment the pointer touched it:
-    // the hover fill there is #ffffff too. An icon over the window colour takes
-    // the window text colour, whatever mode it is in.
-    const QColor glyph = (mode == QIcon::Active || mode == QIcon::Selected)
-                             ? palette.color(QPalette::Active, QPalette::WindowText)
-                             : palette.color(QPalette::Active, QPalette::BrightText);
-
-    // Replacement order matters: rewrite the six-digit white before the
-    // three-digit one, otherwise "#ffffff" would be partially clobbered by the
-    // "#fff" rule. The colour is the only thing that changes; the shape is left
-    // untouched, so rendering is identical to the original shipped SVG.
-    text.replace(QStringLiteral("#ffffff"), glyph.name());
-    text.replace(QStringLiteral("#fff"), glyph.name());
-    text.replace(QStringLiteral("#a0a0a0"), palette.color(QPalette::Disabled, QPalette::WindowText).name());
-    text.replace(QStringLiteral("#000000"), palette.color(QPalette::Active, QPalette::WindowText).name());
+    // Every painted colour becomes the one target: the black files are the
+    // resting shape, the white files the same shape on a hover fill, and both
+    // sit on the surface the caller says the icon lives on. Replacement order
+    // matters: rewrite the six-digit white before the three-digit one,
+    // otherwise "#ffffff" would be partially clobbered by the "#fff" rule. The
+    // colour is the only thing that changes; the shape is left untouched, so
+    // rendering is identical to the original shipped SVG.
+    text.replace(QStringLiteral("#ffffff"), svgColor(glyph));
+    text.replace(QStringLiteral("#fff"), svgColor(glyph));
+    text.replace(QStringLiteral("#a0a0a0"), svgColor(glyphDisabled));
+    text.replace(QStringLiteral("#000000"), svgColor(glyph));
 
     // Render through the SVG engine at several sizes so the icon stays crisp on
     // hi-DPI screens; a single intrinsic-size raster would blur when scaled.
@@ -137,13 +142,85 @@ QIcon tintedIcon(const QString &fileName, const QPalette &palette, QIcon::Mode m
     }
     return icon;
 }
+
+// The regular tint: an icon over the window colour takes the window text
+// colour, whatever mode it is in - hover and press now paint palette(midlight)
+// and palette(mid), which belong to the window colour's family. (Mapping the
+// white files to BrightText, as an earlier pass did, left them #ffffff in both
+// schemes, which is why a light dock's close button vanished the moment the
+// pointer touched it: the hover fill there is #ffffff too.)
+QIcon tintedIconForWindow(const QString &fileName, const QPalette &palette)
+{
+    const QColor windowText = palette.color(QPalette::Active, QPalette::WindowText);
+    return tintedIcon(fileName, windowText, palette.color(QPalette::Disabled, QPalette::WindowText));
+}
+
+// The icon set that reads on the highlight fill. The focused tab's close
+// button and the whole auto hide title bar sit on that fill, where the window
+// text tint disappears into the accent. Every state goes white because the
+// accent is the same #0078d4 in both themes; the disabled state steps back to a
+// translucent white, the only step available on a saturated fill.
+QIcon highlightSurfaceIconImpl(const QPalette &palette, Qx::DockIcon id)
+{
+    const QColor glyph = palette.color(QPalette::Active, QPalette::HighlightedText);
+    const QColor glyphDisabled(255, 255, 255, 110);
+    QIcon icon;
+    for (const IconSpec &spec : kIconSpecs) {
+        if (spec.id != id)
+            continue;
+        QIcon svg = tintedIcon(QLatin1String(spec.file), glyph, glyphDisabled);
+        if (svg.isNull())
+            continue;
+        icon.addPixmap(svg.pixmap(QSize(16, 16)), spec.mode, spec.state);
+    }
+    return icon;
+}
+
 }   // namespace
+
+// Baked variants, keyed by icon id. applyDockIcons() drops the cache on every
+// re-tint, because the variants carry the palette in force when they were made.
+static QHash<Qx::DockIcon, QIcon> s_highlightSurfaceIcons;
+
+QIcon internal::highlightSurfaceIcon(Qx::DockIcon id)
+{
+    auto it = s_highlightSurfaceIcons.find(id);
+    if (it != s_highlightSurfaceIcons.end())
+        return *it;
+    const QIcon icon = highlightSurfaceIconImpl(QGuiApplication::palette(), id);
+    if (!icon.isNull())
+        s_highlightSurfaceIcons.insert(id, icon);
+    return icon;
+}
+
+void internal::resetHighlightSurfaceIconCache()
+{
+    s_highlightSurfaceIcons.clear();
+}
+
+// A button that paints over the highlight fill, not over the window colour:
+// the close button of a focused tab (the tab hangs off the highlight), and any
+// button on an auto hide container's title bar (that bar is filled with the
+// highlight too). Those take the white variants instead of the window text
+// ones, or the glyph disappears into the accent.
+bool isOnHighlightSurface(const QAbstractButton *button)
+{
+    if (const DockTab *tab = qobject_cast<const DockTab *>(button->parentWidget()))
+        return tab->property("focused").toBool();
+    for (const QWidget *w = button->parentWidget(); w; w = w->parentWidget()) {
+        if (QLatin1String(w->metaObject()->className()) == QLatin1String("QxDock::DockAutoHideContainer"))
+            return true;
+    }
+    return false;
+}
 
 void applyDockIcons(const QPalette &palette, QWidget *root)
 {
+    internal::resetHighlightSurfaceIconCache();
+
     QHash<Qx::DockIcon, QIcon> icons;
     for (const IconSpec &spec : kIconSpecs) {
-        QIcon svg = tintedIcon(QLatin1String(spec.file), palette, spec.mode);
+        QIcon svg = tintedIconForWindow(QLatin1String(spec.file), palette);
         if (svg.isNull())
             continue;
         icons[spec.id].addPixmap(svg.pixmap(QSize(16, 16)), spec.mode, spec.state);
@@ -170,7 +247,8 @@ void refreshDockIcons(QWidget *root)
         const int id = button->property("qxdock.iconId").toInt(&ok);
         if (!ok)
             continue;
-        const QIcon icon = DockManager::iconProvider().customIcon(Qx::DockIcon(id));
+        QIcon icon = isOnHighlightSurface(button) ? internal::highlightSurfaceIcon(Qx::DockIcon(id))
+                                                  : DockManager::iconProvider().customIcon(Qx::DockIcon(id));
         if (!icon.isNull())
             button->setIcon(icon);
     }

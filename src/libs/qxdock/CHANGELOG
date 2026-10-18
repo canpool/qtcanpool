@@ -120,6 +120,28 @@ Bugfix
   scheme: the button was there, the picture of closing was not. Both states are
   drawn over the window colour, so the white maps to the window text colour now
   and the glyph reads the same on hover as it does at rest, whatever the theme.
+- An auto hide container's tab covered the title bar it sits in. That title bar
+  is filled with palette(highlight) and the tab bar is laid out inside it, so
+  the tab's own active fill - the window gradient, in the activeTab rule - drew
+  a grey patch over the accent, and the label kept the colour it uses over the
+  window colour. The four sheets now let the tab step aside inside an auto hide
+  container: no fill, no border, and #ffffff for the label, matching the focused
+  tab. The selector spells out both [activeTab] forms, because the activeTab
+  rules outrank a bare type selector and a comma list counts as its least
+  specific member. Hover and press on that close button are white washes, the
+  same relationship the focused tab has, since the accent is the surface there.
+- The buttons that sit on the highlight fill wore the window text glyph. The
+  focused tab's close button and every button of an auto hide title bar paint
+  over palette(highlight), where the window text tint all but disappears into
+  the accent - a black cross on #0078d4. The icon provider now hands out a
+  second variant built for that surface, in which every state is the highlight
+  text colour (the disabled one a translucent white, the only step available on
+  a saturated fill), and refreshDockIcons() picks it for a button whose parent
+  tab is focused or whose ancestor is an auto hide container. DockTab switches
+  its close button between the two when the focus controller sets the "focused"
+  property, so the glyph follows the fill the tab is painting on. An application
+  that never calls applyDockIcons() gets no variant and keeps the platform icons
+  it already had.
 
 0.2.3
 ---

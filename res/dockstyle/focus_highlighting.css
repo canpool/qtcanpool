@@ -307,21 +307,56 @@ QxDock--DockSideBar[sideBarArea="3"] {
 /*****************************************************************************
  * DockAutoHideContainer
  *****************************************************************************/
-QxDock--DockAutoHideContainer {
+#autoHideDockContainer {
     background: palette(window);
 }
 
-QxDock--DockAutoHideContainer QxDock--DockTitleBar {
+#autoHideDockContainer QxDock--DockTitleBar {
     background: palette(highlight);
     padding: 0px;
     border: none;
 }
 
+/* The auto hide title bar wears the highlight fill, and the tab bar lives
+   inside it - the tab's own active fill (the window gradient) would paint a
+   grey patch over that accent, which is what "the tab covers the title bar"
+   was. The tab steps aside instead: no fill, no border, and text that reads on
+   the accent, the same pair the focused tab uses. Both attribute forms are
+   spelled out because the activeTab rules above outrank a bare type selector. */
+#autoHideDockContainer QxDock--DockTab {
+    background: transparent;
+    border-color: transparent;
+}
+
+#autoHideDockContainer QxDock--DockTab[activeTab="true"] {
+    background: transparent;
+    border-color: transparent;
+}
+
+#autoHideDockContainer QxDock--DockTab QLabel {
+    color: #ffffff;
+}
+
+#autoHideDockContainer QxDock--DockTab[activeTab="true"] QLabel {
+    color: #ffffff;
+}
+
+/* White washes on the accent, the same relationship the focused tab's close
+   button has: the two palette steps that lift the button off the window colour
+   would read as grey blocks here. */
+#autoHideDockContainer QxDock--DockTab>#dockTabCloseButton:hover {
+    background: rgba(255, 255, 255, 60);
+}
+
+#autoHideDockContainer QxDock--DockTab>#dockTabCloseButton:pressed {
+    background: rgba(255, 255, 255, 92);
+}
+
 /*
  * This is required because the QxDock--DockPanel[focused="true"] will
- * overwrite the QxDock--DockAutoHideContainer QxDock--DockTitleBar rule
+ * overwrite the #autoHideDockContainer QxDock--DockTitleBar rule
  */
-QxDock--DockAutoHideContainer QxDock--DockPanel[focused="true"] QxDock--DockTitleBar {
+#autoHideDockContainer QxDock--DockPanel[focused="true"] QxDock--DockTitleBar {
     background: palette(highlight);
     padding: 0px;
     border: none;
@@ -341,15 +376,19 @@ QxDock--DockAutoHideContainer QxDock--DockPanel[focused="true"] QxDock--DockTitl
     qproperty-iconSize: 16px;
 }
 
-QxDock--DockAutoHideContainer #dockPanelAutoHideButton {
+#autoHideDockContainer #dockPanelAutoHideButton {
     qproperty-iconSize: 16px;
 }
 
-QxDock--DockAutoHideContainer #dockPanelMinimizeButton {
+#autoHideDockContainer #dockPanelMinimizeButton {
     qproperty-iconSize: 16px;
 }
 
-QxDock--DockAutoHideContainer QxDock--TitleBarButton:pressed {
+#autoHideDockContainer QxDock--TitleBarButton:hover {
+    background: rgba(255, 255, 255, 60);
+}
+
+#autoHideDockContainer QxDock--TitleBarButton:pressed {
     background: rgba(255, 255, 255, 96);
 }
 
@@ -364,18 +403,18 @@ QxDock--DockResizeHandle {
     background: palette(window);
 }
 
-QxDock--DockAutoHideContainer[sideBarArea="0"] QxDock--DockResizeHandle {
+#autoHideDockContainer[sideBarArea="0"] QxDock--DockResizeHandle {
     border-top: 1px solid palette(dark);
 }
 
-QxDock--DockAutoHideContainer[sideBarArea="1"] QxDock--DockResizeHandle {
+#autoHideDockContainer[sideBarArea="1"] QxDock--DockResizeHandle {
     border-left: 1px solid palette(dark);
 }
 
-QxDock--DockAutoHideContainer[sideBarArea="2"] QxDock--DockResizeHandle {
+#autoHideDockContainer[sideBarArea="2"] QxDock--DockResizeHandle {
     border-right: 1px solid palette(dark);
 }
 
-QxDock--DockAutoHideContainer[sideBarArea="3"] QxDock--DockResizeHandle {
+#autoHideDockContainer[sideBarArea="3"] QxDock--DockResizeHandle {
     border-top: 1px solid palette(dark);
 }

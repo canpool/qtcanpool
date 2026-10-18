@@ -91,6 +91,23 @@ QPixmap createTransparentPixmap(const QPixmap &source, qreal opacity);
 
 void setButtonIcon(QAbstractButton *b, QStyle::StandardPixmap pixmap, Qx::DockIcon iconId);
 
+/**
+ * Returns the tinted variant of the built-in dock icon that reads on the
+ * highlight fill: the focused tab's close button and every title bar button of
+ * an auto hide container sit on that fill, where the regular (window text)
+ * tint disappears into the accent. All states of the icon are white in both
+ * themes, because the accent is the same colour in both; the disabled state is
+ * a translucent white. An application that never calls applyDockIcons() gets an
+ * empty icon here, and the caller keeps whatever icon the button already wears.
+ */
+QIcon highlightSurfaceIcon(Qx::DockIcon id);
+
+/**
+ * Drops the highlightSurfaceIcon() cache. applyDockIcons() calls it on every
+ * re-tint, since the cached variants are baked from the palette in force.
+ */
+void resetHighlightSurfaceIconCache();
+
 void replaceSplitterWidget(QSplitter *splitter, QWidget *from, QWidget *to);
 
 void hideEmptyParentSplitters(DockSplitter *firstParentSplitter);

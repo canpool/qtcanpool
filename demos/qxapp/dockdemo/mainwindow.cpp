@@ -9,6 +9,7 @@
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockstylesheet.h"
+#include "qxdock/dockautohidecontainer.h"
 #include "qxdock/dockiconprovider.h"
 #include "qxapp/qxthemebundle.h"
 #include "qxtheme/qxtheme.h"
@@ -113,6 +114,7 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     w->setWidget(cw);
     viewMenu->addAction(w->toggleViewAction());
     m_dockWindow->addAutoHideDockWidget(Qx::DockSideBarLeft, w);
+    m_autoHideDockWidget = w;
 
     // edit menu
     QMenu *editMenu = mb->addMenu(tr("Edit"));
@@ -240,6 +242,17 @@ void MainWindow::createThemeMenu()
     connect(followSystem, &QAction::toggled, this, [engine](bool on) {
         engine->setFollowSystemTheme(on);
     });
+}
+
+void MainWindow::expandAutoHidePanel()
+{
+    if (!m_autoHideDockWidget) {
+        return;
+    }
+    DockAutoHideContainer *container = m_autoHideDockWidget->autoHideContainer();
+    if (container) {
+        container->toggleCollapseState();
+    }
 }
 
 void MainWindow::saveToSettings()
