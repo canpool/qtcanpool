@@ -15,6 +15,10 @@ QT_BEGIN_NAMESPACE
 class QMenu;
 QT_END_NAMESPACE
 
+QX_APP_BEGIN_NAMESPACE
+class ThemeInstaller;
+QX_APP_END_NAMESPACE
+
 QX_APP_USE_NAMESPACE
 QX_PLUGIN_USE_NAMESPACE
 
@@ -74,6 +78,15 @@ private:
 
     QxPluginManager *m_manager = nullptr;
     QMenu *m_pageMenu = nullptr;
+    /*!
+     * The whole theme - the bundle's sheet, the dock's sheet after it and the
+     * dock's icons - kept in force. Nothing in this class chooses a theme: the
+     * engine restores the one the user picked, and this is what makes the window
+     * wear it, docks included. Built before start(), because the docks this
+     * application has come from the plugins start() loads, and a dock takes its
+     * glyphs from the icon set installed here as it is constructed.
+     */
+    ThemeInstaller *m_theme = nullptr;
 };
 
 #endif   // SHELLWINDOW_H

@@ -5,6 +5,8 @@
 #include "shellwindow.h"
 
 #include "qxapp/qxpluginmanagerdialog.h"
+#include "qxapp/qxthemebundle.h"
+#include "qxapp/qxthemeinstaller.h"
 
 #include "qxplugin/qxpluginspec.h"
 
@@ -58,7 +60,24 @@ ShellWindow::ShellWindow(QWidget *parent)
     resize(1100, 720);
 
     // Installing the engine first restores the theme the user picked last time.
-    QxThemeManager::instance();
+    QxThemeManager *engine = QxThemeManager::instance();
+    // A shell with no sheet of its own still has docks and a ribbon, so it wears
+    // the bundle: the same ten themes the other demos offer, chosen once by the
+    // engine rather than here.
+    QxApp::registerBundledThemes(engine);
+    engine->setSystemThemePair(QStringLiteral("soft-light"), QStringLiteral("soft-dark"));
+    // The theme the engine restored named nothing when it ran - the bundle was
+    // not registered yet - so it is applied here. apply() rather than setTheme()
+    // because this is not a new choice, and it must not look like one.
+    if (engine->hasTheme(engine->theme())) {
+        engine->apply();
+    } else {
+        engine->setTheme(QStringLiteral("soft-light"));
+    }
+    // Before the modules load: the docks they contribute take their glyphs from
+    // the icon set installed here as they are built, and the sheet is already in
+    // place for them to be styled by.
+    m_theme = new QxApp::ThemeInstaller(engine, this, this);
 
     // The ribbon brings the status message with it, so nothing to say here.
     createRibbon();

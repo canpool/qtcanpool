@@ -47,4 +47,9 @@ add_qtc_executable(IdeShellDemo
   SOURCES
     main.cpp
     shellwindow.cpp shellwindow.h
+    # The theme bundle and the dock's fragments: the shell wears both, and
+    # neither library carries them - a sheet belongs to the application that
+    # offers it. Same two files the other demos ship.
+    ${CMAKE_SOURCE_DIR}/res/themes.qrc
+    ${CMAKE_SOURCE_DIR}/res/dockstyle.qrc
 )
