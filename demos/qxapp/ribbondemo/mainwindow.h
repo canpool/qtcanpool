@@ -61,7 +61,6 @@ private:
     void createPageContext1();
     void createPageContext2();
     void createPageContext1(RibbonPage *page);
-    void createPageContext2(RibbonPage *page);
     void createQuickAccessBar();
     void createRightButtonGroup();
     void createApplicationButton();

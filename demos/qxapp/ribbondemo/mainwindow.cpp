@@ -24,6 +24,8 @@
 #include "qxribbon/ribbonstatusbar.h"
 
 #include "applypage.h"
+#include "contextpage2.h"
+#include "custompage.h"
 #include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthemepalette.h"
 
@@ -56,7 +58,6 @@
 #include <QTimer>
 
 #include "aboutdialog.h"
-#include "custompage.h"
 
 QX_RIBBON_USE_NAMESPACE
 QX_THEME_USE_NAMESPACE
@@ -774,8 +775,9 @@ void MainWindow::createPageContext1()
     RibbonPage *page1 = m_pageContext->addPage(tr("Page1"));
     createPageContext1(page1);
 
-    RibbonPage *page2 = m_pageContext->addPage(tr("Page2"));
-    createPageContext2(page2);
+    auto *contextPage2 = new ContextPage2(m_icons, this);
+    contextPage2->setPageName(tr("Page2"));
+    m_pageContext->addPage(contextPage2);
 }
 
 void MainWindow::createPageContext2()
@@ -894,63 +896,6 @@ void MainWindow::createPageContext1(RibbonPage *page)
     ctrlContainer2->setText(tr("linedit:"));
     ctrlContainer2->setIconVisible(false);
     group4->addMediumWidget(ctrlContainer2);
-}
-
-void MainWindow::createPageContext2(RibbonPage *page)
-{
-    RibbonGroup *group1 = page->addGroup(QStringLiteral(u"删除PagePage测试"));
-
-    QAction *actionDeleteThisPage = createAction(tr("delete this page"), ":/icon/res/delete.svg");
-    group1->addLargeAction(actionDeleteThisPage);
-    connect(actionDeleteThisPage, &QAction::triggered, this, [this, page]() {
-        this->ribbonBar()->removePage(page);
-        page->deleteLater();
-    });
-    RibbonGroup *groupLayout = page->addGroup(QStringLiteral(u"特殊布局"));
-
-    groupLayout->addAction(createAction(tr("Large"), ":/icon/res/file.svg", "@Large1"), QToolButton::InstantPopup,
-                           RibbonGroup::Large);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small1"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small2"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addSeparator();
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small3"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small4"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small5"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small6"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addSeparator();
-    groupLayout->addAction(createAction(tr("Large"), ":/icon/res/file.svg", "@Large2"), QToolButton::InstantPopup,
-                           RibbonGroup::Large);
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium1"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium2"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small7"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium3"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Large"), ":/icon/res/file.svg", "@Large3"), QToolButton::InstantPopup,
-                           RibbonGroup::Large);
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium4"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium5"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Large"), ":/icon/res/file.svg", "@Large4"), QToolButton::InstantPopup,
-                           RibbonGroup::Large);
-    groupLayout->addSeparator();
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium6"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Large"), ":/icon/res/file.svg", "@Large5"), QToolButton::InstantPopup,
-                           RibbonGroup::Large);
-    groupLayout->addAction(createAction(tr("Medium"), ":/icon/res/file.svg", "@Medium7"), QToolButton::InstantPopup,
-                           RibbonGroup::Medium);
-    groupLayout->addAction(createAction(tr("Small"), ":/icon/res/file.svg", "@Small8"), QToolButton::InstantPopup,
-                           RibbonGroup::Small);
 }
 
 void MainWindow::createQuickAccessBar()
