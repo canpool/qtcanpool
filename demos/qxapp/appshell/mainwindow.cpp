@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 
 #include "qxapp/qxthemebundle.h"
+#include "qxapp/qxthemeinstaller.h"
 #include "qxapp/qxworkspacemanager.h"
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonpage.h"
@@ -42,6 +43,24 @@ MainWindow::MainWindow(QWidget *parent)
     // and polishes the widgets once, before the window is even shown.
     QxThemeManager *engine = QxThemeManager::instance();
     QxApp::registerBundledThemes(engine);
+    // The pair "Follow system" chooses from. Without it that switch has nothing
+    // to select and following the desktop quietly does nothing.
+    engine->setSystemThemePair(QStringLiteral("soft-light"), QStringLiteral("soft-dark"));
+    // The engine could not apply what it restored: it ran before the bundle was
+    // registered, so the id it read named no theme yet. Applying it now is one
+    // call that leaves the stored choice alone - the alternative, setTheme()
+    // with the same id, would look like the user picked it again.
+    if (engine->hasTheme(engine->theme())) {
+        engine->apply();
+    } else {
+        engine->setTheme(QStringLiteral("soft-light"));
+    }
+    // Everything the theme consists of for this application: its sheet, the
+    // dock's sheet after it and the dock's icons, redone on a theme switch or a
+    // platform palette change. Created before the docks exist on purpose - the
+    // icon set it installs is what they take their glyphs from as they are
+    // built, so nothing has to be repainted afterwards.
+    m_theme = new QxApp::ThemeInstaller(engine, this, this);
 
     // The ribbon brings the status message with it, so nothing to say here.
     createRibbon();

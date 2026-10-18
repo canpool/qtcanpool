@@ -22,4 +22,8 @@ add_qtc_executable(AppShellDemo
     # The style sheets this demo offers as themes; res/themes.qrc is shared with
     # any other application that wants to offer the same set.
     ${CMAKE_SOURCE_DIR}/res/themes.qrc
+    # The dock's fragments, which the window appends to the theme's sheet. A
+    # theme says nothing about QxDock's own widget classes, so without these the
+    # docks would be a row of unstyled widgets.
+    ${CMAKE_SOURCE_DIR}/res/dockstyle.qrc
 )

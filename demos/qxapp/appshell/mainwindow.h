@@ -12,6 +12,10 @@ class QMenu;
 class QTimer;
 QT_END_NAMESPACE
 
+QX_APP_BEGIN_NAMESPACE
+class ThemeInstaller;
+QX_APP_END_NAMESPACE
+
 QX_APP_USE_NAMESPACE
 
 /*!
@@ -53,6 +57,13 @@ private:
     QMenu *m_workspaceMenu = nullptr;
     QTimer *m_progressTimer = nullptr;
     int m_progressStep = 0;
+    /*!
+     * Puts the theme the bundle ships on the whole application - its sheet, the
+     * dock's sheet on top of it and the dock's icons - and keeps it there. It
+     * owns the application style sheet for as long as this window lives, which
+     * is what the constructor comment in the implementation is about.
+     */
+    ThemeInstaller *m_theme = nullptr;
 };
 
 #endif   // MAINWINDOW_H
