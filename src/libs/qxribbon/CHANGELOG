@@ -8,6 +8,14 @@ Addition
   ownership: the caller still decides when the page dies. tst_RibbonPageContext::
   builtPage is the check.
 
+Fixed
+- The application button is laid out at the tab strip's full height instead of one
+  pixel less. A tab title is centred in its tab rect, and so is a label the button
+  carries of its own, so a button one baseline row shorter centred that label half
+  a pixel above every title beside it - a File button that visibly does not sit on
+  the tabs' line. tst_RibbonBar::applicationButtonSharesTheTabRow is the check, in
+  both tab-row styles.
+
 0.13.0
 ---
 Interface

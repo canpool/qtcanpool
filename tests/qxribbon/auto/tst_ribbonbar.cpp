@@ -45,6 +45,7 @@ class tst_RibbonBar : public QObject
     Q_OBJECT
 private slots:
     void applicationButton();
+    void applicationButtonSharesTheTabRow();
     void page();
     void pageContext();
     void clear();
@@ -94,6 +95,37 @@ void tst_RibbonBar::applicationButton()
     // delete
     rb.setApplicationButton(nullptr);
     QCOMPARE(nullptr, rb.applicationButton());
+}
+
+void tst_RibbonBar::applicationButtonSharesTheTabRow()
+{
+    // A tab title is centred in its tab rect, and the application button usually carries a
+    // label of its own on the same row. Giving the button a rect even one pixel shorter
+    // centres that label half a pixel off every title beside it - visible as "the File
+    // button does not sit on the tabs' line", which is how the mismatch was reported.
+    for (RibbonBar::RibbonStyle style : {RibbonBar::TabBarBelowStyle, RibbonBar::TabBarInlineStyle}) {
+        QWidget window;
+        window.resize(900, 400);
+
+        RibbonBar rb(&window);
+        rb.addPage(QStringLiteral("page1"));
+        rb.addPage(QStringLiteral("page2"));
+        rb.setRibbonStyle(style);
+
+        window.show();
+        rb.resizeRibbon();
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+        QTabBar *bar = rb.findChild<QTabBar *>(QStringLiteral("qx_RibbonTabBar"));
+        QVERIFY(bar);
+        QAbstractButton *button = rb.applicationButton();
+        QVERIFY(button);
+
+        const QRect tab = bar->tabRect(0).translated(bar->pos());
+        QVERIFY(tab.isValid());
+        QCOMPARE(tab.top(), button->geometry().top());
+        QCOMPARE(tab.height(), button->geometry().height());
+    }
 }
 
 void tst_RibbonBar::page()

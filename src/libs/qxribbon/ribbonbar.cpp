@@ -653,7 +653,11 @@ void RibbonBarPrivate::resizeInTabBarBelowStyle()
     y += validTitleBarHeight;
     // |m_applicationButton|~~~~~ m_tabBar ~~~~~|m_bottomLeftButtonGroup|m_bottomRightButtonGroup|cornerW|
     if (takesPartInLayout(m_applicationButton)) {
-        m_applicationButton->setGeometry(x, y, m_applicationButton->size().width(), otherH);
+        // The height is the tab strip's, not the strip minus the baseline row: the button
+        // carries a label of its own, and a rect one pixel shorter centres that label half
+        // a pixel off every tab title beside it. The baseline is painted under the button
+        // anyway, so the strip's bottom row costs nothing here.
+        m_applicationButton->setGeometry(x, y, m_applicationButton->size().width(), tabH);
         x = m_applicationButton->geometry().right();
     }
     endX = q->width() - border.right();
