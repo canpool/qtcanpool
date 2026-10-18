@@ -350,6 +350,17 @@ jobs:
         # full build, and this one should say so in seconds.
         run: python3 scripts/check-template-sync.py
 
+      - name: Check the icon resources match the icon policy
+        # Icon files are the one kind of source no compiler looks at: a coloured
+        # icon dropped into the dock's directory builds, links, passes every
+        # test, and then keeps its own colour while the theme changes around it,
+        # because qxdock replaces colour literals and qxribbon repaints an alpha
+        # mask - two mechanisms that disagree about what a colour in the file
+        # means. scripts/check-icons.py asserts that each icon matches the
+        # policy entry that claims it. It needs no Qt and no SDK, so it belongs
+        # with the other static text checks in this job.
+        run: python3 scripts/check-icons.py
+
       - name: Check the sources are UTF-8 with no byte order mark
         # The other half of the encoding argument, and the half that needs no
         # toolchain. The `encoding` job proves MSVC reads the files right; this
