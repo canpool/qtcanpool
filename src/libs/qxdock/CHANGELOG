@@ -33,6 +33,18 @@ Feature
   the set.
   tst_DockIconProvider::colorsReachTheGlyph
 
+Bugfix
+- The buttons on an auto hide container's title bar kept the surface glyph
+  colour. The buttons are built before anything knows the container will sit on
+  the accent fill, and neither showing the window nor a later palette change
+  re-applies icons to a container that has not been shown yet - so on a light
+  scheme the glyph came out black on the accent, the exact case the tint exists
+  for. Showing the container re-applies the icons beneath it now, which is the
+  moment the fill it sits on becomes real. An application that never registered
+  icons is untouched: refreshDockIcons() has nothing to hand out and changes
+  nothing.
+  tst_DockAutoHideContainer::glyphsFollowTheSurfaceOnShow
+
 Cleanup
 - The four dock style sheets became three fragments. They had been four complete
   copies of one look - default, focus_highlighting, and the _linux pair - because

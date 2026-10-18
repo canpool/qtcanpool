@@ -5,12 +5,15 @@
 #include "tst_global.h"
 
 #include "qxdock/dockautohidecontainer.h"
+#include "qxdock/dockiconprovider.h"
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockpanel.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
 
+#include <QAbstractButton>
 #include <QCoreApplication>
+#include <QGuiApplication>
 #include <QPointer>
 
 QX_DOCK_USE_NAMESPACE
@@ -22,6 +25,7 @@ private slots:
     void autoHideStaysPinnedOnAnEmptyWindow();
     void sizeObeysTheContentRectAndItsMargin();
     void collapseSlidesIntoPlace();
+    void glyphsFollowTheSurfaceOnShow();
 };
 
 /*!
@@ -167,6 +171,59 @@ void tst_DockAutoHideContainer::collapseSlidesIntoPlace()
     DockManager::setAutoHideConfigFlag(DockManager::AutoHideAnimationEnabled, false);
     container->collapseView(false);
     QCOMPARE(container->geometry(), place);
+}
+
+/*!
+ * The title bar's buttons are built before anything knows this container will
+ * sit on the accent fill, so they carry the surface text colour - black on the
+ * accent in a light scheme, which is exactly where a black glyph disappears.
+ * Showing the container re-applies the icons beneath it, and the glyph a
+ * caller configured for the accent fill is what comes out.
+ */
+void tst_DockAutoHideContainer::glyphsFollowTheSurfaceOnShow()
+{
+    // A colour nothing else in the test uses, so a pixel carrying it is the
+    // glyph, not the fill behind it.
+    DockStyleColors colors;
+    colors.onAccent = QColor(9, 8, 7);
+    applyDockIcons(colors);
+
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    DockWindow window;
+    window.resize(800, 600);
+    DockWidget *widget = new DockWidget(QStringLiteral("Glyphs"));
+    DockAutoHideContainer *container = window.addAutoHideDockWidget(Qx::DockSideBarLeft, widget);
+    QVERIFY(container != Q_NULLPTR);
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    // A fresh auto hide panel starts collapsed; opening it is the Show this
+    // test is about.
+    container->collapseView(false);
+
+    // The most opaque pixel over every dock button: a glyph is a stroke, so the
+    // comparison is against the colour with the best coverage, with a tolerance
+    // for antialiasing.
+    QColor glyph;
+    int best = 0;
+    const QList<QAbstractButton *> buttons = window.findChildren<QAbstractButton *>();
+    for (const QAbstractButton *button : buttons) {
+        const QImage image = button->icon().pixmap(QSize(16, 16)).toImage();
+        for (int y = 0; y < image.height(); ++y) {
+            for (int x = 0; x < image.width(); ++x) {
+                const QColor pixel = image.pixelColor(x, y);
+                if (pixel.alpha() > best) {
+                    best = pixel.alpha();
+                    glyph = pixel;
+                }
+            }
+        }
+    }
+    QVERIFY(best > 200);
+    QVERIFY2(qAbs(glyph.red() - 9) <= 3 && qAbs(glyph.green() - 8) <= 3 && qAbs(glyph.blue() - 7) <= 3,
+             qPrintable(QStringLiteral("glyph is %1").arg(glyph.name())));
+
+    // Leave the provider and the cached variants as the other tests found them.
+    applyDockIcons(QGuiApplication::palette());
 }
 
 TEST_ADD(tst_DockAutoHideContainer)

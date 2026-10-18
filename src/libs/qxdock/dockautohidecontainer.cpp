@@ -5,6 +5,7 @@
 #include "dockautohidecontainer.h"
 #include "dockwidget.h"
 #include "dockcontainer.h"
+#include "dockiconprovider.h"
 #include "docksidetab.h"
 #include "dockpanel.h"
 #include "dockwindow.h"
@@ -618,6 +619,16 @@ bool DockAutoHideContainer::event(QEvent *event)
     case QEvent::Enter:
     case QEvent::Hide:
         d->forwardEventToDockContainer(event);
+        break;
+
+    case QEvent::Show:
+        // The title bar's buttons were built before anything knew this container
+        // would sit on the accent fill, so their glyphs carry the surface text
+        // colour - black on the accent in a light scheme. Re-apply now that the
+        // container exists: refreshDockIcons() hands the on-accent variants to
+        // everything beneath it, and touches nothing when no application has
+        // registered icons at all.
+        refreshDockIcons(this);
         break;
 
     case QEvent::MouseButtonPress:

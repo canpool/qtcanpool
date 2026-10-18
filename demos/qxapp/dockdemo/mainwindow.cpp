@@ -11,6 +11,7 @@
 #include "qxdock/dockstylesheet.h"
 #include "qxdock/dockautohidecontainer.h"
 #include "qxdock/dockiconprovider.h"
+#include "qxapp/qxdockstyle.h"
 #include "qxapp/qxthemebundle.h"
 #include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthememanager.h"
@@ -42,18 +43,15 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     // this demo carries it - the library no longer holds a copy and no longer
     // styles the DockWindow for us. The flag is set just above and is what picks
     // the sheet, so the two lines are one decision read in two places.
-    m_dockSheet = dockStyleSheet(true);
     // A theme decides the palette and the style sheet the whole application
     // wears, and the dock's sheet is a second application-level one. That is a
     // single string, so installing the theme's takes the dock's with it - the
     // two are joined here and rejoined on every theme change.
     createTheme(themeId);
-    // Step 2 of the theme work: tint the dock's built-in SVG icons to the
-    // application palette so they follow light/dark instead of staying the
-    // hard-coded black the SVGs ship with. The library only provides the helper;
-    // this demo opts in, the same way it installs the stylesheet. A palette
-    // change re-tints and re-applies them (see eventFilter).
-    applyDockIcons(qApp->palette(), this);
+    // The dock's icons and its sheet take the same colour set, mapped from the
+    // theme just installed: a family that paints the focused tab one accent and
+    // its glyph another would be a theme that did not say what it meant.
+    applyDockColors();
     qApp->installEventFilter(this);
     // set auto hide config before new DockWindow
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
@@ -182,10 +180,11 @@ void MainWindow::createTheme(const QString &themeId)
         // The engine has just put the palette and the new theme's sheet in
         // place; the dock's sheet has to go back on top of it.
         installApplicationStyleSheet();
-        // The dock icons follow the palette, and the palette has just changed.
-        // The eventFilter further down does this too once it is installed;
-        // this call covers the changes that happen before it is.
-        applyDockIcons(qApp->palette(), this);
+        // The dock icons follow the same colour set as the sheet, and the theme
+        // has just changed which set that is. The eventFilter further down does
+        // this too once it is installed; this call covers the changes that
+        // happen before it is.
+        applyDockColors();
     });
 
     installApplicationStyleSheet();
@@ -199,7 +198,18 @@ void MainWindow::installApplicationStyleSheet()
     // widgets by class name and cannot outrank a rule the theme states about
     // one of them, while the reverse order would let the dock's plain
     // background win over the theme's.
-    qApp->setStyleSheet(engine->styleSheet(engine->theme()) + m_dockSheet);
+    //
+    // The dock's text is rendered here rather than kept as a string, because
+    // which colours it wants depends on which theme is in force - the theme's
+    // roles, not the palette's two cases.
+    const QxThemeInfo theme = engine->themeInfo(engine->theme());
+    qApp->setStyleSheet(engine->styleSheet(engine->theme()) + dockStyleSheet(QxApp::dockStyleColors(theme), true));
+}
+
+void MainWindow::applyDockColors()
+{
+    QxThemeManager *engine = QxThemeManager::instance();
+    applyDockIcons(QxApp::dockStyleColors(engine->themeInfo(engine->theme())), this);
 }
 
 void MainWindow::createThemeMenu()
@@ -282,9 +292,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     // The OS/theme palette changed (e.g. Windows light<->dark). Re-tint the dock
-    // icons to the new palette and re-apply them to every existing dock button.
+    // icons to the new theme's colours and re-apply them to every existing dock
+    // button.
     if (watched == qApp && event->type() == QEvent::ApplicationPaletteChange) {
-        applyDockIcons(qApp->palette(), this);
+        applyDockColors();
     }
     return QMainWindow::eventFilter(watched, event);
 }

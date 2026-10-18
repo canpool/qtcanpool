@@ -63,10 +63,10 @@ private:
     void createTheme(const QString &themeId);
     void createThemeMenu();
     void installApplicationStyleSheet();
+    void applyDockColors();
 
     DockWindow *m_dockWindow = nullptr;
     DockWidget *m_autoHideDockWidget = nullptr;
     bool m_screenshotMode = false;
-    QString m_dockSheet;
 };
 #endif   // MAINWINDOW_H
