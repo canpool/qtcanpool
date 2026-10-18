@@ -67,6 +67,14 @@ public:
      * because a black wash on a dark surface is invisible.
      */
     static DockStyleColors fromPalette(const QPalette &palette);
+
+    /*!
+     * A copy with every invalid field filled from fromPalette() of the current
+     * application palette. The renderer and the icon tinting both start here,
+     * so a partial mapping never produces an empty declaration or an invisible
+     * glyph.
+     */
+    DockStyleColors resolved() const;
 };
 
 /*!

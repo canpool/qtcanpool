@@ -18,7 +18,9 @@
 #include "tst_global.h"
 
 #include "qxdock/dockiconprovider.h"
+#include "qxdock/dockmanager.h"
 
+#include <QImage>
 #include <QPixmap>
 
 QX_DOCK_USE_NAMESPACE
@@ -31,6 +33,7 @@ private slots:
     void nothingIsRegisteredByDefault();
     void registeringOneIconLeavesTheOthersAlone();
     void registeringAgainReplaces();
+    void colorsReachTheGlyph();
 };
 
 void tst_DockIconProvider::nothingIsRegisteredByDefault()
@@ -79,6 +82,41 @@ void tst_DockIconProvider::registeringAgainReplaces()
     // An empty icon is a value, not a no-op: it clears the slot again.
     provider.registerCustomIcon(Qx::DockAutoHideIcon, QIcon());
     QVERIFY(provider.customIcon(Qx::DockAutoHideIcon).isNull());
+}
+
+/*!
+ * The tint follows the colour set, not the palette. The glyph is checked on a
+ * pixel rather than on the icon's identity because the point is what is drawn:
+ * an icon that kept the palette's colour would still be a valid, non-null QIcon.
+ */
+void tst_DockIconProvider::colorsReachTheGlyph()
+{
+    DockStyleColors colors;
+    colors.text = QColor(1, 2, 3);
+    applyDockIcons(colors);
+
+    const QImage image = DockManager::iconProvider().customIcon(Qx::DockPanelCloseIcon).pixmap(QSize(16, 16)).toImage();
+    QVERIFY(!image.isNull());
+
+    // The glyph is a stroke, so the centre is transparent; take the most opaque
+    // pixel and compare its channels with a tolerance for antialiasing.
+    QColor glyph;
+    int best = 0;
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            const QColor pixel = image.pixelColor(x, y);
+            if (pixel.alpha() > best) {
+                best = pixel.alpha();
+                glyph = pixel;
+            }
+        }
+    }
+    QVERIFY(best > 200);
+    QVERIFY2(qAbs(glyph.red() - 1) <= 3 && qAbs(glyph.green() - 2) <= 3 && qAbs(glyph.blue() - 3) <= 3,
+             qPrintable(QStringLiteral("glyph is %1").arg(glyph.name())));
+
+    // Leave the provider and the cached variants as the other tests found them.
+    applyDockIcons(QGuiApplication::palette());
 }
 
 TEST_ADD(tst_DockIconProvider)

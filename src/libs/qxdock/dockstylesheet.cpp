@@ -82,12 +82,11 @@ QString colorText(const QColor &color)
  */
 QString render(const QString &fragment, const DockStyleColors &colors)
 {
-    const DockStyleColors fallback = DockStyleColors::fromPalette(QGuiApplication::palette());
+    const DockStyleColors resolved = colors.resolved();
     QString result = fragment;
     for (const Token &token : kTokens) {
-        const QColor chosen = colors.*(token.member);
-        const QColor value = chosen.isValid() ? chosen : fallback.*(token.member);
-        result.replace(QStringLiteral("{{") + QLatin1String(token.name) + QStringLiteral("}}"), colorText(value));
+        result.replace(QStringLiteral("{{") + QLatin1String(token.name) + QStringLiteral("}}"),
+                       colorText(resolved.*(token.member)));
     }
     return result;
 }
@@ -132,6 +131,43 @@ DockStyleColors DockStyleColors::fromPalette(const QPalette &palette)
     colors.pressed = palette.color(QPalette::Mid);
     colors.tabActiveTop = window;
     colors.tabActiveBottom = palette.color(QPalette::Light);
+    return colors;
+}
+
+DockStyleColors DockStyleColors::resolved() const
+{
+    const DockStyleColors fallback = fromPalette(QGuiApplication::palette());
+    DockStyleColors colors = *this;
+    if (!colors.surface.isValid())
+        colors.surface = fallback.surface;
+    if (!colors.surfaceRaised.isValid())
+        colors.surfaceRaised = fallback.surfaceRaised;
+    if (!colors.divider.isValid())
+        colors.divider = fallback.divider;
+    if (!colors.text.isValid())
+        colors.text = fallback.text;
+    if (!colors.mutedText.isValid())
+        colors.mutedText = fallback.mutedText;
+    if (!colors.accent.isValid())
+        colors.accent = fallback.accent;
+    if (!colors.accentText.isValid())
+        colors.accentText = fallback.accentText;
+    if (!colors.onAccent.isValid())
+        colors.onAccent = fallback.onAccent;
+    if (!colors.onAccentHover.isValid())
+        colors.onAccentHover = fallback.onAccentHover;
+    if (!colors.onAccentPressed.isValid())
+        colors.onAccentPressed = fallback.onAccentPressed;
+    if (!colors.subtle.isValid())
+        colors.subtle = fallback.subtle;
+    if (!colors.hover.isValid())
+        colors.hover = fallback.hover;
+    if (!colors.pressed.isValid())
+        colors.pressed = fallback.pressed;
+    if (!colors.tabActiveTop.isValid())
+        colors.tabActiveTop = fallback.tabActiveTop;
+    if (!colors.tabActiveBottom.isValid())
+        colors.tabActiveBottom = fallback.tabActiveBottom;
     return colors;
 }
 

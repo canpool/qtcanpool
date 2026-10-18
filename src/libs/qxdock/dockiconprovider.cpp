@@ -143,32 +143,29 @@ QIcon tintedIcon(const QString &fileName, const QColor &glyph, const QColor &gly
     return icon;
 }
 
-// The regular tint: an icon over the window colour takes the window text
-// colour, whatever mode it is in - hover and press now paint palette(midlight)
-// and palette(mid), which belong to the window colour's family. (Mapping the
-// white files to BrightText, as an earlier pass did, left them #ffffff in both
-// schemes, which is why a light dock's close button vanished the moment the
-// pointer touched it: the hover fill there is #ffffff too.)
-QIcon tintedIconForWindow(const QString &fileName, const QPalette &palette)
+// The regular tint: an icon over the surface takes the sheet's text colour,
+// whatever mode it is in - hover and press paint the sheet's hover/pressed
+// tokens, which belong to the surface's family. The disabled state takes the
+// muted text colour, which the theme dims from the same scheme.
+QIcon tintedIconForWindow(const QString &fileName, const DockStyleColors &colors)
 {
-    const QColor windowText = palette.color(QPalette::Active, QPalette::WindowText);
-    return tintedIcon(fileName, windowText, palette.color(QPalette::Disabled, QPalette::WindowText));
+    return tintedIcon(fileName, colors.text, colors.mutedText);
 }
 
-// The icon set that reads on the highlight fill. The focused tab's close
-// button and the whole auto hide title bar sit on that fill, where the window
-// text tint disappears into the accent. Every state goes white because the
-// accent is the same #0078d4 in both themes; the disabled state steps back to a
-// translucent white, the only step available on a saturated fill.
-QIcon highlightSurfaceIconImpl(const QPalette &palette, Qx::DockIcon id)
+// The icon set that reads on the accent fill. The focused tab's close button
+// and the whole auto hide title bar sit on that fill, where the text tint
+// disappears into the accent. Every state takes on-accent; the disabled state
+// steps back to a translucent version of it, the only step available on a
+// saturated fill.
+QIcon highlightSurfaceIconImpl(const DockStyleColors &colors, Qx::DockIcon id)
 {
-    const QColor glyph = palette.color(QPalette::Active, QPalette::HighlightedText);
-    const QColor glyphDisabled(255, 255, 255, 110);
+    QColor glyphDisabled = colors.onAccent;
+    glyphDisabled.setAlpha(110);
     QIcon icon;
     for (const IconSpec &spec : kIconSpecs) {
         if (spec.id != id)
             continue;
-        QIcon svg = tintedIcon(QLatin1String(spec.file), glyph, glyphDisabled);
+        QIcon svg = tintedIcon(QLatin1String(spec.file), colors.onAccent, glyphDisabled);
         if (svg.isNull())
             continue;
         icon.addPixmap(svg.pixmap(QSize(16, 16)), spec.mode, spec.state);
@@ -182,12 +179,17 @@ QIcon highlightSurfaceIconImpl(const QPalette &palette, Qx::DockIcon id)
 // re-tint, because the variants carry the palette in force when they were made.
 static QHash<Qx::DockIcon, QIcon> s_highlightSurfaceIcons;
 
+// The colours the last applyDockIcons() installed. highlightSurfaceIcon() has
+// only an id to work from - it is reached from DockTab and the auto hide
+// container, which do not carry the set - so the set is kept here.
+static DockStyleColors s_activeColors;
+
 QIcon internal::highlightSurfaceIcon(Qx::DockIcon id)
 {
     auto it = s_highlightSurfaceIcons.find(id);
     if (it != s_highlightSurfaceIcons.end())
         return *it;
-    const QIcon icon = highlightSurfaceIconImpl(QGuiApplication::palette(), id);
+    const QIcon icon = highlightSurfaceIconImpl(s_activeColors.resolved(), id);
     if (!icon.isNull())
         s_highlightSurfaceIcons.insert(id, icon);
     return icon;
@@ -214,13 +216,14 @@ bool isOnHighlightSurface(const QAbstractButton *button)
     return false;
 }
 
-void applyDockIcons(const QPalette &palette, QWidget *root)
+void applyDockIcons(const DockStyleColors &colors, QWidget *root)
 {
+    s_activeColors = colors.resolved();
     internal::resetHighlightSurfaceIconCache();
 
     QHash<Qx::DockIcon, QIcon> icons;
     for (const IconSpec &spec : kIconSpecs) {
-        QIcon svg = tintedIconForWindow(QLatin1String(spec.file), palette);
+        QIcon svg = tintedIconForWindow(QLatin1String(spec.file), s_activeColors);
         if (svg.isNull())
             continue;
         icons[spec.id].addPixmap(svg.pixmap(QSize(16, 16)), spec.mode, spec.state);
@@ -232,6 +235,11 @@ void applyDockIcons(const QPalette &palette, QWidget *root)
 
     if (root)
         refreshDockIcons(root);
+}
+
+void applyDockIcons(const QPalette &palette, QWidget *root)
+{
+    applyDockIcons(DockStyleColors::fromPalette(palette), root);
 }
 
 void refreshDockIcons(QWidget *root)
