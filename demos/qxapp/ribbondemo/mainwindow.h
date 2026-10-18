@@ -18,6 +18,8 @@ class QTextEdit;
 class QActionGroup;
 class QAbstractButton;
 
+#include "qxtheme/qxtheme_global.h"
+
 QX_RIBBON_BEGIN_NAMESPACE
 class RibbonPage;
 class RibbonPageContext;
@@ -26,6 +28,10 @@ class RibbonQuickAccessBar;
 class RibbonButtonGroup;
 class RibbonBackstageView;
 QX_RIBBON_END_NAMESPACE
+
+QX_THEME_BEGIN_NAMESPACE
+class QxThemeIcons;
+QX_THEME_END_NAMESPACE
 
 QX_RIBBON_USE_NAMESPACE
 
@@ -94,6 +100,7 @@ private slots:
     void onActionFontSmallerTriggered();
     void onButtonGroupActionTriggered(QAction *act);
 private:
+    QX_THEME_PREPEND_NAMESPACE(QxThemeIcons) *m_icons = nullptr;
     RibbonPageContext *m_pageContext = nullptr;
     RibbonPageContext *m_pageContext2 = nullptr;
     QTextEdit *m_edit = nullptr;

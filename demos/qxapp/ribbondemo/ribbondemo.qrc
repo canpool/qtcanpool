@@ -70,5 +70,15 @@
         <file>res/gallery/Google-Maps.svg</file>
         <file>res/gallery/Adobe.svg</file>
         <file>res/gallery/Word.svg</file>
+        <!-- Single-colour glyphs, repainted from the palette at run time; the
+             set they come from is named in res/tabler/LICENSE.txt. -->
+        <file>res/tabler/align-center.svg</file>
+        <file>res/tabler/align-justified.svg</file>
+        <file>res/tabler/align-left.svg</file>
+        <file>res/tabler/align-right.svg</file>
+        <file>res/tabler/bold.svg</file>
+        <file>res/tabler/italic.svg</file>
+        <file>res/tabler/text-decrease.svg</file>
+        <file>res/tabler/text-increase.svg</file>
     </qresource>
 </RCC>

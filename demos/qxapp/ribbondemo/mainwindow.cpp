@@ -23,6 +23,10 @@
 #include "qxribbon/ribbonbackstageview.h"
 #include "qxribbon/ribbonstatusbar.h"
 
+#include "applypage.h"
+#include "qxtheme/qxthemeicon.h"
+#include "qxtheme/qxthemepalette.h"
+
 #include <QAbstractButton>
 #include <QAction>
 #include <QApplication>
@@ -54,6 +58,7 @@
 #include "aboutdialog.h"
 
 QX_RIBBON_USE_NAMESPACE
+QX_THEME_USE_NAMESPACE
 
 #define COST_START()                                                                                                   \
     QElapsedTimer costTimer;                                                                                           \
@@ -119,6 +124,8 @@ MainWindow::MainWindow(QWidget *par, bool screenshotMode)
     // setContentsMargins(1, 1, 1, 1);
 
     m_customizeXml = qApp->applicationDirPath() + QDir::separator() + "customize.xml";
+    // The set every page hands its glyphs to, so a theme change repaints them.
+    m_icons = new QxThemeIcons(this);
 
     COST_START();
 
@@ -172,6 +179,13 @@ void MainWindow::applyTheme(const QString &themeId)
         // make it win over the application's wherever both describe the same widget,
         // which is how the ribbon used to stay light while the rest went dark.
         qApp->setStyleSheet(QString::fromUtf8(file.readAll()));
+        // The style sheet cannot repaint an icon, so a theme that only installed
+        // one left every glyph in the colour it was drawn in - black on a dark
+        // ribbon. Installing the matching palette is what the glyphs are painted
+        // from, and refreshing is what makes them painted again: the same call
+        // that answers for a light theme answers differently for a dark one.
+        qApp->setPalette(QxTheme::paletteFor(theme.dark));
+        m_icons->refresh();
         // A dark ribbon needs the context page to leave its tab alone; a light one
         // draws over it. Office 2016 Blue is dark enough to count.
         ribbonBar()->setPageContextCoverTab(!theme.dark);
@@ -763,50 +777,17 @@ void MainWindow::createPageCustom()
 
 /**
  * @brief Builds the "Apply" page.
- * @param page
+ *
+ * The page builds itself; the window only connects what it wants to hear about.
  */
 void MainWindow::createPageApply()
 {
-    RibbonPage *page = ribbonBar()->addPage(tr("&Apply(example long page)"));
-    page->setObjectName(("pageApply"));
+    auto *page = new ApplyPage(m_icons, this);
+    ribbonBar()->addPage(page);
 
-    QAction *act = nullptr;
-    RibbonGroup *group = page->addGroup(tr("Font"));
-    RibbonButtonGroup *group1 = new RibbonButtonGroup(group);
-    group1->setObjectName(QStringLiteral(u"group1"));
-    QLabel *labelFontSize = new QLabel(group1);
-    labelFontSize->setText(tr("select font"));
-    labelFontSize->setObjectName(QStringLiteral(u"labelFontSize"));
-    group1->addWidget(labelFontSize);
-    QFontComboBox *fontComWidget = new QFontComboBox(group1);
-    fontComWidget->setObjectName(QStringLiteral(u"fontComboBox"));
-    connect(fontComWidget, &QFontComboBox::currentFontChanged, this, &MainWindow::onFontComWidgetCurrentFontChanged);
-    group1->addWidget(fontComWidget);
-    act = group->addWidget(group1, RibbonGroup::Medium);
-    act->setObjectName(labelFontSize->objectName());
-
-    RibbonButtonGroup *group2 = new RibbonButtonGroup(group);
-    group2->setObjectName(QStringLiteral(u"group2"));
-    group2->addAction(createAction(tr("Bold"), ":/icon/res/bold.svg"));
-    group2->addAction(createAction(tr("Italic"), ":/icon/res/italic.svg"));
-    group2->addSeparator();
-    group2->addAction(createAction(tr("left alignment"), ":/icon/res/align-left.svg"));
-    group2->addAction(createAction(tr("center alignment"), ":/icon/res/align-center.svg"));
-    group2->addAction(createAction(tr("right alignment"), ":/icon/res/align-right.svg"));
-    group2->addAction(createAction(tr("line up on both sides"), ":/icon/res/align-bothside.svg"));
-    act = group->addWidget(group2, RibbonGroup::Medium);
-    act->setObjectName(group2->objectName());
-
-    group->addSeparator();
-
-    QAction *actLargerFontSize = createAction(tr("Larger"), ":/icon/res/largerFont.svg", "actLargerFontSize");
-    group->addLargeAction(actLargerFontSize);
-
-    QAction *actSmallFontSize = createAction(tr("Smaller"), ":/icon/res/smallFont.svg", "actSmallFontSize");
-    group->addLargeAction(actSmallFontSize);
-
-    connect(actLargerFontSize, &QAction::triggered, this, &MainWindow::onActionFontLargerTriggered);
-    connect(actSmallFontSize, &QAction::triggered, this, &MainWindow::onActionFontSmallerTriggered);
+    connect(page, &ApplyPage::fontSelected, this, &MainWindow::onFontComWidgetCurrentFontChanged);
+    connect(page, &ApplyPage::largerFontRequested, this, &MainWindow::onActionFontLargerTriggered);
+    connect(page, &ApplyPage::smallerFontRequested, this, &MainWindow::onActionFontSmallerTriggered);
 }
 
 /**

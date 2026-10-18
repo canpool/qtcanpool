@@ -33,6 +33,11 @@ plain       src/libs/qxdock/res/images/pin-button.svg
 plain       src/libs/qxdock/res/images/pin-button-big.svg
 plain       src/libs/qxdock/res/images/vs-pin-button_45.svg
 
+# Single-colour glyphs taken from one upstream set, written in the canonical
+# colour so that QxTheme::themedIcon() can repaint them from the palette. This is
+# the directory the rewritten demo pages draw from; see res/tabler/LICENSE.txt.
+tinted      demos/qxapp/ribbondemo/res/tabler
+
 # Legacy icon sets. They are classified rather than left out - an unclassified
 # icon is reported - but nothing is asserted about their colours until they are
 # replaced and their entry is flipped to tinted.

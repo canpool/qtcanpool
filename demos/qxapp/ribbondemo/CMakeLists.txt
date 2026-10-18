@@ -1,4 +1,4 @@
-set(_ribbondemo_depends qxribbon Qt5::Core Qt5::Widgets)
+set(_ribbondemo_depends qxribbon qxtheme Qt5::Core Qt5::Widgets)
 set(_ribbondemo_defines)
 
 # Same choice as ribbondemo.pro used to make: on Windows with Qt 6 the frameless
@@ -24,6 +24,7 @@ add_qtc_executable(RibbonDemo
   DEFINES ${_ribbondemo_defines}
   SOURCES
     aboutdialog.cpp aboutdialog.h
+    applypage.cpp applypage.h
     main.cpp
     mainwindow.cpp mainwindow.h
     ribbondemo.qrc
