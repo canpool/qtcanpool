@@ -13,6 +13,7 @@
 
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockpanel.h"
+#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
 
@@ -218,6 +219,7 @@ int main(int argc, char *argv[])
     // are unaffected by the host having no frame; this just makes the example
     // show the auto-hide side of docking as well.
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    a.setStyleSheet(dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)));
 
     MainWindow w;
     w.show();

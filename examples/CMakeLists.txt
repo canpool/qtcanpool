@@ -38,6 +38,7 @@ function(add_qtc_example name library directory window)
 
     set(_sources ${_sample_sources})
     set(_includes "${CMAKE_CURRENT_SOURCE_DIR}/${directory}")
+    set(_defines "")
 
     if (window STREQUAL "none")
         # Nothing shared to add.
@@ -67,12 +68,18 @@ function(add_qtc_example name library directory window)
     # affair, where the second step is the one nobody does.
     if (library STREQUAL "qxdock")
         list(APPEND _sources "${PROJECT_SOURCE_DIR}/res/dockstyle.qrc")
+        # ... and the shared main() applies it, which it can only do behind a
+        # define: a ribbon sample compiles the same main.cpp without qxdock to
+        # link against.
+        list(APPEND _defines "QTC_EXAMPLE_DOCK")
     endif()
 
     add_qtc_executable(${name}
         # Samples are built here and stay here; none of them belongs in an
         # installed SDK tree next to the libraries.
         SKIP_INSTALL
+        DEFINES
+            ${_defines}
         DEPENDS
             ${library}
             Qt5::Core

@@ -15,6 +15,7 @@
 #include <QToolBar>
 
 #include "qxdock/dockmanager.h"
+#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
 
@@ -161,6 +162,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    a.setStyleSheet(dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)));
 
     MainWindow w;
     w.show();

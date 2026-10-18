@@ -11,6 +11,7 @@
 
 #include "qxdock/dockwindow.h"
 #include "qxdock/dockmanager.h"
+#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockpanel.h"
 
@@ -42,6 +43,9 @@ int main(int argc, char *argv[])
 
     DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
     DockManager::setConfigFlag(DockManager::AllTabsHaveCloseButton, true);
+    // The library ships no sheet of its own, so the sample puts one on - and
+    // after the flags, since the focus one is what it is read back for.
+    a.setStyleSheet(dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)));
     auto wd = new DockWindow(&w);
     w.setCentralWidget(wd);
     w.setDockWindow(wd);
