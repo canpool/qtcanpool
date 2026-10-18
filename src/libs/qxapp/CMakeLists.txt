@@ -25,5 +25,6 @@ add_qtc_library(qxapp
     qxtoastmanager.cpp qxtoastmanager.h qxtoastmanager_p.h
     qxworkspacemanager.cpp qxworkspacemanager.h qxworkspacemanager_p.h
     qxthemebundle.cpp qxthemebundle.h
+    qxthemeinstaller.cpp qxthemeinstaller.h
     ribbonappwindow.cpp ribbonappwindow.h
 )

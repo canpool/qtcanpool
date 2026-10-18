@@ -10,6 +10,7 @@
 #include "qxapp/qxpluginmanagerdialog.h"
 #include "qxapp/qxsplashscreen.h"
 #include "qxapp/qxthemebundle.h"
+#include "qxapp/qxthemeinstaller.h"
 #include "qxapp/ribbonappwindow.h"
 
 #include "qxcore/qxsettings.h"
@@ -33,6 +34,7 @@
 #include <QtCore/QMargins>
 #include <QtCore/QSettings>
 #include <QtGui/QIcon>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QLayout>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QProgressBar>
@@ -1211,6 +1213,8 @@ class tst_QxThemeBundle : public QObject
 private slots:
     void bundledThemesCarryTheirRoles();
     void rolesReachTheDock();
+    void applicationSheetKeepsTheThemeOnTop();
+    void installerFollowsTheTheme();
 };
 
 void tst_QxThemeBundle::bundledThemesCarryTheirRoles()
@@ -1266,6 +1270,70 @@ void tst_QxThemeBundle::rolesReachTheDock()
         dockStyleColors(QxTheme::QxThemeInfo(QStringLiteral("no-roles"), QStringLiteral("No Roles")));
     QVERIFY(!empty.accent.isValid());
     QVERIFY(!empty.surface.isValid());
+}
+
+/*!
+ * The application sheet is the theme's rules with the dock's appended, in that
+ * order, and the dock's half is rendered from the theme's roles.
+ *
+ * The order is the assertion worth writing down: at equal specificity the rule
+ * declared first wins, so a dock fragment placed in front of the theme would take
+ * the last word on every widget the two describe.
+ */
+void tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop()
+{
+    QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
+    QVERIFY(engine);
+    registerBundledThemes(engine);
+
+    const QxTheme::QxThemeInfo info = engine->themeInfo(QStringLiteral("accent-dark"));
+    QVERIFY(info.isValid());
+    QVERIFY(!info.styleSheet.isEmpty());
+
+    const QString sheet = applicationStyleSheet(info);
+    QVERIFY2(sheet.startsWith(info.styleSheet), "the dock's fragment was put in front of the theme's sheet");
+
+    const QString dockPart = sheet.mid(info.styleSheet.size());
+    QVERIFY(!dockPart.isEmpty());
+    // What the mapping above is for: the palette fallback cannot carry this
+    // accent, so its presence says the fragment was rendered from the roles.
+    QVERIFY2(dockPart.contains(info.colors.value(QStringLiteral("accent")).name()),
+             "the dock's fragment was rendered from the palette, not from the theme's roles");
+}
+
+/*!
+ * The installer puts both sheets on the application and follows a theme switch -
+ * the half of the job the engine's own apply() cannot do, because it only knows
+ * the theme's sheet.
+ */
+void tst_QxThemeBundle::installerFollowsTheTheme()
+{
+    QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
+    QVERIFY(engine);
+    registerBundledThemes(engine);
+
+    // Both are put back at the end: the application sheet outlives this test, and
+    // a dock's rules left on it would change the geometry every later widget test
+    // measures.
+    const QString savedSheet = qApp->styleSheet();
+    const QString savedTheme = engine->theme();
+
+    {
+        ThemeInstaller installer(engine);
+        QVERIFY2(qApp->styleSheet() == applicationStyleSheet(engine->themeInfo(engine->theme())),
+                 "construction did not install the theme in force");
+
+        // A switch goes through the engine, which puts the new theme's own sheet
+        // in place and only then says so - the dock's half comes back from here.
+        engine->setTheme(QStringLiteral("flat-dark"));
+        const QxTheme::QxThemeInfo flat = engine->themeInfo(QStringLiteral("flat-dark"));
+        QVERIFY(flat.isValid());
+        QVERIFY2(qApp->styleSheet() == applicationStyleSheet(flat), "the dock's fragment did not follow the theme");
+        QVERIFY(qApp->styleSheet().contains(flat.colors.value(QStringLiteral("accent")).name()));
+    }
+
+    engine->setTheme(savedTheme);
+    qApp->setStyleSheet(savedSheet);
 }
 
 TEST_ADD(tst_QxThemeBundle)

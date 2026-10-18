@@ -5,6 +5,8 @@
 
 #include "qxdockstyle.h"
 
+#include "qxdock/dockmanager.h"
+
 QX_APP_BEGIN_NAMESPACE
 
 QX_DOCK_PREPEND_NAMESPACE(DockStyleColors) dockStyleColors(const QxTheme::QxThemeInfo &theme)
@@ -42,6 +44,16 @@ QX_DOCK_PREPEND_NAMESPACE(DockStyleColors) dockStyleColors(const QxTheme::QxThem
     colors.tabActiveTop = role("surface-sub");
     colors.tabActiveBottom = role("surface");
     return colors;
+}
+
+QString applicationStyleSheet(const QxTheme::QxThemeInfo &theme)
+{
+    // Read here rather than taken as an argument: the flag is what the dock's
+    // behaviour follows, so a sheet rendered from anywhere else would be a
+    // second opinion about the same question.
+    const bool focus = QX_DOCK_PREPEND_NAMESPACE(DockManager)::testConfigFlag(
+        QX_DOCK_PREPEND_NAMESPACE(DockManager)::FocusHighlighting);
+    return theme.styleSheet + QX_DOCK_PREPEND_NAMESPACE(dockStyleSheet)(dockStyleColors(theme), focus);
 }
 
 QX_APP_END_NAMESPACE

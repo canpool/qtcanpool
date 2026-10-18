@@ -86,6 +86,10 @@ add_qtc_test(tst_qxapp
         # The bundled themes, so registerBundledThemes() has something to read
         # and the roles that travel beside each sheet can be checked.
         ${CMAKE_SOURCE_DIR}/res/themes.qrc
+        # The dock's fragments, so applicationStyleSheet() has something to
+        # append to a theme's sheet - without them the dock's half is empty and
+        # an assertion about its colours passes for the wrong reason.
+        ${CMAKE_SOURCE_DIR}/res/dockstyle.qrc
 )
 
 # ----------------------------------------------------- qxapp examples --

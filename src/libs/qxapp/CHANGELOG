@@ -1,4 +1,4 @@
-0.2.0
+Unreleased
 ---
 Feature
 - readBundledTheme() reads the colour roles that travel beside each sheet, now
@@ -17,6 +17,30 @@ Feature
   fills from the palette, so an application that never adopted theme roles keeps
   the colours it had.
   tst_QxThemeBundle::rolesReachTheDock
+- applicationStyleSheet() in qxdockstyle.h returns the whole theme as one
+  application style sheet: the theme's own rules with the dock's appended. There
+  is only one application-level sheet, so an application that wants both has to
+  join them, and the order decides who wins at equal specificity - the theme
+  first keeps the last word on a widget the dock's fragments also describe. The
+  dock's focus fragment follows DockManager::FocusHighlighting, so the sheet
+  cannot ask for a frame the dock never draws. A theme with no sheet yields the
+  dock's fragment alone, whose colours then resolve from the palette.
+  tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop
+- ThemeInstaller, in qxthemeinstaller.h, keeps the whole theme in force on the
+  application: both of those sheets, and the dock's icons tinted from the same
+  colour roles. The reason it is a class rather than a pair of calls is the
+  second source of change: a theme switch is a signal, but the platform swapping
+  its own light/dark palette arrives as an application event with no signal, and
+  an application that wires up the first and forgets the second looks right
+  until the desktop changes - at which point the icons no longer agree with the
+  sheet. One installer per application; it owns QApplication::setStyleSheet()
+  while it lives, and install() redoes both halves for a change neither source
+  describes.
+  tst_QxThemeBundle::installerFollowsTheTheme
+
+0.2.0
+---
+Feature
 - QxToast is reported as a Notification and QxSplashScreen names its message. A
   toast is a transient notification, but a plain QWidget as far as the default
   accessibility is concerned, so it was announced as a Client - or not at all,
