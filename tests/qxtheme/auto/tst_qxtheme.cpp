@@ -93,6 +93,7 @@ private slots:
     void styleSheetOfARegisteredTheme();
     void applyTheme();
     void persistence();
+    void restoredThemeWaitsForItsRegistration();
     void accentColor();
     void followSystem();
     void systemThemePair();
@@ -329,6 +330,43 @@ void tst_QxTheme::persistence()
     // Handing the same file back restores the stored theme.
     manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
     QCOMPARE(manager->theme(), QString::fromLatin1(kDark));
+}
+
+/*!
+ * A selection restored from the configuration always arrives before the
+ * registration that supplies it: instance() is what reads the stored id, and
+ * registering can only happen once instance() has returned. So the id is
+ * remembered rather than applied - looking it up in an empty table would be a
+ * warning about a theme that is on its way - and the registration is what
+ * installs it.
+ */
+void tst_QxTheme::restoredThemeWaitsForItsRegistration()
+{
+    QxThemeManager *manager = QxThemeManager::instance();
+    // Nothing painted, so anything that lands afterwards can be seen.
+    manager->setTheme(QString::fromLatin1(kBare));
+    QCOMPARE(qApp->styleSheet(), QString());
+
+    // What a second launch looks like: the file names a theme this build has
+    // not registered yet.
+    const QString id = QStringLiteral("late-light");
+    QxSettings writer(m_settingsFile, QSettings::IniFormat);
+    writer.beginGroup(QStringLiteral("ui"));
+    writer.setValue(QStringLiteral("theme"), id);
+    writer.endGroup();
+
+    manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
+    QCOMPARE(manager->theme(), id);
+    QVERIFY(!manager->hasTheme(id));
+    QCOMPARE(qApp->styleSheet(), QString());
+
+    // The registration that supplies it is what installs it - and without
+    // announcing, because the selection itself did not change.
+    QSignalSpy spy(manager, &QxThemeManager::themeChanged);
+    manager->registerTheme(
+        makeTheme(id, QStringLiteral("Late light"), false, QStringLiteral("QWidget { color: #123456; }")));
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #123456; }"));
+    QCOMPARE(spy.count(), 0);
 }
 
 /*!

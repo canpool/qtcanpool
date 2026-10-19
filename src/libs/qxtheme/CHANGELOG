@@ -65,6 +65,15 @@ Feature
   the theme never saw has no answer of the theme's to go with it.
 
 Bugfix
+- A second launch no longer reports a theme it is about to install. The engine
+  restored the stored id and applied it from instance(), which is before any
+  registration can have happened - registering means calling instance() first -
+  so the lookup found an empty table and warned "no theme registered under
+  ...", and the first frame wore the palette Qt started with rather than the
+  theme's. The restored id is remembered instead, and the registration that
+  supplies it is what installs it - which is also the moment an application's
+  own order of "restore, then register" reaches the theme it named.
+  tst_QxTheme::restoredThemeWaitsForItsRegistration
 - The gallery is no longer dressed by the sheet. Its group paints from the
   palette now, and the ::item rules the skeletons carried described a state the
   sheet never delivered: a pseudo-state on a custom class matched nothing, so

@@ -173,7 +173,16 @@ void QxThemeManagerPrivate::start()
     if (m_followSystem) {
         m_theme = detectSystemDark() ? m_systemDark : m_systemLight;
     }
-    q_ptr->apply();
+    // The restored id is remembered and not installed: nothing can have been
+    // registered yet, since registering means calling instance() first, so
+    // applying here would look the id up in an empty table and warn about a
+    // theme that is about to arrive. The registration that supplies it installs
+    // it (registerTheme() applies when the id handed to it is the selected one),
+    // and so does the first explicit setTheme(). An application that registers
+    // nothing therefore never sees a warning about a choice it did make.
+    if (m_themes.contains(m_theme)) {
+        q_ptr->apply();
+    }
 }
 
 void QxThemeManagerPrivate::setupSystemHook()
