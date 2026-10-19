@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
 #include "mainwindow.h"
+#include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonpage.h"
 
 #include <QApplication>
@@ -104,11 +105,14 @@ int main(int argc, char *argv[])
                                    QStringLiteral("Wait <ms> after showing the window before "
                                                   "capturing."),
                                    QStringLiteral("ms"), QStringLiteral("1500"));
+    QCommandLineOption pageOption(QStringLiteral("page"), QStringLiteral("Start on ribbon page <index> (0-based)."),
+                                  QStringLiteral("index"));
     QCommandLineOption themeOption(QStringLiteral("theme"),
                                    QStringLiteral("Start with the theme <id>, for example accent-dark."),
                                    QStringLiteral("id"));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
+    parser.addOption(pageOption);
     parser.addOption(themeOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
@@ -152,6 +156,18 @@ int main(int argc, char *argv[])
     }
 
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
+
+    if (parser.isSet(pageOption)) {
+        // The gallery and the button groups live on the second page; a capture of
+        // them has to start there, and the tab has to be the one the user clicked.
+        bool ok = false;
+        const int pageIndex = parser.value(pageOption).toInt(&ok);
+        if (ok) {
+            QTimer::singleShot(0, &w, [&w, pageIndex]() {
+                w.ribbonBar()->setCurrentIndex(pageIndex);
+            });
+        }
+    }
 
     if (parser.isSet(themeOption)) {
         // A comma-separated list switches through the themes in order, so a capture can
