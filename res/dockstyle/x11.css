@@ -12,7 +12,7 @@
  * Floating widget styling
  *****************************************************************************/
 QxDock--DockFloatingTitleBar {
-    background: {{surface-raised}};
+    background: {{surface-alt}};
 }
 
 #dockFloatingTitleCloseButton,
@@ -24,13 +24,13 @@ QxDock--DockFloatingTitleBar {
 
 #dockFloatingTitleCloseButton:hover,
 #dockFloatingTitleMaximizeButton:hover {
-    background: {{hover}};
+    background: {{state-hover}};
     border: none;
 }
 
 #dockFloatingTitleCloseButton:pressed,
 #dockFloatingTitleMaximizeButton:pressed {
-    background: {{pressed}};
+    background: {{state-pressed}};
     border: none;
 }
 

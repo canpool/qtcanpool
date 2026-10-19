@@ -40,22 +40,34 @@ struct Token {
     QColor DockStyleColors::*member;
 };
 
+/*
+ * The names are the theme's, not the dock's: the sheet is one part of a theme
+ * and the theme spells a surface, a hairline and the two button states the way
+ * its ribbon half does. Anything the dock used to call its own is either one of
+ * those (a separator is the border role, a raised surface is the secondary one)
+ * or a colour the theme has to be asked for - see the three at the end, which
+ * are washes on the accent and a neutral one, and which the generator derives
+ * rather than keeps in the palette.
+ *
+ * tabActiveTop and tabActiveBottom have no token of their own any more: the
+ * active tab's gradient runs between the two surfaces, and naming them twice
+ * would only give the same answer two ways. The fields stay, because
+ * DockStyleColors is published.
+ */
 const Token kTokens[] = {
     {"surface", &DockStyleColors::surface},
-    {"surface-raised", &DockStyleColors::surfaceRaised},
-    {"divider", &DockStyleColors::divider},
+    {"surface-alt", &DockStyleColors::surfaceRaised},
+    {"border", &DockStyleColors::divider},
     {"text", &DockStyleColors::text},
-    {"muted-text", &DockStyleColors::mutedText},
+    {"text-muted", &DockStyleColors::mutedText},
     {"accent", &DockStyleColors::accent},
     {"accent-text", &DockStyleColors::accentText},
-    {"on-accent", &DockStyleColors::onAccent},
+    {"text-on-fill", &DockStyleColors::onAccent},
+    {"state-hover", &DockStyleColors::hover},
+    {"state-pressed", &DockStyleColors::pressed},
     {"on-accent-hover", &DockStyleColors::onAccentHover},
     {"on-accent-pressed", &DockStyleColors::onAccentPressed},
     {"subtle", &DockStyleColors::subtle},
-    {"hover", &DockStyleColors::hover},
-    {"pressed", &DockStyleColors::pressed},
-    {"tab-active-top", &DockStyleColors::tabActiveTop},
-    {"tab-active-bottom", &DockStyleColors::tabActiveBottom},
 };
 
 /*

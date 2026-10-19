@@ -27,7 +27,7 @@ QxDock--DockContainer>QSplitter {
    stands, and the narrower form dropped the fill for one that stood elsewhere
    (the focus sheets used it, and the two variants disagreed on this rule only). */
 QxDock--DockSplitter::handle {
-    background-color: {{divider}};
+    background-color: {{border}};
 }
 
 /*****************************************************************************
@@ -62,7 +62,7 @@ QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
  *****************************************************************************/
 QxDock--DockTab {
     background: {{surface}};
-    border-color: {{divider}};
+    border-color: {{border}};
     border-style: solid;
     border-width: 0 1px 0 0;
     padding: 0 0px;
@@ -70,15 +70,15 @@ QxDock--DockTab {
 }
 
 QxDock--DockTab[activeTab="true"] {
-    background: qlineargradient(spread : pad, x1 : 0, y1 : 0, x2 : 0, y2 : 0.5, stop : 0 {{tab-active-top}}, stop:1 {{tab-active-bottom}});
+    background: qlineargradient(spread : pad, x1 : 0, y1 : 0, x2 : 0, y2 : 0.5, stop : 0 {{surface}}, stop:1 {{surface-alt}});
 }
 
 /* The label of an inactive tab: the same text, dimmed. This used to be
    palette(dark), which says it the wrong way round in a dark scheme -
    QPalette::Dark is derived from the window colour (window.darker(150)), so on
-   a dark surface it is a near-black the label disappears into. muted-text is
-   the dock's own name for "this text, but quieter"; the theme fills it from the
-   scheme's disabled text colour, so it reads as muted in both.
+   a dark surface it is a near-black the label disappears into. text-muted is
+   the theme's name for "this text, but quieter", and it reads as muted in both
+   schemes.
 
    The transparent background is not decoration. A rule that matches a widget
    makes the style sheet paint that widget's box, and with no background to
@@ -88,7 +88,7 @@ QxDock--DockTab[activeTab="true"] {
    handing the pixel back to the tab is what removes it. */
 QxDock--DockTab QLabel {
     background: transparent;
-    color: {{muted-text}};
+    color: {{text-muted}};
 }
 
 QxDock--DockTab[activeTab="true"] QLabel {
@@ -111,20 +111,20 @@ QxDock--DockTab[activeTab="true"] QLabel {
    also stops the sheet from having to know which scheme is in force, which is
    what the palette roles it used before were standing in for. */
 #dockTabCloseButton:hover {
-    border: 1px solid {{divider}};
-    background: {{hover}};
+    border: 1px solid {{border}};
+    background: {{state-hover}};
 }
 
 #dockTabCloseButton:pressed {
-    background: {{pressed}};
+    background: {{state-pressed}};
 }
 
 /*****************************************************************************
  * DockWidget
  *****************************************************************************/
 QxDock--DockWidget {
-    background: {{surface-raised}};
-    border-color: {{surface-raised}};
+    background: {{surface-alt}};
+    border-color: {{surface-alt}};
     border-style: solid;
     border-width: 1px 0 0 0;
 }
@@ -239,19 +239,19 @@ QxDock--DockSideBar {
 }
 
 QxDock--DockSideBar[sideBarArea="0"] {
-    border-bottom: 1px solid {{divider}};
+    border-bottom: 1px solid {{border}};
 }
 
 QxDock--DockSideBar[sideBarArea="1"] {
-    border-right: 1px solid {{divider}};
+    border-right: 1px solid {{border}};
 }
 
 QxDock--DockSideBar[sideBarArea="2"] {
-    border-left: 1px solid {{divider}};
+    border-left: 1px solid {{border}};
 }
 
 QxDock--DockSideBar[sideBarArea="3"] {
-    border-top: 1px solid {{divider}};
+    border-top: 1px solid {{border}};
 }
 
 /*****************************************************************************
@@ -284,11 +284,11 @@ QxDock--DockSideBar[sideBarArea="3"] {
 }
 
 #autoHideDockContainer QxDock--DockTab QLabel {
-    color: {{on-accent}};
+    color: {{text-on-fill}};
 }
 
 #autoHideDockContainer QxDock--DockTab[activeTab="true"] QLabel {
-    color: {{on-accent}};
+    color: {{text-on-fill}};
 }
 
 /* White washes on the accent, the same relationship the focused tab's close
@@ -315,9 +315,9 @@ QxDock--DockSideBar[sideBarArea="3"] {
 #dockAutoHideTitleLabel {
     padding-left: 4px;
     /* On the accent fill, so the text has to be the colour that reads there -
-       see the focused tab label above for why the dock names that colour
-       itself. */
-    color: {{on-accent}};
+       see the focused tab label above for why the sheet names that colour
+       instead of asking the palette for it. */
+    color: {{text-on-fill}};
 }
 
 /*****************************************************************************
@@ -355,19 +355,19 @@ QxDock--DockResizeHandle {
 }
 
 #autoHideDockContainer[sideBarArea="0"] QxDock--DockResizeHandle {
-    border-top: 1px solid {{divider}};
+    border-top: 1px solid {{border}};
 }
 
 #autoHideDockContainer[sideBarArea="1"] QxDock--DockResizeHandle {
-    border-left: 1px solid {{divider}};
+    border-left: 1px solid {{border}};
 }
 
 #autoHideDockContainer[sideBarArea="2"] QxDock--DockResizeHandle {
-    border-right: 1px solid {{divider}};
+    border-right: 1px solid {{border}};
 }
 
 #autoHideDockContainer[sideBarArea="3"] QxDock--DockResizeHandle {
-    border-top: 1px solid {{divider}};
+    border-top: 1px solid {{border}};
 }
 
 /*****************************************************************************
@@ -389,7 +389,7 @@ QxDock--DockResizeHandle {
    down by two pixels. */
 QxDock--DockTitleBar[focusHighlighting="true"] {
     background: transparent;
-    border-bottom: 2px solid {{divider}};
+    border-bottom: 2px solid {{border}};
     padding-bottom: 0px;
 }
 
@@ -431,10 +431,10 @@ QxDock--DockTab[focused="true"]>#dockTabCloseButton:pressed {
    it through a style sheet: palette(highlightedtext) and palette(brighttext)
    are the roles that mean "text on a highlight fill", and neither is among the
    names a sheet's palette() lookup accepts - the declaration is dropped and the
-   label keeps whatever colour it had. on-accent is the dock's name for it, and
-   fromPalette() fills it from QPalette::HighlightedText, asked in C++ where the
-   role is available. The theme supplies the same colour the ribbon writes as
-   text-on-fill, which is how both surfaces end up agreeing. */
+   label keeps whatever colour it had. text-on-fill is the theme's name for it,
+   and fromPalette() fills it from QPalette::HighlightedText, asked in C++ where
+   the role is available. The ribbon writes the same colour, which is how both
+   halves of a theme end up agreeing. */
 QxDock--DockTab[activeTab="true"][focused="true"] QLabel {
-    color: {{on-accent}};
+    color: {{text-on-fill}};
 }
