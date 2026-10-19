@@ -262,7 +262,8 @@ QxDock--DockSideBar[sideBarArea="3"] {
 }
 
 #autoHideDockContainer QxDock--DockTitleBar {
-    background: {{accent}};
+    background: {{accent-fill-strong}};
+    color: {{text-on-fill}};
     padding: 0px;
     border: none;
 }
@@ -307,7 +308,8 @@ QxDock--DockSideBar[sideBarArea="3"] {
  * overwrite the #autoHideDockContainer QxDock--DockTitleBar rule
  */
 #autoHideDockContainer QxDock--DockPanel[focused="true"] QxDock--DockTitleBar {
-    background: {{accent}};
+    background: {{accent-fill-strong}};
+    color: {{text-on-fill}};
     padding: 0px;
     border: none;
 }
@@ -399,8 +401,9 @@ QxDock--DockPanel[focused="true"] QxDock--DockTitleBar[focusHighlighting="true"]
 
 /* Focus related styling */
 QxDock--DockTab[focused="true"] {
-    background: {{accent}};
-    border-color: {{accent}};
+    background: {{accent-fill-strong}};
+    border-color: {{accent-fill-strong}};
+    color: {{text-on-fill}};
 }
 
 /* The focused tab is filled with the highlight colour, so the two steps that

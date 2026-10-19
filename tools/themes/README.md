@@ -4,13 +4,14 @@
 `res/themes/<family>_<scheme>.json` 同样是生成物：**同一个 `PALETTES` 条目的数据版**，
 随 css 一起写出。css 里角色已经被替换成具体色值，读不回来；json 留给「画在样式表之外」
 的库（qxdock 的自有片段就是第一个消费者），经 `QxThemeInfo::colors` 送到应用层。
-一套主题由三部分相加而成：
+一套主题由四部分相加而成：
 
 | 文件 | 作用 |
 | :--- | :--- |
 | `skeleton_light.css` | 浅色骨架：只描述 Ribbon 部件。标准控件交给平台样式 + 浅色调色板 |
 | `skeleton_dark.css` | 暗色骨架：除 Ribbon 外**还要重画标准控件**（暗色下平台样式会忽略调色板，否则下拉框、树、滚动条仍是浅色） |
 | `chrome_<family>.css` | 家族的**结构**差异：页签怎么表示选中、圆角、页签条与页面之间有没有分隔线、强调色用在哪 |
+| `res/dockstyle/base.css` | dock 的那半张表（`QxDock--*`）。**源只有这一份**：它对明暗无话可说——两张骨架说同一套结构，差别只在令牌填进什么值——而 qxdock 在运行时还要读同一份，给没装主题的应用当回退表 |
 | `build_themes.py` 里的 `PALETTES` | 该家族的**颜色**角色 |
 
 三者拼起来 = `res/themes/<family>_<scheme>.css`，每个家族 × 明暗两套各一份。
@@ -70,6 +71,7 @@ slate / accent）。
 | `accent-text` | 强调色当**文字或字形**压在中性面上（选中页签的字、文件键的字形）。亮色取深一端、暗色取亮一端，否则 4.5:1 不够 |
 | `accent-fill` / `accent-fill-strong` | 强调色**填充**面（选中项底、标题栏按钮悬停） |
 | `accent-faint` / `accent-soft` | 强调色的极淡/淡色洗（悬停底色、淡边框） |
+| `subtle` / `on-accent-hover` / `on-accent-pressed` | **不是调色板角色，是生成器派生的洗**：白（亮色下黑）的固定透明度，铺在说不出名字的面上——侧边页签没东西可标时的占位条、强调色块上按钮的两态。派生而不手填，是为了和 `DockStyleColors::fromPalette()` 在运行时算出的同一个答案一致 |
 | `highlight` | 提示性黄（下拉框悬停边） |
 | `close-hover` / `close-pressed` | 关闭按钮悬停/按下（微软系红，通常不改） |
 
