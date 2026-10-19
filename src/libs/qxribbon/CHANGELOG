@@ -79,6 +79,16 @@ Fixed
   which painted a dark glyph on this button's own fill. The fill here is not the
   emphasis but the close button's, so the glyph is white, which is what the
   button's file was drawn in and what reads on it.
+- A gallery item's bottom line is inside the strip again. The grid was sized as
+  the height over the rows, which is the height of a row but not the room one
+  has for it: the rows have to fit between the gaps above, below and between
+  them as well, so the last row reached past the widget's bottom edge and the
+  bottom of its box - the line that says which item is selected - was clipped
+  away, which reads as the gallery cutting the item off. The grid is
+  (height - (rows + 1) * spacing) / rows now, so the last row ends where the
+  strip does. tst_RibbonGallery::geometry asserts every item's bottom is inside
+  the widget, alongside the check that selecting one still moves nothing.
+
 Interface
 - RibbonGalleryGroup is a QWidget that paints its own items, not a QListView any
   more. The view was carrying machinery the gallery never used well: a model per

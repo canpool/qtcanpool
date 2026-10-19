@@ -318,7 +318,12 @@ void RibbonGalleryGroup::recalcGridSize(int galleryHeight)
     }
     Q_D(RibbonGalleryGroup);
     const int rowCount = d->displayRowCount();
-    int h = galleryHeight / rowCount;
+    // The rows have to fit between the spacings, not merely inside the height:
+    // there is a gap above the first row, below the last one and between the rows.
+    // A grid that is simply height/rows tall runs the last row past the bottom
+    // edge, and an item whose bottom row is off the widget loses its bottom line
+    // - which reads as the gallery cutting the item off.
+    int h = (galleryHeight - (rowCount + 1) * d->m_spacing) / rowCount;
     if (h <= 1) {
         h = galleryHeight;
     }

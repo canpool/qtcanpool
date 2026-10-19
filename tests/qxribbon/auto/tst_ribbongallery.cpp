@@ -134,11 +134,18 @@ void tst_RibbonGallery::geometry()
     // is what is left between the spacings rather than the whole height: a grid
     // that is merely height/rows tall runs the last row past the bottom edge, and
     // the bottom line of those items is then never painted.
-    // The grid is square-ish and bounded by what the caller asked for.
+    // Wide enough for the six of them to sit on one row: the grid is sized for the
+    // rows on show, and rows beyond those are reached by scrolling, so the fit is
+    // asserted for a strip that really is one row deep.
+    group.resize(600, 80);
     group.setGridMinimumWidth(40);
     group.recalcGridSize(80);
     QVERIFY(group.gridSize().width() >= 40);
-    QCOMPARE(group.gridSize().height(), 80);
+    QCOMPARE(group.gridSize().height(), 80 - 2 * group.spacing());
+    QCOMPARE(group.rowCount(), 1);
+    for (int i = 0; i < group.itemCount(); ++i) {
+        QVERIFY(group.itemRect(i).bottom() < group.height());
+    }
 }
 
 void tst_RibbonGallery::scrolling()
