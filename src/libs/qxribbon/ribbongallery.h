@@ -59,7 +59,6 @@ public Q_SLOTS:
     virtual void pageDown();
     virtual void showMoreDetail();
 protected Q_SLOTS:
-    void onItemClicked(const QModelIndex &index);
     virtual void onTriggered(QAction *action);
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;

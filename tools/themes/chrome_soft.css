@@ -102,11 +102,6 @@ QxRibbon--RibbonControlButton:hover {
   background-color: {{accent-soft}};
 }
 
-QxRibbon--RibbonGalleryGroup::item:hover {
-  border: 1px solid transparent;
-  background-color: {{accent-soft}};
-}
-
 QAbstractButton#qx_RibbonApplicationButton {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;

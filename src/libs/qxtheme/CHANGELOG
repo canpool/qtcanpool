@@ -65,6 +65,12 @@ Feature
   the theme never saw has no answer of the theme's to go with it.
 
 Bugfix
+- The gallery is no longer dressed by the sheet. Its group paints from the
+  palette now, and the ::item rules the skeletons carried described a state the
+  sheet never delivered: a pseudo-state on a custom class matched nothing, so
+  the selected fill they promised was never seen, while the hover border that
+  did land moved the item's contents a pixel - the jumping. The rules are gone,
+  and the popup's group titles take the hairline caption they never had.
 - A button whose menu was open showed nothing. The bar's buttons had a hover
   and no held state, so opening a menu left the button looking idle and the
   menu appeared to come from nowhere; the click has to land somewhere. Pressed

@@ -4,21 +4,235 @@
  **/
 #include "ribbongallery.h"
 #include "ribbongallery_p.h"
+#include "ribbongallerygroup_p.h"
 #include "ribboncontrols.h"
 #include "ribbonutils.h"
 
 #include <QApplication>
 #include <QEvent>
 #include <QIcon>
+#include <QAction>
 #include <QActionGroup>
+#include <QBoxLayout>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QMouseEvent>
+#include <QPainter>
 #include <QResizeEvent>
-#include <QScrollBar>
-#include <QVBoxLayout>
+#include <QScrollArea>
+#include <QScreen>
 
 QX_RIBBON_BEGIN_NAMESPACE
+
+/*
+ * RibbonGalleryPreview - one group, every row of it.
+ *
+ * The popup has to show the whole group while the gallery is still showing the
+ * same group a few rows at a time, and a widget cannot be in two layouts at
+ * once. So the popup gets a view of the group instead of the group: it reads
+ * the items and the metrics off it and paints them with the same painter the
+ * group uses, which is also why the two never disagree about where an item is.
+ */
+class RibbonGalleryPreview : public QWidget
+{
+public:
+    explicit RibbonGalleryPreview(RibbonGallery *gallery, RibbonGalleryGroup *group, QWidget *parent = Q_NULLPTR);
+    QSize sizeHint() const override;
+    int heightForWidth(int w) const override;
+    bool hasHeightForWidth() const override;
+    void refresh();
+    /// The grid the popup paints with. A group that has never been laid out keeps
+    /// a stale one, and the popup cannot borrow the width of a group it does not
+    /// show - so the gallery hands every preview the same grid the strip uses.
+    void setGrid(const QSize &grid);
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+private:
+    void fill(RibbonGalleryPaintSpec &spec) const;
+    QRect area() const;
+    QSize grid() const;
+private:
+    RibbonGallery *m_gallery;
+    RibbonGalleryGroup *m_group;
+    QSize m_grid;
+    int m_hoverIndex;
+    int m_pressedIndex;
+};
+
+RibbonGalleryPreview::RibbonGalleryPreview(RibbonGallery *gallery, RibbonGalleryGroup *group, QWidget *parent)
+    : QWidget(parent)
+    , m_gallery(gallery)
+    , m_group(group)
+    , m_hoverIndex(-1)
+    , m_pressedIndex(-1)
+{
+    setMouseTracking(true);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+}
+
+QRect RibbonGalleryPreview::area() const
+{
+    const int sp = m_group ? m_group->spacing() : 1;
+    return rect().adjusted(sp, sp, -sp, -sp);
+}
+
+QSize RibbonGalleryPreview::grid() const
+{
+    if (m_grid.isValid()) {
+        return m_grid;
+    }
+    return (m_group && m_group->gridSize().isValid()) ? m_group->gridSize() : QSize(64, 64);
+}
+
+void RibbonGalleryPreview::setGrid(const QSize &grid)
+{
+    if (m_grid == grid) {
+        return;
+    }
+    m_grid = grid;
+    updateGeometry();
+    update();
+}
+
+void RibbonGalleryPreview::fill(RibbonGalleryPaintSpec &spec) const
+{
+    spec.actions.clear();
+    if (Q_NULLPTR == m_group) {
+        return;
+    }
+    const int count = m_group->itemCount();
+    for (int i = 0; i < count; ++i) {
+        spec.actions.append(m_group->itemAction(i));
+    }
+    spec.grid = grid();
+    spec.spacing = m_group->spacing();
+    spec.style = m_group->galleryGroupStyle();
+    spec.palette = palette();
+    spec.font = font();
+    spec.hoverIndex = m_hoverIndex;
+    spec.selectedIndex = m_group->selectedIndex();
+    spec.pressedIndex = m_pressedIndex;
+    spec.firstRow = 0;
+    spec.visibleRows = 0;
+    spec.columns = galleryColumnCount(area(), spec);
+}
+
+void RibbonGalleryPreview::refresh()
+{
+    updateGeometry();
+    update();
+}
+
+bool RibbonGalleryPreview::hasHeightForWidth() const
+{
+    return true;
+}
+
+int RibbonGalleryPreview::heightForWidth(int w) const
+{
+    if (Q_NULLPTR == m_group) {
+        return 0;
+    }
+    RibbonGalleryPaintSpec spec;
+    fill(spec);
+    const int sp = spec.spacing;
+    const int stepX = spec.grid.width() + sp;
+    const int stepY = spec.grid.height() + sp;
+    const int columns = (stepX <= 0) ? 1 : qMax(1, (w - 2 * sp + sp) / stepX);
+    const int rows = qMax(1, (spec.actions.count() + columns - 1) / columns);
+    return rows * stepY - sp + 2 * sp;
+}
+
+QSize RibbonGalleryPreview::sizeHint() const
+{
+    const int w = (width() > 0) ? width() : 240;
+    return QSize(w, heightForWidth(w));
+}
+
+void RibbonGalleryPreview::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+    if (Q_NULLPTR == m_group) {
+        return;
+    }
+    QPainter painter(this);
+    RibbonGalleryPaintSpec spec;
+    fill(spec);
+    galleryPaintGrid(&painter, area(), spec);
+}
+
+void RibbonGalleryPreview::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton) {
+        QWidget::mousePressEvent(event);
+        return;
+    }
+    RibbonGalleryPaintSpec spec;
+    fill(spec);
+    m_pressedIndex = galleryItemAt(area(), spec, event->pos());
+    update();
+    event->accept();
+}
+
+void RibbonGalleryPreview::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton) {
+        QWidget::mouseReleaseEvent(event);
+        return;
+    }
+    RibbonGalleryPaintSpec spec;
+    fill(spec);
+    const int index = galleryItemAt(area(), spec, event->pos());
+    const int pressed = m_pressedIndex;
+    m_pressedIndex = -1;
+    if (index >= 0 && index == pressed && m_group) {
+        // Picking out of another group makes that group the one the strip shows,
+        // which is what the Office gallery does: the strip follows the choice
+        // rather than staying on the group it happened to start with.
+        if (m_gallery && m_gallery->currentViewGroup() != m_group) {
+            m_gallery->setCurrentViewGroup(m_group);
+        }
+        m_group->selectByIndex(index);
+        QAction *act = m_group->itemAction(index);
+        if (act && act->isEnabled()) {
+            act->trigger();
+        }
+    }
+    update();
+    event->accept();
+}
+
+void RibbonGalleryPreview::mouseMoveEvent(QMouseEvent *event)
+{
+    RibbonGalleryPaintSpec spec;
+    fill(spec);
+    const int index = galleryItemAt(area(), spec, event->pos());
+    if (index == m_hoverIndex) {
+        event->accept();
+        return;
+    }
+    m_hoverIndex = index;
+    update();
+    QAction *act = m_group ? m_group->itemAction(index) : Q_NULLPTR;
+    if (act && act->isEnabled()) {
+        act->activate(QAction::Hover);
+    }
+    event->accept();
+}
+
+void RibbonGalleryPreview::leaveEvent(QEvent *event)
+{
+    if (m_hoverIndex != -1) {
+        m_hoverIndex = -1;
+        update();
+    }
+    QWidget::leaveEvent(event);
+}
 
 /* RibbonGalleryPrivate */
 class RibbonGalleryPrivate
@@ -28,15 +242,20 @@ public:
     RibbonGalleryPrivate();
 public:
     void init();
-    void setViewPort(RibbonGalleryGroup *v);
+    void setCurrentGroup(RibbonGalleryGroup *g);
     RibbonGalleryViewport *getPopupViewPort();
     void updateButtonIcons();
+    void updateButtonState();
+    void refreshPreviews();
 public:
     RibbonControlButton *m_buttonUp;
     RibbonControlButton *m_buttonDown;
     RibbonControlButton *m_buttonMore;
     RibbonGalleryViewport *m_popupWidget;
-    RibbonGalleryGroup *m_viewportGroup;
+    RibbonGalleryGroup *m_currentGroup;
+    QList<RibbonGalleryGroup *> m_groups;
+    QList<RibbonGalleryPreview *> m_previews;
+    QMap<RibbonGalleryGroup *, RibbonGalleryPreview *> m_groupToPreview;
     QBoxLayout *m_btnLayout;
     QBoxLayout *m_layout;
     static int s_galleryButtonMaximumWidth;
@@ -45,8 +264,13 @@ public:
 int RibbonGalleryPrivate::s_galleryButtonMaximumWidth = 15;
 
 RibbonGalleryPrivate::RibbonGalleryPrivate()
-    : m_popupWidget(Q_NULLPTR)
-    , m_viewportGroup(Q_NULLPTR)
+    : m_buttonUp(Q_NULLPTR)
+    , m_buttonDown(Q_NULLPTR)
+    , m_buttonMore(Q_NULLPTR)
+    , m_popupWidget(Q_NULLPTR)
+    , m_currentGroup(Q_NULLPTR)
+    , m_btnLayout(Q_NULLPTR)
+    , m_layout(Q_NULLPTR)
 {
 }
 
@@ -101,25 +325,70 @@ void RibbonGalleryPrivate::updateButtonIcons()
     m_buttonMore->setIcon(tintedIcon(QStringLiteral(":/qxribbon/res/arrow_more.png"), color, m_buttonMore->iconSize()));
 }
 
-void RibbonGalleryPrivate::setViewPort(RibbonGalleryGroup *v)
+void RibbonGalleryPrivate::updateButtonState()
+{
+    const bool canScroll = m_currentGroup && (m_currentGroup->maxScrollRow() > 0);
+    m_buttonUp->setEnabled(canScroll && (m_currentGroup->scrollRow() > 0));
+    m_buttonDown->setEnabled(canScroll && (m_currentGroup->scrollRow() < m_currentGroup->maxScrollRow()));
+}
+
+void RibbonGalleryPrivate::refreshPreviews()
+{
+    // Every preview paints with the grid the strip is using, so the popup and the
+    // strip agree on how big an item is - a group that has never been laid out
+    // would otherwise keep the stale size it was born with.
+    const int rowHeight =
+        (m_currentGroup && m_currentGroup->gridSize().isValid()) ? m_currentGroup->gridSize().height() : 64;
+    for (int i = 0; i < m_previews.count(); ++i) {
+        RibbonGalleryPreview *pv = m_previews.at(i);
+        int w = rowHeight;
+        RibbonGalleryGroup *g = m_groups.value(i, Q_NULLPTR);
+        if (g) {
+            if (g->gridMinimumWidth() > 0 && w < g->gridMinimumWidth()) {
+                w = g->gridMinimumWidth();
+            }
+            if (g->gridMaximumWidth() > 0 && w > g->gridMaximumWidth()) {
+                w = g->gridMaximumWidth();
+            }
+        }
+        pv->setGrid(QSize(w, rowHeight));
+        pv->refresh();
+    }
+}
+
+/*
+ * Puts the group in the strip on the left of the buttons.
+ *
+ * The group is shown as it is - the gallery used to keep a second view fed from
+ * the same model, which is why nothing could agree with anything: the strip was
+ * the copy, the popup held the original, and a click had to be forwarded between
+ * them. One widget, shown once, is the whole point of the rewrite.
+ */
+void RibbonGalleryPrivate::setCurrentGroup(RibbonGalleryGroup *g)
 {
     Q_Q(RibbonGallery);
-    if (Q_NULLPTR == m_viewportGroup) {
-        m_viewportGroup = new RibbonGalleryGroup(q);
-        m_layout->addWidget(m_viewportGroup, 1);
+    if (m_currentGroup == g) {
+        return;
     }
-    m_viewportGroup->setRecalcGridSizeBlock(true);
-    m_viewportGroup->setGalleryGroupStyle(v->galleryGroupStyle());
-    m_viewportGroup->setDisplayRow(v->displayRow());
-    m_viewportGroup->setSpacing(v->spacing());
-    m_viewportGroup->setGridMaximumWidth(v->gridMaximumWidth());
-    m_viewportGroup->setGridMinimumWidth(v->gridMinimumWidth());
-    m_viewportGroup->setRecalcGridSizeBlock(false);
-    m_viewportGroup->recalcGridSize(m_viewportGroup->height());
-    m_viewportGroup->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_viewportGroup->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_viewportGroup->setModel(v->model());
-    m_viewportGroup->show();
+    if (m_currentGroup) {
+        m_layout->removeWidget(m_currentGroup);
+        m_currentGroup->setViewportRows(0);
+        m_currentGroup->hide();
+    }
+    m_currentGroup = g;
+    if (Q_NULLPTR == g) {
+        updateButtonState();
+        return;
+    }
+    if (g->parent() != q) {
+        g->setParent(q);
+    }
+    m_layout->addWidget(g, 1);
+    // How many rows the strip shows is what DisplayRow already says: the grid is
+    // sized so that many fit the height, and the rest are scrolled through.
+    g->setViewportRows(g->displayRow());
+    g->show();
+    updateButtonState();
 }
 
 RibbonGalleryViewport *RibbonGalleryPrivate::getPopupViewPort()
@@ -140,6 +409,10 @@ RibbonGallery::RibbonGallery(QWidget *parent)
     Q_D(RibbonGallery);
     d->init();
     setFrameShape(QFrame::Box);
+    // The frame keeps the strip off its own pixels by itself: QFrame insets the
+    // layout by the frame width, so a child laid inside it already starts at
+    // (frameWidth, frameWidth). Adding margins of our own only wastes a pixel on
+    // each side and leaves the strip looking loosely fitted.
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMinimumWidth(200);
     // B9: the gallery can be reached and driven from the keyboard: arrows move the
@@ -179,11 +452,27 @@ RibbonGalleryGroup *RibbonGallery::addGalleryGroup()
 void RibbonGallery::addGalleryGroup(RibbonGalleryGroup *group)
 {
     Q_D(RibbonGallery);
+    if (Q_NULLPTR == group) {
+        return;
+    }
+    if (d->m_groups.contains(group)) {
+        return;
+    }
+    if (group->parent() != this) {
+        group->setParent(this);
+    }
+    d->m_groups.append(group);
     RibbonGalleryViewport *viewport = d->getPopupViewPort();
-    viewport->addWidget(group, group->groupTitle());
-    connect(group, &QAbstractItemView::clicked, this, &RibbonGallery::onItemClicked);
-    connect(group, &RibbonGalleryGroup::groupTitleChanged, this, [group, viewport](const QString &t) {
-        viewport->widgetTitleChanged(group, t);
+    RibbonGalleryPreview *preview = new RibbonGalleryPreview(this, group, viewport);
+    viewport->addWidget(preview, group->groupTitle());
+    d->m_previews.append(preview);
+    d->m_groupToPreview.insert(group, preview);
+    connect(group, &RibbonGalleryGroup::groupTitleChanged, this, [this, group](const QString &t) {
+        Q_D(RibbonGallery);
+        RibbonGalleryPreview *pv = d->m_groupToPreview.value(group, Q_NULLPTR);
+        if (pv && d->m_popupWidget) {
+            d->m_popupWidget->widgetTitleChanged(pv, t);
+        }
     });
     connect(group, &RibbonGalleryGroup::triggered, this, &RibbonGallery::triggered);
     connect(group, &RibbonGalleryGroup::hovered, this, &RibbonGallery::hovered);
@@ -201,17 +490,25 @@ RibbonGalleryGroup *RibbonGallery::addGalleryGroup(const QString &title, QList<Q
     return group;
 }
 
+/**
+ * @brief Gets the group the strip is showing
+ *
+ * This is the group itself and not a view of it: it is the widget in the strip
+ * and the one scrolled by the buttons and the keyboard.
+ */
 RibbonGalleryGroup *RibbonGallery::currentViewGroup() const
 {
     Q_D(const RibbonGallery);
-    return d->m_viewportGroup;
+    return d->m_currentGroup;
 }
 
 void RibbonGallery::setCurrentViewGroup(RibbonGalleryGroup *group)
 {
     Q_D(RibbonGallery);
-    d->setViewPort(group);
-    QApplication::postEvent(this, new QResizeEvent(size(), size()));
+    d->setCurrentGroup(group);
+    if (d->m_currentGroup) {
+        d->m_currentGroup->recalcGridSize(d->m_currentGroup->height());
+    }
 }
 
 QSize RibbonGallery::sizeHint() const
@@ -231,22 +528,18 @@ void RibbonGallery::setGalleryButtonMaximumWidth(int w)
 void RibbonGallery::pageDown()
 {
     Q_D(RibbonGallery);
-    if (d->m_viewportGroup) {
-        QScrollBar *vscrollBar = d->m_viewportGroup->verticalScrollBar();
-        int v = vscrollBar->value();
-        v += vscrollBar->singleStep();
-        vscrollBar->setValue(v);
+    if (d->m_currentGroup) {
+        d->m_currentGroup->scrollByRows(1);
+        d->updateButtonState();
     }
 }
 
 void RibbonGallery::pageUp()
 {
     Q_D(RibbonGallery);
-    if (d->m_viewportGroup) {
-        QScrollBar *vscrollBar = d->m_viewportGroup->verticalScrollBar();
-        int v = vscrollBar->value();
-        v -= vscrollBar->singleStep();
-        vscrollBar->setValue(v);
+    if (d->m_currentGroup) {
+        d->m_currentGroup->scrollByRows(-1);
+        d->updateButtonState();
     }
 }
 
@@ -260,44 +553,62 @@ void RibbonGallery::showMoreDetail()
     if (Q_NULLPTR == d->m_popupWidget) {
         return;
     }
+    d->refreshPreviews();
+
+    const int width = (d->m_currentGroup && d->m_currentGroup->width() > 0) ? d->m_currentGroup->width() : 240;
+    // Each preview's height is stated for the width it is about to get, rather
+    // than left to the layout to ask for: a scroll area does not propagate
+    // heightForWidth, and an answer it never asks for is a height it never gets.
+    const int previewWidth = width - qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - 4;
+    for (RibbonGalleryPreview *pv : d->m_previews) {
+        pv->setFixedHeight(pv->heightForWidth(qMax(60, previewWidth)));
+    }
+    // A popup is measured, not guessed: give it the width it will get, let the
+    // layout answer with the height the groups need, then cut that down to what
+    // the screen has.
+    d->m_popupWidget->setGeometry(0, 0, width, 100);
+    d->m_popupWidget->layout()->activate();
     QSize popupSize = d->m_popupWidget->sizeHint();
-    QPoint start = mapToGlobal(QPoint(0, 0));
+    if (popupSize.isEmpty()) {
+        popupSize = QSize(width, 100);
+    }
+    const int maxHeight = screen() ? (screen()->availableGeometry().height() * 7 / 10) : 480;
+    const int popupHeight = qMin(qMax(popupSize.height(), 60), maxHeight);
 
-    int width = d->m_viewportGroup->width();   // viewport
-
-    width += qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);   // scrollbar
-    d->m_popupWidget->setGeometry(start.x(), start.y(), width, popupSize.height());
+    QPoint pos = mapToGlobal(QPoint(0, QWidget::height() - 1));
+    if (screen() && (pos.y() + popupHeight > screen()->availableGeometry().bottom())) {
+        pos = mapToGlobal(QPoint(0, -popupHeight + 1));
+    }
+    d->m_popupWidget->setGeometry(pos.x(), pos.y(), width, popupHeight);
     d->m_popupWidget->show();
 }
 
 /**
- * @brief Moves the viewport's current item by @a step, clamped to the model (B9)
+ * @brief Moves the selected item by @a step, clamped to the group (B9)
  *
- * With no current item yet, the first Down/Right selects the first item and the first
- * Up/Left selects the last one, which is what a list is expected to do.
+ * With nothing selected yet, the first Down/Right selects the first item and the
+ * first Up/Left selects the last one, which is what a list is expected to do.
  */
 void RibbonGallery::moveCurrentItem(int step)
 {
     Q_D(RibbonGallery);
-    RibbonGalleryGroup *group = d->m_viewportGroup;
-    if (!group || !group->model()) {
+    RibbonGalleryGroup *group = d->m_currentGroup;
+    if (Q_NULLPTR == group) {
         return;
     }
-    const int count = group->model()->rowCount();
+    const int count = group->itemCount();
     if (count == 0) {
         return;
     }
-    const QModelIndex current = group->currentIndex();
-    const int row = current.isValid() ? current.row() : (step > 0 ? -1 : count);
-    const QModelIndex next = group->model()->index(qBound(0, row + step, count - 1), 0);
-    group->setCurrentIndex(next);
-    group->scrollTo(next);
+    const int current = group->selectedIndex();
+    const int from = (current < 0) ? (step > 0 ? -1 : count) : current;
+    group->selectByIndex(qBound(0, from + step, count - 1));
 }
 
 void RibbonGallery::keyPressEvent(QKeyEvent *event)
 {
     Q_D(RibbonGallery);
-    RibbonGalleryGroup *group = d->m_viewportGroup;
+    RibbonGalleryGroup *group = d->m_currentGroup;
     if (!group) {
         QFrame::keyPressEvent(event);
         return;
@@ -328,18 +639,6 @@ void RibbonGallery::keyPressEvent(QKeyEvent *event)
     QFrame::keyPressEvent(event);
 }
 
-void RibbonGallery::onItemClicked(const QModelIndex &index)
-{
-    QObject *obj = sender();
-    RibbonGalleryGroup *group = qobject_cast<RibbonGalleryGroup *>(obj);
-    if (group) {
-        setCurrentViewGroup(group);
-        RibbonGalleryGroup *curGroup = currentViewGroup();
-        curGroup->scrollTo(index);
-        curGroup->setCurrentIndex(index);
-    }
-}
-
 void RibbonGallery::onTriggered(QAction *action)
 {
     Q_D(RibbonGallery);
@@ -352,36 +651,13 @@ void RibbonGallery::onTriggered(QAction *action)
 
 void RibbonGallery::resizeEvent(QResizeEvent *event)
 {
-    Q_D(RibbonGallery);
     QFrame::resizeEvent(event);
-    // Resize all RibbonGalleryGroups in the RibbonGalleryViewport
-    int h = layout()->contentsRect().height();
-    if (d->m_viewportGroup) {
-        h = d->m_viewportGroup->height();
-        d->m_viewportGroup->recalcGridSize();
+    Q_D(RibbonGallery);
+    if (d->m_currentGroup) {
+        d->m_currentGroup->setViewportRows(d->m_currentGroup->displayRow());
+        d->m_currentGroup->recalcGridSize(d->m_currentGroup->height());
     }
-    if (d->m_popupWidget) {
-        QLayout *lay = d->m_popupWidget->layout();
-        if (!lay) {
-            return;
-        }
-        int c = lay->count();
-        for (int i = 0; i < c; ++i) {
-            QLayoutItem *item = lay->itemAt(i);
-            if (!item) {
-                continue;
-            }
-            QWidget *w = item->widget();
-            if (!w) {
-                continue;
-            }
-            RibbonGalleryGroup *g = qobject_cast<RibbonGalleryGroup *>(w);
-            if (!g) {
-                continue;
-            }
-            g->recalcGridSize(h);
-        }
-    }
+    d->updateButtonState();
 }
 
 void RibbonGallery::paintEvent(QPaintEvent *event)
@@ -398,19 +674,35 @@ public:
     void init();
 public:
     QVBoxLayout *m_layout;
+    QScrollArea *m_scroll;
+    QWidget *m_content;
     QMap<QWidget *, QLabel *> m_widgetToTitleLabel;
 };
 
 RibbonGalleryViewportPrivate::RibbonGalleryViewportPrivate()
+    : m_layout(Q_NULLPTR)
+    , m_scroll(Q_NULLPTR)
+    , m_content(Q_NULLPTR)
 {
 }
 
 void RibbonGalleryViewportPrivate::init()
 {
     Q_Q(RibbonGalleryViewport);
-    m_layout = new QVBoxLayout(q);
+    m_scroll = new QScrollArea(q);
+    m_scroll->setWidgetResizable(true);
+    m_scroll->setFrameShape(QFrame::NoFrame);
+    m_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_content = new QWidget(m_scroll);
+    m_layout = new QVBoxLayout(m_content);
     m_layout->setSpacing(2);
     m_layout->setContentsMargins(0, 0, 0, 0);
+    m_scroll->setWidget(m_content);
+
+    QVBoxLayout *top = new QVBoxLayout(q);
+    top->setSpacing(0);
+    top->setContentsMargins(0, 0, 0, 0);
+    top->addWidget(m_scroll);
 }
 
 RibbonGalleryViewport::RibbonGalleryViewport(QWidget *parent)
@@ -434,7 +726,7 @@ RibbonGalleryViewport::~RibbonGalleryViewport()
 void RibbonGalleryViewport::addWidget(QWidget *w)
 {
     Q_D(RibbonGalleryViewport);
-    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     d->m_layout->addWidget(w);
 }
 
@@ -443,10 +735,10 @@ void RibbonGalleryViewport::addWidget(QWidget *w, const QString &title)
     Q_D(RibbonGalleryViewport);
     QLabel *label = new QLabel(this);
     label->setText(title);
-    label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     label->setObjectName(QLatin1String("RibbonGalleryGroupTitle"));
     d->m_layout->addWidget(label);
-    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     d->m_layout->addWidget(w);
     d->m_widgetToTitleLabel[w] = label;
 }
@@ -473,6 +765,20 @@ QLabel *RibbonGalleryViewport::getWidgetTitleLabel(QWidget *w)
 {
     Q_D(RibbonGalleryViewport);
     return d->m_widgetToTitleLabel.value(w, Q_NULLPTR);
+}
+
+/*!
+ * The popup is as tall as the groups it holds, which is the only height it can
+ * be measured at: the groups wrap according to the width they are given, so
+ * their answer changes with it. The gallery gives the width first and asks after.
+ */
+QSize RibbonGalleryViewport::sizeHint() const
+{
+    Q_D(const RibbonGalleryViewport);
+    if (Q_NULLPTR == d->m_content) {
+        return QSize(240, 100);
+    }
+    return d->m_content->sizeHint() + QSize(2, 2);
 }
 
 void RibbonGalleryViewport::widgetTitleChanged(QWidget *w, const QString &title)

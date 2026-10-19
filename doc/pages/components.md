@@ -135,7 +135,7 @@ themes->setTheme(QStringLiteral("fluent-dark"));
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单；页面变窄时先逐组缩放、缩不动才出滚动条（B11） |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口。**不带主题**（4.5 起 `RibbonTheme` 与主题三件套已移除）：Ribbon 长什么样由下发到应用的那张样式表决定，见 @ref QxTheme::QxThemeManager 与 `Example_RibbonStyle` |
 | `WindowButtonGroup` | 一组最小化 / 最大化 / 关闭按钮 |
-| `RibbonGallery` / `RibbonGalleryGroup` | 选项板及其分组；4.5 起可聚焦并用方向键 / Enter / PageUp 导航（B9） |
+| `RibbonGallery` / `RibbonGalleryGroup` | 选项板及其分组；4.5 起可聚焦并用方向键 / Enter / PageUp 导航（B9）。分组 4.5 起不再派生 `QListView` 而是自绘：条目矩形与状态无关（指针进出不位移），悬停 / 选中的强调取自 palette，弹出面板画每个分组的完整网格 |
 | `RibbonCustomizeDialog` / `RibbonActionsManager` | 自定义对话框，及其背后按标签管理 action 的管理器 |
 | `RibbonButton` | Ribbon 标准按钮（大 / 中 / 小三种尺寸，可带弹出菜单） |
 | `RibbonControlButton` | 通用按钮基类（`QToolButton` 派生），`RibbonFactory` 据此造隐藏组按钮等 |

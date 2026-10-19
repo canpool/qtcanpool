@@ -464,3 +464,22 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
     仓库已替你接好两处：`demos/qxapp/dockdemo`（显式编入并 `setStyleSheet`）与
     `examples/CMakeLists.txt`（凡是 `add_qtc_example(..., qxdock, ...)` 的样本自动附加
     `res/dockstyle.qrc`）。库里删掉的 `DockWindowPrivate::loadStylesheet()` 无需任何替换。
+
+### 4.6
+
+- **`RibbonGalleryGroup` 改为自绘 `QWidget`**（库 `qxribbon`，破坏 API / ABI）：不再继承
+  `QListView`。条目自己管理（action 列表 + 一个 `QActionGroup`）、自己算网格、自己画；
+  悬停 / 选中的强调从 **palette** 取色（`Highlight` 洗色 + 描边），文字恒用 `Text` 色，
+  不再反白。状态只改变洗色与描边，**不改变几何**——条目矩形与状态无关，指针进出不位移。
+  弹出面板改为用同一套绘制逻辑画每个分组的完整网格（分组标题条），并支持滚动；
+  在面板里选中另一分组的条目，strip 会切换到该分组（与 Office 行为一致）。
+  - 保留：`GalleryGroupStyle` / `DisplayRow` / `setGridMinimumWidth` / `setGridMaximumWidth` /
+    `recalcGridSize` / `selectByIndex` / `triggerCurrentItem` / `actionGroup` /
+    `addItem(s)` / `setGroupTitle` 与 `groupTitleChanged` / `triggered` / `hovered` 三个信号。
+  - 删除（原 `QListView` 泄漏的成员）：`model()` / `currentIndex()` / `scrollTo()` /
+    `spacing()`（QListView 版）等。
+  - 新增：`itemCount()` / `itemAction()` / `selectedIndex()` / `itemRect()` / `setSpacing()` /
+    `gridSize()` / `rowCount()` / `columnCount()`，以及滚动一组
+    `setViewportRows()` / `scrollByRows()` / `scrollToItem()` / `maxScrollRow()`。
+  - `RibbonGallery::currentViewGroup()` 语义变化：返回 **strip 正在显示的那个分组本身**
+    （旧实现返回一个内部镜像分组，与 `addGalleryGroup()` 返回的不是同一个对象）。

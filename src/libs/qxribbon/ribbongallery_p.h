@@ -22,6 +22,9 @@ class RibbonGalleryViewportPrivate;
  * _p.h included, so being reachable on disk is not a promise: a caller that
  * wants its own popup overrides RibbonGallery::showMoreTrigger() instead and
  * never names this class.
+ *
+ * It scrolls, because the popup shows every group at full length and a gallery
+ * can hold more of them than the screen has room for.
  */
 class RibbonGalleryViewport : public QWidget
 {
@@ -34,6 +37,7 @@ public:
     void addWidget(QWidget *w, const QString &title);
     void removeWidget(QWidget *w);
     QLabel *getWidgetTitleLabel(QWidget *w);
+    QSize sizeHint() const override;
 public Q_SLOTS:
     void widgetTitleChanged(QWidget *w, const QString &title);
 private:

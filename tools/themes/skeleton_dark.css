@@ -655,20 +655,20 @@ QxRibbon--RibbonGalleryGroup {
   border: 1px solid {{border}};
 }
 
-QxRibbon--RibbonGalleryGroup::item:selected {
-  color: {{text-on-fill}};
-  background-color: {{accent-fill-strong}};
-}
-
-QxRibbon--RibbonGalleryGroup::item:hover {
-  border: 1px solid {{border}};
-  background-color: {{state-hover}};
-}
-
 /*RibbonGalleryViewport*/
 
 QxRibbon--RibbonGalleryViewport {
   background-color: {{surface}};
+}
+
+/* A group title in the popup: a caption, not a heading - it sits on a hairline
+   and speaks in the muted voice, which is all a label needs to separate the
+   groups it sits between. */
+QLabel#RibbonGalleryGroupTitle {
+  padding: 2px 4px;
+  background-color: transparent;
+  color: {{text-muted}};
+  border-bottom: 1px solid {{border}};
 }
 
 /*RibbonButtonGroup*/

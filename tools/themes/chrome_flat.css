@@ -74,11 +74,6 @@ QxRibbon--RibbonControlButton:hover {
   background-color: {{surface-sub}};
 }
 
-QxRibbon--RibbonGalleryGroup::item:hover {
-  border: 1px solid transparent;
-  background-color: {{surface-sub}};
-}
-
 QxRibbon--RibbonMenu::item:hover {
   border: 1px solid transparent;
   background-color: {{surface-sub}};

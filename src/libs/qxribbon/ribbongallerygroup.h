@@ -5,8 +5,11 @@
 #pragma once
 
 #include "qxribbon_global.h"
-#include <QListView>
 
+#include <QIcon>
+#include <QWidget>
+
+class QAction;
 class QActionGroup;
 
 QX_RIBBON_BEGIN_NAMESPACE
@@ -16,9 +19,18 @@ class RibbonGalleryGroupPrivate;
 ///
 /// \brief Group of the Gallery
 ///
-/// The group is responsible for displaying and managing Gallery Items
+/// The group holds the items a gallery offers and paints them itself. It is the
+/// data a gallery scrolls through and the widget a gallery pops up, and both
+/// uses share one set of metrics: an item's rectangle never depends on what is
+/// being done to it, so pointing at one cannot move it.
 ///
-class QX_RIBBON_EXPORT RibbonGalleryGroup : public QListView
+/// The group paints from the palette - QPalette::Highlight for the emphasis and
+/// QPalette::Text for the labels - and leaves its own background alone, so a
+/// theme is followed without a style sheet having to describe the item states.
+/// A state changes the wash and the border; it never changes the geometry, and
+/// it never reverses the text out of its own colour.
+///
+class QX_RIBBON_EXPORT RibbonGalleryGroup : public QWidget
 {
     Q_OBJECT
 public:
@@ -55,13 +67,17 @@ public:
     void addItem(const QString &text, const QIcon &icon);
     void addItem(QAction *act);
     void addItems(const QList<QAction *> &acts);
+    int itemCount() const;
+    QAction *itemAction(int index) const;
 
     void setGroupTitle(const QString &title);
     QString groupTitle() const;
 
     void selectByIndex(int i);
+    int selectedIndex() const;
+    QAction *selectedAction() const;
 
-    /// Activates the current item exactly as a mouse click would; used by the keyboard
+    /// Activates the selected item exactly as a mouse click would; used by the keyboard
     /// navigation of RibbonGallery (B9).
     void triggerCurrentItem();
 
@@ -74,12 +90,29 @@ public:
     void setGridMaximumWidth(int w);
     int gridMaximumWidth() const;
 
+    void setSpacing(int spacing);
+    int spacing() const;
+
+    QSize gridSize() const;
+    int rowCount() const;
+    int columnCount() const;
+    QRect itemRect(int index) const;
+    int itemAt(const QPoint &pos) const;
+
+    /// How many rows the group shows at once. Zero - the default, and what a group
+    /// standing on its own wants - shows every row and never scrolls; a gallery sets
+    /// it to the number of rows that fit and scrolls the rest through.
+    void setViewportRows(int rows);
+    int viewportRows() const;
+    int scrollRow() const;
+    void setScrollRow(int row);
+    void scrollByRows(int rows);
+    void scrollToItem(int index);
+    int maxScrollRow() const;
+
     QSize sizeHint() const override;
 
     QActionGroup *actionGroup() const;
-private Q_SLOTS:
-    void onItemClicked(const QModelIndex &index);
-    void onItemEntered(const QModelIndex &index);
 Q_SIGNALS:
     void groupTitleChanged(const QString &title);
     /**
@@ -93,11 +126,18 @@ Q_SIGNALS:
      * @brief Equivalent to QActionGroup's hovered
      * All actions added to the RibbonGalleryGroup are managed by a QActionGroup; the corresponding action group can be
      * obtained via @sa actionGroup
-     * @note This property is activated via QAbstractItemView::entered(const QModelIndex
-     * &index), so make sure setMouseTracking(true) is set
      * @param action
      */
     void hovered(QAction *action);
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void changeEvent(QEvent *event) override;
 private:
     QX_DECLARE_PRIVATE(RibbonGalleryGroup)
 };

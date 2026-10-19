@@ -5,93 +5,48 @@
 #pragma once
 
 #include "qxribbon_global.h"
+#include "ribbongallerygroup.h"
 
-#include <QAction>
-#include <QIcon>
-#include <QMap>
-#include <QVariant>
-#include <QList>
-#include <QListView>
-#include <QStyledItemDelegate>
+#include <QFont>
+#include <QPalette>
+#include <QRect>
+#include <QSize>
+
+class QAction;
+class QPainter;
 
 QX_RIBBON_BEGIN_NAMESPACE
 
-class RibbonGalleryItemPrivate;
-
-class RibbonGalleryItem
-{
-public:
-    RibbonGalleryItem();
-    RibbonGalleryItem(const QString &text, const QIcon &icon);
-    RibbonGalleryItem(QAction *act);
-    virtual ~RibbonGalleryItem();
-
-    void setData(int role, const QVariant &data);
-    virtual QVariant data(int role) const;
-
-    void setText(const QString &text);
-    QString text() const;
-
-    void setToolTip(const QString &text);
-    QString toolTip() const;
-
-    void setIcon(const QIcon &ico);
-    QIcon icon() const;
-
-    bool isSelectable() const;
-    void setSelectable(bool isSelectable);
-
-    bool isEnable() const;
-    void setEnable(bool isEnable);
-
-    void setFlags(Qt::ItemFlags flag);
-    virtual Qt::ItemFlags flags() const;
-
-    void setAction(QAction *act);
-    QAction *action();
-
-    void setTextAlignment(Qt::Alignment a);
-    Qt::Alignment textAlignment() const;
-private:
-    RibbonGalleryItemPrivate *d;
+/*
+ * RibbonGalleryPaintSpec - everything painting a group's grid needs to know.
+ *
+ * The group and the gallery's popup both paint the same items, and they have to
+ * agree on where every one of them is; one description of the grid is what makes
+ * that true. It carries no widget and does no lookups, so the popup can paint a
+ * group it does not own.
+ */
+struct RibbonGalleryPaintSpec {
+    QList<QAction *> actions;
+    QSize grid = QSize(64, 64);
+    int spacing = 1;
+    int columns = 1;
+    RibbonGalleryGroup::GalleryGroupStyle style = RibbonGalleryGroup::IconWithText;
+    QPalette palette;
+    QFont font;
+    int hoverIndex = -1;
+    int selectedIndex = -1;
+    int pressedIndex = -1;
+    int firstRow = 0;      ///< the row painted at the top of the area
+    int visibleRows = 0;   ///< how many rows to paint; 0 paints every row
 };
 
-/* RibbonGalleryGroupItemDelegate */
-class RibbonGalleryGroup;
-class RibbonGalleryGroupItemDelegate : public QStyledItemDelegate
-{
-public:
-    RibbonGalleryGroupItemDelegate(RibbonGalleryGroup *group, QObject *parent = Q_NULLPTR);
+/* Geometry shared by the group and the popup */
+int galleryColumnCount(const QRect &area, const RibbonGalleryPaintSpec &spec);
+int galleryRowCount(const RibbonGalleryPaintSpec &spec);
+QRect galleryItemRect(const QRect &area, const RibbonGalleryPaintSpec &spec, int index);
+int galleryItemAt(const QRect &area, const RibbonGalleryPaintSpec &spec, const QPoint &pos);
 
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option,
-                       const QModelIndex &index) const Q_DECL_OVERRIDE;
-
-    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
-    virtual void paintIconOnly(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-private:
-    RibbonGalleryGroup *m_group;
-};
-
-/* RibbonGalleryGroupModel */
-class RibbonGalleryGroupModel : public QAbstractListModel
-{
-    Q_OBJECT
-public:
-    explicit RibbonGalleryGroupModel(QObject *parent = Q_NULLPTR);
-    virtual ~RibbonGalleryGroupModel();
-
-    virtual int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
-    virtual QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
-    virtual QModelIndex index(int row, int column, const QModelIndex &parent) const Q_DECL_OVERRIDE;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role) Q_DECL_OVERRIDE;
-    void clear();
-    RibbonGalleryItem *at(int row) const;
-    void insert(int row, RibbonGalleryItem *item);
-    RibbonGalleryItem *take(int row);
-    void append(RibbonGalleryItem *item);
-private:
-    QList<RibbonGalleryItem *> m_items;
-};
+/* Painting shared by the group and the popup */
+void galleryPaintGrid(QPainter *painter, const QRect &area, const RibbonGalleryPaintSpec &spec);
 
 QX_RIBBON_END_NAMESPACE

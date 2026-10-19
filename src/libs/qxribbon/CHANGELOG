@@ -79,6 +79,33 @@ Fixed
   which painted a dark glyph on this button's own fill. The fill here is not the
   emphasis but the close button's, so the glyph is white, which is what the
   button's file was drawn in and what reads on it.
+Interface
+- RibbonGalleryGroup is a QWidget that paints its own items, not a QListView any
+  more. The view was carrying machinery the gallery never used well: a model per
+  group, a delegate, a selection model, and a "mirror" group inside the gallery
+  fed from the current group's model - the strip showed the copy, the popup held
+  the original, and a click had to be forwarded between them. The item states
+  were left to the style sheet, and the sheet could not deliver them: an ::item
+  rule on a custom class matched nothing, so hover and selection were whatever
+  the platform style had left behind, and the one pseudo-state that did land - a
+  hover border - moved the item's contents by a pixel, which is the jumping. Now
+  the group owns its items (a list of actions under one QActionGroup), computes
+  its own grid, and paints from the palette: a state changes the wash and the
+  border, never the geometry, and the label keeps QPalette::Text instead of
+  reversing to white on a wash. The popup paints each group with the same
+  painter, so the strip and the popup cannot disagree about where an item is.
+
+  The member surface keeps its shape - the styles, the display rows, the grid
+  bounds, recalcGridSize(), selectByIndex(), triggerCurrentItem(), actionGroup()
+  and the three signals all answer as before - but the class it inherits is
+  QWidget, and what the view leaked is gone: no model(), currentIndex(),
+  scrollTo() or QListView's spacing(). In their place the group says what it now
+  is: itemCount(), itemAction(), selectedIndex(), itemRect(), setSpacing(),
+  gridSize(), and the viewport/scroll pair (setViewportRows(), scrollByRows(),
+  scrollToItem()) the gallery drives. currentViewGroup() returns the group the
+  strip shows, which is the group itself and not a copy of it - the assertion
+  that the two were different objects was the old design's, and tst_RibbonGallery
+  now asserts the opposite.
 
 0.13.0
 ---

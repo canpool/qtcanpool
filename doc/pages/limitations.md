@@ -98,11 +98,11 @@
 **为什么没继续做**：这是性能问题不是正确性问题，没有观察到的故障，也没有可测量的回归基线
 （离屏截图测试测的不是这个）。
 
-**要改变它需要什么**：触发条件已列清（上表）。除上表第 1 类之外，本库自己的投递点只剩三处：
+**要改变它需要什么**：触发条件已列清（上表）。除上表第 1 类之外，本库自己的投递点只剩两处：
 `RibbonBar::resizeRibbon()` 的**一处**排队投递（唯一的排队点；内容入口与
-`setQuickAccessBarPosition` / `setTabBarPosition` 都经它请求）、`RibbonBar::resizeRibbonNow()` 的
-同步 `sendEvent(this, &resizeEvent)`（`setMinimized()` / `showMinimumButton()` 走它），以及
-`RibbonGallery` 自己的一处排队投递（`ribbongallery.cpp`，`QResizeEvent`）。
+`setQuickAccessBarPosition` / `setTabBarPosition` 都经它请求），以及 `RibbonBar::resizeRibbonNow()` 的
+同步 `sendEvent(this, &resizeEvent)`（`setMinimized()` / `showMinimumButton()` 走它）。
+（`RibbonGallery` 原先也有一处排队投递，4.5 把选项板分组改为自绘之后它已不存在。）
 要判断的是"能不能用 `LayoutRequest` 替掉其中某几个"，以及"替掉之后 resize 轮次是变多还是变少"。
 ⚠️ 这一步需要一份**真机事件日志**来对照（离屏测的不是这个），而且 `resizeRibbon()` 的延迟正是上面
 「RibbonBar 的 resize 是延迟的」那一条的来源——动它要连着那一条一起看。
