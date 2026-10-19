@@ -103,10 +103,14 @@ public:
  * question only the application can answer, and it answers it by building them
  * in and asking here for their text.
  *
- * The install order is the application's to keep: the theme's sheet first, this
- * one after it. Both are application-level, Qt keeps the earlier of two equally
- * specific rules, and the dock's rules are single type selectors - the same
- * specificity as a theme's QWidget rule - so the dock has to come last to win.
+ * A theme carries these rules too: they are one part of a theme, in the same
+ * sheet as the ribbon's, and the ten bundled themes are generated with them.
+ * An application that installs a theme therefore does not install this one - it
+ * would be a second copy of the same rules, drawn in the palette's colours
+ * instead of the theme's, and it would win on order. What such an application
+ * still needs is dockPlatformStyleSheet(). This function is the sheet an
+ * application installs when there is no theme: it is the same rules, filled in
+ * from the palette instead of from a palette a theme chose.
  *
  * \a focusHighlighting no longer selects anything, and both values return the
  * same sheet - see above. It is kept because this signature is published. The
@@ -129,5 +133,22 @@ QX_DOCK_EXPORT QString dockStyleSheet(const DockStyleColors &colors, bool focusH
  * application palette. Kept for callers written before DockStyleColors existed.
  */
 QX_DOCK_EXPORT QString dockStyleSheet(bool focusHighlighting);
+
+/*!
+ * The one piece of the dock's look a theme cannot carry: the rules an X11
+ * desktop needs and the other platforms do not, which only the library knows -
+ * QX_DOCK_X11 is decided when it is built. Empty everywhere else, and that is
+ * the answer rather than a failure: a theme that carries the dock's rules is
+ * complete, and restating them here would draw them in the palette's colours,
+ * which are the fall-back a theme exists to replace.
+ *
+ * So this is what an application with a theme appends - and not what an
+ * application without one calls, since that one wants the whole of
+ * dockStyleSheet(), platform piece included.
+ */
+QX_DOCK_EXPORT QString dockPlatformStyleSheet(const DockStyleColors &colors);
+
+/*! The same, rendered from the current application palette. */
+QX_DOCK_EXPORT QString dockPlatformStyleSheet();
 
 QX_DOCK_END_NAMESPACE

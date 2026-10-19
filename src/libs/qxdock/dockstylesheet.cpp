@@ -62,6 +62,11 @@ const Token kTokens[] = {
     {"text-muted", &DockStyleColors::mutedText},
     {"accent", &DockStyleColors::accent},
     {"accent-text", &DockStyleColors::accentText},
+    // The theme's two accent fills are one colour here: a palette has the
+    // highlight and its pair, and no second step down from it, so the fall-back
+    // sheet paints an emphasized surface in the same colour it draws the
+    // emphasis with. A theme, which has both, does not have to.
+    {"accent-fill-strong", &DockStyleColors::accent},
     {"text-on-fill", &DockStyleColors::onAccent},
     {"state-hover", &DockStyleColors::hover},
     {"state-pressed", &DockStyleColors::pressed},
@@ -183,6 +188,26 @@ DockStyleColors DockStyleColors::resolved() const
     return colors;
 }
 
+/*
+ * One fragment, read out of the resource and filled in. A placeholder that
+ * survived means the fragment names a token this table does not know; handing
+ * that to setStyleSheet() would drop the declaration silently, so the whole
+ * fragment is refused instead.
+ */
+QString renderFragment(const QString &name, const DockStyleColors &colors)
+{
+    QString result = readFragment(name);
+    if (result.isEmpty()) {
+        return QString();
+    }
+    result = render(result, colors);
+    if (result.contains(QStringLiteral("{{"))) {
+        qWarning("qxdock: the dock style sheet left a placeholder unresolved");
+        return QString();
+    }
+    return result;
+}
+
 QString dockStyleSheet(const DockStyleColors &colors, bool focusHighlighting)
 {
     // The focus treatment used to be a second fragment, appended or not
@@ -198,34 +223,40 @@ QString dockStyleSheet(const DockStyleColors &colors, bool focusHighlighting)
     // Two fragments in a fixed order: the look, then the pieces an X11 desktop
     // needs. The order is not cosmetic - where the fragment restates a rule
     // instead of adding one, it has to come after the rule it restates.
-    QString result = readFragment(QStringLiteral("base.css"));
+    QString result = renderFragment(QStringLiteral("base.css"), colors);
     if (result.isEmpty()) {
         return QString();
     }
 
 #if QX_DOCK_X11
-    const QString x11 = readFragment(QStringLiteral("x11.css"));
+    const QString x11 = renderFragment(QStringLiteral("x11.css"), colors);
     if (x11.isEmpty()) {
         return QString();
     }
     result += x11;
 #endif
 
-    result = render(result, colors);
-
-    // A placeholder that survived means a fragment names a token this function
-    // does not know. Handing that to setStyleSheet() would drop the declaration
-    // silently, so the whole sheet is refused instead.
-    if (result.contains(QStringLiteral("{{"))) {
-        qWarning("qxdock: the dock style sheet left a placeholder unresolved");
-        return QString();
-    }
     return result;
 }
 
 QString dockStyleSheet(bool focusHighlighting)
 {
     return dockStyleSheet(DockStyleColors::fromPalette(QGuiApplication::palette()), focusHighlighting);
+}
+
+QString dockPlatformStyleSheet(const DockStyleColors &colors)
+{
+#if QX_DOCK_X11
+    return renderFragment(QStringLiteral("x11.css"), colors);
+#else
+    Q_UNUSED(colors);
+    return QString();
+#endif
+}
+
+QString dockPlatformStyleSheet()
+{
+    return dockPlatformStyleSheet(DockStyleColors::fromPalette(QGuiApplication::palette()));
 }
 
 QX_DOCK_END_NAMESPACE

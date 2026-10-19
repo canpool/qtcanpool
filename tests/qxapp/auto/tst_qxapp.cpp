@@ -14,6 +14,7 @@
 #include "qxapp/ribbonappwindow.h"
 
 #include "qxcore/qxsettings.h"
+#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
 #include "qxplugin/qxplugin.h"
@@ -1214,6 +1215,7 @@ private slots:
     void bundledThemesCarryTheirAccent();
     void accentReachesThePalette();
     void applicationSheetKeepsTheThemeOnTop();
+    void theThemeStatesTheDocksOwnRules();
     void installerFollowsTheTheme();
 };
 
@@ -1290,12 +1292,43 @@ void tst_QxThemeBundle::accentReachesThePalette()
 }
 
 /*!
- * The application sheet is the theme's rules with the dock's appended, in that
- * order.
+ * The selectors a sheet states for the dock, sorted.
  *
- * The order is the assertion worth writing down: at equal specificity the rule
- * declared first wins, so a dock fragment placed in front of the theme would take
- * the last word on every widget the two describe.
+ * Comments are dropped first: a selector written in one is not a rule, and the
+ * dock's sheet explains itself at length right above the rules it is explaining.
+ */
+static QStringList dockSelectors(const QString &sheet)
+{
+    const QRegularExpression comment(QStringLiteral("/\\*.*?\\*/"), QRegularExpression::DotMatchesEverythingOption);
+    const QRegularExpression rule(QStringLiteral("([^{}]+)\\{"));
+    QStringList result;
+    // The library's own, and only those: a plain "dock" would also take Qt's
+    // QDockWidget, which the skeleton restyles and the dock library has nothing
+    // to do with.
+    QRegularExpressionMatchIterator it = rule.globalMatch(QString(sheet).remove(comment));
+    while (it.hasNext()) {
+        const QStringList parts = it.next().captured(1).split(QLatin1Char(','));
+        for (const QString &part : parts) {
+            const QString selector = part.simplified();
+            if (selector.contains(QStringLiteral("QxDock--")) || selector.contains(QStringLiteral("#dock")) ||
+                selector.contains(QStringLiteral("#autoHide")) || selector.contains(QStringLiteral("#side"))) {
+                result.append(selector);
+            }
+        }
+    }
+    result.sort();
+    return result;
+}
+
+/*!
+ * The application sheet is the theme's, and the only thing after it is the piece
+ * that belongs to one desktop - which is empty everywhere else.
+ *
+ * The dock's rules are part of a theme now, so there is no order to keep: the
+ * sheet used to be the theme's rules with a second sheet appended, and at equal
+ * specificity Qt keeps the rule declared first, which made the theme the one
+ * that lost. Nothing is appended but the platform piece, and off X11 there is no
+ * platform piece.
  */
 void tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop()
 {
@@ -1309,21 +1342,51 @@ void tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop()
     const QxTheme::QxThemeInfo info = engine->themeInfo(QStringLiteral("accent-dark"));
     QVERIFY(info.isValid());
     QVERIFY(!info.styleSheet.isEmpty());
-    // The dock's half is rendered from the palette, so it only carries this
-    // theme's accent once the theme has been applied.
     engine->setTheme(QStringLiteral("accent-dark"));
 
     const QString sheet = applicationStyleSheet(engine);
-    QVERIFY2(sheet.startsWith(info.styleSheet), "the dock's fragment was put in front of the theme's sheet");
+    QVERIFY2(sheet.startsWith(info.styleSheet), "the theme's sheet is not the first thing in the application's");
 
-    const QString dockPart = sheet.mid(info.styleSheet.size());
-    QVERIFY(!dockPart.isEmpty());
-    // The dock's fragment asks the palette, and the engine put this accent in it;
-    // before that, this assertion passed on the palette's own highlight.
-    QVERIFY2(dockPart.contains(info.accent.name()), "the dock's fragment does not carry the theme's accent");
+    const QString tail = sheet.mid(info.styleSheet.size());
+    // QX_DOCK_X11 is defined either way - to 1 or to 0 - so it is asked, not
+    // tested for.
+#if QX_DOCK_X11
+    QVERIFY2(!tail.isEmpty(), "an X11 build appends the desktop's own fragment");
+#else
+    QVERIFY2(tail.isEmpty(), "off X11 there is nothing to append, so the theme's sheet is the whole thing");
+#endif
 
     engine->setTheme(savedTheme);
     qApp->setPalette(savedPalette);
+}
+
+/*!
+ * A theme's dock rules and the library's own sheet are one file rendered twice:
+ * by the generator from the palette a theme names, and by the library from the
+ * palette in force, for an application that has no theme. Same source, so same
+ * selectors - which is what makes a rule added to one and not the other a
+ * failure here instead of a dock that quietly looks different with a theme on
+ * than without one.
+ */
+void tst_QxThemeBundle::theThemeStatesTheDocksOwnRules()
+{
+    QxTheme::QxThemeManager *engine = QxTheme::QxThemeManager::instance();
+    QVERIFY(engine);
+    registerBundledThemes(engine);
+
+    const QxTheme::QxThemeInfo info = engine->themeInfo(QStringLiteral("accent-dark"));
+    QVERIFY(info.isValid());
+
+    const QStringList fromTheme = dockSelectors(info.styleSheet);
+    QVERIFY2(!fromTheme.isEmpty(), "the theme says nothing about the dock");
+
+    // The library's sheet carries the platform piece too, so it is subtracted
+    // before the two are compared.
+    QStringList fromLibrary = dockSelectors(dockStyleSheet(false));
+    for (const QString &selector : dockSelectors(dockPlatformStyleSheet())) {
+        fromLibrary.removeOne(selector);
+    }
+    QCOMPARE(fromTheme, fromLibrary);
 }
 
 /*!

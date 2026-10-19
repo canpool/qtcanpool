@@ -5,26 +5,29 @@
 
 #include "qxdockstyle.h"
 
-#include "qxdock/dockmanager.h"
+#include "qxdock/dockstylesheet.h"
 #include "qxtheme/qxthememanager.h"
 
 QX_APP_BEGIN_NAMESPACE
 
 QString applicationStyleSheet(QxTheme::QxThemeManager *engine)
 {
-    // The dock's half is rendered from the palette, not from the theme: the
-    // engine put the theme's accent in the palette as QPalette::Highlight, and
-    // a dock's own sheet asks the palette for exactly what a control asks for -
-    // the colour this application emphasizes with, and the pair that reads on
-    // it. Which is why the two halves cannot disagree about the accent any
-    // more, and why there is nothing to map.
+    // The theme's sheet already carries the dock: those rules are one part of a
+    // theme, sitting next to the ribbon's in the same file, and the ten bundled
+    // themes are generated with them. What is left is only the piece a theme
+    // cannot have - the rules that belong to one desktop, which the library
+    // knows from the way it was built and the generator, running anywhere, does
+    // not. On Windows and macOS that piece is empty and this is the theme's
+    // sheet unchanged.
     //
-    // The flag is read here rather than taken as an argument: it is what the
-    // dock's behaviour follows, so a sheet rendered from anywhere else would be
-    // a second opinion about the same question.
-    const bool focus = QX_DOCK_PREPEND_NAMESPACE(DockManager)::testConfigFlag(
-        QX_DOCK_PREPEND_NAMESPACE(DockManager)::FocusHighlighting);
-    return engine->styleSheet(engine->theme()) + QX_DOCK_PREPEND_NAMESPACE(dockStyleSheet)(focus);
+    // Appending the dock's whole sheet instead would draw the same rules twice,
+    // and the second copy would win on order while being filled in from the
+    // palette rather than from the theme - the fall-back speaking over the
+    // source. A theme that says nothing about the dock draws the dock the way a
+    // theme that says nothing about the ribbon draws the ribbon; an application
+    // that wants the dock's look without a theme installs
+    // dockStyleSheet() itself.
+    return engine->styleSheet(engine->theme()) + QX_DOCK_PREPEND_NAMESPACE(dockPlatformStyleSheet)();
 }
 
 QX_APP_END_NAMESPACE

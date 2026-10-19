@@ -1,34 +1,29 @@
 Unreleased
 ---
 Feature
-- readBundledTheme() reads the colour roles that travel beside each sheet, now
-  that res/themes/<family>_<scheme>.json exists: the sheet has the roles
-  substituted in, so the values are no longer recoverable from it, and a library
-  painting outside the sheet needs them (qxdock's fragments are the first
-  consumer). A theme without that file is still registered, with an empty colour
-  map, because leaving everything to the palette remains a legitimate theme.
-  tst_QxThemeBundle::bundledThemesCarryTheirRoles
-- dockStyleColors() maps a theme's roles onto the dock's colour set, in
-  qxdockstyle.h. The two sets answer different questions - a theme describes the
-  ribbon's layering, the dock describes its own - so they stay separate types and
-  this function is the only place they meet. qxapp is the only library that can
-  see both, which is why the mapping lives here rather than in either of them.
-  A theme registered without roles yields an all-invalid set, which the dock
-  fills from the palette, so an application that never adopted theme roles keeps
-  the colours it had.
-  tst_QxThemeBundle::rolesReachTheDock
-- applicationStyleSheet() in qxdockstyle.h returns the whole theme as one
-  application style sheet: the theme's own rules with the dock's appended. There
-  is only one application-level sheet, so an application that wants both has to
-  join them, and the order decides who wins at equal specificity - the theme
-  first keeps the last word on a widget the dock's fragments also describe. The
-  dock's focus fragment follows DockManager::FocusHighlighting, so the sheet
-  cannot ask for a frame the dock never draws. A theme with no sheet yields the
-  dock's fragment alone, whose colours then resolve from the palette.
-  tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop
+- readBundledTheme() reads the one colour a sheet cannot carry - the accent the
+  theme emphasizes with - from res/themes/accents.json, one table keyed by
+  theme id rather than a file per theme: every other colour is substituted into
+  the sheet, and this one is what the engine installs as QPalette::Highlight,
+  where an application can only read it back by parsing CSS. A theme without an
+  entry there is still registered and keeps the platform's highlight, because
+  leaving emphasis to the palette remains a legitimate theme.
+  tst_QxThemeBundle::bundledThemesCarryTheirAccent
+- applicationStyleSheet() in qxdockstyle.h returns the theme as one application
+  style sheet, and appends only the dock's platform piece - the rules that
+  belong to one desktop, which is empty off X11. The dock's rules are part of a
+  theme now, in the same sheet as the ribbon's, so there is nothing left to
+  join and no order to keep: the sheet used to be the theme's rules with a
+  second rendering of the dock's appended, and at equal specificity Qt keeps
+  the first, which made the theme lose to its own fall-back. A theme that says
+  nothing about the dock draws the dock the way a theme that says nothing about
+  the ribbon draws the ribbon; an application that wants the dock's look
+  without a theme installs dockStyleSheet() itself.
+  tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop,
+  tst_QxThemeBundle::theThemeStatesTheDocksOwnRules
 - ThemeInstaller, in qxthemeinstaller.h, keeps the whole theme in force on the
-  application: both of those sheets, and the dock's icons tinted from the same
-  colour roles. The reason it is a class rather than a pair of calls is the
+  application: the sheet, and the dock's icons tinted from the palette it
+  installed. The reason it is a class rather than a pair of calls is the
   second source of change: a theme switch is a signal, but the platform swapping
   its own light/dark palette arrives as an application event with no signal, and
   an application that wires up the first and forgets the second looks right
