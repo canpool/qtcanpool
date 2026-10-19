@@ -143,15 +143,13 @@ public:
      * Hosts btn as the application button, left of the tab bar; the bar takes
      * ownership of whatever was there before.
      *
-     * A button without an object name is given "qx_RibbonApplicationButton",
-     * which is what the theme stylesheets target
-     * (QAbstractButton#qx_RibbonApplicationButton) - that is how a
-     * caller-supplied QToolButton ends up with the same themed look as the
-     * library's own RibbonApplicationButton, press included. A button that
-     * already has an object name keeps it, and with it the platform's own press
-     * look; style it against that name to match the theme. See
-     * doc/pages/limitations.md, "custom QToolButton application button sinks on
-     * press".
+     * The theme stylesheets dress the application button by the dynamic
+     * property this call sets ("qxRibbonApplicationButton"), as well as by the
+     * object name "qx_RibbonApplicationButton" a button without one is given -
+     * which is how a caller-supplied QToolButton ends up with the same themed
+     * look as the library's own RibbonApplicationButton, press included,
+     * whatever it is called. A button that already has an object name keeps
+     * it.
      */
     void setApplicationButton(QAbstractButton *btn);
 

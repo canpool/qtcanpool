@@ -88,6 +88,18 @@ Fixed
   (height - (rows + 1) * spacing) / rows now, so the last row ends where the
   strip does. tst_RibbonGallery::geometry asserts every item's bottom is inside
   the widget, alongside the check that selecting one still moves nothing.
+- A caller's own application button is dressed by the theme now. The sheets
+  answered to the ribbon's own object name only, and setApplicationButton()
+  granted that name to a button that had none - so a button the application
+  named itself kept its name and with it the platform's press look, which read
+  as the button sinking where the themed ones stay flat. The sheets answer to a
+  dynamic property as well now: setApplicationButton() sets
+  "qxRibbonApplicationButton" on the button and re-polishes it, and every
+  application-button selector in the skeletons and the family sheets answers to
+  the property beside the name, each state to both. Nothing changes for an unnamed button, and a named one still keeps
+  its name - only the dressing follows the button instead of the name. The
+  limitations entry is gone with the boundary it described.
+  tst_RibbonBar::applicationButton
 
 Interface
 - RibbonGalleryGroup is a QWidget that paints its own items, not a QListView any

@@ -107,6 +107,13 @@ QVector<DemoTheme> demoThemes()
         {QStringLiteral("accent-light"), MainWindow::tr("AccentLight"), false,
          QStringLiteral(":/themes/accent_light.css")},
         {QStringLiteral("accent-dark"), MainWindow::tr("AccentDark"), true, QStringLiteral(":/themes/accent_dark.css")},
+        {QStringLiteral("fluent-light"), MainWindow::tr("FluentLight"), false,
+         QStringLiteral(":/themes/fluent_light.css")},
+        {QStringLiteral("fluent-dark"), MainWindow::tr("FluentDark"), true, QStringLiteral(":/themes/fluent_dark.css")},
+        {QStringLiteral("material-light"), MainWindow::tr("MaterialLight"), false,
+         QStringLiteral(":/themes/material_light.css")},
+        {QStringLiteral("material-dark"), MainWindow::tr("MaterialDark"), true,
+         QStringLiteral(":/themes/material_dark.css")},
     };
 }
 
@@ -451,12 +458,11 @@ void MainWindow::createRightButtonGroup()
 
 void MainWindow::createApplicationButton()
 {
-    // NOTE: the theme stylesheets target the ribbon's own object name, which
-    // setApplicationButton() grants to an unnamed button. This one is unnamed,
-    // so the theme covers it and its pressed look is the theme's, identical to
-    // the library's own RibbonApplicationButton. Naming it here is what would
-    // leave it on the platform's press look.
-    // See doc/pages/limitations.md, "custom QToolButton application button sinks on press".
+    // NOTE: the theme stylesheets dress the application button through the
+    // property setApplicationButton() maintains, so this button carries the
+    // theme's look - pressed included - whatever it is called. Before 4.6 the
+    // sheets answered to the ribbon's own object name only, and a named button
+    // was left on the platform's press look.
     QToolButton *appBtn = new QToolButton(this);
     appBtn->setAutoRaise(true);
     appBtn->setFocusPolicy(Qt::NoFocus);

@@ -78,6 +78,8 @@ void tst_RibbonBar::applicationButton()
     QAbstractButton *ab = rb.applicationButton();
     QCOMPARE("qx_RibbonApplicationButton", ab->objectName());
     QCOMPARE(tr("app"), ab->text());
+    // the property the theme sheet dresses the button by, next to its name
+    QCOMPARE(true, ab->property("qxRibbonApplicationButton").toBool());
 
     int i = 0;
     connect(&rb, &RibbonBar::applicationButtonClicked, this, [&i]() {
@@ -95,15 +97,15 @@ void tst_RibbonBar::applicationButton()
     QTest::mouseClick(ab, Qt::LeftButton);
     QCOMPARE(2, i);
 
-    // A button the caller named keeps that name. The theme stylesheets target
-    // the ribbon's own name (QAbstractButton#qx_RibbonApplicationButton), so
-    // keeping it is what leaves a caller's button on the platform style instead
-    // of the theme - see doc/pages/limitations.md, "custom QToolButton
-    // application button sinks on press".
+    // A button the caller named keeps that name - and since 4.6 it is dressed
+    // all the same: the sheet answers to the property setApplicationButton()
+    // maintains, not only to the ribbon's own name, so the dressing follows the
+    // button rather than the name it happens to carry.
     QToolButton *named = new QToolButton();
     named->setObjectName(QStringLiteral("mine"));
     rb.setApplicationButton(named);
     QCOMPARE("mine", rb.applicationButton()->objectName());
+    QCOMPARE(true, named->property("qxRibbonApplicationButton").toBool());
 
     // delete
     rb.setApplicationButton(nullptr);

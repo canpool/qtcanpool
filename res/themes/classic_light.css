@@ -357,7 +357,8 @@ QxRibbon--RibbonCtrlContainer {
 
 /*RibbonApplicationButton*/
 
-QAbstractButton#qx_RibbonApplicationButton {
+QAbstractButton#qx_RibbonApplicationButton,
+QAbstractButton[qxRibbonApplicationButton="true"] {
   margin: 0px;
   color: #ffffff;
   border-top-left-radius: 2px;
@@ -365,19 +366,23 @@ QAbstractButton#qx_RibbonApplicationButton {
   background-color: #004e8c;
 }
 
-QAbstractButton#qx_RibbonApplicationButton:hover {
+QAbstractButton#qx_RibbonApplicationButton:hover,
+QAbstractButton[qxRibbonApplicationButton="true"]:hover {
   background-color: #0072c6;
 }
 
-QAbstractButton#qx_RibbonApplicationButton:pressed {
+QAbstractButton#qx_RibbonApplicationButton:pressed,
+QAbstractButton[qxRibbonApplicationButton="true"]:pressed {
   background-color: #004e8c;
 }
 
-QAbstractButton#qx_RibbonApplicationButton:focus {
+QAbstractButton#qx_RibbonApplicationButton:focus,
+QAbstractButton[qxRibbonApplicationButton="true"]:focus {
   outline: none;
 }
 
-QAbstractButton#qx_RibbonApplicationButton::menu-indicator {
+QAbstractButton#qx_RibbonApplicationButton::menu-indicator,
+QAbstractButton[qxRibbonApplicationButton="true"]::menu-indicator {
   image: none;
 }
 
@@ -728,7 +733,8 @@ QxRibbon--RibbonLineEdit {
   border-radius: 0px;
 }
 
-QAbstractButton#qx_RibbonApplicationButton {
+QAbstractButton#qx_RibbonApplicationButton,
+QAbstractButton[qxRibbonApplicationButton="true"] {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
 }

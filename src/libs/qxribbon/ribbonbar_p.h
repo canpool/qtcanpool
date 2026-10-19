@@ -94,6 +94,8 @@ public:
     void init();
 
     void setApplicationButton(QAbstractButton *btn);
+    /*! Names an unnamed button and marks it as the application button for the theme sheet. */
+    void dressApplicationButton(QAbstractButton *btn);
     bool isPageContextVisible(RibbonPageContext *pageContext);
 
     void setMinimizedFlag(bool flag);

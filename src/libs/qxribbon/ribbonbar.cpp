@@ -27,6 +27,7 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QStyleOptionMenuItem>
+#include <QStyle>
 #include <QTimer>
 #include <QVariant>
 #include <QVector>
@@ -41,6 +42,11 @@ QX_RIBBON_BEGIN_NAMESPACE
 const int tabBarBaseLineHeight = 1;
 const int tabBarMinimumWidth = 100;
 const int dragAreaMinimumWidth = 20;
+
+// The theme sheet dresses the application button by this property as well as by
+// its object name; see setApplicationButton(). The name is what a selector in
+// tools/themes/*.css spells in square brackets.
+static const char kApplicationButtonProperty[] = "qxRibbonApplicationButton";
 
 // Whether a widget takes part in the ribbon layout. isVisible() would also
 // turn false while the top-level window is still hidden, so the very first
@@ -200,8 +206,8 @@ void RibbonBarPrivate::init()
 {
     Q_Q(RibbonBar);
     m_applicationButton = new RibbonApplicationButton(tr("app"), q);
-    m_applicationButton->setObjectName(QStringLiteral("qx_RibbonApplicationButton"));
     connect(m_applicationButton, &QAbstractButton::clicked, q, &RibbonBar::applicationButtonClicked);
+    dressApplicationButton(m_applicationButton);
     m_tabBar = new RibbonTabBar(q);
     m_tabBar->setObjectName(QStringLiteral("qx_RibbonTabBar"));
     m_tabBar->setDrawBase(false);
@@ -239,12 +245,29 @@ void RibbonBarPrivate::setApplicationButton(QAbstractButton *btn)
         btn->move(0, q->titleBarHeight());
         connect(btn, &QAbstractButton::clicked, q, &RibbonBar::applicationButtonClicked);
 
-        if (btn->objectName().isEmpty()) {
-            btn->setObjectName(QStringLiteral("qx_RibbonApplicationButton"));
-        }
+        dressApplicationButton(btn);
         btn->setVisible(true);
     }
     m_applicationButton = btn;
+}
+
+void RibbonBarPrivate::dressApplicationButton(QAbstractButton *btn)
+{
+    if (!btn) {
+        return;
+    }
+    if (btn->objectName().isEmpty()) {
+        btn->setObjectName(QStringLiteral("qx_RibbonApplicationButton"));
+    }
+    // The theme sheet dresses the application button by this property as well
+    // as by its object name, so one the application named itself is dressed too
+    // - the name is the application's to choose, and a sheet that only answered
+    // to ours would leave its button undressed. Polished again because a sheet
+    // installed before this call has already been matched against the button
+    // without the property.
+    btn->setProperty(kApplicationButtonProperty, true);
+    btn->style()->unpolish(btn);
+    btn->style()->polish(btn);
 }
 
 bool RibbonBarPrivate::isPageContextVisible(RibbonPageContext *pageContext)

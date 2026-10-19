@@ -103,7 +103,8 @@ QxRibbon--RibbonLineEdit {
   border-radius: 0px;
 }
 
-QAbstractButton#qx_RibbonApplicationButton {
+QAbstractButton#qx_RibbonApplicationButton,
+QAbstractButton[qxRibbonApplicationButton="true"] {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
 }
