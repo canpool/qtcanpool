@@ -27,7 +27,7 @@ QxRibbon--RibbonTabBar QAbstractButton {
 }
 
 QxRibbon--RibbonTabBar QAbstractButton:hover {
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonTabBar QAbstractButton:pressed {
@@ -119,7 +119,7 @@ QxRibbon--RibbonGroupOptionButton {
 }
 
 QxRibbon--RibbonGroupOptionButton:hover {
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
   border: 0px;
 }
 
@@ -142,7 +142,7 @@ QxRibbon--RibbonGroupOptionButton:pressed {
 
 QxRibbon--RibbonGroupOptionButton:checked {
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
   color: {{text}};
 }
 
@@ -170,7 +170,7 @@ QxRibbon--RibbonGalleryGroup::item:selected {
 
 QxRibbon--RibbonGalleryGroup::item:hover {
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 /*RibbonGalleryViewport*/
@@ -229,6 +229,30 @@ QxRibbon--RibbonQuickAccessBar QToolButton::menu-indicator {
 
 QxRibbon--RibbonQuickAccessButton {
   width: 22px;
+  border-radius: 0px;
+}
+
+/* Left to the platform style, the hover on one of these is whatever the
+   platform paints for a tool button: a pale wash with rounded corners, which on
+   a light theme is a shape floating on the bar rather than the button lighting
+   up. The bar's buttons state their own - and the type selector is the bar's,
+   not the button's: the actions it carries become QToolButtons the toolbar
+   builds itself, and the one button the library names is only the customize
+   popup at the end. */
+QxRibbon--RibbonQuickAccessBar QToolButton:hover {
+  border-radius: 0px;
+  background-color: {{accent-soft}};
+}
+
+/* A button whose menu is open is a held button, and on a light surface the held
+   state is the wash with the accent as its outline: a solid accent fill would
+   put a dark glyph on a mid-blue box. Without a state of its own the bar gives
+   no sign the click landed, and the menu seems to come from nowhere. */
+QxRibbon--RibbonQuickAccessBar QToolButton:pressed,
+QxRibbon--RibbonQuickAccessBar QToolButton:open {
+  border-radius: 0px;
+  border: 1px solid {{accent}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonQuickAccessButton::menu-indicator {
@@ -291,7 +315,7 @@ QToolButton#qx_RibbonBackstageButton:hover,
 QToolButton#qx_RibbonBackstageCloseButton:hover {
   color: {{text}};
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QToolButton#qx_RibbonBackstageButton:pressed,
@@ -305,7 +329,7 @@ QToolButton#qx_RibbonBackstageButton:checked,
 QToolButton#qx_RibbonBackstageCloseButton:checked {
   color: {{text}};
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QFrame#qx_RibbonBackstageSeparator {
@@ -344,13 +368,13 @@ QxRibbon--RibbonButton:pressed {
 QxRibbon--RibbonButton:checked {
   color: {{text}};
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonButton:hover {
   color: {{text}};
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 /*RibbonControlButton*/
@@ -369,12 +393,12 @@ QxRibbon--RibbonControlButton:pressed {
 
 QxRibbon--RibbonControlButton:checked {
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonControlButton:hover {
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonControlButton#RibbonGalleryButtonUp, #RibbonGalleryButtonDown, #RibbonGalleryButtonMore {
@@ -403,12 +427,12 @@ QxRibbon--RibbonMenu#qx_compatible::item {
 }
 
 QxRibbon--RibbonMenu::item:selected {
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonMenu::item:hover {
   color: {{text}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
   border: 1px solid {{accent-soft}};
 }
 
@@ -481,7 +505,7 @@ QxRibbon--RibbonPageScrollButton[arrowType="4"] {
 
 QxRibbon--RibbonPageScrollButton:hover {
   color: {{text}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--WindowButton {

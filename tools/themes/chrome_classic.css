@@ -93,7 +93,7 @@ QxRibbon--RibbonControlButton {
 QxRibbon--RibbonButton:hover,
 QxRibbon--RibbonControlButton:hover {
   border: 1px solid {{accent-soft}};
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonGallery,

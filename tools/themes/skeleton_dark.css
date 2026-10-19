@@ -277,71 +277,8 @@ QTabBar::tear {
 QTabBar::close-button {
 } */
 
-QMenu {
-  margin: 0px;
-  background: {{surface}};
-}
-
-/* The item carries no fill of its own, so the menu reads as one surface and the
-   selected row is the only thing that lifts off it. Filling every item with the
-   separator colour did the opposite: the rows were lighter than the menu they
-   sat in, and the selected one - filled with the surface - looked like a hole
-   punched through them, which is what made the rows jump as the pointer moved. */
-QMenu::item {
-  padding: 4px 20px 4px 20px;
-  border-width: 1px 1px 1px 5px;
-  border-style: solid;
-  border-color: transparent;
-  background: transparent;
-}
-
-QMenu::indicator {
-  width: 13px;
-  height: 13px;
-}
-
-QMenu::item:selected {
-  color: {{text}};
-  background: {{state-hover}};
-}
-
-QMenu::item:disabled {
-}
-
-QMenu::separator {
-  height: 1px;
-  background: {{border}};
-  margin-left: 0px;
-  margin-right: 0px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
-/* The item gets a box of its own, so the bar's height is one the sheet states
-   instead of whatever the platform style leaves behind, and the hover fill
-   paints a rectangle that is the same for every item - without it the fill was
-   drawn tight around each label, and the bar appeared to shift as the pointer
-   crossed it. */
-QMenuBar {
-  padding: 0px 0px 0px 2px;
-  background: {{surface}};
-}
-
-QMenuBar::item {
-  padding: 3px 8px;
-  background: transparent;
-}
-
-QMenuBar::item:selected {
-  background: {{state-hover}};
-}
-
-QMenuBar::item:pressed {
-  background: {{state-pressed}};
-}
-
-QMenuBar::item:disabled {
-}
+/* The menu geometry lives in menu.css, which the generator puts ahead of both
+   skeletons - it is one set of rules for both schemes, not this file's to keep. */
 
 QToolBar {
   border: 1px solid {{border-strong}};
@@ -793,6 +730,27 @@ QxRibbon--RibbonQuickAccessBar QAbstractButton {
 
 QxRibbon--RibbonQuickAccessButton {
   width: 22px;
+  border-radius: 0px;
+}
+
+/* The dark skeleton repaints the standard controls, but a wash it does not
+   state is still the platform's to choose - and on a hover the platform's is a
+   pale one with rounded corners. The bar's buttons state their own; the type
+   selector is the bar's, since the actions it carries become QToolButtons the
+   toolbar builds itself. */
+QxRibbon--RibbonQuickAccessBar QToolButton:hover {
+  border-radius: 0px;
+  background-color: {{accent-soft}};
+}
+
+/* Held: the click that opened the menu has to show on the button, or the menu
+   seems to come from nowhere. Dark schemes can fill it outright - every glyph
+   here is light already - where a light one can only outline the wash. */
+QxRibbon--RibbonQuickAccessBar QToolButton:pressed,
+QxRibbon--RibbonQuickAccessBar QToolButton:open {
+  border-radius: 0px;
+  border: 1px solid {{accent-fill-strong}};
+  background-color: {{accent-fill-strong}};
 }
 
 QxRibbon--RibbonQuickAccessButton::menu-indicator {

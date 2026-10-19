@@ -1,0 +1,77 @@
+/* Menu geometry both schemes carry.
+ *
+ * A light scheme used to leave these to the platform style, on the reasoning
+ * that a light palette needs no repainting - and the bar came out at whatever
+ * height the style happens to hand out, taller than the dark scheme's. The
+ * height is the sheet's answer in both schemes; only the dark skeleton goes on
+ * to repaint the rest of the standard widgets, because there the platform
+ * style ignores the palette and would draw light combos and trees.
+ *
+ * Kept as its own file rather than copied into both skeletons: the rules are
+ * identical, the tokens resolve to each palette's answer. */
+
+QMenu {
+  margin: 0px;
+  background: {{surface}};
+}
+
+/* The item carries no fill of its own, so the menu reads as one surface and the
+   selected row is the only thing that lifts off it. Filling every item with the
+   separator colour did the opposite: the rows were lighter than the menu they
+   sat in, and the selected one - filled with the surface - looked like a hole
+   punched through them, which is what made the rows jump as the pointer moved. */
+QMenu::item {
+  padding: 4px 20px 4px 20px;
+  border-width: 1px 1px 1px 5px;
+  border-style: solid;
+  border-color: transparent;
+  background: transparent;
+}
+
+QMenu::indicator {
+  width: 13px;
+  height: 13px;
+}
+
+QMenu::item:selected {
+  color: {{text}};
+  background: {{state-hover}};
+}
+
+QMenu::item:disabled {
+}
+
+QMenu::separator {
+  height: 1px;
+  background: {{border}};
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+/* The item gets a box of its own, so the bar's height is one the sheet states
+   instead of whatever the platform style leaves behind, and the hover fill
+   paints a rectangle that is the same for every item - without it the fill was
+   drawn tight around each label, and the bar appeared to shift as the pointer
+   crossed it. */
+QMenuBar {
+  padding: 0px 0px 0px 2px;
+  background: {{surface}};
+}
+
+QMenuBar::item {
+  padding: 3px 8px;
+  background: transparent;
+}
+
+QMenuBar::item:selected {
+  background: {{state-hover}};
+}
+
+QMenuBar::item:pressed {
+  background: {{state-pressed}};
+}
+
+QMenuBar::item:disabled {
+}

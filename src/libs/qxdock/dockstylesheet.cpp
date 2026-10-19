@@ -62,6 +62,7 @@ const Token kTokens[] = {
     {"text-muted", &DockStyleColors::mutedText},
     {"accent", &DockStyleColors::accent},
     {"accent-text", &DockStyleColors::accentText},
+    {"accent-soft", &DockStyleColors::accentSoft},
     // The theme's two accent fills are one colour here: a palette has the
     // highlight and its pair, and no second step down from it, so the fall-back
     // sheet paints an emphasized surface in the same colour it draws the
@@ -80,6 +81,15 @@ const Token kTokens[] = {
  * HexArgb (#AARRGGBB) is not used because Qt 5's parser is the older one and
  * this library still builds there.
  */
+/*!
+ * \a one mixed towards \a other, \a t being how much of \a other to take.
+ */
+QColor mix(const QColor &one, const QColor &other, double t)
+{
+    return QColor(qRound(one.red() * (1 - t) + other.red() * t), qRound(one.green() * (1 - t) + other.green() * t),
+                  qRound(one.blue() * (1 - t) + other.blue() * t));
+}
+
 QString colorText(const QColor &color)
 {
     if (color.alpha() == 255) {
@@ -132,6 +142,12 @@ DockStyleColors DockStyleColors::fromPalette(const QPalette &palette)
     colors.accentText = colors.accent;
     colors.onAccent = onAccent;
 
+    // The wash a button hovers with, which a theme spells as a token of its
+    // own: enough accent to read as emphasis, enough surface to stay a hover
+    // and not a fill. Derived rather than asked for, because no palette role
+    // carries "the accent, but faint".
+    colors.accentSoft = mix(colors.accent, window, 0.75);
+
     QColor onAccentHover = onAccent;
     onAccentHover.setAlpha(60);
     colors.onAccentHover = onAccentHover;
@@ -169,6 +185,8 @@ DockStyleColors DockStyleColors::resolved() const
         colors.accent = fallback.accent;
     if (!colors.accentText.isValid())
         colors.accentText = fallback.accentText;
+    if (!colors.accentSoft.isValid())
+        colors.accentSoft = fallback.accentSoft;
     if (!colors.onAccent.isValid())
         colors.onAccent = fallback.onAccent;
     if (!colors.onAccentHover.isValid())

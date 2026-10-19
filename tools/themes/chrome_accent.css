@@ -18,7 +18,7 @@ QxRibbon--RibbonTabBar QAbstractButton {
 }
 
 QxRibbon--RibbonTabBar QAbstractButton:hover {
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonTabBar QAbstractButton:pressed {
@@ -50,7 +50,7 @@ QxRibbon--RibbonTabBar::tab:selected {
 
 QxRibbon--RibbonTabBar::tab:hover:!selected {
   border: 0px;
-  background: {{accent-faint}};
+  background: {{accent-soft}};
   color: {{text}};
 }
 
@@ -75,8 +75,6 @@ QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
   border: 0px;
 }
 
-QxRibbon--RibbonButton,
-QxRibbon--RibbonControlButton,
 QxRibbon--RibbonGallery,
 QxRibbon--RibbonGalleryGroup,
 QxRibbon--RibbonComboBox,
@@ -84,19 +82,28 @@ QxRibbon--RibbonLineEdit {
   border-radius: 2px;
 }
 
+/* The icon buttons get no radius: their hover is a wash with no box of its
+   own, and a rounded wash reads as a lozenge pasted on the bar rather than
+   as the button lighting up. The gallery, the combo and the line edit keep
+   the family's 2px - those do draw a box. */
+QxRibbon--RibbonButton,
+QxRibbon--RibbonControlButton {
+  border-radius: 0px;
+}
+
 /* the hover wash is the palest accent, matching the bar */
 QxRibbon--RibbonButton:hover,
 QxRibbon--RibbonControlButton:hover {
   border: 1px solid transparent;
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonGalleryGroup::item:hover {
   border: 1px solid transparent;
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }
 
 QxRibbon--RibbonMenu::item:hover {
   border: 1px solid transparent;
-  background-color: {{accent-faint}};
+  background-color: {{accent-soft}};
 }

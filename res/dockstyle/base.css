@@ -37,8 +37,15 @@ QxDock--DockPanel {
     background: {{surface}};
 }
 
+/* A rule that names any box property hands the button to the stylesheet's own
+   painting, and one that states no background leaves the face to the base
+   style - which paints a light button face on every scheme, a patch sitting on
+   the title bar. The button is the bar's surface to paint: it states none and
+   steps back in on hover. */
 QxDock--TitleBarButton {
     padding: 0px 0px;
+    background: transparent;
+    border: none;
 }
 
 QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
@@ -58,8 +65,24 @@ QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
 }
 
 /*****************************************************************************
- * DockTab and close button styling
+ * DockTabBar and DockTab styling
  *****************************************************************************/
+
+/* The run of bar between the last tab and the buttons is the title bar's to
+   paint, not the tab bar's: a QTabBar fills its own box, and with nothing
+   stating what to fill it with it takes the window colour - which is the
+   palette's answer where every colour around it is the sheet's. In a light
+   theme the two differ, so a bar sitting on a transparent title bar read as a
+   strip of a third colour, wider than the tabs it carried. The bar and the two
+   containers inside it step aside; the tab states its own fill and wins, being
+   named outright. */
+QxDock--DockTabBar,
+QxDock--DockTabBar > QWidget,
+QWidget#tabsContainerWidget {
+    background: transparent;
+    border: none;
+}
+
 QxDock--DockTab {
     background: {{surface}};
     border-color: {{border}};
@@ -95,9 +118,19 @@ QxDock--DockTab[activeTab="true"] QLabel {
     color: {{text}};
 }
 
+/* A dock's icon buttons carry no box of their own - their hover is a wash laid
+   straight on the bar - and a rounded wash reads as a lozenge pasted on it
+   rather than as the button lighting up. The platform style rounds them, since
+   a wash the sheet does not state is the platform's to choose, so the sheet
+   states it. */
+QxDock--TitleBarButton,
+#dockTabCloseButton {
+    border-radius: 0px;
+}
+
 #dockTabCloseButton {
     margin-top: 2px;
-    background: none;
+    background: transparent;
     border: none;
     padding: 0px -2px;
     qproperty-iconSize: 16px;
@@ -110,12 +143,25 @@ QxDock--DockTab[activeTab="true"] QLabel {
    hover lifts the button off the surface, press settles it back in. Naming them
    also stops the sheet from having to know which scheme is in force, which is
    what the palette roles it used before were standing in for. */
+/* The wash a theme's buttons hover with, the same one the ribbon's use: the
+   neutral hover step is four levels off a white surface, which is a hover the
+   eye has to look for. */
 #dockTabCloseButton:hover {
     border: 1px solid {{border}};
-    background: {{state-hover}};
+    background: {{accent-soft}};
 }
 
 #dockTabCloseButton:pressed {
+    background: {{state-pressed}};
+}
+
+/* The title bar's buttons had no hover at all, so the platform style painted
+   one - pale and rounded, on every light theme. */
+QxDock--TitleBarButton:hover {
+    background: {{accent-soft}};
+}
+
+QxDock--TitleBarButton:pressed {
     background: {{state-pressed}};
 }
 

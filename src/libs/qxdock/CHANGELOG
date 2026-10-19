@@ -1,6 +1,18 @@
 Unreleased
 ---
 Feature
+- DockStyleColors::accentSoft, and the accent-soft token it fills: the wash a
+  button hovers with - enough accent to read as emphasis, enough surface to stay
+  a hover and not a fill. A theme spells it as a token of its own; the set has
+  to derive it, since no palette role means "the accent, but faint", and it is
+  mixed from the accent towards the window for the same reason the sheet asks
+  rather than guesses.
+- The dock's icon buttons state their own hover. A wash the sheet does not name
+  is the platform's to choose, and every light theme was getting the platform's:
+  a pale wash with rounded corners, which reads as a shape pasted on the bar
+  rather than as the button lighting up. The buttons now take the accent-soft
+  wash the ribbon's buttons take and square the corners - a hover is a wash with
+  no box of its own, so there is nothing to round.
 - The dock sheets take their colours from a DockStyleColors instead of reading
   palette() roles and literals inside the sheet. Every declaration that named a
   colour now carries a placeholder, and the new overload
@@ -75,6 +87,23 @@ Feature
   tst_QxThemeBundle::theThemeStatesTheDocksOwnRules
 
 Bugfix
+- A tab bar filled its own box with the window colour - the palette's answer,
+  where every colour around it is the sheet's. In a light theme the two differ,
+  so the run of bar between the last tab and the buttons read as a strip of a
+  third colour, wider than the tabs it carried: a QTabBar fills by default and
+  nothing told it not to, and a dark theme only hid it because there the global
+  QWidget rule paints the same value. The bar and the two containers inside it
+  step aside; a tab states its own fill and is named outright, so it still
+  wins.
+- A docked title bar's buttons carried a face of their own. A rule that names
+  any box property hands the button to the stylesheet's painting, and one that
+  states no background leaves the face to the base style - which paints a light
+  button face, a patch sitting on the bar in every light theme and the same
+  colour back in a dark one, where it only passed unnoticed. The buttons state
+  no background now and step back in on hover and press (accent-soft and the
+  pressed wash, the states the tab close button already takes); the close
+  button's background:none meant the same thing and is spelled transparent,
+  since a wash the sheet does not name falls back to the window colour.
 - An auto hide container's title bar was painted over by the things on it. The
   bar is filled with the accent, and its own children tile it end to end - the
   label carrying the title, the spacer pushing the buttons to the far end, the

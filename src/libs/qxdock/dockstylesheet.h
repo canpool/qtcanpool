@@ -47,6 +47,7 @@ public:
     QColor mutedText;       /*!< An inactive tab's label. */
     QColor accent;          /*!< The focused tab, the auto hide title, the active mark. */
     QColor accentText;      /*!< Accent used as text on a neutral fill. */
+    QColor accentSoft;      /*!< A wash of \c accent towards \c surface: a button's hover. */
     QColor onAccent;        /*!< Text and glyphs on \c accent. */
     QColor onAccentHover;   /*!< A wash of \c onAccent, for hover. */
     QColor onAccentPressed; /*!< The deeper wash, for press. */

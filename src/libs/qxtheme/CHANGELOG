@@ -64,6 +64,53 @@ Feature
   accent override replaces the fill, so it replaces the pair with it - a colour
   the theme never saw has no answer of the theme's to go with it.
 
+Bugfix
+- A button whose menu was open showed nothing. The bar's buttons had a hover
+  and no held state, so opening a menu left the button looking idle and the
+  menu appeared to come from nowhere; the click has to land somewhere. Pressed
+  and open are stated now, following RibbonButton's answer: a light scheme
+  outlines the wash with the accent, since a solid accent fill would put a dark
+  glyph on a mid-blue box, and a dark scheme fills it outright, every glyph
+  there being light already.
+- A hover no light theme could show. Every button's hover was filled with
+  accent-faint, a wash 93% of the way to white, which on a white surface is
+  four levels of difference - a hover the eye has to look for. They take
+  accent-soft now, the wash the palette already named for a hover, and the
+  one the dock's buttons were given to match. flat-light's sat further out
+  than the other families' and was brought to theirs; slate-dark's sat at the
+  accent's own lightness and left the glyph on it at 4.0:1, so it was taken
+  down to where every other dark family's is.
+- Icon buttons were rounded where they have nothing to round: a hover is a wash
+  with no box of its own, and a rounded wash reads as a lozenge pasted on the
+  bar rather than as the button lighting up. The platform style was choosing
+  the radius, because a wash the sheet does not state is its to choose - and on
+  a light theme the sheet states far less. The ribbon's icon buttons and the
+  quick access bar's are square now - by the bar's type selector, since the
+  actions it carries become plain tool buttons the toolbar builds itself and
+  the one button the library names is only the customize popup; the gallery,
+  the combo and the line edit keep the family's radius, since those do draw
+  a box.
+- The light scheme's menus came out at whatever height the platform style
+  hands out, because the light skeleton carried no menu rules at all: the
+  geometry both schemes state now lives in menu.css, which the generator puts
+  ahead of each skeleton, and the dark skeleton's menu fixes are in it too -
+  every item filled with the separator colour made the rows read as blocks
+  that moved under the pointer, and a selected row filled with the surface
+  looked like a hole punched through them. The item carries no fill and the
+  selected row is the one thing that lifts off; the bar's items get a stated
+  box, which is also what makes the bar's height the sheet's answer.
+- readableOn() picked the wrong half of the pair on a saturated blue. It asked
+  which of black and white is further from the fill, and on #3a96dd - the accent
+  two of the bundled families emphasize with - black is: 6.6:1 against white's
+  3.2:1. So the palette handed out QPalette::HighlightedText as black while the
+  same theme's sheet writes text-on-fill as white, and every glyph that asks the
+  role - a dock's auto hide buttons, a focused tab's close button - came out
+  black on the very fill it is supposed to read against. It now measures WCAG
+  contrast and prefers white, taking black only where white cannot reach the
+  3:1 a user interface element is held to, which is the answer those themes
+  give. Themes are no longer asked to agree by computation: QxThemeInfo::onAccent
+  carries the colour itself.
+
 0.2.0
 ---
 Feature
@@ -116,26 +163,6 @@ Cleanup
 0.1.1
 ---
 Bugfix
-- The dark skeleton's menus read as blocks that moved under the pointer. Every
-  item was filled with the separator colour - lighter than the menu it sat in -
-  and the selected one was filled with the surface, the menu's own colour, so
-  the row the pointer was on looked like a hole punched through the others. The
-  item now carries no fill and the selected row is the one thing that lifts off
-  the surface. The bar's items had no box of their own either, so the hover fill
-  was drawn tight around each label and the bar appeared to shift as the pointer
-  crossed it; the item gets a stated box now, which is also what makes the bar's
-  height the sheet's answer instead of whatever the platform style leaves.
-- readableOn() picked the wrong half of the pair on a saturated blue. It asked
-  which of black and white is further from the fill, and on #3a96dd - the accent
-  two of the bundled families emphasize with - black is: 6.6:1 against white's
-  3.2:1. So the palette handed out QPalette::HighlightedText as black while the
-  same theme's sheet writes text-on-fill as white, and every glyph that asks the
-  role - a dock's auto hide buttons, a focused tab's close button - came out
-  black on the very fill it is supposed to read against. It now measures WCAG
-  contrast and prefers white, taking black only where white cannot reach the
-  3:1 a user interface element is held to, which is the answer those themes
-  give. Themes are no longer asked to agree by computation: QxThemeInfo::onAccent
-  carries the colour itself.
 - QX_THEME_DEPRECATED_SINCE(major, minor) never answered true for a deprecation
   that had already happened: QX_THEME_DISABLE_DEPRECATED_BEFORE defaulted to
   QX_THEME_VERSION, so the deprecation point was compared against the version
