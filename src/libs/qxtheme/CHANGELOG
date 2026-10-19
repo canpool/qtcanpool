@@ -53,6 +53,16 @@ Feature
   does not announce. An action destroyed while its icon is being kept up to date
   is dropped rather than painted into. Nothing is repainted unless an
   application asked for it to be. tst_QxTheme::iconsFollowThePalette
+- QxThemeInfo::onAccent is the colour to paint on the fill QxThemeInfo::accent
+  names. An emphasis is a pair, and the theme is the one that picked it: the
+  sheet writes both and was drawn to look right with them together, so a second
+  opinion computed from the fill alone is one more place for the two halves to
+  disagree - which is how a dock's auto hide buttons came out black on a fill
+  the same theme labels white. apply() installs it as QPalette::HighlightedText,
+  the pair of the Highlight it already installs; invalid for a theme that says
+  nothing about emphasis, which then gets the computed answer as before. An
+  accent override replaces the fill, so it replaces the pair with it - a colour
+  the theme never saw has no answer of the theme's to go with it.
 
 0.2.0
 ---
@@ -106,6 +116,26 @@ Cleanup
 0.1.1
 ---
 Bugfix
+- The dark skeleton's menus read as blocks that moved under the pointer. Every
+  item was filled with the separator colour - lighter than the menu it sat in -
+  and the selected one was filled with the surface, the menu's own colour, so
+  the row the pointer was on looked like a hole punched through the others. The
+  item now carries no fill and the selected row is the one thing that lifts off
+  the surface. The bar's items had no box of their own either, so the hover fill
+  was drawn tight around each label and the bar appeared to shift as the pointer
+  crossed it; the item gets a stated box now, which is also what makes the bar's
+  height the sheet's answer instead of whatever the platform style leaves.
+- readableOn() picked the wrong half of the pair on a saturated blue. It asked
+  which of black and white is further from the fill, and on #3a96dd - the accent
+  two of the bundled families emphasize with - black is: 6.6:1 against white's
+  3.2:1. So the palette handed out QPalette::HighlightedText as black while the
+  same theme's sheet writes text-on-fill as white, and every glyph that asks the
+  role - a dock's auto hide buttons, a focused tab's close button - came out
+  black on the very fill it is supposed to read against. It now measures WCAG
+  contrast and prefers white, taking black only where white cannot reach the
+  3:1 a user interface element is held to, which is the answer those themes
+  give. Themes are no longer asked to agree by computation: QxThemeInfo::onAccent
+  carries the colour itself.
 - QX_THEME_DEPRECATED_SINCE(major, minor) never answered true for a deprecation
   that had already happened: QX_THEME_DISABLE_DEPRECATED_BEFORE defaulted to
   QX_THEME_VERSION, so the deprecation point was compared against the version

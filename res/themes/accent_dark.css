@@ -291,14 +291,20 @@ QTabBar::close-button {
 
 QMenu {
   margin: 0px;
+  background: #1f1f1f;
 }
 
+/* The item carries no fill of its own, so the menu reads as one surface and the
+   selected row is the only thing that lifts off it. Filling every item with the
+   separator colour did the opposite: the rows were lighter than the menu they
+   sat in, and the selected one - filled with the surface - looked like a hole
+   punched through them, which is what made the rows jump as the pointer moved. */
 QMenu::item {
-  padding: 2px 30px 2px 20px;
+  padding: 4px 20px 4px 20px;
   border-width: 1px 1px 1px 5px;
   border-style: solid;
   border-color: transparent;
-  background: #3f3f3f;
+  background: transparent;
 }
 
 QMenu::indicator {
@@ -307,8 +313,8 @@ QMenu::indicator {
 }
 
 QMenu::item:selected {
-  color: #ffffff;
-  background: #1f1f1f;
+  color: #f3f2f1;
+  background: #313131;
 }
 
 QMenu::item:disabled {
@@ -323,8 +329,19 @@ QMenu::separator {
   margin-bottom: 0px;
 }
 
+/* The item gets a box of its own, so the bar's height is one the sheet states
+   instead of whatever the platform style leaves behind, and the hover fill
+   paints a rectangle that is the same for every item - without it the fill was
+   drawn tight around each label, and the bar appeared to shift as the pointer
+   crossed it. */
 QMenuBar {
-  padding: 0px 0px 0px 5px;
+  padding: 0px 0px 0px 2px;
+  background: #1f1f1f;
+}
+
+QMenuBar::item {
+  padding: 3px 8px;
+  background: transparent;
 }
 
 QMenuBar::item:selected {
@@ -1452,6 +1469,36 @@ QxDock--DockSideBar[sideBarArea="3"] {
 #autoHideDockContainer QxDock--DockTab[activeTab="true"] {
     background: transparent;
     border-color: transparent;
+}
+
+/* The two things around the tab have no rule of their own, so both take the
+   window colour the dark skeleton paints on every QWidget and cover the accent
+   with it: the tab bar is a scroll area, and its viewport is a widget inside a
+   widget. The icon beside the label is a bare QLabel built in C++ with no
+   object name at all. All three step aside with the tab. */
+#autoHideDockContainer QxDock--DockTabBar,
+#autoHideDockContainer QxDock--DockTabBar QWidget,
+#autoHideDockContainer QxDock--DockTab QLabel {
+    background: transparent;
+    border: none;
+}
+
+/* The rest of the way the accent fill gets covered: the bar's own children tile
+   it end to end - the label that carries the title, the spacer that pushes the
+   buttons to the far end, the buttons themselves - and not one of them has a
+   rule of its own, so each paints the window colour over the fill it sits on.
+   Measured on a soft-dark dock demo, the four of them left 45% of a 216px bar
+   still showing the accent.
+
+   Everything under the bar steps aside rather than the three of them by name:
+   the spacer is a private class in the library, and a type selector that names
+   it says nothing to a sheet that cannot see the class. A button gets a fill
+   back on hover, which is a state the bar itself cannot be in. */
+#autoHideDockContainer QxDock--DockTitleBar QWidget,
+#autoHideDockContainer #dockAutoHideTitleLabel,
+#autoHideDockContainer QxDock--TitleBarButton {
+    background: transparent;
+    border: none;
 }
 
 #autoHideDockContainer QxDock--DockTab QLabel {

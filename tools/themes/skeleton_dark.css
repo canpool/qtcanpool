@@ -279,14 +279,20 @@ QTabBar::close-button {
 
 QMenu {
   margin: 0px;
+  background: {{surface}};
 }
 
+/* The item carries no fill of its own, so the menu reads as one surface and the
+   selected row is the only thing that lifts off it. Filling every item with the
+   separator colour did the opposite: the rows were lighter than the menu they
+   sat in, and the selected one - filled with the surface - looked like a hole
+   punched through them, which is what made the rows jump as the pointer moved. */
 QMenu::item {
-  padding: 2px 30px 2px 20px;
+  padding: 4px 20px 4px 20px;
   border-width: 1px 1px 1px 5px;
   border-style: solid;
   border-color: transparent;
-  background: {{border}};
+  background: transparent;
 }
 
 QMenu::indicator {
@@ -295,8 +301,8 @@ QMenu::indicator {
 }
 
 QMenu::item:selected {
-  color: {{text-on-fill}};
-  background: {{surface}};
+  color: {{text}};
+  background: {{state-hover}};
 }
 
 QMenu::item:disabled {
@@ -311,8 +317,19 @@ QMenu::separator {
   margin-bottom: 0px;
 }
 
+/* The item gets a box of its own, so the bar's height is one the sheet states
+   instead of whatever the platform style leaves behind, and the hover fill
+   paints a rectangle that is the same for every item - without it the fill was
+   drawn tight around each label, and the bar appeared to shift as the pointer
+   crossed it. */
 QMenuBar {
-  padding: 0px 0px 0px 5px;
+  padding: 0px 0px 0px 2px;
+  background: {{surface}};
+}
+
+QMenuBar::item {
+  padding: 3px 8px;
+  background: transparent;
 }
 
 QMenuBar::item:selected {

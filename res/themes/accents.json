@@ -1,12 +1,42 @@
 {
-  "accent-dark": "#3a96dd",
-  "accent-light": "#0078d4",
-  "classic-dark": "#0078d7",
-  "classic-light": "#0072c6",
-  "flat-dark": "#00a0e6",
-  "flat-light": "#2b7de9",
-  "slate-dark": "#007acc",
-  "slate-light": "#007acc",
-  "soft-dark": "#3a96dd",
-  "soft-light": "#0078d4"
+  "accent-dark": {
+    "accent": "#3a96dd",
+    "on-accent": "#ffffff"
+  },
+  "accent-light": {
+    "accent": "#0078d4",
+    "on-accent": "#ffffff"
+  },
+  "classic-dark": {
+    "accent": "#0078d7",
+    "on-accent": "#ffffff"
+  },
+  "classic-light": {
+    "accent": "#0072c6",
+    "on-accent": "#ffffff"
+  },
+  "flat-dark": {
+    "accent": "#00a0e6",
+    "on-accent": "#ffffff"
+  },
+  "flat-light": {
+    "accent": "#2b7de9",
+    "on-accent": "#ffffff"
+  },
+  "slate-dark": {
+    "accent": "#007acc",
+    "on-accent": "#ffffff"
+  },
+  "slate-light": {
+    "accent": "#007acc",
+    "on-accent": "#ffffff"
+  },
+  "soft-dark": {
+    "accent": "#3a96dd",
+    "on-accent": "#ffffff"
+  },
+  "soft-light": {
+    "accent": "#0078d4",
+    "on-accent": "#ffffff"
+  }
 }
