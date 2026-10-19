@@ -284,6 +284,36 @@ QxDock--DockSideBar[sideBarArea="3"] {
     border-color: transparent;
 }
 
+/* The two things around the tab have no rule of their own, so both take the
+   window colour the dark skeleton paints on every QWidget and cover the accent
+   with it: the tab bar is a scroll area, and its viewport is a widget inside a
+   widget. The icon beside the label is a bare QLabel built in C++ with no
+   object name at all. All three step aside with the tab. */
+#autoHideDockContainer QxDock--DockTabBar,
+#autoHideDockContainer QxDock--DockTabBar QWidget,
+#autoHideDockContainer QxDock--DockTab QLabel {
+    background: transparent;
+    border: none;
+}
+
+/* The rest of the way the accent fill gets covered: the bar's own children tile
+   it end to end - the label that carries the title, the spacer that pushes the
+   buttons to the far end, the buttons themselves - and not one of them has a
+   rule of its own, so each paints the window colour over the fill it sits on.
+   Measured on a soft-dark dock demo, the four of them left 45% of a 216px bar
+   still showing the accent.
+
+   Everything under the bar steps aside rather than the three of them by name:
+   the spacer is a private class in the library, and a type selector that names
+   it says nothing to a sheet that cannot see the class. A button gets a fill
+   back on hover, which is a state the bar itself cannot be in. */
+#autoHideDockContainer QxDock--DockTitleBar QWidget,
+#autoHideDockContainer #dockAutoHideTitleLabel,
+#autoHideDockContainer QxDock--TitleBarButton {
+    background: transparent;
+    border: none;
+}
+
 #autoHideDockContainer QxDock--DockTab QLabel {
     color: {{text-on-fill}};
 }

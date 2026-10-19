@@ -75,6 +75,17 @@ Feature
   tst_QxThemeBundle::theThemeStatesTheDocksOwnRules
 
 Bugfix
+- An auto hide container's title bar was painted over by the things on it. The
+  bar is filled with the accent, and its own children tile it end to end - the
+  label carrying the title, the spacer pushing the buttons to the far end, the
+  buttons - none of which had a rule of its own, so each painted the window
+  colour over the fill it sits on; measured on a soft-dark dock demo, 45% of a
+  216px bar still showed the accent. The spacer was the widest of them and the
+  one a sheet could not reach: it sets a style sheet on itself, a widget's own
+  outranks the application's, and "background: none" sets no background, so the
+  widget filled itself with the palette's window colour instead. Its sheet now
+  says transparent, and the sheet's auto hide rules cover the bar's children
+  without naming the private class a type selector cannot see.
 - The buttons on an auto hide container's title bar kept the surface glyph
   colour. The buttons are built before anything knows the container will sit on
   the accent fill, and neither showing the window nor a later palette change

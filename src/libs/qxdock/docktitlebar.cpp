@@ -107,7 +107,13 @@ SpacerWidget::SpacerWidget(QWidget *parent)
     : QWidget(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setStyleSheet("border: none; background: none;");
+    // Transparent, not "none": a widget's own sheet outranks the application's,
+    // so this one is what the spacer paints by, and "none" sets no background
+    // at all - which leaves the widget filled with the palette's window colour,
+    // a patch of grey over whatever the bar behind it was filled with. On the
+    // auto hide bar that is the accent fill, and the spacer is the widest thing
+    // on it.
+    setStyleSheet("border: none; background: transparent;");
 }
 
 class DockTitleBarPrivate
