@@ -11,9 +11,10 @@
 
 #include "qxdock/dockwindow.h"
 #include "qxdock/dockmanager.h"
-#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockpanel.h"
+
+#include "themestart.h"
 
 QX_DOCK_USE_NAMESPACE
 
@@ -43,9 +44,10 @@ int main(int argc, char *argv[])
 
     DockManager::setConfigFlag(DockManager::FocusHighlighting, true);
     DockManager::setConfigFlag(DockManager::AllTabsHaveCloseButton, true);
-    // The library ships no sheet of its own, so the sample puts one on - and
-    // after the flags, since the focus one is what it is read back for.
-    a.setStyleSheet(dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)));
+    // The library ships no look of its own, so the sample wears a bundled theme
+    // - and after the flags, since the focus one is what the dock's rules, which
+    // the theme carries, ask about.
+    installExampleTheme();
     auto wd = new DockWindow(&w);
     w.setCentralWidget(wd);
     w.setDockWindow(wd);

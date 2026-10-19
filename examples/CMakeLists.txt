@@ -39,6 +39,7 @@ function(add_qtc_example name library directory window)
     set(_sources ${_sample_sources})
     set(_includes "${CMAKE_CURRENT_SOURCE_DIR}/${directory}")
     set(_defines "")
+    set(_libraries "")
 
     if (window STREQUAL "none")
         # Nothing shared to add.
@@ -60,17 +61,58 @@ function(add_qtc_example name library directory window)
 
     list(APPEND _sources ${ARGN})
 
-    # A sample built against qxdock needs the dock style sheet, because the
-    # library no longer ships one: without it a DockWindow is a row of unstyled
-    # widgets. It lives in res/dockstyle.qrc and is offered the way res/themes.qrc is
-    # - built in by whoever wants it. Doing it here rather than in twelve sample
-    # directories is what keeps "add a new dock sample" from being a two-step
-    # affair, where the second step is the one nobody does.
+    # A sample built against a library that has no look of its own needs one:
+    # qxribbon's sheets are the theme sheets, qxdock's are one part of them, and
+    # neither library installs anything. Without a theme the sample opens on
+    # whatever the platform style leaves behind, which is not what either
+    # library is meant to look like and not what the sample is there to show.
+    #
+    # The bundle is registered by shared/themestart.cpp, called from the shared
+    # main() - or from the sample's own, for the three that carry one. qxplugin
+    # is left out on purpose: it has no widgets a theme would reach. A sample
+    # that already builds res/themes.qrc registers the bundle itself, and one
+    # target with two copies of the same qrc is two definitions of the same
+    # init function.
+    set(_extras ${ARGN})
+    set(_want_theme FALSE)
+    if (library STREQUAL "qxribbon" OR library STREQUAL "qxdock" OR library STREQUAL "qxapp")
+        set(_want_theme TRUE)
+    endif()
+    foreach (_extra IN LISTS _extras)
+        if (_extra MATCHES "themes\\.qrc$")
+            set(_want_theme FALSE)
+        endif()
+    endforeach()
+
+    if (_want_theme)
+        list(APPEND _sources
+            "${CMAKE_CURRENT_SOURCE_DIR}/shared/themestart.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/shared/themestart.h"
+            "${PROJECT_SOURCE_DIR}/res/themes.qrc")
+        # Last on the include path, so a mainwindow.h the sample ships - or the
+        # ribbon one a ribbon sample is given - still wins over the plain one
+        # that lives here.
+        list(APPEND _includes "${CMAKE_CURRENT_SOURCE_DIR}/shared")
+        list(APPEND _libraries qxtheme)
+        list(APPEND _defines "QTC_EXAMPLE_THEME")
+    endif()
+
     if (library STREQUAL "qxdock")
-        list(APPEND _sources "${PROJECT_SOURCE_DIR}/res/dockstyle.qrc")
+        if (NOT _want_theme)
+            # A theme carries the dock's rules, so only an unthemed sample needs
+            # the library's own sheet: without it a DockWindow is a row of
+            # unstyled widgets. It lives in res/dockstyle.qrc and is offered the
+            # way res/themes.qrc is - built in by whoever wants it. Doing it
+            # here rather than in twelve sample directories is what keeps "add a
+            # new dock sample" from being a two-step affair, where the second
+            # step is the one nobody does.
+            list(APPEND _sources "${PROJECT_SOURCE_DIR}/res/dockstyle.qrc")
+        endif()
         # ... and the shared main() applies it, which it can only do behind a
         # define: a ribbon sample compiles the same main.cpp without qxdock to
-        # link against.
+        # link against. A themed dock sample gets this define too, because the
+        # platform's piece of the dock's look is the one part a theme does not
+        # carry.
         list(APPEND _defines "QTC_EXAMPLE_DOCK")
     endif()
 
@@ -82,6 +124,7 @@ function(add_qtc_example name library directory window)
             ${_defines}
         DEPENDS
             ${library}
+            ${_libraries}
             Qt5::Core
             Qt5::Gui
             Qt5::Widgets

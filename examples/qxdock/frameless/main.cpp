@@ -13,9 +13,10 @@
 
 #include "qxdock/dockmanager.h"
 #include "qxdock/dockpanel.h"
-#include "qxdock/dockstylesheet.h"
 #include "qxdock/dockwidget.h"
 #include "qxdock/dockwindow.h"
+
+#include "themestart.h"
 
 QX_DOCK_USE_NAMESPACE
 
@@ -219,7 +220,8 @@ int main(int argc, char *argv[])
     // are unaffected by the host having no frame; this just makes the example
     // show the auto-hide side of docking as well.
     DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
-    a.setStyleSheet(dockStyleSheet(DockManager::testConfigFlag(DockManager::FocusHighlighting)));
+    // The library ships no look of its own; a theme carries the dock's rules.
+    installExampleTheme();
 
     MainWindow w;
     w.show();
