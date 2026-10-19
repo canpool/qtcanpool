@@ -38,14 +38,19 @@ jobs:
           # than checking anything macOS-specific.
           - { os: macos-latest,   qt: '6.8.1' }
           - { os: ubuntu-latest,  qt: '5.15.2' }
-          # 6.12 LTS, gating. One Linux leg and not three: what it answers is
-          # whether the tree builds and passes against 6.12 at all, which is a
-          # property of the code rather than of the platform, and the three
-          # platforms are already covered on 6.8 above. It was report only - a
-          # job of its own with continue-on-error - for as long as nobody had
-          # compiled this tree against 6.12 and the first run could have been
-          # red; it has been green since dda5b328, so it now gates like the rest.
+          # 6.12 LTS, gating. Two legs and not three: Linux answers whether the
+          # tree builds and passes against 6.12 at all - a property of the code
+          # rather than of the platform - and Windows is there because only a
+          # Windows run compiles the native backend (QX_WINDOW_CONFIG_NATIVE is
+          # false on the others, so qxwindow links no private module there), and
+          # 6.12 split those private modules into packages of their own, which
+          # is a break no other leg could have seen. macOS adds nothing the two
+          # do not cover. It was report only - a job of its own with
+          # continue-on-error - for as long as nobody had compiled this tree
+          # against 6.12 and the first run could have been red; it has been
+          # green since dda5b328, so it now gates like the rest.
           - { os: ubuntu-latest,  qt: '6.12.0' }
+          - { os: windows-latest, qt: '6.12.0' }
     steps:
       - uses: actions/checkout@v4
 
