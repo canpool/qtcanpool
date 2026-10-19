@@ -7,6 +7,8 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
+#include <algorithm>
+#include <cmath>
 #include <QtCore/QMetaType>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QPalette>
@@ -49,17 +51,41 @@ QColor colorFromText(const QString &text)
 #endif
 }
 
+namespace
+{
+// WCAG relative luminance: the channels are linearised before they are mixed,
+// because a saturated blue is far darker than its byte values suggest.
+double relativeLuminance(const QColor &color)
+{
+    double channels[3] = {color.redF(), color.greenF(), color.blueF()};
+    for (double &c : channels) {
+        c = c <= 0.03928 ? c / 12.92 : std::pow((c + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+double contrast(const QColor &one, const QColor &two)
+{
+    const double a = relativeLuminance(one);
+    const double b = relativeLuminance(two);
+    return (std::max(a, b) + 0.05) / (std::min(a, b) + 0.05);
+}
+}   // namespace
+
 /*!
  * Black or white, whichever stays readable on \a background.
  *
- * The usual perceptual weighting rather than a plain average: the eye is far
- * more sensitive to green than to blue, so an average would call a saturated
- * blue "light" and paint black on it.
+ * White first, and black only when white cannot reach the 3:1 a user interface
+ * element is held to. A lightness threshold gives the wrong answer here: it
+ * asks which of the two is further from the fill, and on a saturated blue black
+ * is - 6.6:1 against white's 3.2:1 - so the accent fill the bundled families
+ * emphasize with got black labels while every one of those same themes writes
+ * its text-on-fill as white. The pair belongs to the theme; where a theme says
+ * nothing, this is the answer the theme would have given.
  */
 QColor readableOn(const QColor &background)
 {
-    const double luminance = 0.299 * background.redF() + 0.587 * background.greenF() + 0.114 * background.blueF();
-    return luminance > 0.5 ? QColor(Qt::black) : QColor(Qt::white);
+    return contrast(background, QColor(Qt::white)) >= 3.0 ? QColor(Qt::white) : QColor(Qt::black);
 }
 
 /*!
@@ -490,12 +516,16 @@ void QxThemeManager::apply()
     const QColor accent = d->m_accentOverride.isValid() ? d->m_accentOverride : info.accent;
     if (accent.isValid()) {
         // The emphasis is a pair, not a colour: what sits on the fill is
-        // HighlightedText, and readableOn() is what keeps the two legible on
-        // each other - a glyph on the emphasized surface asks that role and
-        // needs it to have been computed from *this* fill, not from the
-        // palette's own highlight.
+        // HighlightedText, and a glyph on the emphasized surface asks that role
+        // and needs it to belong to *this* fill, not to the palette's own
+        // highlight. The theme's own pair wins when it registered one - it is
+        // the one the sheet was drawn with. An override replaces the fill, so
+        // it replaces the pair: a colour the theme never saw has no answer of
+        // the theme's to go with it, and readableOn() is the fallback for
+        // exactly that, and for a theme that said nothing about emphasis.
         palette.setColor(QPalette::Highlight, accent);
-        palette.setColor(QPalette::HighlightedText, readableOn(accent));
+        const QColor onAccent = d->m_accentOverride.isValid() ? readableOn(accent) : info.onAccent;
+        palette.setColor(QPalette::HighlightedText, onAccent.isValid() ? onAccent : readableOn(accent));
         // QPalette has no accent text role: the pair of a highlight is
         // HighlightedText, and that is the one set above, so the accent role is
         // the only one to add - and it only exists from 6.6 on.

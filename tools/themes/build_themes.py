@@ -493,15 +493,20 @@ def main():
     accents = {}
     for family, scheme, raw, filled, palette in sheets:
         (OUT / f"{family}_{scheme}.css").write_bytes(filled.encode("utf-8"))
-        accents[f"{family}-{scheme}"] = palette["accent"]
-    # The one colour a sheet cannot publish: the sheet has it substituted in,
-    # where an application can only read it back by parsing CSS, and what needs
-    # it is the palette - QPalette::Highlight, whose pair HighlightedText is
-    # what a glyph on an emphasized surface is painted with. One table, keyed
-    # by theme id, rather than one file per theme: a lone key/value pair does
-    # not carry the weight of ten files, and a table lets the ten be read at
-    # once - an accent out of step with its family is visible next to the
-    # others. QX_APP's registerBundledThemes() reads this file.
+        # The accent and the colour that reads on it, published as the pair the
+        # sheet was drawn with: anything else and the palette computes the
+        # second from the first, which on a saturated blue picks black where the
+        # sheet picked white.
+        accents[f"{family}-{scheme}"] = {"accent": palette["accent"],
+                                         "on-accent": palette["text-on-fill"]}
+    # The two colours a sheet cannot publish: the sheet has them substituted in,
+    # where an application can only read them back by parsing CSS, and what
+    # needs them is the palette - QPalette::Highlight, whose pair
+    # HighlightedText is what a glyph on an emphasized surface is painted with.
+    # One table, keyed by theme id, rather than one file per theme: a lone
+    # key/value pair does not carry the weight of ten files, and a table lets
+    # the ten be read at once - an accent out of step with its family is
+    # visible next to the others. QX_APP's registerBundledThemes() reads this.
     (OUT / "accents.json").write_bytes(
         (json.dumps(accents, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     print("wrote:", ", ".join(f"{f}_{s}.css" for f, s, _, _, _ in sheets))

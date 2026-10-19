@@ -1,13 +1,18 @@
 Unreleased
 ---
 Feature
-- readBundledTheme() reads the one colour a sheet cannot carry - the accent the
-  theme emphasizes with - from res/themes/accents.json, one table keyed by
-  theme id rather than a file per theme: every other colour is substituted into
-  the sheet, and this one is what the engine installs as QPalette::Highlight,
-  where an application can only read it back by parsing CSS. A theme without an
-  entry there is still registered and keeps the platform's highlight, because
-  leaving emphasis to the palette remains a legitimate theme.
+- readBundledTheme() reads the two colours a sheet cannot carry - the accent the
+  theme emphasizes with, and the colour that reads on it - from
+  res/themes/accents.json, one table keyed by theme id rather than a file per
+  theme: every other colour is substituted into the sheet, and these are what
+  the engine installs as QPalette::Highlight and its pair HighlightedText,
+  where an application can only read them back by parsing CSS. The second one
+  is a choice the theme already made and wrote into its sheet, so carrying it
+  keeps the palette from computing a different answer for the same question -
+  which it did, pairing a saturated blue with black while the sheet paired it
+  with white. A theme without an entry there is still registered and keeps the
+  platform's highlight, because leaving emphasis to the palette remains a
+  legitimate theme.
   tst_QxThemeBundle::bundledThemesCarryTheirAccent
 - applicationStyleSheet() in qxdockstyle.h returns the theme as one application
   style sheet, and appends only the dock's platform piece - the rules that

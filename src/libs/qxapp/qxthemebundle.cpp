@@ -45,9 +45,17 @@ QxTheme::QxThemeInfo readBundledTheme(const QString &id, const QString &name, bo
     QxTheme::QxThemeInfo info(id, name, dark);
     info.styleSheet = QString::fromUtf8(file.readAll());
 
-    const QColor accent(bundledAccents().value(id).toString());
+    // The pair the sheet was drawn with, not one colour and a computation: what
+    // reads on the accent is a choice the theme already made, and a sheet that
+    // fills a surface with a saturated blue writes white on it.
+    const QJsonObject entry = bundledAccents().value(id).toObject();
+    const QColor accent(entry.value(QStringLiteral("accent")).toString());
     if (accent.isValid()) {
         info.accent = accent;
+    }
+    const QColor onAccent(entry.value(QStringLiteral("on-accent")).toString());
+    if (onAccent.isValid()) {
+        info.onAccent = onAccent;
     }
     return info;
 }

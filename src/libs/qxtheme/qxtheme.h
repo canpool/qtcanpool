@@ -57,6 +57,22 @@ public:
      * which is the answer an application with no registered theme gets too.
      */
     QColor accent;
+
+    /*!
+     * The colour to paint on that fill: the label on a selected tab, the glyph
+     * on a dock's emphasized surface - everything that asks
+     * QPalette::HighlightedText, the pair \a accent is installed as.
+     *
+     * An emphasis is a pair and the theme is the one that picked it: the sheet
+     * writes both colours and was drawn to look right with them together, so
+     * computing the second one from the first is answering a question the theme
+     * has already answered - and answering it differently, since a saturated
+     * blue is darker than it looks and a threshold on its lightness pairs it
+     * with black while the sheet pairs it with white. Left invalid, the engine
+     * computes one from \a accent; that is what a theme saying nothing about
+     * emphasis gets.
+     */
+    QColor onAccent;
 };
 
 /*! The palette behind the light themes: light surfaces, dark text. */
