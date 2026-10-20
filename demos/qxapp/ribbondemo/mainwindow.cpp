@@ -107,13 +107,6 @@ QVector<DemoTheme> demoThemes()
         {QStringLiteral("accent-light"), MainWindow::tr("AccentLight"), false,
          QStringLiteral(":/themes/accent_light.css")},
         {QStringLiteral("accent-dark"), MainWindow::tr("AccentDark"), true, QStringLiteral(":/themes/accent_dark.css")},
-        {QStringLiteral("fluent-light"), MainWindow::tr("FluentLight"), false,
-         QStringLiteral(":/themes/fluent_light.css")},
-        {QStringLiteral("fluent-dark"), MainWindow::tr("FluentDark"), true, QStringLiteral(":/themes/fluent_dark.css")},
-        {QStringLiteral("material-light"), MainWindow::tr("MaterialLight"), false,
-         QStringLiteral(":/themes/material_light.css")},
-        {QStringLiteral("material-dark"), MainWindow::tr("MaterialDark"), true,
-         QStringLiteral(":/themes/material_dark.css")},
     };
 }
 
