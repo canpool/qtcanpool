@@ -1,3 +1,133 @@
+4.6.0
+---
+- The libraries stop naming colours inside their own style sheets, and take them
+  from the theme instead. A sheet that says `#f5f5f5` is a sheet that only works
+  on one window; qxdock's declarations now carry placeholders that a
+  DockStyleColors fills - where a colour sits in the dock, and separately what
+  goes on top of the accent - and qxtheme's themes publish an accent as a pair,
+  so a glyph on the accent fill finds the colour that reads on it. The dock's
+  rules moved into the themes themselves, one sheet with the ribbon's, so
+  applicationStyleSheet() no longer joins two renderings and no longer loses to
+  its own fall-back. Icons follow: a single-colour glyph is repainted from the
+  palette the theme installed, from six entry points in qxtheme, and every
+  library that ships glyphs re-asks when the palette changes
+- qxtheme 0.2.0 -> 0.2.1. New: QxThemeInfo::accent, installed as
+  QPalette::Highlight with HighlightedText as its pair, and accentColor()
+  answering with the theme's accent before the platform's; applyColorScheme(bool)
+  and followSystemColorScheme(), which tell the platform which way the theme
+  paints - on Windows 11 the windows11 style draws from its own table chosen by
+  the system scheme and never reads the palette, so a light theme on a dark
+  desktop came out with dark input fields, dark scroll bars and a dark title bar,
+  and setting a light palette could not reach any of it; and tintedPixmap(),
+  tintedIcon(), themedPixmap() and themedIcon() in qxthemeicon.h, which rasterise
+  a glyph and repaint it through its alpha so the colour the file was drawn in is
+  replaced outright and the antialiased edges keep their coverage. Fixed: a
+  restored theme waited for its registration instead of being rejected against an
+  engine that had not read it yet, a theme now states the colour that reads on
+  its own fill rather than letting the palette compute a different answer (a
+  saturated blue was being paired with black while the sheet paired it with
+  white), and the themed icons are repainted when the palette changes
+- qxwindow 0.3.1 -> 0.3.2. New: WindowAgentBase::setBorderOwnsCursor() takes the
+  resize border out of the hit test. A frameless window draws its own border and
+  the border it draws is not always there to be grabbed - it may be no more than
+  the room a shadow needs, with dragging meant to go through the title bar only -
+  and nothing in the geometry says which of the two it is. Default true, which is
+  the behaviour every window has always had; this is the opt-out whose absence
+  0.3.0 recorded as a limitation. Both backends honour it, and the answer differs
+  either side of the window edge, because there is nothing outside it to hand a
+  press to. Cleanup: the Qt 5.14 guard around the private qwinregistry_p.h
+  include is gone, the header being below the 5.15 minimum
+- qxdock 0.3.0 -> 0.3.1. New: DockStyleColors and the accent-soft token it fills -
+  the wash a button hovers with, enough accent to read as emphasis and enough
+  surface to stay a hover; dockStyleSheet(const DockStyleColors &, bool)
+  substitutes the whole set, dockStyleSheet(bool) stays and renders with
+  fromPalette() of the application palette, and a field left invalid falls back
+  per field while an unresolved placeholder refuses the sheet and says so rather
+  than letting Qt drop the declaration silently. The dock's icon buttons state
+  their own hover instead of taking the platform's pale rounded wash, which read
+  as a shape pasted on the bar; the glyphs say which of two surfaces they are on
+  rather than which colours to use, so the glyph on the accent fill is painted in
+  HighlightedText; and dockPlatformStyleSheet() hands the platform's piece out on
+  its own. Fixed: an auto hide bar's accent no longer loses to what sits on it; a
+  hover glyph is tinted like the resting one and the two fills are separated; the
+  drop indicator takes the theme it is shown in - it cached the first valid colour
+  it computed and painted its bitmap once, so a window that switched theme kept a
+  five-way indicator in the old palette until it was rebuilt; and the icon buttons
+  have a height both schemes share, the dark skeleton's min-height on ordinary
+  buttons having reached the layout through the title bar and the tab close
+  button
+- qxribbon 0.13.0 -> 0.14.0. Interface: RibbonGalleryGroup paints its own items
+  instead of being a QListView, and the class it inherits is now QWidget. The view
+  was carrying machinery the gallery never used well - a model per group, a
+  delegate, a selection model, and a mirror group inside the gallery fed from the
+  current group's model, so the strip showed a copy, the popup held the original
+  and a click was forwarded between them. The item states were left to the sheet,
+  and the sheet could not deliver them: an ::item rule on a custom class matched
+  nothing, so hover and selection were whatever the platform style had left
+  behind, and the one pseudo-state that did land moved the item's contents by a
+  pixel, which is the jumping. A state now changes the wash and the border and
+  never the geometry, the label keeps QPalette::Text instead of reversing to
+  white on a wash, and the popup paints each group with the same painter, so the
+  strip and the popup cannot disagree about where an item is. What the view leaked
+  is gone - no model(), currentIndex(), scrollTo() or QListView's spacing() - and
+  the group says what it now is: itemCount(), itemAction(), selectedIndex(),
+  itemRect(), setSpacing(), gridSize(), and the viewport/scroll triple the gallery
+  drives; currentViewGroup() returns the group itself rather than a copy.
+  Addition: RibbonPageContext::addPage(RibbonPage *) takes a page the caller
+  built, RibbonBar::setCornerWidget(QWidget *, Qt::Corner) is the ribbon-aware way
+  to reach the bar's top corners, and a zh_CN catalogue sits next to the sources
+  with every string the library shows translated in it. Fixed: the gallery's last
+  row ends inside the strip instead of running past its bottom edge; the popup
+  keeps one item size whatever the strip is showing and stays on screen, its
+  height measured at the width it really gets rather than at a guessed one; two
+  strings lupdate could not see were in a context the runtime never looked up, so
+  their translations could not be found; the ScreenTip repaints from the palette
+  on every show; the minimize button is painted from the palette; the application
+  button is laid out on the tab strip's line and takes the theme when it is a
+  caller's own; the quick access menu triangle is gone; a page can be taken into a
+  context that already exists; and the close glyph no longer borrows the
+  highlight's pair
+- qxapp 0.2.0 -> 0.2.1. New: ThemeInstaller keeps the whole theme in force on the
+  application - the sheet, and the dock's icons tinted from the palette it
+  installed - because a theme switch is a signal while the platform swapping its
+  own light or dark palette arrives as an application event with no signal, and an
+  application that wires up the first and forgets the second looks right until the
+  desktop changes; applicationStyleSheet() hands out the theme as one application
+  sheet and appends only the dock's platform piece, the rules that belong to one
+  desktop and are empty off X11; and readBundledTheme() reads the two colours a
+  sheet cannot carry from res/themes/accents.json, keyed by theme id rather than
+  one file per theme
+- qxcore 0.2.0 and qxplugin 0.3.0: unchanged. Both were settled at 4.5.0 and
+  nothing in this cycle touched them - no repair, no addition - so neither number
+  moved (K11). What 4.6 touched in their neighbourhood is the catalogue the
+  libraries ship, and a catalogue is a file next to the sources, not an interface
+- demos and examples: ribbondemo is rebuilt around themed icons - Tabler Icons
+  3.49.0 under MIT, the licence text next to them, the old sets removed and every
+  page one file - and starts under a named theme, takes `--theme a,b` for a
+  sequence and `--lang` for its catalogue; dockdemo takes the theme from the
+  shared installer, paints the dock from the theme's colour roles, accepts
+  `--theme a,b` and answers `--inspect` with the tree it is actually showing;
+  and every sample in examples/ that shows a ribbon, a dock or the shell now
+  installs a bundled theme, defaulting to soft-light
+- i18n: qxribbon, qxdock and qxapp each ship a zh_CN catalogue built and installed
+  with the library - 116 strings translated, nine diagnostics deliberately left
+  in English so the same words can be searched whatever language the interface
+  runs in - and one test holds the three catalogues together. The new
+  internationalisation page says how an application reaches them, and adding a
+  language is a `LANGUAGES` entry in three CMakeLists.txt plus the translations
+- ci and build: Qt 6.12 now gates on Windows too, six legs in all; the icon policy
+  - one drawing style, sources and licences recorded - is checked in the format
+  job; and the sources are held to the UTF-8 the build assumes
+- docs: an icon policy and an internationalisation page, a theming page that says
+  which half of an application's colours belongs to the platform, a contributing
+  guide that lets the change decide how much verification a commit needs, and a
+  release of the 4.6 task ledger recording what was measured against what was
+  assumed - including the dock's theme switch, which turned out to keep a metric
+  the old theme set rather than a colour
+- Note: this release breaks source and binary compatibility in one place -
+  RibbonGalleryGroup no longer inherits QListView. doc/pages/migration.md, section
+  "4.6", lists what an application has to touch
+
 4.5.0
 ---
 - The libraries stop carrying a look of their own, and the themes are rebuilt.
