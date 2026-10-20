@@ -18,12 +18,47 @@
 #include <QLabel>
 #include <QDebug>
 #include <QFile>
+#include <QPointer>
 #include <QTemporaryDir>
 #include <QApplication>
 #include <QImage>
 #include <QTest>
 
 QX_DOCK_USE_NAMESPACE
+
+namespace
+{
+/*!
+ * The state document with the geometry of the floating windows taken out.
+ *
+ * A floating container stores what saveGeometry() reports, and what that
+ * reports is the platform's answer about a window's frame rather than anything
+ * the docking layout decided. Measured in this test run on the offscreen
+ * platform: a plain QWidget saved at (2, 2) and restored comes back at
+ * (2, 25), with the size untouched - which is Qt's contract, not a defect here,
+ * and would make a byte comparison fail on every platform in some other way.
+ *
+ * What the element holds is still covered: the floating container itself, the
+ * widget inside it and the size of the window all appear elsewhere in the
+ * document and are compared as they are.
+ */
+QByteArray withoutFloatingWindowGeometry(const QByteArray &state)
+{
+    QByteArray document = state.startsWith("<?xml") ? state : qUncompress(state);
+    const QByteArray open = QByteArrayLiteral("<Geometry>");
+    const QByteArray close = QByteArrayLiteral("</Geometry>");
+    int from = document.indexOf(open);
+    while (from >= 0) {
+        const int to = document.indexOf(close, from);
+        if (to < 0) {
+            break;
+        }
+        document.remove(from, to + close.size() - from);
+        from = document.indexOf(open);
+    }
+    return document;
+}
+}   // namespace
 
 class tst_DockWindow : public QObject
 {
@@ -41,6 +76,7 @@ private slots:
     void state();
     void stateFile();
     void perspective();
+    void perspectiveReturnsToTheSavedBytes();
     void framelessHost();
     void carriesNoStyleSheetOfItsOwn();
     void styleSheetIsReadFromTheApplication();
@@ -701,6 +737,15 @@ void tst_DockWindow::state()
 
     QCOMPARE(wd.dockWidgetsMap().count(), 4);
 
+    // A restore rebuilds the panels and only schedules the old ones for
+    // deletion, so the pointers taken before it must not be used again - they
+    // still address a dead panel and would answer with its leftover state. The
+    // panels are asked for again from the widgets that sit in them.
+    p1 = dw1->dockPanel();
+    p2 = dw2->dockPanel();
+    QVERIFY(p1);
+    QVERIFY(p2);
+
     QCOMPARE(p1->dockContainer(), p2->dockContainer());
     QCOMPARE(p1->currentDockWidget(), dw1);
     QCOMPARE(p2->currentDockWidget(), dw2);
@@ -751,6 +796,12 @@ void tst_DockWindow::stateFile()
 
     QCOMPARE(wd.restoreStateFromFile(fileName), true);
     QCOMPARE(wd.dockWidgetsMap().count(), 4);
+
+    p1 = dw1->dockPanel();
+    p2 = dw2->dockPanel();
+    QVERIFY(p1);
+    QVERIFY(p2);
+
     QCOMPARE(p1->dockContainer(), p2->dockContainer());
     QCOMPARE(p1->currentDockWidget(), dw1);
     QCOMPARE(p2->currentDockWidget(), dw2);
@@ -807,6 +858,14 @@ void tst_DockWindow::perspective()
     // switch t1
     wd.openPerspective("t1");
 
+    // Opening a perspective restores a state, which rebuilds the panels - the
+    // pointers above belong to the previous arrangement and are taken again
+    // below before anything is asked of them.
+    p1 = dw1->dockPanel();
+    p2 = dw2->dockPanel();
+    QVERIFY(p1);
+    QVERIFY(p2);
+
     QCOMPARE(p1->dockContainer(), p2->dockContainer());
     QCOMPARE(p1->currentDockWidget(), dw1);
     QCOMPARE(p2->currentDockWidget(), dw2);
@@ -816,11 +875,108 @@ void tst_DockWindow::perspective()
     // switch t2
     wd.openPerspective("t2");
 
+    p1 = dw1->dockPanel();
+    p2 = dw2->dockPanel();
+    QVERIFY(p1);
+    QVERIFY(p2);
+
     QCOMPARE(p1->dockContainer(), p2->dockContainer());
     QCOMPARE(p1->currentDockWidget(), dw1);
     QCOMPARE(p2->currentDockWidget(), dw2);
     QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarBottom);
     QCOMPARE(fc1->topLevelDockWidget(), dw4);
+}
+
+/*!
+ * Going back to a perspective must give back the moment it was taken, and the
+ * strongest way to say that is to serialize again and compare the documents: a
+ * restore that drops the closed widget, forgets which tab was in front or drags
+ * an auto hide container to the wrong bar writes a different document, while a
+ * hand written list of properties only asks about the ones somebody thought of.
+ *
+ * The scene differs from perspective() in exactly the axes that a restore is
+ * likely to lose: a closed widget, two tabs with an order between them, an auto
+ * hide container that has moved, and a floating widget that has to come back
+ * with the widget inside it.
+ *
+ * One value in the document is left out of the comparison for the reason
+ * withoutFloatingWindowGeometry() gives: it reports what the platform says
+ * about a window rather than what the docking decided. The splitter sizes are
+ * the other provisional value, and they are kept - by letting the pending
+ * layout run before saving, so that both documents describe the same
+ * arrangement instead of one describing an arrangement that has moved on.
+ */
+void tst_DockWindow::perspectiveReturnsToTheSavedBytes()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+
+    DockWindow wd;
+    wd.resize(1000, 700);
+    wd.show();
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+    DockWidget *dw5 = new DockWidget("dw5");
+
+    DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    wd.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
+    // dw5 joins the panel dw1 is in, so the pair has a tab order to keep.
+    wd.addDockWidgetTab(Qx::LeftDockWidgetArea, dw5);
+    DockAutoHideContainer *ahc1 = wd.addAutoHideDockWidget(Qx::DockSideBarTop, dw3);
+    DockFloatingContainer *fc1 = wd.addDockWidgetFloating(dw4);
+
+    // Two of the axes are states rather than positions: one widget is closed and
+    // one panel has a tab in front of the other.
+    dw2->toggleView(false);
+    QCOMPARE(dw2->isClosed(), true);
+    p1->setCurrentDockWidget(dw5);
+    QCOMPARE(p1->currentDockWidget(), dw5);
+
+    // The document records the sizes the splitters have, not the sizes they
+    // ought to have: with dw2 closed but the layout not yet re-run, it stores
+    // the 498/498 the closing left behind, and restoring that document lays out
+    // to what the sizes really are (1000/0) - two documents for one state. The
+    // pending layout requests are let through first, which is also what a caller
+    // saving from a menu gets, since the event loop has run by then.
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
+    const QByteArray saved = wd.saveState();
+
+    wd.addPerspective("A");
+
+    // Move everything that can move, so that "still the saved state" cannot be
+    // true by accident: the bar to the other side, the closed widget back, the
+    // other tab in front.
+    ahc1->moveToNewSideBarArea(Qx::DockSideBarBottom);
+    dw2->toggleView(true);
+    QCOMPARE(dw2->isClosed(), false);
+    p1->setCurrentDockWidget(dw1);
+    QCOMPARE(p1->currentDockWidget(), dw1);
+
+    wd.addPerspective("B");
+    QVERIFY(withoutFloatingWindowGeometry(saved) != withoutFloatingWindowGeometry(wd.saveState()));
+
+    // A restore rebuilds every panel, and the ones it replaces are only
+    // scheduled for deletion - so a pointer taken before it addresses memory
+    // that has not been freed yet, and reading through it answers with a dead
+    // panel instead of failing. The deferred deletes are run here to state that
+    // as a fact rather than a suspicion, and the panel is then asked for again
+    // from a widget that sits in it.
+    const QPointer<DockPanel> leftPanelBeforeRestore(p1);
+    wd.openPerspective("A");
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QVERIFY2(leftPanelBeforeRestore.isNull(), "restoring a state must rebuild the panels");
+    p1 = dw1->dockPanel();
+    QVERIFY(p1);
+
+    // Asked one by one as well as by document: when the bytes do differ, these
+    // say which axis came back wrong instead of leaving a diff to be read.
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(dw2->isClosed(), true);
+    QCOMPARE(p1->currentDockWidget(), dw5);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+    QCOMPARE(withoutFloatingWindowGeometry(wd.saveState()), withoutFloatingWindowGeometry(saved));
 }
 
 TEST_ADD(tst_DockWindow)
