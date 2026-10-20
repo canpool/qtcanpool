@@ -802,11 +802,22 @@ QxDock--DockPanel {
    painting, and one that states no background leaves the face to the base
    style - which paints a light button face on every scheme, a patch sitting on
    the title bar. The button is the bar's surface to paint: it states none and
-   steps back in on hover. */
+   steps back in on hover.
+
+   Its height is stated for the same reason, and the number is the tab bar's:
+   the dark skeleton gives every QPushButton a min-height of 18 for the standard
+   buttons it has to repaint, and the light skeleton gives none - so an icon
+   button that leaves its height to the style came out 19 pixels in one scheme
+   and 21 in the other. The row this button sits in is as tall as the tab bar
+   beside it, so the two pixels reached the bar, the title bar, and every
+   splitter size computed while that theme was on. An icon button is 19 in both
+   schemes; where that number comes from is not the platform's to answer. */
 QxDock--TitleBarButton {
     padding: 0px 0px;
     background: transparent;
     border: none;
+    min-height: 19px;
+    max-height: 19px;
 }
 
 QxDock--DockPanel #dockTabsMenuButton::menu-indicator {
@@ -894,6 +905,10 @@ QxDock--TitleBarButton,
     background: transparent;
     border: none;
     padding: 0px -2px;
+    /* The same standard-button min-height reaches this one, and here it costs
+       the tab: the label is a 12-pixel row, so a close button two pixels taller
+       than its icon is two pixels of tab. */
+    min-height: 0px;
     qproperty-iconSize: 16px;
 }
 

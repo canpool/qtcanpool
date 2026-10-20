@@ -50,6 +50,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QProcess>
 #include <QtCore/QProcessEnvironment>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QStringList>
 #include <QtGui/QImage>
 #include <QtTest/QtTest>
@@ -108,17 +109,19 @@ constexpr double kMinThemeDiffPercent = 1.0;
 
 /*!
  * A ceiling for the demos that are known to keep the geometry they were laid out with
- * across a switch. The dock is one: the light sheets give a dock tab bar 19 pixels and
- * the dark ones 21, the splitter has already divided the window up by then, and nothing
- * lays it out again - so switching from dark to light leaves the bottom area 14 pixels
- * lower than a window started in light is. Measured on the three pairs below at 3.5%,
- * 3.5% and 4.3% of the pixels, every one of them along that one edge.
+ * across a switch. The dock is one: the two schemes give their standard controls
+ * different metrics - a scroll bar is 16 pixels wide under a dark skeleton and 14 under
+ * a light scheme's platform style - the splitter has already divided the window up by
+ * then, and nothing lays it out again, so switching leaves the areas a few pixels off
+ * where a window started in the target scheme puts them. Measured on the three pairs
+ * below at 3.6%, 4.8% and 4.8% of the pixels, all of them along the edges that moved.
  *
  * This is not the budget the check wants, it is the range a known defect lives in, and
  * it is kept as a separate assertion so that a surface left in the old theme - tens of
  * percent - still fails instead of being taken for the known shift. See
  * kMaxSwitchDiffPercent for the budget that is actually meant, and 4.6-TASKS for the
- * two ways out.
+ * two ways out. The one metric that has been made to agree, the tab bar's height, is
+ * held down by dockChromeKeepsItsHeightAcrossThemes rather than by this ceiling.
  */
 constexpr double kMaxSwitchDiffPercentAfterLayoutShift = 10.0;
 
@@ -347,6 +350,7 @@ private slots:
     void dockDemoRenders();
     void dockDemoMatchesGolden();
     void dockThemeSwitchMatchesAFreshStart();
+    void dockChromeKeepsItsHeightAcrossThemes();
 #endif
 private:
     QImage m_ribbonScreenshot;
@@ -457,6 +461,64 @@ QImage captureAfterSwitch(const QString &executable, const QString &demoName, co
         return QImage();
     }
     return loadAsArgb32(path);
+}
+
+/*!
+ * The widget tree a demo prints for @p themeId under --inspect, or empty with @p error
+ * set. A capture answers "does this look right"; this answers "what size did this come
+ * out at", which is the question a theme can move by two pixels and still look right.
+ */
+QString runInspect(const QString &executable, const QString &themeId, const QString &logName, QString &error)
+{
+    const QFileInfo demo(executable);
+    if (!demo.exists()) {
+        error = QStringLiteral("the demo is missing: %1").arg(demo.absoluteFilePath());
+        return QString();
+    }
+
+    QDir().mkpath(themeCaptureDirectory());
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+    if (!environment.contains(QStringLiteral("QT_QPA_PLATFORM"))) {
+        environment.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("offscreen"));
+    }
+
+    const QString logPath = themeCaptureDirectory() + QLatin1Char('/') + logName;
+    QProcess process;
+    process.setProcessEnvironment(environment);
+    process.setProgram(demo.absoluteFilePath());
+    process.setArguments(QStringList{QStringLiteral("--theme"), themeId, QStringLiteral("--inspect")});
+    process.setStandardInputFile(QProcess::nullDevice());
+    process.setStandardOutputFile(logPath);
+    process.setStandardErrorFile(logPath);
+    process.start();
+
+    if (!process.waitForStarted(60000)) {
+        error = QStringLiteral("the demo did not start (log at %1)").arg(logPath);
+        return QString();
+    }
+    if (!process.waitForFinished(180000)) {
+        error = QStringLiteral("the demo did not finish (log at %1)").arg(logPath);
+        return QString();
+    }
+
+    QFile logFile(logPath);
+    if (!logFile.open(QIODevice::ReadOnly)) {
+        error = QStringLiteral("the demo log could not be read (log at %1)").arg(logPath);
+        return QString();
+    }
+    const QString output = QString::fromLocal8Bit(logFile.readAll());
+    if (process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0) {
+        error = QStringLiteral("the demo exited with %1:\n%2").arg(process.exitCode()).arg(output);
+        return QString();
+    }
+    return output;
+}
+
+/*! The height in @p tree of the first widget @p pattern names, or -1 when it is not there. */
+int heightIn(const QString &tree, const QString &pattern)
+{
+    const QRegularExpressionMatch match = QRegularExpression(pattern).match(tree);
+    return match.hasMatch() ? match.captured(2).toInt() : -1;
 }
 
 /*!
@@ -589,10 +651,38 @@ void tst_DemoScreenshot::dockThemeSwitchMatchesAFreshStart()
     // What it found is a fourth thing, and not a colour: the switch re-colours every
     // pixel and leaves the layout one theme behind. See kMaxSwitchDiffPercentAfterLayoutShift.
     checkThemeSwitches(QStringLiteral(DEMO_DOCK_EXECUTABLE), QStringLiteral("dockdemo"), m_themeScreenshots,
-                       "the dock keeps the geometry it was laid out with: the bottom area's share of "
-                       "the window was divided up under the previous theme's tab bar metrics, and a "
-                       "switch does not lay the window out again - the colours are correct, the "
-                       "bottom area sits 14 pixels off (4.6-TASKS records the two ways out)");
+                       "the dock keeps the geometry it was laid out with: the standard controls the dark "
+                       "skeleton repaints are given different metrics from the light scheme's platform "
+                       "ones, the splitter has already divided the window up by then, and a switch does "
+                       "not lay the window out again - the colours are correct, the areas sit a few "
+                       "pixels off (4.6-TASKS records the two ways out)");
+}
+
+void tst_DemoScreenshot::dockChromeKeepsItsHeightAcrossThemes()
+{
+    // A title bar is as tall as the tab bar beside it, and that is as tall as the
+    // buttons it shares the row with - so a metric the two schemes disagree on does not
+    // stay in the button, it becomes the layout. The dark skeleton states a min-height
+    // for the standard buttons it has to repaint and the light one states none, which
+    // made an icon button 21 pixels in one scheme and 19 in the other.
+    //
+    // Asserted on the numbers rather than on the pixels: the capture comparison above
+    // spans the whole window and cannot tell a two-pixel metric from a colour the switch
+    // forgot, and it is expected to fail for reasons of its own. This one is the part
+    // that has been fixed, so it is the part that gets a check that cannot be excused.
+    QString error;
+    const QString light = runInspect(QStringLiteral(DEMO_DOCK_EXECUTABLE), QStringLiteral("classic-light"),
+                                     QStringLiteral("inspect-classic-light.log"), error);
+    QVERIFY2(!light.isEmpty(), qPrintable(error));
+    const QString dark = runInspect(QStringLiteral(DEMO_DOCK_EXECUTABLE), QStringLiteral("classic-dark"),
+                                    QStringLiteral("inspect-classic-dark.log"), error);
+    QVERIFY2(!dark.isEmpty(), qPrintable(error));
+
+    const QString tabBar = QStringLiteral("DockTabBar \"\" \\(0,0 (\\d+)x(\\d+)\\)");
+    const QString titleBar = QStringLiteral("\"dockTitleBar\" \\(0,0 (\\d+)x(\\d+)\\)");
+    QVERIFY2(heightIn(light, tabBar) > 0, "the inspect tree carries no dock tab bar");
+    QCOMPARE(heightIn(dark, tabBar), heightIn(light, tabBar));
+    QCOMPARE(heightIn(dark, titleBar), heightIn(light, titleBar));
 }
 #endif
 
