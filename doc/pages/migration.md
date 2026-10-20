@@ -483,3 +483,26 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
     `setViewportRows()` / `scrollByRows()` / `scrollToItem()` / `maxScrollRow()`。
   - `RibbonGallery::currentViewGroup()` 语义变化：返回 **strip 正在显示的那个分组本身**
     （旧实现返回一个内部镜像分组，与 `addGalleryGroup()` 返回的不是同一个对象）。
+
+- **dock 的规则已经并入主题表，别再单独装 `dockStyleSheet()`**（库 `qxapp` / `qxdock`，
+  不破 API，但装错了会静悄悄地看到错的外观）：4.5 让应用自己把 `qxdock::dockStyleSheet(...)`
+  装上去，4.6 把 dock 的规则写进了 `res/themes/` 的每一张表——`applicationStyleSheet()` 出的
+  那一串里**已经含 dock 的规则**，它只额外拼上「属于某个桌面」的那一小段平台片段
+  （`dockPlatformStyleSheet()`，非 X11 上是空的）。
+  - 用主题的应用：`ThemeInstaller::install()`（或自己调 `applicationStyleSheet()`），
+    **不要再叠一次 `dockStyleSheet()`**。两份规则同特异性时 Qt 留先声明的那份，叠上去的
+    那份不会赢，只会让「我装了 dock 表」这句话变成假的。
+  - 不用主题、只要 dock 那套外观的应用：照旧 `qApp->setStyleSheet(qxdock::dockStyleSheet(...))`，
+    这条路径完全没变。
+  - 想让 dock 按某个主题的配色画、但不想装整张表：`dockStyleSheet(const DockStyleColors &, bool)`
+    接一个 `DockStyleColors`，逐字段回退，漏填的字段仍从应用调色板推。
+
+- **`qxwindow::WindowAgentBase::setBorderOwnsCursor()` 是开关不是破坏**：默认 `true`，即现有
+  行为一字不变；`false` 才把缩放边框从命中测试里摘出去，让按在边框上的点击落到画在那里的
+  控件上、光标一路到窗口边缘都还是箭头。4.5 及以前把它记在限制页「要改变它需要什么」里，
+  那条现在删了。不需要迁移。
+
+- **`qxribbon` / `qxdock` / `qxapp` 现在随库带 `zh_CN` 目录**：不装就还是英文，装了才有中文；
+  `QxTranslator` 加载 `qxribbon_zh_CN.qm` / `qxdock_zh_CN.qm` / `qxapp_zh_CN.qm` 即可，
+  `demos/qxapp/ribbondemo --lang zh_CN` 是可跑的样例。诊断信息（`qDebug()` 写出去的那些）
+  故意留英文，不进目录。
