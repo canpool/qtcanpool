@@ -19,6 +19,8 @@
 #include <QDebug>
 #include <QFile>
 #include <QPointer>
+#include <QSettings>
+#include <QStringList>
 #include <QTemporaryDir>
 #include <QApplication>
 #include <QImage>
@@ -58,6 +60,42 @@ QByteArray withoutFloatingWindowGeometry(const QByteArray &state)
     }
     return document;
 }
+
+/*!
+ * The contents of a file, or an empty array if it cannot be read. Used where the
+ * test wants to look at what was written rather than at what the library says
+ * it wrote.
+ */
+QByteArray contentsOf(const QString &fileName)
+{
+    QFile file(fileName);
+    return file.open(QIODevice::ReadOnly) ? file.readAll() : QByteArray();
+}
+
+/*!
+ * The configuration flags are global, and a failed QCOMPARE returns from the
+ * test function on the spot - so a test that changes them has to put them back
+ * on the way out instead of at the end of its own body, or every test that runs
+ * after a failure inherits whatever the failing one had set.
+ */
+class ConfigFlagsGuard
+{
+public:
+    ConfigFlagsGuard()
+        : m_saved(DockManager::configFlags())
+    {
+    }
+
+    ~ConfigFlagsGuard()
+    {
+        DockManager::setConfigFlags(m_saved);
+    }
+
+    ConfigFlagsGuard(const ConfigFlagsGuard &) = delete;
+    ConfigFlagsGuard &operator=(const ConfigFlagsGuard &) = delete;
+private:
+    DockManager::ConfigFlags m_saved;
+};
 }   // namespace
 
 class tst_DockWindow : public QObject
@@ -77,6 +115,8 @@ private slots:
     void stateFile();
     void perspective();
     void perspectiveReturnsToTheSavedBytes();
+    void persistenceRoutesAgreeWithEachOther();
+    void stateFormatIsOnlyARenderingChoice();
     void framelessHost();
     void carriesNoStyleSheetOfItsOwn();
     void styleSheetIsReadFromTheApplication();
@@ -977,6 +1017,276 @@ void tst_DockWindow::perspectiveReturnsToTheSavedBytes()
     QCOMPARE(p1->currentDockWidget(), dw5);
     QCOMPARE(fc1->topLevelDockWidget(), dw4);
     QCOMPARE(withoutFloatingWindowGeometry(wd.saveState()), withoutFloatingWindowGeometry(saved));
+}
+
+/*!
+ * A layout can be written down four ways - a compressed blob from saveState(), a
+ * file from saveStateToFile(), a value an application puts in a QSettings file
+ * itself, and a named perspective carried by savePerspectives() - and all four
+ * have to give back the same layout. This walks each route separately: disturb
+ * the arrangement, restore through that one route, and compare the document
+ * that comes out with the one that went in.
+ *
+ * Every disturbance is first shown to be visible in the document, so that a
+ * route which quietly does nothing cannot pass by leaving the layout alone.
+ *
+ * The QSettings route is taken twice because there are two things to hold on
+ * to. One is the encoding: an ini file escapes its values, and a compressed
+ * blob is full of the bytes that need escaping, so the round trip has to be
+ * byte for byte - and the same has to hold for the plain document, which
+ * contains '=' in every attribute. The other is the library's own array API,
+ * restored into a second window, which is what an application does on its next
+ * start.
+ */
+void tst_DockWindow::persistenceRoutesAgreeWithEachOther()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    ConfigFlagsGuard flags;
+    DockManager::setConfigFlag(DockManager::XmlAutoFormattingEnabled, false);
+    DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, true);
+
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    const QString stateFile = dir.filePath("dock-state.xml");
+    const QString settingsFile = dir.filePath("dock-layout.ini");
+
+    DockWindow wd;
+    wd.resize(1000, 700);
+    wd.show();
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockWidget *dw3 = new DockWidget("dw3");
+    DockWidget *dw4 = new DockWidget("dw4");
+    DockWidget *dw5 = new DockWidget("dw5");
+
+    DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    wd.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
+    wd.addDockWidgetTab(Qx::LeftDockWidgetArea, dw5);
+    DockAutoHideContainer *ahc1 = wd.addAutoHideDockWidget(Qx::DockSideBarTop, dw3);
+    DockFloatingContainer *fc1 = wd.addDockWidgetFloating(dw4);
+
+    dw2->toggleView(false);
+    p1->setCurrentDockWidget(dw5);
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
+
+    const QByteArray recorded = withoutFloatingWindowGeometry(wd.saveState());
+
+    // The four written forms of that one state.
+    const QByteArray blob = wd.saveState();
+    QVERIFY2(!blob.startsWith("<?xml"), "this route is meant to walk the compressed blob");
+    QVERIFY(wd.saveStateToFile(stateFile));
+
+    wd.addPerspective("A");
+
+    // Compression off for a moment, to have the plain document as well.
+    DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, false);
+    const QByteArray plainBlob = wd.saveState();
+    QVERIFY2(plainBlob.startsWith("<?xml"), "with compression off saveState() writes the document");
+    DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, true);
+
+    {
+        QSettings settings(settingsFile, QSettings::IniFormat);
+        settings.setValue("Layout", blob);
+        settings.setValue("PlainLayout", plainBlob);
+        wd.savePerspectives(settings);
+        settings.sync();
+    }
+
+    // Reading through a fresh QSettings object, the way the next start would.
+    const QByteArray blobFromIni = [&settingsFile]() {
+        QSettings settings(settingsFile, QSettings::IniFormat);
+        return settings.value("Layout").toByteArray();
+    }();
+    QVERIFY2(blobFromIni == blob, "a compressed state must survive the ini encoding byte for byte");
+
+    const QByteArray plainFromIni = [&settingsFile]() {
+        QSettings settings(settingsFile, QSettings::IniFormat);
+        return settings.value("PlainLayout").toByteArray();
+    }();
+    QVERIFY2(plainFromIni == plainBlob, "a plain document must survive the ini escaping as well");
+
+    // Move everything that can move, then read the document back and compare.
+    // The panel is asked for again each time: a restore rebuilds the panels and
+    // only schedules the old ones for deletion, as perspective() states.
+    const auto disturb = [&]() -> bool {
+        ahc1->moveToNewSideBarArea(Qx::DockSideBarBottom);
+        dw2->toggleView(true);
+        DockPanel *panel = dw1->dockPanel();
+        if (!panel) {
+            return false;
+        }
+        panel->setCurrentDockWidget(dw1);
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
+        return true;
+    };
+    const auto document = [&]() {
+        return withoutFloatingWindowGeometry(wd.saveState());
+    };
+
+    QVERIFY(disturb());
+    QVERIFY2(document() != recorded, "the disturbance must show in the document, or a restore proves nothing");
+    QVERIFY(wd.restoreState(blob));
+    QCOMPARE(document(), recorded);
+
+    // Asked one by one as well, so that a failing comparison says which axis
+    // came back wrong instead of leaving a diff to be read.
+    QCOMPARE(ahc1->sideBarArea(), Qx::DockSideBarTop);
+    QCOMPARE(dw2->isClosed(), true);
+    QCOMPARE(dw1->dockPanel()->currentDockWidget(), dw5);
+    QCOMPARE(fc1->topLevelDockWidget(), dw4);
+
+    QVERIFY(disturb());
+    QVERIFY2(document() != recorded, "the disturbance must show in the document, or a restore proves nothing");
+    QVERIFY(wd.restoreStateFromFile(stateFile));
+    QCOMPARE(document(), recorded);
+
+    QVERIFY(disturb());
+    QVERIFY2(document() != recorded, "the disturbance must show in the document, or a restore proves nothing");
+    QVERIFY(wd.restoreState(blobFromIni));
+    QCOMPARE(document(), recorded);
+
+    QVERIFY(disturb());
+    QVERIFY2(document() != recorded, "the disturbance must show in the document, or a restore proves nothing");
+    QVERIFY(wd.restoreState(plainFromIni));
+    QCOMPARE(document(), recorded);
+
+    // The same document, restored into a second window that only knows the
+    // perspective by the name it was saved under - the route an application
+    // takes when it starts again.
+    DockWindow reopened;
+    reopened.resize(1000, 700);
+    reopened.show();
+
+    DockWidget *r1 = new DockWidget("dw1");
+    DockWidget *r2 = new DockWidget("dw2");
+    DockWidget *r3 = new DockWidget("dw3");
+    DockWidget *r4 = new DockWidget("dw4");
+    DockWidget *r5 = new DockWidget("dw5");
+
+    DockPanel *rp = reopened.addDockWidget(Qx::LeftDockWidgetArea, r1);
+    reopened.addDockWidget(Qx::RightDockWidgetArea, r2, rp);
+    reopened.addDockWidgetTab(Qx::LeftDockWidgetArea, r5);
+    reopened.addAutoHideDockWidget(Qx::DockSideBarTop, r3);
+    reopened.addDockWidgetFloating(r4);
+
+    {
+        QSettings settings(settingsFile, QSettings::IniFormat);
+        reopened.loadPerspectives(settings);
+    }
+    QCOMPARE(reopened.perspectiveNames(), QStringList{QStringLiteral("A")});
+    reopened.openPerspective("A");
+
+    // The second window has just been filled for the first time; let its layout
+    // run, or the comparison is between two different moments.
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
+    QCOMPARE(withoutFloatingWindowGeometry(reopened.saveState()), recorded);
+}
+
+/*!
+ * The format flags decide how a layout is written down, never what it says.
+ * Three things follow, and this states each of them against the public API.
+ *
+ * Automatic formatting adds line breaks and indentation, and a document written
+ * either way restores to the same layout. Compression changes saveState() from
+ * the document to a qCompress() blob, and it is a writer's choice: both forms
+ * are read back with the flag in either position, because restoreState() looks
+ * at what the bytes are and not at what the flag currently says. And a file
+ * written by saveStateToFile() is always the plain document, because a file on
+ * disk is meant to be looked at by a person.
+ *
+ * The version number is the other half of the same subject: it is not a format
+ * detail but a contract, so a document saved as version 7 must be refused by a
+ * caller asking for version 8, and refusing has to leave the layout exactly as
+ * it was.
+ */
+void tst_DockWindow::stateFormatIsOnlyARenderingChoice()
+{
+    DockManager::setAutoHideConfigFlags(DockManager::DefaultAutoHideConfig);
+    ConfigFlagsGuard flags;
+
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    DockWindow wd;
+    wd.resize(800, 600);
+    wd.show();
+
+    DockWidget *dw1 = new DockWidget("dw1");
+    DockWidget *dw2 = new DockWidget("dw2");
+    DockPanel *p1 = wd.addDockWidget(Qx::LeftDockWidgetArea, dw1);
+    wd.addDockWidget(Qx::RightDockWidgetArea, dw2, p1);
+    dw2->toggleView(false);
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
+
+    const QString compactFile = dir.filePath("compact.xml");
+    const QString prettyFile = dir.filePath("pretty.xml");
+
+    DockManager::setConfigFlag(DockManager::XmlAutoFormattingEnabled, false);
+    QVERIFY(wd.saveStateToFile(compactFile));
+    DockManager::setConfigFlag(DockManager::XmlAutoFormattingEnabled, true);
+    QVERIFY(wd.saveStateToFile(prettyFile));
+
+    const QByteArray compact = contentsOf(compactFile);
+    const QByteArray pretty = contentsOf(prettyFile);
+
+    QVERIFY(compact.startsWith("<?xml"));
+    QVERIFY(pretty.startsWith("<?xml"));
+    QVERIFY2(pretty.count('\n') > compact.count('\n'), "automatic formatting is what puts the line breaks in");
+
+    // Both renderings describe the same layout, so both restore to the same one.
+    const QString afterCompactFile = dir.filePath("after-compact.xml");
+    const QString afterPrettyFile = dir.filePath("after-pretty.xml");
+
+    QVERIFY(wd.restoreState(compact));
+    QVERIFY(wd.saveStateToFile(afterCompactFile));
+    const QByteArray afterCompact = contentsOf(afterCompactFile);
+
+    QVERIFY(wd.restoreState(pretty));
+    QVERIFY(wd.saveStateToFile(afterPrettyFile));
+    const QByteArray afterPretty = contentsOf(afterPrettyFile);
+
+    QCOMPARE(afterPretty, afterCompact);
+
+    // Compression is a writer's choice, not a reader's: each form is read back
+    // with the flag in the position it was not written in.
+    DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, true);
+    const QByteArray compressed = wd.saveState();
+    QVERIFY2(!compressed.startsWith("<?xml"), "saveState() compresses when the flag asks it to");
+    QVERIFY(qUncompress(compressed).startsWith("<?xml"));
+
+    const QString plainFile = dir.filePath("plain.xml");
+    QVERIFY(wd.saveStateToFile(plainFile));
+    const QByteArray plain = contentsOf(plainFile);
+
+    QVERIFY2(plain.startsWith("<?xml"), "a file on disk is never the compressed blob");
+    QCOMPARE(plain, contentsOf(prettyFile));
+
+    DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, false);
+    QVERIFY2(wd.restoreState(compressed), "a compressed document must be readable with compression off");
+    DockManager::setConfigFlag(DockManager::XmlCompressionEnabled, true);
+    QVERIFY2(wd.restoreState(plain), "a plain document must be readable with compression on");
+
+    // A version mismatch is refused, and refusing does not touch the layout.
+    const QString versionedFile = dir.filePath("version-7.xml");
+    QVERIFY(wd.saveStateToFile(versionedFile, 7));
+    const QByteArray versioned = contentsOf(versionedFile);
+
+    dw2->toggleView(true);
+    QCOMPARE(dw2->isClosed(), false);
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::LayoutRequest);
+
+    const QString disturbedFile = dir.filePath("disturbed.xml");
+    const QString refusedFile = dir.filePath("refused.xml");
+    QVERIFY(wd.saveStateToFile(disturbedFile));
+    const QByteArray disturbed = contentsOf(disturbedFile);
+
+    QCOMPARE(wd.restoreState(versioned, 8), false);
+    QVERIFY(wd.saveStateToFile(refusedFile));
+    QCOMPARE(contentsOf(refusedFile), disturbed);
+
+    QVERIFY(wd.restoreState(versioned, 7));
+    QCOMPARE(dw2->isClosed(), true);
 }
 
 TEST_ADD(tst_DockWindow)
