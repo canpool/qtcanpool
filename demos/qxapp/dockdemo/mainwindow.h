@@ -52,6 +52,18 @@ public:
     void restoreFromSettings();
 
     /*!
+     * Switches the window to \a themeId, one of the registered theme ids.
+     *
+     * Only main()'s --theme sequence calls this: the Theme menu goes straight to
+     * the engine. There is nothing to check on the way - an id the engine does
+     * not know is warned about and ignored - and nothing to install, since
+     * m_theme listens to themeChanged. It exists so that a capture can ask for
+     * "start here, then switch there" in one run, which is the shape the ribbon
+     * demo's --theme already has, and the one thing a single capture cannot show.
+     */
+    void applyTheme(const QString &themeId);
+
+    /*!
      * Opens the auto hide panel the demo owns, as if its side tab had been
      * clicked. A capture needs it: the auto hide title bar is filled with the
      * highlight and the tabs sit inside it, and a screenshot that only ever

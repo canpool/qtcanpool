@@ -177,6 +177,16 @@ void MainWindow::createTheme(const QString &themeId)
     createThemeMenu();
 }
 
+void MainWindow::applyTheme(const QString &themeId)
+{
+    // One call, because the window installs the theme in one place: the
+    // ThemeInstaller m_theme owns listens to themeChanged and redoes the sheet,
+    // the dock's sheet and the glyphs. Adding anything here would be a second
+    // path to the same result, which is the mistake the dock's own styling
+    // history is a record of.
+    QxThemeManager::instance()->setTheme(themeId);
+}
+
 void MainWindow::createThemeMenu()
 {
     QxThemeManager *engine = QxThemeManager::instance();

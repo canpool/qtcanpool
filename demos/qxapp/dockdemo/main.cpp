@@ -9,8 +9,10 @@
 #include <QCommandLineParser>
 #include <QAbstractButton>
 #include <QColor>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QEventLoop>
 #include <QGuiApplication>
 #include <QHash>
 #include <QImage>
@@ -252,11 +254,18 @@ int main(int argc, char *argv[])
 
     const QString screenshotFile = parser.value(screenshotOption);
     const bool inspect = parser.isSet(QStringLiteral("inspect"));
+    // A comma-separated list switches through the themes in order, so a capture
+    // can show what the window looks like after a switch and not only after a
+    // start - the same shape the ribbon demo's --theme has, and what the theme
+    // switch test drives.
+    const QStringList themeIds = parser.isSet(QStringLiteral("theme"))
+                                     ? parser.value(themeOption).split(QLatin1Char(','), Qt::SkipEmptyParts)
+                                     : QStringList();
     // An interactive run keeps whatever theme the engine restored from last time,
     // so the demo opens on the one the user left it on. A capture names one: the
     // golden has to be the same picture whatever the machine's last run picked.
-    const QString themeId = parser.isSet(QStringLiteral("theme"))
-                                ? parser.value(themeOption)
+    const QString themeId = !themeIds.isEmpty()
+                                ? themeIds.first().trimmed()
                                 : ((screenshotFile.isEmpty() && !inspect) ? QString() : QStringLiteral("soft-light"));
 
     if (!screenshotFile.isEmpty()) {
@@ -278,6 +287,20 @@ int main(int argc, char *argv[])
     // runs; a screenshot must neither read one nor write one, so that the
     // capture is the demo's own layout on every machine.
     MainWindow w(nullptr, !screenshotFile.isEmpty(), themeId);
+
+    if (themeIds.size() > 1) {
+        // The window is built on the first theme, so the rest are asked for
+        // behind the construction. A switch is a stack of palette and sheet
+        // changes, and the dock re-tints its glyphs from them; let each land
+        // before the next one is asked for, or the capture is of a window
+        // halfway between two themes.
+        QTimer::singleShot(0, &w, [&w, themeIds]() {
+            for (int i = 1; i < themeIds.size(); ++i) {
+                w.applyTheme(themeIds.at(i).trimmed());
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            }
+        });
+    }
 
     if (screenshotFile.isEmpty()) {
         w.show();
