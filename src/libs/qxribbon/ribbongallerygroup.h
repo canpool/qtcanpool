@@ -46,6 +46,13 @@ public:
 
     /**
      * @brief Defines the number of icon rows the Gallery displays under a group
+     *
+     * The rows share the height the strip already has instead of asking for more:
+     * the grid is (height - (rows + 1) * spacing) / rows tall, so an item in a
+     * three-row group is about a third of the height of an item in a one-row
+     * group. Icon-only groups are what this suits; a group with text needs a strip
+     * tall enough to give every row a readable height, and the strip a ribbon
+     * gives is about one row deep (see RibbonGallery's size hint).
      */
     enum DisplayRow {
         DisplayOneRow = 1,   ///< display 1 row, default
