@@ -349,7 +349,7 @@ QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QTimeEdit, QDate
 
 QLineEdit[echoMode="2"] {
   lineedit-password-character: 9679;
-  font-size: 10px;
+  font-size: {{type-caption}};
 }
 
 QLineEdit:hover, QTextEdit:hover, QPlainTextEdit:hover, QSpinBox:hover, QDoubleSpinBox:hover,
@@ -410,7 +410,7 @@ QComboBox QAbstractItemView {
 }
 
 QComboBox QAbstractItemView::item {
-  font-size: 15px;
+  font-size: {{type-body}};
   height: 20px;
 }
 
@@ -490,7 +490,7 @@ QCalendarWidget QToolButton::menu-indicator{
 }
 
 QCalendarWidget QTableView {
-  font-size: 13px;
+  font-size: {{type-subtitle}};
   border-width:  0px;
   color: {{text}};
   background-color: {{surface}};

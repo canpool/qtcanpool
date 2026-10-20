@@ -254,6 +254,24 @@ SHAPE = {
 # it is checked on the raw sheet - after fill() a tier *is* a pixel count, so
 # the generated sheet is the wrong place to look.
 RADIUS = re.compile(r"border-radius\s*:\s*[0-9]")
+# The type tiers, the second non-colour vocabulary. The values are the sizes the
+# dark skeleton already emitted - caption is the password character, subtitle is
+# the calendar grid, body is the size the combo popup reads at - kept so a theme
+# regenerates to the same bytes it replaced; title has no user in these sheets
+# yet and is there for the ones coming. The light skeleton carries no type rules
+# (a light theme leaves the standard widgets to the platform style), so the
+# scale is picked once here, from the dark side's current values, and both
+# skeletons read the same tiers when they name one - that is the flattening,
+# not a second scale invented for light.
+TYPE = {
+    "type-caption": "10px",
+    "type-subtitle": "13px",
+    "type-body": "15px",
+    "type-title": "18px",
+}
+# A font size the gate can see spelled out is one a hand wrote past the tiers,
+# checked on the raw sheet for the same reason RADIUS is.
+FONT_SIZE = re.compile(r"font-size\s*:\s*[0-9]")
 # The dock's half of a theme: one file, not one per scheme, because the two
 # schemes ask it for the same structure and differ only in what the tokens are
 # filled with. It stays in res/ rather than here because the library renders it
@@ -490,6 +508,7 @@ def build(family, scheme):
     palette = dict(PALETTES[(family, scheme)])
     palette.update(WASHES)
     palette.update(SHAPE)
+    palette.update(TYPE)
     palette["subtle"] = SUBTLE[scheme]
     menu = read(HERE / "menu.css")
     skeleton = read(HERE / f"skeleton_{scheme}.css")
@@ -514,6 +533,9 @@ def main():
         if RADIUS.search(raw):
             problems.append(f"{family}_{scheme}: a border-radius spells a pixel "
                             "count where a corner tier belongs")
+        if FONT_SIZE.search(raw):
+            problems.append(f"{family}_{scheme}: a font-size spells a pixel "
+                            "count where a type tier belongs")
     if problems:
         for line in problems:
             print(line, file=sys.stderr)
