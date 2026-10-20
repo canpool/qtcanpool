@@ -272,6 +272,27 @@ TYPE = {
 # A font size the gate can see spelled out is one a hand wrote past the tiers,
 # checked on the raw sheet for the same reason RADIUS is.
 FONT_SIZE = re.compile(r"font-size\s*:\s*[0-9]")
+# The spacing tiers, the third non-colour vocabulary: every value sits on the
+# 4px grid, so a sheet cannot place an element between the steps. The chrome
+# files speak them first - a family picks its tier per element, the way it
+# picks a corner - and the skeletons still spell their paddings out; the gate
+# below holds the chrome files to the tiers until the rest follows. The sheets
+# speak the comfortable tier; compact is the control libraries' runtime switch,
+# which follows the same tier names rather than a second scale. classic and
+# accent carried a 10px tab padding that the grid has no step for - classic
+# takes sm, the tighter boxy manner it already had; accent takes md, since a
+# solid block of accent reads better with the room.
+SPACING = {
+    "space-xs": "4px",
+    "space-sm": "8px",
+    "space-md": "12px",
+    "space-lg": "16px",
+}
+# A padding in a chrome file spelled out is one a hand wrote past the tiers.
+# The gate reads the chrome file on its own - the skeletons and menu.css still
+# spell paddings legitimately, and the combined sheet would fail for the wrong
+# file's sake.
+PAD = re.compile(r"padding[a-z-]*\s*:\s*[0-9]")
 # The dock's half of a theme: one file, not one per scheme, because the two
 # schemes ask it for the same structure and differ only in what the tokens are
 # filled with. It stays in res/ rather than here because the library renders it
@@ -509,6 +530,7 @@ def build(family, scheme):
     palette.update(WASHES)
     palette.update(SHAPE)
     palette.update(TYPE)
+    palette.update(SPACING)
     palette["subtle"] = SUBTLE[scheme]
     menu = read(HERE / "menu.css")
     skeleton = read(HERE / f"skeleton_{scheme}.css")
@@ -536,6 +558,11 @@ def main():
         if FONT_SIZE.search(raw):
             problems.append(f"{family}_{scheme}: a font-size spells a pixel "
                             "count where a type tier belongs")
+    for family in FAMILIES:
+        chrome_raw = read(HERE / f"chrome_{family}.css")
+        if PAD.search(chrome_raw):
+            problems.append(f"chrome_{family}: a padding spells a pixel count "
+                            "where a spacing tier belongs")
     if problems:
         for line in problems:
             print(line, file=sys.stderr)

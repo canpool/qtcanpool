@@ -658,8 +658,8 @@ QxRibbon--RibbonTabBar QAbstractButton:pressed {
 QxRibbon--RibbonTabBar::tab {
   color: #605e5c;
   border: 0px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
   margin-top: 2px;
 }
 

@@ -30,8 +30,8 @@ QxRibbon--RibbonTabBar::tab {
   color: {{text-muted}};
   border: 0px;
   border-top: 1px solid transparent;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: {{space-sm}};
+  padding-right: {{space-sm}};
   margin-left: 0px;
 }
 
