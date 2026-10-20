@@ -18,6 +18,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QContextMenuEvent>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QHoverEvent>
 #include <QKeyEvent>
@@ -205,7 +206,11 @@ RibbonBarPrivate::RibbonBarPrivate()
 void RibbonBarPrivate::init()
 {
     Q_Q(RibbonBar);
-    m_applicationButton = new RibbonApplicationButton(tr("app"), q);
+    // The private class derives QObject without Q_OBJECT, so a bare tr() here
+    // resolves to QObject::tr() while lupdate files it under
+    // RibbonBarPrivate - two different answers, and neither finds the other.
+    // RibbonBar is the class the button belongs to, so name it.
+    m_applicationButton = new RibbonApplicationButton(QCoreApplication::translate("RibbonBar", "app"), q);
     connect(m_applicationButton, &QAbstractButton::clicked, q, &RibbonBar::applicationButtonClicked);
     dressApplicationButton(m_applicationButton);
     m_tabBar = new RibbonTabBar(q);

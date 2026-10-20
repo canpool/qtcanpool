@@ -9,6 +9,7 @@
 
 #include <QAction>
 #include <QActionEvent>
+#include <QCoreApplication>
 #include <QEvent>
 #include <QFrame>
 #include <QIcon>
@@ -75,7 +76,12 @@ void RibbonBackstageViewPrivate::init(RibbonBar *ribbonBar)
     m_closeButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     m_closeButton->setAutoRaise(true);
     m_closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    m_closeButton->setToolTip(q->tr("Back"));
+    // tr() here would look like it belongs to RibbonBackstageViewPrivate, and
+    // the two disagree: lupdate takes the enclosing class for the context while
+    // tr() takes the class whose Q_OBJECT defined it, which for q->tr() is the
+    // public one. The explicit call names the context both sides then agree on,
+    // and the button keeps the context it always asked for.
+    m_closeButton->setToolTip(QCoreApplication::translate("RibbonBackstageView", "Back"));
     m_menuLayout->addWidget(m_closeButton);
     m_menuLayout->addStretch();
 

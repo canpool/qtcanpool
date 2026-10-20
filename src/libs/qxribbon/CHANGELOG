@@ -14,7 +14,6 @@ Addition
   again, so the widget keeps the position and size it was born with. The ribbon's
   entry point shows it and re-runs the layout. Those corners are the ones Qt uses
   while an MDI child is maximized, for the child's icon and its window buttons.
-
 Fixed
 - Corner widgets keep the room and the row the ribbon gives them. Both are outside this
   class's control - Qt installs an MDI child's icon and window buttons there, and an
@@ -73,6 +72,16 @@ Fixed
   the first time a tip was shown": after a switch to a dark theme the tip kept
   the light theme's black text. tst_RibbonButton::screenTipFollowsThePalette is
   the check.
+- Two strings finally answer to a translation. "Back", the tooltip of the
+  backstage view's close button, was asked for through q->tr() and "app", the
+  application button's default text, through a bare tr() - both from inside a
+  private class that derives QObject without Q_OBJECT, and that is the one place
+  where lupdate and the run time disagree on what a context is: lupdate files the
+  message under the class it is written in, while tr() answers with the class
+  whose Q_OBJECT defined it, that class having no Q_OBJECT of its own and so
+  inheriting QObject's. The two names never met, which no amount of translating
+  could have cured. Both now name their context explicitly, in the public class
+  the string belongs to.
 - The close button's hover glyph no longer reads QPalette::HighlightedText. That
   role is the pair of QPalette::Highlight - what sits on the application's
   emphasis - and a theme that emphasizes with a light colour makes it dark,
@@ -643,3 +652,4 @@ Other
 0.5.x
 ---
 - See to https://gitee.com/icanpool/QxRibbon
+
