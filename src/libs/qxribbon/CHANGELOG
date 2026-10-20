@@ -23,6 +23,27 @@ Addition
   interface runs in. tst_RibbonTranslations::catalogue holds the strings to that.
 
 Fixed
+- A gallery's popup keeps one item size whatever the strip is showing, and it stays
+  on the screen. Picking an item out of another group makes the strip show that
+  group - that is what the Office gallery does, and the strip still shows the rows
+  DisplayRow asks for - but a group asking for three display rows divides the
+  strip's height by three, so its own grid is a third as tall. The popup took that
+  grid as the item size for every group it showed, so each pick made the next popup
+  smaller by a step, and the sizes had nothing to do with the popup's own width,
+  which is where the items are laid out. An item is now one row of the strip's,
+  taken from the strip's height rather than from the group the strip happens to
+  show. The height a group needs is measured at the width it really gets as well:
+  it used to be derived from a guessed width (the popup's minus a scroll bar and a
+  fudge), which came out one column short of the width the layout then handed the
+  preview and left a row of empty space under the last group -
+  RibbonGalleryPreview::syncHeight() states it when the width arrives, since a
+  scroll area never asks for heightForWidth. And the popup is placed against the
+  screen and not the strip alone: it opens upwards when the room below is not
+  enough, measured from the strip's top edge (stepping back from its bottom used to
+  hang the popup off the top of the screen whenever the window sat low), it is cut
+  down to the side with more room when neither side can hold it, and it is moved
+  back onto the screen sideways when the gallery is nearly as wide as the screen.
+  tst_RibbonGallery::popupItemsKeepTheirSize and popupStaysOnScreen are the checks.
 - Corner widgets keep the room and the row the ribbon gives them. Both are outside this
   class's control - Qt installs an MDI child's icon and window buttons there, and an
   application may install anything - and the placement computed by the last layout went

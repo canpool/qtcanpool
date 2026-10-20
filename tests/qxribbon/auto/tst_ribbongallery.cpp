@@ -10,9 +10,58 @@
 #include <QAction>
 #include <QApplication>
 #include <QKeyEvent>
+#include <QScreen>
+#include <QScrollArea>
 #include <QSignalSpy>
 
 QX_RIBBON_USE_NAMESPACE
+
+namespace
+{
+/*! The popup the gallery manages, as a widget - it is not part of the public API. */
+QWidget *galleryPopup(RibbonGallery *gallery)
+{
+    const QList<QWidget *> children = gallery->findChildren<QWidget *>();
+    for (QWidget *w : children) {
+        if (w->windowFlags() & Qt::Popup) {
+            return w;
+        }
+    }
+    return nullptr;
+}
+
+/*!
+ * The previews inside \a popup, in the order the groups were added.
+ *
+ * RibbonGalleryPreview has no Q_OBJECT, so it has no class name to look for; the
+ * scroll area's content is where the previews (and the group titles) live, and a
+ * title is the one thing there that is a QLabel.
+ */
+QList<QWidget *> popupPreviews(QWidget *popup)
+{
+    QList<QWidget *> previews;
+    if (!popup) {
+        return previews;
+    }
+    for (QScrollArea *area : popup->findChildren<QScrollArea *>()) {
+        QWidget *content = area->widget();
+        if (!content) {
+            continue;
+        }
+        for (QWidget *w : content->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly)) {
+            if (!w->inherits("QLabel")) {
+                previews.append(w);
+            }
+        }
+    }
+    return previews;
+}
+
+QString rectText(const QRect &r)
+{
+    return QStringLiteral("%1,%2 %3x%4").arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
+}
+}   // namespace
 
 class tst_RibbonGallery : public QObject
 {
@@ -22,6 +71,8 @@ private slots:
     void keyboard();
     void geometry();
     void scrolling();
+    void popupItemsKeepTheirSize();
+    void popupStaysOnScreen();
 };
 
 void tst_RibbonGallery::group()
@@ -183,6 +234,135 @@ void tst_RibbonGallery::scrolling()
     alone.show();
     QCOMPARE(alone.viewportRows(), 0);
     QCOMPARE(alone.maxScrollRow(), 0);
+}
+
+/*
+ * The popup's items are the strip's items, whatever the strip is showing.
+ *
+ * A group that asks for three display rows divides the strip's height by three,
+ * so its own grid is a third as tall. The popup used to take that grid as the
+ * size of an item for every group it showed, which made the whole popup shrink a
+ * step each time an item in another group was picked - the strip follows the
+ * choice, so the group it followed answered with a smaller grid. The popup is
+ * laid out by its own width, and its items are one row of the strip's worth big.
+ */
+void tst_RibbonGallery::popupItemsKeepTheirSize()
+{
+    RibbonGallery gallery;
+    QList<QAction *> oneRow;
+    QList<QAction *> threeRows;
+    for (int i = 0; i < 30; ++i) {
+        oneRow << new QAction(tr("one%1").arg(i), &gallery);
+        threeRows << new QAction(tr("three%1").arg(i), &gallery);
+    }
+    RibbonGalleryGroup *one = gallery.addGalleryGroup(tr("one"), oneRow);
+    RibbonGalleryGroup *three = gallery.addGalleryGroup(tr("three"), threeRows);
+    three->setGalleryGroupStyle(RibbonGalleryGroup::IconOnly);
+    three->setDisplayRow(RibbonGalleryGroup::DisplayThreeRow);
+    gallery.setCurrentViewGroup(one);
+
+    // The width is chosen so that five pixels decide a column: the height a group
+    // needs depends on how many columns its width buys, and the old measurement
+    // guessed a width five pixels short of the one the layout then gave the
+    // preview. Only near a column boundary does that guess cost a whole row, which
+    // is the band of empty surface this asserts is not there.
+    gallery.resize(577, 64);
+    gallery.show();
+    QCoreApplication::processEvents();
+
+    gallery.showMoreDetail();
+    QCoreApplication::processEvents();
+    QWidget *popup = galleryPopup(&gallery);
+    QVERIFY(popup);
+    QVERIFY(popup->isVisible());
+
+    const QList<QWidget *> before = popupPreviews(popup);
+    QCOMPARE(before.count(), 2);
+    QList<int> heights;
+    for (QWidget *preview : before) {
+        heights << preview->height();
+    }
+    QVERIFY(heights.at(0) > 0);
+
+    // And no row of empty space under the group: the height is what its items
+    // need at the width the preview actually has, not at a width guessed before
+    // the layout ran. A guess one column too narrow is one row too much, which is
+    // a band of empty surface under the last group.
+    const int spacing = one->spacing();
+    const int gridHeight = gallery.contentsRect().height() - 2 * spacing;
+    const int gridWidth = qMax(gridHeight, one->gridMinimumWidth());
+    const int columns = qMax(1, (before.at(0)->width() + spacing) / (gridWidth + spacing));
+    const int rows = (one->itemCount() + columns - 1) / columns;
+    const int needed = rows * (gridHeight + spacing) - spacing + 2 * spacing;
+    QCOMPARE(before.at(0)->height(), needed);
+    popup->hide();
+
+    // The strip now shows the three-row group, so its own items are smaller -
+    // that is what DisplayRow asks for, and the assertion is the premise of this
+    // test rather than a restatement of the fix.
+    gallery.setCurrentViewGroup(three);
+    QCoreApplication::processEvents();
+    QVERIFY2(three->gridSize().height() < one->gridSize().height(),
+             qPrintable(QStringLiteral("strip grids: one=%1 three=%2")
+                            .arg(one->gridSize().height())
+                            .arg(three->gridSize().height())));
+
+    gallery.showMoreDetail();
+    QCoreApplication::processEvents();
+    const QList<QWidget *> after = popupPreviews(popup);
+    QCOMPARE(after.count(), 2);
+    for (int i = 0; i < after.count() && i < heights.count(); ++i) {
+        QCOMPARE(after.at(i)->height(), heights.at(i));
+    }
+}
+
+/*
+ * The popup opens under the strip only when it fits there: against the bottom of
+ * the screen it has to open upwards, and against the right edge it has to stay
+ * on the screen sideways. It used to be placed at the strip's left edge and under
+ * it unconditionally, with no answer for either edge - when it flipped up it
+ * flipped by its whole height from the strip's bottom, which leaves the popup
+ * hanging off the top of the screen whenever the window sits low.
+ */
+void tst_RibbonGallery::popupStaysOnScreen()
+{
+    RibbonGallery gallery;
+    QList<QAction *> actions;
+    for (int i = 0; i < 60; ++i) {
+        actions << new QAction(tr("action%1").arg(i), &gallery);
+    }
+    RibbonGalleryGroup *group = gallery.addGalleryGroup(tr("group"), actions);
+    QVERIFY(group);
+    QScreen *screen = gallery.screen();
+    QVERIFY(screen);
+    const QRect avail = screen->availableGeometry();
+    gallery.resize(qMin(400, qMax(120, avail.width() - 20)), 90);
+    gallery.show();
+    QCoreApplication::processEvents();
+
+    // Against the bottom edge: there is no room below, and the popup is taller
+    // than what is left of the screen, so it has to end up above the strip.
+    gallery.move(avail.left() + 10, avail.bottom() - gallery.height() + 1);
+    QCoreApplication::processEvents();
+    gallery.showMoreDetail();
+    QCoreApplication::processEvents();
+    QWidget *popup = galleryPopup(&gallery);
+    QVERIFY(popup);
+    QVERIFY2(avail.contains(popup->geometry()),
+             qPrintable(
+                 QStringLiteral("bottom edge: popup %1, screen %2").arg(rectText(popup->geometry()), rectText(avail))));
+    QVERIFY(popup->geometry().bottom() <= gallery.mapToGlobal(QPoint(0, 0)).y());
+    popup->hide();
+
+    // Against the right edge: the width comes from the gallery, which is nearly
+    // as wide as the window, so it has to be moved back onto the screen.
+    gallery.move(avail.right() - gallery.width() + 1, avail.top() + 10);
+    QCoreApplication::processEvents();
+    gallery.showMoreDetail();
+    QCoreApplication::processEvents();
+    QVERIFY2(avail.contains(popup->geometry()),
+             qPrintable(
+                 QStringLiteral("right edge: popup %1, screen %2").arg(rectText(popup->geometry()), rectText(avail))));
 }
 
 TEST_ADD(tst_RibbonGallery)

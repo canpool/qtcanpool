@@ -8,7 +8,6 @@
 #include "ribboncontrols.h"
 #include "ribbonutils.h"
 
-#include <QApplication>
 #include <QEvent>
 #include <QIcon>
 #include <QAction>
@@ -44,7 +43,8 @@ public:
     void refresh();
     /// The grid the popup paints with. A group that has never been laid out keeps
     /// a stale one, and the popup cannot borrow the width of a group it does not
-    /// show - so the gallery hands every preview the same grid the strip uses.
+    /// show - so the gallery hands every preview the grid one strip row's worth of
+    /// items is drawn with.
     void setGrid(const QSize &grid);
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -52,16 +52,19 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 private:
     void fill(RibbonGalleryPaintSpec &spec) const;
     QRect area() const;
     QSize grid() const;
+    void syncHeight();
 private:
     RibbonGallery *m_gallery;
     RibbonGalleryGroup *m_group;
     QSize m_grid;
     int m_hoverIndex;
     int m_pressedIndex;
+    bool m_syncingHeight;
 };
 
 RibbonGalleryPreview::RibbonGalleryPreview(RibbonGallery *gallery, RibbonGalleryGroup *group, QWidget *parent)
@@ -70,6 +73,7 @@ RibbonGalleryPreview::RibbonGalleryPreview(RibbonGallery *gallery, RibbonGallery
     , m_group(group)
     , m_hoverIndex(-1)
     , m_pressedIndex(-1)
+    , m_syncingHeight(false)
 {
     setMouseTracking(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -95,8 +99,46 @@ void RibbonGalleryPreview::setGrid(const QSize &grid)
         return;
     }
     m_grid = grid;
+    syncHeight();
     updateGeometry();
     update();
+}
+
+/*!
+ * States the height this preview needs at the width it has.
+ *
+ * heightForWidth() is the right answer and the popup cannot ask for it: a widget
+ * inside a QScrollArea is laid out by its size hint, and a scroll area does not
+ * propagate heightForWidth to the widget it scrolls. So the preview works it out
+ * itself whenever it is given a width - which is also what keeps the answer true
+ * when the vertical scroll bar appears and takes 14 pixels off that width.
+ *
+ * The guard is for the round trip: setFixedHeight() resizes the widget, and the
+ * resize asks this again. One pass is enough; a second one would only re-derive
+ * the number that was just written.
+ */
+void RibbonGalleryPreview::syncHeight()
+{
+    if (m_syncingHeight) {
+        return;
+    }
+    const int w = width();
+    if (w <= 0) {
+        return;
+    }
+    const int h = heightForWidth(w);
+    if (h <= 0 || (minimumHeight() == h && maximumHeight() == h)) {
+        return;
+    }
+    m_syncingHeight = true;
+    setFixedHeight(h);
+    m_syncingHeight = false;
+}
+
+void RibbonGalleryPreview::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    syncHeight();
 }
 
 void RibbonGalleryPreview::fill(RibbonGalleryPaintSpec &spec) const
@@ -334,15 +376,23 @@ void RibbonGalleryPrivate::updateButtonState()
 
 void RibbonGalleryPrivate::refreshPreviews()
 {
-    // Every preview paints with the grid the strip is using, so the popup and the
-    // strip agree on how big an item is - a group that has never been laid out
-    // would otherwise keep the stale size it was born with.
-    const int rowHeight =
-        (m_currentGroup && m_currentGroup->gridSize().isValid()) ? m_currentGroup->gridSize().height() : 64;
+    Q_Q(RibbonGallery);
+    // The size of an item in the popup is one row of the strip's - not the grid
+    // the group the strip happens to show was compressed to. A group with three
+    // display rows divides the strip's height by three, and taking that answer as
+    // the popup's item size made every group in the popup shrink each time the
+    // strip's group changed: the size of an item has nothing to do with how many
+    // rows its group asked for, and everything to do with the strip's height.
+    const int strip = q->contentsRect().height();
     for (int i = 0; i < m_previews.count(); ++i) {
         RibbonGalleryPreview *pv = m_previews.at(i);
-        int w = rowHeight;
         RibbonGalleryGroup *g = m_groups.value(i, Q_NULLPTR);
+        const int sp = g ? g->spacing() : 1;
+        int h = strip - 2 * sp;
+        if (h <= 0) {
+            h = 64;   // never laid out yet: a sane item, not a failed measurement
+        }
+        int w = h;
         if (g) {
             if (g->gridMinimumWidth() > 0 && w < g->gridMinimumWidth()) {
                 w = g->gridMinimumWidth();
@@ -351,7 +401,7 @@ void RibbonGalleryPrivate::refreshPreviews()
                 w = g->gridMaximumWidth();
             }
         }
-        pv->setGrid(QSize(w, rowHeight));
+        pv->setGrid(QSize(w, h));
         pv->refresh();
     }
 }
@@ -556,30 +606,61 @@ void RibbonGallery::showMoreDetail()
     d->refreshPreviews();
 
     const int width = (d->m_currentGroup && d->m_currentGroup->width() > 0) ? d->m_currentGroup->width() : 240;
-    // Each preview's height is stated for the width it is about to get, rather
-    // than left to the layout to ask for: a scroll area does not propagate
-    // heightForWidth, and an answer it never asks for is a height it never gets.
-    const int previewWidth = width - qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) - 4;
-    for (RibbonGalleryPreview *pv : d->m_previews) {
-        pv->setFixedHeight(pv->heightForWidth(qMax(60, previewWidth)));
-    }
-    // A popup is measured, not guessed: give it the width it will get, let the
-    // layout answer with the height the groups need, then cut that down to what
-    // the screen has.
-    d->m_popupWidget->setGeometry(0, 0, width, 100);
+    // Measure, do not guess. The previews answer with the height they need at the
+    // width they are given (RibbonGalleryPreview::syncHeight), so the popup is
+    // given that width and its layout is run until the answers have settled. This
+    // used to be stated the other way round - a width was guessed for the previews
+    // (the popup's minus a scroll bar and a fudge), a height was derived from it,
+    // and the layout then gave them a different width; one column of difference is
+    // an extra row of items, which is the empty band under the last group.
+    //
+    // resize() rather than setGeometry(): a popup that is already open must not
+    // jump to (0, 0) while it is being measured, and it should not be seen
+    // shrinking to a measuring rectangle either - the height it has is kept.
+    // Two passes: the first hands every preview a width, and the height they
+    // answer with is what the second pass lays out.
+    d->m_popupWidget->resize(width, qMax(100, d->m_popupWidget->height()));
     d->m_popupWidget->layout()->activate();
+    d->m_popupWidget->layout()->activate();
+
     QSize popupSize = d->m_popupWidget->sizeHint();
     if (popupSize.isEmpty()) {
         popupSize = QSize(width, 100);
     }
-    const int maxHeight = screen() ? (screen()->availableGeometry().height() * 7 / 10) : 480;
-    const int popupHeight = qMin(qMax(popupSize.height(), 60), maxHeight);
 
-    QPoint pos = mapToGlobal(QPoint(0, QWidget::height() - 1));
-    if (screen() && (pos.y() + popupHeight > screen()->availableGeometry().bottom())) {
-        pos = mapToGlobal(QPoint(0, -popupHeight + 1));
+    // The popup opens under the strip, but only if it fits: it flips above when
+    // the room below is not enough, and is cut down to the side that has more room
+    // when neither side can hold it. It also has to stay on the screen sideways -
+    // the width comes from a gallery that may be almost as wide as the screen.
+    const QRect avail = screen() ? screen()->availableGeometry() : QRect();
+    const QPoint stripTopLeft = mapToGlobal(QPoint(0, 0));
+    const QPoint stripBottom = mapToGlobal(QPoint(0, QWidget::height() - 1));
+
+    int popupWidth = width;
+    int popupHeight = qMin(qMax(popupSize.height(), 60), avail.isValid() ? (avail.height() * 7 / 10) : 480);
+    int x = stripBottom.x();
+    int y = stripBottom.y();
+
+    if (avail.isValid()) {
+        popupWidth = qMin(popupWidth, avail.width());
+        const int roomBelow = avail.bottom() - stripBottom.y() + 1;
+        const int roomAbove = stripTopLeft.y() - avail.top();
+        if (popupHeight > roomBelow) {
+            if (popupHeight <= roomAbove) {
+                // Its bottom edge against the strip's top edge: opening upwards.
+                y = stripTopLeft.y() - popupHeight;
+            } else if (roomAbove > roomBelow) {
+                popupHeight = roomAbove;
+                y = avail.top();
+            } else {
+                popupHeight = roomBelow;
+            }
+        }
+        popupHeight = qBound(1, popupHeight, avail.height());
+        x = qBound(avail.left(), x, qMax(avail.left(), avail.right() - popupWidth + 1));
     }
-    d->m_popupWidget->setGeometry(pos.x(), pos.y(), width, popupHeight);
+
+    d->m_popupWidget->setGeometry(x, y, popupWidth, popupHeight);
     d->m_popupWidget->show();
 }
 
