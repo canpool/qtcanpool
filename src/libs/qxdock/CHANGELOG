@@ -91,6 +91,7 @@ Feature
   menus, the tooltips on their buttons - is translated there and compiled into a
   qxdock_zh_CN.qm an application loads; the internationalisation page says how.
   tst_DockTranslations::catalogue holds the catalogue to it.
+
 Bugfix
 - A tab bar filled its own box with the window colour - the palette's answer,
   where every colour around it is the sheet's. In a light theme the two differ,
@@ -130,6 +131,19 @@ Bugfix
   icons is untouched: refreshDockIcons() has nothing to hand out and changes
   nothing.
   tst_DockAutoHideContainer::glyphsFollowTheSurfaceOnShow
+- The drop indicator kept the colours of whichever theme was in force when a drag
+  first set it up. Two things held them apart from the palette: the private set
+  of colours memoised the palette's answer for every colour the application had
+  not set itself, and the indicators are pixmaps painted once, so a new palette
+  reached the widgets and stopped there. On a dock demo that switched from light
+  to dark, dragging a dock widget showed the cross in the light theme's frame and
+  arrow, and it stayed that way for the rest of the session. A colour the
+  application sets is still its own - that is what the memo is for - and anything
+  else is now asked of the palette each time it is wanted; a palette or style
+  change repaints the indicators. iconColor() reports the colour that will be
+  used rather than an invalid one for a colour nobody set, so the matching
+  qproperty-...Color reads back a colour.
+  tst_DockOverlayCross::followsTheApplicationPalette
 
 Cleanup
 - The four dock style sheets became two fragments. They had been four complete

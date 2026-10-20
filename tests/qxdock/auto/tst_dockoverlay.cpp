@@ -24,9 +24,48 @@
 
 #include "qxdock/dockoverlay.h"
 
+#include <QGuiApplication>
+#include <QLabel>
+#include <QImage>
+#include <QPalette>
+#include <QTest>
 #include <QWidget>
 
 QX_DOCK_USE_NAMESPACE
+
+namespace
+{
+/*!
+ * The pixmap one of the cross's drop indicators is showing.
+ *
+ * Read from the label rather than captured from the cross: the cross is a
+ * translucent tool window, and a capture of it on the offscreen platform comes
+ * back empty - measured, 113 bytes of nothing for either scheme, which would
+ * make any comparison of two captures pass without measuring anything.
+ */
+QImage indicatorImage(DockOverlayCross *cross, Qx::DockWidgetArea area)
+{
+    const QList<QLabel *> labels = cross->findChildren<QLabel *>(QStringLiteral("DockWidgetAreaLabel"));
+    for (QLabel *label : labels) {
+        if (label->property("dockWidgetArea").toInt() != int(area)) {
+            continue;
+        }
+        // A label hands its pixmap out by value from Qt 6 on, by pointer before.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        const QPixmap pixmap = label->pixmap();
+        if (!pixmap.isNull()) {
+            return pixmap.toImage();
+        }
+#else
+        const QPixmap *pixmap = label->pixmap();
+        if (pixmap && !pixmap->isNull()) {
+            return pixmap->toImage();
+        }
+#endif
+    }
+    return QImage();
+}
+}   // namespace
 
 class tst_DockOverlay : public QObject
 {
@@ -44,6 +83,7 @@ class tst_DockOverlayCross : public QObject
 private slots:
     void colorsAreIndependent();
     void colorStringIsParsedByName();
+    void followsTheApplicationPalette();
 };
 
 void tst_DockOverlay::allowedAreasRoundTrip()
@@ -107,6 +147,73 @@ void tst_DockOverlayCross::colorStringIsParsedByName()
     cross.setIconColors(QStringLiteral("Nope=#ffffffff Arrow=#0000ff"));
     QCOMPARE(cross.iconColor(DockOverlayCross::ArrowColor), QColor(QStringLiteral("#0000ff")));
     QCOMPARE(cross.iconColor(DockOverlayCross::FrameColor), QColor(QStringLiteral("#ff3d3d3d")));
+}
+
+/*!
+ * The cross is painted from the application's palette, so a theme change has to
+ * reach it - both the colors it asks for and the pixmaps it has already painted
+ * with them.
+ *
+ * Both halves are measured because they fail independently. The colors were
+ * memoized on first use, so the cross kept the scheme it was first shown in;
+ * and the drop indicators are pixmaps, painted once when the cross is set up, so
+ * even a color asked for again would not be painted again.
+ */
+void tst_DockOverlayCross::followsTheApplicationPalette()
+{
+    const QPalette savedPalette = QGuiApplication::palette();
+
+    QWidget host;
+    DockOverlay overlay(&host);
+    DockOverlayCross *cross = host.findChild<DockOverlayCross *>();
+    QVERIFY2(cross != nullptr, "the overlay has no cross to measure");
+
+    cross->setupOverlayCross(DockOverlay::PanelOverlayMode);
+    cross->resize(240, 240);
+    cross->show();
+    QVERIFY(QTest::qWaitForWindowExposed(cross));
+
+    QPalette light;
+    light.setColor(QPalette::Highlight, QColor(0, 120, 212));
+    light.setColor(QPalette::Base, QColor(255, 255, 255));
+    qApp->setPalette(light);
+    QTest::qWait(50);
+    const QColor frameInLight = cross->iconColor(DockOverlayCross::FrameColor);
+
+    QPalette dark;
+    dark.setColor(QPalette::Highlight, QColor(76, 194, 255));
+    dark.setColor(QPalette::Base, QColor(32, 32, 32));
+    qApp->setPalette(dark);
+    QTest::qWait(50);
+    const QColor frameInDark = cross->iconColor(DockOverlayCross::FrameColor);
+
+    // Between two drags, which is when a theme is switched: the cross is hidden
+    // while nothing is being dragged, and showing it again is the next drag.
+    cross->hide();
+    cross->show();
+    QVERIFY(QTest::qWaitForWindowExposed(cross));
+    QTest::qWait(50);
+    const QImage paintedInDark = indicatorImage(cross, Qx::TopDockWidgetArea);
+
+    // And the first scheme's, painted by asking for it again: the pixmaps are
+    // what a drag shows, so they are what has to follow.
+    qApp->setPalette(light);
+    cross->hide();
+    cross->show();
+    QVERIFY(QTest::qWaitForWindowExposed(cross));
+    QTest::qWait(50);
+    const QImage paintedInLight = indicatorImage(cross, Qx::TopDockWidgetArea);
+
+    qApp->setPalette(savedPalette);
+
+    QCOMPARE(frameInLight, QColor(0, 120, 212));
+    QCOMPARE(frameInDark, QColor(76, 194, 255));
+
+    QVERIFY2(!paintedInLight.isNull() && !paintedInDark.isNull(), "a drop indicator has no pixmap to compare");
+    QVERIFY2(paintedInLight.size() == paintedInDark.size(), "the cross changed size with the palette");
+    QVERIFY2(paintedInLight != paintedInDark,
+             "the cross is painted with the palette it was first shown with: switching the theme left it as it "
+             "was, and the drop indicators a drag shows are the one thing on screen at that moment");
 }
 
 TEST_ADD(tst_DockOverlay)

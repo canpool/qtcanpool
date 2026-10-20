@@ -341,9 +341,9 @@ public:
     void init();
 
     QPoint areaGridPosition(const Qx::DockWidgetArea area);
-    QColor defaultIconColor(DockOverlayCross::IconColor colorIndex);
+    QColor defaultIconColor(DockOverlayCross::IconColor colorIndex) const;
 
-    QColor iconColor(DockOverlayCross::IconColor colorIndex);
+    QColor iconColor(DockOverlayCross::IconColor colorIndex) const;
 
     qreal dropIndicatiorWidth(QLabel *l) const;
 
@@ -427,9 +427,9 @@ QPoint DockOverlayCrossPrivate::areaGridPosition(const Qx::DockWidgetArea area)
     }
 }
 
-QColor DockOverlayCrossPrivate::defaultIconColor(DockOverlayCross::IconColor colorIndex)
+QColor DockOverlayCrossPrivate::defaultIconColor(DockOverlayCross::IconColor colorIndex) const
 {
-    Q_Q(DockOverlayCross);
+    Q_Q(const DockOverlayCross);
     QPalette pal = q->palette();
     switch (colorIndex) {
     case DockOverlayCross::FrameColor:
@@ -453,14 +453,15 @@ QColor DockOverlayCrossPrivate::defaultIconColor(DockOverlayCross::IconColor col
     return QColor();
 }
 
-QColor DockOverlayCrossPrivate::iconColor(DockOverlayCross::IconColor colorIndex)
+QColor DockOverlayCrossPrivate::iconColor(DockOverlayCross::IconColor colorIndex) const
 {
-    QColor color = m_iconColors[colorIndex];
-    if (!color.isValid()) {
-        color = defaultIconColor(colorIndex);
-        m_iconColors[colorIndex] = color;
-    }
-    return color;
+    // A color the caller set is the answer; anything else is asked of the palette
+    // every time it is wanted. The palette is the application's and a theme change
+    // replaces it, so memoizing this answer froze the cross in the scheme it was
+    // first shown in - and the cross is on screen exactly while a drag is, which
+    // is not when anyone wants last theme's colors.
+    const QColor color = m_iconColors[colorIndex];
+    return color.isValid() ? color : defaultIconColor(colorIndex);
 }
 
 qreal DockOverlayCrossPrivate::dropIndicatiorWidth(QLabel *l) const
@@ -669,7 +670,7 @@ DockOverlayCross::~DockOverlayCross()
 QColor DockOverlayCross::iconColor(IconColor colorIndex) const
 {
     Q_D(const DockOverlayCross);
-    return d->m_iconColors[colorIndex];
+    return d->iconColor(colorIndex);
 }
 
 void DockOverlayCross::setIconColor(IconColor colorIndex, const QColor &color)
@@ -850,6 +851,27 @@ void DockOverlayCross::setAreaWidgets(const QHash<Qx::DockWidgetArea, QWidget *>
         d->m_gridLayout->setColumnStretch(4, 0);
     }
     reset();
+}
+
+void DockOverlayCross::changeEvent(QEvent *event)
+{
+    QWidget::changeEvent(event);
+    // The drop indicators are pixmaps, painted once when the cross is set up and
+    // holding the colors they were painted with. Their colors are read from the
+    // palette, so a new palette has to reach the pixmaps rather than stop at the
+    // widgets holding them.
+    //
+    // Measured: an application's setPalette() arrives here as an
+    // ApplicationPaletteChange, and without this the cross a drag shows keeps the
+    // colors of whichever theme was in force when it was first set up.
+    const QEvent::Type type = event->type();
+    if (type != QEvent::PaletteChange && type != QEvent::ApplicationPaletteChange && type != QEvent::StyleChange) {
+        return;
+    }
+    Q_D(DockOverlayCross);
+    for (QWidget *widget : d->m_dropIndicatorWidgets) {
+        d->updateDropIndicatorIcon(widget);
+    }
 }
 
 void DockOverlayCross::showEvent(QShowEvent *e)
