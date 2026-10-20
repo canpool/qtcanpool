@@ -38,6 +38,10 @@ Feature
   describes.
   tst_QxThemeBundle::installerFollowsTheTheme
 
+- A zh_CN catalogue, qxapp_zh_CN.ts next to the sources: the shell's own page and
+  status messages, the plugin manager dialog and the property editor are translated
+  there and compiled into a qxapp_zh_CN.qm an application loads, which is what the
+  internationalisation page describes. tst_AppTranslations::catalogue holds it to it.
 0.2.0
 ---
 Feature
@@ -129,3 +133,4 @@ Bugfix
   every minor bump. The default is now a fixed floor, so an API stays declared for
   as long as it is inside its removal buffer (K26), and raising the cutoff is what
   compiles it out. tst_qxdeprecated covers all seven libraries
+

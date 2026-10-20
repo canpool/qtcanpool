@@ -36,3 +36,16 @@ if (UNIX AND NOT APPLE AND NOT QTCANPOOL_WASM)
       xcb
   )
 endif()
+
+# See qxribbon's copy of this block for why the catalogue lives here and why
+# the target prefixes carry the library name.
+if (TARGET Qt5::lrelease)
+  add_translation_targets(qxdock
+    LANGUAGES zh_CN
+    TARGETS qxdock
+    OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations"
+    INSTALL_DESTINATION "${IDE_DATA_PATH}/translations"
+    TS_TARGET_PREFIX "qxdock_ts_"
+    QM_TARGET_PREFIX "qxdock_qm_"
+  )
+endif()

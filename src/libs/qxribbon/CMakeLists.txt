@@ -40,3 +40,25 @@ add_qtc_library(qxribbon
     windowbuttongroup.cpp windowbuttongroup.h windowbuttongroup_p.h
 )
 
+# Translations. A library owns the strings that its own widgets show, so it
+# carries the catalogue for them beside its sources and updating one library's
+# strings never touches another's catalogue. The generated catalogues all land
+# in one shared directory because QxTranslator reads a single path, and that
+# directory repeats the install one under CMAKE_BINARY_DIR so a build tree and
+# an installed tree answer to the same lookup.
+#
+# The tool targets have to carry the library name: add_custom_target() names
+# are global, and three libraries calling this function would otherwise all
+# claim the same "ts_zh_CN". Only the umbrella target is shared, and it is the
+# one the function creates only once.
+if (TARGET Qt5::lrelease)
+  add_translation_targets(qxribbon
+    LANGUAGES zh_CN
+    TARGETS qxribbon
+    OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations"
+    INSTALL_DESTINATION "${IDE_DATA_PATH}/translations"
+    TS_TARGET_PREFIX "qxribbon_ts_"
+    QM_TARGET_PREFIX "qxribbon_qm_"
+  )
+endif()
+

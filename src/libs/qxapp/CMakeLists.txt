@@ -28,3 +28,16 @@ add_qtc_library(qxapp
     qxthemeinstaller.cpp qxthemeinstaller.h
     ribbonappwindow.cpp ribbonappwindow.h
 )
+
+# See qxribbon's copy of this block for why the catalogue lives here and why
+# the target prefixes carry the library name.
+if (TARGET Qt5::lrelease)
+  add_translation_targets(qxapp
+    LANGUAGES zh_CN
+    TARGETS qxapp
+    OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations"
+    INSTALL_DESTINATION "${IDE_DATA_PATH}/translations"
+    TS_TARGET_PREFIX "qxapp_ts_"
+    QM_TARGET_PREFIX "qxapp_qm_"
+  )
+endif()

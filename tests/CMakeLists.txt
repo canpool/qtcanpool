@@ -44,6 +44,20 @@ else()
   message(STATUS "lrelease not found: the translator test will skip its load layer")
 endif()
 
+# Three libraries ship strings and therefore ship a catalogue for them, and each
+# one is checked by reading it back from both ends: the .ts says what every
+# string promised, the compiled .qm says what Qt really answers when asked
+# through the very context the .ts recorded. A catalogue that quietly stops
+# matching its own source is what that catches. Both reach the test as defines
+# because this file is the only place that knows where the build put things.
+set(QTCANPOOL_CATALOGUE_DEFINES "")
+if (TARGET Qt5::lrelease)
+  set(QTCANPOOL_CATALOGUE_DEFINES
+    "QTCANPOOL_TRANSLATIONS_DIR=\"${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations\""
+    "QTCANPOOL_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
+  )
+endif()
+
 file(GLOB QXCORE_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxcore/auto/tst_*.cpp")
 add_qtc_test(tst_qxcore
     DEPENDS qxcore
@@ -77,8 +91,11 @@ add_qtc_test(tst_qxtheme
 file(GLOB QXAPP_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxapp/auto/tst_*.cpp")
 add_qtc_test(tst_qxapp
     DEPENDS qxapp
+    DEFINES ${QTCANPOOL_CATALOGUE_DEFINES}
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.h"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
         "${QTCANPOOL_TESTS_DIR}/qxapp/auto/main.cpp"
@@ -91,6 +108,9 @@ add_qtc_test(tst_qxapp
         # an assertion about its colours passes for the wrong reason.
         ${CMAKE_SOURCE_DIR}/res/dockstyle.qrc
 )
+if (TARGET generate_qm_files)
+  add_dependencies(tst_qxapp generate_qm_files)
+endif()
 
 # ----------------------------------------------------- qxapp examples --
 # In-process smoke tests for the four family examples added in 4.4.1. Each test
@@ -170,18 +190,27 @@ endif()
 file(GLOB QXRIBBON_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/tst_*.cpp")
 add_qtc_test(tst_qxribbon
     DEPENDS qxribbon
+    DEFINES ${QTCANPOOL_CATALOGUE_DEFINES}
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.h"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
         "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/main.cpp"
         ${QXRIBBON_TEST_SOURCES}
 )
+if (TARGET generate_qm_files)
+  # The catalogue has to be compiled before the suite that reads it runs, and
+  # "ALL" alone does not say it happens first.
+  add_dependencies(tst_qxribbon generate_qm_files)
+endif()
 
 # ------------------------------------------------------------------ qxdock --
 file(GLOB QXDOCK_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxdock/auto/tst_*.cpp")
 add_qtc_test(tst_qxdock
     DEPENDS qxdock
+    DEFINES ${QTCANPOOL_CATALOGUE_DEFINES}
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
         # The dock style sheet is the application's to build in, so this suite has
@@ -191,11 +220,16 @@ add_qtc_test(tst_qxdock
         # failing. In SOURCES rather than a keyword of its own because
         # add_qtc_test() takes none - AUTORCC picks the .qrc up from here.
         "${PROJECT_SOURCE_DIR}/res/dockstyle.qrc"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.h"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
         "${QTCANPOOL_TESTS_DIR}/qxdock/auto/main.cpp"
         ${QXDOCK_TEST_SOURCES}
 )
+if (TARGET generate_qm_files)
+  add_dependencies(tst_qxdock generate_qm_files)
+endif()
 
 # -------------------------------------------------------------- qxwindow --
 # qxwindow is platform-heavy, so this suite sticks to the backend-independent

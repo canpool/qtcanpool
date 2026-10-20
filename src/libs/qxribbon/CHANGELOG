@@ -14,6 +14,14 @@ Addition
   again, so the widget keeps the position and size it was born with. The ribbon's
   entry point shows it and re-runs the layout. Those corners are the ones Qt uses
   while an MDI child is maximized, for the child's icon and its window buttons.
+- A zh_CN catalogue, qxribbon_zh_CN.ts next to the sources. Every user-visible
+  string this library shows - tooltips and menu entries alike - is translated
+  there and compiled into a qxribbon_zh_CN.qm the application loads; see the
+  internationalisation page for how an application reaches it. The diagnostics
+  the library writes through qDebug() are the deliberate exception: they stay
+  English so that the same words can be found in a search whatever language the
+  interface runs in. tst_RibbonTranslations::catalogue holds the strings to that.
+
 Fixed
 - Corner widgets keep the room and the row the ribbon gives them. Both are outside this
   class's control - Qt installs an MDI child's icon and window buttons there, and an
@@ -652,4 +660,3 @@ Other
 0.5.x
 ---
 - See to https://gitee.com/icanpool/QxRibbon
-

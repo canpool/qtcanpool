@@ -86,6 +86,11 @@ Feature
   tst_QxThemeBundle::applicationSheetKeepsTheThemeOnTop,
   tst_QxThemeBundle::theThemeStatesTheDocksOwnRules
 
+- A zh_CN catalogue, qxdock_zh_CN.ts next to the sources. Every string the dock puts
+  in front of the user - the perspective menu, the titles of the pin and close
+  menus, the tooltips on their buttons - is translated there and compiled into a
+  qxdock_zh_CN.qm an application loads; the internationalisation page says how.
+  tst_DockTranslations::catalogue holds the catalogue to it.
 Bugfix
 - A tab bar filled its own box with the window colour - the palette's answer,
   where every colour around it is the sheet's. In a light theme the two differ,
@@ -414,3 +419,4 @@ Test
 0.1.0
 ---
 - Powered by ads 952131a1e9730636e0ee87e99fcc8bdb259f6451
+

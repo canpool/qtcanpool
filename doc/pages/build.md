@@ -12,6 +12,7 @@
 | 编译器 | MinGW（随 Qt 分发）、MSVC 2019+、GCC 9+、Apple Clang |
 | Doxygen（可选） | 1.9 及以上，仅在构建文档站点时需要 |
 | Graphviz（可选） | 提供 `dot` 后类继承图才会生成 |
+| LinguistTools（可选） | Qt 的 `lupdate` / `lrelease`。缺失时照样构建成功，只是不产出译文目录，相关测试自行跳过（见[界面语言](i18n.md)） |
 
 ### 源文件编码
 
