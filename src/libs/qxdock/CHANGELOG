@@ -1,3 +1,13 @@
+Unreleased
+---
+Cleanup
+- The fall-back sheet resolves the theme's corner tiers the way the generator
+  resolves them for a generated sheet: a radius in base.css names a tier
+  (corner-none to corner-pill) instead of a pixel count, and the renderer
+  substitutes the tier's value - the same value tools/themes/build_themes.py
+  keeps, which the two now have to agree on. An application that loads a
+  generated theme is unaffected: those sheets are filled at generation time.
+
 0.3.1
 ---
 Feature

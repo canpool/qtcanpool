@@ -86,7 +86,7 @@ QxRibbon--RibbonGroup > QxRibbon--RibbonButtonGroup {
 
 QxRibbon--RibbonButton,
 QxRibbon--RibbonControlButton {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
   background-color: transparent;
 }
 
@@ -100,7 +100,7 @@ QxRibbon--RibbonGallery,
 QxRibbon--RibbonGalleryGroup,
 QxRibbon--RibbonComboBox,
 QxRibbon--RibbonLineEdit {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
 }
 
 QAbstractButton#qx_RibbonApplicationButton,

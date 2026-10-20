@@ -64,7 +64,7 @@ QxRibbon--RibbonGallery,
 QxRibbon--RibbonGalleryGroup,
 QxRibbon--RibbonComboBox,
 QxRibbon--RibbonLineEdit {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
 }
 
 /* grey, not accent: the accent belongs to the selected tab alone */

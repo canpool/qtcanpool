@@ -77,6 +77,26 @@ const Token kTokens[] = {
 };
 
 /*
+ * The corner tiers, the one non-colour vocabulary a sheet names. The values are
+ * the generator's - tools/themes/build_themes.py keeps the table the generated
+ * sheets are filled from, and the two stay in step - and base.css is the only
+ * fragment that names one, because it is the one file the run time renders as
+ * well as the generator.
+ */
+struct GeometryToken {
+    const char *name;
+    const char *value;
+};
+
+const GeometryToken kGeometryTokens[] = {
+    {"corner-none", "0px"},
+    {"corner-sm", "2px"},
+    {"corner-md", "3px"},
+    {"corner-lg", "6px"},
+    {"corner-pill", "9999px"},
+};
+
+/*
  * A style sheet takes #RRGGBB and rgba(r, g, b, a), with the alpha in 0-255.
  * HexArgb (#AARRGGBB) is not used because Qt 5's parser is the older one and
  * this library still builds there.
@@ -114,6 +134,10 @@ QString render(const QString &fragment, const DockStyleColors &colors)
     for (const Token &token : kTokens) {
         result.replace(QStringLiteral("{{") + QLatin1String(token.name) + QStringLiteral("}}"),
                        colorText(resolved.*(token.member)));
+    }
+    for (const GeometryToken &token : kGeometryTokens) {
+        result.replace(QStringLiteral("{{") + QLatin1String(token.name) + QStringLiteral("}}"),
+                       QLatin1String(token.value));
     }
     return result;
 }

@@ -55,7 +55,7 @@ QDialogButtonBox QPushButton {
 }
 
 QProgressBar {
-  border-radius: 2px;
+  border-radius: {{corner-sm}};
   text-align: center;
   background: {{border}};
 }
@@ -78,7 +78,7 @@ QScrollBar::handle:vertical {
   background: {{state-rest}};
   min-height: 25px;
   margin: 0px 2px;
-  border-radius: 3px;
+  border-radius: {{corner-md}};
 }
 
 QScrollBar::handle:vertical:hover {
@@ -112,7 +112,7 @@ QScrollBar::handle:horizontal {
   background: {{state-rest}};
   min-width: 25px;
   margin: 2px 0px;
-  border-radius: 3px;
+  border-radius: {{corner-md}};
 }
 
 QScrollBar::handle:horizontal:hover {
@@ -313,7 +313,7 @@ QToolTip {
 
 .QGroupBox {
   border: 1px solid {{border}};
-  border-radius: 2px;
+  border-radius: {{corner-sm}};
   margin-top: 6px;
 }
 
@@ -404,7 +404,7 @@ QComboBox:hover, QComboBox:clicked {
 
 QComboBox QAbstractItemView {
   border: 0px solid {{border}};
-  border-radius: 2px;
+  border-radius: {{corner-sm}};
   selection-color: {{text-on-fill}};
   selection-background-color: {{accent-fill-strong}};
 }
@@ -421,7 +421,7 @@ QStatusBar {
 
 QStatusBar::item {
   border: 0px solid {{border}};
-  border-radius: 3px;
+  border-radius: {{corner-md}};
 }
 
 QToolBox {
@@ -458,7 +458,7 @@ QToolButton#qt_calendar_nextmonth,
 QToolButton#qt_calendar_monthbutton,
 QToolButton#qt_calendar_yearbutton {
   border: 0px solid #000000;
-  border-radius: 0px;
+  border-radius: {{corner-none}};
   /* margin: 3px 3px 3px 3px;
   padding: 3px; */
   background-color: transparent;
@@ -730,7 +730,7 @@ QxRibbon--RibbonQuickAccessBar QAbstractButton {
 
 QxRibbon--RibbonQuickAccessButton {
   width: 22px;
-  border-radius: 0px;
+  border-radius: {{corner-none}};
 }
 
 /* The dark skeleton repaints the standard controls, but a wash it does not
@@ -739,7 +739,7 @@ QxRibbon--RibbonQuickAccessButton {
    selector is the bar's, since the actions it carries become QToolButtons the
    toolbar builds itself. */
 QxRibbon--RibbonQuickAccessBar QToolButton:hover {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
   background-color: {{accent-soft}};
 }
 
@@ -748,7 +748,7 @@ QxRibbon--RibbonQuickAccessBar QToolButton:hover {
    here is light already - where a light one can only outline the wash. */
 QxRibbon--RibbonQuickAccessBar QToolButton:pressed,
 QxRibbon--RibbonQuickAccessBar QToolButton:open {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
   border: 1px solid {{accent-fill-strong}};
   background-color: {{accent-fill-strong}};
 }

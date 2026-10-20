@@ -80,7 +80,7 @@ QxRibbon--RibbonGallery,
 QxRibbon--RibbonGalleryGroup,
 QxRibbon--RibbonComboBox,
 QxRibbon--RibbonLineEdit {
-  border-radius: 3px;
+  border-radius: {{corner-md}};
 }
 
 /* The icon buttons get no radius: their hover is a wash with no box of its
@@ -89,7 +89,7 @@ QxRibbon--RibbonLineEdit {
    the family's 3px - those do draw a box. */
 QxRibbon--RibbonButton,
 QxRibbon--RibbonControlButton {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
 }
 
 QxRibbon--RibbonButton {

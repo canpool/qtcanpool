@@ -136,7 +136,7 @@ QxDock--DockTab[activeTab="true"] QLabel {
    states it. */
 QxDock--TitleBarButton,
 #dockTabCloseButton {
-    border-radius: 0px;
+    border-radius: {{corner-none}};
 }
 
 #dockTabCloseButton {

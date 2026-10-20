@@ -236,6 +236,24 @@ WASHES = {
     "on-accent-pressed": "rgba(255, 255, 255, 92)",
 }
 SUBTLE = {"light": "rgba(0, 0, 0, 48)", "dark": "rgba(255, 255, 255, 48)"}
+# The corner tiers, the one non-colour vocabulary the sheets name: a radius is
+# a family's manner as much as its colours are, so a skeleton or a chrome file
+# picks a tier per element instead of spelling a pixel count. The values are
+# the radii the sheets already emitted, kept so a theme regenerates to the same
+# bytes it replaced; lg and pill have no user in these sheets yet and are there
+# for the ones coming. The dock's run-time renderer keeps its own copy of the
+# tiers for base.css - qxdock's dockstylesheet.cpp - and the two stay in step.
+SHAPE = {
+    "corner-none": "0px",
+    "corner-sm": "2px",
+    "corner-md": "3px",
+    "corner-lg": "6px",
+    "corner-pill": "9999px",
+}
+# A radius the gate can see spelled out is one a hand wrote past the tiers, and
+# it is checked on the raw sheet - after fill() a tier *is* a pixel count, so
+# the generated sheet is the wrong place to look.
+RADIUS = re.compile(r"border-radius\s*:\s*[0-9]")
 # The dock's half of a theme: one file, not one per scheme, because the two
 # schemes ask it for the same structure and differ only in what the tokens are
 # filled with. It stays in res/ rather than here because the library renders it
@@ -471,6 +489,7 @@ def gate(raw, palette, where):
 def build(family, scheme):
     palette = dict(PALETTES[(family, scheme)])
     palette.update(WASHES)
+    palette.update(SHAPE)
     palette["subtle"] = SUBTLE[scheme]
     menu = read(HERE / "menu.css")
     skeleton = read(HERE / f"skeleton_{scheme}.css")
@@ -492,6 +511,9 @@ def main():
     problems = []
     for family, scheme, raw, filled, palette in sheets:
         problems += gate(raw, palette, f"{family}_{scheme}")
+        if RADIUS.search(raw):
+            problems.append(f"{family}_{scheme}: a border-radius spells a pixel "
+                            "count where a corner tier belongs")
     if problems:
         for line in problems:
             print(line, file=sys.stderr)

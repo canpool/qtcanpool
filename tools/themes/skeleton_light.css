@@ -229,7 +229,7 @@ QxRibbon--RibbonQuickAccessBar QToolButton::menu-indicator {
 
 QxRibbon--RibbonQuickAccessButton {
   width: 22px;
-  border-radius: 0px;
+  border-radius: {{corner-none}};
 }
 
 /* Left to the platform style, the hover on one of these is whatever the
@@ -240,7 +240,7 @@ QxRibbon--RibbonQuickAccessButton {
    builds itself, and the one button the library names is only the customize
    popup at the end. */
 QxRibbon--RibbonQuickAccessBar QToolButton:hover {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
   background-color: {{accent-soft}};
 }
 
@@ -250,7 +250,7 @@ QxRibbon--RibbonQuickAccessBar QToolButton:hover {
    no sign the click landed, and the menu seems to come from nowhere. */
 QxRibbon--RibbonQuickAccessBar QToolButton:pressed,
 QxRibbon--RibbonQuickAccessBar QToolButton:open {
-  border-radius: 0px;
+  border-radius: {{corner-none}};
   border: 1px solid {{accent}};
   background-color: {{accent-soft}};
 }
