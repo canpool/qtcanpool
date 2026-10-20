@@ -11,7 +11,8 @@
 - **type**：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`。
 - **scope**：`qxcore` / `qxtheme` / `qxwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `icons` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库；`icons` 专指图标规范与它的门禁（`scripts/icons-policy.txt`、`scripts/check-icons.py`、`doc/pages/icons.md`），同样不属于任何库。
 - **原子提交**：一笔一件事。
-- **每笔提交前必做**：重新构建 + ctest 全绿 + clang-format 过改动文件。
+- **每笔提交前必做**：按 §8 的判据选取验证范围（第 0 级不构建，其余最少一腿构建），
+  clang-format 过改动文件，并在提交信息或回复里写明跑了哪一级。
 - **两远程**：`origin` = gitee、`github`；一笔推两远程。
 
 ## 2. 文档规范（v1）
@@ -77,7 +78,25 @@
 ## 8. 构建与验证
 
 - 构建走 CMake preset（`qt6` / `qt5`，Ninja 生成器，自动并行）；**全量构建带 `--parallel 16`**——作者本机 32 核按核数满载会撞 g++ 内存墙（症状是测试无输出失败一类 flaky）。手动 MinGW Makefiles 才必须带 `--parallel`：不带即单核串行。
-- **两腿都要跑**：Qt 5.15 与 Qt 6 各 100% 构建 + ctest（`QT_QPA_PLATFORM=offscreen`），别只跑 qt6（教训：Qt 6 独有 API 在 Qt 5 侧连编不过）。新增 / 改写代码先问「有没有 Qt 6 独有 API？」。
+- **验证范围按改动分级，不一律两腿**。判据一句话：**这处改动有没有可能只在某一个 Qt 版本、
+  或某一个平台上编不过、或行为不同？答不出「不可能」就跑两腿。**
+
+| 级别 | 改动 | 验证 |
+| :--- | :--- | :--- |
+| 0 | 只动 `doc/`、`.md`、CHANGELOG 文案 | 不构建 |
+| 1 | 源文件里**只改注释**；或改不涉及 Qt API 与平台分支的内部实现 | 一腿增量构建 + `scripts/check-encoding.py`；动了行为才跑相关 ctest 子集 |
+| 2 | 新增 / 替换 Qt API 或容器用法、改 `#if QT_VERSION` / `Q_OS_*`、公开头里的 inline / 签名 / 枚举 | 两腿 100% 构建 + 两腿全量 ctest（`QT_QPA_PLATFORM=offscreen`） |
+| 3 | CMake / `.qrc` / `header.list` / 资源 / 既有测试断言 | 两腿 100% 构建 + 两腿全量 ctest |
+
+- **第 1 级凭什么能省**：注释不进编译器，两腿的编译产物逐字节相同；注释唯一能踩的是
+  「写了坏字节」（`scripts/check-encoding.py` 全树扫 UTF-8 与 BOM，实测 765 个文件 1.7 秒）
+  与格式（clang-format）。但**「只改注释」必须是确定的**，不是「看着像注释」——拿不准就按第 2 级。
+- **两腿的价值在提交前，不是唯一观测通道**：CI 的 Qt 5.15 腿跑在 `ubuntu-latest`
+  （`Qt5 + MSVC` 在 runner 的 toolset 上编不过，故没有 Windows 腿），所以「Windows + Qt 5」
+  只有本机能验证；而 Qt 版本差异里与平台无关的那部分（如 Qt 6 独有的 `QList<QString>(int)`）
+  CI 也能抓——本机两腿是为了**不让红提交先落进主线**（教训：B1 用 Qt6 独有 API，Qt5 侧连编不过）。
+- **判据要留痕**：提交信息或回复里写明级别，如 `Verified: qt6 only (comment-only)`。
+  「只跑一腿」是可审计的声明，不是沉默省掉的步骤；说不清为什么够，就按上一级跑。
 - 覆盖基线含 demos 截图判定；视觉回归（demo 截图）为 opt-in，不影响门禁。
 
 ## 9. 分支、版本与进号
