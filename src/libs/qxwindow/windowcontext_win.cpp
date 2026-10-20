@@ -1501,14 +1501,18 @@ bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
 
     bool isFixedSize = m_delegate->isHostSizeFixed(m_host);
     bool isTitleBar = isInTitleBarDraggableArea(qtScenePos);
-    // There is no way for the host to opt out of the resize cursor at the border:
-    // a `dontOverrideCursor` flag used to sit here, but nothing ever assigned to
-    // it, so every use of it reduced to `isFixedSize` and the branch it guarded
-    // was unreachable. It was removed rather than wired up, because deciding
-    // where such a switch would come from is a public API question - see A5 -
-    // and a dead branch with a suggestive name misleads the next reader.
-    // See doc/pages/limitations.md, "hit testing always overrides the border
-    // cursor".
+    // borderOwnsCursor() is the host's opt-out, and it is asked at the four places
+    // below. A `dontOverrideCursor` flag used to sit here with the same four uses,
+    // but nothing ever assigned to it, so all of them reduced to `isFixedSize` and
+    // the branches it guarded were unreachable; it was removed rather than wired up,
+    // because where such a switch comes from is a public API question. The answer
+    // now is WindowAgentBase::setBorderOwnsCursor(), so the four places ask it.
+    //
+    // What they answer when the border is out is not uniform, and the differences
+    // are the whole point: inside the window it is HTCLIENT, so the press reaches
+    // the control underneath; outside it is HTBORDER, because there is nothing
+    // underneath to reach and telling Windows "client area" about a point off the
+    // window only confuses it.
 
     WindowAgentBase::SystemButton sysButtonType = WindowAgentBase::Unknown;
     if (!isFixedSize && isInSystemButtons(qtScenePos, &sysButtonType)) {
@@ -1525,7 +1529,12 @@ bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
             bool isLeft = nativeLocalPos.x <= kBorderSize;
             bool isRight = (nativeLocalPos.x >= (clientWidth - kBorderSize));
             if (isTop || isLeft || isRight) {
-                if (isTop) {
+                if (!borderOwnsCursor()) {
+                    // Not a resize, and not the button either: the two pixels along
+                    // the edge belong to whatever the button is drawn on top of, so
+                    // it can still be hovered and clicked.
+                    *result = (isTitleBar ? HTCAPTION : HTCLIENT);
+                } else if (isTop) {
                     if (isLeft) {
                         *result = HTTOPLEFT;
                     } else if (isRight) {
@@ -1592,8 +1601,10 @@ bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
             // because when we enter this code path, it means the mouse cursor is
             // outside the window, that is, the three transparent window resize area.
             // Returning HTCLIENT will confuse Windows, we can't put our controls there
-            // anyway.
-            *result = (isFixedSize ? HTBORDER : originalHitTestResult);
+            // anyway. HTBORDER is the answer for "the border is not to be grabbed"
+            // for the same reason it is the answer for a fixed-size window: the point
+            // is outside, so there is nothing to hand it to, only a resize to refuse.
+            *result = ((isFixedSize || !borderOwnsCursor()) ? HTBORDER : originalHitTestResult);
             return true;
         }
         if (full) {
@@ -1612,8 +1623,12 @@ bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
         if (isTop) {
             // Return HTCLIENT instead of HTBORDER here, because the mouse is
             // inside our homemade title bar now, return HTCLIENT to let our
-            // title bar can still capture mouse events.
-            *result = (isFixedSize ? (isTitleBar ? HTCAPTION : HTCLIENT) : HTTOP);
+            // title bar can still capture mouse events. This is the strip the
+            // library draws in place of the frame it removed, which is the one a
+            // host asking for "a border that is only there to hold a shadow" means:
+            // with the flag off the strip answers as the area it sits in, so the
+            // title bar keeps its drag and nothing resizes.
+            *result = ((isFixedSize || !borderOwnsCursor()) ? (isTitleBar ? HTCAPTION : HTCLIENT) : HTTOP);
             return true;
         }
         if (isTitleBar) {
@@ -1634,9 +1649,13 @@ bool WindowContextWin::hitTestHandler(HWND hWnd, LPARAM lParam, LRESULT *result)
         if (!isFixedSize) {
             // Which edge or corner this is, and whether the title bar answers
             // for the rest, is decided by hitTestRegionFor(); the geometry is
-            // kept there so it can be tested without a native window.
-            const auto region = ::QxWindow::hitTestRegionFor(
-                QSize(clientWidth, clientHeight), point2qpoint(nativeLocalPos), frameSize, isTitleBar, false);
+            // kept there so it can be tested without a native window. The flag is
+            // the application's "the border is not there to be grabbed", which the
+            // same function answers - so a press on a border that is only there to
+            // hold a shadow reaches what is drawn under it.
+            const auto region =
+                ::QxWindow::hitTestRegionFor(QSize(clientWidth, clientHeight), point2qpoint(nativeLocalPos), frameSize,
+                                             isTitleBar, false, borderOwnsCursor());
             switch (region) {
             case HitTestRegion::TopLeft:
                 *result = HTTOPLEFT;

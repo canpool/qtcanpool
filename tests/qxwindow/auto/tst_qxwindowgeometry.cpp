@@ -46,6 +46,9 @@ private slots:
     void cursorAgreesWithEdges();
     void borderIsAStripOfAKnownSize();
     void windowFollowsTheBorder();
+
+    void noBorderMeansNoEdgesAnywhere();
+    void noBorderMeansTheArrowEverywhere();
 };
 
 // A window comfortably wider and taller than two borders, so the four strips and
@@ -245,6 +248,34 @@ void tst_QxWindowGeometry::borderIsAStripOfAKnownSize()
 
     const int middle = (kWindow.width() - 2 * kResizeBorderThickness) * (kWindow.height() - 2 * kResizeBorderThickness);
     QCOMPARE(onTheBorder, kWindow.width() * kWindow.height() - middle);
+}
+
+/*!
+ * With the border out of the hit test the same sweep has to come up empty: not
+ * fewer edges, none. Sweeping rather than sampling is what makes this worth
+ * having - a flag that only reached some of the four comparisons would still
+ * answer correctly at a handful of hand-picked points.
+ */
+void tst_QxWindowGeometry::noBorderMeansNoEdgesAnywhere()
+{
+    for (int y = 0; y < kWindow.height(); ++y) {
+        for (int x = 0; x < kWindow.width(); ++x) {
+            QCOMPARE(asInt(resizeEdgesFor(kWindow, QPoint(x, y), false)), asInt(Qt::Edges()));
+        }
+    }
+}
+
+/*!
+ * The cursor half of the same statement, and it has to sweep too: a resize cursor
+ * left behind on one strip would advertise a resize the press would not start.
+ */
+void tst_QxWindowGeometry::noBorderMeansTheArrowEverywhere()
+{
+    for (int y = 0; y < kWindow.height(); ++y) {
+        for (int x = 0; x < kWindow.width(); ++x) {
+            QCOMPARE(resizeCursorFor(kWindow, QPoint(x, y), false), Qt::ArrowCursor);
+        }
+    }
 }
 
 /*!

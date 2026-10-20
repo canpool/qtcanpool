@@ -48,10 +48,18 @@ inline constexpr int kResizeBorderThickness = 8;
     the left and top strips are \c x < thickness while the right and bottom ones
     are \c x >= width - thickness, so the far strips include their inner boundary
     column and the near ones do not.
+
+    \a borderOwnsCursor is the border's claim on the press, and is asked before
+    any of that: while it is false no edge is reported anywhere, which is what
+    makes a press land on the widget under the border instead of starting a
+    resize. The default is true, which is what every window has always got.
 */
-inline Qt::Edges resizeEdgesFor(const QSize &windowSize, const QPoint &pos)
+inline Qt::Edges resizeEdgesFor(const QSize &windowSize, const QPoint &pos, bool borderOwnsCursor = true)
 {
     Qt::Edges edges = {};
+    if (!borderOwnsCursor) {
+        return edges;
+    }
     if (pos.x() < kResizeBorderThickness) {
         edges |= Qt::LeftEdge;
     }
@@ -76,9 +84,17 @@ inline Qt::Edges resizeEdgesFor(const QSize &windowSize, const QPoint &pos)
     reports at least one edge. The diagonal cursors are not symmetric: the
     top-left and bottom-right corners get \c SizeFDiagCursor and the other two get
     \c SizeBDiagCursor.
+
+    \a borderOwnsCursor is asked first and settles the whole answer: while it is
+    false the cursor is the arrow everywhere, including over the border, which is
+    the same "the border is not here" the edges function is reporting from the
+    same flag.
 */
-inline Qt::CursorShape resizeCursorFor(const QSize &windowSize, const QPoint &pos)
+inline Qt::CursorShape resizeCursorFor(const QSize &windowSize, const QPoint &pos, bool borderOwnsCursor = true)
 {
+    if (!borderOwnsCursor) {
+        return Qt::ArrowCursor;
+    }
     const int x = pos.x();
     const int y = pos.y();
     const int w = windowSize.width();

@@ -61,6 +61,30 @@ public:
     bool isCaptionClassName(const char *name) const;
     void addCaptionClassName(const QString &name);
 
+    /*!
+     * Whether the resize border claims a press that lands on it, and with it the
+     * cursor that advertises the resize.
+     *
+     * A frameless window draws its own border, and the border it draws is not
+     * always there to be grabbed: it may be no more than the room a shadow needs,
+     * with dragging meant to go through the title bar only. The hit test cannot
+     * know that from geometry, so it has to be told - which is what this is, and
+     * why it lives here rather than in a backend: both backends ask it, and the
+     * answer changes no platform-specific code.
+     *
+     * True unless someone says otherwise, which is the behaviour every window has
+     * always had.
+     *
+     * Inside the window the border falls back to the area it sits in; outside it -
+     * where the frame lives that the system still draws, and where there is nothing
+     * to hand a press to - it falls back to a plain border instead. Which of the
+     * two a given point is depends on how the library was built: with the default
+     * QX_WINDOW_CONFIG_SYSTEM_BORDERS on, only the strip at the top is drawn here
+     * and the other three edges are the system's, so only that strip is "inside".
+     */
+    inline bool borderOwnsCursor() const;
+    void setBorderOwnsCursor(bool owns);
+
     virtual QString key() const;
 
     enum WindowContextHook {
@@ -104,6 +128,8 @@ protected:
     QObject *m_titleBar{};
     std::array<QObject *, WindowAgentBase::Close + 1> m_systemButtons{};
 
+    bool m_borderOwnsCursor{true};
+
     QVariantHash m_windowAttributes;
 
     std::unique_ptr<QObject> m_windowEventFilter;
@@ -138,6 +164,11 @@ inline QObject *WindowContext::systemButton(WindowAgentBase::SystemButton button
 inline QObject *WindowContext::titleBar() const
 {
     return m_titleBar;
+}
+
+inline bool WindowContext::borderOwnsCursor() const
+{
+    return m_borderOwnsCursor;
 }
 
 #ifdef Q_OS_MAC

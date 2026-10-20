@@ -164,10 +164,24 @@ inline bool isInTitleBarDraggableArea(const QPoint &pos, const QRect &windowRect
  * the draggable title bar it is Caption, otherwise Client. \a isFixedSize turns
  * every border into Border, which is what stops a fixed-size window from being
  * resized by dragging its edge.
+ *
+ * \a borderOwnsCursor is the border's claim on the press: while it is true a
+ * border answers with the resize code for its edge or corner, and while it is
+ * false the border answers as the area it sits in - Caption where the title bar
+ * reaches, Client everywhere else - so the press arrives at whatever is drawn
+ * there instead of starting a resize. The default is true, which is what every
+ * window has always got.
  */
 inline HitTestRegion hitTestRegionFor(const QSize &clientSize, const QPoint &pos, int frameSize, bool isTitleBar,
-                                      bool isFixedSize)
+                                      bool isFixedSize, bool borderOwnsCursor = true)
 {
+    // The border is out of the hit test entirely. It is asked before the fixed-size
+    // branch on purpose: a fixed-size window's border answers Border, which still
+    // keeps the press away from what is drawn underneath, so respecting the flag
+    // only in the resizable branch would leave the flag doing half its job.
+    if (!borderOwnsCursor) {
+        return isTitleBar ? HitTestRegion::Caption : HitTestRegion::Client;
+    }
     if (isFixedSize) {
         // A fixed-size window still reports the edges, but as Border, so the caller
         // returns HTBORDER rather than a resize code.

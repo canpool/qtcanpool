@@ -240,6 +240,13 @@ void WindowContext::addCaptionClassName(const QString &name)
     }
 }
 
+void WindowContext::setBorderOwnsCursor(bool owns)
+{
+    // Nothing to repaint and no window manager to tell: the flag is read on the
+    // next hit test, which is the only place it is ever asked.
+    m_borderOwnsCursor = owns;
+}
+
 QString WindowContext::key() const
 {
     return {};

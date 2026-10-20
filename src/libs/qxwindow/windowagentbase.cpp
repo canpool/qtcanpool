@@ -77,6 +77,48 @@ QVariant WindowAgentBase::windowAttribute(const QString &key) const
 }
 
 /*!
+    Returns whether the resize border claims a press that lands on it.
+
+    \sa setBorderOwnsCursor()
+*/
+bool WindowAgentBase::borderOwnsCursor() const
+{
+    Q_D(const WindowAgentBase);
+    return d->m_context->borderOwnsCursor();
+}
+
+/*!
+    Sets whether the resize border claims a press that lands on it, and with it
+    the cursor that advertises the resize.
+
+    A frameless window draws its own border, and the border it draws is not always
+    there to be grabbed: it may be no more than the room a shadow needs, with
+    dragging meant to go through the title bar only. Nothing in the geometry says
+    which of the two a border is, so it has to be told.
+
+    With \a owns false the border drops out of the hit test: a press there reaches
+    whatever is drawn underneath instead of starting a resize, and the cursor stays
+    the arrow all the way to the window's edge. The title bar keeps its own answer,
+    so dragging by the title bar is unaffected.
+
+    Outside the window the answer is a plain border rather than the client area:
+    there is nothing out there to hand a press to, and a point off the window that
+    claims to be client area confuses the window manager. So a window with this off
+    cannot be resized from its frame at all, which is the intent - but note that
+    how much of the frame is the system's and how much is drawn here depends on
+    QX_WINDOW_CONFIG_SYSTEM_BORDERS, and both halves honour the flag.
+
+    Default is true, which is the behaviour every window has always had.
+
+    \sa borderOwnsCursor()
+*/
+void WindowAgentBase::setBorderOwnsCursor(bool owns)
+{
+    Q_D(WindowAgentBase);
+    d->m_context->setBorderOwnsCursor(owns);
+}
+
+/*!
     Sets the platform-related attribute for the window. Available attributes:
 
     On Windows,

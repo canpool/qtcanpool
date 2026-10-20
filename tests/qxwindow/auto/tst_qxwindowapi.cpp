@@ -42,6 +42,8 @@ class tst_QxWindowApi : public QObject
 private slots:
     void commandsAreSafeBeforeSetup();
     void commandsLeaveTheBookkeepingAlone();
+
+    void borderOwnsCursorStartsTrueAndRoundTrips();
 };
 
 /*!
@@ -94,6 +96,38 @@ void tst_QxWindowApi::commandsLeaveTheBookkeepingAlone()
     QCOMPARE(agent.titleBar(), &titleBar);
     QCOMPARE(agent.systemButton(WindowAgentBase::Close), &closeButton);
     QVERIFY(agent.isHitTestVisible(&closeButton));
+}
+
+/*!
+ * The border flag is the one piece of the public surface whose whole job is to
+ * change what a hit test answers, so what is asserted here is the part that is
+ * ours: that it starts where every window has always been, that it survives a
+ * round trip, and that setting one agent does not reach another.
+ *
+ * That the hit test itself honours it is not this case's to answer - it is
+ * answered offscreen in tst_qxwindowhittest and tst_qxwindowgeometry, which ask
+ * the two functions the backends feed it from.
+ */
+void tst_QxWindowApi::borderOwnsCursorStartsTrueAndRoundTrips()
+{
+    QWidget window;
+    WindowAgentWidget agent;
+    QVERIFY(agent.setup(&window));
+
+    // Default: the border claims the press, which is what it has always done.
+    QVERIFY(agent.borderOwnsCursor());
+
+    agent.setBorderOwnsCursor(false);
+    QVERIFY(!agent.borderOwnsCursor());
+
+    agent.setBorderOwnsCursor(true);
+    QVERIFY(agent.borderOwnsCursor());
+
+    // Per window, not per process: another agent is untouched by the one above.
+    QWidget otherWindow;
+    WindowAgentWidget otherAgent;
+    QVERIFY(otherAgent.setup(&otherWindow));
+    QVERIFY(otherAgent.borderOwnsCursor());
 }
 
 TEST_ADD(tst_QxWindowApi)

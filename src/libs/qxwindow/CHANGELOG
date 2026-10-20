@@ -1,5 +1,26 @@
 Unreleased
 ---
+Interface
+- WindowAgentBase::setBorderOwnsCursor() takes the resize border out of the hit
+  test, and borderOwnsCursor() reads it back. A frameless window draws its own
+  border and the border it draws is not always there to be grabbed - it may be no
+  more than the room a shadow needs, with dragging meant to go through the title
+  bar only - and nothing in the geometry says which of the two it is. With the
+  flag false a press on the border reaches whatever is drawn there instead of
+  starting a resize, and the cursor stays the arrow all the way to the window's
+  edge. The title bar keeps its own answer, so dragging by the title bar is
+  unaffected. Both backends honour it: the native one at the four places in the
+  hit test a dead dontOverrideCursor flag used to sit - two of them in the branch
+  a default build takes, with the system borders on - and the portable one through
+  the cursor and the edges it hands to startSystemResize(). The answer differs
+  either side of the window edge: inside it falls back to the area it sits in, so
+  the press reaches what is drawn there, and outside it falls back to a plain
+  border, because there is nothing out there to hand a press to and calling it
+  client area confuses Windows. Default is true, which is the behaviour every
+  window has always had. This is the opt-out whose absence 0.3.0 recorded as a
+  limitation; that entry is gone from the limitations page now, and
+  tst_qxwindow_native asks a real window procedure for it.
+
 Cleanup
 - Drop the Qt 5.14 guard around the private qwinregistry_p.h include in
   windowkit_win.h. The header exists since 5.14, below the 5.15 minimum, so it

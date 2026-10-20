@@ -59,6 +59,7 @@ private slots:
     void clientAreaReachesTheTopEdge();
     void hitTestAnswersForTheTitleBar();
     void hitTestAnswersForTheSystemButtons();
+    void hitTestHonoursABorderThatOwnsNoCursor();
     void theFrameIsRemovedWithoutClearingTheStyleBits();
     void maximisedFirstShowStillRestores();
 #endif
@@ -138,6 +139,10 @@ QString hitTestName(LRESULT value)
         return QStringLiteral("HTCLOSE");
     case HTTOP:
         return QStringLiteral("HTTOP");
+    case HTLEFT:
+        return QStringLiteral("HTLEFT");
+    case HTBORDER:
+        return QStringLiteral("HTBORDER");
     // HTMINBUTTON and HTMAXBUTTON are aliases of the older HTREDUCE and HTZOOM
     // spellings of the same two values, so only one name out of each pair can
     // appear here - listing both is a duplicate case label, not two regions.
@@ -250,6 +255,12 @@ public:
     QPoint closeButtonCentre() const
     {
         return m_closeButton->geometry().center() + m_titleBar->pos();
+    }
+
+    /*! The flag that takes the resize border out of the hit test. */
+    void setBorderOwnsCursor(bool owns)
+    {
+        m_agent.setBorderOwnsCursor(owns);
     }
 private:
     QWidget m_host;
@@ -380,6 +391,59 @@ void tst_QxWindowNative::hitTestAnswersForTheSystemButtons()
     // its own rectangle rather than the rest of the strip.
     const QPoint besideTheButton = window.closeButtonCentre() - QPoint(kButtonSize, 0);
     QCOMPARE(hitTestName(window.hitTest(besideTheButton)), QStringLiteral("HTCAPTION"));
+}
+
+/*!
+ * The same points, asked twice: once with the border claiming them and once
+ * without. This is the only place the flag is exercised end to end - it goes
+ * through a real window procedure and comes back as a real HT* code, where every
+ * other case for it asks the pure function the procedure reads.
+ *
+ * Two points, because the two halves of the answer are different on purpose. The
+ * one inside the window falls back to the area it sits in, so the press reaches
+ * what is drawn there. The one outside it falls back to HTBORDER, not to
+ * HTCLIENT: there is nothing outside the window to hand a press to, and telling
+ * Windows "client area" about a point off the window only confuses it - which is
+ * the same reason a fixed-size window is answered that way.
+ *
+ * Which points those are depends on how the library was built. With
+ * QX_WINDOW_CONFIG_SYSTEM_BORDERS on (the default) the left, right and bottom
+ * edges are the system's and live outside the client area, so the strip the
+ * library draws is the one at the top and it is the only one inside; with it off
+ * the library draws all four and all four are inside. The case is written against
+ * the default.
+ */
+void tst_QxWindowNative::hitTestHonoursABorderThatOwnsNoCursor()
+{
+    if (!onTheWindowsPlatform()) {
+        QSKIP("there is no window procedure to ask under this platform plugin");
+    }
+
+    AgentWindow window;
+    QVERIFY(window.build());
+
+    // Inside: the strip at the top of the client area, which is what replaces the
+    // frame the handler removed.
+    const QPoint topStrip(window.width() / 2, 1);
+    // Outside: a few pixels to the left of the client area, in the frame.
+    const QPoint leftFrame(-4, window.height() / 2);
+
+    // With the border in charge, which is where every window starts.
+    QCOMPARE(hitTestName(window.hitTest(topStrip)), QStringLiteral("HTTOP"));
+    QCOMPARE(hitTestName(window.hitTest(leftFrame)), QStringLiteral("HTLEFT"));
+
+    window.setBorderOwnsCursor(false);
+
+    // The strip is inside the title bar, so the title bar's own answer is what is
+    // left - the window can still be dragged, it just cannot be resized from there.
+    QCOMPARE(hitTestName(window.hitTest(topStrip)), QStringLiteral("HTCAPTION"));
+    QCOMPARE(hitTestName(window.hitTest(leftFrame)), QStringLiteral("HTBORDER"));
+
+    // And it is a flag, not a permanent change: putting it back restores what the
+    // window answered on the first ask.
+    window.setBorderOwnsCursor(true);
+    QCOMPARE(hitTestName(window.hitTest(topStrip)), QStringLiteral("HTTOP"));
+    QCOMPARE(hitTestName(window.hitTest(leftFrame)), QStringLiteral("HTLEFT"));
 }
 
 void tst_QxWindowNative::theFrameIsRemovedWithoutClearingTheStyleBits()

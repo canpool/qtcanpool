@@ -66,6 +66,10 @@ private:
     Q_SLOT void edgeTitleBarIsCaptionOnlyAwayFromTheBorders();
     Q_SLOT void edgeFixedSizeReportsBorderInsteadOfAnEdge();
     Q_SLOT void edgeFixedSizeStillFindsTheTitleBar();
+
+    Q_SLOT void borderWithoutTheCursorIsTheAreaItSitsIn();
+    Q_SLOT void borderWithoutTheCursorLeavesTheTitleBarAlone();
+    Q_SLOT void borderWithoutTheCursorIsNotAFlagOnFixedSizeOnly();
 };
 
 namespace
@@ -318,9 +322,10 @@ namespace
 constexpr int kFrame = 8;
 const QSize kClient(400, 300);
 
-HitTestRegion regionAt(const QPoint &pos, bool titleBar = false, bool fixed = false, int frame = kFrame)
+HitTestRegion regionAt(const QPoint &pos, bool titleBar = false, bool fixed = false, int frame = kFrame,
+                       bool borderOwnsCursor = true)
 {
-    return hitTestRegionFor(kClient, pos, frame, titleBar, fixed);
+    return hitTestRegionFor(kClient, pos, frame, titleBar, fixed, borderOwnsCursor);
 }
 }   // namespace
 
@@ -398,6 +403,63 @@ void tst_QxWindowHitRegion::edgeFixedSizeStillFindsTheTitleBar()
     // there - a fixed-size window can be dragged by its title bar.
     QCOMPARE(regionAt(QPoint(200, 10), true, true), HitTestRegion::Caption);
     QCOMPARE(regionAt(QPoint(200, 10), false, true), HitTestRegion::Client);
+}
+
+/*!
+ * With the border out of the hit test, every point on it answers as the area it
+ * sits in rather than as an edge or a corner: the press reaches whatever is drawn
+ * there instead of starting a resize. The four corners matter most - they are the
+ * points where a border wins twice over, from the widened side strip and from the
+ * top strip, and both of those have to stop answering.
+ */
+void tst_QxWindowHitRegion::borderWithoutTheCursorIsTheAreaItSitsIn()
+{
+    QCOMPARE(regionAt(QPoint(0, 150), false, false, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(399, 150), false, false, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(200, 0), false, false, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(200, 299), false, false, kFrame, false), HitTestRegion::Client);
+
+    // Corners, which are the whole reason the side strips are widened.
+    QCOMPARE(regionAt(QPoint(0, 0), false, false, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(399, 0), false, false, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(0, 299), false, false, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(399, 299), false, false, kFrame, false), HitTestRegion::Client);
+
+    // The middle never was a border, so it says the same thing either way.
+    QCOMPARE(regionAt(QPoint(200, 150), false, false, kFrame, false), HitTestRegion::Client);
+}
+
+/*!
+ * Turning the border off must not take the title bar with it: dragging by the
+ * title bar is the one way such a window is meant to move, and it is not the
+ * border being switched off.
+ */
+void tst_QxWindowHitRegion::borderWithoutTheCursorLeavesTheTitleBarAlone()
+{
+    // Well inside the title bar and away from any border.
+    QCOMPARE(regionAt(QPoint(200, 10), true, false, kFrame, false), HitTestRegion::Caption);
+    QCOMPARE(regionAt(QPoint(200, 10), false, false, kFrame, false), HitTestRegion::Client);
+
+    // Where the title bar and a border overlap the border used to win; now the
+    // title bar's own answer is what is left.
+    QCOMPARE(regionAt(QPoint(0, 0), true, false, kFrame, false), HitTestRegion::Caption);
+    QCOMPARE(regionAt(QPoint(399, 299), true, false, kFrame, false), HitTestRegion::Caption);
+}
+
+/*!
+ * The flag has to hold for a fixed-size window too. Its border answers Border,
+ * which is not a resize code but still keeps the press away from what is drawn
+ * underneath - so a flag honoured only in the resizable branch would leave the
+ * window swallowing presses along its edges all the same.
+ */
+void tst_QxWindowHitRegion::borderWithoutTheCursorIsNotAFlagOnFixedSizeOnly()
+{
+    QCOMPARE(regionAt(QPoint(0, 150), false, true, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(200, 0), false, true, kFrame, false), HitTestRegion::Client);
+    QCOMPARE(regionAt(QPoint(0, 0), false, true, kFrame, false), HitTestRegion::Client);
+
+    // And the title bar survives there as well.
+    QCOMPARE(regionAt(QPoint(200, 10), true, true, kFrame, false), HitTestRegion::Caption);
 }
 
 TEST_ADD(tst_QxWindowHitRegion)

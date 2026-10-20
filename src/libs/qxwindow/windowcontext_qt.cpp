@@ -23,31 +23,37 @@ QXWINDOW_USED static inline bool hasResizeHandles(const QWindow *window)
     return window && window->visibility() == QWindow::Windowed;
 }
 
-static Qt::CursorShape calculateCursorShape(const QWindow *window, const QPoint &pos)
+// borderOwnsCursor is the agent's "the border is not there to be grabbed" flag. It
+// is asked before hasResizeHandles() because it answers a different question: the
+// latter is "is this window in a state where a resize is possible", the former is
+// "did the application ask for a border at all".
+static Qt::CursorShape calculateCursorShape(const QWindow *window, const QPoint &pos, bool borderOwnsCursor = true)
 {
 #ifdef Q_OS_MACOS
     Q_UNUSED(window);
     Q_UNUSED(pos);
+    Q_UNUSED(borderOwnsCursor);
     return Qt::ArrowCursor;
 #else
-    if (!hasResizeHandles(window)) {
+    if (!borderOwnsCursor || !hasResizeHandles(window)) {
         return Qt::ArrowCursor;
     }
-    return resizeCursorFor(window->size(), pos);
+    return resizeCursorFor(window->size(), pos, borderOwnsCursor);
 #endif
 }
 
-static inline Qt::Edges calculateWindowEdges(const QWindow *window, const QPoint &pos)
+static inline Qt::Edges calculateWindowEdges(const QWindow *window, const QPoint &pos, bool borderOwnsCursor = true)
 {
 #ifdef Q_OS_MACOS
     Q_UNUSED(window);
     Q_UNUSED(pos);
+    Q_UNUSED(borderOwnsCursor);
     return {};
 #else
-    if (!hasResizeHandles(window)) {
+    if (!borderOwnsCursor || !hasResizeHandles(window)) {
         return {};
     }
-    return resizeEdgesFor(window->size(), pos);
+    return resizeEdgesFor(window->size(), pos, borderOwnsCursor);
 #endif
 }
 
@@ -116,7 +122,7 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
         switch (me->button()) {
         case Qt::LeftButton: {
             if (!fixedSize) {
-                Qt::Edges edges = calculateWindowEdges(window, scenePos);
+                Qt::Edges edges = calculateWindowEdges(window, scenePos, m_context->borderOwnsCursor());
                 if (edges != Qt::Edges()) {
                     m_windowStatus = Resizing;
                     startSystemResize(window, edges);
@@ -182,7 +188,7 @@ bool QtWindowEventFilter::sharedEventFilter(QObject *obj, QEvent *event)
         }
         case Idle: {
             if (!fixedSize) {
-                const Qt::CursorShape shape = calculateCursorShape(window, scenePos);
+                const Qt::CursorShape shape = calculateCursorShape(window, scenePos, m_context->borderOwnsCursor());
                 if (shape == Qt::ArrowCursor) {
                     if (m_cursorShapeChanged) {
                         delegate->restoreCursorShape(host);
