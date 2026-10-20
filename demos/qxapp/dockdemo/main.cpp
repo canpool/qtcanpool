@@ -313,6 +313,15 @@ int main(int argc, char *argv[])
     }
 
     if (inspect) {
+        // A tree describes the window it was read from, so it has to be the same
+        // size the captures are taken at - otherwise a rectangle read here cannot
+        // be found in a picture taken there.
+        w.resize(1280, 800);
+        // A theme sequence is applied on the first turn of the event loop, and this
+        // branch answers before that turn runs: without draining the queue first,
+        // --theme a,b --inspect describes a window still in a and says nothing about
+        // what a capture of the same run shows.
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
         // The two roles a glyph is tinted from, printed first: a glyph that
         // comes out black is either a palette that never got the theme's accent
         // or a tint that was never applied, and this says which in one line.
