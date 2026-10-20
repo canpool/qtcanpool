@@ -19,6 +19,20 @@ if (WIN32 AND NOT Qt5_VERSION VERSION_LESS 6.0.0)
   list(APPEND _ribbondemo_defines QXRIBBON_USE_APPWINDOW)
 endif()
 
+# QxTranslator is the qxcore class the demo loads the library catalogues through.
+set(_ribbondemo_depends ${_ribbondemo_depends} qxcore)
+
+# Where the built catalogues are. The paths are defines rather than something
+# walked at run time because they are decided by the install layout - and the
+# build tree repeats that layout under CMAKE_BINARY_DIR, so what the demo is
+# told here is equally true of a build tree and of something that was installed.
+# Absent when lrelease was missing, in which case there is nothing to load and
+# --lang has no effect rather than pointing at a directory that does not exist.
+if (TARGET Qt5::lrelease)
+  list(APPEND _ribbondemo_defines
+    "QTCANPOOL_TRANSLATIONS_DIR=\"${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations\"")
+endif()
+
 add_qtc_executable(RibbonDemo
   DEPENDS ${_ribbondemo_depends}
   DEFINES ${_ribbondemo_defines}
@@ -37,3 +51,7 @@ add_qtc_executable(RibbonDemo
     # The style sheets the demo offers as themes (:/themes/*.css).
     ${CMAKE_SOURCE_DIR}/res/themes.qrc
 )
+
+if (TARGET generate_qm_files)
+  add_dependencies(RibbonDemo generate_qm_files)
+endif()

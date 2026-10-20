@@ -3,8 +3,11 @@
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
 #include "mainwindow.h"
+#include "qxcore/qxtranslator.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonpage.h"
+
+QX_CORE_USE_NAMESPACE
 
 #include <QApplication>
 #include <QCommandLineOption>
@@ -110,10 +113,14 @@ int main(int argc, char *argv[])
     QCommandLineOption themeOption(QStringLiteral("theme"),
                                    QStringLiteral("Start with the theme <id>, for example accent-dark."),
                                    QStringLiteral("id"));
+    QCommandLineOption langOption(QStringLiteral("lang"),
+                                  QStringLiteral("Show the interface in <language>, for example zh_CN."),
+                                  QStringLiteral("language"));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
     parser.addOption(pageOption);
     parser.addOption(themeOption);
+    parser.addOption(langOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
     // switches (-platform, -style, ...), which the parser would reject as
@@ -124,6 +131,24 @@ int main(int argc, char *argv[])
     }
 
     const QString screenshotFile = parser.value(screenshotOption);
+
+    // The libraries each ship a catalogue, and nothing loads one unless an
+    // application says so: this is the half that turns shipping translations
+    // into having them. It happens before MainWindow exists on purpose, because
+    // a catalogue reaches the strings a widget is constructed with and not only
+    // the ones it rebuilds later.
+    QxTranslator translator;
+#ifdef QTCANPOOL_TRANSLATIONS_DIR
+    translator.setTranslationPath(QStringLiteral(QTCANPOOL_TRANSLATIONS_DIR));
+#endif
+    if (parser.isSet(langOption)) {
+        const QString language = parser.value(langOption);
+        if (translator.setLanguage(language)) {
+            qInfo() << "language" << language << "from" << translator.loadedFiles();
+        } else {
+            qWarning() << "no catalogue installed for language" << language;
+        }
+    }
 
     if (!screenshotFile.isEmpty()) {
         // A focused text edit blinks its cursor, and a capture that lands on the
