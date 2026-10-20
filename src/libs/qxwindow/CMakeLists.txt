@@ -13,7 +13,7 @@ option(QX_WINDOW_CONFIG_SYSTEM_BORDERS "Config system borders" YES)
 option(QX_WINDOW_CONFIG_WIDGET_AGENT "Config widget agent" YES)
 
 add_qtc_library(qxwindow
-  VERSION 0.3.1
+  VERSION 0.3.2
   DEFINES QX_WINDOW_LIBRARY
   PUBLIC_DEPENDS Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES

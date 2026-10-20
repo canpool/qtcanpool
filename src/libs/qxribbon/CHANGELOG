@@ -1,4 +1,4 @@
-Unreleased
+0.14.0
 ---
 Addition
 - RibbonPageContext::addPage(RibbonPage *) takes a page it did not build, the

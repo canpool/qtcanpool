@@ -1,4 +1,4 @@
-Unreleased
+0.3.2
 ---
 Interface
 - WindowAgentBase::setBorderOwnsCursor() takes the resize border out of the hit

@@ -1,4 +1,4 @@
-Unreleased
+0.2.1
 ---
 Feature
 - readBundledTheme() reads the two colours a sheet cannot carry - the accent the

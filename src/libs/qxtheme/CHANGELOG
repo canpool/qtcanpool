@@ -1,4 +1,4 @@
-Unreleased
+0.2.1
 ---
 Feature
 - QxThemeInfo::accent carries the colour the theme emphasizes with, and
