@@ -14,7 +14,9 @@
 #include "qxdock/docksidebar.h"
 #include "qxdock/docksidetab.h"
 #include "qxdock/dockstylesheet.h"
+#include "qxdock/docktab.h"
 
+#include <QAbstractButton>
 #include <QLabel>
 #include <QDebug>
 #include <QFile>
@@ -96,6 +98,128 @@ public:
 private:
     DockManager::ConfigFlags m_saved;
 };
+
+/*!
+ * The application's palette and sheet, put back on the way out - for the same
+ * reason ConfigFlagsGuard exists: a failed QVERIFY returns from the function,
+ * and a look this test installed would otherwise be the look every test after
+ * it measures.
+ */
+class ApplicationLookGuard
+{
+public:
+    ApplicationLookGuard()
+        : m_palette(QGuiApplication::palette())
+        , m_sheet(qApp->styleSheet())
+    {
+    }
+
+    ~ApplicationLookGuard()
+    {
+        qApp->setStyleSheet(m_sheet);
+        QGuiApplication::setPalette(m_palette);
+    }
+
+    ApplicationLookGuard(const ApplicationLookGuard &) = delete;
+    ApplicationLookGuard &operator=(const ApplicationLookGuard &) = delete;
+private:
+    QPalette m_palette;
+    QString m_sheet;
+};
+
+/*!
+ * The color covering most of \a area in \a image.
+ *
+ * The dominant color rather than a sample or an average: a button's icon and
+ * its label sit in the middle of it, so a single pixel says more about the
+ * glyph than about the surface the state changed, and an average blends the two
+ * into a color neither of them has.
+ */
+QRgb dominantColour(const QImage &image, const QRect &area)
+{
+    QHash<QRgb, int> counts;
+    const QRect clipped = area.intersected(image.rect());
+    for (int y = clipped.top(); y <= clipped.bottom(); ++y) {
+        for (int x = clipped.left(); x <= clipped.right(); ++x) {
+            ++counts[image.pixel(x, y)];
+        }
+    }
+    QRgb best = 0;
+    int bestCount = -1;
+    for (auto it = counts.constBegin(); it != counts.constEnd(); ++it) {
+        if (it.value() > bestCount) {
+            bestCount = it.value();
+            best = it.key();
+        }
+    }
+    return best;
+}
+
+/*!
+ * How far apart two colors are, in the channel that moved furthest.
+ *
+ * The largest channel rather than a distance: the states here are washes of one
+ * hue, and a color that shifted in red alone is as visible as one that shifted
+ * in all three.
+ */
+int channelDelta(QRgb a, QRgb b)
+{
+    const QColor first(a);
+    const QColor second(b);
+    return qMax(qAbs(first.red() - second.red()),
+                qMax(qAbs(first.green() - second.green()), qAbs(first.blue() - second.blue())));
+}
+
+/*!
+ * What a button paints at rest, in the hover state, and while held down.
+ *
+ * \a surface is what gets captured and \a target is what the states are put
+ * into: a state the sheet paints as transparent has to be captured with
+ * whatever is behind it, or there is nothing for the transparency to be
+ * against.
+ *
+ * The state is entered the way a pointer enters it, with QTest::mouseMove, and
+ * that is also the one thing that limits this to the offscreen platform: a
+ * synthesized move hovers a widget there, and on the Windows platform it leaves
+ * the button at rest even with its under-mouse attribute set - so the stylesheet
+ * looks at more than the attribute, and a platform with real windows does not
+ * hand a test the hover it made. The suites and CI run on offscreen, which is
+ * where this is asserted; see the caller for the skip elsewhere.
+ *
+ * The release lands outside the button on purpose. A release inside it is a
+ * click, and these are the dock's close buttons - clicking one closes what the
+ * rest of the function is about to measure.
+ */
+struct StateReading {
+    QRgb rest = 0;
+    QRgb hover = 0;
+    QRgb pressed = 0;
+    bool sampled = false;
+};
+
+StateReading readStates(QWidget *surface, QWidget *target)
+{
+    StateReading reading;
+    const QRect area(target->mapTo(surface, QPoint(0, 0)), target->size());
+    if (!surface->rect().contains(area)) {
+        return reading;
+    }
+    reading.rest = dominantColour(surface->grab().toImage(), area);
+
+    QTest::mouseMove(target, target->rect().center());
+    QTest::qWait(20);
+    reading.hover = dominantColour(surface->grab().toImage(), area);
+
+    QTest::mousePress(target, Qt::LeftButton, Qt::NoModifier, target->rect().center());
+    QTest::qWait(20);
+    reading.pressed = dominantColour(surface->grab().toImage(), area);
+
+    // Off the button, so the press is not also a click.
+    QTest::mouseRelease(target, Qt::LeftButton, Qt::NoModifier, QPoint(-10, -10));
+    QTest::qWait(10);
+    reading.sampled = true;
+    return reading;
+}
 }   // namespace
 
 class tst_DockWindow : public QObject
@@ -120,6 +244,7 @@ private slots:
     void framelessHost();
     void carriesNoStyleSheetOfItsOwn();
     void styleSheetIsReadFromTheApplication();
+    void hoverAndPressAreVisibleInBothSchemes();
 };
 
 /*!
@@ -303,6 +428,153 @@ void tst_DockWindow::styleSheetIsReadFromTheApplication()
     light.setColor(QPalette::Dark, QColor(208, 208, 208));
     QCOMPARE(DockStyleColors::fromPalette(light).subtle, QColor(0, 0, 0, 48));
     QCOMPARE(DockStyleColors::fromPalette(light).divider, QColor(208, 208, 208));
+}
+
+/*!
+ * What a hover and a press paint has to be readable on the surface they are
+ * painted on - on a light window and on a dark one.
+ *
+ * This is the check the hover and press washes were missing rather than the
+ * washes themselves. They were rgba(0, 0, 0, 16/24/48), a black wash: 9 percent
+ * of black over the #202020 of a dark window is three or four levels, which is
+ * the same as nothing. They are tokens now - the accent mixed towards the window
+ * for hover, the palette's Mid for press - and this holds them to the property
+ * that made the old ones wrong in the first place: the difference from rest has
+ * to be visible in both schemes.
+ *
+ * Measured here, the black wash comes out as no change whatsoever: an
+ * alpha-only background on a face that is itself transparent does not reach the
+ * window this is captured from. A reader sees the same nothing, reached a
+ * different way - which is why the old values fail this rather than scrape past
+ * the threshold on a light scheme and only lose the dark one.
+ *
+ * It measures what gets painted, not what the sheet says. Reading the sheet
+ * back would pass on a rule Qt never matches, which is how the states went
+ * unnoticed: a wash the base style paints instead is still a wash, and the
+ * question is whether it can be seen.
+ *
+ * The pointer is moved with QTest::mouseMove, so the state is reached the way
+ * a pointer reaches it rather than by setting a widget attribute. Measured
+ * here: offscreen does route it, and grab() renders the state correctly.
+ */
+void tst_DockWindow::hoverAndPressAreVisibleInBothSchemes()
+{
+    const ApplicationLookGuard look;
+
+    struct Scheme {
+        const char *name;
+        QColor window;
+        QColor text;
+        QColor light;
+        QColor mid;
+        QColor placeholder;
+    };
+    // The two surfaces the dock is asked to work on: a white window, and the
+    // #202020 a dark theme gives it. Both state an accent - the hover wash is
+    // mixed from it towards the window, so a scheme without one has no hover.
+    const Scheme schemes[] = {
+        {"light", QColor(255, 255, 255), QColor(32, 31, 30), QColor(243, 242, 241), QColor(214, 212, 210),
+         QColor(96, 94, 92)},
+        {"dark", QColor(32, 32, 32), QColor(243, 242, 241), QColor(43, 43, 43), QColor(72, 72, 72),
+         QColor(161, 159, 157)},
+    };
+    // The wash is a color step, not a shade: 16 levels in one channel is a
+    // state the eye picks up without being told where to look. The black wash
+    // this replaced is 3 to 4 levels on a dark window by arithmetic, and the
+    // washes in place now measured 34 to 64 across the two schemes - so the
+    // threshold has room on both sides rather than being set to whatever passes
+    // today.
+    const int kMinStateDelta = 16;
+
+    // A hover is carried by the pointer, and a test's pointer reaches a widget
+    // on the platform that routes it without a window manager. Measured here:
+    // offscreen hovers the button and captures it, the Windows platform leaves
+    // it at rest however the pointer is moved. Both the test preset and CI run
+    // offscreen, so this is skipped rather than failed where it cannot reach.
+    if (QGuiApplication::platformName() != QLatin1String("offscreen")) {
+        QSKIP("a hover is delivered by the pointer, which only offscreen routes to a test");
+    }
+
+    for (const Scheme &scheme : schemes) {
+        const QString name = QString::fromLatin1(scheme.name);
+
+        QPalette palette;
+        palette.setColor(QPalette::Window, scheme.window);
+        palette.setColor(QPalette::WindowText, scheme.text);
+        palette.setColor(QPalette::Light, scheme.light);
+        palette.setColor(QPalette::Mid, scheme.mid);
+        palette.setColor(QPalette::PlaceholderText, scheme.placeholder);
+        palette.setColor(QPalette::Highlight, QColor(0, 120, 212));
+        palette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
+
+        // A sheet takes its place in the application's look, the way an
+        // application installs it; a sheet set on one widget would be styled
+        // against that widget's palette and not this one.
+        qApp->setPalette(palette);
+        qApp->setStyleSheet(dockStyleSheet(DockStyleColors::fromPalette(palette), false));
+
+        enum Target {
+            TabClose,
+            TitleBarClose
+        };
+        const struct {
+            Target which;
+            const char *what;
+        } targets[] = {
+            {TabClose, "the tab's close button"},
+            {TitleBarClose, "the title bar's close button"},
+        };
+
+        for (const auto &target : targets) {
+            // A window per button, because the pointer is left where the last
+            // reading put it: sharing one window, a hover still in force would
+            // be the next button's rest, and the reading would report that the
+            // title bar had been re-coloured rather than that it was hovered.
+            DockWindow window;
+            DockWidget *dw = new DockWidget(QStringLiteral("dw"));
+            DockPanel *panel = window.addDockWidget(Qx::CenterDockWidgetArea, dw);
+            QVERIFY(panel != nullptr);
+            window.resize(420, 260);
+            window.show();
+            QVERIFY(QTest::qWaitForWindowExposed(&window));
+
+            // The two dock buttons a pointer reaches without opening anything.
+            // They are the rules the hover and press tokens are spelled in.
+            QAbstractButton *button = nullptr;
+            if (target.which == TabClose) {
+                if (dw->tab()) {
+                    button = dw->tab()->findChild<QAbstractButton *>(QStringLiteral("dockTabCloseButton"));
+                }
+            } else {
+                button = panel->titleBarButton(Qx::TitleBarButtonClose);
+            }
+            QVERIFY2(button != nullptr, target.which == TabClose ? "the tab has no close button to measure"
+                                                                 : "the title bar has no close button to measure");
+            QVERIFY2(button->isVisible(), "a close button is not on screen, so nothing it paints is");
+
+            const StateReading reading = readStates(&window, button);
+            QVERIFY2(reading.sampled, "a close button is not inside the window it is painted on");
+
+            QVERIFY2(channelDelta(reading.rest, reading.hover) >= kMinStateDelta,
+                     qPrintable(QStringLiteral("%1 scheme: a hover on %2 is %3 levels off rest (rest #%4, hover "
+                                               "#%5) - that is not feedback")
+                                    .arg(name, QString::fromLatin1(target.what))
+                                    .arg(channelDelta(reading.rest, reading.hover))
+                                    .arg(QColor(reading.rest).name(), QColor(reading.hover).name())));
+            QVERIFY2(channelDelta(reading.hover, reading.pressed) >= kMinStateDelta,
+                     qPrintable(QStringLiteral("%1 scheme: a press on %2 is %3 levels off the hover it follows "
+                                               "(hover #%4, pressed #%5) - the press would read as nothing")
+                                    .arg(name, QString::fromLatin1(target.what))
+                                    .arg(channelDelta(reading.hover, reading.pressed))
+                                    .arg(QColor(reading.hover).name(), QColor(reading.pressed).name())));
+            QVERIFY2(channelDelta(reading.rest, reading.pressed) >= kMinStateDelta,
+                     qPrintable(QStringLiteral("%1 scheme: a press on %2 is %3 levels off rest (rest #%4, "
+                                               "pressed #%5)")
+                                    .arg(name, QString::fromLatin1(target.what))
+                                    .arg(channelDelta(reading.rest, reading.pressed))
+                                    .arg(QColor(reading.rest).name(), QColor(reading.pressed).name())));
+        }
+    }
 }
 
 void tst_DockWindow::addDockWidget_other()
