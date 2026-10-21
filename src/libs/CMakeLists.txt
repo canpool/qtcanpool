@@ -41,7 +41,9 @@ endif()
 # qxfluent is one of the two control libraries: Fluent's own shapes, ramp,
 # shadows and durations, drawn on the base qxcontrols supplies. It knows
 # qxcontrols and qxtheme and nothing else - the two control libraries do not
-# know about each other.
+# know about each other. The one exception is window material (plan 4.7 C3),
+# which is a wrapper over qxwindow's Mica / Acrylic / Mica Alt and is off
+# entirely when qxwindow is not built - see the comment in qxfluent's own file.
 if (WITH_QXFLUENT AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxfluent)
 endif()

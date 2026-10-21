@@ -61,6 +61,15 @@ Feature
   from the keyboard travels, because there the movement is the feedback. It
   carries a value, so it brings its own accessible face: a role and a state
   cannot say a number, and an assistive tool wants to set it back.
+- FluentWindowMaterial, what a Fluent window is made of: Mica, Mica Alt and
+  Acrylic, asked for by name and answered with yes or no, because a Windows 10
+  cannot give Mica and a Linux has none of them at all - and an application
+  that runs anywhere has to be able to ask without being told the answer
+  first. They are one slot on a window and not three switches, so asking for
+  one turns the others off. What does the asking is qxwindow's window agent,
+  which already knows how to reach the window system on each platform; this is
+  the Fluent spelling of it and nothing more, and it is left out of the build
+  when qxwindow is.
 - FluentTeachingTip, a flyout that points at the thing it is about. Qt has a
   tool tip, and a teaching tip is not one: a tool tip is a sentence the toolkit
   shows and hides, it cannot be asked to stay, it holds no button, and it does
