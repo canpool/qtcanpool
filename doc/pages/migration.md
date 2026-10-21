@@ -516,3 +516,34 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   （`QxThemeInfo{"id", "name", true, css}` 一类）不受影响；直接给字段赋值的写法也不受影响。
   主题表里的字阶 / 间距档是生成期填死的（每族自己的 chrome 文件选档），不走注册结构，
   无需迁移。
+
+- **`classic` 与 `accent` 两族的 ribbon tab 内边距吸附到间距网格**（`res/themes/` 生成表，
+  观感变化、不破 API）：4.7 给主题表加了 `space-{xs,sm,md,lg}` 间距令牌（4/8/12/16px），
+  五个 chrome 文件的 tab padding 上令牌时，flat / slate（8px→`sm`）与 soft（12px→`md`）
+  字节不变，而 classic 与 accent 原来的 10px 不在网格上——classic 吸附到 `sm`（8px，本就
+  更密集的 boxy 风格），accent 吸附到 `md`（12px，accent 色块需要呼吸感）。只有这两族
+  的生成表因此变化，其余六张表逐字节一致；差异只在 ribbon tab 的水平内边距 ±2px。
+  自带 QSS 的应用不受影响——令牌解析发生在**本库的生成器与 `qxdock` 的回退渲染**里，
+  应用手写的片段不经过它们。
+
+- **主题表新增几何 / 字阶令牌，`qxdock` 的回退片段同样认**（不破 API，是新增能力的申报）：
+  `corner-{none,sm,md,lg,pill}`（0/2/3/6/9999px，即全部现状值的收敛）、
+  `type-{caption,subtitle,body,title}`（10/13/15/18px，值取暗侧现状、两骨架共用一份档位）、
+  `space-{xs,sm,md,lg}`。生成器带门禁：raw 表出现裸 `border-radius` / 数字字号即拒写。
+  ⚠️ 与计划初判（§六.2）不同的一点写死在这里：**令牌没有换名**，只有扩容——旧令牌一字未动，
+  没有「旧名保留一个版本」的弃用期问题。`qxdock` 的 `dockStyleSheet()` 回退片段里的圆角
+  现在写 `{{corner-*}}` 占位符、渲染时替值；**自己写片段、给像素值的应用照常工作**
+  （替换只命中 `{{...}}`，裸像素原样通过），加载生成主题的应用也完全不受影响。
+
+- **三个新库：`qxcontrols` / `qxfluent` / `qxmaterial`（都是 `0.1.0`）**（不是破坏，是
+  新增面的申报与版本语义的提醒）：`qxcontrols` 是两套控件集共用的自绘基座
+  （`QxControl`：状态机、状态层、焦点环、无障碍骨架），`qxfluent` / `qxmaterial` 是
+  Fluent 与 Material 3 两套并行可选的控件集，与 `qxribbon` 互补、互不相识，只共同依赖
+  `qxcontrols`（`qxfluent` 另有一处对 `qxwindow` 的窗口材质接线）。依赖方向
+  `qxtheme ← qxcontrols ← {qxfluent, qxmaterial}`。**0.x 的语义就是接口未稳（K11）**：
+  依赖它们的代码在 0.x 内升级要按 CHANGELOG 逐条对，本库不给兼容承诺。
+
+- **`QxThemeManager::setReduceMotion()` 是全局开关且会记住**（不破 API）：动效合规开关
+  持久化在配置的 `ui` 组（`reduceMotion`），下一次启动自动恢复。4.7 之前应用没有这个
+  开关可设；打开后 `motionFor()` 的每一档都回「跳到终态」，读到它的动画器自动合规。
+  现有五族主题与 `qxribbon` / `qxdock` 不读它，行为不变。
