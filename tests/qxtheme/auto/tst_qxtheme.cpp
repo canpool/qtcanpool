@@ -105,6 +105,7 @@ private slots:
     void shadowTiers();
     void motionTiersAndTheReduceSwitch();
     void reduceMotionIsRemembered();
+    void motionScaleFollowsTheTheme();
 
     void tintedPixmapRepaintsTheGlyph();
     void tintedIconIsEmptyForAFileThatIsNotThere();
@@ -806,6 +807,26 @@ void tst_QxTheme::reduceMotionIsRemembered()
     // Leave the process as it was found: motion is global.
     manager->setReduceMotion(false);
     QCOMPARE(isMotionReduced(), false);
+}
+
+/*! The retime is a registration field: applying a theme installs its scale,
+ *  and a theme that says nothing puts 1.0 back. */
+void tst_QxTheme::motionScaleFollowsTheTheme()
+{
+    QxThemeManager *manager = QxThemeManager::instance();
+    setMotionScale(1.0);
+
+    QxThemeInfo stately = makeTheme(QStringLiteral("test-stately"), QStringLiteral("Stately"), false);
+    stately.motionScale = 2.0;
+    manager->registerTheme(stately);
+    manager->setTheme(QStringLiteral("test-stately"));
+    QCOMPARE(motionScale(), 2.0);
+    QCOMPARE(motionFor(0).duration, motionFast.duration * 2);
+
+    // A theme that carries no scale hands the tiers back untouched.
+    manager->setTheme(QString::fromLatin1(kBare));
+    QCOMPARE(motionScale(), 1.0);
+    QCOMPARE(motionFor(0).duration, motionFast.duration);
 }
 
 TEST_ADD(tst_QxTheme)

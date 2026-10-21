@@ -14,6 +14,21 @@
 QX_THEME_BEGIN_NAMESPACE
 
 /*!
+ * How much room a control asks for, the two tiers the spacing vocabulary
+ * speaks at run time.
+ *
+ * The sheets bake their spacing in at generation time; this is the answer for
+ * everything drawn in code - a control that lays itself out picks the tier of
+ * every gap and padding from here. \c Comfortable is the tier the sheets
+ * speak; \c Compact is the tighter one, for a theme that means to be dense.
+ */
+enum class Density
+{
+    Comfortable,
+    Compact
+};
+
+/*!
  * One theme, as the application that owns it describes it.
  *
  * This library is an engine, not a catalogue: it knows nothing about any
@@ -73,6 +88,22 @@ public:
      * emphasis gets.
      */
     QColor onAccent;
+
+    /*!
+     * How dense the theme means to be: the density tier the control libraries
+     * draw at while this theme is in force. \c Comfortable is the default and
+     * the tier the bundled sheets speak; a theme that declares \c Compact asks
+     * every self-drawn control for the tighter tier of its spacing.
+     */
+    Density density = Density::Comfortable;
+
+    /*!
+     * The multiplier the motion of the whole application reads through while
+     * this theme is in force: 1.0 leaves the tiers as they are, a smaller
+     * value retimes everything snappier, a larger one stately. Installed by
+     * apply() the way the palette is; see qxthememotion.h for the tiers.
+     */
+    qreal motionScale = 1.0;
 };
 
 /*! The palette behind the light themes: light surfaces, dark text. */

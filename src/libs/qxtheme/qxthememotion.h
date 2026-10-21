@@ -53,6 +53,19 @@ bool QX_THEME_EXPORT isMotionReduced();
 void QX_THEME_EXPORT setMotionReduced(bool on);
 
 /*!
+ * The multiplier every duration reads through, 1.0 while nobody says otherwise.
+ *
+ * This is how a theme retimes the motion of the whole application: the field
+ * rides on QxThemeInfo, and QxThemeManager::apply() installs the applied
+ * theme's scale here the way it installs the theme's palette - so a theme that
+ * wants everything snappier scales it down, one that wants it stately scales
+ * it up, and one that says nothing leaves the tiers as they are.
+ */
+qreal QX_THEME_EXPORT motionScale();
+/*! Answers \a scale to motionScale(); 0 or less reads as instant. */
+void QX_THEME_EXPORT setMotionScale(qreal scale);
+
+/*!
  * The motion \a tier asks for, saturating at \c motionEmphasized and reading
  * as \c motionFast below zero - a caller that walks a step scale does not have
  * to clamp it first.
@@ -61,7 +74,8 @@ void QX_THEME_EXPORT setMotionReduced(bool on);
  * reduced every tier comes back with a zero duration and a linear curve, so an
  * animator that reads its motion here jumps to the end state without checking
  * the switch itself - compliance is the default, not something every control
- * remembers to do.
+ * remembers to do. The scale rides along the same way: the duration that comes
+ * back is the tier's, times motionScale().
  */
 QxMotion QX_THEME_EXPORT motionFor(int tier);
 

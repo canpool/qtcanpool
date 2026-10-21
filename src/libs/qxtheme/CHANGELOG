@@ -1,6 +1,13 @@
 Unreleased
 ---
 Feature
+- QxThemeInfo carries the tokens a self-drawn control reads at run time, with
+  defaults that leave every existing registration compiling and behaving as it
+  did: density, the density tier the control libraries draw at (Comfortable),
+  and motionScale, the multiplier the application's motion reads through
+  (1.0). apply() installs the applied theme's scale the way it installs the
+  palette; the type and spacing tiers a sheet names were filled at generation
+  time and need no registration field.
 - qxthememotion.h, the motion vocabulary a transition reads its answer from:
   three tiers of duration and curve - a hover, a change with distance to
   cover, an entrance with a settle - named by what the movement is for. The

@@ -543,6 +543,13 @@ void QxThemeManager::apply()
         return;
     }
 
+    // The tokens a self-drawn control reads at run time follow the theme the
+    // way the palette does. The type and spacing tiers a sheet names were
+    // filled at generation time, so the one token that still moves at run time
+    // is the retime: the theme's scale takes over here, and a theme that says
+    // nothing leaves 1.0 in force.
+    QX_THEME_PREPEND_NAMESPACE(setMotionScale)(info.motionScale);
+
     QPalette palette = QX_THEME_PREPEND_NAMESPACE(paletteFor)(info.dark);
     // An override wins over the theme's own: it is the answer to "paint with
     // this", given by the application or by the user, and a theme is a look

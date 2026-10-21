@@ -506,3 +506,13 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   `QxTranslator` 加载 `qxribbon_zh_CN.qm` / `qxdock_zh_CN.qm` / `qxapp_zh_CN.qm` 即可，
   `demos/qxapp/ribbondemo --lang zh_CN` 是可跑的样例。诊断信息（`qDebug()` 写出去的那些）
   故意留英文，不进目录。
+
+### 4.7
+
+- **`QxThemeInfo` 新增 `density` 与 `motionScale` 字段**（库 `qxtheme`，结构体变化；
+  **默认值保证旧注册代码不改也编译、行为不变**）：`density`（默认 `Comfortable`）声明
+  主题的密度档，`motionScale`（默认 `1.0`）是主题在位时全场动效时长的倍率——
+  `apply()` 装主题时顺带装它，装法与 palette 相同。按位置初始化的聚合写法
+  （`QxThemeInfo{"id", "name", true, css}` 一类）不受影响；直接给字段赋值的写法也不受影响。
+  主题表里的字阶 / 间距档是生成期填死的（每族自己的 chrome 文件选档），不走注册结构，
+  无需迁移。
