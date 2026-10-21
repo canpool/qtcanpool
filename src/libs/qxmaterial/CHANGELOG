@@ -55,6 +55,19 @@ Feature
   while it is in force and carries a mark - because "which of these are on"
   has to be readable without pressing each one to find out. An assist chip is
   announced as a button and a filter one as a thing that is on or off.
+- MaterialCard, the card: a surface that holds something, in one of three
+  readings - elevated, which casts a shadow and is the page's own colour;
+  filled, which is a surface one step from the page and casts nothing; and
+  outlined, which is the page's own colour with a line round it. Qt has a group
+  box for the same job, and it arrives with a frame and a title and reads as a
+  form. It is not the Fluent card, and the difference is what each family
+  thinks a card is: Fluent's says how far above the page it sits, so the lift is
+  the message and a card is asked for an elevation; this one says which of
+  three surfaces it is, so only one of the three casts a shadow at all. A
+  Fluent card is lit from wherever the pointer is; this one answers the pointer
+  by lifting one level - and takes no wash, because a tint on top of a lift
+  would be two answers to one pointer. A card is a surface, not a button: what
+  is inside it is what gets pressed.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
