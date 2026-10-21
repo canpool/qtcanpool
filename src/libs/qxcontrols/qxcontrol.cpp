@@ -99,6 +99,11 @@ bool QxControl::hitTest(const QPointF &pos) const
     return rect().contains(pos.toPoint());
 }
 
+QRectF QxControl::chromeRect() const
+{
+    return QRectF(rect());
+}
+
 QColor QxControl::washColor() const
 {
     return textColor();
@@ -133,7 +138,10 @@ void QxControl::paintEvent(QPaintEvent *event)
     paintSurface(&painter);
 
     // The wash goes between the surface and the content: over the fill the
-    // control painted, under the glyphs it is telling the user about.
+    // control painted, under the glyphs it is telling the user about - and
+    // over the part of the control that is a control, not over the label
+    // standing beside it.
+    const QRectF chrome = chromeRect();
     if (isActive() && isEnabled()) {
         const qreal opacity =
             d_ptr->m_state == State::Pressed ? QxStateLayer::pressedOpacity : QxStateLayer::hoverOpacity;
@@ -141,10 +149,10 @@ void QxControl::paintEvent(QPaintEvent *event)
         // not get a square tint at its own round edge.
         QPainterPath clip;
         const qreal radius = cornerRadius();
-        clip.addRoundedRect(QRectF(rect()), radius, radius);
+        clip.addRoundedRect(chrome, radius, radius);
         painter.save();
         painter.setClipPath(clip);
-        QxStateLayer::paint(&painter, QRectF(rect()), washColor(), opacity);
+        QxStateLayer::paint(&painter, chrome, washColor(), opacity);
         painter.restore();
     }
 
@@ -157,7 +165,7 @@ void QxControl::paintEvent(QPaintEvent *event)
         ring.color = accentColor();
         ring.width = 2.0;
         ring.inset = 0.0;
-        QxRingPainter::paint(&painter, QRectF(rect()), cornerRadius(), ring);
+        QxRingPainter::paint(&painter, chrome, cornerRadius(), ring);
     }
 }
 

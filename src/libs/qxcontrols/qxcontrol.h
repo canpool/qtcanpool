@@ -115,6 +115,18 @@ protected:
      */
     virtual bool hitTest(const QPointF &pos) const;
 
+    /*!
+     * The part of the control the wash and the focus ring belong to: the whole
+     * widget by default.
+     *
+     * A control is often a small thing with a sentence beside it - a switch's
+     * track, a check box's box - and the wash and the ring belong to the small
+     * thing: tinting the sentence is a hover that dims the label, and a ring
+     * round the whole row is a ring round nothing. A control that is all one
+     * thing does not override this.
+     */
+    virtual QRectF chromeRect() const;
+
     /*! The wash colour for the current state; the text colour by default. */
     virtual QColor washColor() const;
 

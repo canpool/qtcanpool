@@ -57,6 +57,21 @@ void sendLeave(QWidget *widget)
     QApplication::sendEvent(widget, &leave);
 }
 
+/*! A control that is a small thing with room beside it: the wash and the ring
+ *  belong to the left half. */
+class HalvedControl : public QxControl
+{
+protected:
+    void paintSurface(QPainter *painter) override
+    {
+        painter->fillRect(rect(), Qt::white);
+    }
+    QRectF chromeRect() const override
+    {
+        return QRectF(0, 0, width() / 2.0, height());
+    }
+};
+
 /*! A press or a release, sent straight at the widget. QTest's own helpers
  *  warn when a disabled widget does not take the event, which is exactly the
  *  answer this suite wants to assert rather than be warned about. */
@@ -77,6 +92,7 @@ private slots:
     void hoverTracksThePointer();
     void washFollowsTheState();
     void disabledControlDoesNotClick();
+    void theWashAndTheRingFollowTheChrome();
 };
 
 /*! A press and its release inside is a click, and the state walks back down. */
@@ -158,6 +174,24 @@ void tst_QxControl::disabledControlDoesNotClick()
 
     QCOMPARE(clicks.count(), 0);
     QCOMPARE(control.state(), QxControl::State::Rest);
+}
+
+/*! A control is often a small thing with a sentence beside it, and the wash
+ *  belongs to the small thing: tinting the sentence is a hover that dims the
+ *  label. */
+void tst_QxControl::theWashAndTheRingFollowTheChrome()
+{
+    HalvedControl control;
+    control.resize(40, 24);
+
+    const QImage rest = control.grab().toImage();
+    sendEnter(&control);
+    const QImage hovered = control.grab().toImage();
+
+    // Inside the chrome: tinted.
+    QVERIFY(hovered.pixelColor(8, 12).red() < 255);
+    // Outside it: the same pixel it was at rest.
+    QCOMPARE(hovered.pixelColor(32, 12), rest.pixelColor(32, 12));
 }
 
 TEST_ADD(tst_QxControl)
