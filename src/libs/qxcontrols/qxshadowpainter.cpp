@@ -28,8 +28,9 @@ int spread(const QxTheme::QxShadow &shadow)
 
 // The side of the straight-edge region the tile renders in the middle: wide
 // enough that the corners are finished before it starts, so stretching it is
-// honest. The corner pieces are radius + spread on their own.
-int coreSide(int radius, const QxTheme::QxShadow &shadow)
+// honest. The corner pieces are radius + spread on their own. It does not
+// depend on the shadow: the spread is added around this, not inside it.
+int coreSide(int radius)
 {
     return 2 * radius + 16;
 }
@@ -47,7 +48,7 @@ QPainterPath roundedPath(const QRectF &rect, qreal radius)
 QPixmap renderTile(int radius, const QColor &color, const QxTheme::QxShadow &shadow)
 {
     const int margin = spread(shadow);
-    const int side = coreSide(radius, shadow);
+    const int side = coreSide(radius);
     const int size = side + 2 * margin;
     QPixmap tile(size, size);
     tile.fill(Qt::transparent);
@@ -127,7 +128,7 @@ void paint(QPainter *painter, const QRectF &rect, qreal cornerRadius, const QCol
     const int radius = int(qBound(0.0, cornerRadius, 64.0));
     const int margin = spread(shadow);
     const int corner = radius + margin;
-    const int side = coreSide(radius, shadow);
+    const int side = coreSide(radius);
 
     // The shadow sits where the control sits, dropped by the tier's offset.
     const QRectF outer = rect.adjusted(-margin, -margin + shadow.yOffset, margin, margin + shadow.yOffset);
