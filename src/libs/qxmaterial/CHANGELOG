@@ -91,6 +91,17 @@ Feature
   what says the wait has not settled. Neither is a transition, so both stop when
   the user asked for less motion, and both say how far along as a number an
   assistive tool can read back and set back.
+- MaterialSnackbar, the snackbar: a sentence at the bottom of what is going on,
+  that goes away on its own. Qt has status bars and message boxes, and neither
+  is this: a status bar is a place that is always there, and a message box stops
+  everything until it is answered. This arrives over the content, offers at most
+  one thing to do about it, and leaves when it has been read - or when it is
+  sent away, which the keyboard can do. It is the page's own colours turned
+  over, which is what makes it a surface from somewhere else; that is not the
+  Fluent info bar, which stays a surface of the page and says what it is with a
+  severity colour and a place in the layout - a snackbar is not in the layout at
+  all, and does not stay. A second thing to say does not make it arrive twice:
+  it says the new thing where it is.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
