@@ -247,7 +247,11 @@ endif()
 # ------------------------------------------------------------------ qxdock --
 file(GLOB QXDOCK_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxdock/auto/tst_*.cpp")
 add_qtc_test(tst_qxdock
-    DEPENDS qxdock
+    # qxtheme is here for tst_DockTheme alone: a dock answers a theme switch
+    # through the sheet the application installs, and a theme is the only honest
+    # way to change that sheet. The dock itself knows nothing about themes - it
+    # reads qApp - so the dependency belongs to the test and not to the library.
+    DEPENDS qxdock qxtheme
     DEFINES ${QTCANPOOL_CATALOGUE_DEFINES}
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
