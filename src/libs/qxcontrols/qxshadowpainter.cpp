@@ -37,7 +37,9 @@ int coreSide(int radius, const QxTheme::QxShadow &shadow)
 QPainterPath roundedPath(const QRectF &rect, qreal radius)
 {
     QPainterPath path;
-    const qreal half = qMin(rect.width(), rect.height()) / 2.0;
+    // Clamped at zero, for the reason qxringpainter gives: a rectangle that
+    // has met itself in the middle is not one a radius can be bounded by.
+    const qreal half = qMax(0.0, qMin(rect.width(), rect.height()) / 2.0);
     path.addRoundedRect(rect, qBound(0.0, radius, half), qBound(0.0, radius, half));
     return path;
 }

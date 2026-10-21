@@ -147,7 +147,12 @@ void QxControl::paintEvent(QPaintEvent *event)
     // over the part of the control that is a control, not over the label
     // standing beside it.
     const QRectF chrome = chromeRect();
-    if (isActive() && isEnabled()) {
+    // A control can answer "nothing about me is the control" - a snackbar with
+    // nothing to do about it is one - and there is then nothing to wash and
+    // nothing to ring. An empty rectangle is also the one a ring cannot be
+    // drawn around: the band's own inset would take it past its middle.
+    const bool hasChrome = !chrome.isEmpty();
+    if (hasChrome && isActive() && isEnabled()) {
         const qreal opacity =
             d_ptr->m_state == State::Pressed ? QxStateLayer::pressedOpacity : QxStateLayer::hoverOpacity;
         // The wash follows the control's corners, so a rounded control does
@@ -163,7 +168,7 @@ void QxControl::paintEvent(QPaintEvent *event)
 
     paintContent(&painter);
 
-    if (hasFocus() && isEnabled()) {
+    if (hasChrome && hasFocus() && isEnabled()) {
         // One band in the accents the theme is running with: the ring's width
         // is a mechanism constant, where the family hangs it is the family's.
         QxRing ring;

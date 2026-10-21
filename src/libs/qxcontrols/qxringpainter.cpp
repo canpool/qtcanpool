@@ -21,7 +21,12 @@ namespace
 QPainterPath rounded(const QRectF &rect, qreal inset, qreal radius)
 {
     const QRectF adjusted = rect.adjusted(inset, inset, -inset, -inset);
-    const qreal half = qMin(adjusted.width(), adjusted.height()) / 2.0;
+    // Clamped at zero rather than handed to qBound as it is: the half side the
+    // radius is bounded by goes negative once the inset is deeper than the
+    // rectangle is tall, which is a rectangle that has met itself in the
+    // middle - and a bound whose max is below its min is the one thing qBound
+    // asserts about. A ring around a rectangle this small is nothing to draw.
+    const qreal half = qMax(0.0, qMin(adjusted.width(), adjusted.height()) / 2.0);
     QPainterPath path;
     path.addRoundedRect(adjusted, qBound(0.0, radius - inset, half), qBound(0.0, radius - inset, half));
     return path;
