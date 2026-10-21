@@ -4,6 +4,7 @@
  **/
 #include "qxcontrol.h"
 
+#include "qxcontrolaccessible.h"
 #include "qxstatelayer.h"
 #include "qxringpainter.h"
 
@@ -53,6 +54,10 @@ QxControl::QxControl(QWidget *parent)
     // hover is a state and not a click target.
     setAttribute(Qt::WA_Hover, true);
     setFocusPolicy(Qt::StrongFocus);
+    // A control that paints itself is invisible to an assistive tool until
+    // something says what it is, and there is no point in making that
+    // something every control remembers to call.
+    installControlAccessibility();
 }
 
 QxControl::~QxControl(){QX_FINI_PRIVATE()}
@@ -97,6 +102,16 @@ bool QxControl::hitTest(const QPointF &pos) const
 QColor QxControl::washColor() const
 {
     return textColor();
+}
+
+QAccessible::Role QxControl::accessibleRole() const
+{
+    return QAccessible::Client;
+}
+
+void QxControl::fillAccessibleState(QAccessible::State *state) const
+{
+    Q_UNUSED(state)
 }
 
 void QxControl::paintSurface(QPainter *painter)

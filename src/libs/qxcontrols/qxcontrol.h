@@ -8,6 +8,7 @@
 #include "qxcontrols_global.h"
 #include "qxtheme/qxtheme.h"
 
+#include <QtGui/QAccessible>
 #include <QtWidgets/QWidget>
 
 class QPainter;
@@ -75,6 +76,23 @@ public:
     QColor textColor() const;
     /*! The accent of the theme in force, through the theme manager. */
     QColor accentColor() const;
+
+    /*!
+     * What the control is, for an assistive tool. \c QAccessible::Client for a
+     * control that does not say - which is the role a plain widget gets, and
+     * the honest answer while a control has not been given one. Public because
+     * the accessible face of a control is not the control: it asks, the way a
+     * painter asks for the surface.
+     */
+    virtual QAccessible::Role accessibleRole() const;
+
+    /*!
+     * What is true of the control beyond what any widget already answers -
+     * enabled, focusable, focused - which \a state arrives holding. The base
+     * adds nothing; a control that is checked, pressed or selected says so
+     * here rather than by writing an accessible object of its own.
+     */
+    virtual void fillAccessibleState(QAccessible::State *state) const;
 
 Q_SIGNALS:
     /*! Emitted after the state changed. The wash a subclass draws follows it. */

@@ -24,6 +24,14 @@ Feature
   it, and inherits the rest. The paint order is why surface and content are
   two hooks and not one: a control that drew its glyphs in the surface hook
   would have the wash land on them.
+- QxControlAccessible, the accessible face of a control that paints itself,
+  and the factory that hands one to every control of this base. A control
+  drawn in code is invisible to an assistive tool in the way that matters:
+  the pixels that say what it is and what is true of it are its own, so a
+  control answers two questions - its role and its state - and the plumbing
+  around the answers is done once, here. A control that does not say what it
+  is gets the role a plain widget gets, which is the honest answer, not a
+  guess.
 - QxRingPainter, the focus ring drawn as a band rather than a stroke: the
   ring occupies the strip from its inset to its inset + width inside the
   rectangle, so it never falls off the control and never needs clipping, and
