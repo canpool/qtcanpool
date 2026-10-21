@@ -4,6 +4,9 @@
 
 - qxcore → @ref QxCore
 - qxtheme → @ref QxTheme
+- qxcontrols → @ref QxControls
+- qxfluent → @ref QxFluent
+- qxmaterial → @ref QxMaterial
 - qxwindow → @ref QxWindow
 - qxribbon → @ref QxRibbon
 - qxdock → @ref QxDock
@@ -110,6 +113,75 @@ QxThemeInfo info(QStringLiteral("fluent-dark"), tr("Fluent Dark"), true);
 info.styleSheet = css;   // 文件读来的内容即可
 themes->registerTheme(info);
 themes->setTheme(QStringLiteral("fluent-dark"));
+```
+
+## qxcontrols — 控件基座（4.7 新增）
+
+两套控件集**共同依赖**的那一层：不画控件，只提供「一个控件该怎么回答指针与主题」的机制。
+它依赖 `qxtheme`（读令牌与调色板），**不认识**任何具体控件。
+
+| 类 | 说明 |
+| :--- | :--- |
+| `QxControl` | 控件基类：状态机（Rest / Hover / Pressed）、命中测试（`hitTest`）、内容区（`chromeRect`）、覆盖色（`washColor`）；固定绘制顺序 表面 → 覆盖 → 内容 → 描边 |
+| `QxStateLayer` | 状态层：悬停 .08 / 焦点 .12 / 按下 .12 / 拖动 .16 的覆盖不透明度 |
+| `QxRingPainter` | 描边（焦点环等）绘制 |
+| `QxShadowPainter` | 九宫格缓存的投影绘制：`paint(painter, rect, radius, color, shadow)` |
+| `QxControlAccessible` | 无障碍桥：`accessibleRole()` / `fillAccessibleState()`；滑块与圆环另实现 `QAccessibleValueInterface` |
+
+```cpp
+#include "qxcontrols/qxcontrol.h"
+
+using namespace QxControls;
+
+class MyControl : public QxControl
+{
+protected:
+    void paintContent(QPainter *p) override { /* ... */ }
+};
+```
+
+> 无障碍接口由 `QxControl` 创建，必须用
+> `QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface))` 释放，**不能 `delete`**。
+
+## qxfluent — Fluent 风格控件（4.7 新增）
+
+一套自成体系的 Fluent 观感控件（命名空间 `QxFluent`，类 `Fluent*`，文件 `fluent*`）。
+与 `qxmaterial`、与 `qxribbon` 是**用户三选一的三个选项**，不是同一套的几种皮肤——
+详见[控件集](controls.md)。
+
+| 类 | 说明 |
+| :--- | :--- |
+| 令牌（`fluenttokens.h`） | 四个命名空间：`FluentShape`（圆角 0/2/4/6/8/9999）、`FluentType`、`FluentElevation`、`FluentMotion` |
+| `FluentSwitch` / `FluentSlider` | 开关与滑块 |
+| `FluentBadge` / `FluentCard` | 徽标与卡片 |
+| `FluentProgressRing` / `FluentRating` | 进度环与评分 |
+| `FluentExpander` / `FluentInfoBar` / `FluentBreadcrumbBar` | 展开器、信息条、面包屑 |
+| `FluentCommandBar` / `FluentTeachingTip` | 命令条与教学提示 |
+| `FluentReveal` | 指针附近的揭示高亮 |
+| `FluentWindowMaterial` | 窗口材质（Mica / Acrylic；仅在 `WITH_QXWINDOW` 打开时可用，否则回答「没有」） |
+
+## qxmaterial — Material 风格控件（4.7 新增）
+
+Material 观感的同一层对应物（命名空间 `QxMaterial`，类 `Material*`，文件 `material*`）。
+
+| 类 | 说明 |
+| :--- | :--- |
+| 令牌（`materialtokens.h`） | 四个命名空间：`MaterialShape`（0/4/8/16/28/9999）、`MaterialType`（Label12 … Display36）、`MaterialElevation`（六档）、`MaterialMotion`（含 `Easing`） |
+| `MaterialSwitch` / `MaterialSlider` | 开关与滑块（无刻度：按下即跳、拖动跟随、键盘步进） |
+| `MaterialBadge` / `MaterialChip` / `MaterialCard` | 徽标、筹码（Assist / Filter）与卡片（Elevated / Filled / Outlined） |
+| `MaterialSegmentedButton` | 分段按钮：**整行一个键盘停靠点**，左右键移动选中项 |
+| `MaterialFAB` / `MaterialProgressRing` | 浮动操作按钮（带涟漪）与进度环（不确定态为伸缩弧） |
+| `MaterialSnackbar` / `MaterialSkeleton` | 轻提示（从宿主底边升起）与骨架屏（呼吸着色） |
+| `MaterialRipple` | 按下处扩散的涟漪；动效减弱时不画 |
+
+```cpp
+#include "qxmaterial/materialswitch.h"
+#include "qxmaterial/materialskeleton.h"
+
+using namespace QxMaterial;
+
+MaterialSwitch *sw = new MaterialSwitch(this);
+MaterialSkeleton *loading = new MaterialSkeleton(MaterialSkeleton::Rectangle, this);
 ```
 
 ## qxwindow — 自定义窗口

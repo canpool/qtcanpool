@@ -120,6 +120,9 @@ QTCANPOOL_QT_PREFIX=/opt/Qt/6.8.3/gcc_64 cmake --preset qt6
 | :--- | :--- | :--- |
 | `WITH_QXCORE` | `ON` | 基础设施库（配置、日志） |
 | `WITH_QXTHEME` | `ON` | 主题引擎（需要 `WITH_QXCORE`） |
+| `WITH_QXCONTROLS` | `ON` | 控件基座（需要 `WITH_QXTHEME`；两套控件集的共用层，4.7 新增） |
+| `WITH_QXFLUENT` | `ON` | Fluent 风格控件（需要 `WITH_QXCONTROLS`，4.7 新增） |
+| `WITH_QXMATERIAL` | `ON` | Material 风格控件（需要 `WITH_QXCONTROLS`，4.7 新增） |
 | `WITH_QCANPOOL` | `ON` | legacy 核心库（已冻结） |
 | `WITH_QXRIBBON` | `ON` | Ribbon 界面组件 |
 | `WITH_QXDOCK` | `ON` | 可停靠窗口组件 |

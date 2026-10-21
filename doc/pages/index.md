@@ -35,6 +35,9 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | :--- | :--- | :--- | :--- |
 | `qxcore` | @ref QxCore | 基础设施：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`） | Qt Core |
 | `qxtheme` | @ref QxTheme | 主题引擎：调色板 + 样式表统一应用、运行时切换、持久化、跟随系统 | `qxcore`、Qt Widgets |
+| `qxcontrols` | @ref QxControls | 控件基座：状态机、状态层、描边、投影、无障碍桥（两套控件集的共用层，4.7 新增） | `qxtheme`、Qt Widgets |
+| `qxfluent` | @ref QxFluent | Fluent 风格控件：开关、滑块、徽标、卡片、进度环、评分、揭示等（4.7 新增） | `qxcontrols`、Qt Widgets |
+| `qxmaterial` | @ref QxMaterial | Material 风格控件：开关、滑块、徽标、筹码、卡片、分段按钮、FAB、涟漪等（4.7 新增） | `qxcontrols`、Qt Widgets |
 | `qxwindow` | @ref QxWindow | 自定义窗口：无边框窗口、系统按钮代理、原生窗口上下文 | Qt Widgets |
 | `qxribbon` | @ref QxRibbon | Ribbon 风格界面：菜单栏 / 页 / 分组 / 快捷工具栏 | Qt Widgets |
 | `qxdock` | @ref QxDock | 可停靠窗口：布局管理、标签化面板、浮动容器 | Qt Widgets |
@@ -91,6 +94,7 @@ ctest --test-dir build -C Release --output-on-failure
 | [架构与约定](architecture.md) | 库分层、命名空间与 d-pointer 约定、CMake API、编码规范、新增库约定、布局判据 |
 | [CI 与在线站点](ci.md) | 两条工作流的结构、格式/SDK/质量/tidy 门禁、平台坑与查看 CI 结果 |
 | [组件全览](components.md) | 各组件的能力范围、主要类与最小用法 |
+| [控件集](controls.md) | 4.7 两套控件（Fluent / Material）与 Ribbon 的关系、共用与各自实现的判据、概念映射 |
 | [主题引擎](theming.md) | 主题引擎：应用侧注册、运行时切换、跟随系统、平台强调色与自定义主题 |
 | [图标规范](icons.md) | 图标为什么必须分类登记、两套着色机制的差别、规范色与 `scripts/check-icons.py` 门禁 |
 | [界面语言](i18n.md) | 库自带的译文：目录在哪里、应用怎么装、怎么加一门语言，以及「私有类上下文」那条到不了的坑 |
