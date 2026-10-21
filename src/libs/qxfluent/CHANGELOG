@@ -15,6 +15,19 @@ Feature
   control asking about either. A click and the keyboard both toggle, the
   sentence is its accessible name until the application gives it one, and the
   wash and the focus ring stay on the track.
+- FluentCard, the surface that sits above the page, and the lift is what says
+  how far above. A card is the one place in Fluent where elevation is the
+  message rather than decoration, so the shadow is the shadow of the level
+  the card was given - painted by the base, cached, and given room: the card
+  keeps a margin the size of its own shadow, because contents that sat on the
+  shadow of the surface they are on would be sitting on nothing. It reports a
+  grouping, so what is inside is announced as a section.
+- FluentBadge, the info badge: a dot that says there is something, or a
+  number that says how much. Qt has no badge, which is why a count ends up
+  painted into a label, a button or a pixmap made at run time - three answers
+  that disagree about size, colour and what happens past 99. This one is one
+  answer, and it is the accent, because a badge is the application pointing at
+  something.
 - FluentSlider, the slider: a rail the accent fills up to the thumb, a thumb
   that rides it, and the marks underneath that say where the rail is divided -
   the one thing Fluent's slider says that Material's does not. A drag answers
