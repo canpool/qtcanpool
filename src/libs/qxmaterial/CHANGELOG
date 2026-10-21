@@ -34,6 +34,17 @@ Feature
   so, because "127" is not more useful than "99+" and it is wider. A badge is
   a mark on something else, so it is neither a stop on the way through the
   keyboard nor something the pointer takes hold of.
+- MaterialSegmentedButton, the segmented button: a row of choices, divided
+  into equal parts, where the part in force is the one that is filled. Qt has
+  radio buttons, and a radio group is the right answer for a form - which is
+  not where a segmented button lives: it is a row inside a toolbar or a header,
+  where a group of radio buttons arrives with a frame, spacing and a shape of
+  its own. What says "one of these" here is the fill, not a marker travelling
+  between the labels: the outline stays round the whole row. The row is one
+  stop on the way through the keyboard, not one per segment, and the arrows
+  move what is in force - because a segmented button is one of a fixed number
+  of answers, and that is what a group of radio buttons is to an assistive
+  tool, which is what each segment is announced as.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
