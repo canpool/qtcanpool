@@ -16,6 +16,14 @@ Feature
   second card of the same shape costs a lookup. The blur is sixteen
   concentric rings rather than a true gaussian, which reads as one smooth
   falloff at shadow sizes and keeps the render deterministic and cheap.
+- QxControl, the base a self-drawn control builds on. It tracks where the
+  pointer is, what is being pressed and whether the keyboard is on it, and
+  answers all three as one state; it draws the wash between the surface and
+  the content, and the focus ring over both. A subclass says what its surface
+  looks like, what its content is, and when the pointer counts as being on
+  it, and inherits the rest. The paint order is why surface and content are
+  two hooks and not one: a control that drew its glyphs in the surface hook
+  would have the wash land on them.
 - QxRingPainter, the focus ring drawn as a band rather than a stroke: the
   ring occupies the strip from its inset to its inset + width inside the
   rectangle, so it never falls off the control and never needs clipping, and
