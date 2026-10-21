@@ -29,7 +29,8 @@ QX_CONTROLS_BEGIN_NAMESPACE
  * eight percent of the layer on the page. They are defaults, not law - a
  * control passes what its family's tokens say.
  */
-namespace QxStateLayer {
+namespace QxStateLayer
+{
 
 /*! The resting wash barely there at all: the pointer has arrived. */
 inline constexpr qreal hoverOpacity = 0.08;

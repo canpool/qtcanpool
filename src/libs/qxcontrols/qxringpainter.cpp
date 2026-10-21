@@ -9,7 +9,8 @@
 
 QX_CONTROLS_BEGIN_NAMESPACE
 
-namespace QxRingPainter {
+namespace QxRingPainter
+{
 
 namespace
 {

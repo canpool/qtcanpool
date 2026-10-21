@@ -89,11 +89,7 @@ struct GeometryToken {
 };
 
 const GeometryToken kGeometryTokens[] = {
-    {"corner-none", "0px"},
-    {"corner-sm", "2px"},
-    {"corner-md", "3px"},
-    {"corner-lg", "6px"},
-    {"corner-pill", "9999px"},
+    {"corner-none", "0px"}, {"corner-sm", "2px"}, {"corner-md", "3px"}, {"corner-lg", "6px"}, {"corner-pill", "9999px"},
 };
 
 /*

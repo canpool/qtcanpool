@@ -14,7 +14,8 @@
 
 QX_CONTROLS_BEGIN_NAMESPACE
 
-namespace QxShadowPainter {
+namespace QxShadowPainter
+{
 
 namespace
 {

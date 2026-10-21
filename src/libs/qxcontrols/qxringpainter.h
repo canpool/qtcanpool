@@ -24,11 +24,10 @@ QX_CONTROLS_BEGIN_NAMESPACE
  * negative \a inset is how the languages that hang the ring over the edge
  * (Fluent's outer ring reaches past the control) say "outside".
  */
-struct QxRing
-{
-    QColor color;   /*!< The colour the band paints with. */
-    qreal width;    /*!< Band thickness in device independent pixels. */
-    qreal inset;    /*!< Distance from the rectangle's edge to the band's outer edge. */
+struct QxRing {
+    QColor color; /*!< The colour the band paints with. */
+    qreal width;  /*!< Band thickness in device independent pixels. */
+    qreal inset;  /*!< Distance from the rectangle's edge to the band's outer edge. */
 };
 
 /*!
@@ -41,7 +40,8 @@ struct QxRing
  * corners and without letting it fall off the rectangle, is mechanism, and
  * mechanism is here. A control that wants Fluent's pair calls twice.
  */
-namespace QxRingPainter {
+namespace QxRingPainter
+{
 
 /*!
  * Draws one \a ring around \a rect, whose corners turn with \a cornerRadius -

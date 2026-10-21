@@ -22,8 +22,7 @@ QX_THEME_BEGIN_NAMESPACE
  * every gap and padding from here. \c Comfortable is the tier the sheets
  * speak; \c Compact is the tighter one, for a theme that means to be dense.
  */
-enum class Density
-{
+enum class Density {
     Comfortable,
     Compact
 };

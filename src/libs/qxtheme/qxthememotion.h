@@ -21,10 +21,9 @@ QX_THEME_BEGIN_NAMESPACE
  * the movement is for, not by how long it lasts: a theme that retimes its
  * motion changes the values a user reads, not the names the code reads.
  */
-struct QxMotion
-{
-    int duration;               /*!< Milliseconds; 0 means jump to the end. */
-    QEasingCurve::Type curve;   /*!< The easing the duration rides on. */
+struct QxMotion {
+    int duration;             /*!< Milliseconds; 0 means jump to the end. */
+    QEasingCurve::Type curve; /*!< The easing the duration rides on. */
 };
 
 /*! A state change the user did not ask to watch: hovers, state layers. 120 ms, ease-out. */
@@ -81,8 +80,7 @@ QxMotion QX_THEME_EXPORT motionFor(int tier);
 
 // The tiers have to keep their order: a caller that walks the table reads the
 // order as meaning, the way the shadow tiers' table is read.
-static_assert(motionFast.duration < motionNormal.duration
-                  && motionNormal.duration < motionEmphasized.duration,
+static_assert(motionFast.duration < motionNormal.duration && motionNormal.duration < motionEmphasized.duration,
               "motion duration must grow with the tier");
 
 QX_THEME_END_NAMESPACE

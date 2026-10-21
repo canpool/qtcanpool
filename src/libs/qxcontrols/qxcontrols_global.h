@@ -83,7 +83,8 @@
    QX_CONTROLS_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_CONTROLS_VERSION >= QT_VERSION_CHECK(0, 5, 3))
 */
-#define QX_CONTROLS_VERSION       QT_VERSION_CHECK(QX_CONTROLS_VERSION_MAJOR, QX_CONTROLS_VERSION_MINOR, QX_CONTROLS_VERSION_PATCH)
+#define QX_CONTROLS_VERSION                                                                                            \
+    QT_VERSION_CHECK(QX_CONTROLS_VERSION_MAJOR, QX_CONTROLS_VERSION_MINOR, QX_CONTROLS_VERSION_PATCH)
 
 #define QX_CONTROLS_VERSION_STR                                                                                        \
     QT_STRINGIFY(QX_VERSION_JOIN(QX_CONTROLS_VERSION_MAJOR, QX_CONTROLS_VERSION_MINOR, QX_CONTROLS_VERSION_PATCH))

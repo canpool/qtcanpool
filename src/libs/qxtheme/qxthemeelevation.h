@@ -28,11 +28,10 @@ QX_THEME_BEGIN_NAMESPACE
  * colour, so a theme can draw its shadows softer or harder without moving a
  * geometry value.
  */
-struct QxShadow
-{
-    qreal blurRadius;   /*!< How far the shadow spreads. */
-    qreal yOffset;      /*!< How far below the surface it sits. */
-    int alpha;          /*!< 0-255, applied to the shadow colour. */
+struct QxShadow {
+    qreal blurRadius; /*!< How far the shadow spreads. */
+    qreal yOffset;    /*!< How far below the surface it sits. */
+    int alpha;        /*!< 0-255, applied to the shadow colour. */
 };
 
 /*! A surface that sits on the page and casts nothing. */
@@ -73,12 +72,11 @@ inline QColor shadowColor(const QColor &base, int alpha)
 
 // The tiers have to keep their order: a painter that blends between them and a
 // caller that walks the table both read the order as meaning.
-static_assert(shadowSm.blurRadius < shadowMd.blurRadius
-                  && shadowMd.blurRadius < shadowLg.blurRadius
-                  && shadowLg.blurRadius < shadowXl.blurRadius,
+static_assert(shadowSm.blurRadius < shadowMd.blurRadius && shadowMd.blurRadius < shadowLg.blurRadius &&
+                  shadowLg.blurRadius < shadowXl.blurRadius,
               "shadow blur must grow with the tier");
-static_assert(shadowNone.alpha <= shadowSm.alpha && shadowSm.alpha <= shadowMd.alpha
-                  && shadowMd.alpha <= shadowLg.alpha && shadowLg.alpha <= shadowXl.alpha,
+static_assert(shadowNone.alpha <= shadowSm.alpha && shadowSm.alpha <= shadowMd.alpha &&
+                  shadowMd.alpha <= shadowLg.alpha && shadowLg.alpha <= shadowXl.alpha,
               "shadow alpha must grow with the tier");
 
 QX_THEME_END_NAMESPACE

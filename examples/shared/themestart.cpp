@@ -32,12 +32,11 @@ namespace
 const char kDefaultTheme[] = "soft-light";
 
 /*! One sheet in res/themes.qrc, named the way the engine wants it named. */
-struct Bundled
-{
-    QString id;    /*!< "soft-light" - what goes into the configuration. */
-    QString name;  /*!< "Soft Light" - what a settings dialog would show. */
-    bool dark;     /*!< Whether it draws on a dark background. */
-    QString file;  /*!< "soft_light.css" - where in :/themes it lives. */
+struct Bundled {
+    QString id;   /*!< "soft-light" - what goes into the configuration. */
+    QString name; /*!< "Soft Light" - what a settings dialog would show. */
+    bool dark;    /*!< Whether it draws on a dark background. */
+    QString file; /*!< "soft_light.css" - where in :/themes it lives. */
 };
 
 /*! "soft_light" -> "Soft Light". */
@@ -46,8 +45,7 @@ QString displayName(const QString &stem)
     QString name;
     bool capitalise = true;
     for (const QChar &ch : stem) {
-        name += ch == QLatin1Char('_') ? QLatin1Char(' ')
-                                       : (capitalise ? ch.toUpper() : ch);
+        name += ch == QLatin1Char('_') ? QLatin1Char(' ') : (capitalise ? ch.toUpper() : ch);
         capitalise = (ch == QLatin1Char('_'));
     }
     return name;

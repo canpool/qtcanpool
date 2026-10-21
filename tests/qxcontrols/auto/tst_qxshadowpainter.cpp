@@ -36,8 +36,7 @@ void tst_QxShadowPainter::nothingDrawsWithoutAShadow()
     QImage image(60, 60, QImage::Format_ARGB32_Premultiplied);
     image.fill(Qt::white);
     QPainter painter(&image);
-    QxShadowPainter::paint(&painter, QRectF(10, 10, 40, 40), 4.0, Qt::black,
-                           QxTheme::QxShadow{4.0, 1.0, 0});
+    QxShadowPainter::paint(&painter, QRectF(10, 10, 40, 40), 4.0, Qt::black, QxTheme::QxShadow{4.0, 1.0, 0});
     painter.end();
     QCOMPARE(image.pixelColor(30, 8), QColor(Qt::white));
 }

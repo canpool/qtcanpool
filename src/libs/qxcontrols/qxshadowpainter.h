@@ -34,7 +34,8 @@ QX_CONTROLS_BEGIN_NAMESPACE
  * is drawn at, and the rings keep the render deterministic and cheap. Call
  * from the GUI thread; that is where painting happens anyway.
  */
-namespace QxShadowPainter {
+namespace QxShadowPainter
+{
 
 /*!
  * Draws the shadow of a rounded rectangle: \a color at \a shadow's alpha,
@@ -47,8 +48,8 @@ namespace QxShadowPainter {
  * state is the caller's; anti-aliasing is switched on for the drawing and
  * left the way it was found.
  */
-void QX_CONTROLS_EXPORT paint(QPainter *painter, const QRectF &rect, qreal cornerRadius,
-                              const QColor &color, const QxTheme::QxShadow &shadow);
+void QX_CONTROLS_EXPORT paint(QPainter *painter, const QRectF &rect, qreal cornerRadius, const QColor &color,
+                              const QxTheme::QxShadow &shadow);
 
 /*!
  * The tile \a paint stretches, rendered for the parameters named - for a test
