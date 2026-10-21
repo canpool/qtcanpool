@@ -47,6 +47,7 @@ public Q_SLOTS:
     void setElevation(FluentElevation::Level level);
 protected:
     qreal cornerRadius() const override;
+    QColor washColor() const override;
     void paintSurface(QPainter *painter) override;
 
     QAccessible::Role accessibleRole() const override;

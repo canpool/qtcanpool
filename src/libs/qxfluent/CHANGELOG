@@ -61,6 +61,14 @@ Feature
   from the keyboard travels, because there the movement is the feedback. It
   carries a value, so it brings its own accessible face: a role and a state
   cannot say a number, and an assistive tool wants to set it back.
+- FluentReveal, the wash that follows the pointer. A hover in most toolkits is
+  a flat tint that switches on, which says the pointer is somewhere on this and
+  nothing about where; Fluent's answer is a wash strongest under the pointer
+  and fading away from it, so a surface looks lit from wherever the user is and
+  the lit place travels as they do. It is the hover wash and not an extra one -
+  the same ink at the same opacity, given a shape by the pointer - so a control
+  that wears it paints no flat wash of its own, and the card does: hovering a
+  Fluent card lights it from where the pointer is.
 - FluentWindowMaterial, what a Fluent window is made of: Mica, Mica Alt and
   Acrylic, asked for by name and answered with yes or no, because a Windows 10
   cannot give Mica and a Linux has none of them at all - and an application

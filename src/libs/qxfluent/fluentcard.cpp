@@ -4,6 +4,8 @@
  **/
 #include "fluentcard.h"
 
+#include "fluentreveal.h"
+
 #include "qxcontrols/qxshadowpainter.h"
 
 #include <QtGui/QPainter>
@@ -17,6 +19,7 @@ public:
     QX_DECLARE_PUBLIC(FluentCard)
 
     FluentElevation::Level elevation = FluentElevation::Level::Depth4;
+    FluentReveal *reveal = Q_NULLPTR;
 };
 
 FluentCard::FluentCard(QWidget *parent)
@@ -27,6 +30,10 @@ FluentCard::FluentCard(QWidget *parent)
     // A card is a surface, not a stop on the way through the keyboard.
     setFocusPolicy(Qt::NoFocus);
     setElevation(d_ptr->elevation);
+    // The reveal is what the pointer does to a card, so it is part of the card
+    // rather than something applied to one: it is this card's own, parented to
+    // it, and it goes away with it.
+    d_ptr->reveal = new FluentReveal(this);
 }
 
 FluentCard::~FluentCard(){QX_FINI_PRIVATE()}
@@ -64,6 +71,14 @@ qreal FluentCard::cornerRadius() const
     return FluentShape::radius(FluentShape::Radius::XLarge);
 }
 
+QColor FluentCard::washColor() const
+{
+    // No flat wash: a card wears the reveal instead, which is the same ink
+    // shaped by where the pointer is. An invalid colour is what the base reads
+    // as "this control draws its own", so the two never stack.
+    return QColor();
+}
+
 void FluentCard::paintSurface(QPainter *painter)
 {
     const QRectF surface = QRectF(contentsRect());
@@ -78,6 +93,9 @@ void FluentCard::paintSurface(QPainter *painter)
     painter->setBrush(palette().color(QPalette::Window));
     const qreal radius = cornerRadius();
     painter->drawRoundedRect(surface, radius, radius);
+    // Lit from wherever the pointer is, over the surface and under what the
+    // card is holding.
+    d_ptr->reveal->paint(painter, surface, radius, textColor());
     painter->restore();
 }
 
