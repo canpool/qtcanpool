@@ -3,6 +3,7 @@ option(WITH_QXPLUGIN "Build qxplugin library" ON)
 option(WITH_QXTHEME "Build qxtheme library" ON)
 option(WITH_QXCONTROLS "Build qxcontrols library" ON)
 option(WITH_QXFLUENT "Build qxfluent library" ON)
+option(WITH_QXMATERIAL "Build qxmaterial library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
@@ -46,6 +47,14 @@ endif()
 # entirely when qxwindow is not built - see the comment in qxfluent's own file.
 if (WITH_QXFLUENT AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxfluent)
+endif()
+
+# qxmaterial is the other control library, and it is qxfluent's peer rather
+# than its sibling: same base, same rules, no knowledge of it. The two answer
+# the same questions differently, so nothing they both use is a form - only a
+# mechanism, and those live in qxcontrols.
+if (WITH_QXMATERIAL AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
+  add_subdirectory(qxmaterial)
 endif()
 
 if (WITH_QXRIBBON)

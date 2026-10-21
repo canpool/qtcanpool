@@ -1,0 +1,19 @@
+Unreleased
+---
+Feature
+- The library opens. It is Material's answer to what a control is, drawn in
+  Widgets: the corner scale, the type scale, the elevation levels and the
+  duration-and-easing scale that the controls in here are drawn from, and the
+  controls themselves as they land. It is one of three choices an application
+  can make - ribbon, Fluent, Material - not a skin for any of them, and it
+  shares nothing but mechanism with the Fluent one: the two answer the same
+  questions differently, and a control that is both is a control that is
+  neither.
+- materialtokens, the four scales Material arrives with, each spelled the way
+  Material spells it and answered in the shared vocabulary: corners as radii
+  (M3's seven collapsed to five, because two of them differ by four pixels and
+  four pixels is not a difference a user can see), the type scale as sizes with
+  a heavier cut, elevation as the shadow a level casts, and durations with the
+  curve Material names alongside them - which is what makes a control that
+  asks here honour the reduce-motion switch and the theme's motion scale
+  without asking about either.

@@ -109,6 +109,18 @@ add_qtc_test(tst_qxfluent
         ${QXFLUENT_TEST_SOURCES}
 )
 
+# ------------------------------------------------------------- qxmaterial --
+file(GLOB QXMATERIAL_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxmaterial/auto/tst_*.cpp")
+add_qtc_test(tst_qxmaterial
+    DEPENDS qxmaterial
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxmaterial/auto/main.cpp"
+        ${QXMATERIAL_TEST_SOURCES}
+)
+
 # ------------------------------------------------------------------- qxapp --
 # qxapp is the application framework, so its test links the whole stack: the
 # shell builds a ribbon window with a dock area and a theme.
