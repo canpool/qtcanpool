@@ -4,7 +4,10 @@
  **/
 #include "tst_global.h"
 
+#include "tst_probe.h"
+
 #include "qxribbon/ribbonbar.h"
+#include "qxribbon/ribbonstyleoption.h"
 #include "qxribbon/ribbonbuttongroup.h"
 #include "qxribbon/ribbonmainwindow.h"
 #include "qxribbon/ribbonpage.h"
@@ -68,6 +71,8 @@ private slots:
     void cornerWidgetArrivesAfterTheBarIsUp();
     void cornerWidgetInstalledThroughTheMenuBar();
     void maximizedMdiChildUsesTheCorners();
+
+    void theFourStylesTakeTheHeightTheOptionStatesAndMoveTheTabRow();
 };
 
 void tst_RibbonBar::applicationButton()
@@ -334,6 +339,53 @@ void tst_RibbonBar::style()
     QCOMPARE(RibbonBar::TabBarInlineTwoRowStyle, rb.currentRibbonStyle());
     QCOMPARE(false, rb.hasOwnTabRow());
     QCOMPARE(true, rb.isTwoRowStyle());
+}
+
+/*!
+ * A style is not four flags: it is four arrangements of the same window, and
+ * the option is what states how tall each of them is. The arithmetic of those
+ * heights is covered where the option lives; what was never covered is that the
+ * bar standing there takes the height the option states for the style it was
+ * given, and that moving between the styles moves the tab row with it.
+ *
+ * So the four values are walked in one window and the two numbers that say
+ * where everything ended up are read at every step: how tall the bar is, and
+ * where its tab row begins.
+ */
+void tst_RibbonBar::theFourStylesTakeTheHeightTheOptionStatesAndMoveTheTabRow()
+{
+    RibbonBar bar;
+    RibbonPage *page = bar.addPage(QStringLiteral("page1"));
+    RibbonGroup *group = page->addGroup(QStringLiteral("group1"));
+    QAction *action = new QAction(QStringLiteral("action1"), &bar);
+    action->setObjectName(QStringLiteral("action1"));
+    group->addAction(action, RibbonGroup::Small);
+    bar.resize(800, 400);
+    bar.show();
+
+    const RibbonStyleOption option;
+    const QList<RibbonBar::RibbonStyle> styles{RibbonBar::TabBarBelowStyle, RibbonBar::TabBarBelowTwoRowStyle,
+                                               RibbonBar::TabBarInlineStyle, RibbonBar::TabBarInlineTwoRowStyle};
+
+    QHash<int, int> heights;
+    QHash<int, int> tabRows;
+    for (RibbonBar::RibbonStyle style : styles) {
+        bar.setRibbonStyle(style);
+        Probe::settle(&bar);
+        QTabBar *tabBar = bar.findChild<QTabBar *>();
+        QVERIFY(tabBar);
+        heights.insert(style, bar.height());
+        tabRows.insert(style, tabBar->y());
+    }
+
+    // What the option states is what the bar takes, style for style.
+    for (RibbonBar::RibbonStyle style : styles) {
+        QCOMPARE(heights.value(style), option.ribbonBarHeight(style));
+    }
+    // And the two families are different families: a tab row of its own starts
+    // below the title, an inlined one starts beside it.
+    QVERIFY(tabRows.value(RibbonBar::TabBarBelowStyle) > tabRows.value(RibbonBar::TabBarInlineStyle));
+    QVERIFY(tabRows.value(RibbonBar::TabBarBelowTwoRowStyle) > tabRows.value(RibbonBar::TabBarInlineTwoRowStyle));
 }
 
 /*!
