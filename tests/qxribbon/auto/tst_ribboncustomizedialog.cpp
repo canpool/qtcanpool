@@ -4,6 +4,9 @@
  **/
 #include "tst_global.h"
 
+#include "tst_probe.h"
+
+#include "qxribbon/ribbonbutton.h"
 #include "qxribbon/ribboncustomizedialog.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonactionsmanager.h"
@@ -14,6 +17,7 @@
 #include <QModelIndex>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QTemporaryDir>
 #include <QToolButton>
 #include <QTreeView>
 #include <QXmlStreamWriter>
@@ -96,6 +100,73 @@ static QString recordMove(int selectedRow, const char *buttonName)
     return dialogToXml(dlg);
 }
 
+/*! One page, one group, two small actions, both registered - the smallest
+ *  ribbon an arrangement can be edited in. */
+struct Scene {
+    RibbonBar bar;
+    RibbonActionsManager manager;
+    QAction *first = nullptr;
+    QAction *second = nullptr;
+
+    Scene()
+        : manager(&bar)
+    {
+        RibbonPage *page = bar.addPage(QStringLiteral("page1"));
+        RibbonGroup *group = page->addGroup(QStringLiteral("group1"));
+        first = new QAction(QStringLiteral("action1"), &bar);
+        second = new QAction(QStringLiteral("action2"), &bar);
+        first->setObjectName(QStringLiteral("action1"));
+        second->setObjectName(QStringLiteral("action2"));
+        group->addAction(first, RibbonGroup::Small);
+        group->addAction(second, RibbonGroup::Small);
+        manager.registerAction(first, RibbonActionsManager::CommonlyUsedActionTag);
+        manager.registerAction(second, RibbonActionsManager::CommonlyUsedActionTag);
+    }
+
+    RibbonGroup *group() const
+    {
+        return bar.findChild<RibbonGroup *>();
+    }
+};
+
+/*! The order the two actions are *laid out* in, read off the buttons rather
+ *  than off the group's list of children: a group keeps its buttons in the
+ *  order they were made, and it is their positions that move.
+ *
+ *  Small actions are stacked in a group rather than stood side by side, so the
+ *  first one is the higher one - a row before a column. */
+QString orderOf(const Scene &scene)
+{
+    RibbonGroup *group = scene.group();
+    RibbonButton *firstButton = group->ribbonButtonForAction(scene.first);
+    RibbonButton *secondButton = group->ribbonButtonForAction(scene.second);
+    if (!firstButton || !secondButton) {
+        return QStringLiteral("<a button is missing>");
+    }
+    const QPoint first = firstButton->pos();
+    const QPoint second = secondButton->pos();
+    if (first == second) {
+        return QStringLiteral("<the two buttons are on top of each other>");
+    }
+    const bool firstIsEarlier = (first.y() != second.y()) ? (first.y() < second.y()) : (first.x() < second.x());
+    return firstIsEarlier ? QStringLiteral("action1,action2") : QStringLiteral("action2,action1");
+}
+
+/*! Moves the second action up one place, which is the edit the dialog's own
+ *  tests already know how to make. */
+void moveSecondActionUp(RibbonCustomizeDialog &dlg)
+{
+    QWidget *custom = dlg.findChild<QWidget *>(QStringLiteral("customWidget"));
+    QTreeView *tree = custom->findChild<QTreeView *>(QStringLiteral("treeViewResult"));
+    QToolButton *button = custom->findChild<QToolButton *>(QStringLiteral("pushButtonUp"));
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(tree->model());
+    QStandardItem *groupItem = model->item(0)->child(0);
+    const QModelIndex index = groupItem->child(1)->index();
+    tree->setCurrentIndex(index);
+    QMetaObject::invokeMethod(tree, "clicked", Q_ARG(QModelIndex, index));
+    button->click();
+}
+
 class tst_RibbonCustomizeDialog : public QObject
 {
     Q_OBJECT
@@ -105,6 +176,8 @@ private slots:
     void actionsManager();
     void page();
     void moveAction();
+
+    void anEditedArrangementIsAppliedToTheBarAndComesBackFromAFile();
 };
 
 QAction *tst_RibbonCustomizeDialog::createAction(const QString &text, QObject *parent)
@@ -183,6 +256,57 @@ void tst_RibbonCustomizeDialog::moveAction()
     const QString up = recordMove(1, "pushButtonUp");
     QVERIFY2(up.contains(QStringLiteral("type=\"9\"")), qPrintable(up));
     QVERIFY2(up.contains(QStringLiteral("index=\"-1\"")), qPrintable(up));
+}
+
+/*!
+ * Customization is a flow and not a call: an arrangement is edited, applied to
+ * the bar that is standing there, written down, and read back by a window that
+ * has never seen the edit. Each of those steps is covered on its own - the
+ * dialog records a move, the XML carries the number - and what was never
+ * covered is that they add up to a ribbon that looks the way the user left it.
+ *
+ * So this is the whole flow in one case, and the thing it reads at every step
+ * is the order the two actions are laid out in, which is the only record of the
+ * arrangement a user can see.
+ */
+void tst_RibbonCustomizeDialog::anEditedArrangementIsAppliedToTheBarAndComesBackFromAFile()
+{
+    Scene scene;
+    scene.bar.show();
+    QVERIFY(scene.group());
+    QCOMPARE(orderOf(scene), QStringLiteral("action1,action2"));
+
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    const QString path = dir.filePath(QStringLiteral("customize.xml"));
+
+    RibbonCustomizeDialog dlg(&scene.bar);
+    dlg.setupActionsManager(&scene.manager);
+    moveSecondActionUp(dlg);
+
+    // Applied: the bar that is standing there has been rearranged. A layout has
+    // to run before the buttons are anywhere new, so the arrangement is read
+    // after one.
+    QVERIFY(dlg.apply());
+    Probe::settle(&scene.bar);
+    QCOMPARE(orderOf(scene), QStringLiteral("action2,action1"));
+
+    // Written down.
+    QVERIFY(dlg.toXml(path));
+
+    // And read back by a window that never saw the edit: same names, same
+    // arrangement. This is the step a user meets as "my ribbon is how I left
+    // it" on the next launch - and it is not the dialog's fromXml(), which only
+    // tells a dialog what was already there; the door that applies a file is
+    // this one.
+    Scene second;
+    // The window has to be up for the group to have laid its buttons out at
+    // all: an arrangement is a set of positions, and a widget that was never
+    // shown has none.
+    second.bar.show();
+    QVERIFY(QxRibbonCustomizeApplyFromXmlFile(path, &second.bar, &second.manager));
+    Probe::settle(&second.bar);
+    QCOMPARE(orderOf(second), QStringLiteral("action2,action1"));
 }
 
 TEST_ADD(tst_RibbonCustomizeDialog)
