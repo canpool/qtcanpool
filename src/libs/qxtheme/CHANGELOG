@@ -1,3 +1,13 @@
+Unreleased
+---
+Feature
+- qxthemeelevation.h, the shadow vocabulary a painted shadow reads its answer
+  from: five tiers from a surface that casts nothing to one that floats over
+  everything, each a blur radius, a y offset and an alpha over the theme's
+  shadow colour. QSS cannot draw a shadow and a QGraphicsDropShadowEffect is
+  one effect per widget, so a shadow is painted - these are the values the
+  painter asks for, fixed once so the controls that paint them agree.
+
 0.2.1
 ---
 Feature

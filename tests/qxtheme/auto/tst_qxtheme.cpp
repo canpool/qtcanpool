@@ -5,6 +5,7 @@
 #include "tst_global.h"
 
 #include "qxtheme/qxtheme.h"
+#include "qxtheme/qxthemeelevation.h"
 #include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthemepalette.h"
@@ -100,6 +101,7 @@ private slots:
     void applyReinstallsWithoutAnnouncing();
     void refreshSystemThemeIsANoOpWhileNotFollowing();
     void settingsIsTheObjectSetSettingsTook();
+    void shadowTiers();
 
     void tintedPixmapRepaintsTheGlyph();
     void tintedIconIsEmptyForAFileThatIsNotThere();
@@ -731,6 +733,28 @@ void tst_QxTheme::themedIconFollowsThePalette()
     QVERIFY(!icon.isNull());
     const QPixmap pixmap = icon.pixmap(QSize(16, 16));
     QCOMPARE(pixmap.toImage().pixelColor(pixmap.width() / 2, pixmap.height() / 2), role);
+}
+
+/*! The tiers read as a table: one call per tier, saturating instead of
+ *  asserting, and a shadow colour that survives a theme that names none. */
+void tst_QxTheme::shadowTiers()
+{
+    QCOMPARE(shadowFor(-1).blurRadius, shadowNone.blurRadius);
+    QCOMPARE(shadowFor(0).blurRadius, shadowNone.blurRadius);
+    QCOMPARE(shadowFor(1).blurRadius, shadowSm.blurRadius);
+    QCOMPARE(shadowFor(2).blurRadius, shadowMd.blurRadius);
+    QCOMPARE(shadowFor(3).blurRadius, shadowLg.blurRadius);
+    QCOMPARE(shadowFor(4).blurRadius, shadowXl.blurRadius);
+    // A tier past the last one saturates there: a caller that walks a level
+    // scale does not have to clamp it first.
+    QCOMPARE(shadowFor(9).blurRadius, shadowXl.blurRadius);
+    QCOMPARE(shadowFor(9).alpha, shadowXl.alpha);
+
+    // A shadow asks for black unless a theme hands a colour over, and the
+    // alpha it does hand over lands on the colour it handed.
+    QCOMPARE(shadowColor(QColor(), shadowSm.alpha), QColor(0, 0, 0, shadowSm.alpha));
+    const QColor base(0x20, 0x40, 0x80);
+    QCOMPARE(shadowColor(base, shadowMd.alpha), QColor(0x20, 0x40, 0x80, shadowMd.alpha));
 }
 
 TEST_ADD(tst_QxTheme)

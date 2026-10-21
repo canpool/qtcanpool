@@ -5,6 +5,7 @@ add_qtc_library(qxtheme
   SOURCES
     qxtheme_global.h
     qxtheme.cpp qxtheme.h
+    qxthemeelevation.h
     qxthememanager.cpp qxthememanager.h
     qxthemepalette.cpp qxthemepalette.h
     qxthemeicon.cpp qxthemeicon.h
