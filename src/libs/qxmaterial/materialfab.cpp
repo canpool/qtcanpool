@@ -4,6 +4,7 @@
  **/
 #include "materialfab.h"
 
+#include "materialripple.h"
 #include "materialtokens.h"
 
 #include "qxcontrols/qxshadowpainter.h"
@@ -27,6 +28,7 @@ public:
 
     QIcon icon;
     QString text;
+    MaterialRipple *ripple = Q_NULLPTR;
 
     /*! The lift it is given: the highest surface on the screen but one, and it
      *  goes up while the pointer is on it. */
@@ -51,6 +53,10 @@ MaterialFAB::MaterialFAB(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     const int margin = MaterialFABPrivate::shadowMargin();
     setContentsMargins(margin, margin, margin, margin);
+    // The ripple is what the surface does about being pressed, and this surface
+    // is the accent's - so it answers in the colour that reads on the accent.
+    d_ptr->ripple = new MaterialRipple(this);
+    d_ptr->ripple->setColor(palette().color(QPalette::HighlightedText));
 }
 
 MaterialFAB::~MaterialFAB(){QX_FINI_PRIVATE()}
@@ -133,6 +139,8 @@ void MaterialFAB::paintSurface(QPainter *painter)
     painter->setPen(Qt::NoPen);
     painter->setBrush(accentColor());
     painter->drawRoundedRect(surface, radius, radius);
+    // Pressed: it answers from where the pointer landed, and that travels.
+    d_ptr->ripple->paint(painter, surface, radius);
     painter->restore();
 }
 

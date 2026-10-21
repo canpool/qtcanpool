@@ -113,6 +113,17 @@ Feature
   stops there and holds the middle of its breath, which is still a shape. It is
   neither content nor a control: it takes neither the pointer nor a stop on the
   way through the keyboard, and it says nothing of its own.
+- MaterialRipple, the ripple: the answer a surface gives when it is pressed. A
+  press in most toolkits is a flat tint that switches on, which says "this was
+  pressed" and nothing about where; this is a circle that starts where the
+  pointer landed, spreads to the furthest corner and fades as it goes, so the
+  surface answers from the place the user touched it. It is not the state layer
+  and does not replace it - a hover gets the flat wash and a press gets the
+  ripple on top of it - and it is not the Fluent reveal, which is the hover
+  answer and stays where the pointer is, while a ripple is over before the
+  pointer has moved. It is clipped to the corners of what it is on, and when
+  the user asked for less motion there is none: a ripple is the movement, so
+  there is nothing to draw without it. MaterialFAB wears it.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
