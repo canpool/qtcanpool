@@ -1,0 +1,14 @@
+Unreleased
+---
+Feature
+- The library opens. It is Fluent's answer to what a control is, drawn in
+  Widgets: the corner scale, the type ramp, the elevation scale and the
+  duration scale that the controls in here are drawn from, and the controls
+  themselves as they land. It is one of three choices an application can make
+  - ribbon, Fluent, Material - not a skin for any of them.
+- fluenttokens, the four scales Fluent arrives with, each spelled the way
+  Fluent spells it and answered in the shared vocabulary: corners as radii,
+  the ramp as sizes with a heavier cut, elevation as the shadow a lift casts,
+  and durations mapped onto the motion tiers - which is what makes a control
+  that asks here honour the reduce-motion switch and the theme's motion scale
+  without asking about either.

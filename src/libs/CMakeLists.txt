@@ -2,6 +2,7 @@ option(WITH_QXCORE "Build qxcore library" ON)
 option(WITH_QXPLUGIN "Build qxplugin library" ON)
 option(WITH_QXTHEME "Build qxtheme library" ON)
 option(WITH_QXCONTROLS "Build qxcontrols library" ON)
+option(WITH_QXFLUENT "Build qxfluent library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
@@ -35,6 +36,14 @@ endif()
 # direction stays one-way: qxtheme <- qxcontrols <- qxfluent / qxmaterial.
 if (WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxcontrols)
+endif()
+
+# qxfluent is one of the two control libraries: Fluent's own shapes, ramp,
+# shadows and durations, drawn on the base qxcontrols supplies. It knows
+# qxcontrols and qxtheme and nothing else - the two control libraries do not
+# know about each other.
+if (WITH_QXFLUENT AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
+  add_subdirectory(qxfluent)
 endif()
 
 if (WITH_QXRIBBON)
