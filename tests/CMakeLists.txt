@@ -233,6 +233,8 @@ add_qtc_test(tst_qxribbon
         "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.h"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_probe.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_probe.h"
         "${QTCANPOOL_TESTS_DIR}/qxribbon/auto/main.cpp"
         ${QXRIBBON_TEST_SOURCES}
 )
@@ -260,6 +262,8 @@ add_qtc_test(tst_qxdock
         "${QTCANPOOL_TESTS_DIR}/common/tst_catalogue.h"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_probe.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_probe.h"
         "${QTCANPOOL_TESTS_DIR}/qxdock/auto/main.cpp"
         ${QXDOCK_TEST_SOURCES}
 )
