@@ -102,6 +102,17 @@ Feature
   severity colour and a place in the layout - a snackbar is not in the layout at
   all, and does not stay. A second thing to say does not make it arrive twice:
   it says the new thing where it is.
+- MaterialSkeleton, the skeleton: the shape of what has not arrived yet. A
+  screen that is waiting can show nothing and then jump, or it can show the
+  shape of what is coming - a line where a line will be, a disc where a face
+  will be - so that when it arrives it lands where the user was already
+  looking. Material does not name this one, and it is drawn the way a surface
+  here is: a tint of the page's own ink. What it does is breathe, because a
+  shape that sits perfectly still is a shape the user has started to read - and
+  breathing is the kind of movement the reduce-motion switch is about, so it
+  stops there and holds the middle of its breath, which is still a shape. It is
+  neither content nor a control: it takes neither the pointer nor a stop on the
+  way through the keyboard, and it says nothing of its own.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and

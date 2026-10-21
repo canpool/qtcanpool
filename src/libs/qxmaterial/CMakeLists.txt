@@ -14,4 +14,5 @@ add_qtc_library(qxmaterial
     materialfab.h materialfab.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
+    materialskeleton.h materialskeleton.cpp
 )
