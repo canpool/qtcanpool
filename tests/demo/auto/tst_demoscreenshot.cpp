@@ -37,6 +37,17 @@
  * those steps leaves a different half of the window behind, so one demo's green run
  * says nothing about the other's.
  *
+ * The control gallery adds a switch of its own, and one check that only it can make.
+ * Its --style switch replaces the whole page with the other control set's, and the
+ * equivalence is the same shape as the theme one: a window switched into a style has
+ * to look exactly like a window started in it. What the gallery adds is the crop: a
+ * whole-window comparison across two dozen controls is diluted - one control that
+ * kept the other set's ink is a fraction of a percent of the frame - and a pixel
+ * count cannot tell "not re-coloured" from "moved" anyway. So the gallery also
+ * prints where every control is (--inspect), and the comparison is made once per
+ * control, inside that control's own rectangle, each side cut at its own offset.
+ * A control that moved passes; a control that kept the wrong ink does not.
+ *
  * Paths arrive as compile definitions from tests/CMakeLists.txt; there is no
  * reasonable way to guess them at runtime (the demos and the test do not share
  * an output directory on every platform). A demo whose definition is missing
@@ -76,6 +87,15 @@ constexpr int kMinDistinctColours = 20;
  * that painted nothing at all.
  */
 constexpr int kMaxDominantPercent = 90;
+
+/*!
+ * The gallery's ceiling for the same proxy, and not the shared one: a gallery is
+ * a form of small controls on a large page, so its background is most of the
+ * frame by construction - 94% of it on the capture this was measured on, where
+ * the dock's empty panels and the ribbon's empty page area measure 64% and 80%.
+ * The distinct-colour floor is the half of the guard that still bites here.
+ */
+constexpr int kMaxGalleryDominantPercent = 97;
 
 /*!
  * Font rasterisation moves a pixel here and there between two machines, so a
@@ -136,6 +156,14 @@ constexpr double kMaxSwitchDiffPercentAfterLayoutShift = 10.0;
  * being filed away with it.
  */
 constexpr double kMaxDockSwitchDiffPercentKnownShift = 8.0;
+
+/*!
+ * A per-control crop is small, and its whole point is that anything in it is a
+ * finding - so the budget is loose only where a stray pixel can reach: half a
+ * percent of the control's own area, at full channel tolerance. A control that
+ * kept the wrong ink moves tens of percent of its own pixels.
+ */
+constexpr double kMaxControlDiffPercent = 0.5;
 
 QImage loadAsArgb32(const QString &path)
 {
@@ -250,7 +278,7 @@ bool runDemo(const QString &executable, const QString &screenshotPath, const QSt
  * but renders nothing, or a window that lost its geometry. Whether the pixels
  * are the *right* pixels is the golden's business.
  */
-void checkRenders(const QImage &screenshot, const QString &name)
+void checkRenders(const QImage &screenshot, const QString &name, int maxDominantPercent = kMaxDominantPercent)
 {
     QVERIFY2(screenshot.width() >= 800 && screenshot.height() >= 600,
              qPrintable(QStringLiteral("%1: implausible window size %2x%3")
@@ -283,7 +311,7 @@ void checkRenders(const QImage &screenshot, const QString &name)
                             .arg(name)
                             .arg(counts.size())));
 
-    QVERIFY2(100 * dominant < kMaxDominantPercent * sampled,
+    QVERIFY2(100 * dominant < maxDominantPercent * sampled,
              qPrintable(QStringLiteral("%1: %2% of the pixels are one colour - the demo rendered a blank window")
                             .arg(name)
                             .arg(100.0 * dominant / sampled, 0, 'f', 1)));
@@ -364,6 +392,11 @@ private slots:
     void dockThemeSwitchMatchesAFreshStart();
     void dockChromeKeepsItsHeightAcrossThemes();
 #endif
+#ifdef DEMO_GALLERY_EXECUTABLE
+    void galleryRenders();
+    void galleryMatchesGolden();
+    void gallerySwitchLeavesNoControlBehind();
+#endif
 private:
     QImage m_ribbonScreenshot;
     /*!
@@ -373,6 +406,9 @@ private:
     QHash<QString, QImage> m_themeScreenshots;
 #ifdef DEMO_DOCK_EXECUTABLE
     QImage m_dockScreenshot;
+#endif
+#ifdef DEMO_GALLERY_EXECUTABLE
+    QImage m_galleryScreenshot;
 #endif
 };
 
@@ -400,6 +436,17 @@ void tst_DemoScreenshot::initTestCase()
         !m_dockScreenshot.isNull(),
         qPrintable(
             QStringLiteral("the screenshot could not be read: %1").arg(QStringLiteral(DEMO_DOCK_SCREENSHOT_PATH))));
+#endif
+
+#ifdef DEMO_GALLERY_EXECUTABLE
+    QVERIFY2(runDemo(QStringLiteral(DEMO_GALLERY_EXECUTABLE), QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH),
+                     QStringLiteral("controlgallery.log"), error),
+             qPrintable(error));
+    m_galleryScreenshot = loadAsArgb32(QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH));
+    QVERIFY2(
+        !m_galleryScreenshot.isNull(),
+        qPrintable(
+            QStringLiteral("the screenshot could not be read: %1").arg(QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH))));
 #endif
 }
 
@@ -480,7 +527,8 @@ QImage captureAfterSwitch(const QString &executable, const QString &demoName, co
  * set. A capture answers "does this look right"; this answers "what size did this come
  * out at", which is the question a theme can move by two pixels and still look right.
  */
-QString runInspect(const QString &executable, const QString &themeId, const QString &logName, QString &error)
+QString runInspectWith(const QString &executable, const QStringList &extraArguments, const QString &logName,
+                       QString &error)
 {
     const QFileInfo demo(executable);
     if (!demo.exists()) {
@@ -498,7 +546,9 @@ QString runInspect(const QString &executable, const QString &themeId, const QStr
     QProcess process;
     process.setProcessEnvironment(environment);
     process.setProgram(demo.absoluteFilePath());
-    process.setArguments(QStringList{QStringLiteral("--theme"), themeId, QStringLiteral("--inspect")});
+    QStringList arguments = extraArguments;
+    arguments.append(QStringLiteral("--inspect"));
+    process.setArguments(arguments);
     process.setStandardInputFile(QProcess::nullDevice());
     process.setStandardOutputFile(logPath);
     process.setStandardErrorFile(logPath);
@@ -524,6 +574,15 @@ QString runInspect(const QString &executable, const QString &themeId, const QStr
         return QString();
     }
     return output;
+}
+
+/*!
+ * The tree a demo prints for @p themeId, asked for through the theme switch the
+ * two older demos carry.
+ */
+QString runInspect(const QString &executable, const QString &themeId, const QString &logName, QString &error)
+{
+    return runInspectWith(executable, QStringList{QStringLiteral("--theme"), themeId}, logName, error);
 }
 
 /*! The height in @p tree of the first widget @p pattern names, or -1 when it is not there. */
@@ -771,7 +830,212 @@ void checkDockSwitchWithinItsOwnRect(const QString &executable, QHash<QString, Q
                                 .arg(freshPath)));
     }
 }
+#ifdef DEMO_GALLERY_EXECUTABLE
+/*!
+ * A control the gallery names in its --inspect tree, and the rectangle it was
+ * read at.
+ */
+struct GalleryControl {
+    QString name;
+    QRect rect;
+};
+
+/*!
+ * Every control of the two control sets the gallery's tree carries, on the page
+ * that was up when the tree was printed.
+ *
+ * The page that is not current is in the tree too - laid out squeezed and marked
+ * hidden - and a rectangle read from it would cut into a picture of the other
+ * page, so the hidden ones are dropped here rather than trusted to the caller.
+ */
+QList<GalleryControl> galleryControls(const QString &tree)
+{
+    static const QRegularExpression pattern(
+        QStringLiteral("^\\s*[\\w:]+ \"(\\w+)\" \\((-?\\d+),(-?\\d+) (\\d+)x(\\d+)\\)( hidden)?$"),
+        QRegularExpression::MultilineOption);
+
+    // The demo's log arrives with CRLF line endings (the log is written in text
+    // mode on Windows), and a pattern anchored at $ never matches there: $ is
+    // before the newline, and the carriage return sits between it and the
+    // rectangle. The dock's own tree patterns get away without an anchor; this
+    // one needs the end of the line, so the returns are dropped instead.
+    QString lines = tree;
+    lines.remove(QLatin1Char('\r'));
+
+    QList<GalleryControl> controls;
+    QRegularExpressionMatchIterator it = pattern.globalMatch(lines);
+    while (it.hasNext()) {
+        const QRegularExpressionMatch match = it.next();
+        const QString name = match.captured(1);
+        if (!name.startsWith(QStringLiteral("fluent")) && !name.startsWith(QStringLiteral("material"))) {
+            continue;
+        }
+        // The group carries the space it matched, so it is trimmed before it is
+        // compared - an exact compare against "hidden" would be false for every
+        // hidden widget and the filter would keep exactly the ones it exists to
+        // drop.
+        if (match.captured(6).trimmed() == QLatin1String("hidden")) {
+            continue;
+        }
+        controls.append({name, QRect(match.captured(2).toInt(), match.captured(3).toInt(), match.captured(4).toInt(),
+                                     match.captured(5).toInt())});
+    }
+    return controls;
+}
+
+/*!
+ * The gallery's own half of "did a switch leave anything behind", asked once per
+ * control instead of once per window.
+ *
+ * A whole-window comparison across two dozen controls is diluted: one control
+ * that kept the wrong ink is a fraction of a percent of the frame, and a pixel
+ * count cannot tell "not re-coloured" from "moved" anyway (the pitfall the task
+ * records). The tree is what makes the per-control question answerable - it says
+ * where every control is, in window coordinates, so the two captures can be cut
+ * to the same control at each side's own offset. A control that moved between the
+ * two runs passes; a control that kept the wrong ink does not.
+ *
+ * Two switches are asked. The style switch is the one only this demo can make -
+ * the set that comes up is a different page painted by a different library, and
+ * the one thing it must not bring with it is the other set's answers. The theme
+ * switch is the one every demo asks, and the first time the control sets have
+ * ever been asked it: both sets read the palette the engine installs, so a
+ * control that kept the light ink on a dark sheet shows up here and nowhere else.
+ */
+void checkGallerySwitches(const QString &executable)
+{
+    struct GallerySwitch {
+        const char *option;
+        const char *from;
+        const char *to;
+    };
+    const GallerySwitch pairs[] = {
+        {"--style", "fluent", "material"},
+        {"--style", "material", "fluent"},
+        {"--theme", "soft-light", "soft-dark"},
+    };
+
+    QString error;
+    for (const GallerySwitch &pair : pairs) {
+        const QString option = QString::fromLatin1(pair.option);
+        const QString from = QString::fromLatin1(pair.from);
+        const QString to = QString::fromLatin1(pair.to);
+        const QString name = QStringLiteral("controlgallery %1 %2 -> %3").arg(option.mid(2), from, to);
+        const QString stem = QStringLiteral("gallery-%1-%2-to-%3").arg(option.mid(2), from, to);
+
+        const QStringList freshArguments{option, to};
+        const QStringList switchedArguments{option, from + QLatin1Char(',') + to};
+
+        const QString freshPath = themeCaptureDirectory() + QLatin1Char('/') + stem + QStringLiteral("-fresh.png");
+        QVERIFY2(runDemo(executable, freshPath, stem + QStringLiteral("-fresh.log"), error, freshArguments),
+                 qPrintable(error));
+        const QImage fresh = loadAsArgb32(freshPath);
+        QVERIFY2(!fresh.isNull(), qPrintable(QStringLiteral("%1: the capture could not be read").arg(name)));
+
+        const QString switchedPath =
+            themeCaptureDirectory() + QLatin1Char('/') + stem + QStringLiteral("-switched.png");
+        QVERIFY2(runDemo(executable, switchedPath, stem + QStringLiteral("-switched.log"), error, switchedArguments),
+                 qPrintable(error));
+        const QImage switched = loadAsArgb32(switchedPath);
+        QVERIFY2(switched.size() == fresh.size(),
+                 qPrintable(QStringLiteral("%1: the window is %2x%3 after the switch but %4x%5 when started there")
+                                .arg(name)
+                                .arg(switched.width())
+                                .arg(switched.height())
+                                .arg(fresh.width())
+                                .arg(fresh.height())));
+
+        const QString freshTree =
+            runInspectWith(executable, freshArguments, stem + QStringLiteral("-fresh-inspect.log"), error);
+        QVERIFY2(!freshTree.isEmpty(), qPrintable(QStringLiteral("%1: %2").arg(name, error)));
+        const QString switchedTree =
+            runInspectWith(executable, switchedArguments, stem + QStringLiteral("-switched-inspect.log"), error);
+        QVERIFY2(!switchedTree.isEmpty(), qPrintable(QStringLiteral("%1: %2").arg(name, error)));
+
+        const QList<GalleryControl> controls = galleryControls(freshTree);
+        QVERIFY2(controls.count() >= 12,
+                 qPrintable(QStringLiteral("%1: the gallery named only %2 controls - the page did not come up, "
+                                           "or the tree stopped naming them")
+                                .arg(name)
+                                .arg(controls.count())));
+
+        QHash<QString, QRect> after;
+        const QList<GalleryControl> switchedControls = galleryControls(switchedTree);
+        for (const GalleryControl &control : switchedControls) {
+            after.insert(control.name, control.rect);
+        }
+
+        for (const GalleryControl &control : controls) {
+            const QString where = QStringLiteral("%1: %2").arg(name, control.name);
+            QVERIFY2(control.rect.width() > 0 && control.rect.height() > 0,
+                     qPrintable(QStringLiteral("%1: came out %2x%3 - it rendered nothing")
+                                    .arg(where)
+                                    .arg(control.rect.width())
+                                    .arg(control.rect.height())));
+            QVERIFY2(fresh.rect().contains(control.rect),
+                     qPrintable(QStringLiteral("%1: sits at (%2,%3) %4x%5, outside the %6x%7 window - the page "
+                                               "has to be shown whole at the capture size")
+                                    .arg(where)
+                                    .arg(control.rect.x())
+                                    .arg(control.rect.y())
+                                    .arg(control.rect.width())
+                                    .arg(control.rect.height())
+                                    .arg(fresh.width())
+                                    .arg(fresh.height())));
+            QVERIFY2(after.contains(control.name),
+                     qPrintable(QStringLiteral("%1: gone from the tree after the switch").arg(where)));
+
+            const QRect afterRect = after.value(control.name);
+            const QImage freshCrop = fresh.copy(control.rect);
+            const QImage switchedCrop = switched.copy(afterRect);
+            QVERIFY2(freshCrop.size() == switchedCrop.size(),
+                     qPrintable(QStringLiteral("%1: %2x%3 when started there, %4x%5 after the switch")
+                                    .arg(where)
+                                    .arg(freshCrop.width())
+                                    .arg(freshCrop.height())
+                                    .arg(switchedCrop.width())
+                                    .arg(switchedCrop.height())));
+
+            const int differing = countDifferingPixels(freshCrop, switchedCrop, 0);
+            const double percent = 100.0 * differing / (freshCrop.width() * freshCrop.height());
+            QVERIFY2(percent <= kMaxControlDiffPercent,
+                     qPrintable(QStringLiteral("%1: %2% of its own pixels differ after the switch (budget %3%) - "
+                                               "something the switch did not re-colour, or the other set's ink; "
+                                               "compare %4 with %5")
+                                    .arg(where)
+                                    .arg(percent, 0, 'f', 2)
+                                    .arg(kMaxControlDiffPercent)
+                                    .arg(switchedPath)
+                                    .arg(freshPath)));
+        }
+    }
+}
+#endif   // DEMO_GALLERY_EXECUTABLE
+
 }   // namespace
+
+#ifdef DEMO_GALLERY_EXECUTABLE
+void tst_DemoScreenshot::galleryRenders()
+{
+    // The gallery's own ceiling, and not the shared one; see the constant.
+    checkRenders(m_galleryScreenshot, QStringLiteral("controlgallery"), kMaxGalleryDominantPercent);
+}
+
+void tst_DemoScreenshot::galleryMatchesGolden()
+{
+    checkGolden(m_galleryScreenshot, QStringLiteral(DEMO_GALLERY_GOLDEN_PATH),
+                QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH), QStringLiteral("controlgallery"));
+}
+
+void tst_DemoScreenshot::gallerySwitchLeavesNoControlBehind()
+{
+    // Both switches at once: the style switch is the gallery's own question and
+    // the theme switch is the one every demo asks, but only here is the answer
+    // cut up per control - see checkGallerySwitches for why the crop is the part
+    // that cannot be done on a whole window.
+    checkGallerySwitches(QStringLiteral(DEMO_GALLERY_EXECUTABLE));
+}
+#endif
 
 void tst_DemoScreenshot::themeSwitchMatchesAFreshStart()
 {

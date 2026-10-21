@@ -74,7 +74,8 @@ cmake --build build --config Release --parallel
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-编译产物中的示例程序位于 `bin/`，例如 `RibbonDemo`、`DockDemo`、`AppShellDemo`。
+编译产物中的示例程序位于 `bin/`，例如 `RibbonDemo`、`DockDemo`、`ControlGallery`（fluent / material
+两套新控件集的画廊）、`AppShellDemo`。
 完整的构建说明与开关列表见 [构建与安装](build.md)。
 
 ### 在线体验

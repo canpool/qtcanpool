@@ -437,6 +437,20 @@ if (TARGET DockDemo)
   list(APPEND DEMO_SCREENSHOT_TARGETS DockDemo)
 endif()
 
+# The control gallery is registered like the others and checked one step further:
+# its --inspect tree is what lets the switch check be made per control (see
+# tst_demoscreenshot.cpp), which is the part a whole-window comparison cannot do.
+if (TARGET ControlGallery)
+  set(DEMO_GALLERY_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/controlgallery.png")
+  set(DEMO_GALLERY_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/controlgallery.png")
+  list(APPEND DEMO_SCREENSHOT_DEFINES
+      DEMO_GALLERY_EXECUTABLE="$<TARGET_FILE:ControlGallery>"
+      DEMO_GALLERY_SCREENSHOT_PATH="${DEMO_GALLERY_SCREENSHOT}"
+      DEMO_GALLERY_GOLDEN_PATH="${DEMO_GALLERY_GOLDEN}"
+  )
+  list(APPEND DEMO_SCREENSHOT_TARGETS ControlGallery)
+endif()
+
 if (DEMO_SCREENSHOT_DEFINES)
   add_qtc_test(tst_demoscreenshot
       DEPENDS Qt5::Gui

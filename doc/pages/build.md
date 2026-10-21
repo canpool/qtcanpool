@@ -258,6 +258,7 @@ cmake --build build --target docs
 | :--- | :--- | :--- |
 | `ribbondemo` | `RibbonDemo` | Ribbon 界面：页、分组、快捷工具栏、应用按钮 |
 | `dockdemo` | `DockDemo` | 可停靠窗口：中央区域、浮动、标签化、布局保存 |
+| `controlgallery` | `ControlGallery` | 控件画廊：fluent / material 两套风格一页一套，`--style fluent,material` 切换，`--theme` 换主题（同其它 demo） |
 | `appshell` | `AppShellDemo` | 应用外壳：导航轨 + 页面栈 + 停靠区 + 主题 + 启动屏 + 布局持久化 |
 | `qxwindow` | `QxWindowDemo` | 无边框窗口：自绘标题栏 + 四个系统按钮 + 整套窗口材质（DWM blur / acrylic / mica，macOS 毛玻璃） |
 
