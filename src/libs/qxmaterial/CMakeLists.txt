@@ -11,4 +11,5 @@ add_qtc_library(qxmaterial
     materialsegmentedbutton.h materialsegmentedbutton.cpp
     materialchip.h materialchip.cpp
     materialcard.h materialcard.cpp
+    materialfab.h materialfab.cpp
 )

@@ -68,6 +68,19 @@ Feature
   by lifting one level - and takes no wash, because a tint on top of a lift
   would be two answers to one pointer. A card is a surface, not a button: what
   is inside it is what gets pressed.
+- MaterialFAB, the floating action button: the one thing a screen is for,
+  floated over it. Qt has buttons, and a button is what this is - but a button
+  in a layout is one of the things on the screen, while this is *the* thing,
+  and it says so by where it is: over the content, clear of it, lifted off it,
+  and round. It sits at the highest level but the one that interrupts the
+  screen, and it is the accent's own colour, because what it stands for is what
+  the screen is for and that is what the accent is for. What it carries is an
+  icon, and the icon is the application's - drawn as it was given, because
+  recolouring it here would be guessing at what it meant - and what it says is
+  not drawn at all, so it is what an assistive tool is told. The pointer lifts
+  it rather than tinting it, which is one level more rather than another colour
+  on top; and the wash it takes is the colour that reads on the accent, not the
+  one that reads on the page.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
