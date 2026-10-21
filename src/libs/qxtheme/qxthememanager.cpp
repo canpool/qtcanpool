@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
 #include "qxthememanager.h"
+#include "qxthememotion.h"
 #include "qxthemepalette.h"
 
 #include <QtCore/QCoreApplication>
@@ -31,6 +32,7 @@ const char *const kFollowKey = "followSystemTheme";
 const char *const kSystemLightKey = "systemLightTheme";
 const char *const kSystemDarkKey = "systemDarkTheme";
 const char *const kAccentKey = "accentColor";
+const char *const kReduceMotionKey = "reduceMotion";
 
 /*!
  * A colour from the text QSettings stored it as.
@@ -230,6 +232,9 @@ void QxThemeManagerPrivate::reload()
     // Unparsable text is no override, which is also what a fresh installation
     // has: the platform's colour stays the answer.
     m_accentOverride = colorFromText(settings->stringValue(QString::fromLatin1(kAccentKey)));
+    // The switch is process-wide and the stored ask is what a fresh launch
+    // starts with; a configuration that says nothing leaves it off.
+    setMotionReduced(settings->boolValue(QString::fromLatin1(kReduceMotionKey), false));
     settings->endGroup();
 }
 
@@ -439,6 +444,29 @@ void QxThemeManager::setSystemThemePair(const QString &lightId, const QString &d
     settings->endGroup();
 
     refreshSystemTheme();
+}
+
+bool QxThemeManager::reduceMotion() const
+{
+    return isMotionReduced();
+}
+
+void QxThemeManager::setReduceMotion(bool on)
+{
+    // The global switch is the state; the manager is where the ask is stored
+    // and announced. An application can also call setMotionReduced() directly,
+    // and this records and announces the same switch rather than a second one.
+    if (isMotionReduced() == on) {
+        return;
+    }
+    setMotionReduced(on);
+
+    QX_CORE_PREPEND_NAMESPACE(QxSettings) *settings = d_func()->ensureSettings();
+    settings->beginGroup(QString::fromLatin1(kGroup));
+    settings->setValue(QString::fromLatin1(kReduceMotionKey), on);
+    settings->endGroup();
+
+    Q_EMIT reduceMotionChanged(on);
 }
 
 QX_CORE_PREPEND_NAMESPACE(QxSettings) * QxThemeManager::settings() const

@@ -7,6 +7,7 @@
 #include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthemeelevation.h"
 #include "qxtheme/qxthemeicon.h"
+#include "qxtheme/qxthememotion.h"
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthemepalette.h"
 
@@ -102,6 +103,8 @@ private slots:
     void refreshSystemThemeIsANoOpWhileNotFollowing();
     void settingsIsTheObjectSetSettingsTook();
     void shadowTiers();
+    void motionTiersAndTheReduceSwitch();
+    void reduceMotionIsRemembered();
 
     void tintedPixmapRepaintsTheGlyph();
     void tintedIconIsEmptyForAFileThatIsNotThere();
@@ -755,6 +758,54 @@ void tst_QxTheme::shadowTiers()
     QCOMPARE(shadowColor(QColor(), shadowSm.alpha), QColor(0, 0, 0, shadowSm.alpha));
     const QColor base(0x20, 0x40, 0x80);
     QCOMPARE(shadowColor(base, shadowMd.alpha), QColor(0x20, 0x40, 0x80, shadowMd.alpha));
+}
+
+/*! The tiers read as a table, and the reduce switch is the answer every tier
+ *  gives - an animator that reads its motion here needs no check of its own. */
+void tst_QxTheme::motionTiersAndTheReduceSwitch()
+{
+    QCOMPARE(motionFor(-1).duration, motionFast.duration);
+    QCOMPARE(motionFor(0).duration, motionFast.duration);
+    QCOMPARE(motionFor(1).duration, motionNormal.duration);
+    QCOMPARE(motionFor(2).duration, motionEmphasized.duration);
+    // Past the last tier saturates there, like the shadows do.
+    QCOMPARE(motionFor(9).duration, motionEmphasized.duration);
+
+    // Reduced, every tier is a jump to the end state: zero time, no shape.
+    setMotionReduced(true);
+    const QxMotion reduced = motionFor(1);
+    QCOMPARE(reduced.duration, 0);
+    QCOMPARE(reduced.curve, QEasingCurve::Linear);
+    setMotionReduced(false);
+    QCOMPARE(motionFor(1).duration, motionNormal.duration);
+}
+
+/*! The ask for less motion is the application's, and it outlives the run:
+ *  written as a value a fresh settings object reads back. */
+void tst_QxTheme::reduceMotionIsRemembered()
+{
+    QxThemeManager *manager = QxThemeManager::instance();
+    setMotionReduced(false);
+
+    QSignalSpy spy(manager, &QxThemeManager::reduceMotionChanged);
+    manager->setReduceMotion(true);
+    QCOMPARE(manager->reduceMotion(), true);
+    QCOMPARE(spy.count(), 1);
+    // The switch is process-wide: the free function is the same answer.
+    QCOMPARE(isMotionReduced(), true);
+
+    QxSettings reader(m_settingsFile, QSettings::IniFormat);
+    reader.beginGroup(QStringLiteral("ui"));
+    QCOMPARE(reader.boolValue(QStringLiteral("reduceMotion")), true);
+    reader.endGroup();
+
+    // Handing the same file back starts reduced again.
+    manager->setSettings(new QxSettings(m_settingsFile, QSettings::IniFormat));
+    QCOMPARE(manager->reduceMotion(), true);
+
+    // Leave the process as it was found: motion is global.
+    manager->setReduceMotion(false);
+    QCOMPARE(isMotionReduced(), false);
 }
 
 TEST_ADD(tst_QxTheme)

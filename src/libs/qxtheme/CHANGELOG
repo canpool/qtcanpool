@@ -1,6 +1,17 @@
 Unreleased
 ---
 Feature
+- qxthememotion.h, the motion vocabulary a transition reads its answer from:
+  three tiers of duration and curve - a hover, a change with distance to
+  cover, an entrance with a settle - named by what the movement is for. The
+  reduce-motion switch is the application's own (widgets cannot read the
+  system preference) and motionFor() honours it: a reduced switch turns every
+  tier into a jump to the end state, so compliance is the default rather than
+  something each control remembers to do.
+- QxThemeManager::setReduceMotion() / reduceMotion(), the application's
+  accessibility switch, persisted under the ui group and announced through
+  reduceMotionChanged() - the one place that knows what the user asked for,
+  remembering it so the next launch starts reduced again.
 - qxthemeelevation.h, the shadow vocabulary a painted shadow reads its answer
   from: five tiers from a surface that casts nothing to one that floats over
   everything, each a blur radius, a y offset and an alpha over the theme's

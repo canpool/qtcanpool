@@ -123,6 +123,24 @@ public:
     void setSystemThemePair(const QString &lightId, const QString &darkId);
 
     /*!
+     * True while the user has asked for less motion.
+     *
+     * Widgets cannot read the system's reduce-motion preference, so this is the
+     * application's own accessibility switch, and the answer every animator
+     * gets through motionFor() follows it - a reduced switch turns every tier
+     * into a jump to the end state. See qxthememotion.h for the tiers.
+     *
+     * The choice is persisted, so the next launch starts reduced again.
+     */
+    bool reduceMotion() const;
+    /*!
+     * Records the user's ask for less motion, persists it and announces it.
+     * Turned on from the application's settings page - the one place that knows
+     * what the user asked for.
+     */
+    void setReduceMotion(bool on);
+
+    /*!
      * The settings object backing persistence; created on first use from the
      * application name, and owned by the manager.
      */
@@ -169,6 +187,8 @@ Q_SIGNALS:
      * was passed in - after setAccentColor() changed it.
      */
     void accentColorChanged(const QColor &color);
+    /*! Emitted after setReduceMotion() changed the switch. */
+    void reduceMotionChanged(bool on);
 protected:
     explicit QxThemeManager(QObject *parent = Q_NULLPTR);
     ~QxThemeManager() override;
