@@ -5,6 +5,8 @@
 #ifndef TST_PROBE_H
 #define TST_PROBE_H
 
+#include <QImage>
+#include <QRect>
 #include <QString>
 #include <QStringList>
 
@@ -97,6 +99,28 @@ int lengthOf(QSplitter *splitter);
  * sequence rather than once at the end.
  */
 bool fillsItself(QSplitter *splitter);
+
+/*! What \a widget looks like, as pixels rather than as a sentence. A picture
+ *  answers questions a colour count cannot - where on a control something was
+ *  painted is the whole of the answer when the control is two parts that
+ *  react on their own. */
+QImage image(QWidget *widget);
+
+/*!
+ * The smallest rectangle holding every pixel in which \a a and \a b disagree,
+ * or a null rectangle when they agree everywhere.
+ *
+ * "Something changed" is a weak thing to say about a control that is drawn in
+ * halves; where it changed is what tells the halves apart.
+ */
+QRect differingRect(const QImage &a, const QImage &b);
+
+/*! How many pixels inside \a area the two pictures disagree on.
+ *
+ *  A bounding rectangle answers "how far apart", which a one-pixel border is
+ *  enough to make the whole control. Counting inside a chosen area is how a
+ *  test asks about one part of a control and not the frame round it. */
+int differingPixels(const QImage &a, const QImage &b, const QRect &area);
 
 /*! \a splitter in one line: how many parts, what size each, how long it is.
  *  The line a failed QVERIFY2 prints, so it has to name the number that was

@@ -221,6 +221,53 @@ int heightOf(const QString &tree, const QString &what)
     return ok ? height : -1;
 }
 
+QImage image(QWidget *widget)
+{
+    return widget->grab().toImage().convertToFormat(QImage::Format_ARGB32);
+}
+
+QRect differingRect(const QImage &a, const QImage &b)
+{
+    if (a.size() != b.size()) {
+        // Two pictures of different sizes differ everywhere they overlap, which
+        // is not an answer about any place in particular.
+        return QRect(0, 0, qMin(a.width(), b.width()), qMin(a.height(), b.height()));
+    }
+    int left = a.width();
+    int top = a.height();
+    int right = -1;
+    int bottom = -1;
+    for (int y = 0; y < a.height(); ++y) {
+        for (int x = 0; x < a.width(); ++x) {
+            if (a.pixel(x, y) == b.pixel(x, y)) {
+                continue;
+            }
+            left = qMin(left, x);
+            top = qMin(top, y);
+            right = qMax(right, x);
+            bottom = qMax(bottom, y);
+        }
+    }
+    if (right < 0) {
+        return QRect();
+    }
+    return QRect(left, top, right - left + 1, bottom - top + 1);
+}
+
+int differingPixels(const QImage &a, const QImage &b, const QRect &area)
+{
+    const QRect clamped = area.intersected(QRect(0, 0, qMin(a.width(), b.width()), qMin(a.height(), b.height())));
+    int differing = 0;
+    for (int y = clamped.top(); y <= clamped.bottom(); ++y) {
+        for (int x = clamped.left(); x <= clamped.right(); ++x) {
+            if (a.pixel(x, y) != b.pixel(x, y)) {
+                ++differing;
+            }
+        }
+    }
+    return differing;
+}
+
 int lengthOf(QSplitter *splitter)
 {
     return splitter->orientation() == Qt::Horizontal ? splitter->width() : splitter->height();
