@@ -15,6 +15,19 @@ Feature
   control asking about either. A click and the keyboard both toggle, the
   sentence is its accessible name until the application gives it one, and the
   wash and the focus ring stay on the track.
+- FluentInfoBar, a message that stays until it is dealt with. A QMessageBox is
+  a window the user has to dismiss before doing anything else and a status tip
+  leaves before it has been read; what sits between them - something happened,
+  it matters, it does not stop you - is what this is. It carries a severity,
+  and the severity is what colours it: a theme has a role for a highlight and
+  none for "warning", so a bar carries those colours itself. Closing is not
+  drawing it differently, it is going away.
+- FluentExpander, a header that keeps a body and opens to show it. Qt's answer
+  to this is a button next to a widget the application hides and shows itself,
+  which is why the two disagree about where the clickable part ends and why
+  the movement is instant. Here the header is the control - it is what the
+  pointer reaches and what the keyboard stops at - and the body travels out
+  from under it on a Fluent duration, or is simply out, under reduce-motion.
 - FluentRating, a row of stars filled up to the one the user chose. Qt has no
   rating control, and the two things a rating has to answer are not answered
   by a row of buttons: how much is it now, and what would it be if I clicked
