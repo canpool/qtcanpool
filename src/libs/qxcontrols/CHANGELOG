@@ -10,3 +10,9 @@ Feature
   state, layered() as the value a test can predict, paint() as the draw.
   Which colour a family washes with belongs to the family; how a wash is
   composed and painted is here.
+- QxRingPainter, the focus ring drawn as a band rather than a stroke: the
+  ring occupies the strip from its inset to its inset + width inside the
+  rectangle, so it never falls off the control and never needs clipping, and
+  a negative inset is how a ring hangs over the edge. A ring's corners turn
+  with the control's radius, and painting one band - without seams at the
+  corners - is what lives here; which bands a family draws is its own answer.

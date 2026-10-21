@@ -5,4 +5,5 @@ add_qtc_library(qxcontrols
   SOURCES
     qxcontrols_global.h
     qxstatelayer.h qxstatelayer.cpp
+    qxringpainter.h qxringpainter.cpp
 )
