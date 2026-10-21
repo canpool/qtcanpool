@@ -6,4 +6,5 @@ add_qtc_library(qxfluent
     qxfluent_global.h
     fluenttokens.h fluenttokens.cpp
     fluentswitch.h fluentswitch.cpp
+    fluentslider.h fluentslider.cpp
 )
