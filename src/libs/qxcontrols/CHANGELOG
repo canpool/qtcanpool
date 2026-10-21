@@ -10,6 +10,12 @@ Feature
   state, layered() as the value a test can predict, paint() as the draw.
   Which colour a family washes with belongs to the family; how a wash is
   composed and painted is here.
+- QxShadowPainter, the mechanism that turns an elevation tier into pixels: a
+  tile rendered once for a set of parameters - blur, alpha, corner radius,
+  colour - and stretched over the rectangle in nine pieces, cached so the
+  second card of the same shape costs a lookup. The blur is sixteen
+  concentric rings rather than a true gaussian, which reads as one smooth
+  falloff at shadow sizes and keeps the render deterministic and cheap.
 - QxRingPainter, the focus ring drawn as a band rather than a stroke: the
   ring occupies the strip from its inset to its inset + width inside the
   rectangle, so it never falls off the control and never needs clipping, and

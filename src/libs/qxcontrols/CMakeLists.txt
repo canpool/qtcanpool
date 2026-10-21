@@ -6,4 +6,5 @@ add_qtc_library(qxcontrols
     qxcontrols_global.h
     qxstatelayer.h qxstatelayer.cpp
     qxringpainter.h qxringpainter.cpp
+    qxshadowpainter.h qxshadowpainter.cpp
 )
