@@ -6,6 +6,15 @@ Feature
   duration scale that the controls in here are drawn from, and the controls
   themselves as they land. It is one of three choices an application can make
   - ribbon, Fluent, Material - not a skin for any of them.
+- FluentSwitch, the toggle switch: a pill with a knob in it and a sentence
+  beside it. Qt has a check box and no switch, and they are not the same
+  answer - a switch says what it stands for is in force now, a check box says
+  a choice was made and will be collected later. The track fills with the
+  accent when it is on and the knob travels on a Fluent duration, which is a
+  motion tier: reduce-motion and the theme's scale reach it without the
+  control asking about either. A click and the keyboard both toggle, the
+  sentence is its accessible name until the application gives it one, and the
+  wash and the focus ring stay on the track.
 - fluenttokens, the four scales Fluent arrives with, each spelled the way
   Fluent spells it and answered in the shared vocabulary: corners as radii,
   the ramp as sizes with a heavier cut, elevation as the shadow a lift casts,

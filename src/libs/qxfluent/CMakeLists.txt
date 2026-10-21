@@ -5,4 +5,5 @@ add_qtc_library(qxfluent
   SOURCES
     qxfluent_global.h
     fluenttokens.h fluenttokens.cpp
+    fluentswitch.h fluentswitch.cpp
 )
