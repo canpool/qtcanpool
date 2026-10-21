@@ -20,7 +20,9 @@ namespace
 const QColor kAccent(0, 0, 255);
 
 /* The fill of a chip whose filter is in force is the accent tinted into the
- * surface, not the accent itself, so what is counted is a leaning towards it. */
+ * surface, not the accent itself, so what is counted is a leaning towards it -
+ * which a glyph's coloured fringe also has, hence the counts are only ever
+ * read as a difference between two pictures of the same chip. */
 int tintedPixels(QWidget *widget)
 {
     const QImage image = widget->grab().toImage();
@@ -98,20 +100,28 @@ void tst_MaterialChip::aFilterChipHoldsWhatItStandsFor()
     chip.setText(QStringLiteral("Unread"));
     chip.resize(chip.sizeHint());
     QVERIFY(!chip.isChecked());
-    QCOMPARE(tintedPixels(&chip), 0);
+    // What being in force looks like is the fill, and the fill is the accent
+    // leaning into the surface across the whole of the chip. It cannot be read
+    // off one picture: the sentence is drawn with the platform's own text
+    // antialiasing, and on the Linux legs that is subpixel - every glyph
+    // carries a coloured fringe of its own, 182 pixels of it in this chip,
+    // which is neither the fill nor separable from one by colour alone. Hence
+    // the difference between two pictures of the same chip: the fill is most
+    // of it, a fringe is a twentieth.
+    const int resting = tintedPixels(&chip);
 
     QSignalSpy flipped(&chip, &MaterialChip::toggled);
     QTest::mouseClick(&chip, Qt::LeftButton);
     QVERIFY(chip.isChecked());
     QCOMPARE(flipped.count(), 1);
     QCOMPARE(flipped.at(0).at(0).toBool(), true);
-    QVERIFY(tintedPixels(&chip) > 0);
+    QVERIFY(tintedPixels(&chip) - resting > chip.width() * chip.height() / 2);
 
-    // Pressing it again takes the filter back.
+    // Pressing it again takes the filter back, and the fill goes with it.
     QTest::mouseClick(&chip, Qt::LeftButton);
     QVERIFY(!chip.isChecked());
     QCOMPARE(flipped.count(), 2);
-    QCOMPARE(tintedPixels(&chip), 0);
+    QCOMPARE(tintedPixels(&chip), resting);
 }
 
 /*! The mark a filter chip carries while it is in force takes room, so the chip
