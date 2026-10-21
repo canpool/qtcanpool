@@ -61,6 +61,18 @@ Feature
   from the keyboard travels, because there the movement is the feedback. It
   carries a value, so it brings its own accessible face: a role and a state
   cannot say a number, and an assistive tool wants to set it back.
+- FluentCommandBar, where the commands of a Fluent application live. An
+  application that has chosen Fluent has no ribbon, and this is what it has
+  instead: one row of commands, the ones that matter in the order they matter,
+  and the ones that do not fit kept behind a button rather than dropped. A
+  command here is a QAction - connect to it, disable it, check it - and what
+  the bar adds is the answer to what a click does, one of four: a command that
+  runs, a command that stays in force, a menu, or both in one, where the
+  chevron opens the menu and the rest of it runs the command. Room is the
+  bar's to answer: what does not fit goes into the overflow and comes back
+  when there is room again, and the row's least is the overflow itself. The
+  keyboard walks the row, the wash and the focus ring stay on the one command
+  the pointer or the keyboard is on, and what is announced is a toolbar.
 - FluentBreadcrumbBar, the path to where the user is, and a way back along it.
   Qt has no breadcrumb, and the nearest thing - a row of flat buttons with ">"
   labels between them - gets three things wrong: the last step is not a

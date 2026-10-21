@@ -14,4 +14,5 @@ add_qtc_library(qxfluent
     fluentexpander.h fluentexpander.cpp
     fluentinfobar.h fluentinfobar.cpp
     fluentbreadcrumbbar.h fluentbreadcrumbbar.cpp
+    fluentcommandbar.h fluentcommandbar.cpp
 )
