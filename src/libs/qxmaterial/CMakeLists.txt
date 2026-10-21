@@ -9,4 +9,5 @@ add_qtc_library(qxmaterial
     materialslider.h materialslider.cpp
     materialbadge.h materialbadge.cpp
     materialsegmentedbutton.h materialsegmentedbutton.cpp
+    materialchip.h materialchip.cpp
 )

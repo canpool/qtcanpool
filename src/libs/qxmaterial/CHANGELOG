@@ -45,6 +45,16 @@ Feature
   move what is in force - because a segmented button is one of a fixed number
   of answers, and that is what a group of radio buttons is to an assistive
   tool, which is what each segment is announced as.
+- MaterialChip, the chip: a small thing that stands for one choice, or does
+  one thing. Qt has buttons for both, and a button is what a chip is made of -
+  but a button in a row of buttons reads as a toolbar, while a row of chips
+  reads as a set of things the user is carrying: a filter applied, a tag, a
+  suggestion offered. The two kinds are not the same answer to the same
+  question, which is why they are one class: an assist chip does something when
+  it is pressed and holds nothing, while a filter chip holds a state, is filled
+  while it is in force and carries a mark - because "which of these are on"
+  has to be readable without pressing each one to find out. An assist chip is
+  announced as a button and a filter one as a thing that is on or off.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
