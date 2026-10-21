@@ -13,6 +13,7 @@
 #include <QtGui/QPixmap>
 #include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QSplitter>
 #include <QtWidgets/QWidget>
 
 namespace Probe
@@ -163,6 +164,13 @@ void settle(QWidget *window)
     // turn of the event loop, and a tree read before that turn describes a
     // window that has not had them.
     QCoreApplication::processEvents(QEventLoop::AllEvents);
+    // And a widget thrown away with deleteLater() is still in that tree: it
+    // goes when the deferred delete is delivered, not when it is posted. A
+    // pinned pane that was asked to unpin is one of those - its side tab is
+    // deleted by the container's destructor - so a settle that stopped here
+    // would call it still pinned.
+    QCoreApplication::sendPostedEvents(Q_NULLPTR, QEvent::DeferredDelete);
+    QCoreApplication::processEvents(QEventLoop::AllEvents);
 }
 
 void revealCollapsed(QWidget *root)
@@ -211,6 +219,55 @@ int heightOf(const QString &tree, const QString &what)
     const int close = matches.first().indexOf(QLatin1Char(')'), cross);
     const int height = matches.first().mid(cross + 1, close - cross - 1).toInt(&ok);
     return ok ? height : -1;
+}
+
+int lengthOf(QSplitter *splitter)
+{
+    return splitter->orientation() == Qt::Horizontal ? splitter->width() : splitter->height();
+}
+
+bool fillsItself(QSplitter *splitter)
+{
+    const QList<int> sizes = splitter->sizes();
+    if (sizes.isEmpty()) {
+        return false;
+    }
+    int total = 0;
+    int showing = 0;
+    for (int i = 0; i < sizes.count(); ++i) {
+        // A part that is not showing is given no room at all - that is what a
+        // splitter does with a hidden child, and a closed pane is exactly
+        // that - so it is not one of the parts that have to fill the splitter,
+        // and it does not carry a handle of its own either.
+        QWidget *part = splitter->widget(i);
+        if (part && part->isHidden()) {
+            continue;
+        }
+        if (sizes.at(i) <= 0) {
+            return false;
+        }
+        total += sizes.at(i);
+        ++showing;
+    }
+    if (!showing) {
+        return false;
+    }
+    const int handles = (showing - 1) * splitter->handleWidth();
+    return qAbs(total + handles - lengthOf(splitter)) <= 1;
+}
+
+QString describe(QSplitter *splitter)
+{
+    QStringList parts;
+    const QList<int> sizes = splitter->sizes();
+    parts.reserve(sizes.count());
+    for (int size : sizes) {
+        parts.append(QString::number(size));
+    }
+    return QStringLiteral("%1 parts [%2] in %3 pixels")
+        .arg(splitter->count())
+        .arg(parts.join(QLatin1Char(',')))
+        .arg(lengthOf(splitter));
 }
 
 }   // namespace Probe

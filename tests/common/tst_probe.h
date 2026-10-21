@@ -9,6 +9,7 @@
 #include <QStringList>
 
 class QWidget;
+class QSplitter;
 
 /*!
  * The instruments a scene test reaches for, kept here so that the suites that
@@ -80,6 +81,27 @@ QStringList lines(const QString &tree, const QString &what);
  * the bug that went unexplained - and that is one number out of one line.
  */
 int heightOf(const QString &tree, const QString &what);
+
+/*! How long \a splitter is along the way it divides things up. */
+int lengthOf(QSplitter *splitter);
+
+/*!
+ * Whether \a splitter measures what it is holding: every part non-zero, and the
+ * parts together as long as the splitter.
+ *
+ * A docking layout is a set of sizes that were measured once, and everything
+ * wrong with it shows up as a size measured against something that has since
+ * changed - a pane handed a size out of the old metrics is either zero or
+ * leaves a gap. Both are visible in these two numbers and neither is visible
+ * in a single-step test, which is why this is asked after every step of a
+ * sequence rather than once at the end.
+ */
+bool fillsItself(QSplitter *splitter);
+
+/*! \a splitter in one line: how many parts, what size each, how long it is.
+ *  The line a failed QVERIFY2 prints, so it has to name the number that was
+ *  wrong and not only that one was. */
+QString describe(QSplitter *splitter);
 
 }   // namespace Probe
 

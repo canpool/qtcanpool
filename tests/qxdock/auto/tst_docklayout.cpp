@@ -15,7 +15,6 @@
 #include <QBoxLayout>
 #include <QSplitter>
 #include <QTest>
-#include <QVariant>
 
 QX_DOCK_USE_NAMESPACE
 
@@ -35,40 +34,6 @@ public:
     }
 };
 
-/*! How long a splitter is along the way it divides things up. */
-int lengthOf(QSplitter *splitter)
-{
-    return splitter->orientation() == Qt::Horizontal ? splitter->width() : splitter->height();
-}
-
-/*! What a splitter is holding: every part non-zero, and the parts together
- *  filling the splitter - which is what "measured again" means. A pane that was
- *  handed a size out of the old metrics is either zero or leaves a gap, and
- *  both show up in these two numbers. */
-bool fillsItself(QSplitter *splitter)
-{
-    const QList<int> sizes = splitter->sizes();
-    if (sizes.isEmpty()) {
-        return false;
-    }
-    int total = 0;
-    for (int size : sizes) {
-        if (size <= 0) {
-            return false;
-        }
-        total += size;
-    }
-    const int handles = (sizes.count() - 1) * splitter->handleWidth();
-    return qAbs(total + handles - lengthOf(splitter)) <= 1;
-}
-
-QString describe(QSplitter *splitter)
-{
-    return QStringLiteral("%1 parts %2 in %3 pixels")
-        .arg(splitter->count())
-        .arg(QVariant::fromValue(splitter->sizes()).toString())
-        .arg(lengthOf(splitter));
-}
 }   // namespace
 
 /*!
@@ -126,7 +91,7 @@ void tst_DockLayout::theRowIsMeasuredAgainWhenAPaneJoins()
 
     QSplitter *root = dock.root();
     QVERIFY(root);
-    QVERIFY2(fillsItself(root), qPrintable(describe(root)));
+    QVERIFY2(Probe::fillsItself(root), qPrintable(Probe::describe(root)));
     const int panes = Probe::lines(Probe::tree(&host), QStringLiteral("QxDock::DockWidget ")).count();
 
     DockWidget right(QStringLiteral("right"));
@@ -142,7 +107,7 @@ void tst_DockLayout::theRowIsMeasuredAgainWhenAPaneJoins()
     QVERIFY(right.isVisible());
     QVERIFY(right.width() > 0);
     QVERIFY(right.height() > 0);
-    QVERIFY2(fillsItself(root), qPrintable(describe(root)));
+    QVERIFY2(Probe::fillsItself(root), qPrintable(Probe::describe(root)));
 }
 
 /*! And a pane leaving is the same measurement run in the other direction: what
@@ -167,7 +132,7 @@ void tst_DockLayout::theRowIsMeasuredAgainWhenAPaneLeaves()
 
     QSplitter *root = dock.root();
     QVERIFY(root);
-    QVERIFY2(fillsItself(root), qPrintable(describe(root)));
+    QVERIFY2(Probe::fillsItself(root), qPrintable(Probe::describe(root)));
     const int panes = Probe::lines(Probe::tree(&host), QStringLiteral("QxDock::DockWidget ")).count();
 
     dock.removeDockWidget(&right);
@@ -177,7 +142,7 @@ void tst_DockLayout::theRowIsMeasuredAgainWhenAPaneLeaves()
     QVERIFY(root);
     QCOMPARE(Probe::lines(Probe::tree(&host), QStringLiteral("QxDock::DockWidget ")).count(), panes - 1);
     QVERIFY(!right.isVisible());
-    QVERIFY2(fillsItself(root), qPrintable(describe(root)));
+    QVERIFY2(Probe::fillsItself(root), qPrintable(Probe::describe(root)));
 }
 
 /*! The tab bar is part of what a pane is measured against: when it grows, the
