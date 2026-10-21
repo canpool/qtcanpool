@@ -5,4 +5,7 @@ add_qtc_library(qxmaterial
   SOURCES
     qxmaterial_global.h
     materialtokens.h materialtokens.cpp
+    materialswitch.h materialswitch.cpp
+    materialslider.h materialslider.cpp
+    materialbadge.h materialbadge.cpp
 )

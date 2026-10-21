@@ -9,6 +9,31 @@ Feature
   shares nothing but mechanism with the Fluent one: the two answer the same
   questions differently, and a control that is both is a control that is
   neither.
+- MaterialSwitch, the switch: a track that fills with the primary colour and a
+  handle that crosses it, carrying a mark once it is on. Qt has a check box and
+  no switch, and they are not the same answer - a switch says what it stands
+  for is in force now, a check box says a choice was made and will be collected
+  later. It is not Fluent's switch either: Fluent's is a small pill whose knob
+  keeps its size, so its state has to be read by comparing the knob against
+  the far end of the track, while this one can be read off the handle alone.
+- MaterialSlider, the slider: a track, and a handle that rides over it - bigger
+  than the track it covers, and lifting off it. The difference between the two
+  families is what it does not draw: Fluent's slider says where its rail is
+  divided, with a mark at every interval, and this one says nothing of the
+  kind, because the handle's position is the answer and a second one would be
+  a second answer to a question already answered. A press anywhere on the
+  track moves the handle there, a drag follows the pointer at once, and the
+  keyboard steps it - because a slider is a value in a range, so it brings its
+  own accessible face and lets the value be read back and set back.
+- MaterialBadge, the badge: a dot that says there is something, or a number
+  that says how much. Qt has no badge, which is why a count ends up painted
+  into a label, a button or a pixmap made at run time. It is not the Fluent
+  one: a Fluent badge is the application pointing at something and wears the
+  accent, while this one is the error colour, because what a badge says is that
+  something needs attention - and past its maximum it stops counting and says
+  so, because "127" is not more useful than "99+" and it is wider. A badge is
+  a mark on something else, so it is neither a stop on the way through the
+  keyboard nor something the pointer takes hold of.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
