@@ -15,6 +15,19 @@ Feature
   control asking about either. A click and the keyboard both toggle, the
   sentence is its accessible name until the application gives it one, and the
   wash and the focus ring stay on the track.
+- FluentRating, a row of stars filled up to the one the user chose. Qt has no
+  rating control, and the two things a rating has to answer are not answered
+  by a row of buttons: how much is it now, and what would it be if I clicked
+  here. The second is the hover, and it is not decoration - a rating that does
+  not show what a click would do is a control the user has to click to find
+  out about. The keyboard walks it, because a rating is a value in a range.
+- FluentProgressRing, the arc that says how far along something is, or only
+  that something is happening. QProgressBar's indeterminate mode is the
+  style's to draw, so a Fluent application gets a block sweeping a track. The
+  turning here is the one motion in these controls that is not a transition -
+  nothing moves from one state to another, it is a loop - so it reads the
+  reduce-motion switch itself and stops, because a ring that turns forever is
+  what that switch asks not to be shown.
 - FluentCard, the surface that sits above the page, and the lift is what says
   how far above. A card is the one place in Fluent where elevation is the
   message rather than decoration, so the shadow is the shadow of the level

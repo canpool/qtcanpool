@@ -65,7 +65,6 @@ public:
         }
         return QxControls::QxControlAccessible::interface_cast(type);
     }
-
 private:
     FluentProgressRing *ring() const
     {
@@ -100,9 +99,7 @@ FluentProgressRing::FluentProgressRing(QWidget *parent)
         d_ptr->turn = value.toReal();
         update();
     });
-    if (d_ptr->indeterminate) {
-        d_ptr->turner.start();
-    }
+    updateTurning();
 }
 
 FluentProgressRing::~FluentProgressRing()

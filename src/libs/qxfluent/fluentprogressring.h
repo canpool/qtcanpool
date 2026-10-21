@@ -9,9 +9,9 @@
 
 #include "qxcontrols/qxcontrol.h"
 
-class FluentProgressRingPrivate;
-
 QX_FLUENT_BEGIN_NAMESPACE
+
+class FluentProgressRingPrivate;
 
 /*!
  * Fluent's progress ring: an arc that says how far along something is, or an
@@ -48,14 +48,12 @@ public:
 public Q_SLOTS:
     void setValue(int value);
     void setIndeterminate(bool on);
-
 protected:
     void paintSurface(QPainter *painter) override;
     void changeEvent(QEvent *event) override;
 
     QAccessible::Role accessibleRole() const override;
     QAccessibleInterface *accessibleInterface() override;
-
 private:
     void updateTurning();
 
