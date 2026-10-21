@@ -1,0 +1,12 @@
+Unreleased
+---
+Feature
+- The library opens. It is the shared base the control libraries draw on:
+  the mechanisms two design languages answer the same way - state layers,
+  focus rings, shadows - kept apart from the forms, which stay with each
+  family. It reads the token vocabularies from qxtheme and nothing above it.
+- QxStateLayer, the wash a control draws over itself to say where the pointer
+  is, where the focus sits, what is being pressed: default opacities per
+  state, layered() as the value a test can predict, paint() as the draw.
+  Which colour a family washes with belongs to the family; how a wash is
+  composed and painted is here.

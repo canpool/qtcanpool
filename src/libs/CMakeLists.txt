@@ -1,6 +1,7 @@
 option(WITH_QXCORE "Build qxcore library" ON)
 option(WITH_QXPLUGIN "Build qxplugin library" ON)
 option(WITH_QXTHEME "Build qxtheme library" ON)
+option(WITH_QXCONTROLS "Build qxcontrols library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
@@ -26,6 +27,14 @@ endif()
 # theme engine stays usable in applications that do not use the ribbon.
 if (WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxtheme)
+endif()
+
+# qxcontrols is the shared base the control libraries draw on: state layers,
+# focus rings, shadows - the mechanisms, not any family's form. It reads the
+# token vocabularies from qxtheme and nothing above it, so the dependency
+# direction stays one-way: qxtheme <- qxcontrols <- qxfluent / qxmaterial.
+if (WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
+  add_subdirectory(qxcontrols)
 endif()
 
 if (WITH_QXRIBBON)

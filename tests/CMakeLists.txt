@@ -85,6 +85,18 @@ add_qtc_test(tst_qxtheme
         ${QXTHEME_TEST_SOURCES}
 )
 
+# ------------------------------------------------------------ qxcontrols --
+file(GLOB QXCONTROLS_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxcontrols/auto/tst_*.cpp")
+add_qtc_test(tst_qxcontrols
+    DEPENDS qxcontrols
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxcontrols/auto/main.cpp"
+        ${QXCONTROLS_TEST_SOURCES}
+)
+
 # ------------------------------------------------------------------- qxapp --
 # qxapp is the application framework, so its test links the whole stack: the
 # shell builds a ribbon window with a dock area and a theme.
