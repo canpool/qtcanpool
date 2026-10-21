@@ -566,3 +566,56 @@ QToolBar 的 `sizeHint()` 依赖它**当前**的宽度（放不下的项进溢�
 那是**加法**（不删不改现有签名），但要想定下来，得先回答一个问题：附加段由谁拥有、
 主题表为空（"no skin" 主题）时还算不算、以及两段都写到同一个控件时谁赢（现在靠拼接顺序决定，
 这个约定得写进文档）。
+
+---
+
+## offscreen 下有几件事是看不见的（what an offscreen test cannot see）
+
+> **（4.7 I1）新增记录**：4.7 把「场景测试」当成一等公民之后攒下来的一页。
+> 这一条的读者是**写测试的人**，不是用库的人：它说的是在 `QT_QPA_PLATFORM=offscreen`
+> 下，哪些断言**看起来在测、其实没测到**，以及哪些根本测不了。
+
+**现象**：下面每一条都是一次「测试绿了但没测到东西」的实况，按撞到的顺序记：
+
+1. **`grab()` 自带不透明背景**：`render()` 带 `DrawWindowBackground`，所以每个 widget 抓下来
+   都是 100% filled——**「没画」读不出来**（dump 里每个 widget 都写 100% 就是这个）。
+   能用的只有**主色及其占比**；要测「画了多少」得**跟页面色比**。
+2. **平台度量随 style 变**：滚动条在 fusion 16 / windowsvista 17 / windows11 12（暗色恒 16），
+   菜单栏与工具栏由平台样式画 ⇒ **整窗截图比较**在换平台或换主题后不可靠。
+   dock 的截图比较已改成「两图各按自己 `--inspect` 读到的 dock 矩形裁剪，只比共同高度那一段」。
+3. **指针要真的挪**：`RibbonButton::drawButton()` 这类代码**不看 widget 的 hover 记账**，
+   而是问 `QCursor::pos()` 在不在 rect 里。⇒ ① 测 hover 必须 `QTest::mouseMove` 真移指针
+   （`sendEvent(Enter)` 不够）；② **「静止」那张基准图必须先把指针挪开**——它停在上一个用例
+   留下的位置，常常正好在被测控件里，于是「rest == 已 hover」，断言全假绿。
+4. **延迟删除不算消失**：`deleteLater()` 的东西在 `processEvents()` **之后还在树里**
+   （dock 取消 pin 时 side tab 就是在容器的析构里才 delete 的）。
+   ⇒ `Probe::settle()` 除了 `processEvents(AllEvents)` 还补了
+   `sendPostedEvents(nullptr, QEvent::DeferredDelete)`。
+5. **没 show 的 widget 没有几何**：布局没跑 ⇒ 位置全是 (0,0)、splitter `sizes()` 为空。
+   读几何之前必须 `show()` + settle 一拍（`apply()` 之后同理）。
+6. **拖放不能用 `QDropEvent`**：Qt 只接受真拖拽投递的 drop，`sendEvent()` 的那个会被
+   **静默丢弃**，`dropEvent()` 根本不进。⇒ 测「落下来之后发生什么」走
+   `DockWindow::handleDockWidgetDrop()`（它是 `dropEvent()` 的全部本体）。
+7. **半透明 tool window 抓出来是空的**；`(not painted)` / `transparent` 的 widget
+   无法参与「规则有没有生效」这类断言（矩阵测试里 `SpacerWidget`、两个 `DockOverlay` 就跳过了）。
+8. **字体**：Qt 不再随包发字体（offscreen 下每笔都刷 `Cannot find font directory` 的警告），
+   所以**与字号相关的绝对值不可测**。dock / ribbon 的 chrome 高度是**样式表里写死的数字**
+   （实测 17pt 字体下 tab 栏仍是 24）——要动 chrome 得动样式表，不是动字体。
+9. **内部类（没有导出宏）无法独立链接测试**：`_p.h` 里的类、`QSplitter` 之外的度量算术、
+   `RibbonButtonPrivate::calcIconAndTextRect()` 这类几何，都只能**透过公开门**
+   或**在测试里子类化暴露 protected 成员**来间接测。给它们加 `Q_AUTOTEST_EXPORT`
+   需要库与测试**两端**都按 `QT_BUILD_INTERNAL` 构建，属独立工程。
+
+**成因**：offscreen 平台没有窗口系统——没有真实指针、没有真实窗口、没有字体服务；
+而「画了什么」这件事本来只有抓图一条路，抓图又自带背景。
+
+**现状**：能绕的都绕进测试基建 `tests/common/tst_probe.{h,cpp}`（`Probe` 命名空间）：
+`settle()`（含延迟删除）、`painted()` / `glyph()`（数主色与占比，而不是数像素）、
+`image()` / `differingRect()` / `differingPixels()`（按区域比两张图）、
+`revealCollapsed()`（展开 auto hide 容器）、`fillsItself()`（跳过 hidden 的 splitter 格）。
+不能绕的（1、2、6、7、8、9）写在这里。
+
+**要改变它需要什么**：1 需要自己 render 到透明底（`grab()` 没有这个开关）；
+2 需要按平台/Qt 大版本分基线（截图基线已经是按 `CMAKE_SYSTEM_NAME`/`Qt<N>` 分的）；
+3–5 是测试写法问题，不属库；6 只能走 `handleDockWidgetDrop()`；
+9 需要 `QT_BUILD_INTERNAL` 的双端接线。
