@@ -18,6 +18,11 @@ QAccessibleInterface *controlAccessibleFactory(const QString &className, QObject
 {
     Q_UNUSED(className)
     if (QxControl *control = qobject_cast<QxControl *>(object)) {
+        // A control with more to say than a role and a state - one with a
+        // value - brings its own face and owns it.
+        if (QAccessibleInterface *iface = control->accessibleInterface()) {
+            return iface;
+        }
         return new QxControlAccessible(control, control->accessibleRole());
     }
     return Q_NULLPTR;

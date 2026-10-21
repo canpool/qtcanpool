@@ -94,6 +94,19 @@ public:
      */
     virtual void fillAccessibleState(QAccessible::State *state) const;
 
+    /*!
+     * The accessible face of this control, for a control the base cannot
+     * describe: one that carries a value, or a range, or children of its own.
+     *
+     * A role and a handful of states describe most controls; a slider does not
+     * end there, because "what is true of it" has a number in it and the
+     * assistive tool wants to set that number back. Such a control answers
+     * here and owns what it answers; the base's face - the one built from
+     * accessibleRole() and fillAccessibleState() - is what a control that
+     * answers null gets, which is most of them.
+     */
+    virtual QAccessibleInterface *accessibleInterface();
+
 Q_SIGNALS:
     /*! Emitted after the state changed. The wash a subclass draws follows it. */
     void stateChanged(QxControl::State state);

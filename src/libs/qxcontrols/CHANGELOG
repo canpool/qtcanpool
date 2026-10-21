@@ -28,6 +28,11 @@ Feature
   ring belong to - the whole widget unless the control says otherwise. A
   control is often a small thing with a sentence beside it, and tinting the
   sentence is a hover that dims the label, not one that lights the control.
+- QxControl::accessibleInterface(), the way a control with more to say than a
+  role and a state supplies a face of its own and owns it. A slider's answer
+  is a number, and an assistive tool wants to read that number and set it
+  back - which neither a role nor a state can carry. A control that answers
+  null, which is most of them, gets the face the base builds.
 - QxControlAccessible, the accessible face of a control that paints itself,
   and the factory that hands one to every control of this base. A control
   drawn in code is invisible to an assistive tool in the way that matters:

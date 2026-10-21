@@ -15,6 +15,17 @@ QX_CONTROLS_USE_NAMESPACE
 
 namespace
 {
+/*! A control that has a number in it: a role and a state cannot say it, so
+ *  the control brings a face that can. */
+class ValuedControl : public QxControl
+{
+public:
+    QAccessibleInterface *accessibleInterface() override
+    {
+        return new QxControlAccessible(this, QAccessible::Slider);
+    }
+};
+
 /*! An accessible interface is not owned by its caller and cannot be deleted:
  *  the registry hands it out and takes it back. */
 void releaseInterface(QAccessibleInterface *iface)
@@ -51,6 +62,7 @@ private slots:
     void theRoleIsWhatTheControlSays();
     void theStateCarriesWhatTheControlAdds();
     void onlyControlsGetTheFace();
+    void aControlWithMoreToSayBringsItsOwnFace();
 private:
     bool m_wasActive = false;
 };
@@ -123,6 +135,17 @@ void tst_QxControlAccessible::onlyControlsGetTheFace()
     QAccessibleInterface *controlIface = QAccessible::queryAccessibleInterface(&control);
     QVERIFY(dynamic_cast<QxControlAccessible *>(controlIface) != nullptr);
     releaseInterface(controlIface);
+}
+
+/*! A role and a state describe most controls; a control that carries a value
+ *  answers with a face of its own and the factory hands that one out. */
+void tst_QxControlAccessible::aControlWithMoreToSayBringsItsOwnFace()
+{
+    ValuedControl control;
+    QAccessibleInterface *iface = QAccessible::queryAccessibleInterface(&control);
+    QVERIFY(iface);
+    QCOMPARE(iface->role(), QAccessible::Slider);
+    releaseInterface(iface);
 }
 
 TEST_ADD(tst_QxControlAccessible)

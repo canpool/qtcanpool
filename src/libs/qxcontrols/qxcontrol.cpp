@@ -119,6 +119,11 @@ void QxControl::fillAccessibleState(QAccessible::State *state) const
     Q_UNUSED(state)
 }
 
+QAccessibleInterface *QxControl::accessibleInterface()
+{
+    return Q_NULLPTR;
+}
+
 void QxControl::paintSurface(QPainter *painter)
 {
     Q_UNUSED(painter)
