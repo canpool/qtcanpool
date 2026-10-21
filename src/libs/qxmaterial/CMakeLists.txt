@@ -12,4 +12,5 @@ add_qtc_library(qxmaterial
     materialchip.h materialchip.cpp
     materialcard.h materialcard.cpp
     materialfab.h materialfab.cpp
+    materialprogressring.h materialprogressring.cpp
 )

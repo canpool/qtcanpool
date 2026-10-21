@@ -81,6 +81,16 @@ Feature
   it rather than tinting it, which is one level more rather than another colour
   on top; and the wash it takes is the colour that reads on the accent, not the
   one that reads on the page.
+- MaterialProgressRing, the progress ring: an arc that says how far along
+  something is, over the track it has not reached, or an arc that only says
+  something is happening. QProgressBar is a styled widget and its indeterminate
+  mode is the style's to draw, so an application gets a block of Windows 95
+  sweeping a track. The second mode is where this stops being the Fluent ring:
+  that one is a fixed arc that turns, while this one grows and shrinks as it
+  goes round - one movement rather than two, and a length that keeps changing is
+  what says the wait has not settled. Neither is a transition, so both stop when
+  the user asked for less motion, and both say how far along as a number an
+  assistive tool can read back and set back.
 - materialtokens, the four scales Material arrives with, each spelled the way
   Material spells it and answered in the shared vocabulary: corners as radii
   (M3's seven collapsed to five, because two of them differ by four pixels and
