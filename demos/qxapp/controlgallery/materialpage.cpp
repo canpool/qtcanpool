@@ -15,6 +15,7 @@
 #include "qxmaterial/materialslider.h"
 #include "qxmaterial/materialsnackbar.h"
 #include "qxmaterial/materialswitch.h"
+#include "qxmaterial/materialtextfield.h"
 #include "qxmaterial/materialtokens.h"
 
 #include <QApplication>
@@ -22,6 +23,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QLabel>
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 
 QX_MATERIAL_USE_NAMESPACE
@@ -106,6 +108,24 @@ MaterialPage::MaterialPage(QWidget *parent)
                                                           new MaterialSegmentedButton(this));
     segmented->setItems(QStringList{tr("Day"), tr("Week"), tr("Month")});
     segmented->setCurrentIndex(1);
+
+    // The two variants are the two answers to where a field ends, so they are
+    // shown side by side rather than one per row: a page that grows a row per
+    // variant is a page whose last control sits below the capture.
+    auto *fieldHost = new QWidget(this);
+    auto *fieldLayout = new QHBoxLayout(fieldHost);
+    fieldLayout->setContentsMargins(0, 0, 0, 0);
+    fieldLayout->setSpacing(16);
+    auto *filledField = new MaterialTextField(fieldHost);
+    filledField->setVariant(MaterialTextField::Variant::Filled);
+    filledField->setLabel(tr("Email"));
+    auto *outlinedField = new MaterialTextField(fieldHost);
+    outlinedField->setVariant(MaterialTextField::Variant::Outlined);
+    outlinedField->setLabel(tr("Search"));
+    outlinedField->setText(QStringLiteral("Material"));
+    fieldLayout->addWidget(filledField);
+    fieldLayout->addWidget(outlinedField);
+    addControl<QWidget>(QStringLiteral("materialTextField"), QStringLiteral("MaterialTextField"), fieldHost);
 
     addSection(tr("Display"));
 

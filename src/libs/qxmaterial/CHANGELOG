@@ -1,3 +1,22 @@
+Unreleased
+---
+Feature
+- MaterialTextField, the field that keeps its label. Qt has QLineEdit and a
+  placeholder, and a placeholder is not this: it disappears the moment there is
+  something to say, while a field's name has to go on standing when the field
+  is filled - it is what the row means, not what it is waiting for. So the name
+  is drawn: it stands where the text will be typed while the field is empty and
+  has no keyboard, and floats, smaller, out of the way as soon as either is
+  true. Two variants, the two answers Material gives to where a field ends:
+  filled is an opening in the page tinted with the page's own ink, with an
+  indicator line under it that thickens and takes the accent while the field
+  has the keyboard; outlined is a stroke that opens a window where the floated
+  label lands, because a stroke behind a twelve point label is a stroke through
+  it. The text itself is a QLineEdit, so selection, the cursor, the clipboard
+  and an input method behave the way the platform taught the user to expect,
+  and the field reports what a single-line field has to report: textChanged
+  whether the text was typed or set, editingFinished, and returnPressed.
+
 0.1.0
 ---
 Feature
