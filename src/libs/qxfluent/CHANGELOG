@@ -116,3 +116,15 @@ Feature
   and durations mapped onto the motion tiers - which is what makes a control
   that asks here honour the reduce-motion switch and the theme's motion scale
   without asking about either.
+- FluentNavigationView, the skeleton a Fluent application is navigated in: a
+  column the destinations stand in, and beside it the room where the one in
+  force shows up. Qt's answer to this is a list beside a stack that the
+  application keeps in step itself, and a QListWidget is drawn by the style in
+  whatever shape the style has. Here a destination is a QAction, which is what
+  an application already has; the one in force is marked by Fluent's bar at the
+  leading edge rather than by filling the row, because a fill reads as a
+  pressed button; and the pane can fold itself down to its icons, which is a
+  state the view holds rather than a size the application sets - and which is
+  why the content beside it moves and the words do not. The wash, the focus
+  and what is announced belong to one destination, not to the view: a view has
+  no part of it that a ring could be drawn round.
