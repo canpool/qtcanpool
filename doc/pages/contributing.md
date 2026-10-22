@@ -23,7 +23,7 @@
 | :--- | :--- | :--- | :--- |
 | 代码（`.h/.cpp/.qrc`/测试/示例） | `src/**` `tests/**` `examples/**` `demos/**` | 每个可验证的最小原子改动一笔 | 与**同改动的库 CHANGELOG ＋ 台账** 同笔 |
 | 库级 CHANGELOG | `src/libs/<lib>/CHANGELOG` | 每次改动只要「需登记」就写（顶端 `Unreleased` 段，`Feature`/`Interface`/`Optimize`/`Bugfix` 体例） | 随代码同一笔（不另开笔、不按组） |
-| 台账 | `doc/design/<ver>-TASKS.md` | **随本次改动即时更新**（落了哪条写哪条，不按组、不攒批） | 随代码同一笔（漏写只可补一笔、与代码同笔补） |
+| 台账 | `doc/design/<minor>/<ver>-TASKS.md`（如 `4.7/4.7.0-TASKS.md`） | **随本次改动即时更新**（落了哪条写哪条，不按组、不攒批） | 随代码同一笔（漏写只可补一笔、与代码同笔补） |
 | 叙事文档（限制页、迁移、路线叙事、README） | `doc/pages/*.md`、`doc/design/*.md` 叙事段、README | 一组收口时统一提交，不逐条提 | 组末单独一笔 `docs(<scope>)`；不与台账同笔 |
 | 根 CHANGELOG | `CHANGELOG` | 发版时一次性写 | 与项目版本号前进同笔 |
 | 版本号 + 打包清单 | `QtCanpoolBranding.cmake` + `qtproject.pri` + `vcpkg.json` + `conanfile.py` | 新版本开发刚开始时前进，三处齐升、值相等 | 同笔（`chore(release)`） |
@@ -46,6 +46,33 @@
 
 - **已推送的不追溯**：事后发现库 CHANGELOG / 台账漏写，只能补一笔（与代码同笔补，scope 用 `docs(changelog)` / `docs(design)`），不改写历史。
 - **台账纪律**：在研版本任务动态规划，中途不存在「收口」一说；按「当前已落地条目」写，新工作照常追加，版本未结算前开放。归因标签（`stretch` / 可延后）一律标「助手建议」，不得写成「原定 / 既定 / 原留」，不得命名具体后续版本号。
+
+### 2.1 台账的目录与两层结构（**4.7 起**，作者 2026-10-22 定）
+
+K36 定了 patch 是常态（一个 minor 系列会有很多个 patch），扁平的 `doc/design/<minor>-TASKS.md`
+因此必然越写越长——4.4 一个 minor 三个 patch 就撑到 1717 行，涨的全是执行流水，把定位与
+决策淹在里面。所以台账改成**一个 minor 一个目录、一个 patch 一份文件、分两层**：
+
+```
+doc/design/4.7/
+  4.7-TASKS.md        # 系列层：4.7.x 期间唯一持续增长的，只涨指针与结论
+  4.7.0-TASKS.md      # 单 patch：分解 + 执行记录 + 结算，发版封版
+  4.7.1-TASKS.md      # 下一个 patch 开新文件，不回写上一个
+```
+
+- **系列层** `<minor>/<minor>-TASKS.md`：该 minor 的定位与硬约束、K 决策、**候选池**（下一个
+  patch 从这取材）、跨 patch 进度表。
+- **patch 层** `<minor>/<minor>.<patch>-TASKS.md`：本 patch 的范围、任务分解、执行记录、结算。
+- ⚠️ **patch 台账发版即封版**：发版那一笔之后，新工作写进下一个 patch 的文件，**不回写上
+  一个**——只建目录不封版，只是把「一个文件涨到 2500 行」换成「五个文件各涨到 500 行」。
+- **每个 patch 都要有立项**，不是装东西的桶：范围（为什么是这个 patch）+ **兼容面核对一行**
+  ——K36 说 patch 不能改签名 / 删 API / 改默认行为，开工时核对，越界要么改判 minor、
+  要么把该条挪进下一个 minor 的候选池。
+- **历史不追溯**：4.6 及更早保持扁平（4.4.1 / 4.4.2 的内容长在 `4.4-TASKS.md` 里，拆它等于
+  重写历史）。4.7 是唯一的例外——它当时未发版，故按新制归档。
+- 命名保留 `-TASKS.md` 后缀（`**/*-TASKS.md` 仍可 glob），patch 文件写全三段：单独打开或被
+  grep 到时不依赖目录名才知道自己是谁。
+- `doc/design/` 不进 Doxygen（`INPUT` 只有 `src/libs` 与 `doc/pages`），改目录结构不影响文档站。
 
 ## 3. 注释与文档的写法
 
@@ -121,7 +148,7 @@
 
 - 四条值得推翻的设计判据：**越界**（库把本属应用层的职责打包进自己，使应用无从替换）/ **双轨**（同一件事在库里有两套互不相干实现且彼此不通气）/ **隐式压制**（库的行为在没有对外 API 表达的前提下压过应用的设置）/ **开关错配**（非外观的开关改变外观或行为）。
 - **「未导出 ⇒ 非 API」**：有无 `QX_<LIB>_EXPORT` 才是判据；磁盘上有 `_p.h` ≠ 可用。
-- 详细台账与条目见 `doc/design/<ver>-TASKS.md` 的 K 组（如 `4.5-TASKS.md`）。
+- 详细台账与条目见 `doc/design/<minor>/<ver>-TASKS.md` 的 K 组（如 `4.5-TASKS.md`；4.7 起在 `4.7/` 目录里）。
 
 ## 13. CI 概览
 
@@ -132,4 +159,4 @@
 ## 引用
 
 - 技术细节：[架构与约定](architecture.md) · [构建与安装](build.md) · [发布流程](release.md) · [已知限制](limitations.md) · [迁移指南](migration.md) · [主题引擎](theming.md) · [图标规范](icons.md)
-- 任务台账：`doc/design/<ver>-TASKS.md`（如 `4.5-TASKS.md`）；路线：`doc/ROADMAP-3.x.md`
+- 任务台账：`doc/design/<minor>/<ver>-TASKS.md`（如 `4.5-TASKS.md`、`4.7/4.7.0-TASKS.md`），目录与两层结构见上文 §2.1；路线：`doc/ROADMAP-3.x.md`

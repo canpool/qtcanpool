@@ -2,7 +2,9 @@
 
 这一页是**「发一次版本要做的全部动作」的唯一出处**。
 [`doc/ROADMAP-3.x.md`](https://github.com/canpool/qtcanpool/blob/master/doc/ROADMAP-3.x.md) 的附录 B
-与各 `doc/design/*-TASKS.md` 里的发布小节是**当时的执行记录**；规则若与本页不一致，以本页为准。
+与各 `doc/design/**/*-TASKS.md` 里的发布小节是**当时的执行记录**；规则若与本页不一致，以本页为准。
+台账的目录与两层结构（4.7 起一个 minor 一个目录、一个 patch 一份文件）见
+[`contributing.md`](./contributing.md) §2.1。
 
 发布分四件事：**过闸门 → 定版本号 → 写三本账 → 推 tag 与 Release**。
 前两件决定"能不能发"，后两件决定"发得对不对"。
@@ -197,7 +199,9 @@ CI 状态与 Release 都走 GitHub API。仓库里有两个**不入库**的辅�
 
 ## 七、完成后
 
-1. 把「发布记录」写进本版的设计文档（`doc/design/<ver>-TASKS.md` 的执行记录）：闸门结果、tag 的
-   **提交与 tag 对象两个 SHA**、Release 标题、版本结算的结论；
+1. 把「发布记录」写进本版的设计文档（`doc/design/<minor>/<ver>-TASKS.md` 的执行记录）：闸门结果、
+   tag 的**提交与 tag 对象两个 SHA**、Release 标题、版本结算的结论；
+   ⚠️ 同时**封版**——本 patch 的台账此后不再追加，下一个 patch 开 `doc/design/<minor>/<下一个 patch>-TASKS.md`
+   （目录与两层结构见 `contributing.md` §2.1），并在系列台账 `<minor>-TASKS.md` 里补一行进度；
 2. 确认工作区干净（`git status --short` 为空）；
 3. 两端 `git ls-remote master` 与本地 `git rev-parse master` 三者一致。
