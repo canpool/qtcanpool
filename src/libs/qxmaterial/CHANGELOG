@@ -132,3 +132,19 @@ Feature
   curve Material names alongside them - which is what makes a control that
   asks here honour the reduce-motion switch and the theme's motion scale
   without asking about either.
+- MaterialNavigationRail, the column a Material application is navigated in
+  when the room for it is narrow: eighty wide, holding three to seven
+  destinations as an icon with its name under it, and a header above them that
+  is given rather than drawn, because what goes there - a face, a mark - is the
+  application's, not the rail's. It is the narrow half of what Fluent answers
+  with one class: a Fluent pane folds to a strip of icons and opens again, and
+  what it holds is one column of destinations beside the room they open into,
+  while a rail is the whole width it has and never opens, and what it names is
+  the middle of the three answers Material has - a bar for the narrowest, a
+  rail for the narrow, a drawer for the rest. What says which destination is in
+  force is a pill behind the icon, the accent at the strength Material gives an
+  active indicator, and not a tint over the row: a row that is tinted reads as
+  pressed in a language Material does not speak, and the pill is behind the
+  icon rather than under the name because the icon is what is recognised
+  first. A destination nobody can use is drawn thinned and cannot be put in
+  force. The keyboard walks the column, and the column is announced as a list.

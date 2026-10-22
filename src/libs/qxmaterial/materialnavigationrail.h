@@ -1,0 +1,96 @@
+/**
+ * Copyright (C) 2026 maminjie <canpool@163.com>
+ * SPDX-License-Identifier: MulanPSL-2.0
+ **/
+#ifndef MATERIALNAVIGATIONRAIL_H
+#define MATERIALNAVIGATIONRAIL_H
+
+#include "qxmaterial_global.h"
+
+#include "qxcontrols/qxcontrol.h"
+
+#include <QtGui/QIcon>
+
+class QAction;
+class QKeyEvent;
+class QMouseEvent;
+class QResizeEvent;
+
+QX_MATERIAL_BEGIN_NAMESPACE
+
+class MaterialNavigationRailPrivate;
+
+/*!
+ * Material's navigation rail: where a Material application keeps its few
+ * destinations when there are only a few.
+ *
+ * Material has two shapes for "where you can go" and the choice between them is
+ * a choice about the screen, not about taste: a rail is for the handful of
+ * destinations a phone or a narrow window can show at once, and a drawer is for
+ * the rest. Qt has neither, and its nearest thing - a QToolBar turned on its
+ * end - is a row of buttons with a frame and a grip, drawn by the style.
+ *
+ * What makes a rail a rail is the indicator: the destination in force is not
+ * marked by tinting the row but by a pill behind its icon, which is the same
+ * answer Material gives everywhere - the thing in force wears a shape, and the
+ * shape is the accent's. A destination here is a QAction, because that is what
+ * an application already has, and the rail has nothing to say about what
+ * happens when one is chosen beyond which one it is.
+ */
+class QX_MATERIAL_EXPORT MaterialNavigationRail : public QxControls::QxControl
+{
+    Q_OBJECT
+    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
+public:
+    explicit MaterialNavigationRail(QWidget *parent = Q_NULLPTR);
+    ~MaterialNavigationRail() override;
+
+    /*! Adds \a label as a destination and returns it. The rail owns it. */
+    QAction *addDestination(const QString &label, const QIcon &icon = QIcon());
+    void removeDestination(QAction *action);
+    void clear();
+    QList<QAction *> destinations() const;
+
+    QAction *currentDestination() const;
+    int currentIndex() const;
+
+    /*! Hands \a widget the top of the rail, above every destination. It is
+     *  where Material puts a floating action button: the one thing that is not
+     *  a destination but belongs above them. */
+    void setHeaderWidget(QWidget *widget);
+    QWidget *headerWidget() const;
+
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+
+public Q_SLOTS:
+    void setCurrentIndex(int index);
+    void setCurrentDestination(QAction *action);
+
+Q_SIGNALS:
+    void currentIndexChanged(int index);
+    void currentDestinationChanged(QAction *action);
+protected:
+    /*! Nothing: a rail is a column of destinations with a pill on one of them,
+     *  and the wash and the ring belong to a destination. */
+    QRectF chromeRect() const override;
+
+    void paintSurface(QPainter *painter) override;
+    void paintContent(QPainter *painter) override;
+
+    void resizeEvent(QResizeEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+
+    QAccessible::Role accessibleRole() const override;
+private:
+    Q_DISABLE_COPY(MaterialNavigationRail)
+    QX_DECLARE_PRIVATE(MaterialNavigationRail)
+};
+
+QX_MATERIAL_END_NAMESPACE
+
+#endif   // MATERIALNAVIGATIONRAIL_H
