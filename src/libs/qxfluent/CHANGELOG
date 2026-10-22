@@ -138,3 +138,12 @@ Feature
   moves is the line. Closing is asked about rather than done: the view says
   whose close mark was clicked and closes nothing, because whether a tab may be
   closed is the application's to answer and not the view's.
+
+Fix
+- Where the things in FluentNavigationView and FluentTabView stand is now
+  worked out when it is asked for rather than when the room changed. A widget
+  that has never been shown is not told it was resized, so a view asked where
+  its items or tabs were answered from the geometry it had when it was last
+  told - which put the content beside the pane, or under the row, at the size
+  the view used to be. A hit test against stale geometry is a lie, and this is
+  the same reading FluentCommandBar already had.

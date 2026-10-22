@@ -124,6 +124,10 @@ void FluentNavigationViewPrivate::relayout()
 
 int FluentNavigationViewPrivate::itemAt(const QPointF &pos) const
 {
+    // The pane may have been resized since it was last asked; where its items
+    // stand is answered now, because a hit test against stale geometry is a
+    // lie - and a view that has never been shown is never told it was resized.
+    const_cast<FluentNavigationViewPrivate *>(this)->relayout();
     for (int i = 0; i < items.count(); ++i) {
         if (items.at(i).rect.contains(pos)) {
             return i;

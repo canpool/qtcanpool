@@ -59,10 +59,10 @@ class QX_MATERIAL_EXPORT MaterialTopAppBar : public QxControls::QxControl
 public:
     /*! The shape the bar takes, and with it how much room the name gets. */
     enum class Variant {
-        Small,        /*!< 56 - the name beside the icons. */
+        Small,         /*!< 56 - the name beside the icons. */
         CenterAligned, /*!< 56 - the same room, with the name in the middle. */
-        Medium,       /*!< 112 - the name under the icons, at 22. */
-        Large         /*!< 152 - the name under the icons, at 36. */
+        Medium,        /*!< 112 - the name under the icons, at 22. */
+        Large          /*!< 152 - the name under the icons, at 36. */
     };
     Q_ENUM(Variant)
 

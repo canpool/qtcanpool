@@ -80,6 +80,7 @@ private slots:
     void aTabIsSomethingOpen();
     void aClickLooksAtTheTabUnderIt();
     void onlyTheTabBeingLookedAtIsShowing();
+    void theContentFollowsTheRoomItIsGiven();
     void closingIsAskedAboutNotDone();
     void theRowIsWalkedSideways();
     void whatAnAssistiveToolReads();
@@ -137,6 +138,25 @@ void tst_FluentTabView::onlyTheTabBeingLookedAtIsShowing()
     view->setCurrentIndex(1);
     QVERIFY(one->isHidden());
     QVERIFY(!two->isHidden());
+}
+
+/*! The room a tab's content gets is the room under the row, and it is worked
+ *  out when it is asked for rather than when the room changed: a view that has
+ *  never been shown is never told it was resized, so a layout made before that
+ *  would go on giving the content the room the view used to have. */
+void tst_FluentTabView::theContentFollowsTheRoomItIsGiven()
+{
+    std::unique_ptr<FluentTabView> view(viewWith({QStringLiteral("One")}, false));
+    QWidget *one = view->contentOf(view->tabs().at(0));
+    QVERIFY(one->height() != 260);
+
+    view->resize(600, 300);
+    // What makes the view work out where things stand again is being asked
+    // where they are: a press asks.
+    QTest::mouseClick(view.get(), Qt::LeftButton, Qt::NoModifier, tabPoint({QStringLiteral("One")}, false, 0));
+
+    QCOMPARE(one->width(), 600);
+    QCOMPARE(one->height(), 300 - kBarHeight);
 }
 
 /*! The cross is a question, not an answer: the view says which tab's cross was

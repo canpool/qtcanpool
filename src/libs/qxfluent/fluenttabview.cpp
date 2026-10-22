@@ -133,6 +133,11 @@ void FluentTabViewPrivate::relayout()
 
 int FluentTabViewPrivate::tabAt(const QPointF &pos) const
 {
+    // The bar may have been resized since it was last asked; where its tabs and
+    // their close buttons stand is answered now, because a hit test against
+    // stale geometry is a lie - and a view that has never been shown is never
+    // told it was resized.
+    const_cast<FluentTabViewPrivate *>(this)->relayout();
     for (int i = 0; i < tabs.count(); ++i) {
         if (tabs.at(i).rect.contains(pos)) {
             return i;
@@ -143,6 +148,8 @@ int FluentTabViewPrivate::tabAt(const QPointF &pos) const
 
 bool FluentTabViewPrivate::onClose(const QPointF &pos) const
 {
+    // The same reason tabAt() lays out before it answers.
+    const_cast<FluentTabViewPrivate *>(this)->relayout();
     for (const TabItem &tab : tabs) {
         if (!tab.close.isEmpty() && tab.close.contains(pos)) {
             return true;

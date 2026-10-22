@@ -55,6 +55,7 @@ private slots:
     void aClickOnADestinationPutsItInForce();
     void theMenuButtonFoldsThePane();
     void theContentIsKeptBesideThePane();
+    void theContentFollowsTheRoomItIsGiven();
     void aDestinationNobodyCanUseIsNotPutInForce();
     void theKeyboardWalksTheColumn();
     void whatAnAssistiveToolReads();
@@ -140,6 +141,26 @@ void tst_FluentNavigationView::theContentIsKeptBesideThePane()
 
 /*! An action that is disabled says so, and a pane that answered a click on it
  *  would be putting a destination in force that cannot be reached. */
+/*! The room beside the pane is the room the view has, and it is worked out
+ *  when it is asked for rather than when the room changed: a view that has
+ *  never been shown is never told it was resized, so a layout made before that
+ *  would go on giving the content the room the view used to have. */
+void tst_FluentNavigationView::theContentFollowsTheRoomItIsGiven()
+{
+    std::unique_ptr<FluentNavigationView> view(viewWith({QStringLiteral("Home")}));
+    QWidget *content = new QWidget;
+    view->setContent(content);
+    QVERIFY(content->height() != 300);
+
+    view->resize(600, 300);
+    // What makes the view work out where things stand again is being asked
+    // where they are: a press asks.
+    QTest::mouseClick(view.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(0));
+
+    QCOMPARE(content->height(), view->height());
+    QCOMPARE(content->geometry().right() + 1, view->width());
+}
+
 void tst_FluentNavigationView::aDestinationNobodyCanUseIsNotPutInForce()
 {
     std::unique_ptr<FluentNavigationView> view(viewWith({QStringLiteral("Home"), QStringLiteral("Mail")}));

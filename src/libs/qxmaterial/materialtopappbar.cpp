@@ -396,8 +396,8 @@ void MaterialTopAppBar::paintContent(QPainter *painter)
         painter->setPen(textColor());
         painter->setOpacity(enabled ? 1.0 : kDisabledOpacity);
         const int flags = d_ptr->variant == Variant::CenterAligned && !tall
-            ? (Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine)
-            : (Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine);
+                              ? (Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine)
+                              : (Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine);
         painter->drawText(titleRect, flags, text);
         painter->setOpacity(1.0);
     }
