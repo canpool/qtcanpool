@@ -18,6 +18,7 @@
 
 QX_RIBBON_BEGIN_NAMESPACE
 
+/* RibbonBar */
 RibbonBar::RibbonBar(QWidget *parent)
     : QMenuBar(parent)
 {
@@ -752,11 +753,5 @@ void RibbonBar::setWindowButtonGroup(QWidget *widget)
     Q_D(RibbonBar);
     d->m_windowButtonGroup = widget;
 }
-
-/**
- * @brief Updates the ribbon layout data; use this for key size changes that require relayout of the ribbon's items
- *
- * @note This function is slow; avoid calling it in performance-critical paths
- */
 
 QX_RIBBON_END_NAMESPACE

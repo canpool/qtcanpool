@@ -12,6 +12,11 @@ Changed
   cornerBandGeometry() with the CornerBand it returns, and
   tabBarBaseLineHeight - now live in ribbonbar_p.h as inline entities, which is
   where a private header keeps what its implementation files share.
+- The section marker and the doc comment that the five-way split left one file
+  away from what they document are back where they belong: the /* RibbonBar */
+  marker opens ribbonbar.cpp again, and the note about the cost of a relayout
+  sits above updateRibbonGeometry() in ribbonbarlayout.cpp. Comments moved,
+  nothing else.
 
 0.14.1
 ---

@@ -414,7 +414,6 @@ void RibbonBarPrivate::onFontChanged()
     RibbonElementStyleOpt.recalc();
 }
 
-/* RibbonBar */
 void RibbonBarPrivate::hideKeyTips()
 {
     Q_Q(RibbonBar);

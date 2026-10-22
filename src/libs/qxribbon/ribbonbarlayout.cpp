@@ -483,6 +483,11 @@ RibbonButtonGroup *RibbonBarPrivate::createButtonGroup()
     return buttonGroup;
 }
 
+/**
+ * @brief Updates the ribbon layout data; use this for key size changes that require relayout of the ribbon's items
+ *
+ * @note This function is slow; avoid calling it in performance-critical paths
+ */
 void RibbonBar::updateRibbonGeometry()
 {
     Q_D(RibbonBar);
