@@ -17,6 +17,11 @@
 #include <QSettings>
 #include <QPointer>
 #include <QAction>
+// The X11 block below is compiled out everywhere else, so these two are the
+// only reason this file needs them and the only platform that would notice
+// their absence (the Linux CI leg owns #if QX_DOCK_X11).
+#include <QApplication>
+#include <QWindow>
 
 QX_DOCK_BEGIN_NAMESPACE
 
