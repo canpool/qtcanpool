@@ -91,7 +91,16 @@ jobs:
         # They sit after --parallel, which is deliberate: --parallel takes an
         # optional value, and an empty expansion would leave it in the one position
         # where it could take the next argument.
-        run: cmake --build build --config Release --parallel ${{ matrix.os == 'macos-latest' && '--target qxwindow qxdock' || '' }}
+        #
+        # The job count is given, and that is the point. Left out, --parallel hands
+        # the Makefile generator a bare -j, which is not "one per core" but
+        # unlimited: make starts every target whose dependencies are met at once.
+        # That was survivable until 4.7 grew three libraries, their tests and two
+        # more demos - from 51f1456c on, both ubuntu legs died a few minutes in with
+        # the runner shut down and no compile error, while the same commit's other
+        # legs passed and the same two legs had been green at 4.6.0. Four is one job
+        # per core on every runner in the matrix.
+        run: cmake --build build --config Release --parallel 4 ${{ matrix.os == 'macos-latest' && '--target qxwindow qxdock' || '' }}
 
       - name: Test
         # Nothing to run on macOS: what is built there is two libraries and no test
