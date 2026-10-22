@@ -1,3 +1,18 @@
+Unreleased
+---
+Feature
+- FluentNumberBox, a number you can type and step. QSpinBox is a styled widget
+  with the arrows stacked in a corner by a style that a Fluent application has
+  to replace anyway; this one is drawn - a field that is an opening in the page
+  with a hairline round it and an accent bar under it while it has the keyboard,
+  and a stepper column of two chevrons, each one a command rather than half of
+  a dial. The text is a QLineEdit, so selection, the cursor, the clipboard and
+  an input method behave the way the platform taught the user to expect. The
+  rule that makes it a number box is the one thing Qt's own spin box leaves to
+  the application: the value is the truth and the text is a way of saying it -
+  text that is not a number never reaches the value, and leaving the field puts
+  the text back to what the value is.
+
 0.1.0
 ---
 Feature

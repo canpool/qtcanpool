@@ -10,6 +10,7 @@
 #include "qxfluent/fluentcommandbar.h"
 #include "qxfluent/fluentexpander.h"
 #include "qxfluent/fluentinfobar.h"
+#include "qxfluent/fluentnumberbox.h"
 #include "qxfluent/fluentprogressring.h"
 #include "qxfluent/fluentrating.h"
 #include "qxfluent/fluentreveal.h"
@@ -88,6 +89,11 @@ FluentPage::FluentPage(QWidget *parent)
     slider->setRange(0, 100);
     slider->setTickInterval(25);
     slider->setValue(40);
+
+    auto *number = addControl<FluentNumberBox>(QStringLiteral("fluentNumberBox"), QStringLiteral("FluentNumberBox"),
+                                               new FluentNumberBox(this));
+    number->setRange(0, 999);
+    number->setValue(42);
 
     auto *rating = addControl<FluentRating>(QStringLiteral("fluentRating"), QStringLiteral("FluentRating"),
                                             new FluentRating(this));
