@@ -14,6 +14,12 @@
 
 - 平台 × Qt：`ubuntu` / `windows` / `macos` 各一条 **Qt 6.8.1**，外加 `ubuntu` × **Qt 5.15.2** 与
   `ubuntu` × **Qt 6.12.0**。
+- ⚠️ **没有 `windows` × Qt 6.12 这条腿**（2026-10-22 撤下）：Qt 把 Windows 桌面包改成按架构分目录，
+  版本级包目录 `qt6_6120/qt6_6120/` 不再存在，而 `aqtinstall` 仍先取它的 `Updates.xml`——404，
+  于是腿在「Install Qt」就死，连续五次同一处失败。修复在 aqtinstall 未合并的 PR #1048
+  （"Qt 6.12 compatibility"），发版后把这条腿加回来。它原本要回答的「6.12 把私有模块拆成独立包」
+  是 Windows 独有的破法，目前靠本机 Qt 6.12 `mingw_64` 手工构建（`build/qt612`）回答。
+  留一条「装不上依赖」的腿只会教人把红当常态。
 - `macOS` 那条腿**只构建 `qxwindow` 与 `qxdock`** 且不跑测试（见
   [已知限制](limitations.md#macos-builds-qxwindow-and-qxdock-only)）；判据是「文件里有没有
   `#ifdef Q_OS_MAC`」，不是「谁实现了平台后端」。

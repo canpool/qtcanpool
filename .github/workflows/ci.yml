@@ -38,19 +38,32 @@ jobs:
           # than checking anything macOS-specific.
           - { os: macos-latest,   qt: '6.8.1' }
           - { os: ubuntu-latest,  qt: '5.15.2' }
-          # 6.12 LTS, gating. Two legs and not three: Linux answers whether the
+          # 6.12 LTS, gating. One leg and not two: Linux answers whether the
           # tree builds and passes against 6.12 at all - a property of the code
-          # rather than of the platform - and Windows is there because only a
-          # Windows run compiles the native backend (QX_WINDOW_CONFIG_NATIVE is
-          # false on the others, so qxwindow links no private module there), and
-          # 6.12 split those private modules into packages of their own, which
-          # is a break no other leg could have seen. macOS adds nothing the two
-          # do not cover. It was report only - a job of its own with
-          # continue-on-error - for as long as nobody had compiled this tree
-          # against 6.12 and the first run could have been red; it has been
-          # green since dda5b328, so it now gates like the rest.
+          # rather than of the platform - and macOS adds nothing it does not
+          # cover. It was report only - a job of its own with continue-on-error -
+          # for as long as nobody had compiled this tree against 6.12 and the
+          # first run could have been red; it has been green since dda5b328, so
+          # it now gates like the rest.
+          #
+          # There was a Windows 6.12 leg, and there is not one now: Qt moved the
+          # Windows desktop packages to per-architecture directories and dropped
+          # the version-wide package the download tool still asks for first, so
+          # `aqt install-qt windows desktop 6.12.0 win64_msvc2022_64` fetches a
+          # checksum for
+          #   qt6_6120/qt6_6120/Updates.xml
+          # which answers 404 (the real one is qt6_6120/qt6_6120_msvc2022_64/),
+          # and the leg dies in "Install Qt" before it configures anything. It
+          # failed that way on five consecutive runs. aqtinstall has the fix in
+          # an unmerged pull request (#1048, "Qt 6.12 compatibility"), so no
+          # released version can provision this leg; a gate that cannot install
+          # its compiler is not a gate, and leaving the leg in place only
+          # teaches everyone to read red as normal. What it was there for - 6.12
+          # splitting the private modules into packages of their own, a break
+          # only a Windows run sees - is answered off-CI meanwhile, by building
+          # this tree against a Qt 6.12 mingw_64 install on a Windows desktop.
+          # Put the leg back when aqtinstall ships 6.12 support.
           - { os: ubuntu-latest,  qt: '6.12.0' }
-          - { os: windows-latest, qt: '6.12.0' }
     steps:
       - uses: actions/checkout@v4
 
