@@ -1,4 +1,4 @@
-Unreleased
+0.2.2
 ---
 Feature
 - QxThemeInfo carries the tokens a self-drawn control reads at run time, with

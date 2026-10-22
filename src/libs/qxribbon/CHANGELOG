@@ -1,4 +1,4 @@
-Unreleased
+0.14.1
 ---
 Fixed
 - The quick access bar takes the width it asks for once a style sheet has reached

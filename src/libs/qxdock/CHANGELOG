@@ -1,4 +1,4 @@
-Unreleased
+0.3.2
 ---
 Cleanup
 - The fall-back sheet resolves the theme's corner tiers the way the generator
