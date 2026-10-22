@@ -174,7 +174,7 @@ Material 观感的同一层对应物（命名空间 `QxMaterial`，类 `Material
 | `MaterialFAB` / `MaterialProgressRing` | 浮动操作按钮（带涟漪）与进度环（不确定态为伸缩弧） |
 | `MaterialSnackbar` / `MaterialSkeleton` | 轻提示（从宿主底边升起）与骨架屏（呼吸着色） |
 | `MaterialNavigationRail` / `MaterialTopAppBar` | 骨架层：竖向导航轨（宽 80 固定不拉伸，目的地是 `QAction`、选中项背后画强调色药丸；被拉宽时整列居中）与顶部应用栏 |
-| `MaterialRipple` | 按下处扩散的涟漪（`QObject` 事件过滤器，可挂在任意部件上；减弱动效时不再画） |
+| `MaterialRipple` | 按下处扩散的涟漪：构造时给一个宿主部件，它自己监视按下并画在该部件的圆角内；减弱动效时时长归零，等于不扩散 |
 | `MaterialRipple` | 按下处扩散的涟漪；动效减弱时不画 |
 
 ```cpp
