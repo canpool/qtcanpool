@@ -66,6 +66,21 @@ public:
      * cannot see and a capture cannot name.
      */
     void printTree();
+
+    /*!
+     * The size a capture of this window is taken at.
+     *
+     * Fixed in width, and in height it is the tallest page's own layout that
+     * decides, measured rather than guessed: a gallery is a column of rows, and
+     * a row below the fold is a row the visual regression test cannot crop to.
+     * The floor covers the common case; the page covers the day a control is
+     * added and the floor stops being enough, which is the day that used to be
+     * discovered by a test failing with a rectangle outside the window.
+     *
+     * Both answers are measured after the window has been laid out - ask too
+     * early and the chrome is a guess and the pages are at their default size.
+     */
+    QSize captureSize() const;
 private:
     void createTheme(const QString &themeId);
     void createThemeMenu();

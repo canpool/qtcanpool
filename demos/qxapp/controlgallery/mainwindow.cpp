@@ -28,6 +28,17 @@ QX_THEME_USE_NAMESPACE
 namespace
 {
 /*!
+ * The floor a capture is taken at.
+ *
+ * Fixed in width, because there is no window manager to maximise the window and
+ * the golden would otherwise be whatever the offscreen screen happens to be.
+ * The height is only a floor: the taller page is asked for its own figure and
+ * wins when it is bigger - see MainWindow::captureSize().
+ */
+constexpr int kCaptureWidth = 1280;
+constexpr int kCaptureHeight = 1080;
+
+/*!
  * One line of the --inspect tree, and the whole of what the visual regression
  * test parses out of it.
  *
@@ -121,6 +132,29 @@ void MainWindow::printTree()
 {
     QTextStream out(stdout);
     describe(out, this, 0);
+}
+
+QSize MainWindow::captureSize() const
+{
+    QSize size(kCaptureWidth, kCaptureHeight);
+
+    // Measured on the tab on show: a hidden page's viewport is a placeholder
+    // (about eighty pixels), so subtracting it from the window height would
+    // count the page's own height twice and the capture would grow on every
+    // ask.
+    const QScrollArea *shown = qobject_cast<QScrollArea *>(m_tabs->currentWidget());
+    if (!shown) {
+        return size;
+    }
+    const int chrome = height() - shown->viewport()->height();
+
+    const GalleryPage *pages[] = {m_fluent, m_material};
+    for (const GalleryPage *page : pages) {
+        if (page) {
+            size.setHeight(qMax(size.height(), page->height() + chrome));
+        }
+    }
+    return size;
 }
 
 void MainWindow::createTheme(const QString &themeId)

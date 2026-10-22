@@ -22,12 +22,12 @@
 namespace
 {
 /*!
- * The size a capture is taken at.
+ * The size a headless run opens at, before the pages have had a say.
  *
- * Fixed, because there is no window manager to maximise the window and the
- * golden would otherwise be whatever the offscreen screen happens to be. Tall,
- * because a gallery is a column of rows and a row that has to be scrolled to is
- * a row the visual regression test cannot crop to.
+ * The window answers the real question itself - MainWindow::captureSize() adds
+ * whatever the taller page turns out to need - but a window has to be given some
+ * size before it is shown for that first answer to mean anything, and this is
+ * the one the captures were taken at until the pages outgrew it.
  */
 constexpr int kCaptureWidth = 1280;
 constexpr int kCaptureHeight = 1080;
@@ -152,6 +152,13 @@ int main(int argc, char *argv[])
     } else {
         w.resize(kCaptureWidth, kCaptureHeight);
         w.show();
+        // The second answer is the one a capture is taken at. A page says how
+        // tall it wants to be only once it has been laid out, which is the first
+        // turn of the event loop; asking before that turn gets the size the
+        // window was just handed, and a page that needed more would silently be
+        // cut off at the bottom of every picture.
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        w.resize(w.captureSize());
     }
 
     if (inspect) {
