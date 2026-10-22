@@ -16,6 +16,10 @@ Changed
   inline entities. The z-order counter stayed where its only user is, because a
   stateful static in a header would give every translation unit its own copy
   and the order would stop being one order.
+- The doc comments that the dockcontainer split left one file away from what
+  they document are back where they belong: the splitter-handles note sits above
+  updateSplitterHandles() in dockcontainerdrop.cpp and the activation note above
+  event() in dockcontainer.cpp. Comments moved, nothing else.
 
 0.3.2
 ---

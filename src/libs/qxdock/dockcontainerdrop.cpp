@@ -331,6 +331,10 @@ void DockContainerPrivate::moveToAutoHideSideBar(QWidget *widget, Qx::DockWidget
     }
 }
 
+/**
+ * This function forces the dock container widget to update handles of splitters
+ * based on resize modes of dock widgets contained in the container.
+ */
 void DockContainer::updateSplitterHandles(QSplitter *splitter)
 {
     Q_D(DockContainer);

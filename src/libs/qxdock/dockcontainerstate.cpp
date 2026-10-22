@@ -303,8 +303,4 @@ bool DockContainer::restoreState(DockStateReader &s, bool testing)
     return true;
 }
 
-/**
- * Handles activation events to update zOrderIndex
- */
-
 QX_DOCK_END_NAMESPACE

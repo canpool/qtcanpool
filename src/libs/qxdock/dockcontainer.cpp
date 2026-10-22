@@ -738,10 +738,8 @@ QList<DockWidget *> DockContainer::dockWidgets() const
 }
 
 /**
- * This function forces the dock container widget to update handles of splitters
- * based on resize modes of dock widgets contained in the container.
+ * Handles activation events to update zOrderIndex
  */
-
 bool DockContainer::event(QEvent *e)
 {
     Q_D(DockContainer);
