@@ -30,6 +30,19 @@ dark.styleSheet = readFile(QStringLiteral(":/themes/soft_dark.css"));
 QxThemeManager::instance()->registerTheme(dark);
 ```
 
+一条注册有八个字段，**只有 `id` 是必填的**（它是写进配置文件的那个值），其余留空各有默认：
+
+| 字段 | 默认 | 说明 |
+| :--- | :--- | :--- |
+| `id` | — | 稳定标识；唯一必填字段 |
+| `name` | 空 | 给人看的名字，设置对话框用 |
+| `dark` | `false` | 决定引擎用 `lightPalette()` 还是 `darkPalette()` |
+| `styleSheet` | 空 | 空是**合法注册**：清掉应用样式表、只留调色板，即「不换肤」也是一个可选项 |
+| `accent` | 无效色 | 强调色；引擎把它装成 `QPalette::Highlight`（见下一节） |
+| `onAccent` | 无效色 | 压在强调色上的那个颜色（`QPalette::HighlightedText`） |
+| `density` | `Comfortable` | 主题在位时自绘控件按哪一档间距画（见「密度与动效」） |
+| `motionScale` | `1.0` | 全场动效时长的倍率，由 `apply()` 装（见「密度与动效」） |
+
 `res/themes.qrc` 把仓库 `res/themes/` 下的样式表挂到 `:/themes/` 上，需要它们的应用
 在 CMake 里把这份 qrc 加进自己的源文件即可。仓库自带的主题与约定 id 如下（每族明暗各一套，
 生成方式见 `tools/themes/README.md`）：
@@ -99,6 +112,63 @@ Qt 随后会向所有部件派发 `QEvent::StyleChange`，而 `qxribbon` 与 `qx
 也正因为是 **应用级**下发：把样式表贴在窗口自己身上会盖掉应用的那张，
 这正是 4.5 之前 Ribbon 区不跟随主题的原因。窗口不带主题，应用下发的才到得了 Ribbon。
 
+## 强调色是一个对
+
+主题决定「这个应用用什么颜色强调」——选中页签的填充、dock 焦点标签的填充、指针下窗口按钮的填充，
+以及 `QPalette::Highlight`。它**不能由样式表发布**：`Highlight` 是控件问「这个应用强调什么」时
+读的那个值，而画在强调面上的字形与图标读的是 `HighlightedText`。
+
+`QxThemeInfo::accent` 与 `onAccent` 就是这两个值，**要成对看待**：
+
+- 两个都不给：引擎用自带高亮，与「没有注册任何主题」时同一个答案。
+- 只给 `accent`：引擎从它算一个 `onAccent`（按亮度取黑或白）。
+- **两个都给（推荐）**：样式表本来就是照这对颜色画的。让引擎算第二色，等于回答一个
+  主题已经回答过的问题，而且答案不同——饱和蓝比它看起来更暗，按亮度阈值会配黑字，
+  而写表的人是配白字的。
+
+预置主题的这对颜色写在 `res/themes/accents.json`（一个配置 id 一条），注册时照抄：
+
+```json
+"accent-light": { "accent": "#0078d4", "on-accent": "#ffffff" }
+```
+
+用 `qxapp` 的 `registerBundledThemes()` 一键注册时，这对颜色会从 `accents.json` 自动填进每个
+`QxThemeInfo`——只有自己逐条注册时才需要照抄。
+
+## 密度与动效
+
+这两件事由主题声明、由**自绘控件**去读，都不改样式表——表里的间距与字号是生成期写死的，
+换不到运行时的选择。
+
+**密度**：`QxThemeInfo::density`（`Comfortable` / `Compact`）。自绘控件排每一处间隙与内边距时
+问它，而不是把数字写进自己的绘制里。预置五族都是 `Comfortable`（表说的就是这一档）；
+`Compact` 留给「这套主题本来就该更紧」的注册项。⚠️ 它只影响**代码里画的**那一半，
+表里的 padding 不跟着变——要改表得改生成器里那族的档。
+
+**动效**：`qxthememotion.h` 给一套词汇，按「这段动效是干什么的」命名，不按「多长」命名：
+
+| 档位 | 用在哪 | 时长 / 曲线 |
+| :--- | :--- | :--- |
+| `motionFast` | 用户没要求看的：悬停、状态层 | 120ms，`OutQuad` |
+| `motionNormal` | 有距离要走的：展开、淡入、滑动 | 240ms，`OutCubic` |
+| `motionEmphasized` | 用户主动要的入场：浮层打开、对话框抵达 | 360ms，`OutBack` |
+
+控件写 `motionFor(tier)` 取值，把 `duration` 交给计时器、`curve` 交给 `QPropertyAnimation`。
+`motionFor()` 自己会乘上 `motionScale()`（来自 `QxThemeInfo::motionScale`，由 `apply()` 安装，
+默认 `1.0`），所以换一套「更利落」或「更从容」的主题时，控件不用知道倍率是多少。
+
+**减弱动效**是应用自己的无障碍开关——Widgets 读不到系统的「减少动效」偏好，所以由应用在
+它自己的设置页里问用户：
+
+```cpp
+themes->setReduceMotion(true);   // 记住，下次启动还是这样
+```
+
+它**持久化**在配置的 `ui` 组（`reduceMotion`）。打开后 `motionFor()` 的每一档都回
+「时长 0 + 线性」，于是**读到它的动画器自动合规**，不需要每个控件自己记得先判一次开关。
+进程级的那份状态由 `QxTheme::isMotionReduced()` / `setMotionReduced()` 读写，管理器构造时
+把它对齐到配置里的值。⚠️ 预置五族主题与 `qxribbon` / `qxdock` 不读这套词汇，行为不变。
+
 ## 调色板之外：平台色方案
 
 调色板和样式表说的是**应用画什么**；另一半是**平台替应用画什么**——窗口边框、非客户区，
@@ -150,10 +220,31 @@ themes->setFollowSystemTheme(true);
 
 ```cpp
 // 直接给出内容（传空串可撤销）
-themes->setStyleSheet(QStringLiteral("dark-officeplus"), myCss);
+themes->setStyleSheet(QStringLiteral("soft-dark"), myCss);
 
 // styleSheet(id) 可以查看 apply() 实际会装载的内容
 ```
+
+### 应用自己的第二张表
+
+应用级样式表只有一个字符串，所以两张表只能互相顶掉：引擎和应用各自往
+`QApplication::setStyleSheet()` 里写，后写的赢，另一张就整张不见了。要表达
+「主题那张之外，我还想加几条自己的规则」，用 `setAdditionalStyleSheet()`：
+
+```cpp
+themes->setAdditionalStyleSheet(myCss);   // 立刻重新装一遍
+```
+
+它拼在**主题表之后**——这个顺序正是它的用途：两边都写的同一个选择器、同特异性时，
+后声明的这条决定；主题没提到的选择器照旧落到。三条边界：
+
+- **不持久化**，也**不属于任何主题**：它是应用的文本，什么时候改由应用决定
+  （包括在主题切换后按当前调色板重建一遍）。
+- 没有主题在位时，它**也一起不装**——与引擎对主题表的态度一致。
+- 传空串撤销，`additionalStyleSheet()` 读回当前文本。
+
+⚠️ 这与 4.6 那条「别在主题之上再叠一次 dock 整表」不矛盾：那条讲的是**同一批规则**
+装两遍（附赠一张完整的 dock 表），这里讲的是**加在主题没说的地方**（应用自己的那几条）。
 
 ## 持久化
 
@@ -168,11 +259,29 @@ themes->setStyleSheet(QStringLiteral("dark-officeplus"), myCss);
 `settings()` 返回引擎持有的 @ref QxCore::QxSettings 对象；`setSettings()` 可以替换它
 （所有权转移，已存的值会被重新读取），这也是让测试使用一个隔离配置文件的方式。
 
+## 令牌：表里不写像素
+
+生成的主题表不写裸值，写**令牌占位符**，由生成器在写出时替换成像素：
+
+| 组 | 档位 |
+| :--- | :--- |
+| 圆角 `corner-` | `none` 0 · `sm` 2 · `md` 3 · `lg` 6 · `pill` 9999 |
+| 字号 `type-` | `caption` 10 · `subtitle` 13 · `body` 15 · `title` 18 |
+| 间距 `space-` | `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 |
+| 强调色 `accent-` 一族 | 每族一份：`accent` / `accent-hover` / `accent-fill` / `accent-faint` / `accent-text` … |
+
+令牌的用处是让同一条规矩只写一处：五族 × 明暗十张表一起改，改动落在生成器里而不是十份文本里。
+它同时是**可检查的**——raw 表里出现裸 `border-radius` 或数字字号，生成器直接拒写，
+所以「有人顺手写了 7px」这类漂移进不来。
+
+`qxdock` 的 `dockStyleSheet()` 回退片段认同一套占位符（写成 `{{corner-md}}`），渲染时替值。
+**自己写片段、直接给像素的应用照常工作**：替换只命中 `{{...}}`，裸像素原样通过。
+
 ## 写自己的主题
 
-1. 参照 `res/themes/` 下的样式表：同样是**一套骨架 + 一份调色板**——浅色主题只描述
-   Ribbon，暗色主题额外把标准控件也重画（暗色下平台样式会忽略调色板）。
-   顶点注释块写明了该主题取自哪套设计语言的调色板。
+1. 参照 `res/themes/` 下的样式表：同样是**一套骨架 + 一份调色板**——浅色主题描述 Ribbon 与
+   dock，暗色主题额外把标准控件也重画（暗色下平台样式会忽略调色板）。顶点注释块写明了
+   该主题取自哪套设计语言的调色板；表里用的是令牌而不是像素（见上一节）。
 2. 调色板只由「深色 / 浅色」决定（@ref QxTheme::paletteFor），
    因此新增一套主题只需要注册时给对 `dark`，不需要改库。
 3. 只想换样式表而不动注册，用 `setStyleSheet(id, css)` 即可，无需改库。

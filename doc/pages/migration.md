@@ -547,3 +547,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets)
   持久化在配置的 `ui` 组（`reduceMotion`），下一次启动自动恢复。4.7 之前应用没有这个
   开关可设；打开后 `motionFor()` 的每一档都回「跳到终态」，读到它的动画器自动合规。
   现有五族主题与 `qxribbon` / `qxdock` 不读它，行为不变。
+
+- **`QxThemeManager::additionalStyleSheet()` 让应用的样式表与主题表共存**（不破 API，新增能力的
+  申报）：应用级样式表只有一个字符串，引擎和应用各写一次就互相顶掉，输的那张整张消失。
+  新入口把应用的文本拼在**主题表之后**——同特异性时由应用这条决定，主题没提到的选择器
+  照旧落到；文本不持久化、不属于任何主题，没有主题在位时连它一起不装。
+  见[主题引擎](theming.md)的「应用自己的第二张表」。

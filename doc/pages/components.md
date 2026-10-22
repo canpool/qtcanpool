@@ -157,6 +157,7 @@ protected:
 | `FluentProgressRing` / `FluentRating` | 进度环与评分 |
 | `FluentExpander` / `FluentInfoBar` / `FluentBreadcrumbBar` | 展开器、信息条、面包屑 |
 | `FluentCommandBar` / `FluentTeachingTip` | 命令条与教学提示 |
+| `FluentNavigationView` / `FluentTabView` | 骨架层：导航视图（目的地列 + 内容区，列可折叠成仅图标，折叠是视图自己的状态）与页签视图（选中的标记是页签下一条短横线；关闭先问，由应用决定） |
 | `FluentReveal` | 指针附近的揭示高亮 |
 | `FluentWindowMaterial` | 窗口材质（Mica / Acrylic；仅在 `WITH_QXWINDOW` 打开时可用，否则回答「没有」） |
 
@@ -172,6 +173,8 @@ Material 观感的同一层对应物（命名空间 `QxMaterial`，类 `Material
 | `MaterialSegmentedButton` | 分段按钮：**整行一个键盘停靠点**，左右键移动选中项 |
 | `MaterialFAB` / `MaterialProgressRing` | 浮动操作按钮（带涟漪）与进度环（不确定态为伸缩弧） |
 | `MaterialSnackbar` / `MaterialSkeleton` | 轻提示（从宿主底边升起）与骨架屏（呼吸着色） |
+| `MaterialNavigationRail` / `MaterialTopAppBar` | 骨架层：竖向导航轨（宽 80 固定不拉伸，目的地是 `QAction`、选中项背后画强调色药丸；被拉宽时整列居中）与顶部应用栏 |
+| `MaterialRipple` | 按下处扩散的涟漪（`QObject` 事件过滤器，可挂在任意部件上；减弱动效时不再画） |
 | `MaterialRipple` | 按下处扩散的涟漪；动效减弱时不画 |
 
 ```cpp
@@ -193,7 +196,7 @@ MaterialSkeleton *loading = new MaterialSkeleton(MaterialSkeleton::Rectangle, th
 
 | 类 | 说明 |
 | :--- | :--- |
-| `WindowAgentBase` | 代理基类：窗口属性键值、系统菜单、居中、抬升，以及 `SystemButton` 枚举 |
+| `WindowAgentBase` | 代理基类：窗口属性键值、系统菜单、居中、抬升，以及 `SystemButton` 枚举；4.6 起 `setBorderOwnsCursor(false)` 把缩放边框从命中测试里摘出去（按在边框上的点击落到画在那里的控件上，光标到窗口边缘仍是箭头；默认 `true`＝原行为） |
 | `WindowAgentWidget` | QWidget 版代理：`setup()`、标题栏 / 系统按钮部件、命中测试可见性、自定义标题类名 |
 
 `QWK` 时代的名字已全部并入 `QxWindow` 命名空间。
@@ -202,7 +205,7 @@ MaterialSkeleton *loading = new MaterialSkeleton(MaterialSkeleton::Rectangle, th
 
 | 类 | 说明 |
 | :--- | :--- |
-| `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组；4.5 起内建 KeyTips（B1）、富提示（B6）、右键上下文菜单（B10） |
+| `RibbonBar` | Ribbon 主体：应用按钮、快捷工具栏、页与分组；4.5 起内建 KeyTips（B1）、富提示（B6）、右键上下文菜单（B10）；4.6 起 `setCornerWidget(w, corner)` 是往顶部角上放部件的 ribbon 专用入口（`QMenuBar` 那个不会让它重排，放上去的部件会停在出生时的位置和大小） |
 | `RibbonBackstageView` | 应用按钮打开的整屏后台视图（4.5 新增，B4）：覆盖 RibbonBar 所在宿主、左侧命令列（addAction/addSeparator/addPage）+ 右侧页面（setActivePage/activePage）；Esc 与返回按钮关闭，除非 setClosePrevented()；列/按钮/分隔符带 qx_RibbonBackstage* 对象名供主题着色，见 `Example_Ribbon_Backstage` |
 | `RibbonPage` / `RibbonGroup` | 页与分组，分组内可放入大按钮、小按钮、下拉菜单；页面变窄时先逐组缩放、缩不动才出滚动条（B11） |
 | `RibbonMainWindow` | 已装配好 RibbonBar 的主窗口。**不带主题**（4.5 起 `RibbonTheme` 与主题三件套已移除）：Ribbon 长什么样由下发到应用的那张样式表决定，见 @ref QxTheme::QxThemeManager 与 `Example_RibbonStyle` |
@@ -218,7 +221,7 @@ MaterialSkeleton *loading = new MaterialSkeleton(MaterialSkeleton::Rectangle, th
 | `RibbonControl` | Ribbon 控件基类（`QWidget` 派生） |
 | `RibbonManager` | Ribbon 全局管理器（单例 `instance()`）：持有 `RibbonFactory`；旧宏 `RibbonElementMgr` 是其 `instance()` 的别名 |
 | `RibbonFactory` | 控件工厂 + `RibbonStyleOption`（条带高度等布局尺寸参数）的持有者 |
-| `RibbonPageContext` | 把一组页作为上下文整体显隐（如「表格工具」上下文页签） |
+| `RibbonPageContext` | 把一组页作为上下文整体显隐（如「表格工具」上下文页签）；`addPage(RibbonPage *)` 收下调用方自己建的页（不接管所有权），是 `addPage(title)` 之外的另一条路 |
 | `RibbonMdiArea` | 标签式文档 MDI 区（`QMdiArea` 派生，4.5 新增）：文档以标签页呈现，切换活动文档时自动换掉其登记的 `RibbonPage`；见 `Example_Ribbon_MdiTabs` |
 
 `qxribbon` 本身**不带主题**：库不再内置任何样式表，也不提供主题枚举或切换 API（`RibbonTheme` 已删，B12）。一个 ribbon 用什么配色，由**到达应用的样式表**决定——通常是通过 `QxThemeManager` 注册并以 id 选取（见 @ref QxTheme::QxThemeManager）。仓库根的 `res/themes/` 提供现成的家族样式表（每族明暗各一套，清单与 id 约定见[主题引擎](theming.md)），被 `res/themes.qrc`（前缀 `:/themes/`）打包，由各应用自行编入并注册，没有副本散落在库里。
@@ -231,6 +234,8 @@ MaterialSkeleton *loading = new MaterialSkeleton(MaterialSkeleton::Rectangle, th
 | `DockWidget` | 单个停靠面板（可移动、可浮动、可关闭） |
 | `DockPanel` / `DockContainer` / `DockSplitter` | 面板、容器与分割条 |
 | `DockFloatingContainer` | 浮动窗口容器（纯虚接口为 `DockFloatingWidget`） |
+| `dockStyleSheet()` | 返回 dock 那张样式表的**文本**（库只出文本、不替应用装）：无参版按焦点高亮与 `QX_DOCK_X11` 选一张；`(const DockStyleColors &, bool)` 接一套配色、漏填字段回退到应用调色板 |
+| `applyDockIcons()` / `refreshDockIcons()` | 内置单色 SVG 图标的 opt-in 着色助手；不调用就回落到本就跟随主题的平台样式图标 |
 
 `DockWindow` 要求**中央部件第一个加入**：@ref QxApp::QxAppShell 在构造时就把页面栈装为中央部件，
 其余停靠面板再围绕它排布。

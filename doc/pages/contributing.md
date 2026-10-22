@@ -9,7 +9,7 @@
 
 - **格式**：Conventional Commits —— `type(scope): subject`。**提交信息与代码注释一律英文**（`.md` 不限）。
 - **type**：`feat` / `fix` / `docs` / `style` / `refactor` / `perf` / `test` / `build` / `ci` / `chore` / `revert`。
-- **scope**：`qxcore` / `qxtheme` / `qxwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `icons` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库；`icons` 专指图标规范与它的门禁（`scripts/icons-policy.txt`、`scripts/check-icons.py`、`doc/pages/icons.md`），同样不属于任何库。
+- **scope**：`qxcore` / `qxtheme` / `qxcontrols` / `qxfluent` / `qxmaterial` / `qxwindow` / `qxribbon` / `qxdock` / `qxplugin` / `qxapp` / `themes` / `icons` / `modules` / `project` / `ci` / `test` / `docs`。其中 `themes` 专指 `tools/themes/` 与 `res/themes/` 这套预置主题（生成器 + 生成物），不属于任何库；`icons` 专指图标规范与它的门禁（`scripts/icons-policy.txt`、`scripts/check-icons.py`、`doc/pages/icons.md`），同样不属于任何库。
 - **原子提交**：一笔一件事。
 - **每笔提交前必做**：按 §8 的判据选取验证范围（第 0 级不构建，其余最少一腿构建），
   clang-format 过改动文件，并在提交信息或回复里写明跑了哪一级。
@@ -68,6 +68,8 @@ doc/design/4.7/
 - **每个 patch 都要有立项**，不是装东西的桶：范围（为什么是这个 patch）+ **兼容面核对一行**
   ——K36 说 patch 不能改签名 / 删 API / 改默认行为，开工时核对，越界要么改判 minor、
   要么把该条挪进下一个 minor 的候选池。
+  ⚠️ **内部重构不在这三项里**（拆大文件、抽纯逻辑类、调私有类可见性）：公开面与默认行为不变
+  ⇒ 它就是 patch +1 的常态，**不要攒到下一个 minor**（2026-10-22 作者裁定，见 ROADMAP K36 表）。
 - **历史不追溯**：4.6 及更早保持扁平（4.4.1 / 4.4.2 的内容长在 `4.4-TASKS.md` 里，拆它等于
   重写历史）。4.7 是唯一的例外——它当时未发版，故按新制归档。
 - 命名保留 `-TASKS.md` 后缀（`**/*-TASKS.md` 仍可 glob），patch 文件写全三段：单独打开或被

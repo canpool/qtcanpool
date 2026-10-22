@@ -19,7 +19,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | :--- | :--- |
 | **项目组织** | 一套 CMake 框架管理多个项目：库、示例、插件、测试各有约定俗成的落点，新增模块只需一行 `add_subdirectory` |
 | **构建与质量** | CMake 是唯一构建方式（qmake 已于 4.0 移除）；[clang-format](https://github.com/canpool/qtcanpool/blob/master/.clang-format) 作为 CI 强制门禁；CTest 单元测试矩阵覆盖 Qt 5.15 与 Qt 6 |
-| **界面组件** | Ribbon、Dock、无边框窗口三类现代桌面界面范式，均可在 Qt 5 与 Qt 6 上编译 |
+| **界面组件** | Ribbon、Dock、无边框窗口三类现代桌面界面范式，外加 Fluent / Material 两套自绘控件集（4.7 新增），均可在 Qt 5 与 Qt 6 上编译 |
 | **应用骨架** | @ref QxApp::QxAppShell 把导航轨、页面栈、停靠区、状态栏与启动屏组装成一个可直接继承的窗口 |
 | **布局与工作区** | `saveLayout()` 记下窗口几何与停靠布局；@ref QxApp::QxWorkspaceManager 在此之上给排列起名字，可存多套并随时切换（3.3） |
 | **主题** | @ref QxTheme::QxThemeManager 统一应用调色板与样式表，支持运行时切换、选择持久化与跟随系统深浅色 |
@@ -56,6 +56,9 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | `qxcore` | `qxtheme` | `qxwindow` | `qxribbon` | `qxdock` | `qxplugin` | `qxapp` |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 0.2.0 | 0.2.1 | 0.3.2 | 0.14.0 | 0.3.1 | 0.3.0 | 0.2.1 |
+
+4.7 新增的三个库（`qxcontrols` / `qxfluent` / `qxmaterial`）不在这张表里：它们到 4.7 才存在，
+首次结算随 4.7 发版进入表中，库号从 `0.1.0` 起。
 
 **项目版本**（tag 打在它上面）是发布列车号，**每个库另有自己的版本号**，两者互不绑定（K11）：
 每次项目发版结算一次，这一批里有修复或增量的库才前进号。历史各版本与各库号的完整对照、
@@ -111,7 +114,7 @@ ctest --test-dir build -C Release --output-on-failure
 | [已知限制](limitations.md) | 知道但不打算改的行为：现象、成因、为什么保持现状、要改变需要什么 |
 | [文档站点（Doxygen）](doxygen.md) | 独立 Doxygen 工程：构建、Doxyfile 关键项、样式表与 `Q_OS_*` 坑 |
 | [发布流程](release.md) | 发一次版本的全部动作：两道闸门、版本号结算、三本账、推送与 Release |
-| [版本对照表](versions.md) | 项目版本与七个库版本号的历史对照，及每一行为什么动 / 为什么不动 |
+| [版本对照表](versions.md) | 项目版本与各库版本号的历史对照，及每一行为什么动 / 为什么不动 |
 | [管理规范](contributing.md) | 过程规范的单一权威来源：提交、文档（台账＋CHANGELOG）、编码、SPDX、构建验证、版本与进号、命名与敏感信息 |
 
 ## 环境要求

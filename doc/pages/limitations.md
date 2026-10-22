@@ -422,7 +422,7 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 `Test` 步骤对这条腿跳过。实测（本机 MinGW 同参配置 + 构建）：产物只有
 `libqxwindow.dll` 与 `libqxdock.dll`，未拖进第三个库。
 
-**理由**：七个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
+**理由**：十个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
 - **`qxwindow`**（8 个文件含 `Q_OS_MAC` 分支）：`windowagentbase.cpp` /
   `windowagentwidget.{cpp,h,_p.h}` / `windowcontext.{cpp,_p.h}` / `windowcontext_qt.cpp` /
   `windowsystem_p.h`；另有**两个整文件的 Mac 实现**（整文件只在 macOS 编，内部无需分支）：
@@ -433,7 +433,8 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
   `dockfloatingcontainer.h:83` 的对应声明，以及 `qxdock_global.h` 的 `QX_DOCK_X11`
   平台卫哨（`!defined(Q_OS_MACOS)`，与 Windows / wasm 并列排除 X11）。
 
-其余五个库——`qxcore` / `qxtheme` / `qxribbon` / `qxplugin` / `qxapp`——**一个 `Q_OS_MAC` 都没有**，
+其余八个库——`qxcore` / `qxtheme` / `qxcontrols` / `qxfluent` / `qxmaterial` / `qxribbon` /
+`qxplugin` / `qxapp`——**一个 `Q_OS_MAC` 都没有**，
 在 macOS 上编的是与 Linux、Windows **完全相同的源文件**，而那两边已有两条腿覆盖。
 在最慢的 runner 上重编它们是**纯墙钟**，换不来任何门禁覆盖。
 

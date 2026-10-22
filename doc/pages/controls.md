@@ -68,6 +68,7 @@ Mica Alt，因此那一个文件在 `WITH_QXWINDOW` 打开时才侧向依赖 `qx
 | 徽标 / 卡片 | `FluentBadge` / `FluentCard` | `MaterialBadge` / `MaterialCard`（三变体） |
 | 进度 | `FluentProgressRing` | `MaterialProgressRing`（不确定态为**伸缩弧**，不是定长旋转弧） |
 | 反馈 / 占位 | `FluentInfoBar` / `FluentTeachingTip` | `MaterialSnackbar` / `MaterialSkeleton` |
+| 骨架（导航 / 页签） | `FluentNavigationView` / `FluentTabView` | `MaterialNavigationRail` / `MaterialTopAppBar` |
 
 差异的**判据**（写新控件时照这个判断）：
 
