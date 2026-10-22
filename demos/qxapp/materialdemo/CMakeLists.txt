@@ -13,8 +13,18 @@
 # qxapp is here for registerBundledThemes() only: it is the one function that
 # knows which theme files res/themes.qrc ships and which of each pair is the
 # dark one. qxcore carries QxTranslator, which is how --lang is answered.
+# Where the built catalogues are - the same define ribbondemo is given. The two
+# control libraries hold no tr() strings of their own yet, so what a language
+# buys here is the shared catalogue's strings (qxapp's) rather than the screens',
+# but --lang answering with what exists beats warning that nothing is installed.
+if (TARGET Qt5::lrelease)
+  set(_materialdemo_defines
+    "QTCANPOOL_TRANSLATIONS_DIR=\"${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations\"")
+endif()
+
 add_qtc_executable(MaterialDemo
   DEPENDS qxmaterial qxapp qxcore qxtheme Qt5::Core Qt5::Widgets
+  DEFINES ${_materialdemo_defines}
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
