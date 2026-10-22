@@ -145,6 +145,20 @@ void MainWindow::createShell()
     // the two are told by the same answer, which is why the title is set here
     // and not by each screen.
     m_bar->setTitle(tr("Home"));
+    // What can be done to the screen as a whole stands at the bar's far end,
+    // drawn as icons - an action without one holds a pressable place and shows
+    // nothing, so each is given a standard icon the way the rail's are. What
+    // they do is the demo's to say, and the snackbar is how it says it.
+    connect(m_bar->addTrailingAction(tr("Search"), style()->standardIcon(QStyle::SP_FileDialogContentsView)),
+            &QAction::triggered, this, [this]() {
+                m_snackbar->showMessage(tr("Nothing to search yet: the bar's actions are the application's "
+                                           "to give work to."));
+            });
+    connect(m_bar->addTrailingAction(tr("More"), style()->standardIcon(QStyle::SP_FileDialogListView)),
+            &QAction::triggered, this, [this]() {
+                m_snackbar->showMessage(tr("Nothing further up: a bar that had a menu in it would open it "
+                                           "here."));
+            });
     layout->addWidget(m_bar);
 
     // A rail is the whole width it has and never opens: what it is beside is

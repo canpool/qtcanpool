@@ -38,7 +38,9 @@ public:
     explicit MaterialProgressRing(QWidget *parent = Q_NULLPTR);
     ~MaterialProgressRing() override;
 
-    /*! How far along, 0 to 100; meaningless while indeterminate. */
+    /*! How far along, 0 to 100. It is kept whatever the mode is, but it only
+     *  shows once the ring is determinate - and a ring is born indeterminate,
+     *  so a first value has to come with setIndeterminate(false). */
     int value() const;
     /*! True while the ring says only that something is happening. */
     bool isIndeterminate() const;

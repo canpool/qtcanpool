@@ -48,6 +48,9 @@ FeedbackPage::FeedbackPage(QWidget *parent)
                "because a progress indicator that stops moving is one the user takes for a hang."));
 
     m_known = new MaterialProgressRing(this);
+    // A ring is born indeterminate: a value it has been handed while it still
+    // sweeps is stored but not shown, so being determinate is said out loud.
+    m_known->setIndeterminate(false);
     m_known->setValue(65);
     addRow(tr("How far"), m_known);
 
