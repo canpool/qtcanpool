@@ -153,10 +153,13 @@ protected:
 | :--- | :--- |
 | 令牌（`fluenttokens.h`） | 四个命名空间：`FluentShape`（圆角 0/2/4/6/8/9999）、`FluentType`、`FluentElevation`、`FluentMotion` |
 | `FluentSwitch` / `FluentSlider` | 开关与滑块 |
+| `FluentNumberBox` | 数字框：字段是带细边的开口，步进是旁边一列两条尖角（各是一条命令，不是 QSpinBox 的角落箭头）；值是**真身**、文本是说法——非数字进不了值，离开字段把文本改回值 |
 | `FluentBadge` / `FluentCard` | 徽标与卡片 |
 | `FluentProgressRing` / `FluentRating` | 进度环与评分 |
 | `FluentExpander` / `FluentInfoBar` / `FluentBreadcrumbBar` | 展开器、信息条、面包屑 |
 | `FluentCommandBar` / `FluentTeachingTip` | 命令条与教学提示 |
+| `FluentDropDownButton` / `FluentToggleSplitButton` | 菜单按钮（整面开菜单，菜单归按钮所有、应用只填）与切换分体按钮（左半是**保持按下的命令**、右半开菜单，从哪半按下就只算哪半） |
+| `FluentContentDialog` | 内容对话框：纱幕 + 64 级阴影 + 圆角卡片，卡片里放应用给的内容；按钮是 `QPushButton`，按下只发信号、不自决，角色来回答「哪个是肯定、哪个是出口」 |
 | `FluentNavigationView` / `FluentTabView` | 骨架层：导航视图（目的地列 + 内容区，列可折叠成仅图标，折叠是视图自己的状态）与页签视图（选中的标记是页签下一条短横线；关闭先问，由应用决定） |
 | `FluentReveal` | 指针附近的揭示高亮 |
 | `FluentWindowMaterial` | 窗口材质（Mica / Acrylic；仅在 `WITH_QXWINDOW` 打开时可用，否则回答「没有」） |
@@ -169,13 +172,14 @@ Material 观感的同一层对应物（命名空间 `QxMaterial`，类 `Material
 | :--- | :--- |
 | 令牌（`materialtokens.h`） | 四个命名空间：`MaterialShape`（0/4/8/16/28/9999）、`MaterialType`（Label12 … Display36）、`MaterialElevation`（六档）、`MaterialMotion`（含 `Easing`） |
 | `MaterialSwitch` / `MaterialSlider` | 开关与滑块（无刻度：按下即跳、拖动跟随、键盘步进） |
+| `MaterialTextField` | 文本字段：标签是**字段名**，字段空着且没有键盘时当提示、一旦有其一就浮起来变小；Filled 有底色与指示线（得焦点时加粗转强调色），Outlined 的标签浮进描边的缺口里 |
 | `MaterialBadge` / `MaterialChip` / `MaterialCard` | 徽标、筹码（Assist / Filter）与卡片（Elevated / Filled / Outlined） |
 | `MaterialSegmentedButton` | 分段按钮：**整行一个键盘停靠点**，左右键移动选中项 |
 | `MaterialFAB` / `MaterialProgressRing` | 浮动操作按钮（带涟漪）与进度环（不确定态为伸缩弧） |
 | `MaterialSnackbar` / `MaterialSkeleton` | 轻提示（从宿主底边升起）与骨架屏（呼吸着色） |
 | `MaterialNavigationRail` / `MaterialTopAppBar` | 骨架层：竖向导航轨（宽 80 固定不拉伸，目的地是 `QAction`、选中项背后画强调色药丸；被拉宽时整列居中）与顶部应用栏 |
 | `MaterialRipple` | 按下处扩散的涟漪：构造时给一个宿主部件，它自己监视按下并画在该部件的圆角内；减弱动效时时长归零，等于不扩散 |
-| `MaterialRipple` | 按下处扩散的涟漪；动效减弱时不画 |
+| `MaterialDialog` | 对话框：Basic 是一张 28 圆角的卡，在压暗的页面上问一句、最多两个文字按钮；FullScreen 是整页、标题栏带一条离开的叉。答案是**文字不是命令**，按下只发 `buttonClicked()`；关闭与否由应用决定 |
 
 ```cpp
 #include "qxmaterial/materialswitch.h"

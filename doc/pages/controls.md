@@ -65,10 +65,18 @@ Mica Alt，因此那一个文件在 `WITH_QXWINDOW` 打开时才侧向依赖 `qx
 | 动效 | `FluentMotion::Duration` | `MaterialMotion::Duration` + `MaterialMotion::Easing` |
 | 指针高亮 | `FluentReveal`（指针附近的揭示） | `MaterialRipple`（按下处扩散的涟漪） |
 | 开关 / 滑块 | `FluentSwitch` / `FluentSlider` | `MaterialSwitch` / `MaterialSlider`（无刻度） |
+| 数字输入 | `FluentNumberBox`（值是真身、文本是说法） | — |
+| 文本输入 | — | `MaterialTextField`（标签是字段名，会浮起；Filled / Outlined） |
+| 菜单 / 分体按钮 | `FluentDropDownButton`（整面开菜单） / `FluentToggleSplitButton`（左半命令、右半菜单） | — |
 | 徽标 / 卡片 | `FluentBadge` / `FluentCard` | `MaterialBadge` / `MaterialCard`（三变体） |
 | 进度 | `FluentProgressRing` | `MaterialProgressRing`（不确定态为**伸缩弧**，不是定长旋转弧） |
 | 反馈 / 占位 | `FluentInfoBar` / `FluentTeachingTip` | `MaterialSnackbar` / `MaterialSkeleton` |
+| 对话框 | `FluentContentDialog`（Primary / Secondary / Close 三种角色） | `MaterialDialog`（Basic / FullScreen 两种形态，Primary / Secondary 两种答案） |
 | 骨架（导航 / 页签） | `FluentNavigationView` / `FluentTabView` | `MaterialNavigationRail` / `MaterialTopAppBar` |
+
+⚠️ **映射不等于对称**：两族各有对方没有的东西（Material 有文本字段，Fluent 有数字框与菜单
+按钮），缺的一侧写 `—`，意思是「本族没有这一件」，**不是**「借另一族那件来顶上」——混用两套
+控件集没有做过任何对齐工作（见 §一）。
 
 差异的**判据**（写新控件时照这个判断）：
 
