@@ -1,3 +1,22 @@
+Unreleased
+---
+Changed
+- dockcontainer.cpp is three files now, split by responsibility rather than by
+  size: the container's object model and its panel add/remove stay in
+  dockcontainer.cpp, everything that happens when something is dragged in from
+  outside moves to dockcontainerdrop.cpp, and the state pair moves to
+  dockcontainerstate.cpp. No line was rewritten on the way and no behaviour
+  changed; the public headers did not move at all.
+- DockContainerPrivate now lives in dockcontainer_p.h instead of inside the
+  .cpp, which is where a private header keeps what its implementation files
+  share. It is still not part of the exported API: the public class reaches it
+  through the same d-pointer, and the public ABI is unchanged. The two
+  stateless helpers the split needed in more than one file -
+  insertWidgetIntoSplitter() and areaIdToIndex() - moved into that header as
+  inline entities. The z-order counter stayed where its only user is, because a
+  stateful static in a header would give every translation unit its own copy
+  and the order would stop being one order.
+
 0.3.2
 ---
 Cleanup
