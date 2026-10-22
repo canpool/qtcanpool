@@ -1,3 +1,150 @@
+4.7.0
+---
+- Three libraries join the set, and the two of them that draw controls are two
+  answers to the same question rather than a skin over one: qxfluent answers it
+  the way Fluent does and qxmaterial the way Material 3 does, while qxcontrols
+  holds the mechanism both need and each family keeps its forms. They are
+  chosen, not mixed - a control that is both is a control that is neither - and
+  neither touches qxribbon: an application picks ribbon, Fluent or Material
+- qxcontrols 0.1.0. New: the library opens as the base the two control sets
+  draw on, reading qxtheme's token vocabularies and nothing above it. QxControl
+  is what a self-drawn control builds on: it tracks where the pointer is, what
+  is being pressed and whether the keyboard is on it, and answers all three as
+  one state, draws the wash between the surface and the content and the focus
+  ring over both, and leaves a subclass to say what its surface looks like,
+  what its content is and when the pointer counts as being on it - two hooks
+  rather than one because a control that drew its glyphs in the surface hook
+  would have the wash land on them. QxStateLayer is that wash: default
+  opacities per state, layered() as a value a test can predict, paint() as the
+  draw, and the colour left to the family. QxRingPainter draws the ring a focus
+  or a selection is made of as the band between two rounded rectangles rather
+  than a stroke along a midline, which would put half of it outside the band
+  and leave the corners uneven; a negative inset is the ring hanging outside
+  the control, which is how Fluent draws its outer one. QxShadowPainter turns
+  an elevation tier into pixels: a tile rendered once for a set of parameters
+  and stretched over the rectangle in nine pieces, cached so the second card of
+  the same shape costs a lookup; the blur is sixteen concentric rings rather
+  than a true gaussian, which reads as one smooth falloff at shadow sizes and
+  keeps the render deterministic. QxControlAccessible is the face a control
+  that paints itself hands an assistive tool - a role and a state cannot carry
+  a slider's number, so a control can supply and own one of its own
+- qxfluent 0.1.0. New: the library opens with the scales its controls are drawn
+  from - a six-step corner ladder that is deliberately not the sheets' five, a
+  type ramp, an elevation scale and a duration scale - and with the controls
+  themselves. FluentSwitch is a pill with a knob and a sentence beside it, on a
+  Fluent duration that reduce-motion and the theme's scale reach without the
+  control asking about either. FluentInfoBar is a message that stays until it
+  is dealt with, coloured by its severity because a theme has a role for a
+  highlight and none for "warning". FluentExpander is a header that keeps a
+  body and opens to show it, the header being the control and the body
+  travelling out from under it. FluentRating is a row of stars that shows what
+  a click would do before it is clicked. FluentProgressRing says how far along
+  something is, or only that something is happening. FluentSlider fills its
+  rail with the accent and divides it with a mark at every interval.
+  FluentCard is a surface whose lift is what says it sits above the page.
+  FluentBadge is the application pointing at something, in the accent.
+  FluentReveal is the wash that follows the pointer over a list.
+  FluentCommandBar is where a Fluent application's commands live,
+  FluentBreadcrumbBar is the path back, and FluentTeachingTip is a flyout that
+  points at the thing it is about. FluentNavigationView and FluentTabView are
+  the skeletons an application is navigated in and several things are open at
+  once in. FluentWindowMaterial is what a Fluent window is
+  made of - Mica, Mica Alt and Acrylic - and it is the one place this library
+  reaches qxwindow, because a material is the host's to draw
+- qxmaterial 0.1.0. New: the library opens with its own scales - corner, type,
+  elevation and a duration-and-easing set - and with the controls drawn from
+  them. MaterialSwitch fills its track with the primary colour and crosses it
+  with a handle that carries a mark once it is on, so its state is read off the
+  handle alone. MaterialSlider says nothing about intervals, because the
+  handle's position is the answer and a second one would answer it again.
+  MaterialBadge is the error colour and stops counting past its maximum,
+  because "127" is not more useful than "99+" and it is wider.
+  MaterialSegmentedButton is a row of choices divided into equal parts, where
+  the part in force is the one that is filled. MaterialChip stands for one
+  choice or does one thing. MaterialCard holds something, in one of three
+  weights. MaterialFAB is the one thing a screen is for.
+  MaterialProgressRing, MaterialSnackbar and MaterialSkeleton are what says
+  something is happening, what just happened and what has not arrived yet.
+  MaterialRipple is the answer a surface gives when it is pressed, an event
+  filter on any widget rather than a control of its own.
+  MaterialNavigationRail is the column an application is navigated in - fixed
+  width, its items in a column centred in the width it really has - and
+  MaterialTopAppBar is the top of a screen with three places in one bar
+- qxtheme 0.2.1 -> 0.2.2. New: QxThemeInfo::density and motionScale, with
+  defaults that leave every existing registration compiling and behaving as it
+  did - the density tier a control library draws at (Comfortable) and the
+  multiplier the application's motion reads through (1.0), installed by apply()
+  the way the palette is. qxthememotion.h is the motion vocabulary a transition
+  reads its answer from: three tiers of duration and curve named by what the
+  movement is for - a hover, a change with distance to cover, an entrance with
+  a settle - and motionFor() honours the reduce-motion switch by turning every
+  tier into a jump to the end state, so compliance is the default rather than
+  something each control remembers to do. QxThemeManager::setReduceMotion() is
+  that switch, persisted under the ui group and announced through
+  reduceMotionChanged(). qxthemeelevation.h is the shadow vocabulary a painted
+  shadow reads: five tiers from a surface that casts nothing to one that floats
+  over everything, each a blur radius, a y offset and an alpha over the theme's
+  shadow colour. QxThemeManager::additionalStyleSheet() puts the application's
+  own sheet after the theme's instead of replacing it - an application-level
+  sheet is one string, so an application that had one competed with this engine
+  for it and whichever ran last won - and the text is the application's: not
+  persisted, not part of a theme, and not installed while no theme is in force
+- qxribbon 0.14.0 -> 0.14.1. Fixed: the quick access bar takes the width it asks
+  for once a style sheet has reached it, including a sheet installed after the
+  window was already on the screen. What the bar's layout gives it is the width
+  of its size hint, and a sheet decides what that hint is, so a sheet that
+  arrived late changed the hint after the only pass that would have answered it
+  had run and the last button was cut off by the widget that followed it. The
+  request the tool bar posts when its own size changes is now a reason to lay
+  the bar out again, next to the one the corner widgets already had
+- qxdock 0.3.1 -> 0.3.2. Cleanup: the fall-back sheet resolves the theme's
+  corner tiers the way the generator resolves them for a generated sheet - a
+  radius in base.css names a tier instead of a pixel count, and the renderer
+  substitutes the tier's value, the same value tools/themes keeps. An
+  application that loads a generated theme is unaffected; an application that
+  writes its own fragment with pixel values keeps working, because only
+  {{...}} is substituted
+- qxcore 0.2.0, qxwindow 0.3.2, qxplugin 0.3.0 and qxapp 0.2.1: unchanged. All
+  four were settled before this cycle and nothing in 4.7 repaired or added to
+  any of them - no number moved (K11). This is a project minor with no library
+  minor in it, and that is not an oversight: the whole cycle added 40 public
+  headers, modified 2 with declarations and nothing else, and deleted or
+  renamed none, so no library had an interface change to declare
+- themes: the sheets gain the vocabularies the controls read rather than more
+  colours. corner-{none,sm,md,lg,pill} (0/2/3/6/9999px) and
+  type-{caption,subtitle,body,title} (10/13/15/18px) name values the sheets
+  already carried, space-{xs,sm,md,lg} (4/8/12/16px) puts the five chrome
+  fragments' tab padding on a 4px grid - flat, slate and soft land byte for
+  byte, while classic and accent were at 10px and snap to 8 and 12, which is a
+  visible +/-2px on the ribbon's tab padding and the one look this release
+  changes. The generator refuses to write a sheet that still carries a bare
+  border-radius or a numeric font size, so the vocabulary cannot quietly
+  decay; the token names are unchanged and only widened, so nothing written
+  against the old ones breaks
+- demos and examples: controlgallery is one window that shows both control
+  sets and switches between them, fluentdemo and materialdemo are two small
+  applications built the way each design language says an application is built
+  - a navigation column, a top bar and a page of controls - and the two of them
+  share the gallery's widgets rather than re-implementing them
+- ci and build: every build leg now gives --parallel a number, because a bare
+  -j is not "one job per core" on a Makefile generator and the runners had been
+  asked for an unbounded one; the Windows Qt 6.12 leg is out until Qt can be
+  installed on that runner, which leaves the six legs of 4.6 as five for now
+- docs: every guide page was read against the tree after 4.7 landed, which is
+  how three new libraries came to be missing from the front page's component
+  table, the four skeleton controls from the component list, and the theme's
+  whole 4.7 half from the theming page - the patch ledger records what was
+  missing and the two lessons it taught. A 4.6 note is corrected in passing:
+  equally specific rules are decided by the later declaration, not the earlier
+  one, measured on Qt 5.15.2 and 6.8.3 both
+- Note: this release breaks nothing. doc/pages/migration.md, section "4.7",
+  lists what an application may want to look at - new fields on QxThemeInfo
+  whose defaults keep old registrations compiling, the two token vocabularies
+  that were widened and the two families whose ribbon tab padding moved by 2px,
+  and the two entry points - the reduce-motion switch and the additional style
+  sheet - that are switches rather than breaks. The three new libraries are
+  0.x and carry no compatibility promise of their own yet
+
 4.6.0
 ---
 - The libraries stop naming colours inside their own style sheets, and take them
