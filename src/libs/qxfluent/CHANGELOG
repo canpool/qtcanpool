@@ -1,6 +1,21 @@
 Unreleased
 ---
 Feature
+- FluentDropDownButton, a command that is a menu: the whole face opens it. Qt's
+  QToolButton can be told to behave this way and is then drawn by a style a
+  Fluent application replaces anyway, but what it cannot be told is the promise
+  the shape makes - that there is nothing here to press and then something else
+  to choose. So the face is one thing and a press anywhere on it, chevron
+  included, opens the menu; the half that means "do the command" belongs to
+  FluentToggleSplitButton, and the two are separate classes because they are
+  separate promises. The menu is the button's own child, which is the one
+  ownership question this class answers: an application fills it - before the
+  menu opens, since aboutToShowMenu() is emitted first - and never owns it. A
+  menu left empty is not opened at all, because opening an empty box is a
+  promise the button cannot keep. Space, Enter, Down and F4 open it, the
+  chevron is drawn rather than typed so the theme can colour it and no
+  assistive tool reads it as a character, and the text is the accessible name
+  until the application gives a better one.
 - FluentNumberBox, a number you can type and step. QSpinBox is a styled widget
   with the arrows stacked in a corner by a style that a Fluent application has
   to replace anyway; this one is drawn - a field that is an opening in the page

@@ -8,6 +8,7 @@
 #include "qxfluent/fluentbreadcrumbbar.h"
 #include "qxfluent/fluentcard.h"
 #include "qxfluent/fluentcommandbar.h"
+#include "qxfluent/fluentdropdownbutton.h"
 #include "qxfluent/fluentexpander.h"
 #include "qxfluent/fluentinfobar.h"
 #include "qxfluent/fluentnumberbox.h"
@@ -94,6 +95,12 @@ FluentPage::FluentPage(QWidget *parent)
                                                new FluentNumberBox(this));
     number->setRange(0, 999);
     number->setValue(42);
+
+    auto *exportButton = addControl<FluentDropDownButton>(
+        QStringLiteral("fluentDropDownButton"), QStringLiteral("FluentDropDownButton"), new FluentDropDownButton(this));
+    exportButton->setText(tr("Export"));
+    exportButton->menu()->addAction(tr("As a PDF"));
+    exportButton->menu()->addAction(tr("As an image"));
 
     auto *rating = addControl<FluentRating>(QStringLiteral("fluentRating"), QStringLiteral("FluentRating"),
                                             new FluentRating(this));
