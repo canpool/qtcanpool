@@ -25,6 +25,7 @@ add_qtc_library(qxfluent
     fluentrating.h fluentrating.cpp
     fluentexpander.h fluentexpander.cpp
     fluentinfobar.h fluentinfobar.cpp
+    fluentcontentdialog.h fluentcontentdialog.cpp
     fluentbreadcrumbbar.h fluentbreadcrumbbar.cpp
     fluentcommandbar.h fluentcommandbar.cpp
     fluentdropdownbutton.h fluentdropdownbutton.cpp

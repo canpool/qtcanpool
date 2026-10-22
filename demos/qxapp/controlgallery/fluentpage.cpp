@@ -8,6 +8,7 @@
 #include "qxfluent/fluentbreadcrumbbar.h"
 #include "qxfluent/fluentcard.h"
 #include "qxfluent/fluentcommandbar.h"
+#include "qxfluent/fluentcontentdialog.h"
 #include "qxfluent/fluentdropdownbutton.h"
 #include "qxfluent/fluentexpander.h"
 #include "qxfluent/fluentinfobar.h"
@@ -147,6 +148,30 @@ FluentPage::FluentPage(QWidget *parent)
     info->setTitle(tr("Saved"));
     info->setMessage(tr("The gallery wrote nothing to disk."));
     info->setOpen(true);
+
+    // A dialog is a window that covers the page it was opened over, so the row
+    // is what opens it rather than the dialog - a window capture cannot hold
+    // two, which is the same bargain the teaching tip row makes.
+    auto *dialogButton =
+        addControl<QPushButton>(QStringLiteral("fluentContentDialogLauncher"), QStringLiteral("FluentContentDialog"),
+                                new QPushButton(tr("Ask me something"), this));
+    connect(dialogButton, &QPushButton::clicked, this, [this]() {
+        if (!m_dialog) {
+            m_dialog = new FluentContentDialog(this);
+            m_dialog->setTitle(tr("Save before closing?"));
+            m_dialog->setMessage(tr("The document has changes that are not on disk yet."));
+            m_dialog->primaryButton()->setText(tr("Save"));
+            m_dialog->secondaryButton()->setText(tr("Do not save"));
+            m_dialog->closeButton()->setText(tr("Cancel"));
+            // The dialog asks and the page answers: a button only says which
+            // answer it was, so these three connections are the whole of what
+            // pressing one does here.
+            connect(m_dialog->primaryButton(), &QPushButton::clicked, m_dialog, &QDialog::accept);
+            connect(m_dialog->secondaryButton(), &QPushButton::clicked, m_dialog, &QDialog::reject);
+            connect(m_dialog->closeButton(), &QPushButton::clicked, m_dialog, &QDialog::reject);
+        }
+        m_dialog->open();
+    });
 
     addSection(tr("Navigation"));
 

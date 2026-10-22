@@ -1,6 +1,27 @@
 Unreleased
 ---
 Feature
+- FluentContentDialog, a question asked over a dimmed page. Qt's QDialog is a
+  window with a title bar and a QDialogButtonBox under it, and what a Fluent
+  dialog is made of is none of those: it is a card in the middle of the page it
+  was opened over, on a veil that says the page is not the thing to look at now,
+  with no chrome of the platform's anywhere in it - so the veil, the shadow of
+  the 64 level and the rounded card are drawn here, and the window underneath is
+  still a QDialog, because modality, Escape, exec() and a result code are the
+  toolkit's and writing them again would only produce a worse copy. The card is
+  painted in the page's own colour and what lifts it is the veil, which is the
+  whole reason a scrim is drawn rather than a border; the card keeps the reach
+  of its own shadow off the edge of the page, so a page too short for the
+  dialogue shortens the card rather than letting the shadow be cut. At most
+  three buttons exist, one of each role, and each is made the first time it is
+  asked for - a dialog that never asks for one has none. They are the toolkit's
+  QPushButtons and the dialog does not answer for them: pressing one emits
+  clicked() and nothing else happens, because whether the question was answered,
+  and which way that counts, is the application's - a dialog sits on top of the
+  write it is asking about, and a control that closed itself would take that
+  decision away. Fluent reads the row from the affirmative, so the answer comes
+  before the way out of being asked, and Return reaches the affirmative and
+  nothing else.
 - FluentToggleSplitButton, a command that stays down with a menu beside it:
   doing and choosing more are two things, and this is the shape that says so.
   The left half is the command - it goes down and stays down, and the face is

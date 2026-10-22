@@ -10,6 +10,7 @@
 #include "qxfluent/qxfluent_global.h"
 
 QX_FLUENT_BEGIN_NAMESPACE
+class FluentContentDialog;
 class FluentTeachingTip;
 class FluentWindowMaterial;
 QX_FLUENT_END_NAMESPACE
@@ -37,6 +38,11 @@ private:
      * top-level window the capture has to explain.
      */
     FluentTeachingTip *m_tip = Q_NULLPTR;
+    /*!
+     * And the dialog, for the same reason: it is a window that covers the page
+     * it was opened over, so it can only exist while it is open.
+     */
+    FluentContentDialog *m_dialog = Q_NULLPTR;
     /*!
      * Likewise made on the first ask: it is the wrapper round qxwindow's
      * materials, and nothing needs it until one is chosen.
