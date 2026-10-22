@@ -31,6 +31,8 @@ const char *const kShort = "chrome-short";
 const char *const kTall = "chrome-tall";
 const char *const kGrey = "chrome-grey";
 const char *const kBlue = "chrome-blue";
+const char *const kPaneShort = "pane-short";
+const char *const kPaneTall = "pane-tall";
 
 QxThemeInfo makeTheme(const QString &id, const QString &name, const QString &css)
 {
@@ -51,6 +53,58 @@ public:
         return rootSplitter();
     }
 };
+
+/*! The arrangement the screenshot suite compares: a left panel holding most of
+ *  the docks, a right panel beside it, and one row of two below both. The two
+ *  rows of it are what the root splitter divides, and they are not the same
+ *  kind of widget - which is what makes the split depend on the chrome. */
+void buildTheComparedArrangement(SplitterWindow &dock)
+{
+    DockWidget *w = new DockWidget(QStringLiteral("dock1"), &dock);
+    w->setWidget(new QWidget(&dock));
+    DockPanel *panel = dock.addDockWidget(Qx::LeftDockWidgetArea, w);
+
+    w = new DockWidget(QStringLiteral("dock2"), &dock);
+    w->setWidget(new QWidget(&dock));
+    dock.addDockWidget(Qx::RightDockWidgetArea, w, panel);
+
+    w = new DockWidget(QStringLiteral("longdock"), &dock);
+    w->setWidget(new QWidget(&dock), DockWidget::ForceScrollArea);
+    dock.addDockWidget(Qx::RightDockWidgetArea, w, panel);
+
+    w = new DockWidget(QStringLiteral("dock4"), &dock);
+    dock.addDockWidget(Qx::CenterDockWidgetArea, w, panel);
+
+    w = new DockWidget(QStringLiteral("dock5"), &dock);
+    dock.addDockWidgetTab(Qx::LeftDockWidgetArea, w);
+
+    w = new DockWidget(QStringLiteral("dock3"), &dock);
+    panel = dock.addDockWidget(Qx::BottomDockWidgetArea, w);
+
+    w = new DockWidget(QStringLiteral("dock6"), &dock);
+    w->setWidget(new QWidget(&dock), DockWidget::ForceNoScrollArea);
+    dock.addDockWidgetTab(w, panel);
+}
+
+/*! The row the root splitter divides, in a window built while @p themeId was
+ *  in force; the window is the caller's to keep alive, and @p dockOut is how
+ *  the caller gets at the splitter afterwards. */
+QList<int> rowBuiltUnder(const QString &themeId, QWidget *host, SplitterWindow **dockOut = nullptr)
+{
+    QxThemeManager::instance()->setTheme(themeId);
+
+    host->setLayout(new QVBoxLayout);
+    auto *dock = new SplitterWindow(host);
+    host->layout()->addWidget(dock);
+    host->resize(1280, 800);
+    buildTheComparedArrangement(*dock);
+    host->show();
+    Probe::settle(host);
+    if (dockOut) {
+        *dockOut = dock;
+    }
+    return dock->root()->sizes();
+}
 }   // namespace
 
 /*!
@@ -74,6 +128,7 @@ private slots:
     void cleanup();
 
     void theChromeFollowsTheSwitchWhileTheRowKeepsTheSizesItWasGiven();
+    void theRowIsDividedWhileTheWindowIsBuiltAndReDividingItIsNotTheAnswer();
     void theChromeIsRepaintedWhenTheThemeChanges();
 private:
     void registerThemes();
@@ -125,6 +180,12 @@ void tst_DockTheme::registerThemes()
                                      QStringLiteral("QFrame { background-color: #404040; }")));
     manager->registerTheme(makeTheme(QString::fromLatin1(kBlue), QStringLiteral("chrome blue"),
                                      QStringLiteral("QFrame { background-color: #305090; }")));
+    // What the panes sit under is measured from the title bar, so a sheet on
+    // the title bar is what moves a row without any widget being dragged.
+    manager->registerTheme(makeTheme(QString::fromLatin1(kPaneShort), QStringLiteral("pane short"),
+                                     QStringLiteral("QxDock--DockTitleBar { min-height: 24px; }")));
+    manager->registerTheme(makeTheme(QString::fromLatin1(kPaneTall), QStringLiteral("pane tall"),
+                                     QStringLiteral("QxDock--DockTitleBar { min-height: 48px; }")));
 }
 
 /*! The chrome is measured from the sheet on every switch, and what it takes it
@@ -168,6 +229,67 @@ void tst_DockTheme::theChromeFollowsTheSwitchWhileTheRowKeepsTheSizesItWasGiven(
     // And this is the part it does not: the row keeps the sizes it was given,
     // which is why a switched window and a fresh one are not the same shape.
     QCOMPARE(dock.root()->sizes(), sizesBefore);
+}
+
+/*! Why the row is left alone, said in numbers rather than in the pixel budget
+ *  over a whole window.
+ *
+ *  The row is divided while the window is being built, and what it is divided
+ *  by is the chrome of the theme in force at that moment - so two windows with
+ *  one arrangement in them, one built in a scheme and one built in its
+ *  counterpart, do not start from the same split. A switch does not divide the
+ *  row again, which is the choice the case above pins.
+ *
+ *  What this case adds is the third way that was left open when the 17 pixels
+ *  were filed as expected: re-dividing the row on a switch. It is not a way.
+ *  A row divided again is an even row, and an even row is what neither theme's
+ *  own start gives - so re-dividing would move a switched window further from
+ *  a fresh one than leaving it alone does, and would still throw away an
+ *  arrangement the user had made. Measured before it was written down, so that
+ *  nobody has to try it again. */
+void tst_DockTheme::theRowIsDividedWhileTheWindowIsBuiltAndReDividingItIsNotTheAnswer()
+{
+    QWidget shortHost;
+    const QList<int> shortSplit = rowBuiltUnder(QString::fromLatin1(kPaneShort), &shortHost);
+    QWidget tallHost;
+    const QList<int> tallSplit = rowBuiltUnder(QString::fromLatin1(kPaneTall), &tallHost);
+    QCOMPARE(shortSplit.size(), tallSplit.size());
+    QVERIFY(shortSplit.size() >= 2);
+    QVERIFY2(shortSplit != tallSplit,
+             qPrintable(QStringLiteral("a window built in either scheme started the row the same way (%1) - "
+                                       "the chrome that decides the split was not measured")
+                            .arg(shortSplit.value(1))));
+
+    // Built in one and switched to the other: the split is the one the window
+    // was built with, and no change of size divides the row again either.
+    QWidget host;
+    SplitterWindow *dock = nullptr;
+    const QList<int> builtInShort = rowBuiltUnder(QString::fromLatin1(kPaneShort), &host, &dock);
+    QCOMPARE(builtInShort, shortSplit);
+    QVERIFY(dock);
+    QxThemeManager::instance()->setTheme(QString::fromLatin1(kPaneTall));
+    Probe::settle(&host);
+    QCOMPARE(dock->root()->sizes(), shortSplit);
+    host.resize(1280, 700);
+    Probe::settle(&host);
+    host.resize(1280, 800);
+    Probe::settle(&host);
+    QCOMPARE(dock->root()->sizes(), shortSplit);
+
+    // And the way out that was not taken: an even row, which is neither.
+    QSplitter *root = dock->root();
+    const int usable = root->height() - (shortSplit.size() - 1) * root->handleWidth();
+    QList<int> evenSplit;
+    for (int i = 0; i < shortSplit.size(); ++i) {
+        evenSplit.append(usable / shortSplit.size());
+    }
+    root->setSizes(evenSplit);
+    Probe::settle(&host);
+    const QList<int> redone = root->sizes();
+    QVERIFY2(redone != shortSplit && redone != tallSplit,
+             qPrintable(QStringLiteral("re-dividing the row landed on %1, which is what one of the two "
+                                       "schemes starts with - the third way would have worked after all")
+                            .arg(redone.value(1))));
 }
 
 /*! The other half of what a switch has to do: the chrome that was already up

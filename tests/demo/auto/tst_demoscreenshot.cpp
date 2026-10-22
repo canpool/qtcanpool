@@ -769,14 +769,11 @@ QRect dockWindowRect(const QString &tree)
  * The dock half of the switch check, compared inside the dock's own rectangle.
  *
  * The question "did the switch leave anything behind" is the same one
- * checkThemeSwitches asks; what changes is what counts as an answer. The two schemes
- * that a switch crosses are drawn by different machinery for every control that the
- * dark skeleton repaints and the light one leaves to the platform, and those metrics
- * differ - a scroll bar is 16 pixels wide under one and 12, 14 or 17 under the other,
- * depending on which platform style is running. A window built straight into the target
- * theme therefore puts the dock a few pixels higher than a window that was built in one
- * theme and switched to the other, and comparing whole windows reports that difference
- * on every edge, though the dock itself answers for none of it.
+ * checkThemeSwitches asks; what changes is what counts as an answer. Above the dock
+ * is the demo's own chrome, and what a menu bar or a scroll bar in it measures is
+ * the platform style's to say - 16 pixels wide under one and 12, 14 or 17 under
+ * another. Comparing whole windows reports that on every edge, though the dock
+ * answers for none of it.
  *
  * So the two captures are cut down to the dock window first, each at its own offset,
  * and only their common height is compared: the dock's top edge is where the demo's
@@ -886,9 +883,10 @@ void checkDockSwitchWithinItsOwnRect(const QString &executable, QHash<QString, Q
                                 .arg(switchPath)
                                 .arg(freshPath)));
         QEXPECT_FAIL("",
-                     "the dock keeps the pane sizes it was divided up with: the chrome is 17 pixels "
-                     "shorter in the target scheme, and re-distributing the panes would also discard the "
-                     "user's own arrangement (4.6-TASKS records the way out that was not taken)",
+                     "the dock keeps the row it was divided with: the split is measured from the theme "
+                     "in force while the window was being built, and re-dividing the row gives an even "
+                     "row - further from a fresh start than leaving it, besides discarding the user's "
+                     "own arrangement (tst_DockTheme pins it, and 4.7-TASKS carries the measurements)",
                      Continue);
         QVERIFY2(leftBehind <= kMaxSwitchDiffPercent,
                  qPrintable(QStringLiteral("%1: %2% of the dock's pixels still show the old theme (budget "
