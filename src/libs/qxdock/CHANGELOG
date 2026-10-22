@@ -20,6 +20,17 @@ Changed
   they document are back where they belong: the splitter-handles note sits above
   updateSplitterHandles() in dockcontainerdrop.cpp and the activation note above
   event() in dockcontainer.cpp. Comments moved, nothing else.
+- dockwidget.cpp is three files now, split the same way: the widget's content,
+  ownership and feature flags stay in dockwidget.cpp together with the private
+  implementation they lean on, the tool bar and its two styles move to
+  dockwidgettoolbar.cpp, and the view side - side tab, auto hide, show and hide,
+  floating, close - moves to dockwidgetview.cpp. No line was rewritten on the way
+  and no behaviour changed; the public headers did not move at all.
+- DockWidgetPrivate now lives in dockwidget_p.h, which is where a private header
+  keeps what its implementation files share. It is still not part of the exported
+  API: the public class reaches it through the same d-pointer and the public ABI
+  is unchanged. This translation unit had no file-level helper to carry along, so
+  the header holds the class and nothing else.
 
 0.3.2
 ---
