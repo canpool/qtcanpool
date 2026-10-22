@@ -10,6 +10,10 @@ add_qtc_library(qxribbon
     ribbonapplicationbutton.cpp ribbonapplicationbutton.h
     ribbonbackstageview.cpp ribbonbackstageview.h ribbonbackstageview_p.h
     ribbonbar.cpp ribbonbar.h ribbonbar_p.h
+    ribbonbarlayout.cpp
+    ribbonbarpaint.cpp
+    ribbonbarprivate.cpp
+    ribbonbarstackedwidget.cpp
     ribbonbutton.cpp ribbonbutton.h ribbonbutton_p.h
     ribbonbuttongroup.cpp ribbonbuttongroup.h
     ribboncolorbutton.cpp ribboncolorbutton.h ribboncolorbutton_p.h

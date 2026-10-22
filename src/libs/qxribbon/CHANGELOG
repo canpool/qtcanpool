@@ -1,3 +1,18 @@
+Unreleased
+---
+Changed
+- ribbonbar.cpp is five files now, split by responsibility rather than by size:
+  the object model stays in ribbonbar.cpp, layout and the events that ask for a
+  re-layout move to ribbonbarlayout.cpp, everything the ribbon paints itself
+  moves to ribbonbarpaint.cpp, the private state with its slots and the key tips
+  moves to ribbonbarprivate.cpp, and the two attached Qt classes move to
+  ribbonbarstackedwidget.cpp. No line was rewritten on the way and no behaviour
+  changed; the public headers did not move at all. The three file-level helpers
+  that more than one of the new files uses - takesPartInLayout(),
+  cornerBandGeometry() with the CornerBand it returns, and
+  tabBarBaseLineHeight - now live in ribbonbar_p.h as inline entities, which is
+  where a private header keeps what its implementation files share.
+
 0.14.1
 ---
 Fixed

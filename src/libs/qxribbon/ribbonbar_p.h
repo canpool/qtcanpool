@@ -20,6 +20,37 @@ class RibbonKeyTip;
 // Accessibility (B2): register the ribbon's QAccessible factory. Idempotent.
 void installRibbonAccessibility();
 
+inline constexpr int tabBarBaseLineHeight = 1;
+
+// Whether a widget takes part in the ribbon layout. isVisible() would also
+// turn false while the top-level window is still hidden, so the very first
+// layout would skip such widgets and leave them at their default position
+// (e.g. the window button group ends up in the top-left corner and stays
+// there until the window happens to be resized).
+inline bool takesPartInLayout(const QWidget *w)
+{
+    return w && !w->isHidden();
+}
+
+// The vertical half of the rule placeCornerWidget() follows: a corner widget that
+// fits in the band reserved for it is centred in that band, one that does not is
+// stretched over the band's shorter row. Only this half is shared, with the
+// staleness check in cornerWidgetsNeedLayout(): the horizontal position of a corner
+// widget is what the layout is computing at the time, so a check that runs outside
+// that layout cannot know it.
+struct CornerBand {
+    int top;
+    int height;
+};
+
+inline CornerBand cornerBandGeometry(int bandTop, int centredHeight, int stretchedHeight, int hintHeight)
+{
+    if (hintHeight < centredHeight) {
+        return {bandTop + (centredHeight - hintHeight) / 2, hintHeight};
+    }
+    return {bandTop, stretchedHeight};
+}
+
 class RibbonStackedWidget : public QStackedWidget
 {
     Q_OBJECT
