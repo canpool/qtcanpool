@@ -145,6 +145,7 @@ public:
     int minimumWidthInTabBarInlineStyle() const;
 
     bool cornerWidgetsNeedLayout() const;
+    bool quickAccessBarNeedsLayout() const;
 
     int calcMinTabBarWidth() const;
     int mainBarHeight() const;

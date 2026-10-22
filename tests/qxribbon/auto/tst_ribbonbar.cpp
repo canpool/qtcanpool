@@ -17,6 +17,7 @@
 
 #include <QAbstractButton>
 #include <QAction>
+#include <QApplication>
 #include <QColor>
 #include <QCoreApplication>
 #include <QImage>
@@ -71,6 +72,7 @@ private slots:
     void cornerWidgetArrivesAfterTheBarIsUp();
     void cornerWidgetInstalledThroughTheMenuBar();
     void maximizedMdiChildUsesTheCorners();
+    void quickAccessBarFollowsASheetThatLandsLate();
 
     void theFourStylesTakeTheHeightTheOptionStatesAndMoveTheTabRow();
 };
@@ -846,6 +848,56 @@ void tst_RibbonBar::maximizedMdiChildUsesTheCorners()
     QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     QCOMPARE(nullptr, ribbon->cornerWidget(Qt::TopLeftCorner));
     QCOMPARE(nullptr, ribbon->cornerWidget(Qt::TopRightCorner));
+}
+
+/*!
+ * A sheet that lands after the window is up changes what the quick access bar
+ * wants to be, and the bar has to be laid out again once it has.
+ *
+ * What the bar's layout gives the quick access bar is the width of its size
+ * hint, and a sheet is one of the things that decides what that hint is - the
+ * shipped themes pad the buttons, so the bar wants more room after one lands.
+ * A sheet installed after the window was shown changes the hint after the pass
+ * that would have answered it has run: this class is told about the new style
+ * before the tool bar inside the quick access bar is, so the hint it reads then
+ * is still the old one, and the last button of the bar is cut off by the widget
+ * that follows it.
+ *
+ * The request the tool bar posts when its own size changes is what catches it,
+ * and this is the case the LayoutRequest handler puts to it.
+ */
+void tst_RibbonBar::quickAccessBarFollowsASheetThatLandsLate()
+{
+    RibbonBar rb;
+    rb.addPage(QStringLiteral("page"));
+    for (int i = 0; i < 6; ++i) {
+        rb.quickAccessBar()->addAction(new QAction(QStringLiteral("A%1").arg(i), &rb));
+    }
+    rb.resize(900, rb.height());
+    rb.show();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    // Where it starts: the width it was given is the width it asks for.
+    QWidget *container = rb.quickAccessBar()->parentWidget();
+    QVERIFY(container);
+    QCOMPARE(container->width(), container->sizeHint().width());
+    const int before = container->sizeHint().width();
+
+    qApp->setStyleSheet(QStringLiteral("QToolButton { padding: 4px; }"));
+    // A resize in this class is queued, so what answers the sheet arrives with
+    // the event queue rather than by the time the call returns.
+    for (int i = 0; i < 8; ++i) {
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+
+    const int after = container->sizeHint().width();
+    if (after == before) {
+        QSKIP("this style gives the tool bar the same hint with and without the sheet");
+    }
+    QCOMPARE(container->width(), after);
+
+    qApp->setStyleSheet(QString());
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 TEST_ADD(tst_RibbonBar)

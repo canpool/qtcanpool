@@ -1,3 +1,19 @@
+Unreleased
+---
+Fixed
+- The quick access bar takes the width it asks for once a style sheet has reached
+  it, including a sheet installed after the window was already on the screen.
+  What the bar's layout gives the quick access bar is the width of its size hint,
+  and a sheet is one of the things that decides what that hint is - the shipped
+  themes pad the buttons, so the bar wants more room after one lands. A sheet that
+  arrived late changed the hint after the only pass that would have answered it
+  had run: this class is told about the new style before the tool bar inside the
+  quick access bar is, so the width it read was still the old one, and the last
+  button of the bar was cut off by the widget that followed it. The request the
+  tool bar posts when its own size changes is now a reason to lay the bar out
+  again, next to the one the corner widgets already had.
+  tst_RibbonBar::quickAccessBarFollowsASheetThatLandsLate is the check.
+
 0.14.0
 ---
 Addition

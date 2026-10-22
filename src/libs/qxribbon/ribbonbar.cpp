@@ -1038,6 +1038,31 @@ bool RibbonBarPrivate::cornerWidgetsNeedLayout() const
     return false;
 }
 
+/*!
+ * Whether the quick access bar stands at the width it asks for.
+ *
+ * What the bar's own layout gives the quick access bar is the width of its size
+ * hint, and a style sheet is one of the things that changes what that hint is:
+ * the shipped themes pad the buttons, so the bar wants more room after one lands
+ * than it did before. A sheet that reaches the window after it was shown changes
+ * the hint too late for the pass that answers it - this class is told about the
+ * style before the tool bar inside it is - and nothing else asks afterwards.
+ *
+ * So the request that follows the change is the only chance to notice, and this
+ * is the question the LayoutRequest handler puts to it: like a corner widget,
+ * the quick access bar is a part of this bar whose size this class does not
+ * decide, so a stale one is invisible to every other trigger. The button that
+ * used to disappear when a theme was installed late was this staleness, with the
+ * rest of the row cut off by the widget that follows it.
+ */
+bool RibbonBarPrivate::quickAccessBarNeedsLayout() const
+{
+    if (!takesPartInLayout(m_quickAccessBar)) {
+        return false;
+    }
+    return m_quickAccessBar->width() != m_quickAccessBar->sizeHint().width();
+}
+
 /**
  * @brief Resets the tabbar width as needed, mainly for TabBarInlineStyle
  */
@@ -2085,14 +2110,21 @@ bool RibbonBar::event(QEvent *event)
         // cost more than one resize pass per event, and the conditions that
         // produce a LayoutRequest here have never been enumerated - nor has
         // which of the postEvent()/sendEvent() calls elsewhere could be
-        // replaced by one. The handler is therefore gated, and the gate is
-        // about corner widgets only: they are the one part of this bar whose
-        // size and position this class does not decide, so a request from them
-        // is the one that can leave the placement stale - including the request
-        // QMenuBar posts right after it placed them on its own terms, which is
-        // the only signal this bar gets for that (cornerWidgetsNeedLayout).
+        // replaced by one. The handler is therefore gated, and the gate asks
+        // about the parts of this bar whose size and position this class does
+        // not decide, because a request from one of them is what can leave the
+        // placement stale:
+        //  - the corner widgets, including the request QMenuBar posts right
+        //    after it placed them on its own terms, which is the only signal
+        //    this bar gets for that (cornerWidgetsNeedLayout);
+        //  - the quick access bar, whose size hint a style sheet changes after
+        //    the pass that would have answered it has already run
+        //    (quickAccessBarNeedsLayout).
+        // Both questions are of the form "is what was placed still what is
+        // asked for", so a yes is answered by one more pass and a no costs
+        // nothing.
         // See doc/pages/limitations.md, "LayoutRequest can add resize passes".
-        if (d->cornerWidgetsNeedLayout()) {
+        if (d->cornerWidgetsNeedLayout() || d->quickAccessBarNeedsLayout()) {
             d->resizeRibbon();
         }
     } break;
