@@ -32,6 +32,7 @@ QLabel *bodyLabel(const QString &text, QWidget *parent)
 
 DemoPage::DemoPage(const QString &title, const QString &intro, QWidget *parent)
     : QWidget(parent)
+    , m_title(title)
 {
     m_layout = new QVBoxLayout(this);
     m_layout->setContentsMargins(QMargins(kPageMargin, kPageMargin, kPageMargin, kPageMargin));
@@ -50,6 +51,11 @@ DemoPage::DemoPage(const QString &title, const QString &intro, QWidget *parent)
         m_layout->addWidget(lead);
         m_layout->addSpacing(kSectionGap);
     }
+}
+
+QString DemoPage::title() const
+{
+    return m_title;
 }
 
 void DemoPage::addSection(const QString &text)

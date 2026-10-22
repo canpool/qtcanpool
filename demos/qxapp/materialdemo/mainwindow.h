@@ -81,6 +81,10 @@ private:
     void createNavigation();
     void createConnections();
 
+    /*! The name of the screen that opens first, taken from the page itself:
+     *  the caption has to say something before the rail has reported anything,
+     *  and a literal here would be a second name for one screen. */
+    QString m_firstTitle;
     TitleBar *m_titleBar = Q_NULLPTR;
     QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
     /*! The app bar the caption holds: the screen's name and the things that can

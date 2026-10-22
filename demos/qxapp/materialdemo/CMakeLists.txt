@@ -4,11 +4,12 @@
 ##
 
 # A Material application, not a gallery: a top app bar, a navigation rail, a
-# floating action button, a snackbar, and four screens built out of QxMaterial
-# alone. Where the control gallery puts one control in each row so that a
-# change in what a control paints shows up, this puts them to work - which is
-# the other half of what a control set has to prove, and the half that says
-# whether an application can be built out of it.
+# floating action button, a snackbar, six template screens built out of
+# QxMaterial alone, and the catalogue of what the library ships. Where the
+# control gallery puts one control in each row so that a change in what a
+# control paints shows up, this puts them to work - which is the other half of
+# what a control set has to prove, and the half that says whether an
+# application can be built out of it.
 #
 # qxapp is here for registerBundledThemes() only: it is the one function that
 # knows which theme files res/themes.qrc ships and which of each pair is the
@@ -32,9 +33,15 @@ add_qtc_executable(MaterialDemo
     mainwindow.cpp mainwindow.h
     titlebar.cpp titlebar.h
     demopage.cpp demopage.h
-    homepage.cpp homepage.h
-    selectionpage.cpp selectionpage.h
-    feedbackpage.cpp feedbackpage.h
+    # The six templates: a whole screen each, built out of the library alone.
+    dashboardpage.cpp dashboardpage.h
+    albumpage.cpp albumpage.h
+    pricingpage.cpp pricingpage.h
+    signinpage.cpp signinpage.h
+    blogpage.cpp blogpage.h
+    checkoutpage.cpp checkoutpage.h
+    # The library itself, one control per row, and the window's own settings.
+    catalogpage.cpp catalogpage.h
     settingspage.cpp settingspage.h
     # The style sheets the themes the settings screen offers are read from
     # (:/themes/*.css) - the same bundle the other demos offer.

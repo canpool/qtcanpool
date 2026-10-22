@@ -29,6 +29,10 @@ class DemoPage : public QWidget
 public:
     explicit DemoPage(const QString &title, const QString &intro, QWidget *parent = Q_NULLPTR);
 
+    /*! What this screen is called: the rail, the caption and the page's own
+     *  heading all read it here, so a place has one name rather than three. */
+    QString title() const;
+
     /*! Starts a section named \a text. Rows and blocks after this belong to it. */
     void addSection(const QString &text);
     /*! A wrapped paragraph at body size: what a screen says about itself. */
@@ -40,7 +44,13 @@ public:
     void addBlock(QWidget *widget);
     /*! Takes up what is left, so a short screen does not stretch its rows. */
     void addStretch();
+Q_SIGNALS:
+    /*! Something on this screen has a sentence to say, and the window is what
+     *  says it: a snackbar belongs to the window it rises in, so a screen that
+     *  has something to report asks rather than keeping one of its own. */
+    void messageRequested(const QString &message);
 private:
+    QString m_title;
     QVBoxLayout *m_layout = Q_NULLPTR;
     /*! The rows of the current section; a section or a block ends it. */
     QFormLayout *m_form = Q_NULLPTR;

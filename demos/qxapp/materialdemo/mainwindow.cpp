@@ -4,11 +4,15 @@
  **/
 #include "mainwindow.h"
 
+#include "albumpage.h"
+#include "blogpage.h"
+#include "catalogpage.h"
+#include "checkoutpage.h"
+#include "dashboardpage.h"
 #include "demopage.h"
-#include "feedbackpage.h"
-#include "homepage.h"
-#include "selectionpage.h"
+#include "pricingpage.h"
 #include "settingspage.h"
+#include "signinpage.h"
 #include "titlebar.h"
 
 #include "qxapp/qxthemebundle.h"
@@ -181,7 +185,9 @@ void MainWindow::buildTitleBar()
     // the bar's to draw and the rail's to say, which is why nothing here sets the
     // title again after the first screen.
     m_bar = m_titleBar->appBar();
-    m_bar->setTitle(tr("Home"));
+    // The bar opens on the name of the screen that opens first, which is the
+    // page's own answer and not a second copy of it kept here.
+    m_bar->setTitle(m_firstTitle);
 
     // What can be done to the screen as a whole stands at the bar's far end,
     // drawn as icons - an action without one holds a pressable place and shows
@@ -266,32 +272,37 @@ void MainWindow::createNavigation()
     m_stack = new QStackedWidget(this);
     m_stack->setObjectName(QStringLiteral("screens"));
 
-    HomePage *home = new HomePage(m_stack);
-    SelectionPage *selection = new SelectionPage(m_stack);
-    FeedbackPage *feedback = new FeedbackPage(m_stack);
-    m_settings = new SettingsPage(m_stack);
-
-    // The rail holds one thing, and what it opens is a screen at a time: a
-    // stacked widget is what turns "one room beside the rail" into "one of
-    // four", and it is also what keeps a screen's state while another is shown.
-    struct Destination {
-        QStyle::StandardPixmap pixmap;
-        const char *name;
-        DemoPage *page;
+    // A destination is a screen and the icon beside its name, and the name is
+    // the page's own - the rail, the caption and the page's heading all read it
+    // from there, so a place has one name rather than three.
+    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap) {
+        if (m_firstTitle.isEmpty()) {
+            m_firstTitle = page->title();
+        }
+        m_rail->addDestination(page->title(), style()->standardIcon(pixmap));
+        m_stack->addWidget(scrollable(page));
+        // The snackbar belongs to the window, so a screen that has something to
+        // say says it through the window rather than keeping one of its own.
+        connect(page, &DemoPage::messageRequested, this, [this](const QString &message) {
+            m_snackbar->showMessage(message);
+        });
     };
-    const Destination destinations[] = {{QStyle::SP_DirHomeIcon, QT_TR_NOOP("Home"), home},
-                                        {QStyle::SP_ComputerIcon, QT_TR_NOOP("Selection"), selection},
-                                        {QStyle::SP_MessageBoxInformation, QT_TR_NOOP("Feedback"), feedback},
-                                        {QStyle::SP_FileDialogDetailedView, QT_TR_NOOP("Settings"), m_settings}};
 
-    for (const Destination &destination : destinations) {
-        // A destination is a QAction, and the rail puts the one that was
-        // clicked in force - so an application that connected to it hears
-        // about it, and the stack follows the rail's own answer rather than a
-        // second copy of the same decision.
-        m_rail->addDestination(tr(destination.name), style()->standardIcon(destination.pixmap));
-        m_stack->addWidget(scrollable(destination.page));
-    }
+    // Six templates, then the catalogue: a template is a whole screen built out
+    // of this library - which is what an application would actually build - and
+    // the catalogue is the library itself, one control per row.
+    addPage(new DashboardPage(m_stack), QStyle::SP_DirHomeIcon);
+    addPage(new AlbumPage(m_stack), QStyle::SP_DirIcon);
+    addPage(new PricingPage(m_stack), QStyle::SP_FileDialogListView);
+    addPage(new SignInPage(m_stack), QStyle::SP_ArrowForward);
+    addPage(new BlogPage(m_stack), QStyle::SP_FileIcon);
+    addPage(new CheckoutPage(m_stack), QStyle::SP_FileDialogDetailedView);
+    addPage(new CatalogPage(m_stack), QStyle::SP_FileDialogContentsView);
+
+    // What the window is, as opposed to what it is showing, stays last: it is
+    // not a place the user works in.
+    m_settings = new SettingsPage(m_stack);
+    addPage(m_settings, QStyle::SP_FileDialogInfoView);
 }
 
 void MainWindow::createConnections()
@@ -318,15 +329,6 @@ void MainWindow::createConnections()
         m_snackbar->showMessage(tr("Nothing was composed: the floating action button is where an "
                                    "application puts the one thing its screen is for."));
     });
-
-    // The snackbar is the window's, so a screen that has something to say says
-    // it through the window rather than keeping one of its own.
-    FeedbackPage *feedback = qobject_cast<FeedbackPage *>(m_stack->widget(2));
-    if (feedback) {
-        connect(feedback, &FeedbackPage::messageRequested, this, [this](const QString &message) {
-            m_snackbar->showMessage(message);
-        });
-    }
 
     connect(m_settings, &SettingsPage::variantRequested, this, [this](MaterialTopAppBar::Variant variant) {
         m_bar->setVariant(variant);
