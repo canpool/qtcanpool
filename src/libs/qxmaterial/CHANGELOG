@@ -165,3 +165,16 @@ Feature
   icon here is a QAction, and what a press does is the action's to say: the
   bar's only answer is which icon was landed on. The row is one stop on the way
   through the keyboard, not one per icon, and it is announced as a toolbar.
+
+Fix
+- Where the things in MaterialNavigationRail stand is now worked out when it is
+  asked for rather than when the room changed, and the rail is fixed across.
+  A widget that has never been shown is not told it was resized, so a rail asked
+  where its destinations were answered from the geometry it had when it was last
+  told - the width a top-level widget starts with, which put the column where it
+  used to be and left a click aiming at nothing. Across the rail, the column is
+  eighty wide wherever the rail was made wider than that and stands in the
+  middle of the room it was given, and the rail is fixed at the token so that a
+  layout cannot hand it the room that belongs to the screen - which is how a
+  floating action button in its header came to sit off the middle of a rail a
+  parent had stretched.

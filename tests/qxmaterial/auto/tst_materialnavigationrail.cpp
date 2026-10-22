@@ -23,6 +23,7 @@ using QxMaterial::MaterialNavigationRail;
 constexpr int kRailWidth = 80;
 constexpr int kTopPadding = 12;
 constexpr int kItemHeight = 56;
+constexpr int kHeaderGap = 12;
 
 QPoint itemPoint(int index)
 {
@@ -49,6 +50,7 @@ private slots:
     void theRailHoldsWhatItIsGiven();
     void aClickPutsTheDestinationInForce();
     void theHeaderStandsAboveThem();
+    void theColumnKeepsItsWidthAndStaysInTheMiddle();
     void aDestinationNobodyCanUseIsNotPutInForce();
     void theKeyboardWalksTheColumn();
     void whatAnAssistiveToolReads();
@@ -106,6 +108,34 @@ void tst_MaterialNavigationRail::theHeaderStandsAboveThem()
     // Above them, and clear of them: the first destination starts under it.
     QVERIFY(header->geometry().bottom() < kTopPadding + 48 + kItemHeight);
     QVERIFY(rail->sizeHint().height() > 48 + kItemHeight);
+}
+
+/*! A rail is a column beside the room the destinations open into, so it is the
+ *  room that grows and not the column: it is fixed across, and a rail made
+ *  wider than the token by hand stands its column in the middle of the room
+ *  rather than against the left edge of it. Where the column stands is worked
+ *  out when it is asked for, because a widget that has never been shown is not
+ *  told it was resized - and a column laid out when the room changed answers
+ *  from a room it no longer has. */
+void tst_MaterialNavigationRail::theColumnKeepsItsWidthAndStaysInTheMiddle()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(railWith({QStringLiteral("Home"), QStringLiteral("Mail")}));
+    QCOMPARE(rail->sizePolicy().horizontalPolicy(), QSizePolicy::Fixed);
+
+    rail->resize(240, 200);
+    QWidget *header = new QWidget;
+    header->setFixedSize(48, 48);
+    rail->setHeaderWidget(header);
+
+    const int middle = rail->width() / 2;
+    QCOMPARE(header->geometry().x() + header->width() / 2, middle);
+
+    // Aiming at the middle of the room it was given lands on the column: the
+    // second destination is the one under the header, and it is the one that
+    // answers.
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier,
+                      QPoint(middle, kTopPadding + 48 + kHeaderGap + kItemHeight + kItemHeight / 2));
+    QCOMPARE(rail->currentIndex(), 1);
 }
 
 void tst_MaterialNavigationRail::aDestinationNobodyCanUseIsNotPutInForce()

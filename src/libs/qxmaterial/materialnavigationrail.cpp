@@ -12,6 +12,7 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QResizeEvent>
+#include <QtWidgets/QSizePolicy>
 #include <QtWidgets/QWidget>
 // QAction is in Widgets on Qt 5 and in Gui on Qt 6, so it is asked for without
 // naming a module - the same way the rest of the libraries ask.
@@ -47,27 +48,24 @@ QPointF eventPos(const QMouseEvent *event)
 }
 }   // namespace
 
-struct RailItem {
-    QAction *action = Q_NULLPTR;
-    QRectF rect;
-};
-
 class MaterialNavigationRailPrivate
 {
 public:
     QX_DECLARE_PUBLIC(MaterialNavigationRail)
 
-    QList<RailItem> items;
+    QList<QAction *> items;
     int hovered = -1;
     int armed = -1;
     int current = -1;
     int focused = -1;
     QWidget *header = Q_NULLPTR;
 
+    qreal columnLeft() const;
     qreal itemsTop() const;
-    void relayout();
+    QRectF itemRect(int index) const;
+    void layoutHeader();
     int itemAt(const QPointF &pos) const;
-    QRectF indicatorOf(const RailItem &item) const;
+    QRectF indicatorOf(const QRectF &item) const;
     QSize headerSize() const;
 };
 
@@ -83,6 +81,22 @@ QSize MaterialNavigationRailPrivate::headerSize() const
     return hint.isValid() ? hint : header->size();
 }
 
+/*! Where the column stands across the rail.
+ *
+ *  The column is eighty wide wherever the rail was made wider than that, and
+ *  it stands in the middle of the room it was given rather than against the
+ *  left edge of it: a width the rail did not ask for is a parent's doing, and
+ *  what answers it is where the column goes - not a wider column. What is
+ *  asked for is worked out when it is asked for, because a widget that has
+ *  never been shown is not told it was resized: a rail laid out when the room
+ *  changed answers from a room it no longer has, which is how a destination
+ *  came to be aimed at where it used to be. */
+qreal MaterialNavigationRailPrivate::columnLeft() const
+{
+    Q_Q(const MaterialNavigationRail);
+    return qMax(0.0, (qreal(q->width()) - kRailWidth) / 2.0);
+}
+
 qreal MaterialNavigationRailPrivate::itemsTop() const
 {
     if (!header) {
@@ -91,31 +105,30 @@ qreal MaterialNavigationRailPrivate::itemsTop() const
     return kTopPadding + qreal(headerSize().height()) + kHeaderGap;
 }
 
-QRectF MaterialNavigationRailPrivate::indicatorOf(const RailItem &item) const
+QRectF MaterialNavigationRailPrivate::itemRect(int index) const
 {
-    return QRectF(item.rect.center().x() - kIndicatorWidth / 2.0, item.rect.top(), kIndicatorWidth, kIndicatorHeight);
+    return QRectF(columnLeft(), itemsTop() + qreal(index) * kItemHeight, kRailWidth, kItemHeight);
 }
 
-void MaterialNavigationRailPrivate::relayout()
+void MaterialNavigationRailPrivate::layoutHeader()
 {
-    Q_Q(MaterialNavigationRail);
-    if (header) {
-        const QSize size = headerSize();
-        header->setGeometry(int((kRailWidth - qreal(size.width())) / 2.0), int(kTopPadding), size.width(),
-                            size.height());
+    if (!header) {
+        return;
     }
-    qreal top = itemsTop();
-    for (RailItem &item : items) {
-        item.rect = QRectF(0.0, top, kRailWidth, kItemHeight);
-        top += kItemHeight;
-    }
-    Q_UNUSED(q)
+    const QSize size = headerSize();
+    header->setGeometry(int(columnLeft() + (kRailWidth - qreal(size.width())) / 2.0), int(kTopPadding), size.width(),
+                        size.height());
+}
+
+QRectF MaterialNavigationRailPrivate::indicatorOf(const QRectF &item) const
+{
+    return QRectF(item.center().x() - kIndicatorWidth / 2.0, item.top(), kIndicatorWidth, kIndicatorHeight);
 }
 
 int MaterialNavigationRailPrivate::itemAt(const QPointF &pos) const
 {
     for (int i = 0; i < items.count(); ++i) {
-        if (items.at(i).rect.contains(pos)) {
+        if (itemRect(i).contains(pos)) {
             return i;
         }
     }
@@ -130,6 +143,13 @@ MaterialNavigationRail::MaterialNavigationRail(QWidget *parent)
     // Which destination the pointer is on is what the pill answers, so moves
     // are wanted without a button - the same reason a rating wants them.
     setMouseTracking(true);
+    // A rail is the width Material gives it and nothing else: it is a column
+    // beside the room the destinations open into, and a parent that stretched
+    // it would be widening the gap beside a column, not the column. Across is
+    // therefore fixed at the token, while down is whatever the screen has - the
+    // same answer a toolbar gives, and the one that keeps a layout from
+    // handing the rail the space that belongs to the screen.
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 }
 
 MaterialNavigationRail::~MaterialNavigationRail(){QX_FINI_PRIVATE()}
@@ -137,16 +157,13 @@ MaterialNavigationRail::~MaterialNavigationRail(){QX_FINI_PRIVATE()}
 QAction *MaterialNavigationRail::addDestination(const QString &label, const QIcon &icon)
 {
     QAction *action = new QAction(icon, label, this);
-    RailItem item;
-    item.action = action;
-    d_ptr->items.append(item);
+    d_ptr->items.append(action);
     if (d_ptr->focused < 0) {
         d_ptr->focused = 0;
     }
     if (d_ptr->current < 0) {
         d_ptr->current = 0;
     }
-    d_ptr->relayout();
     updateGeometry();
     update();
     return action;
@@ -155,7 +172,7 @@ QAction *MaterialNavigationRail::addDestination(const QString &label, const QIco
 void MaterialNavigationRail::removeDestination(QAction *action)
 {
     for (int i = 0; i < d_ptr->items.count(); ++i) {
-        if (d_ptr->items.at(i).action != action) {
+        if (d_ptr->items.at(i) != action) {
             continue;
         }
         d_ptr->items.removeAt(i);
@@ -169,7 +186,6 @@ void MaterialNavigationRail::removeDestination(QAction *action)
         }
         d_ptr->hovered = -1;
         delete action;
-        d_ptr->relayout();
         updateGeometry();
         update();
         return;
@@ -181,15 +197,14 @@ void MaterialNavigationRail::clear()
     if (d_ptr->items.isEmpty()) {
         return;
     }
-    const QList<RailItem> items = d_ptr->items;
+    const QList<QAction *> items = d_ptr->items;
     d_ptr->items.clear();
     d_ptr->current = -1;
     d_ptr->focused = -1;
     d_ptr->hovered = -1;
-    for (const RailItem &item : items) {
-        delete item.action;
+    for (QAction *action : items) {
+        delete action;
     }
-    d_ptr->relayout();
     updateGeometry();
     update();
 }
@@ -198,8 +213,8 @@ QList<QAction *> MaterialNavigationRail::destinations() const
 {
     QList<QAction *> actions;
     actions.reserve(d_ptr->items.count());
-    for (const RailItem &item : d_ptr->items) {
-        actions.append(item.action);
+    for (QAction *action : d_ptr->items) {
+        actions.append(action);
     }
     return actions;
 }
@@ -209,7 +224,7 @@ QAction *MaterialNavigationRail::currentDestination() const
     if (d_ptr->current < 0 || d_ptr->current >= d_ptr->items.count()) {
         return Q_NULLPTR;
     }
-    return d_ptr->items.at(d_ptr->current).action;
+    return d_ptr->items.at(d_ptr->current);
 }
 
 int MaterialNavigationRail::currentIndex() const
@@ -231,7 +246,7 @@ void MaterialNavigationRail::setHeaderWidget(QWidget *widget)
         widget->setParent(this);
         widget->show();
     }
-    d_ptr->relayout();
+    d_ptr->layoutHeader();
     updateGeometry();
     update();
 }
@@ -258,7 +273,7 @@ void MaterialNavigationRail::setCurrentIndex(int index)
 void MaterialNavigationRail::setCurrentDestination(QAction *action)
 {
     for (int i = 0; i < d_ptr->items.count(); ++i) {
-        if (d_ptr->items.at(i).action == action) {
+        if (d_ptr->items.at(i) == action) {
             setCurrentIndex(i);
             return;
         }
@@ -299,11 +314,12 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
     const qreal radius = MaterialShape::radius(MaterialShape::Radius::Circular);
 
     for (int i = 0; i < d_ptr->items.count(); ++i) {
-        const RailItem &item = d_ptr->items.at(i);
-        if (!item.rect.intersects(rect())) {
+        const QRectF item = d_ptr->itemRect(i);
+        if (!item.intersects(rect())) {
             continue;
         }
-        const bool usable = item.action->isEnabled();
+        QAction *action = d_ptr->items.at(i);
+        const bool usable = action->isEnabled();
         painter->setOpacity(enabled ? (usable ? 1.0 : kDisabledOpacity) : kDisabledOpacity);
 
         const QRectF indicator = d_ptr->indicatorOf(item);
@@ -323,15 +339,14 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
             QxControls::QxStateLayer::paint(painter, indicator, textColor(), QxControls::QxStateLayer::focusOpacity);
         }
 
-        if (!item.action->icon().isNull()) {
+        if (!action->icon().isNull()) {
             const QRectF iconRect(indicator.center().x() - kIconSize / 2.0, indicator.center().y() - kIconSize / 2.0,
                                   kIconSize, kIconSize);
-            item.action->icon().paint(painter, iconRect.toRect(), Qt::AlignCenter,
-                                      usable ? QIcon::Normal : QIcon::Disabled);
+            action->icon().paint(painter, iconRect.toRect(), Qt::AlignCenter, usable ? QIcon::Normal : QIcon::Disabled);
         }
 
-        const QRectF labelRect(0.0, indicator.bottom(), kRailWidth, kLabelHeight);
-        const QString text = metrics.elidedText(item.action->text(), Qt::ElideRight, int(kRailWidth) - 8);
+        const QRectF labelRect(item.left(), indicator.bottom(), kRailWidth, kLabelHeight);
+        const QString text = metrics.elidedText(action->text(), Qt::ElideRight, int(kRailWidth) - 8);
         if (!text.isEmpty()) {
             painter->setFont(label);
             painter->setPen(textColor());
@@ -344,7 +359,7 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
 void MaterialNavigationRail::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
-    d_ptr->relayout();
+    d_ptr->layoutHeader();
     QxControls::QxControl::resizeEvent(event);
 }
 
@@ -361,7 +376,7 @@ void MaterialNavigationRail::mouseReleaseEvent(QMouseEvent *event)
     d_ptr->armed = -1;
     if (armed >= 0 && d_ptr->itemAt(pos) == armed) {
         d_ptr->focused = armed;
-        if (d_ptr->items.at(armed).action->isEnabled()) {
+        if (d_ptr->items.at(armed)->isEnabled()) {
             setCurrentIndex(armed);
         }
     }

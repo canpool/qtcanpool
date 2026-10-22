@@ -36,6 +36,12 @@ class MaterialNavigationRailPrivate;
  * shape is the accent's. A destination here is a QAction, because that is what
  * an application already has, and the rail has nothing to say about what
  * happens when one is chosen beyond which one it is.
+ *
+ * A rail is eighty wide and does not stretch: it is a column the screen puts
+ * beside the room the destinations open into, so the room is what grows. It is
+ * fixed across and preferred down, which is what a parent layout is told; a
+ * rail made wider than eighty by hand keeps its column in the middle of the
+ * room rather than against the left edge of it.
  */
 class QX_MATERIAL_EXPORT MaterialNavigationRail : public QxControls::QxControl
 {
