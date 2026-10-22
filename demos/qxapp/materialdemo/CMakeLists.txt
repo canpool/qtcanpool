@@ -1,0 +1,33 @@
+##
+## Copyright (C) 2026 maminjie <canpool@163.com>
+## SPDX-License-Identifier: MulanPSL-2.0
+##
+
+# A Material application, not a gallery: a top app bar, a navigation rail, a
+# floating action button, a snackbar, and four screens built out of QxMaterial
+# alone. Where the control gallery puts one control in each row so that a
+# change in what a control paints shows up, this puts them to work - which is
+# the other half of what a control set has to prove, and the half that says
+# whether an application can be built out of it.
+#
+# qxapp is here for registerBundledThemes() only: it is the one function that
+# knows which theme files res/themes.qrc ships and which of each pair is the
+# dark one. qxcore carries QxTranslator, which is how --lang is answered.
+add_qtc_executable(MaterialDemo
+  DEPENDS qxmaterial qxapp qxcore qxtheme Qt5::Core Qt5::Widgets
+  SOURCES
+    main.cpp
+    mainwindow.cpp mainwindow.h
+    demopage.cpp demopage.h
+    homepage.cpp homepage.h
+    selectionpage.cpp selectionpage.h
+    feedbackpage.cpp feedbackpage.h
+    settingspage.cpp settingspage.h
+    # The style sheets the themes the settings screen offers are read from
+    # (:/themes/*.css) - the same bundle the other demos offer.
+    ${CMAKE_SOURCE_DIR}/res/themes.qrc
+)
+
+if (TARGET generate_qm_files)
+  add_dependencies(MaterialDemo generate_qm_files)
+endif()

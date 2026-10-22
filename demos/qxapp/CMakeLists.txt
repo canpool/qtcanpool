@@ -1,5 +1,7 @@
 add_subdirectory(ribbondemo)
 add_subdirectory(dockdemo)
 add_subdirectory(controlgallery)
+add_subdirectory(fluentdemo)
+add_subdirectory(materialdemo)
 add_subdirectory(appshell)
 add_subdirectory(ideshell)
