@@ -13,6 +13,8 @@
 # qxapp is here for registerBundledThemes() only: it is the one function that
 # knows which theme files res/themes.qrc ships and which of each pair is the
 # dark one. qxcore carries QxTranslator, which is how --lang is answered.
+# qxwindow is what takes the system frame away and makes the app bar the
+# caption; the bar itself is still the one qxmaterial ships.
 # Where the built catalogues are - the same define ribbondemo is given. The two
 # control libraries hold no tr() strings of their own yet, so what a language
 # buys here is the shared catalogue's strings (qxapp's) rather than the screens',
@@ -23,11 +25,12 @@ if (TARGET Qt5::lrelease)
 endif()
 
 add_qtc_executable(MaterialDemo
-  DEPENDS qxmaterial qxapp qxcore qxtheme Qt5::Core Qt5::Widgets
+  DEPENDS qxmaterial qxapp qxcore qxtheme qxwindow Qt5::Core Qt5::Widgets
   DEFINES ${_materialdemo_defines}
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
+    titlebar.cpp titlebar.h
     demopage.cpp demopage.h
     homepage.cpp homepage.h
     selectionpage.cpp selectionpage.h

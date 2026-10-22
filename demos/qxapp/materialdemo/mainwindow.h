@@ -8,6 +8,7 @@
 #include <QtWidgets/QMainWindow>
 
 #include "qxmaterial/qxmaterial_global.h"
+#include "qxwindow/qxwindow_global.h"
 
 class QStackedWidget;
 
@@ -19,10 +20,16 @@ class MaterialTopAppBar;
 QX_MATERIAL_END_NAMESPACE
 
 QX_MATERIAL_USE_NAMESPACE
+QX_WINDOW_USE_NAMESPACE
+
+QX_WINDOW_BEGIN_NAMESPACE
+class WindowAgentWidget;
+QX_WINDOW_END_NAMESPACE
 
 class DemoPage;
 class FeedbackPage;
 class SettingsPage;
+class TitleBar;
 
 /*!
  * A Material application's window: a top app bar along the top, a navigation
@@ -63,9 +70,16 @@ public:
 private:
     void createTheme(const QString &themeId);
     void createShell();
+    void buildTitleBar();
+    void installWindowAgent();
     void createNavigation();
     void createConnections();
 
+    TitleBar *m_titleBar = Q_NULLPTR;
+    QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
+    /*! The app bar the caption holds: the screen's name and the things that can
+     *  be done to it. It is the library's own control, and the caption is only
+     *  where the window puts it. */
     MaterialTopAppBar *m_bar = Q_NULLPTR;
     MaterialNavigationRail *m_rail = Q_NULLPTR;
     MaterialFAB *m_fab = Q_NULLPTR;

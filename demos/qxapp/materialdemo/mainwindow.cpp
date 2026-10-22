@@ -9,6 +9,7 @@
 #include "homepage.h"
 #include "selectionpage.h"
 #include "settingspage.h"
+#include "titlebar.h"
 
 #include "qxapp/qxthemebundle.h"
 #include "qxmaterial/materialfab.h"
@@ -19,6 +20,7 @@
 #include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthememotion.h"
+#include "qxwindow/windowagentwidget.h"
 
 #include <QtCore/QTextStream>
 #include <QAction>
@@ -134,17 +136,42 @@ void MainWindow::createTheme(const QString &themeId)
 
 void MainWindow::createShell()
 {
-    auto *central = new QWidget(this);
-    auto *layout = new QVBoxLayout(central);
-    layout->setContentsMargins(QMargins());
-    layout->setSpacing(0);
+    // A rail is the whole width it has and never opens: what it is beside is
+    // the window's to arrange, which is a row of two here - the column of
+    // destinations, and the room they open into. The app bar is not in this
+    // layout: it is the caption, and a caption is not part of the body.
+    auto *body = new QWidget(this);
+    auto *bodyLayout = new QHBoxLayout(body);
+    bodyLayout->setContentsMargins(QMargins());
+    bodyLayout->setSpacing(0);
 
-    m_bar = new MaterialTopAppBar(central);
-    m_bar->setObjectName(QStringLiteral("appBar"));
-    // What the screen is called is the rail's to say and the bar's to show:
-    // the two are told by the same answer, which is why the title is set here
-    // and not by each screen.
+    createNavigation();
+    bodyLayout->addWidget(m_rail);
+    bodyLayout->addWidget(m_stack, 1);
+
+    setCentralWidget(body);
+
+    buildTitleBar();
+    installWindowAgent();
+
+    // The snackbar belongs to the window it rises in, and it is not in a
+    // layout: it places itself at the bottom of its parent and rises from
+    // under the edge, which a layout would not let it do.
+    m_snackbar = new MaterialSnackbar(body);
+    m_snackbar->setObjectName(QStringLiteral("snackbar"));
+    m_snackbar->hide();
+}
+
+void MainWindow::buildTitleBar()
+{
+    m_titleBar = new TitleBar(this);
+    // The app bar is the library's own control and the caption is only where the
+    // window puts it: what the screen is called and what can be done to it stay
+    // the bar's to draw and the rail's to say, which is why nothing here sets the
+    // title again after the first screen.
+    m_bar = m_titleBar->appBar();
     m_bar->setTitle(tr("Home"));
+
     // What can be done to the screen as a whole stands at the bar's far end,
     // drawn as icons - an action without one holds a pressable place and shows
     // nothing, so each is given a standard icon the way the rail's are. What
@@ -159,29 +186,58 @@ void MainWindow::createShell()
                 m_snackbar->showMessage(tr("Nothing further up: a bar that had a menu in it would open it "
                                            "here."));
             });
-    layout->addWidget(m_bar);
+}
 
-    // A rail is the whole width it has and never opens: what it is beside is
-    // the window's to arrange, which is a row of two here - the column of
-    // destinations, and the room they open into.
-    auto *body = new QWidget(central);
-    auto *bodyLayout = new QHBoxLayout(body);
-    bodyLayout->setContentsMargins(QMargins());
-    bodyLayout->setSpacing(0);
+void MainWindow::installWindowAgent()
+{
+    // 1. Take the window over. From here on it draws no system frame: the agent
+    //    answers the hit test that decides which part of the client area still
+    //    behaves as border, as caption and as system button.
+    m_agent = new WindowAgentWidget(this);
+    m_agent->setup(this);
 
-    createNavigation();
-    bodyLayout->addWidget(m_rail);
-    bodyLayout->addWidget(m_stack, 1);
+    // 2. Hand the bar over as the caption. It is an ordinary widget and the
+    //    agent is told which one it is, nothing more.
+    setMenuWidget(m_titleBar);
+    m_agent->setTitleBar(m_titleBar);
 
-    layout->addWidget(body, 1);
-    setCentralWidget(central);
+    // 3. Name the system buttons. Naming them is what keeps them clickable: the
+    //    hit test calls everything else in the bar the caption, and a press
+    //    there starts a window move instead of reaching a button. There is no
+    //    WindowIcon among them, because a Material app bar carries no
+    //    application mark - the corner a mark would have taken holds nothing.
+#ifndef Q_OS_MAC
+    m_agent->setSystemButton(WindowAgentBase::Minimize, m_titleBar->minimizeButton());
+    m_agent->setSystemButton(WindowAgentBase::Maximize, m_titleBar->maximizeButton());
+    m_agent->setSystemButton(WindowAgentBase::Close, m_titleBar->closeButton());
 
-    // The snackbar belongs to the window it rises in, and it is not in a
-    // layout: it places itself at the bottom of its parent and rises from
-    // under the edge, which a layout would not let it do.
-    m_snackbar = new MaterialSnackbar(central);
-    m_snackbar->setObjectName(QStringLiteral("snackbar"));
-    m_snackbar->hide();
+    connect(m_titleBar->minimizeButton(), &QAbstractButton::clicked, this, &QWidget::showMinimized);
+    connect(m_titleBar->maximizeButton(), &QAbstractButton::clicked, this, [this]() {
+        if (isMaximized()) {
+            showNormal();
+        } else {
+            showMaximized();
+        }
+    });
+    connect(m_titleBar->closeButton(), &QAbstractButton::clicked, this, &QWidget::close);
+#endif
+
+    // 4. The app bar as a whole is client area, because it is one control that
+    //    draws its own icons: naming the bar is how a press on one of them
+    //    reaches the bar rather than starting a window move. What that costs -
+    //    a press on the bar no longer drags - the caption's wrapper pays back by
+    //    watching for a drag once it has travelled far enough; see TitleBar.
+    m_agent->setHitTestVisible(m_bar, true);
+
+#ifdef Q_OS_MAC
+    // macOS reserves a corner of the title bar for the three buttons it draws
+    // itself, and this is how wide that corner is. Without it the hit test and
+    // the screen disagree about where the buttons are.
+    m_agent->setSystemButtonAreaCallback([](const QSize &size) {
+        static constexpr const int width = 75;
+        return QRect(QPoint(size.width() - width, 0), QSize(width, size.height()));
+    });
+#endif
 }
 
 void MainWindow::createNavigation()
