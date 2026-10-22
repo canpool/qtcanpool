@@ -66,6 +66,7 @@ Q_SIGNALS:
      *  was built. */
     void aboutToShowMenu();
 protected:
+    qreal cornerRadius() const override;
     void paintContent(QPainter *painter) override;
     void keyPressEvent(QKeyEvent *event) override;
 

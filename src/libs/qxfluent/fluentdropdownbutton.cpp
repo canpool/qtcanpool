@@ -157,6 +157,12 @@ QRectF FluentDropDownButton::iconRect() const
     return QRectF(kPadding, (height() - kIconSize) / 2.0, kIconSize, kIconSize);
 }
 
+qreal FluentDropDownButton::cornerRadius() const
+{
+    // A command's turn, the same as the commands in a bar: four.
+    return FluentShape::radius(FluentShape::Radius::Medium);
+}
+
 void FluentDropDownButton::paintContent(QPainter *painter)
 {
     QColor ink = textColor();

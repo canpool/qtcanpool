@@ -6,12 +6,15 @@
 
 #include "qxfluent/fluentdropdownbutton.h"
 
+#include "qxtheme/qxthememanager.h"
+
 #include <QAccessible>
 #include <QApplication>
 #include <QMenu>
 #include <QSignalSpy>
 
 QX_FLUENT_USE_NAMESPACE
+QX_THEME_USE_NAMESPACE
 
 namespace
 {
@@ -23,6 +26,18 @@ constexpr int kHeight = 32;
 void giveSize(FluentDropDownButton *button)
 {
     button->resize(kWidth, kHeight);
+}
+
+QColor pixel(QWidget *widget, int x, int y)
+{
+    const QImage image = widget->grab().toImage();
+    const qreal dpr = image.width() / qreal(widget->width());
+    return image.pixelColor(qRound(x * dpr), qRound(y * dpr));
+}
+
+bool isAccent(const QColor &color)
+{
+    return color.red() < 80 && color.blue() > 200;
 }
 }   // namespace
 
@@ -40,6 +55,7 @@ private slots:
     void theTextIsTheAccessibleName();
     void whatItIs();
     void aChangeOfTextIsAnnounced();
+    void theRingFollowsTheCorners();
 private:
     bool m_wasActive = false;
 };
@@ -181,6 +197,29 @@ void tst_FluentDropDownButton::aChangeOfTextIsAnnounced()
     // The same text twice is one change.
     button.setText(QStringLiteral("Export"));
     QCOMPARE(changed.count(), 1);
+}
+
+/*! The ring and the wash follow the button's corners rather than its
+ *  rectangle: a Fluent command is a rounded thing, and a square ring at a round
+ *  corner is a ring that misses the control. */
+void tst_FluentDropDownButton::theRingFollowsTheCorners()
+{
+    QxTheme::QxThemeManager::instance()->setAccentColor(QColor(0, 0, 255));
+
+    FluentDropDownButton button;
+    giveSize(&button);
+    button.setText(QStringLiteral("Export"));
+    button.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&button));
+    button.setFocus();
+    QVERIFY(button.hasFocus());
+
+    // The middle of an edge is the ring; the corner is the page, because the
+    // ring turned the corner instead of crossing it.
+    QVERIFY(isAccent(pixel(&button, kWidth / 2, 0)));
+    QVERIFY(!isAccent(pixel(&button, 0, 0)));
+
+    QxTheme::QxThemeManager::instance()->setAccentColor(QColor());
 }
 
 TEST_ADD(tst_FluentDropDownButton)
