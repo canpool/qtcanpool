@@ -515,34 +515,6 @@ plain `QMainWindow` + 同一个样式表可以复现（与 ribbon 无关），ri
 
 ---
 
-## 主题的样式表和 dock 的样式表都是「应用级」，只能留一份（the theme's sheet and the dock's sheet are both application level）
-
-> **（4.6 B4）新增记录**：给 `dockdemo` 接主题引擎时撞见的，是 4.5 把 dock 外观交还给应用之后
-> 留下的接缝：`qxdock::dockStyleSheet()` 要应用自己 `setStyleSheet()`，
-> 而主题引擎 `QxThemeManager::apply()` 也在同一个位置 `setStyleSheet()`。
-
-**现象**：一个既用主题引擎、又用 dock 的应用，两张应用级样式表**互相覆盖**——后装的赢。
-先装 dock 表、再切主题，dock 表被主题表顶掉（dock 回到未装饰的样子）；先切主题再装 dock 表，
-主题表被顶掉（整个界面退回平台外观）。只有一条路走得通：**把两张拼成一条字符串装上去**，
-并且在每次主题变更后重拼一次。
-
-**成因**：Qt 的应用级样式表是**一个字符串**（`QApplication::styleSheet()`），不是列表；
-`qxribbon` 与 `qxdock` 都在 4.5 退回到「外观由应用装」（B12 / C9），两个库于是都要求应用
-在同一个位置装自己那张。widget 级样式表能避开，但优先级更高，会把应用主题里对这些控件的规则
-整个盖掉——那正是 4.5 拆掉 widget 级 sheet 要解决的事，不能走回头路。
-
-**现状**：`demos/qxapp/dockdemo` 自己拼：`engine->styleSheet(engine->theme()) + m_dockSheet`，
-并监听 `themeChanged` 重拼。拼的顺序是**主题在前、dock 在后**：dock 表按类名描述 dock 自己的
-控件，不会盖掉主题对同一控件的规则；反过来则会让 dock 的纯色背景压过主题的背景。
-
-**要改变它需要什么**：让应用级样式表可以由几段组成——引擎在装主题表时把附加段接在后面
-（`QxThemeManager` 加一个「附加样式表」入口，`dockStyleSheet()` 的文本交给它而不是应用自己拼）。
-那是**加法**（不删不改现有签名），但要想定下来，得先回答一个问题：附加段由谁拥有、
-主题表为空（"no skin" 主题）时还算不算、以及两段都写到同一个控件时谁赢（现在靠拼接顺序决定，
-这个约定得写进文档）。
-
----
-
 ## offscreen 下有几件事是看不见的（what an offscreen test cannot see）
 
 > **（4.7 I1）新增记录**：4.7 把「场景测试」当成一等公民之后攒下来的一页。

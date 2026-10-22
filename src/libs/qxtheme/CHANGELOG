@@ -25,6 +25,20 @@ Feature
   shadow colour. QSS cannot draw a shadow and a QGraphicsDropShadowEffect is
   one effect per widget, so a shadow is painted - these are the values the
   painter asks for, fixed once so the controls that paint them agree.
+- QxThemeManager::additionalStyleSheet() / setAdditionalStyleSheet(), the text
+  this engine appends to the theme's own sheet whenever it installs one. An
+  application-level style sheet is one string, so an application that has one
+  of its own competed with this engine for that string: whichever ran last won
+  and the other's rules were gone - which is how an application that both ran a
+  theme and dressed a library's widgets from a sheet of that library's came to
+  lose one of the two. The engine puts them together instead, the theme's first
+  and this text after it, so a rule of the same specificity as one of the
+  theme's is the application's. The text is not persisted and is not part of a
+  theme: it is the application's, which is also what decides when it changes -
+  including rebuilding it from the palette of the theme in force. Nothing is
+  installed while no theme is in force, this text included, because that is what
+  the engine already does with the theme's own. tst_QxTheme::
+  additionalStyleSheetGoesAfterTheThemes is the check.
 
 0.2.1
 ---

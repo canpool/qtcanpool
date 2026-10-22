@@ -152,12 +152,36 @@ public:
     QColor m_systemAccent;
     /*! Set by setAccentColor(); invalid while the platform's colour is the answer. */
     QColor m_accentOverride;
+    /*! Set by setAdditionalStyleSheet(); installed after the theme's own sheet. */
+    QString m_additionalStyleSheet;
     bool m_warnedUnknownTheme = false;
 
     /*! The registration of the selected theme; invalid while there is none. */
     QxThemeInfo current() const
     {
         return m_themes.value(m_theme);
+    }
+
+    /*!
+     * Puts the theme's sheet and the application's own on the widgets, in that
+     * order.
+     *
+     * With no theme in force this installs nothing, the additional text
+     * included: that is the answer apply() already gives for the theme's own
+     * sheet - an application that set a sheet up before any theme was selected
+     * keeps it - and there is nothing here to append the text to anyway.
+     */
+    void installSheet()
+    {
+        QApplication *app = qobject_cast<QApplication *>(QCoreApplication::instance());
+        if (!app) {
+            return;
+        }
+        const QxThemeInfo info = current();
+        if (!info.isValid()) {
+            return;
+        }
+        app->setStyleSheet(info.styleSheet + m_additionalStyleSheet);
     }
 };
 
@@ -512,6 +536,24 @@ void QxThemeManager::setStyleSheet(const QString &id, const QString &css)
     }
 }
 
+QString QxThemeManager::additionalStyleSheet() const
+{
+    Q_D(const QxThemeManager);
+    return d->m_additionalStyleSheet;
+}
+
+void QxThemeManager::setAdditionalStyleSheet(const QString &css)
+{
+    Q_D(QxThemeManager);
+    if (d->m_additionalStyleSheet == css) {
+        return;
+    }
+    d->m_additionalStyleSheet = css;
+    // Only the sheet is affected: the palette and the rest of what apply()
+    // does belong to the theme, which did not change.
+    d->installSheet();
+}
+
 void QxThemeManager::setTheme(const QString &id)
 {
     Q_D(QxThemeManager);
@@ -593,8 +635,10 @@ void QxThemeManager::apply()
 
     // An empty sheet is a theme that paints nothing of its own, not a theme
     // that failed to resolve: installing it is what takes the previous theme's
-    // sheet back off the widgets.
-    app->setStyleSheet(info.styleSheet);
+    // sheet back off the widgets. The application's own text goes after it, so
+    // that a rule of the same specificity as one of the theme's is the
+    // application's - see additionalStyleSheet().
+    d->installSheet();
 }
 
 void QxThemeManager::refreshSystemTheme()

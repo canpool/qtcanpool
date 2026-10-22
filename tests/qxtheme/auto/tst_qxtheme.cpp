@@ -87,12 +87,14 @@ class tst_QxTheme : public QObject
 private slots:
     void initTestCase();
     void init();
+    void cleanup();
 
     void registering();
     void unknownThemeIsLeftAlone();
     void palettes();
     void colorSchemeHintLeavesThePaletteAlone();
     void styleSheetOfARegisteredTheme();
+    void additionalStyleSheetGoesAfterTheThemes();
     void applyTheme();
     void persistence();
     void restoredThemeWaitsForItsRegistration();
@@ -125,6 +127,13 @@ private:
 void tst_QxTheme::initTestCase()
 {
     QVERIFY(m_dir.isValid());
+}
+
+void tst_QxTheme::cleanup()
+{
+    // The application's own text would outlive a test that failed before it
+    // took it down, and every other test here reads the application's sheet.
+    QxThemeManager::instance()->setAdditionalStyleSheet(QString());
 }
 
 void tst_QxTheme::init()
@@ -319,6 +328,42 @@ void tst_QxTheme::applyTheme()
     // which is the only way "no skin" can be a choice.
     manager->setTheme(QString::fromLatin1(kBare));
     QCOMPARE(qApp->styleSheet(), QString());
+}
+
+/*!
+ * A sheet of the application's own, installed next to the theme's.
+ *
+ * An application-level style sheet is one string, so an application that has
+ * one of its own competes with this engine for that one string: whichever ran
+ * last won, and the other's rules were gone. Putting the two together is what
+ * the additional text is for, and the order it is put together in is also the
+ * order that decides a rule both of them name at the same specificity - the
+ * theme's first, so that what the application asks for is what it gets.
+ */
+void tst_QxTheme::additionalStyleSheetGoesAfterTheThemes()
+{
+    QxThemeManager *manager = QxThemeManager::instance();
+    QCOMPARE(manager->additionalStyleSheet(), QString());
+
+    manager->setTheme(QString::fromLatin1(kLight));
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #0f0f0f; }"));
+
+    const QString own = QStringLiteral("QWidget { background: #123456; }");
+    manager->setAdditionalStyleSheet(own);
+    QCOMPARE(manager->additionalStyleSheet(), own);
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #0f0f0f; }") + own);
+
+    // It rides along with every switch, and it is not the theme's: a theme that
+    // paints nothing of its own still leaves the application's text standing.
+    manager->setTheme(QString::fromLatin1(kBare));
+    QCOMPARE(qApp->styleSheet(), own);
+
+    manager->setTheme(QString::fromLatin1(kDark));
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #f0f0f0; }") + own);
+
+    // Taking it away leaves the theme's sheet exactly as it was.
+    manager->setAdditionalStyleSheet(QString());
+    QCOMPARE(qApp->styleSheet(), QStringLiteral("QWidget { color: #f0f0f0; }"));
 }
 
 void tst_QxTheme::persistence()

@@ -161,6 +161,32 @@ public:
      */
     void setStyleSheet(const QString &id, const QString &css);
 
+    /*!
+     * Text this engine appends to the theme's own sheet whenever it installs
+     * one, empty until the application sets it.
+     *
+     * An application-level style sheet is one string, so a second one can only
+     * replace the first: this engine and a library that dresses its own widgets
+     * from a sheet of its own were both writing to QApplication::
+     * setStyleSheet(), and whichever ran last won. Putting the two together is
+     * what this is for - the theme's sheet first and this text after it, so a
+     * rule of the same specificity as one of the theme's is the one that
+     * decides, while a rule the theme says nothing about still lands.
+     *
+     * The text is not persisted and it is not part of a theme: it belongs to
+     * the application, which is also what decides when it changes - including
+     * rebuilding it from the palette of the theme in force, which is how the
+     * piece a theme cannot carry is filled. Nothing is installed while no
+     * theme is in force, this text included, because that is what the engine
+     * does with the theme's own sheet then (see apply()).
+     */
+    QString additionalStyleSheet() const;
+    /*!
+     * Replaces that text and installs the sheet again, so the change is on the
+     * widgets by the time the call returns.
+     */
+    void setAdditionalStyleSheet(const QString &css);
+
 public Q_SLOTS:
     /*!
      * Applies \a id, persists it as the explicit choice and emits
