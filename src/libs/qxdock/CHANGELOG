@@ -31,6 +31,22 @@ Changed
   API: the public class reaches it through the same d-pointer and the public ABI
   is unchanged. This translation unit had no file-level helper to carry along, so
   the header holds the class and nothing else.
+- dockwindow.cpp is three files now, cut the same way: the window's object model -
+  construction, the add/remove/lookup calls, the central widget, the tool bar
+  styles, the perspectives and the registration and notification calls - stays in
+  dockwindow.cpp; everything that reads or writes a state goes to
+  dockwindowstate.cpp, including opening a perspective and hiding or restoring the
+  floating windows around it; and the events the window receives from outside -
+  both eventFilter branches, showEvent and the four drag events - go to
+  dockwindowevents.cpp. No line was rewritten on the way and no behaviour changed.
+- DockWindowPrivate joins the accessibility declaration in dockwindow_p.h, which
+  is where a private header keeps what its implementation files share. It is still
+  not part of the exported API: the public class reaches it through the same
+  d-pointer and the public ABI is unchanged. The StateFileVersion enum went to
+  dockwindowstate.cpp instead, because that file holds both of its readers.
+- The two eventFilter definitions are the X11 branch and its fall-back, not a
+  duplicate to be merged on sight, so both moved verbatim and the guard around
+  them moved with them.
 
 0.3.2
 ---
