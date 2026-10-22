@@ -1,6 +1,20 @@
 Unreleased
 ---
 Feature
+- FluentToggleSplitButton, a command that stays down with a menu beside it:
+  doing and choosing more are two things, and this is the shape that says so.
+  The left half is the command - it goes down and stays down, and the face is
+  washed in the accent while it is in force - and the right half is the chevron
+  that opens the menu. QToolButton's MenuButtonPopup has the same two halves
+  and means something else by them, and neither it nor a button with a menu
+  beside it can say "this is on" without the menu being the answer to why. Here
+  a press is answered by the half it started on and by nothing else: a press
+  that begins on the body and is released over the chevron has not chosen more,
+  and one that begins on the chevron has not done the command - the seam
+  between them is drawn so that a reader does not have to learn it. The
+  keyboard has no halves to aim at, so the keys say it instead: Space and Enter
+  toggle, Down and F4 open the menu. For an assistive tool it is a check box,
+  because the question it answers is whether the command is in force.
 - FluentDropDownButton, a command that is a menu: the whole face opens it. Qt's
   QToolButton can be told to behave this way and is then drawn by a style a
   Fluent application replaces anyway, but what it cannot be told is the promise

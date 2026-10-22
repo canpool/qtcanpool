@@ -28,6 +28,7 @@ add_qtc_library(qxfluent
     fluentbreadcrumbbar.h fluentbreadcrumbbar.cpp
     fluentcommandbar.h fluentcommandbar.cpp
     fluentdropdownbutton.h fluentdropdownbutton.cpp
+    fluenttogglesplitbutton.h fluenttogglesplitbutton.cpp
     fluentnavigationview.h fluentnavigationview.cpp
     fluenttabview.h fluenttabview.cpp
     fluentteachingtip.h fluentteachingtip.cpp

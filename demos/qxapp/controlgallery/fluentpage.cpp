@@ -18,6 +18,7 @@
 #include "qxfluent/fluentslider.h"
 #include "qxfluent/fluentswitch.h"
 #include "qxfluent/fluentteachingtip.h"
+#include "qxfluent/fluenttogglesplitbutton.h"
 #include "qxfluent/fluenttokens.h"
 #include "qxfluent/fluentwindowmaterial.h"
 
@@ -101,6 +102,14 @@ FluentPage::FluentPage(QWidget *parent)
     exportButton->setText(tr("Export"));
     exportButton->menu()->addAction(tr("As a PDF"));
     exportButton->menu()->addAction(tr("As an image"));
+
+    auto *pinButton = addControl<FluentToggleSplitButton>(QStringLiteral("fluentToggleSplitButton"),
+                                                          QStringLiteral("FluentToggleSplitButton"),
+                                                          new FluentToggleSplitButton(this));
+    pinButton->setText(tr("Pin"));
+    pinButton->setChecked(true);
+    pinButton->menu()->addAction(tr("Pin to the left"));
+    pinButton->menu()->addAction(tr("Unpin all"));
 
     auto *rating = addControl<FluentRating>(QStringLiteral("fluentRating"), QStringLiteral("FluentRating"),
                                             new FluentRating(this));
