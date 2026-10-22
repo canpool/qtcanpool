@@ -17,4 +17,5 @@ add_qtc_library(qxmaterial
     materialskeleton.h materialskeleton.cpp
     materialripple.h materialripple.cpp
     materialnavigationrail.h materialnavigationrail.cpp
+    materialtopappbar.h materialtopappbar.cpp
 )

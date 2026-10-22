@@ -148,3 +148,20 @@ Feature
   icon rather than under the name because the icon is what is recognised
   first. A destination nobody can use is drawn thinned and cannot be put in
   force. The keyboard walks the column, and the column is announced as a list.
+- MaterialTopAppBar, the top of a Material screen: one bar with three places in
+  it - the leading icon, the name of the screen, and the trailing icons. Qt has
+  no such bar: a QToolBar is a row of buttons whose look belongs to the style,
+  a QMenuBar is a menu, and a title is a label the application has to place and
+  keep placed. Which of the four shapes it takes is a question about the
+  screen, not about taste: the two at fifty-six name the screen beside its
+  icons, with the name in the middle in one of them, and the two taller ones
+  give the name a row of its own - at twenty-two and at thirty-six - which is
+  what a screen that is a place wants, and is why they are taller rather than
+  bolder. What the bar says about being scrolled under is a change of surface,
+  not a line and not a shadow: at rest it is the page, and once content has
+  moved under it, it is the surface one step away - which is the whole of what
+  Material calls on-scroll elevation, and why the scrolled state is handed to
+  the bar rather than the bar watching a scroll area it was never given. An
+  icon here is a QAction, and what a press does is the action's to say: the
+  bar's only answer is which icon was landed on. The row is one stop on the way
+  through the keyboard, not one per icon, and it is announced as a toolbar.
