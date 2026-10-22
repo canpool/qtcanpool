@@ -7,7 +7,7 @@
 
 | 文件 | 触发 | 内容 |
 | :--- | :--- | :--- |
-| `.github/workflows/ci.yml` | push / PR 到 `master` / `release-*` | 矩阵构建 + 测试、clang-format 门禁、SDK 消费门禁、覆盖率 / 消毒器门禁、clang-tidy（报告） |
+| `.github/workflows/ci.yml` | push / PR 到 `master` / `release-*` | 矩阵构建 + 测试、clang-format 门禁、源文件编码门禁、SDK 消费门禁、覆盖率 / 消毒器门禁、clang-tidy（报告） |
 | `.github/workflows/pages.yml` | `doc/**` `src/libs/**` `demos/**` `cmake/**` 根 `CMakeLists.txt` 自身 | Doxygen 站点 + wasm demo，合并后发 GitHub Pages |
 
 ## ci.yml 矩阵
@@ -54,6 +54,23 @@ clang-format --style=file --dry-run --Werror $FILES
 
 - `projects/consume`：装好 SDK 后 `find_package(QtCanpool)` → 编译 → 链接 → 运行。
 - `scripts/new-project`：真实生成一个工程并编译（`test -x` 断言产物）。
+
+## 源文件编码门禁（`encoding` 作业）
+
+- MSVC 是这里唯一必须被告知源码编码的编译器：没有 `/utf-8` 它会按系统代码页解码，
+  `u"..."` 与每一个 `QStringLiteral` 到运行时就是错的字，而**编译照样成功**。
+  根 `CMakeLists.txt` 给 MSVC 加这个开关，本作业负责让它不被悄悄拿掉——删掉它、挪到 targets
+  之后、破坏 `if(MSVC)` 守卫，这三种改法都不会让别的腿变红。
+- 做法不是「grep 命令行有没有 `-utf-8`」，而是**真的编一次再回读**：从 `compile_commands.json`
+  里取一个真实源文件的编译命令（脚本按内容找那个带中文字面量的 demo TU，不写死路径），
+  原样重跑并把 obj 里的字面量读回来，`u"…"` 必须完好。再跑两个对照：去掉 Qt 自己的 `-utf-8`
+  （正是 Qt 5 的处境）、去掉全部 UTF-8 开关（「没按 UTF-8 解码」长什么样）——对照不过，
+  就说明这个字面量根本不敏感，检查不算通过。
+- 为什么不直接跑测试套件：Qt 6 通过 `Qt6::Platform` 的接口编译选项替消费者传 `-utf-8`，
+  所以今天能跑的腿上把开关删掉也照样绿；Qt 5.15 才是「开关就是全部」的那条腿，
+  而它的头文件在现在的 runner 工具集上编不过。
+- 显示名 `source encoding / windows / Qt 6.8.1`：钉 6.8.1 是为了拿到一份能真实构建的
+  `compile_commands.json`，与编码检查本身无关（`vswhere` + `vcvars` 把 MSVC 环境写进命令）。
 
 ## native 作业（qxwindow native，报告态、非门禁）
 

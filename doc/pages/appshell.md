@@ -242,6 +242,11 @@ connect(rail, &QxNavigationBar::currentChanged, this, [](int i) { /* ... */ });
 - 条目插删在选中项之前时，选中索引会随之平移并发信号 —— 把索引当作"导轨中的地址"，
   而不是条目的身份。
 
+> ⚠️ **三条「导轨」不是同一件东西**：本页这条是 `qxapp` 的 `QxNavigationBar`（外壳自己用的、
+> 外观由主题表决定）；4.7 的两件是控件集里的 `MaterialNavigationRail`（选中项背后画强调色药丸，
+> 固定 80 宽不拉伸）与 `FluentNavigationView`（目的地列 + 内容区的骨架，列可折叠成仅图标）。
+> 它们互不依赖，也不互相替换。
+
 ## 启动屏
 
 `QxSplashScreen` 在 `QSplashScreen` 的基础上补的是**进度**：
