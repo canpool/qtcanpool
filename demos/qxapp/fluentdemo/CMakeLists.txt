@@ -22,11 +22,12 @@ if (TARGET Qt5::lrelease)
 endif()
 
 add_qtc_executable(FluentDemo
-  DEPENDS qxfluent qxapp qxcore qxtheme Qt5::Core Qt5::Widgets
+  DEPENDS qxfluent qxapp qxcore qxtheme qxwindow Qt5::Core Qt5::Widgets
   DEFINES ${_fluentdemo_defines}
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
+    titlebar.cpp titlebar.h
     demopage.cpp demopage.h
     homepage.cpp homepage.h
     inputspage.cpp inputspage.h

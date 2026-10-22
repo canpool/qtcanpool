@@ -10,6 +10,7 @@
 #include "homepage.h"
 #include "inputspage.h"
 #include "settingspage.h"
+#include "titlebar.h"
 
 #include "qxapp/qxthemebundle.h"
 #include "qxfluent/fluentcommandbar.h"
@@ -18,10 +19,14 @@
 #include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthememotion.h"
+#include "qxwindow/windowagentwidget.h"
 
+#include <QtCore/QSignalBlocker>
 #include <QtCore/QTextStream>
+#include <QtCore/QTimer>
 #include <QAction>
 #include <QActionGroup>
+#include <QLineEdit>
 #include <QMenu>
 #include <QScrollArea>
 #include <QStackedWidget>
@@ -34,6 +39,7 @@
 
 QX_APP_USE_NAMESPACE
 QX_THEME_USE_NAMESPACE
+QX_WINDOW_USE_NAMESPACE
 
 namespace
 {
@@ -63,8 +69,7 @@ void describe(QTextStream &out, QWidget *widget, int depth)
     }
 }
 
-/*! Adds \a page to the stack and returns the screen, wrapped so that a screen
- *  taller than the window scrolls on its own. */
+/*! Wraps \a page so that a screen taller than the window scrolls on its own. */
 QWidget *scrollable(DemoPage *page)
 {
     auto *area = new QScrollArea;
@@ -73,6 +78,11 @@ QWidget *scrollable(DemoPage *page)
     area->setFrameShape(QFrame::NoFrame);
     return area;
 }
+
+/*! How long a single click on the application mark waits before it opens the
+ *  system menu, so that the second click of a double click can cancel it. Short
+ *  enough that the menu still feels like it opened on the click. */
+constexpr int kSystemMenuDelay = 75;
 }   // namespace
 
 MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &themeId)
@@ -98,13 +108,14 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     layout->setContentsMargins(QMargins());
     layout->setSpacing(0);
 
-    createCommandBar();
-    layout->addWidget(m_bar);
-
     createNavigation();
     layout->addWidget(m_nav, 1);
 
     setCentralWidget(central);
+
+    buildTitleBar();
+    installWindowAgent();
+
     resize(1100, 760);
 
     createConnections();
@@ -143,32 +154,91 @@ void MainWindow::createTheme(const QString &themeId)
     }
 }
 
-void MainWindow::createCommandBar()
+void MainWindow::createNavigation()
 {
-    m_bar = new FluentCommandBar(this);
-    m_bar->setObjectName(QStringLiteral("commandBar"));
+    m_nav = new FluentNavigationView(this);
+    m_nav->setObjectName(QStringLiteral("navigation"));
+    m_stack = new QStackedWidget(this);
+    m_stack->setObjectName(QStringLiteral("screens"));
 
-    QAction *about = m_bar->addCommand(FluentCommandBar::ItemRole::Button, tr("About"));
-    connect(about, &QAction::triggered, this, [this]() {
-        statusBar()->showMessage(tr("A Fluent application built out of QxFluent: navigation, commands, and "
-                                    "controls - no ribbon, and no style sheet of its own."),
-                                 8000);
-    });
+    // The pane holds one thing, and what it opens is a screen at a time: a
+    // stacked widget is what turns "one room beside the pane" into "one of
+    // five", and it is also what keeps a screen's state while another is shown.
+    struct Built {
+        QStyle::StandardPixmap pixmap;
+        const char *name;
+        DemoPage *page;
+    };
+    HomePage *home = new HomePage(m_stack);
+    InputsPage *inputs = new InputsPage(m_stack);
+    FeedbackPage *feedback = new FeedbackPage(m_stack);
+    CollectionPage *collection = new CollectionPage(m_stack);
+    m_settings = new SettingsPage(m_stack);
+
+    const Built built[] = {{QStyle::SP_DirHomeIcon, QT_TR_NOOP("Home"), home},
+                           {QStyle::SP_ComputerIcon, QT_TR_NOOP("Input"), inputs},
+                           {QStyle::SP_MessageBoxInformation, QT_TR_NOOP("Feedback"), feedback},
+                           {QStyle::SP_DirIcon, QT_TR_NOOP("Collection"), collection},
+                           {QStyle::SP_FileDialogDetailedView, QT_TR_NOOP("Settings"), m_settings}};
+
+    for (const Built &entry : built) {
+        Destination destination;
+        destination.text = tr(entry.name);
+        destination.icon = style()->standardIcon(entry.pixmap);
+        destination.page = scrollable(entry.page);
+        m_stack->addWidget(destination.page);
+        m_destinations.append(destination);
+    }
+
+    m_nav->setContent(m_stack);
+    // The pane is built by the same code that narrows it, so there is one place
+    // that knows what a destination is and not two that have to agree.
+    filterDestinations(QString());
+}
+
+void MainWindow::buildTitleBar()
+{
+    m_titleBar = new TitleBar(this);
+    m_titleBar->setTitle(windowTitle());
+
+    FluentCommandBar *bar = m_titleBar->commandBar();
+    QxThemeManager *engine = QxThemeManager::instance();
 
     // Folding the pane is the one piece of behaviour a Fluent navigation pane
     // has that a list of buttons does not: it is what an application does on a
     // narrow window, where the words are the first thing there is no room for.
-    QAction *fold = m_bar->addCommand(FluentCommandBar::ItemRole::Toggle, tr("Fold the pane"));
+    QAction *fold = bar->addCommand(FluentCommandBar::ItemRole::Toggle, tr("Fold the pane"));
     connect(fold, &QAction::toggled, this, [this](bool on) {
         m_nav->setPaneOpen(!on);
     });
 
-    // The theme menu lives in the command row rather than in a menu bar,
-    // because a Fluent application has no menu bar.
-    QAction *theme = m_bar->addCommand(FluentCommandBar::ItemRole::DropDown, tr("Theme"));
-    QxThemeManager *engine = QxThemeManager::instance();
-    auto *menu = new QMenu(m_bar);
-    auto *group = new QActionGroup(m_bar);
+    // Light and dark are one click apart in the caption, and the pair is asked
+    // of the engine rather than named here: which two themes are the same theme
+    // in the other light is the engine's answer, and a window that wrote the
+    // ids down would be wrong the day another family is registered.
+    QAction *dark = bar->addCommand(FluentCommandBar::ItemRole::Toggle, tr("Dark"));
+    dark->setChecked(engine->isDark());
+    connect(dark, &QAction::toggled, this, [](bool on) {
+        QxThemeManager *engine = QxThemeManager::instance();
+        const QString target = on ? engine->systemDarkTheme() : engine->systemLightTheme();
+        if (!target.isEmpty()) {
+            engine->setTheme(target);
+        }
+    });
+    connect(engine, &QxThemeManager::themeChanged, dark, [engine, dark](const QString &) {
+        // The engine is the only one that knows when the theme changed - a menu
+        // entry, a restored setting or the system's own answer all arrive here,
+        // and the switch has to say what is in force rather than what was
+        // clicked before it.
+        QSignalBlocker blocker(dark);
+        dark->setChecked(engine->isDark());
+    });
+
+    // The theme menu lives in the caption rather than in a menu bar, because a
+    // Fluent application has no menu bar.
+    QAction *theme = bar->addCommand(FluentCommandBar::ItemRole::DropDown, tr("Theme"));
+    auto *menu = new QMenu(bar);
+    auto *group = new QActionGroup(bar);
     group->setExclusive(true);
     const QStringList ids = engine->themeIds();
     for (const QString &id : ids) {
@@ -182,59 +252,113 @@ void MainWindow::createCommandBar()
     connect(group, &QActionGroup::triggered, this, [](QAction *entry) {
         QxThemeManager::instance()->setTheme(entry->data().toString());
     });
+    connect(engine, &QxThemeManager::themeChanged, menu, [group](const QString &id) {
+        // A menu that remembered what was checked rather than what is in force
+        // would show a tick beside a theme the window is no longer drawn in,
+        // whichever of the two put the other one on.
+        const QList<QAction *> entries = group->actions();
+        for (QAction *entry : entries) {
+            QSignalBlocker blocker(entry);
+            entry->setChecked(entry->data().toString() == id);
+        }
+    });
+
+    QAction *about = bar->addCommand(FluentCommandBar::ItemRole::Button, tr("About"));
+    connect(about, &QAction::triggered, this, [this]() {
+        statusBar()->showMessage(tr("A Fluent application built out of QxFluent: a caption of its own, navigation, "
+                                    "commands, and controls - no ribbon, and no style sheet of its own."),
+                                 8000);
+    });
 }
 
-void MainWindow::createNavigation()
+void MainWindow::installWindowAgent()
 {
-    m_nav = new FluentNavigationView(this);
-    m_nav->setObjectName(QStringLiteral("navigation"));
-    m_stack = new QStackedWidget(this);
-    m_stack->setObjectName(QStringLiteral("screens"));
+    // 1. Take the window over. From here on it draws no system frame: the agent
+    //    answers the hit test that decides which part of the client area still
+    //    behaves as border, as caption and as system button.
+    m_agent = new WindowAgentWidget(this);
+    m_agent->setup(this);
 
-    // The pane holds one thing, and what it opens is a screen at a time: a
-    // stacked widget is what turns "one room beside the pane" into "one of
-    // five", and it is also what keeps a screen's state while another is shown.
-    struct Destination {
-        QStyle::StandardPixmap pixmap;
-        const char *name;
-        DemoPage *page;
-    };
-    HomePage *home = new HomePage(m_stack);
-    InputsPage *inputs = new InputsPage(m_stack);
-    FeedbackPage *feedback = new FeedbackPage(m_stack);
-    CollectionPage *collection = new CollectionPage(m_stack);
-    m_settings = new SettingsPage(m_stack);
+    // 2. Hand the bar over as the caption. It is an ordinary widget and the
+    //    agent is told which one it is, nothing more.
+    setMenuWidget(m_titleBar);
+    m_agent->setTitleBar(m_titleBar);
 
-    const Destination destinations[] = {{QStyle::SP_DirHomeIcon, QT_TR_NOOP("Home"), home},
-                                        {QStyle::SP_ComputerIcon, QT_TR_NOOP("Input"), inputs},
-                                        {QStyle::SP_MessageBoxInformation, QT_TR_NOOP("Feedback"), feedback},
-                                        {QStyle::SP_DirIcon, QT_TR_NOOP("Collection"), collection},
-                                        {QStyle::SP_FileDialogDetailedView, QT_TR_NOOP("Settings"), m_settings}};
+    // 3. Name the system buttons. Naming them is what keeps them clickable: the
+    //    hit test calls everything else in the bar the caption, and a press
+    //    there starts a window move instead of reaching a button.
+#ifndef Q_OS_MAC
+    m_agent->setSystemButton(WindowAgentBase::WindowIcon, m_titleBar->iconButton());
+    m_agent->setSystemButton(WindowAgentBase::Minimize, m_titleBar->minimizeButton());
+    m_agent->setSystemButton(WindowAgentBase::Maximize, m_titleBar->maximizeButton());
+    m_agent->setSystemButton(WindowAgentBase::Close, m_titleBar->closeButton());
 
-    for (const Destination &destination : destinations) {
-        // A destination is a QAction, and the view puts the one that was
-        // clicked in force and triggers it - so an application that connected
-        // to it hears about it, and the stack follows the view's own answer
-        // rather than a second copy of the same decision.
-        m_nav->addItem(tr(destination.name), style()->standardIcon(destination.pixmap));
-        m_stack->addWidget(scrollable(destination.page));
-    }
+    connect(m_titleBar->minimizeButton(), &QAbstractButton::clicked, this, &QWidget::showMinimized);
+    connect(m_titleBar->maximizeButton(), &QAbstractButton::clicked, this, [this]() {
+        if (isMaximized()) {
+            showNormal();
+        } else {
+            showMaximized();
+        }
+    });
+    connect(m_titleBar->closeButton(), &QAbstractButton::clicked, this, &QWidget::close);
+#endif
 
-    m_nav->setContent(m_stack);
-    m_nav->setCurrentIndex(0);
+    // The two parts of the caption that are not chrome: the field a search is
+    // typed into and the row of commands. Everything else in a caption is where
+    // a press starts a move.
+    m_agent->setHitTestVisible(m_titleBar->searchField(), true);
+    m_agent->setHitTestVisible(m_titleBar->commandBar(), true);
+
+#ifdef Q_OS_WINDOWS
+    // The application mark behaves the way the system's does: one click opens
+    // the system menu, two close the window. A click cannot tell the two apart,
+    // so the menu is put on a short delay that the double click cancels.
+    connect(m_titleBar->iconButton(), &QAbstractButton::clicked, this, [this]() {
+        m_titleBar->iconButton()->setProperty("double-click-close", false);
+        QTimer::singleShot(kSystemMenuDelay, this, [this]() {
+            if (m_titleBar->iconButton()->property("double-click-close").toBool()) {
+                return;
+            }
+            m_agent->showSystemMenu(
+                m_titleBar->iconButton()->mapToGlobal(QPoint{0, m_titleBar->iconButton()->height()}));
+        });
+    });
+    connect(m_titleBar->iconButton(), &CaptionButton::doubleClicked, this, [this]() {
+        m_titleBar->iconButton()->setProperty("double-click-close", true);
+        close();
+    });
+#endif
+
+#ifdef Q_OS_MAC
+    // macOS reserves a corner of the title bar for the three buttons it draws
+    // itself, and this is how wide that corner is. Without it the hit test and
+    // the screen disagree about where the buttons are.
+    m_agent->setSystemButtonAreaCallback([](const QSize &size) {
+        static constexpr const int width = 75;
+        return QRect(QPoint(size.width() - width, 0), QSize(width, size.height()));
+    });
+#endif
 }
 
 void MainWindow::createConnections()
 {
     // The pane says which destination is in force, and the stack follows: there
     // is one way the screen changes, whether it was clicked, walked to with the
-    // keyboard, or asked for from the command line.
+    // keyboard, or asked for from the command line. The index is a position in
+    // the list the pane is showing, which a search can shorten.
     connect(m_nav, &FluentNavigationView::currentIndexChanged, this, [this](int index) {
-        m_stack->setCurrentIndex(index);
+        if (index >= 0 && index < m_shown.count()) {
+            m_stack->setCurrentWidget(m_shown.at(index)->page);
+        }
     });
     connect(m_nav, &FluentNavigationView::currentItemChanged, this, [this](QAction *item) {
-        statusBar()->showMessage(tr("Showing: %1").arg(item->text()), 4000);
+        if (item) {
+            statusBar()->showMessage(tr("Showing: %1").arg(item->text()), 4000);
+        }
     });
+
+    connect(m_titleBar, &TitleBar::searchTextChanged, this, &MainWindow::filterDestinations);
 
     connect(m_settings, &SettingsPage::paneOpenChanged, this, [this](bool open) {
         m_nav->setPaneOpen(open);
@@ -248,4 +372,40 @@ void MainWindow::createConnections()
         // is no, and that is worth showing rather than hiding.
         m_settings->reportMaterial(m_material->apply(material));
     });
+}
+
+void MainWindow::filterDestinations(const QString &needle)
+{
+    const QString trimmed = needle.trimmed();
+    QWidget *currentPage = m_stack->currentWidget();
+
+    m_nav->clear();
+    m_shown.clear();
+    for (const Destination &destination : m_destinations) {
+        if (!trimmed.isEmpty() && !destination.text.contains(trimmed, Qt::CaseInsensitive)) {
+            continue;
+        }
+        m_shown.append(&destination);
+        m_nav->addItem(destination.text, destination.icon);
+    }
+
+    // A search that narrows the pane away from the screen in front must not
+    // close it: what is being read stays, and a pane that lost its mark says so
+    // by marking nothing. A pane with room for the screen keeps marking it.
+    int index = -1;
+    for (int i = 0; i < m_shown.count(); ++i) {
+        if (m_shown.at(i)->page == currentPage) {
+            index = i;
+            break;
+        }
+    }
+    if (index < 0 && m_stack->currentWidget() == Q_NULLPTR && !m_shown.isEmpty()) {
+        // The first build, and nothing in front yet: the pane's first answer is
+        // the screen that comes up, so that the window never opens on a blank.
+        index = 0;
+        m_stack->setCurrentWidget(m_shown.at(0)->page);
+    }
+    if (index >= 0) {
+        m_nav->setCurrentIndex(index);
+    }
 }

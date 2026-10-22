@@ -5,9 +5,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtCore/QVector>
+#include <QtGui/QIcon>
 #include <QtWidgets/QMainWindow>
 
 #include "qxfluent/qxfluent_global.h"
+#include "qxwindow/qxwindow_global.h"
 
 class QStackedWidget;
 
@@ -17,20 +20,31 @@ class FluentNavigationView;
 class FluentWindowMaterial;
 QX_FLUENT_END_NAMESPACE
 
+QX_WINDOW_BEGIN_NAMESPACE
+class WindowAgentWidget;
+QX_WINDOW_END_NAMESPACE
+
 QX_FLUENT_USE_NAMESPACE
 
 class DemoPage;
 class SettingsPage;
+class TitleBar;
 
 /*!
- * A Fluent application's window: a command bar along the top, a navigation pane
- * down the left, and one screen at a time beside it.
+ * A Fluent application's window: a caption of its own along the top - mark,
+ * name, search, commands, system buttons - a navigation pane down the left, and
+ * one screen at a time beside it.
  *
  * This is the shape a Fluent application has instead of a ribbon: the commands
  * that matter in one row, the places that can be gone to in a column, and
  * everything else on the screen the column opens. It is worth a demo of its own
  * because the two control sets are not skins for one another - an application
  * picks one, and what it gets is a whole shell, not a look.
+ *
+ * The window draws no system frame. qxwindow's agent takes the window over, the
+ * bar is handed to it as the caption, and the three system buttons are named one
+ * by one - which is what keeps them clickable, because everything else in a
+ * caption is where a press starts a window move.
  */
 class MainWindow : public QMainWindow
 {
@@ -57,15 +71,34 @@ public:
      */
     void printTree();
 private:
+    /*! A place the pane can go to: what it is called, what it looks like in the
+     *  pane, and the screen it opens. */
+    struct Destination {
+        QString text;
+        QIcon icon;
+        QWidget *page = Q_NULLPTR;
+    };
+
     void createTheme(const QString &themeId);
-    void createCommandBar();
     void createNavigation();
+    void buildTitleBar();
+    void installWindowAgent();
     void createConnections();
 
-    FluentCommandBar *m_bar = Q_NULLPTR;
+    /*! Rebuilds the pane from the destinations whose names contain \a needle,
+     *  keeping the screen in front if it is still one of them. */
+    void filterDestinations(const QString &needle);
+
+    TitleBar *m_titleBar = Q_NULLPTR;
+    QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
     FluentNavigationView *m_nav = Q_NULLPTR;
     QStackedWidget *m_stack = Q_NULLPTR;
     SettingsPage *m_settings = Q_NULLPTR;
+    /*! Every destination in the order the pane shows them, and the ones it is
+     *  showing now - a narrowed pane is the second list, and the index the view
+     *  reports is a position in it. */
+    QVector<Destination> m_destinations;
+    QVector<const Destination *> m_shown;
     /*! Made when a material is asked for and not before: a window material is
      *  asked of a window, and the page is built before it belongs to one. */
     FluentWindowMaterial *m_material = Q_NULLPTR;
