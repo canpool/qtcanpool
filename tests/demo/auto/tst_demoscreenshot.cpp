@@ -98,6 +98,18 @@ constexpr int kMaxDominantPercent = 90;
 constexpr int kMaxGalleryDominantPercent = 97;
 
 /*!
+ * The two application demos' ceiling for the same proxy, and not the shared one:
+ * each is a column of rows on a surface that wraps them, and the surface is the
+ * window's own colour to the edges. Measured: 95.7% and 94.5% on Qt 6's offscreen
+ * plugin, 97.7% and 97.4% on Qt 5's, whose glyphs are boxes rather than text and
+ * whose boxes leave less ink behind. The sharp half of the guard is still the
+ * distinct-colour floor - a blank window is one or two colours and both
+ * applications measure in the hundreds - and "the theme never arrived" is the
+ * theme switch's question, not this one's.
+ */
+constexpr int kMaxApplicationDemoDominantPercent = 98;
+
+/*!
  * Font rasterisation moves a pixel here and there between two machines, so a
  * handful of differing pixels must not fail the run. A real regression - a
  * stylesheet that stopped applying, a layout that collapsed - moves orders of
@@ -397,6 +409,16 @@ private slots:
     void galleryMatchesGolden();
     void gallerySwitchLeavesNoControlBehind();
 #endif
+#ifdef DEMO_FLUENT_EXECUTABLE
+    void fluentDemoRenders();
+    void fluentDemoMatchesGolden();
+    void fluentThemeSwitchMatchesAFreshStart();
+#endif
+#ifdef DEMO_MATERIAL_EXECUTABLE
+    void materialDemoRenders();
+    void materialDemoMatchesGolden();
+    void materialThemeSwitchMatchesAFreshStart();
+#endif
 private:
     QImage m_ribbonScreenshot;
     /*!
@@ -409,6 +431,12 @@ private:
 #endif
 #ifdef DEMO_GALLERY_EXECUTABLE
     QImage m_galleryScreenshot;
+#endif
+#ifdef DEMO_FLUENT_EXECUTABLE
+    QImage m_fluentScreenshot;
+#endif
+#ifdef DEMO_MATERIAL_EXECUTABLE
+    QImage m_materialScreenshot;
 #endif
 };
 
@@ -447,6 +475,28 @@ void tst_DemoScreenshot::initTestCase()
         !m_galleryScreenshot.isNull(),
         qPrintable(
             QStringLiteral("the screenshot could not be read: %1").arg(QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH))));
+#endif
+
+#ifdef DEMO_FLUENT_EXECUTABLE
+    QVERIFY2(runDemo(QStringLiteral(DEMO_FLUENT_EXECUTABLE), QStringLiteral(DEMO_FLUENT_SCREENSHOT_PATH),
+                     QStringLiteral("fluentdemo.log"), error),
+             qPrintable(error));
+    m_fluentScreenshot = loadAsArgb32(QStringLiteral(DEMO_FLUENT_SCREENSHOT_PATH));
+    QVERIFY2(
+        !m_fluentScreenshot.isNull(),
+        qPrintable(
+            QStringLiteral("the screenshot could not be read: %1").arg(QStringLiteral(DEMO_FLUENT_SCREENSHOT_PATH))));
+#endif
+
+#ifdef DEMO_MATERIAL_EXECUTABLE
+    QVERIFY2(runDemo(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH),
+                     QStringLiteral("materialdemo.log"), error),
+             qPrintable(error));
+    m_materialScreenshot = loadAsArgb32(QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH));
+    QVERIFY2(
+        !m_materialScreenshot.isNull(),
+        qPrintable(
+            QStringLiteral("the screenshot could not be read: %1").arg(QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH))));
 #endif
 }
 
@@ -520,6 +570,38 @@ QImage captureAfterSwitch(const QString &executable, const QString &demoName, co
         return QImage();
     }
     return loadAsArgb32(path);
+}
+
+/*!
+ * A theme switch is named by the two ids it goes between.
+ */
+struct ThemeSwitch {
+    const char *from;
+    const char *to;
+};
+
+/*!
+ * The three pairs the demos that predate this test are asked: the reported case
+ * (dark to light), its reverse, and a pair that crosses theme families, where a
+ * sheet and a palette disagreeing shows up first.
+ */
+QList<ThemeSwitch> standardThemeSwitches()
+{
+    return {{"classic-dark", "classic-light"}, {"classic-light", "classic-dark"}, {"accent-dark", "soft-light"}};
+}
+
+/*!
+ * What the two application demos are asked: one pair, light to dark, and its
+ * reverse. Every check here is a demo run, and the two demos are already in
+ * initTestCase twice and in a golden check once each; the question the pairs
+ * answer - did the switch forget a control - is asked as well, but the answer
+ * to "does a family crossing leave something behind" is what the theme engine
+ * already answers for the two older demos, since both applications hand the
+ * same engine their sheet and palette and paint from the same palette after.
+ */
+QList<ThemeSwitch> applicationDemoSwitches()
+{
+    return {{"soft-light", "soft-dark"}, {"soft-dark", "soft-light"}};
 }
 
 /*!
@@ -608,23 +690,11 @@ int heightIn(const QString &tree, const QString &pattern)
  * the dock's half of the check is checkDockSwitchWithinItsOwnRect, which asks the same
  * question about the one rectangle the library is answerable for.
  */
-void checkThemeSwitches(const QString &executable, const QString &demoName, QHash<QString, QImage> &cache)
+void checkThemeSwitches(const QString &executable, const QString &demoName, QHash<QString, QImage> &cache,
+                        const QList<ThemeSwitch> &switches)
 {
-    struct ThemeSwitch {
-        const char *from;
-        const char *to;
-    };
-    // The reported case was dark to light; the reverse runs the same code path and has
-    // the same mistake available to it. The third pair crosses theme families, where a
-    // sheet and a palette disagreeing shows up first.
-    const ThemeSwitch pairs[] = {
-        {"classic-dark", "classic-light"},
-        {"classic-light", "classic-dark"},
-        {"accent-dark", "soft-light"},
-    };
-
     QString error;
-    for (const ThemeSwitch &pair : pairs) {
+    for (const ThemeSwitch &pair : switches) {
         const QString from = QString::fromLatin1(pair.from);
         const QString to = QString::fromLatin1(pair.to);
         const QString name = QStringLiteral("%1: %2 -> %3").arg(demoName, from, to);
@@ -1037,9 +1107,50 @@ void tst_DemoScreenshot::gallerySwitchLeavesNoControlBehind()
 }
 #endif
 
+#ifdef DEMO_FLUENT_EXECUTABLE
+void tst_DemoScreenshot::fluentDemoRenders()
+{
+    // The application demos' own ceiling; see the constant.
+    checkRenders(m_fluentScreenshot, QStringLiteral("fluentdemo"), kMaxApplicationDemoDominantPercent);
+}
+
+void tst_DemoScreenshot::fluentDemoMatchesGolden()
+{
+    checkGolden(m_fluentScreenshot, QStringLiteral(DEMO_FLUENT_GOLDEN_PATH),
+                QStringLiteral(DEMO_FLUENT_SCREENSHOT_PATH), QStringLiteral("fluentdemo"));
+}
+
+void tst_DemoScreenshot::fluentThemeSwitchMatchesAFreshStart()
+{
+    checkThemeSwitches(QStringLiteral(DEMO_FLUENT_EXECUTABLE), QStringLiteral("fluentdemo"), m_themeScreenshots,
+                       applicationDemoSwitches());
+}
+#endif
+
+#ifdef DEMO_MATERIAL_EXECUTABLE
+void tst_DemoScreenshot::materialDemoRenders()
+{
+    // The material application's own ceiling; see the constant.
+    checkRenders(m_materialScreenshot, QStringLiteral("materialdemo"), kMaxApplicationDemoDominantPercent);
+}
+
+void tst_DemoScreenshot::materialDemoMatchesGolden()
+{
+    checkGolden(m_materialScreenshot, QStringLiteral(DEMO_MATERIAL_GOLDEN_PATH),
+                QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH), QStringLiteral("materialdemo"));
+}
+
+void tst_DemoScreenshot::materialThemeSwitchMatchesAFreshStart()
+{
+    checkThemeSwitches(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), QStringLiteral("materialdemo"), m_themeScreenshots,
+                       applicationDemoSwitches());
+}
+#endif
+
 void tst_DemoScreenshot::themeSwitchMatchesAFreshStart()
 {
-    checkThemeSwitches(QStringLiteral(DEMO_RIBBON_EXECUTABLE), QStringLiteral("ribbondemo"), m_themeScreenshots);
+    checkThemeSwitches(QStringLiteral(DEMO_RIBBON_EXECUTABLE), QStringLiteral("ribbondemo"), m_themeScreenshots,
+                       standardThemeSwitches());
 }
 
 #ifdef DEMO_DOCK_EXECUTABLE

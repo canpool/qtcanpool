@@ -451,6 +451,32 @@ if (TARGET ControlGallery)
   list(APPEND DEMO_SCREENSHOT_TARGETS ControlGallery)
 endif()
 
+# The two application demos are registered like the gallery minus the per-control
+# crop: they have no --style to switch (each is one control set, not both), so
+# what they are asked is the theme switch the other demos are asked, cut down to
+# the light/dark pair - see applicationDemoSwitches() in tst_demoscreenshot.cpp.
+if (TARGET FluentDemo)
+  set(DEMO_FLUENT_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/fluentdemo.png")
+  set(DEMO_FLUENT_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/fluentdemo.png")
+  list(APPEND DEMO_SCREENSHOT_DEFINES
+      DEMO_FLUENT_EXECUTABLE="$<TARGET_FILE:FluentDemo>"
+      DEMO_FLUENT_SCREENSHOT_PATH="${DEMO_FLUENT_SCREENSHOT}"
+      DEMO_FLUENT_GOLDEN_PATH="${DEMO_FLUENT_GOLDEN}"
+  )
+  list(APPEND DEMO_SCREENSHOT_TARGETS FluentDemo)
+endif()
+
+if (TARGET MaterialDemo)
+  set(DEMO_MATERIAL_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/materialdemo.png")
+  set(DEMO_MATERIAL_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/materialdemo.png")
+  list(APPEND DEMO_SCREENSHOT_DEFINES
+      DEMO_MATERIAL_EXECUTABLE="$<TARGET_FILE:MaterialDemo>"
+      DEMO_MATERIAL_SCREENSHOT_PATH="${DEMO_MATERIAL_SCREENSHOT}"
+      DEMO_MATERIAL_GOLDEN_PATH="${DEMO_MATERIAL_GOLDEN}"
+  )
+  list(APPEND DEMO_SCREENSHOT_TARGETS MaterialDemo)
+endif()
+
 if (DEMO_SCREENSHOT_DEFINES)
   add_qtc_test(tst_demoscreenshot
       DEPENDS Qt5::Gui
