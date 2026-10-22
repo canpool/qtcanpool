@@ -47,6 +47,19 @@ Changed
 - The two eventFilter definitions are the X11 branch and its fall-back, not a
   duplicate to be merged on sight, so both moved verbatim and the guard around
   them moved with them.
+- dockpanel.cpp is three files now: the panel's object model, its contents
+  add/remove calls and its event() stay in dockpanel.cpp, the title bar side -
+  the two button updates, the visibility rules, the empty area and the outdated
+  menu flag - moves to dockpaneltitlebar.cpp, and closing, auto hide, floating,
+  the side bar area calculation and the state pair move to dockpanelactions.cpp.
+  No line was rewritten on the way and no behaviour changed.
+- What the panel knows about itself now lives in dockpanel_p.h: the property
+  name it stamps on a dock widget, the auto hide question it keeps asking, the
+  default area mask, the stack-like contents layout and DockPanelPrivate. The
+  constant and the free function are inline entities there: at namespace scope
+  static gives every translation unit its own copy, and a copy of a function
+  that a file does not call is an unused function it gets warned about. The
+  BorderLocation enum stayed with calculateSideBarArea(), its only reader.
 
 0.3.2
 ---
