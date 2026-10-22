@@ -7,36 +7,33 @@
 
 #include "demopage.h"
 
-#include "qxfluent/qxfluent_global.h"
+class QGridLayout;
 
-class QPushButton;
-
-QX_FLUENT_BEGIN_NAMESPACE
-class FluentCard;
-class FluentInfoBar;
-class FluentSwitch;
-class FluentTeachingTip;
-QX_FLUENT_END_NAMESPACE
-
-QX_FLUENT_USE_NAMESPACE
-
-/*! The first screen: what this application is, and three of the ways it says
- *  something to the user - a surface that lifts, a message that stays until it
- *  is answered, and a tip that points at the thing it is about. */
+/*! The first screen: what this application is, and the index of what it
+ *  demonstrates.
+ *
+ *  A gallery has two ways in - the pane on the left and the index on the first
+ *  page - and they say the same thing in different shapes: the pane is a list to
+ *  walk down, the index is the whole set at once, which is what a reader wants
+ *  before they know what they are looking for. What the index cannot know is
+ *  where each control ended up, so the window hands the destinations over and
+ *  the page asks for one by number.
+ */
 class HomePage : public DemoPage
 {
     Q_OBJECT
 public:
     explicit HomePage(QWidget *parent = Q_NULLPTR);
+
+    /*! Puts \a titles in the index, the first of them at destination
+     *  \a firstDestination. */
+    void setCatalogue(const QStringList &titles, int firstDestination);
+Q_SIGNALS:
+    /*! The reader asked for destination \a index. */
+    void destinationRequested(int index);
 private:
-    FluentCard *m_card = Q_NULLPTR;
-    FluentInfoBar *m_info = Q_NULLPTR;
-    FluentSwitch *m_showInfo = Q_NULLPTR;
-    /*! Made the first time it is asked for: a teaching tip is a window of its
-     *  own, and one that exists before it is wanted is a second top-level
-     *  window a capture would have to explain. */
-    FluentTeachingTip *m_tip = Q_NULLPTR;
-    QPushButton *m_tipButton = Q_NULLPTR;
+    QGridLayout *m_index = Q_NULLPTR;
+    int m_firstDestination = 0;
 };
 
 #endif   // HOMEPAGE_H

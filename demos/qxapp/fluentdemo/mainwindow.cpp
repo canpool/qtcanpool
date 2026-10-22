@@ -4,11 +4,9 @@
  **/
 #include "mainwindow.h"
 
-#include "collectionpage.h"
+#include "controlpages.h"
 #include "demopage.h"
-#include "feedbackpage.h"
 #include "homepage.h"
-#include "inputspage.h"
 #include "settingspage.h"
 #include "titlebar.h"
 
@@ -163,32 +161,38 @@ void MainWindow::createNavigation()
 
     // The pane holds one thing, and what it opens is a screen at a time: a
     // stacked widget is what turns "one room beside the pane" into "one of
-    // five", and it is also what keeps a screen's state while another is shown.
-    struct Built {
-        QStyle::StandardPixmap pixmap;
-        const char *name;
-        DemoPage *page;
-    };
-    HomePage *home = new HomePage(m_stack);
-    InputsPage *inputs = new InputsPage(m_stack);
-    FeedbackPage *feedback = new FeedbackPage(m_stack);
-    CollectionPage *collection = new CollectionPage(m_stack);
-    m_settings = new SettingsPage(m_stack);
-
-    const Built built[] = {{QStyle::SP_DirHomeIcon, QT_TR_NOOP("Home"), home},
-                           {QStyle::SP_ComputerIcon, QT_TR_NOOP("Input"), inputs},
-                           {QStyle::SP_MessageBoxInformation, QT_TR_NOOP("Feedback"), feedback},
-                           {QStyle::SP_DirIcon, QT_TR_NOOP("Collection"), collection},
-                           {QStyle::SP_FileDialogDetailedView, QT_TR_NOOP("Settings"), m_settings}};
-
-    for (const Built &entry : built) {
+    // twenty", and it is also what keeps a screen's state while another is shown.
+    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap) {
         Destination destination;
-        destination.text = tr(entry.name);
-        destination.icon = style()->standardIcon(entry.pixmap);
-        destination.page = scrollable(entry.page);
+        // The name comes from the page and not from a second list beside it: a
+        // pane that called a page one thing and the page another would be a
+        // demo of two names for one control.
+        destination.text = page->title();
+        destination.icon = style()->standardIcon(pixmap);
+        destination.page = scrollable(page);
         m_stack->addWidget(destination.page);
         m_destinations.append(destination);
+    };
+
+    HomePage *home = new HomePage(m_stack);
+    m_settings = new SettingsPage(m_stack);
+
+    addPage(home, QStyle::SP_DirHomeIcon);
+
+    QStringList titles;
+    const QList<DemoPage *> pages = ControlPages::build(m_stack);
+    for (DemoPage *page : pages) {
+        titles.append(page->title());
+        addPage(page, QStyle::SP_FileIcon);
     }
+    // The first control page is one destination past Home, and the index on the
+    // first screen opens them by number.
+    home->setCatalogue(titles, 1);
+    connect(home, &HomePage::destinationRequested, this, [this](int index) {
+        m_nav->setCurrentIndex(index);
+    });
+
+    addPage(m_settings, QStyle::SP_FileDialogDetailedView);
 
     m_nav->setContent(m_stack);
     // The pane is built by the same code that narrows it, so there is one place

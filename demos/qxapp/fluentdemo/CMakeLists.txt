@@ -29,10 +29,8 @@ add_qtc_executable(FluentDemo
     mainwindow.cpp mainwindow.h
     titlebar.cpp titlebar.h
     demopage.cpp demopage.h
+    controlpages.cpp controlpages.h
     homepage.cpp homepage.h
-    inputspage.cpp inputspage.h
-    feedbackpage.cpp feedbackpage.h
-    collectionpage.cpp collectionpage.h
     settingspage.cpp settingspage.h
     # The style sheets the themes the command bar offers are read from
     # (:/themes/*.css) - the same bundle the other demos offer.

@@ -30,6 +30,10 @@ class DemoPage : public QWidget
 public:
     explicit DemoPage(const QString &title, const QString &intro, QWidget *parent = Q_NULLPTR);
 
+    /*! What the screen calls itself: the heading, and the name the pane lists it
+     *  by - one name in one place, so the two cannot drift apart. */
+    QString title() const;
+
     /*! Starts a section named \a text. Rows and blocks after this belong to it. */
     void addSection(const QString &text);
     /*! A wrapped paragraph at body size: what a screen says about itself. */
@@ -45,6 +49,7 @@ private:
     QVBoxLayout *m_layout = Q_NULLPTR;
     /*! The rows of the current section; a section or a block ends it. */
     QFormLayout *m_form = Q_NULLPTR;
+    QString m_title;
 };
 
 #endif   // DEMOPAGE_H
