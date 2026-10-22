@@ -24,6 +24,7 @@
 
 #include <QtCore/QTextStream>
 #include <QAction>
+#include <QEvent>
 #include <QScrollArea>
 #include <QStackedWidget>
 #include <QStatusBar>
@@ -118,6 +119,16 @@ void MainWindow::printTree()
 {
     QTextStream out(stdout);
     describe(out, this, 0);
+}
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::WindowStateChange && m_titleBar) {
+        // The button is told, not asked: the glyph follows the check, and the
+        // window is the one thing that knows whether it is maximized.
+        m_titleBar->maximizeButton()->setChecked(isMaximized());
+    }
+    QMainWindow::changeEvent(event);
 }
 
 void MainWindow::createTheme(const QString &themeId)

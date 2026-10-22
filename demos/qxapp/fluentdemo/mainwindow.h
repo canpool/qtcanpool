@@ -70,6 +70,12 @@ public:
      * to. The rectangle is measured rather than read from any layout.
      */
     void printTree();
+protected:
+    /*! Keeps the caption's maximize button saying what the window is: the state
+     *  changes without that button being touched - the window starts maximized,
+     *  the system menu maximizes it, a double click on the frame does - and a
+     *  glyph that only follows its own clicks would be guessing. */
+    void changeEvent(QEvent *event) override;
 private:
     /*! A place the pane can go to: what it is called, what it looks like in the
      *  pane, and the screen it opens. */
