@@ -153,7 +153,7 @@ void CaptionButton::paintEvent(QPaintEvent *event)
         painter.drawRoundedRect(mark, 3.0, 3.0);
 
         painter.setBrush(Qt::NoBrush);
-        QPen inner(QColor(Qt::white));
+        QPen inner{QColor(Qt::white)};
         inner.setWidthF(1.2);
         painter.setPen(inner);
         painter.drawRoundedRect(mark.adjusted(3.5, 3.5, -3.5, -3.5), 1.5, 1.5);
