@@ -82,12 +82,16 @@ public:
 
     /*! Puts \a icon in the leading place - the way out, the way back, or the
      *  way into what is beside this screen - and returns it. There is one
-     *  leading place, so a second call takes the first one's place. */
+     *  leading place, so a second call takes the first one's place: the action
+     *  that was there is destroyed, as clearing it would destroy it. The bar
+     *  owns every action it makes, so a pointer it handed out is good only
+     *  until the place it stood in is given something else. */
     QAction *setLeadingAction(const QString &text, const QIcon &icon = QIcon());
     void clearLeadingAction();
     QAction *leadingAction() const;
 
-    /*! Adds \a text as a trailing icon and returns it. The bar owns it. */
+    /*! Adds \a text as a trailing icon and returns it, and takes it back out
+     *  again on removal - the action is destroyed, not merely unshelved. */
     QAction *addTrailingAction(const QString &text, const QIcon &icon = QIcon());
     void removeTrailingAction(QAction *action);
     void clearTrailingActions();

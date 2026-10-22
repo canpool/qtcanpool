@@ -9,6 +9,7 @@
 #include <QAccessible>
 #include <QAction>
 #include <QImage>
+#include <QPointer>
 #include <QWidget>
 
 QX_MATERIAL_USE_NAMESPACE
@@ -85,13 +86,22 @@ void tst_MaterialTopAppBar::theBarHoldsWhatItIsGiven()
     QCOMPARE(bar->trailingActions(), QList<QAction *>({search, more}));
 
     // There is one leading place: a second one takes the first one's place
-    // rather than standing beside it.
+    // rather than standing beside it. Taking the place means the action that
+    // stood there is destroyed - which is what makes a pointer the bar handed
+    // out good only until the place is filled again - so what is watched here
+    // is that the old one is gone, not that the two addresses differ. Addresses
+    // are not the bar's to promise: a freed block is routinely handed straight
+    // back for the next allocation, and two builds of this file on two systems
+    // disagree about it.
+    QPointer<QAction> displaced = nav;
     QAction *back = bar->setLeadingAction(QStringLiteral("Back"));
     QCOMPARE(bar->leadingAction(), back);
-    QVERIFY(back != nav);
+    QVERIFY(displaced.isNull());
 
+    QPointer<QAction> dropped = search;
     bar->removeTrailingAction(search);
     QCOMPARE(bar->trailingActions(), QList<QAction *>({more}));
+    QVERIFY(dropped.isNull());
     bar->clearTrailingActions();
     QVERIFY(bar->trailingActions().isEmpty());
     bar->clearLeadingAction();
