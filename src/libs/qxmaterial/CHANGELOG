@@ -1,6 +1,24 @@
 Unreleased
 ---
 Feature
+- MaterialDialog, in the two shapes M3 gives a dialog. The difference between
+  them is not size, it is what the thing is: a basic dialog is a question with
+  an answer - a card at the 28 corner of the shape scale, over a scrim, holding
+  a sentence and at most two answers - while a full-screen dialog is a place to
+  do something in: full-bleed from the top of the page, its name in a bar with a
+  cross that puts it away, and whatever the application wants in the middle.
+  Qt's QDialog is the window underneath, because modality, Escape, exec() and a
+  result code are the toolkit's; what is drawn here is the surface and the
+  answers. The answers are text and not commands - a Material dialog does not
+  fill an answer in, it names it in the accent and lets the press be the whole
+  of it - which is why they are painted rather than widget buttons: a style
+  sheet cannot draw a QPushButton without a border, and a text button is the
+  whole of what an answer is here. They ask and do not decide: pressing one
+  emits buttonClicked() and nothing else happens, because whether the question
+  was answered, and which way that counts, is the application's. The cross of a
+  full-screen dialog is the one exception, and it is not an answer - it is the
+  dialog being put away, which is what a frameless window otherwise has no
+  button for.
 - MaterialTextField, the field that keeps its label. Qt has QLineEdit and a
   placeholder, and a placeholder is not this: it disappears the moment there is
   something to say, while a field's name has to go on standing when the field

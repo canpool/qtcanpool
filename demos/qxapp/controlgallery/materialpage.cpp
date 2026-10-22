@@ -7,6 +7,7 @@
 #include "qxmaterial/materialbadge.h"
 #include "qxmaterial/materialcard.h"
 #include "qxmaterial/materialchip.h"
+#include "qxmaterial/materialdialog.h"
 #include "qxmaterial/materialfab.h"
 #include "qxmaterial/materialprogressring.h"
 #include "qxmaterial/materialripple.h"
@@ -21,6 +22,7 @@
 #include <QApplication>
 #include <QIcon>
 #include <QPainter>
+#include <QPushButton>
 #include <QPixmap>
 #include <QLabel>
 #include <QHBoxLayout>
@@ -187,6 +189,34 @@ MaterialPage::MaterialPage(QWidget *parent)
     snackbar->setDuration(0);
     snackbar->showMessage(tr("A snackbar says what happened."));
     addControl<QWidget>(QStringLiteral("materialSnackbar"), QStringLiteral("MaterialSnackbar"), snackbarHost);
+
+    // A dialog is a window that covers the page it was opened over, so the row
+    // is what opens it rather than the dialog - a window capture cannot hold
+    // two, which is the same bargain the teaching tip row on the Fluent page
+    // makes.
+    auto *dialogButton =
+        addControl<QPushButton>(QStringLiteral("materialDialogLauncher"), QStringLiteral("MaterialDialog"),
+                                new QPushButton(tr("Ask me something"), this));
+    connect(dialogButton, &QPushButton::clicked, this, [this]() {
+        if (!m_dialog) {
+            m_dialog = new MaterialDialog(this);
+            m_dialog->setTitle(tr("Discard draft?"));
+            m_dialog->setMessage(tr("The draft cannot be brought back."));
+            m_dialog->setButtonText(MaterialDialog::Role::Primary, tr("Discard"));
+            m_dialog->setButtonText(MaterialDialog::Role::Secondary, tr("Cancel"));
+            // The dialog asks and the page answers: a text button only says
+            // which answer it was, so these two connections are the whole of
+            // what pressing one does here.
+            connect(m_dialog, &MaterialDialog::buttonClicked, m_dialog, [this](MaterialDialog::Role role) {
+                if (role == MaterialDialog::Role::Primary) {
+                    m_dialog->accept();
+                } else {
+                    m_dialog->reject();
+                }
+            });
+        }
+        m_dialog->open();
+    });
 
     addSection(tr("Actions and effects"));
 
