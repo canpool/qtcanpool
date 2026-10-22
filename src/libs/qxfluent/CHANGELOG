@@ -128,3 +128,13 @@ Feature
   why the content beside it moves and the words do not. The wash, the focus
   and what is announced belong to one destination, not to the view: a view has
   no part of it that a ring could be drawn round.
+- FluentTabView, several things open at once with one of them showing. It is
+  not a navigation view, and the difference is in what a tab is: a destination
+  is somewhere you go, a tab is something you have open, and it is still
+  holding what you were doing in it when you look at another one - which is why
+  a tab carries content of its own here and a destination does not. The one
+  being looked at is marked by a line under the tab rather than by the tab
+  being a different shape, so a tab is a tab whichever one it is and what
+  moves is the line. Closing is asked about rather than done: the view says
+  whose close mark was clicked and closes nothing, because whether a tab may be
+  closed is the application's to answer and not the view's.
