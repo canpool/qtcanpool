@@ -8,6 +8,7 @@
 #include "qxwindow/windowagentwidget.h"
 #endif
 
+#include <QtCore/QList>
 #include <QtWidgets/QWidget>
 
 QX_FLUENT_BEGIN_NAMESPACE
@@ -51,7 +52,13 @@ public:
 
     /*! The agent is made when the first material is asked for and not before:
      *  an application that never asks for one should not be carrying a window
-     *  agent it has no use for. */
+     *  agent it has no use for.
+     *
+     *  One window gets one agent. A window that has already handed itself over
+     *  keeps the agent it handed itself to, because that is the window a
+     *  material is for - a frameless one drawing a caption of its own - and a
+     *  second agent would answer the hit test without knowing about that
+     *  caption, leaving a window that can no longer be moved by it. */
     bool ensureAgent()
     {
 #if !defined(QX_FLUENT_HAS_WINDOW)
@@ -60,6 +67,16 @@ public:
         Q_Q(FluentWindowMaterial);
         if (!window) {
             return false;
+        }
+        if (!agent) {
+            const QList<QxWindow::WindowAgentWidget *> taken = window->findChildren<QxWindow::WindowAgentWidget *>();
+            for (QxWindow::WindowAgentWidget *each : taken) {
+                if (each->hostWidget() == window) {
+                    agent = each;
+                    setup = true;
+                    break;
+                }
+            }
         }
         if (!agent) {
             agent = new QxWindow::WindowAgentWidget(q);

@@ -7,14 +7,17 @@
 # knows which theme files res/themes.qrc ships and which of each pair is the
 # dark one, so a demo that wants the bundle says so in one call instead of
 # carrying a second copy of that table. The four control sets are the whole
-# content of the window; qxcontrols and qxcore come with them.
+# content of the window; qxcontrols and qxcore come with them. qxwindow is here
+# for the one window a material is shown on: a material is asked of a window
+# that draws its own caption, which is what the agent is told.
 add_qtc_executable(ControlGallery
-  DEPENDS qxfluent qxmaterial qxcupertino qxharmony qxapp qxtheme Qt5::Core Qt5::Widgets
+  DEPENDS qxfluent qxmaterial qxcupertino qxharmony qxapp qxtheme qxwindow Qt5::Core Qt5::Widgets
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
     gallerypage.cpp gallerypage.h
     fluentpage.cpp fluentpage.h
+    fluentmaterialwindow.cpp fluentmaterialwindow.h
     materialpage.cpp materialpage.h
     cupertinopage.cpp cupertinopage.h
     harmonypage.cpp harmonypage.h

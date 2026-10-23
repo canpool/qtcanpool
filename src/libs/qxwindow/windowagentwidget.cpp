@@ -70,6 +70,15 @@ bool WindowAgentWidget::setup(QWidget *w)
 }
 
 /*!
+    Returns the widget this agent has taken over, or nullptr while it has taken over nothing.
+*/
+QWidget *WindowAgentWidget::hostWidget() const
+{
+    Q_D(const WindowAgentWidget);
+    return d->m_hostWidget;
+}
+
+/*!
     Returns the title bar widget.
 */
 QWidget *WindowAgentWidget::titleBar() const

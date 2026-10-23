@@ -1,3 +1,14 @@
+Unreleased
+---
+Interface
+- WindowAgentWidget::hostWidget() answers which window the agent has taken
+  over, or null while it has taken over nothing. setup() answers the same
+  question once and in one direction only, and nothing read it back afterwards,
+  so an object holding a window could not tell one agent on it from another -
+  which is what asking a window material of a window that already draws its own
+  caption needs. The answer does not change when a second window is offered:
+  an agent takes one, and a refused setup leaves the first in place.
+
 0.3.2
 ---
 Interface

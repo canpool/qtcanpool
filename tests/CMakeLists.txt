@@ -98,9 +98,19 @@ add_qtc_test(tst_qxcontrols
 )
 
 # -------------------------------------------------------------- qxfluent --
+# One of these tests asks a material of a window and checks that the window
+# keeps the agent it had already handed itself to. That is only observable
+# where qxwindow is part of the build - without it the material answers "no"
+# on every platform and there is no agent to keep - so the define that says so
+# is only given when it is there.
+set(_qxfluent_test_defines "")
+if (WITH_QXWINDOW)
+  list(APPEND _qxfluent_test_defines QX_FLUENT_HAS_WINDOW)
+endif()
 file(GLOB QXFLUENT_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxfluent/auto/tst_*.cpp")
 add_qtc_test(tst_qxfluent
     DEPENDS qxfluent
+    DEFINES ${_qxfluent_test_defines}
     INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
     SOURCES
         "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"

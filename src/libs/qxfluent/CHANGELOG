@@ -1,3 +1,16 @@
+Unreleased
+---
+Bugfix
+- A window material asked of a window that had already handed itself over to a
+  qxwindow agent used to make a second agent for that window. Two agents answer
+  the same hit test, and the newer one knows nothing about the caption the
+  window draws - so the caption stopped moving the window, which is the one
+  thing a frameless window with a caption of its own is for. The material now
+  finds the agent that is already on the window and asks that one, and only
+  makes an agent when there is none. Nothing about this is observable on a
+  platform that has no materials: the material still answers no there, as
+  before.
+
 0.1.1
 ---
 Feature

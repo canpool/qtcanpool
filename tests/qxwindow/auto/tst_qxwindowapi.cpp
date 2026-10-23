@@ -42,9 +42,33 @@ class tst_QxWindowApi : public QObject
 private slots:
     void commandsAreSafeBeforeSetup();
     void commandsLeaveTheBookkeepingAlone();
+    void hostWidgetIsTheWindowItTookOver();
 
     void borderOwnsCursorStartsTrueAndRoundTrips();
 };
+
+/*!
+ * setup() answers "did I take this window" once and in one direction. hostWidget()
+ * is the same question asked later, which is what an object holding a window needs
+ * in order to tell whether the agent it found on it is the one in charge of it -
+ * asking a material of a window already taken over is the case that made it
+ * necessary.
+ */
+void tst_QxWindowApi::hostWidgetIsTheWindowItTookOver()
+{
+    WindowAgentWidget agent;
+    QVERIFY(!agent.hostWidget());
+
+    QWidget first;
+    QVERIFY(agent.setup(&first));
+    QCOMPARE(agent.hostWidget(), &first);
+
+    // An agent takes one window: the second is refused, and the answer is still
+    // the one it did take.
+    QWidget second;
+    QVERIFY(!agent.setup(&second));
+    QCOMPARE(agent.hostWidget(), &first);
+}
 
 /*!
  * A freshly constructed agent already has a context - the accessors answer rather

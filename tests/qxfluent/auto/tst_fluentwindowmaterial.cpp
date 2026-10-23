@@ -6,9 +6,16 @@
 
 #include "qxfluent/fluentwindowmaterial.h"
 
+#if defined(QX_FLUENT_HAS_WINDOW)
+#include "qxwindow/windowagentwidget.h"
+#endif
+
 #include <QWidget>
 
 QX_FLUENT_USE_NAMESPACE
+#if defined(QX_FLUENT_HAS_WINDOW)
+QX_WINDOW_USE_NAMESPACE
+#endif
 
 class tst_FluentWindowMaterial : public QObject
 {
@@ -19,6 +26,9 @@ private slots:
     void oneWindowOneMaterial();
     void askingForNothingIsAlwaysGiven();
     void theMaterialsAreOneSlot();
+#if defined(QX_FLUENT_HAS_WINDOW)
+    void aWindowThatAlreadyHasAnAgentKeepsIt();
+#endif
 };
 
 /*! A material is asked for by name, and what was asked for is what it is -
@@ -84,6 +94,31 @@ void tst_FluentWindowMaterial::theMaterialsAreOneSlot()
     material.apply(FluentWindowMaterial::Material::MicaAlt);
     QCOMPARE(material.material(), FluentWindowMaterial::Material::MicaAlt);
 }
+
+#if defined(QX_FLUENT_HAS_WINDOW)
+/*! A window that has already handed itself over keeps the agent it handed
+ *  itself to. That is the window a material is for - a frameless one drawing a
+ *  caption of its own - and a second agent would answer the hit test without
+ *  knowing about the caption, leaving the window impossible to move by it. */
+void tst_FluentWindowMaterial::aWindowThatAlreadyHasAnAgentKeepsIt()
+{
+    QWidget window;
+    WindowAgentWidget agent(&window);
+    QVERIFY(agent.setup(&window));
+    auto *caption = new QWidget(&window);
+    agent.setTitleBar(caption);
+
+    FluentWindowMaterial material(&window);
+    material.apply(FluentWindowMaterial::Material::Mica);
+
+    // The one that was here is the one still in charge: no second agent was
+    // made to take the same window over again, and the caption is still the
+    // one it hands a press on.
+    QCOMPARE(window.findChildren<WindowAgentWidget *>().count(), 1);
+    QCOMPARE(agent.hostWidget(), &window);
+    QCOMPARE(agent.titleBar(), caption);
+}
+#endif
 
 TEST_ADD(tst_FluentWindowMaterial)
 

@@ -15,6 +15,8 @@ class FluentTeachingTip;
 class FluentWindowMaterial;
 QX_FLUENT_END_NAMESPACE
 
+class FluentMaterialWindow;
+
 QX_FLUENT_USE_NAMESPACE
 
 /*!
@@ -44,8 +46,15 @@ private:
      */
     FluentContentDialog *m_dialog = Q_NULLPTR;
     /*!
-     * Likewise made on the first ask: it is the wrapper round qxwindow's
-     * materials, and nothing needs it until one is chosen.
+     * Likewise made on the first ask: it is the window a material is shown on,
+     * frameless and drawing its own caption - the only kind of window a
+     * material can be asked of. The gallery's own window keeps its system
+     * title bar and is never asked.
+     */
+    FluentMaterialWindow *m_materialWindow = Q_NULLPTR;
+    /*!
+     * The wrapper round qxwindow's materials, made with the window above -
+     * a material belongs to one window.
      */
     FluentWindowMaterial *m_windowMaterial = Q_NULLPTR;
 };

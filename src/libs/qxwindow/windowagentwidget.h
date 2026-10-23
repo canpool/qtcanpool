@@ -22,6 +22,11 @@ public:
     ~WindowAgentWidget() override;
 public:
     bool setup(QWidget *w);
+    /*! The window this agent has taken over, or null while it has taken over
+     *  nothing. setup() answers the same question once and in one direction
+     *  only; this is how it is asked again later, which is what telling one
+     *  agent from another on the same window needs. */
+    QWidget *hostWidget() const;
 
     QWidget *titleBar() const;
     void setTitleBar(QWidget *w);

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
 #include "fluentpage.h"
+#include "fluentmaterialwindow.h"
 
 #include "qxfluent/fluentbadge.h"
 #include "qxfluent/fluentbreadcrumbbar.h"
@@ -219,10 +220,13 @@ FluentPage::FluentPage(QWidget *parent)
     });
 
     // A window material is not a control and has no rectangle of its own: it is
-    // a choice about the window everything else sits in, asked of qxwindow. The
-    // row is the switch that asks, and the label says what the platform answered
-    // - which on anything other than Windows is "no", and that is worth showing
-    // rather than hiding.
+    // a choice about the window everything else sits in, asked of qxwindow. And
+    // the window it is asked of has to draw a caption of its own, because the
+    // asking takes the system frame away - so this row opens a window for the
+    // material to be shown on instead of dressing the gallery, whose title bar
+    // is the system's and would simply be gone. The row is the switch that asks,
+    // and the label says what the platform answered - which on anything other
+    // than Windows is "no", and that is worth showing rather than hiding.
     auto *materialRow = new QWidget(this);
     auto *materialLayout = new QHBoxLayout(materialRow);
     materialLayout->setContentsMargins(0, 0, 0, 0);
@@ -231,20 +235,36 @@ FluentPage::FluentPage(QWidget *parent)
     materialBox->addItem(tr("Mica"), int(FluentWindowMaterial::Material::Mica));
     materialBox->addItem(tr("Mica Alt"), int(FluentWindowMaterial::Material::MicaAlt));
     materialBox->addItem(tr("Acrylic"), int(FluentWindowMaterial::Material::Acrylic));
-    auto *materialState = new QLabel(tr("not applied"), materialRow);
+    auto *materialState = new QLabel(tr("no window yet"), materialRow);
     materialLayout->addWidget(materialBox);
     materialLayout->addWidget(materialState);
     addControl<QWidget>(QStringLiteral("fluentWindowMaterial"), QStringLiteral("FluentWindowMaterial"), materialRow);
 
-    connect(materialBox, QOverload<int>::of(&QComboBox::activated), this,
-            [this, materialBox, materialState](int index) {
-                if (!m_windowMaterial) {
-                    // Made here and not in the constructor: the page is built
-                    // before it belongs to a window, and a window material is
-                    // asked of a window.
-                    m_windowMaterial = new FluentWindowMaterial(window());
-                }
-                const auto wanted = static_cast<FluentWindowMaterial::Material>(materialBox->itemData(index).toInt());
-                materialState->setText(m_windowMaterial->apply(wanted) ? tr("applied") : tr("not applied"));
-            });
+    connect(
+        materialBox, QOverload<int>::of(&QComboBox::activated), this, [this, materialBox, materialState](int index) {
+            if (!m_materialWindow) {
+                // Made on the first ask and not in the constructor, for the
+                // same reason the tip and the dialog are: a material is
+                // asked of a window, and a window that exists before it is
+                // wanted is one more top-level window the capture has to
+                // explain.
+                m_materialWindow = new FluentMaterialWindow(this);
+                m_windowMaterial = new FluentWindowMaterial(m_materialWindow);
+            }
+            const auto wanted = static_cast<FluentWindowMaterial::Material>(materialBox->itemData(index).toInt());
+            const bool took = m_windowMaterial->apply(wanted);
+            if (wanted == FluentWindowMaterial::Material::None) {
+                m_materialWindow->setMaterialText(tr("No material is asked for: the window is the application's own."));
+            } else if (took) {
+                m_materialWindow->setMaterialText(
+                    tr("%1 is what this window is made of.").arg(materialBox->itemText(index)));
+            } else {
+                m_materialWindow->setMaterialText(
+                    tr("%1 is not something this platform gives.").arg(materialBox->itemText(index)));
+            }
+            materialState->setText(took ? tr("applied") : tr("not applied"));
+            m_materialWindow->show();
+            m_materialWindow->raise();
+            m_materialWindow->activateWindow();
+        });
 }
