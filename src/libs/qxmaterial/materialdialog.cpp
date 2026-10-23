@@ -108,6 +108,12 @@ MaterialDialog::MaterialDialog(QWidget *parent)
 
     d_ptr->card = new QWidget(this);
     d_ptr->card->setFixedWidth(kCardWidth);
+    // The answers are painted on the card rather than being widgets in it, so
+    // the card is what a pointer over them reaches - and a widget without mouse
+    // tracking is never told where the pointer is while no button is down. The
+    // dialog would then draw the washes it has no reason to: a move the card
+    // does not want travels up to the dialog, which does.
+    d_ptr->card->setMouseTracking(true);
     d_ptr->cardLayout = new QVBoxLayout(d_ptr->card);
     d_ptr->cardLayout->setSpacing(kGap);
 

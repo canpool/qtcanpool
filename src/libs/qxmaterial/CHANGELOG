@@ -35,6 +35,16 @@ Feature
   and the field reports what a single-line field has to report: textChanged
   whether the text was typed or set, editingFinished, and returnPressed.
 
+Fix
+- MaterialDialog now answers the pointer over its answers and its cross. They
+  are painted on the card rather than being widgets in it, and the card did not
+  track the mouse, so a pointer that arrived over either of them was never
+  spoken of: the wash under an answer - which is the only thing that says the
+  dialog heard the pointer - never appeared, and an answer read as dead until
+  the moment it was pressed. A press worked all along, because an ignored press
+  travels up to the dialog; a move does not unless the widget under the pointer
+  asked to be told where it is.
+
 0.1.0
 ---
 Feature

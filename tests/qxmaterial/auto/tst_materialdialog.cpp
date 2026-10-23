@@ -58,6 +58,26 @@ QPoint crossCentre(const QWidget *dialog)
 {
     return QPoint(dialog->width() - kBarInset - kCrossSize / 2, kBarHeight / 2);
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+/*! Sends the pointer to \a at and says whether what is drawn at \a sample
+ *  changed. A hover is a wash under what the pointer is over, so it is a pixel
+ *  that was not that colour before - and the pointer is aimed at whatever child
+ *  widget is there, because that is what a pointer hits first.
+ *
+ *  Qt 6 only: on Qt 5 QTest::mouseMove() drives the real cursor, and the
+ *  offscreen screen a test runs on has nowhere to put one, so a move that
+ *  reaches the window is not something a Qt 5 test can ask for. The widget the
+ *  pointer lands on is checked by every leg instead - see the answers test. */
+bool hoverChanges(QWidget *dialog, const QPoint &at, const QPoint &sample)
+{
+    const QColor before = capture(dialog).pixelColor(sample);
+    QWidget *under = dialog->childAt(at);
+    QWidget *target = under ? under : dialog;
+    QTest::mouseMove(target, target->mapFrom(dialog, at));
+    return capture(dialog).pixelColor(sample) != before;
+}
+#endif
 }   // namespace
 
 class tst_MaterialDialog : public QObject
@@ -72,6 +92,7 @@ private slots:
     void anAnswerWithNothingToSayHasNoPlace();
     void theCrossIsTheWayOutOfAFullScreenDialog();
     void theAnswersAskAndTheDialogDoesNotDecide();
+    void theAnswersAreWhereThePointerFindsThem();
     void escapeIsTheWayOut();
     void theContentIsWhatTheDialogHolds();
     void whatAnAssistiveToolReads();
@@ -227,6 +248,47 @@ void tst_MaterialDialog::theAnswersAskAndTheDialogDoesNotDecide()
     dialog.accept();
     QCOMPARE(dialog.result(), int(QDialog::Accepted));
     QVERIFY(!dialog.isVisible());
+}
+
+/*! The answers are painted on the card, and the card is a widget: a pointer
+ *  that arrives over an answer hits the card first. It is still a pointer on
+ *  the dialog, and the wash under the words is what says so - an answer that
+ *  never lights up is one the user has to guess at, and a press on it has to
+ *  reach the dialog the same way. */
+void tst_MaterialDialog::theAnswersAreWhereThePointerFindsThem()
+{
+    Page page;
+    MaterialDialog dialog(&page.window);
+    dialog.setTitle(QStringLiteral("Discard draft?"));
+    dialog.setButtonText(MaterialDialog::Role::Primary, QStringLiteral("Discard"));
+    dialog.setButtonText(MaterialDialog::Role::Secondary, QStringLiteral("Keep"));
+    QList<int> pressed;
+    connect(&dialog, &MaterialDialog::buttonClicked, this, [&pressed](MaterialDialog::Role role) {
+        pressed.append(int(role));
+    });
+    dialog.show();
+
+    const QRect keep = dialog.buttonRect(MaterialDialog::Role::Secondary);
+    const QPoint onIt = keep.center();
+
+    // Whatever is under the pointer there is what a pointer aims at, and it is
+    // a widget that has to ask to be told where the pointer is: a widget
+    // without mouse tracking is not sent moves while no button is down, so it
+    // would be the only thing a pointer over the answers ever reached.
+    QWidget *under = dialog.childAt(onIt);
+    QVERIFY(under);
+    QVERIFY2(under->hasMouseTracking(), "the widget over the answers is never told where the pointer is");
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // A spot inside the answer and clear of the words drawn on it.
+    const QPoint clear(keep.left() + 6, keep.center().y());
+    QVERIFY2(hoverChanges(&dialog, onIt, clear), "the pointer over an answer left no wash under it");
+#endif
+
+    QWidget *target = under;
+    QTest::mouseClick(target, Qt::LeftButton, Qt::NoModifier, target->mapFrom(&dialog, onIt));
+    QCOMPARE(pressed.size(), 1);
+    QCOMPARE(pressed.first(), int(MaterialDialog::Role::Secondary));
 }
 
 void tst_MaterialDialog::escapeIsTheWayOut()
