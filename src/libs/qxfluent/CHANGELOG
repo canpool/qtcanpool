@@ -1,3 +1,12 @@
+Unreleased
+---
+Feature
+- `FluentButton`, the command the page is built out of: three kinds say three
+  weights of command (standard, accent, subtle), a face carries words or an
+  icon or both, and the press never moves it.
+- `FluentDivider`, one hairline that separates: full across the edge it was
+  given or inset past the indent the content beside it keeps.
+
 0.1.2
 ---
 Bugfix
