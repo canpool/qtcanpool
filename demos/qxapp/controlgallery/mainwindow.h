@@ -10,16 +10,15 @@
 
 class QTabWidget;
 
-class FluentPage;
-class MaterialPage;
+class GalleryPage;
 
 /*!
- * One window holding both control sets, one tab each.
+ * One window holding every control set, one tab each.
  *
- * Why one window and not two demos: the two sets are alternatives the user
- * picks between, and a gallery that made them two applications would let them
- * drift apart - different sizes, different themes, different switches - until a
- * comparison between them was a comparison between two demos. Here they share
+ * Why one window and not four demos: the sets are alternatives the user picks
+ * between, and a gallery that made them four applications would let them drift
+ * apart - different sizes, different themes, different switches - until a
+ * comparison between them was a comparison between four demos. Here they share
  * the window, the theme and the switches, so the only thing that changes when
  * the tab changes is the set of controls.
  */
@@ -87,8 +86,11 @@ private:
     void createStyleMenu();
 
     QTabWidget *m_tabs = Q_NULLPTR;
-    FluentPage *m_fluent = Q_NULLPTR;
-    MaterialPage *m_material = Q_NULLPTR;
+    /*! Every page, by the id it answers to on the --style switch. The window
+     *  holds no member per family: a fifth set would otherwise be a header to
+     *  edit, a member to add and a list to extend, and the gallery's whole job
+     *  is to be the place a set is shown with nothing else to do. */
+    QHash<QString, GalleryPage *> m_pages;
     /*! Which tab each style id lives in, so applyStyle() is a lookup and not a
      *  search through the tab widget's own widgets. */
     QHash<QString, int> m_styleTabs;

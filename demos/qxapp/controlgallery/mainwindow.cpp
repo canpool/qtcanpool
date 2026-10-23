@@ -4,8 +4,10 @@
  **/
 #include "mainwindow.h"
 
+#include "cupertinopage.h"
 #include "fluentpage.h"
 #include "gallerypage.h"
+#include "harmonypage.h"
 #include "materialpage.h"
 
 #include "qxapp/qxthemebundle.h"
@@ -88,20 +90,23 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &styl
     }
 
     m_tabs = new QTabWidget(this);
-    m_fluent = new FluentPage(m_tabs);
-    m_material = new MaterialPage(m_tabs);
     // Each page scrolls on its own: a gallery that made the reader choose
-    // between a window tall enough for two dozen controls and a window that fits
-    // a screen would lose either way.
+    // between a window tall enough for a couple of dozen controls and a window
+    // that fits a screen would lose either way. The label is the set's name as
+    // a reader knows it, and the id is what the --style switch says; the two are
+    // not the same string and the page answers the second one.
     auto addPage = [this](GalleryPage *page, const QString &label) {
         auto *area = new QScrollArea(m_tabs);
         area->setWidgetResizable(true);
         area->setWidget(page);
+        m_pages.insert(page->styleId(), page);
         m_styleTabs.insert(page->styleId(), m_tabs->addTab(area, label));
         m_styleOrder.append(page->styleId());
     };
-    addPage(m_fluent, tr("Fluent"));
-    addPage(m_material, tr("Material"));
+    addPage(new FluentPage(m_tabs), tr("Fluent"));
+    addPage(new MaterialPage(m_tabs), tr("Material"));
+    addPage(new CupertinoPage(m_tabs), tr("Cupertino"));
+    addPage(new HarmonyPage(m_tabs), tr("Harmony"));
     setCentralWidget(m_tabs);
 
     createStyleMenu();
@@ -148,8 +153,10 @@ QSize MainWindow::captureSize() const
     }
     const int chrome = height() - shown->viewport()->height();
 
-    const GalleryPage *pages[] = {m_fluent, m_material};
-    for (const GalleryPage *page : pages) {
+    // Every page, in the order the tabs were added: the tallest one decides the
+    // height, because a row below the fold is a row a capture cannot name.
+    for (const QString &id : m_styleOrder) {
+        const GalleryPage *page = m_pages.value(id, Q_NULLPTR);
         if (page) {
             size.setHeight(qMax(size.height(), page->height() + chrome));
         }

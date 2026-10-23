@@ -59,14 +59,15 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     // "--screenshot <file>" turns the demo into a headless renderer: it is what
     // the visual regression test drives, and it is the quickest way for a human
-    // to capture what the two control sets look like on this machine.
+    // to capture what the control sets look like on this machine.
     QCommandLineOption screenshotOption(
         QStringLiteral("screenshot"), QStringLiteral("Save a screenshot to <file> and exit."), QStringLiteral("file"));
     QCommandLineOption delayOption(QStringLiteral("screenshot-delay"),
                                    QStringLiteral("Wait <ms> after showing the window before capturing."),
                                    QStringLiteral("ms"), QStringLiteral("2000"));
-    QCommandLineOption styleOption(
-        QStringLiteral("style"), QStringLiteral("Open on style <id>, one of fluent, material."), QStringLiteral("id"));
+    QCommandLineOption styleOption(QStringLiteral("style"),
+                                   QStringLiteral("Open on style <id>, one of fluent, material, cupertino, harmony."),
+                                   QStringLiteral("id"));
     QCommandLineOption themeOption(
         QStringLiteral("theme"),
         QStringLiteral("Start on theme <id>, one of the registered theme ids (soft-light, soft-dark, ...)."),
