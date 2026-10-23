@@ -59,25 +59,30 @@ QPoint crossCentre(const QWidget *dialog)
     return QPoint(dialog->width() - kBarInset - kCrossSize / 2, kBarHeight / 2);
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 /*! Sends the pointer to \a at and says whether what is drawn at \a sample
  *  changed. A hover is a wash under what the pointer is over, so it is a pixel
- *  that was not that colour before - and the pointer is aimed at whatever child
- *  widget is there, because that is what a pointer hits first.
+ *  that was not that colour before - and the move is aimed at whatever child
+ *  widget is there, because that is what a pointer hits first; the widget is
+ *  expected to ignore it, and an ignored move travels up to the dialog.
  *
- *  Qt 6 only: on Qt 5 QTest::mouseMove() drives the real cursor, and the
- *  offscreen screen a test runs on has nowhere to put one, so a move that
- *  reaches the window is not something a Qt 5 test can ask for. The widget the
- *  pointer lands on is checked by every leg instead - see the answers test. */
+ *  The move is sent rather than driven through the platform because Qt 5's
+ *  QTest::mouseMove() puts the real cursor somewhere, and the offscreen screen a
+ *  test runs on has nowhere to put one. What that leaves untested is the
+ *  delivery itself - that is what the answers test asks the widget for. */
 bool hoverChanges(QWidget *dialog, const QPoint &at, const QPoint &sample)
 {
     const QColor before = capture(dialog).pixelColor(sample);
     QWidget *under = dialog->childAt(at);
     QWidget *target = under ? under : dialog;
-    QTest::mouseMove(target, target->mapFrom(dialog, at));
+    const QPoint local = target->mapFrom(dialog, at);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QMouseEvent move(QEvent::MouseMove, QPointF(local), QPointF(), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+#else
+    QMouseEvent move(QEvent::MouseMove, local, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+#endif
+    QApplication::sendEvent(target, &move);
     return capture(dialog).pixelColor(sample) != before;
 }
-#endif
 }   // namespace
 
 class tst_MaterialDialog : public QObject
@@ -279,14 +284,11 @@ void tst_MaterialDialog::theAnswersAreWhereThePointerFindsThem()
     QVERIFY(under);
     QVERIFY2(under->hasMouseTracking(), "the widget over the answers is never told where the pointer is");
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     // A spot inside the answer and clear of the words drawn on it.
     const QPoint clear(keep.left() + 6, keep.center().y());
     QVERIFY2(hoverChanges(&dialog, onIt, clear), "the pointer over an answer left no wash under it");
-#endif
 
-    QWidget *target = under;
-    QTest::mouseClick(target, Qt::LeftButton, Qt::NoModifier, target->mapFrom(&dialog, onIt));
+    QTest::mouseClick(under, Qt::LeftButton, Qt::NoModifier, under->mapFrom(&dialog, onIt));
     QCOMPARE(pressed.size(), 1);
     QCOMPARE(pressed.first(), int(MaterialDialog::Role::Secondary));
 }
