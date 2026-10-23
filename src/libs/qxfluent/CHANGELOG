@@ -10,6 +10,13 @@ Bugfix
   makes an agent when there is none. Nothing about this is observable on a
   platform that has no materials: the material still answers no there, as
   before.
+- The panel a folded pane opens beside an icon used to stay up until one of its
+  own rows was chosen. It is a popup, and a popup is put away by the first press
+  outside it - but only while the mouse grab Qt takes for it is still there, and
+  a window that moves itself by a caption of its own can take that grab back.
+  The panel now also ends on a press anywhere other than itself, and when it
+  stops being the window in front. The press that ends it is not swallowed: it
+  is still the press it was.
 
 Feature
 - FluentNavigationView now has the second shape WinUI's navigation view has: a

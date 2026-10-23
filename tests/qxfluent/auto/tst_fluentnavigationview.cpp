@@ -132,6 +132,7 @@ private slots:
     void theKeyboardOpensAndClosesAGroup();
     void namingAFoldedDestinationOpensTheGroupsAboveIt();
     void aFoldedPaneOpensAGroupBesideItself();
+    void pressingOutsideThePanelPutsItAway();
     void whatAnAssistiveToolReads();
 };
 
@@ -533,6 +534,25 @@ void tst_FluentNavigationView::aFoldedPaneOpensAGroupBesideItself()
     QTest::mouseClick(panel, Qt::LeftButton, Qt::NoModifier, flyoutPoint(1));
     QCOMPARE(view->currentItem(), h.sent);
     QCOMPARE(view->currentIndex(), 3);
+}
+
+void tst_FluentNavigationView::pressingOutsideThePanelPutsItAway()
+{
+    Hierarchy h;
+    std::unique_ptr<FluentNavigationView> view(h.view);
+    view->show();
+    QVERIFY(QTest::qWaitForWindowExposed(view.get()));
+    view->setPaneOpen(false);
+
+    QTest::mouseClick(view.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(1));
+    QWidget *panel = popupOf(view.get());
+    QVERIFY2(panel, "a folded pane opens a panel beside the icon it belongs to");
+
+    // The panel is a way in, not a mode: a press anywhere else puts it away,
+    // and the press itself still counts as the press it was.
+    QTest::mouseClick(view.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(0));
+    QVERIFY2(!popupOf(view.get()), "a press outside the panel puts it away");
+    QCOMPARE(view->currentIndex(), 0);
 }
 
 void tst_FluentNavigationView::whatAnAssistiveToolReads()

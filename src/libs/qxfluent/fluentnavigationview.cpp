@@ -8,6 +8,7 @@
 
 #include "qxcontrols/qxstatelayer.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtGui/QFontMetrics>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QKeyEvent>
@@ -101,6 +102,18 @@ QPointF eventPos(const QMouseEvent *event)
 #endif
 }
 
+/*! Where on the screen \a event landed: the panel has to be judged against the
+ *  window it hangs beside, and a position in any one widget says nothing about
+ *  the rest of the screen. */
+QPoint eventScreenPos(const QMouseEvent *event)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return event->globalPosition().toPoint();
+#else
+    return event->globalPos();
+#endif
+}
+
 /*! The three bars that fold and unfold the pane: drawn rather than typed,
  *  because a glyph in a font is a glyph the theme cannot colour and an
  *  assistive tool would read. */
@@ -174,6 +187,22 @@ public:
         setAttribute(Qt::WA_TranslucentBackground);
         setMouseTracking(true);
         setFocusPolicy(Qt::StrongFocus);
+        // A panel is put away by a press anywhere else, and the popup flag is
+        // what normally arranges that: Qt grabs the mouse for a popup and ends
+        // it on the first press outside. A window that moves itself by its own
+        // caption can take that grab back, and then a press elsewhere reaches
+        // the application without the panel ever being asked. So the panel asks
+        // as well, from the one place every dispatched event passes through.
+        if (QCoreApplication *app = QCoreApplication::instance()) {
+            app->installEventFilter(this);
+        }
+    }
+
+    ~NavigationFlyout() override
+    {
+        if (QCoreApplication *app = QCoreApplication::instance()) {
+            app->removeEventFilter(this);
+        }
     }
 
     void setEntries(const QList<QAction *> &actions, const QList<int> &depths, QAction *current)
@@ -190,6 +219,22 @@ public:
     /*! What a press on a row means, told to whoever put the panel up. */
     std::function<void(QAction *)> chosen;
 protected:
+    bool eventFilter(QObject *watched, QEvent *event) override
+    {
+        // Only a press can end the panel, and only one that landed somewhere
+        // else: a press on a row is the press the rows below are waiting for.
+        // The panel also ends when it stops being the window in front, because
+        // a panel over a window nobody is looking at is a panel left behind.
+        if (event->type() == QEvent::MouseButtonPress) {
+            if (!frameGeometry().contains(eventScreenPos(static_cast<QMouseEvent *>(event)))) {
+                close();
+            }
+        } else if (event->type() == QEvent::WindowDeactivate && watched == this) {
+            close();
+        }
+        return QWidget::eventFilter(watched, event);
+    }
+
     void paintEvent(QPaintEvent *event) override
     {
         Q_UNUSED(event)
