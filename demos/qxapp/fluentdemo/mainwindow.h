@@ -12,6 +12,7 @@
 #include "qxfluent/qxfluent_global.h"
 #include "qxwindow/qxwindow_global.h"
 
+class QAction;
 class QStackedWidget;
 
 QX_FLUENT_BEGIN_NAMESPACE
@@ -97,6 +98,9 @@ private:
 
     TitleBar *m_titleBar = Q_NULLPTR;
     QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
+    /*! The caption's fold: one of two ways to ask the pane the same thing, and
+     *  the one that has to be told when the other was used. */
+    QAction *m_fold = Q_NULLPTR;
     FluentNavigationView *m_nav = Q_NULLPTR;
     QStackedWidget *m_stack = Q_NULLPTR;
     SettingsPage *m_settings = Q_NULLPTR;

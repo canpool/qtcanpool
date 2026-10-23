@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QSignalBlocker>
 #include <QWidget>
 
 QX_THEME_USE_NAMESPACE
@@ -20,6 +21,18 @@ QX_THEME_USE_NAMESPACE
 bool SettingsPage::paneOpen() const
 {
     return m_paneOpen;
+}
+
+void SettingsPage::setPaneOpen(bool open)
+{
+    if (m_paneOpen == open) {
+        return;
+    }
+    m_paneOpen = open;
+    // Blocked, so that being told is not a request: this switch reports the
+    // window's answer, it does not make one.
+    QSignalBlocker blocker(m_paneSwitch);
+    m_paneSwitch->setOn(open);
 }
 
 void SettingsPage::reportMaterial(bool applied)
@@ -33,6 +46,7 @@ SettingsPage::SettingsPage(QWidget *parent)
     addSection(tr("The pane"));
 
     auto *pane = new FluentSwitch(this);
+    m_paneSwitch = pane;
     pane->setText(tr("Show the words beside the icons"));
     pane->setOn(m_paneOpen);
     connect(pane, &FluentSwitch::toggled, this, [this](bool on) {

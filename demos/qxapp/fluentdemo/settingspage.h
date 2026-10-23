@@ -14,6 +14,10 @@
 
 class QLabel;
 
+QX_FLUENT_BEGIN_NAMESPACE
+class FluentSwitch;
+QX_FLUENT_END_NAMESPACE
+
 QX_FLUENT_USE_NAMESPACE
 
 /*! The screen where the application is configured.
@@ -33,6 +37,12 @@ public:
      *  icons; asked for by the page, kept by the window. */
     bool paneOpen() const;
 
+    /*! Says whether the pane is open, because the window folded it somewhere
+     *  else - the caption's own button is the other way to ask for the same
+     *  thing. The switch is told rather than asked, so that it says what is in
+     *  force rather than what was last clicked here. */
+    void setPaneOpen(bool open);
+
     /*! Says whether the material that was asked for was applied.
      *
      *  The window calls this, because the window is the only thing that can
@@ -45,6 +55,7 @@ Q_SIGNALS:
     void materialRequested(FluentWindowMaterial::Material material);
 private:
     bool m_paneOpen = true;
+    QX_FLUENT_PREPEND_NAMESPACE(FluentSwitch) *m_paneSwitch = Q_NULLPTR;
     QLabel *m_materialState = Q_NULLPTR;
 };
 

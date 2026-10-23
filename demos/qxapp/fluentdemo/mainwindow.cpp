@@ -222,8 +222,12 @@ void MainWindow::buildTitleBar()
     // Folding the pane is the one piece of behaviour a Fluent navigation pane
     // has that a list of buttons does not: it is what an application does on a
     // narrow window, where the words are the first thing there is no room for.
-    QAction *fold = bar->addCommand(FluentCommandBar::ItemRole::Toggle, tr("Fold the pane"));
-    connect(fold, &QAction::toggled, this, [this](bool on) {
+    // The button asks the view and is told the answer back (see
+    // createConnections): the pane is the view's state, and a button that kept
+    // its own copy of it would be a second place the same fact lives.
+    m_fold = bar->addCommand(FluentCommandBar::ItemRole::Toggle, tr("Fold the pane"));
+    m_fold->setChecked(!m_nav->isPaneOpen());
+    connect(m_fold, &QAction::toggled, this, [this](bool on) {
         m_nav->setPaneOpen(!on);
     });
 
@@ -377,6 +381,21 @@ void MainWindow::createConnections()
 
     connect(m_settings, &SettingsPage::paneOpenChanged, this, [this](bool open) {
         m_nav->setPaneOpen(open);
+    });
+
+    // The pane is the view's state, and the caption's fold and the switch on the
+    // settings page are two ways of asking for it - so neither of them remembers
+    // what was last clicked, both are told what is in force. Without this,
+    // folding from one of them left the other saying the pane was still open.
+    //
+    // The action is set without a QSignalBlocker on purpose: a blocker would
+    // silence QAction::changed as well, and that is what a command bar repaints
+    // on - the button would hold the right state and go on drawing the old one.
+    // What keeps this from going round is the view: setPaneOpen() does nothing
+    // when the pane is already there, so the toggle this may raise dies there.
+    connect(m_nav, &FluentNavigationView::paneOpenChanged, this, [this](bool open) {
+        m_fold->setChecked(!open);
+        m_settings->setPaneOpen(open);
     });
     connect(m_settings, &SettingsPage::materialRequested, this, [this](FluentWindowMaterial::Material material) {
         if (!m_material) {
