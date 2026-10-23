@@ -5,6 +5,7 @@
 #include "titlebar.h"
 
 #include "qxfluent/fluentcommandbar.h"
+#include "qxfluent/fluenttokens.h"
 #include "qxcontrols/qxstatelayer.h"
 
 #include <QtGui/QPainter>
@@ -213,6 +214,12 @@ TitleBar::TitleBar(QWidget *parent)
 
     m_title = new QLabel(window()->windowTitle(), this);
     m_title->setObjectName(QStringLiteral("captionTitle"));
+    // The name of the window is body-strong: the size the commands beside it are
+    // set in, told apart by weight. Left to the application's default font it
+    // came out at the ramp's caption step - right for a bare 32 tall title bar,
+    // a size below everything else in this one, which is 48 tall and carries a
+    // 40 tall command bar whose text is body.
+    m_title->setFont(FluentType::font(FluentType::Ramp::Body, true));
     layout->addWidget(m_title);
 
     m_search = new QLineEdit(this);
