@@ -43,7 +43,7 @@ Feature
   pressed a button" from "the user pressed the caption" is what lets a caption
   gesture be given back without taking the buttons away again.
 
-Fix
+Bugfix
 - MaterialDialog now answers the pointer over its answers and its cross. They
   are painted on the card rather than being widgets in it, and the card did not
   track the mouse, so a pointer that arrived over either of them was never
@@ -221,7 +221,7 @@ Feature
   bar's only answer is which icon was landed on. The row is one stop on the way
   through the keyboard, not one per icon, and it is announced as a toolbar.
 
-Fix
+Bugfix
 - Where the things in MaterialNavigationRail stand is now worked out when it is
   asked for rather than when the room changed, and the rail is fixed across.
   A widget that has never been shown is not told it was resized, so a rail asked

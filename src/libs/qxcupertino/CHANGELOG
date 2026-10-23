@@ -93,7 +93,7 @@ Feature
   its accessible name for as long as the application has not given it a better
   one.
 
-Fixed
+Bugfix
 - The segmented control's pill is a face standing on the row and not a hole cut
   through it: white on a light page, and on a dark one the family's grey lifted
   off the page. Left white on a dark page the pill was a bright square in the

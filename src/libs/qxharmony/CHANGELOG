@@ -92,7 +92,7 @@ Feature
   press and Space on the release, and what the button says is its accessible name
   for as long as the application has not given it a better one.
 
-Fixed
+Bugfix
 - The slider asks for the height its own drawing needs. The bubble floats above
   the handle and a widget cannot paint outside itself, so a height worked out
   from the handle alone drew the bubble with its top sliced off - a row or two

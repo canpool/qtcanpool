@@ -81,7 +81,7 @@ Feature
   destination reached with the arrow keys - or chosen by the application - is
   scrolled into the room it is being shown in.
 
-Fix
+Bugfix
 - FluentCommandBar centres its row in the bar it was given rather than in the
   height it asks for. The two are the same height until a layout gives the bar
   more room - and a title bar that puts the bar in a taller row does exactly
@@ -236,7 +236,7 @@ Feature
   whose close mark was clicked and closes nothing, because whether a tab may be
   closed is the application's to answer and not the view's.
 
-Fix
+Bugfix
 - Where the things in FluentNavigationView and FluentTabView stand is now
   worked out when it is asked for rather than when the room changed. A widget
   that has never been shown is not told it was resized, so a view asked where

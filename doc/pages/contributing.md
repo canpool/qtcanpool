@@ -84,6 +84,7 @@ doc/design/4.7/
 ## 4. 库 CHANGELOG 活文档（K24）
 
 - 改动**落地时就写**进该库 `CHANGELOG` 顶端 `Unreleased` 分节（`Feature`/`Interface`/`Optimize`/`Bugfix` 体例），含**不动号的行为修复**。
+- **修缺陷一律写 `Bugfix`**，不写 `Fix` / `Fixed`。两者曾在不同库里各写一种，同一个文件里上下两个版本块互不一致；2026-10-23 全部归一（含历史段的小节名，只改名字、不动条目内容）。
 - 该库**落号时**把 `Unreleased` 改名成新版本号，与改号同一笔提交。
 - **不追溯**：已发布的段一字不动。
 - `qxcore` / `qxtheme` / `qxapp` / `qxplugin` **首次有改动时才建**文件。

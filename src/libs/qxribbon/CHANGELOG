@@ -20,7 +20,7 @@ Changed
 
 0.14.1
 ---
-Fixed
+Bugfix
 - The quick access bar takes the width it asks for once a style sheet has reached
   it, including a sheet installed after the window was already on the screen.
   What the bar's layout gives the quick access bar is the width of its size hint,
@@ -58,7 +58,7 @@ Addition
   English so that the same words can be found in a search whatever language the
   interface runs in. tst_RibbonTranslations::catalogue holds the strings to that.
 
-Fixed
+Bugfix
 - A gallery's popup keeps one item size whatever the strip is showing, and it stays
   on the screen. Picking an item out of another group makes the strip show that
   group - that is what the Office gallery does, and the strip still shows the rows
