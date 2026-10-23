@@ -58,9 +58,13 @@ QPointF eventPos(const QMouseEvent *event)
 #endif
 }
 
-QRectF centeredVertically(qreal left, qreal width, qreal height)
+/*! A command is centred in the bar that holds it, whatever height that bar has
+ *  been given. `kBarHeight` is what the bar asks for; a layout is free to give
+ *  it more, and one that does is the reason this takes the widget rather than
+ *  the constant: the row used to sit against the top edge of a taller bar. */
+QRectF centeredVertically(const QWidget *bar, qreal left, qreal width, qreal height)
 {
-    return QRectF(left, (kBarHeight - height) / 2.0, width, height);
+    return QRectF(left, (bar->height() - height) / 2.0, width, height);
 }
 
 /*! The chevron that says a menu is here: a point turned down, drawn rather
@@ -103,6 +107,10 @@ public:
      *  resized is asked many times and a bar nobody has drawn yet has never
      *  been given a room at all. */
     int laidOutWidth = -1;
+    /*! Centring depends on the height as much as on the width: a bar given more
+     *  room is laid out again, and without this its row would keep the offset
+     *  it was given when it was shorter. */
+    int laidOutHeight = -1;
     bool dirty = true;
 
     int itemWidth(const CommandItem &item) const;
@@ -134,17 +142,18 @@ int FluentCommandBarPrivate::itemWidth(const CommandItem &item) const
 QRectF FluentCommandBarPrivate::overflowRect() const
 {
     Q_Q(const FluentCommandBar);
-    return centeredVertically(q->width() - kItemPadding / 2.0 - kOverflowWidth, kOverflowWidth, kItemHeight);
+    return centeredVertically(q, q->width() - kItemPadding / 2.0 - kOverflowWidth, kOverflowWidth, kItemHeight);
 }
 
 void FluentCommandBarPrivate::relayout()
 {
     Q_Q(FluentCommandBar);
-    if (!dirty && laidOutWidth == q->width()) {
+    if (!dirty && laidOutWidth == q->width() && laidOutHeight == q->height()) {
         return;
     }
     dirty = false;
     laidOutWidth = q->width();
+    laidOutHeight = q->height();
 
     for (CommandItem &item : items) {
         item.rect = QRectF();
@@ -181,7 +190,7 @@ void FluentCommandBarPrivate::relayout()
             continue;
         }
         const qreal width = itemWidth(item);
-        item.rect = centeredVertically(x, width, kItemHeight);
+        item.rect = centeredVertically(q, x, width, kItemHeight);
         if (item.role == FluentCommandBar::ItemRole::Split) {
             item.chevron = QRectF(item.rect.right() - kChevronWidth, item.rect.top(), kChevronWidth, kItemHeight);
         }
