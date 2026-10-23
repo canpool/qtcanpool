@@ -51,7 +51,7 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 
 ## 版本对照
 
-各库当前版本（**4.7.1** 结算后；tag `4.7.1`）：
+各库当前版本（**4.7.1** 结算后；该版本已发版，tag `4.7.1`）：
 
 | `qxcore` | `qxtheme` | `qxcontrols` | `qxfluent` | `qxmaterial` | `qxwindow` | `qxribbon` | `qxdock` | `qxplugin` | `qxapp` |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
