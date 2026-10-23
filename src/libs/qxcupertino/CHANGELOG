@@ -119,7 +119,21 @@ Feature
   drawn at the leading edge and the text starts after it, because a search
   field is a text field with a decoration that is part of it rather than one
   with a button beside it.
-
+- CupertinoListSection and CupertinoListTile, a group of rows and the rows it is
+  made of. No Qt control says what this says: a QGroupBox draws a frame around
+  its children and a QListWidget is a view with a model behind it, where a group
+  in this family is a caption, one card inset from the page, and rows that are
+  the card - a shape that is a container and a row at the same time. Which is
+  why a row knows where it sits in its group: the card is drawn row by row, so
+  the first row turns the two corners above it, the last the two below, a row
+  between them turns none, and a row alone turns all four. A row says nothing
+  about what it is for - it reports clicked(), and the application decides - and
+  the end of it can as well be a mark, a turn to the right for a row that opens
+  something or a tick for the one that is chosen, as a widget the application
+  puts there: a switch, a value. The one mark a row does draw itself is the line
+  between it and the row under it, and the line starts where the text starts,
+  because a line to the card's edge would cut the card rather than separate two
+  rows on it.
 Bugfix
 - The segmented control's pill is a face standing on the row and not a hole cut
   through it: white on a light page, and on a dark one the family's grey lifted

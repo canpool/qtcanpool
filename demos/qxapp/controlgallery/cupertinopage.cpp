@@ -6,6 +6,7 @@
 
 #include "qxcupertino/cupertinoactivityindicator.h"
 #include "qxcupertino/cupertinobutton.h"
+#include "qxcupertino/cupertinolistsection.h"
 #include "qxcupertino/cupertinosegmentedcontrol.h"
 #include "qxcupertino/cupertinoslider.h"
 #include "qxcupertino/cupertinoswitch.h"
@@ -98,6 +99,24 @@ CupertinoPage::CupertinoPage(QWidget *parent)
     // The three levels side by side: what a level is worth is only legible next
     // to the other two.
     addControl<QWidget>(QStringLiteral("cupertinoButton"), QStringLiteral("CupertinoButton"), buttonRow(this));
+
+    addSection(tr("Lists"));
+
+    // A group of rows is one card, and the rows *are* the card: the row at each
+    // end turns the corners, which is why the group tells every row where it
+    // sits rather than the page assigning positions. The three rows show the
+    // three things the end of a row can carry - a turn for a row that opens
+    // something, a control the page puts there, and the tick for the one that
+    // is chosen.
+    auto *list = addControl<CupertinoListSection>(
+        QStringLiteral("cupertinoListSection"), QStringLiteral("CupertinoListSection"), new CupertinoListSection(this));
+    list->setHeader(tr("Settings"));
+    list->addTile(tr("Wi-Fi"), tr("Home"))->setTrailing(CupertinoListTile::Trailing::Chevron);
+    auto *airplane = list->addTile(tr("Airplane Mode"));
+    auto *airplaneSwitch = new CupertinoSwitch(airplane);
+    airplaneSwitch->setOn(true);
+    airplane->setTrailingWidget(airplaneSwitch);
+    list->addTile(tr("Cellular"))->setTrailing(CupertinoListTile::Trailing::Checkmark);
 
     addSection(tr("Status"));
 
