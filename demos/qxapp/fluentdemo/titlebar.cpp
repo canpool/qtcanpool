@@ -199,7 +199,12 @@ TitleBar::TitleBar(QWidget *parent)
     setFixedHeight(kBarHeight);
 
     auto *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(8, 0, 0, 0);
+    // Eight on the right as well as on the left: the bar centres its 32 tall
+    // buttons in 48, which is eight above and eight below, so a close button
+    // flush against the window's edge would be the one side of the caption with
+    // no room in it. The gap is the same on all four sides, and the corner reads
+    // as a corner rather than as a button cut off by the frame.
+    layout->setContentsMargins(8, 0, 8, 0);
     layout->setSpacing(8);
 
     m_icon = new CaptionButton(CaptionButton::Glyph::App, this);
