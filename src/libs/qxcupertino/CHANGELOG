@@ -28,3 +28,22 @@ Feature
   does not run the platform, so they are not attempted at all, and a shape that
   is close without them is the whole of the goal here rather than a shortfall
   to be filed later.
+- `CupertinoSwitch`, a switch drawn as a slim capsule with a white knob in it.
+  Qt has a check box and no switch, and the two are not the same control: this
+  one says that what it stands for is in force now, where a check box says a
+  choice has been made and will be collected later. Two proportions make the
+  drawing this family's rather than another's. The track is slim - a bead's
+  height taller than the knob, and the knob nearly fills it - so the control
+  reads as a line with a bead on it rather than as a filled bar. And the fill
+  does not follow the knob: the track is the off grey until the knob has
+  crossed the middle and the on green from there, one change rather than a
+  blend, which is the half of the likeness a shape can carry without the
+  platform's materials. The green is the family's semantic colour and not the
+  theme's accent, so a switch stays green under every theme; the off grey is the
+  same semantic grey thinned over the page, one alpha that answers both faces.
+  The knob is white on both faces, because it reads as the highlight on the
+  track rather than as a surface of the page, and the one lift it has is the
+  family's raised level. The travel rides on the normal duration, so a theme's
+  motion scale reaches it and the reduce-motion switch silences it without the
+  control checking either. There is no sentence in the control: in this family
+  a switch is the capsule and the words beside it are a label of their own.

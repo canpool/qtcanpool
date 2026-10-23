@@ -5,4 +5,5 @@ add_qtc_library(qxcupertino
   SOURCES
     qxcupertino_global.h
     cupertinotokens.h cupertinotokens.cpp
+    cupertinoswitch.h cupertinoswitch.cpp
 )
