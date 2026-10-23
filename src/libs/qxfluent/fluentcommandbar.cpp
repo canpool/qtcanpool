@@ -306,6 +306,16 @@ QAction *FluentCommandBar::addCommand(ItemRole role, const QString &text, const 
     item.role = role;
     d_ptr->items.append(item);
     d_ptr->dirty = true;
+    // The bar draws the action, so it has to be told when the action stops
+    // looking the way it was drawn: a command turned on somewhere else - the
+    // settings page, a menu, a shortcut - is the same fact arriving by another
+    // route, and a bar that only repainted on its own events would go on
+    // showing the old answer until the pointer happened to cross it.
+    connect(action, &QAction::changed, this, [this]() {
+        d_ptr->dirty = true;
+        d_ptr->relayout();
+        update();
+    });
     d_ptr->relayout();
     updateGeometry();
     update();

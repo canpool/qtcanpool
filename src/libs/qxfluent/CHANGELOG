@@ -85,6 +85,12 @@ Fix
   that, so every command in it sat four pixels high, with the caption buttons
   beside it on the middle line. The bar is laid out again when its height
   changes and not only when its width does.
+- FluentCommandBar follows the actions it shows. It draws them itself - the
+  wash, the ink, and the fill behind a command that is on - and it repainted
+  only on its own events, so an action whose state was set somewhere else - a
+  settings page, a menu, a shortcut - went on looking the way it looked before,
+  until the pointer happened to cross it. A command bar that answers for a
+  toggled command has to be told when the toggle was thrown elsewhere.
 
 0.1.0
 ---
