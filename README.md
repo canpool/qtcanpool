@@ -27,9 +27,11 @@ qtcanpool 旨在提供优秀的项目管理方式、多样的选择与优质的�
 | :--- | :------- | :--- |
 | **qxcore** | `QxCore` | 基础设施库：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`），仅依赖 Qt Core |
 | **qxtheme** | `QxTheme` | 主题引擎：调色板 + 样式表统一应用（预置主题族见 [`res/themes/`](./res/themes)，每族明暗各一套）、运行时切换、选择持久化、可跟随系统深浅色 |
-| **qxcontrols** | `QxControls` | 控件基座：`QxControl` 状态机、状态层、焦点环、投影、无障碍桥——Fluent 与 Material 两套控件集的共用层（4.7 新增） |
+| **qxcontrols** | `QxControls` | 控件基座：`QxControl` 状态机、状态层、焦点环、投影、无障碍桥——四套控件集的共用层（4.7 新增） |
 | **qxfluent** | `QxFluent` | Fluent 风格控件集：开关、滑块、徽标、卡片、进度环、评分、展开器、信息条、面包屑、命令条、教学提示、导航视图、页签视图（4.7 新增） |
 | **qxmaterial** | `QxMaterial` | Material 风格控件集：开关、滑块、徽标、芯片、卡片、分段按钮、浮动操作按钮、涟漪、轻提示、骨架屏、导航轨、顶栏（4.7 新增） |
+| **qxcupertino** | `QxCupertino` | Cupertino 风格控件集：开关、滑块、分段控制、按钮、活动指示器、文本字段（含搜索框）、列表分组、警告对话框（4.7.2 新增） |
+| **qxharmony** | `QxHarmony` | HarmonyOS 风格控件集：开关、滑块、卡片、按钮（4.7.2 新增） |
 | **qxribbon** | `QxRibbon` | Ribbon 风格界面组件（菜单栏 / 页 / 分组等） |
 | **qxdock** | `QxDock` | 可停靠窗口组件（布局管理、浮动容器等） |
 | **qxwindow** | `QxWindow` | 自定义窗口组件（无边框窗口、系统按钮代理等） |

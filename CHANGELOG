@@ -1,3 +1,70 @@
+4.7.2
+---
+- A patch that opens two libraries, which is what a patch means in this
+  project: qxcupertino and qxharmony are the third and fourth control sets,
+  the families the 4.7 layer had promised but not yet filled, and the gallery
+  that shows the control sets grows from two pages to four so each family has
+  a page of its own. Every library's public API only gained declarations this
+  time - not one signature changed, nothing was removed and nothing was
+  renamed - so the compatibility promise of the 4.7 series still holds and the
+  project version is a patch
+- qxcupertino 0.1.0. A new library, opened with the family's five scales - the
+  corners, the type ramp, the elevation levels, the durations and curves, the
+  semantic colours - and eight controls on them: the switch whose knob follows
+  the hand, the slider, the segmented control whose pill stands under the
+  chosen segment, the button in its three levels, the activity indicator of
+  eight spokes fading round a centre, the text field that a search field is one
+  property away from, the list section and its tiles, and the alert dialog
+  whose answers answer by role. One defect left the door with it: the
+  segmented control's pill kept the light face on a dark page, and read white
+  on white
+- qxharmony 0.1.0. A new library, opened the same way - five scales and the
+  vocabulary they fix - with four controls: the switch whose knob answers the
+  hand rather than waiting for the release, the slider whose bubble floats up
+  to say the value while it is held, the card that stands on its shadow, and
+  the button in this family's three levels. The slider also asks for the height
+  its own drawing needs now, which is a sizeHint change its CHANGELOG owns
+- qxfluent 0.1.2. The navigation view gains its second shape, the one WinUI's
+  navigation view has: a destination can hold destinations under it, folded and
+  opened from the arrow, the keyboard or setCurrentIndex, and folded to its
+  narrowest the pane hands what stands under an icon out to a panel beside it.
+  The command faces - the bar and the two buttons that stand alone - draw from
+  one place now, and the bar takes the shape the buttons brought: its chevron
+  was a shade deeper than theirs and its seam a shade lighter, both differences
+  of history rather than of promise. Two defects are fixed in their own
+  entries: a window material asked of a window that already had a qxwindow
+  agent made a second agent and the caption stopped moving the window, and the
+  panel a folded pane opens stayed up until one of its own rows was chosen
+  instead of ending on a press anywhere else
+- qxmaterial 0.1.2. The navigation rail's column travels inside the room it is
+  given: destinations past the bottom padding used to be invisible while their
+  rectangles still caught a press aimed at the padding - invisible and
+  clickable was the worst of both halves of off the rail - and now the wheel
+  moves the column a destination a notch, the keyboard keeps what it walks to
+  in sight, and what stands outside the room is clipped and beyond the pointer
+  alike. The top app bar no longer puts the keyboard's place on the first
+  trailing action the moment it is added, which is where the permanent ring
+  that mark wore came from
+- qxwindow 0.3.3. WindowAgentWidget gains hostWidget(), the answer to "which
+  window has this agent taken over" that setup() could only give once and in
+  one direction. An object holding a window can tell one agent on it from
+  another now, which is what asking a window material of a window that draws
+  its own caption needs
+- qxcore 0.2.0, qxtheme 0.2.2, qxcontrols 0.1.0, qxribbon 0.14.2, qxdock 0.3.3,
+  qxplugin 0.3.0 and qxapp 0.2.1 keep the numbers they had. This is a
+  conclusion, not an omission: none of them gained a fix or an increment in
+  this patch - qxribbon's only change was its CHANGELOG's section names, which
+  is a record and not a fix, and the rest were not touched
+- The gallery that shows the control sets is four pages, and its golden
+  pictures are four now too, one per family, captured by starting the gallery
+  once per style - a picture of one page cannot stand for the three it does
+  not show, and a golden that mixed them would re-baseline four pages whenever
+  one changed. The two application demos carry the new families and the fixes
+  found by using them: the fluent pane shows what a fold and a hierarchy look
+  like, wears an icon per destination so a folded pane is a column of names
+  rather than one glyph repeated, and the cupertino page's alert is answered
+  the way the dialog asks to be
+
 4.7.1
 ---
 - A patch that carries new controls, which is what a patch means in this

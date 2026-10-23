@@ -77,7 +77,7 @@
 
 #define QX_WINDOW_VERSION_MAJOR 0
 #define QX_WINDOW_VERSION_MINOR 3
-#define QX_WINDOW_VERSION_PATCH 2
+#define QX_WINDOW_VERSION_PATCH 3
 /*
    QX_WINDOW_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_WINDOW_VERSION >= QT_VERSION_CHECK(0, 5, 3))

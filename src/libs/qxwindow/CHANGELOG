@@ -1,4 +1,4 @@
-Unreleased
+0.3.3
 ---
 Interface
 - WindowAgentWidget::hostWidget() answers which window the agent has taken

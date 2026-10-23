@@ -17,21 +17,23 @@ qxapp      应用框架
    ├── qxdock    可停靠窗口（布局 / 标签化 / 浮动容器）         ──► 仅 Qt
    ├── qxwindow  单窗口 / 无边框窗口基座                      ──► 仅 Qt
    │
-   │   控件集（4.7 新增，**用户三选一，不是一套的三种皮肤**）
-   ├── qxfluent   Fluent 风格控件                          ──► qxcontrols（+ 可选 qxwindow）
-   ├── qxmaterial Material 风格控件                        ──► qxcontrols
+   │   控件集（4.7 新增，**用户五选一，不是一套的五种皮肤**）
+   ├── qxfluent    Fluent 风格控件                         ──► qxcontrols（+ 可选 qxwindow）
+   ├── qxmaterial  Material 风格控件                       ──► qxcontrols
+   ├── qxcupertino Cupertino 风格控件                     ──► qxcontrols
+   ├── qxharmony   HarmonyOS 风格控件                      ──► qxcontrols
    │      └── qxcontrols  控件基座（状态层 / 描边 / 阴影 / 状态机）──► qxtheme
    │
    ├── qxtheme   主题引擎（调色板 + 样式表）                   ──► qxcore
    └── qxcore    基础设施（配置 / 日志 / 语言）                ──► 仅 Qt Core
 ```
 
-**四层**（4.7 起）：引擎（`qxtheme`）→ 底座（`qxcontrols`）→ 控件集（`qxfluent` / `qxmaterial`）
-→ chrome（`qxribbon` / `qxdock` / `qxwindow`，与控件集**平级**）。
-`qxtheme` **不认识任何控件**（既不认识 `qxcontrols`，也不认识两套控件集）：
+**四层**（4.7 起）：引擎（`qxtheme`）→ 底座（`qxcontrols`）→ 控件集（`qxfluent` / `qxmaterial` /
+`qxcupertino` / `qxharmony`）→ chrome（`qxribbon` / `qxdock` / `qxwindow`，与控件集**平级**）。
+`qxtheme` **不认识任何控件**（既不认识 `qxcontrols`，也不认识四套控件集）：
 底座向下读主题，向上不暴露给引擎——这与「引擎只认应用注册进来的主题」是同一条规矩的两面。
-两套控件集**互不依赖**：名字相同的控件（Switch / Slider / Badge / Card / ProgressRing）
-是**各自实现的两份**，不是同一个类的两种皮肤；只有「两族答案相同」的机制才下沉到 `qxcontrols`
+四套控件集**互不依赖**：名字相同的控件（Switch / Slider / Card …）
+是**各自实现的各一份**，不是同一个类的几种皮肤；只有「各族答案相同」的机制才下沉到 `qxcontrols`
 （判据是**答案相同**，不是**名字相同**，见 [控件集](controls.md)）。
 唯一的横向例外在注释里写明了：`qxfluent` 的窗口材质（`FluentWindowMaterial`）是 `qxwindow`
 的 Mica / Acrylic，因此那一个文件在 `WITH_QXWINDOW` 打开时才侧向依赖 `qxwindow`；
@@ -86,6 +88,8 @@ qxapp      应用框架
 | qxcontrols | `QxControls` | `QX_CONTROLS_` |
 | qxfluent | `QxFluent` | `QX_FLUENT_` |
 | qxmaterial | `QxMaterial` | `QX_MATERIAL_` |
+| qxcupertino | `QxCupertino` | `QX_CUPERTINO_` |
+| qxharmony | `QxHarmony` | `QX_HARMONY_` |
 | qxwindow | `QxWindow` | `QX_WINDOW_` |
 | qxribbon | `QxRibbon` | `QX_RIBBON_` |
 | qxdock | `QxDock` | `QX_DOCK_` |

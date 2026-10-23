@@ -1,4 +1,4 @@
-Unreleased
+0.1.2
 ---
 Bugfix
 - A window material asked of a window that had already handed itself over to a

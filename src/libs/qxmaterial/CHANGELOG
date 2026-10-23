@@ -1,4 +1,4 @@
-Unreleased
+0.1.2
 ---
 Bugfix
 - The first action a top app bar was given wore the focus ring from the moment

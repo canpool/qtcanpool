@@ -7,6 +7,8 @@
 - qxcontrols → @ref QxControls
 - qxfluent → @ref QxFluent
 - qxmaterial → @ref QxMaterial
+- qxcupertino → @ref QxCupertino
+- qxharmony → @ref QxHarmony
 - qxwindow → @ref QxWindow
 - qxribbon → @ref QxRibbon
 - qxdock → @ref QxDock
@@ -117,7 +119,7 @@ themes->setTheme(QStringLiteral("fluent-dark"));
 
 ## qxcontrols — 控件基座（4.7 新增）
 
-两套控件集**共同依赖**的那一层：不画控件，只提供「一个控件该怎么回答指针与主题」的机制。
+四套控件集**共同依赖**的那一层：不画控件，只提供「一个控件该怎么回答指针与主题」的机制。
 它依赖 `qxtheme`（读令牌与调色板），**不认识**任何具体控件。
 
 | 类 | 说明 |
@@ -146,7 +148,7 @@ protected:
 ## qxfluent — Fluent 风格控件（4.7 新增）
 
 一套自成体系的 Fluent 观感控件（命名空间 `QxFluent`，类 `Fluent*`，文件 `fluent*`）。
-与 `qxmaterial`、与 `qxribbon` 是**用户三选一的三个选项**，不是同一套的几种皮肤——
+与其它三套控件集、与 `qxribbon` 是**用户五选一的五个选项**，不是同一套的几种皮肤——
 详见[控件集](controls.md)。
 
 | 类 | 说明 |
@@ -189,6 +191,56 @@ using namespace QxMaterial;
 
 MaterialSwitch *sw = new MaterialSwitch(this);
 MaterialSkeleton *loading = new MaterialSkeleton(MaterialSkeleton::Rectangle, this);
+```
+
+## qxcupertino — Cupertino 风格控件（4.7.2 新增）
+
+一套自成体系的 Cupertino（iOS）观感控件（命名空间 `QxCupertino`，类 `Cupertino*`，文件
+`cupertino*`）。与其它三套控件集、与 `qxribbon` 是**用户五选一的五个选项**——
+详见[控件集](controls.md)。
+
+| 类 | 说明 |
+| :--- | :--- |
+| 令牌（`cupertinotokens.h`） | 五个命名空间：`CupertinoShape`（0/6/8/10/16/全圆）、`CupertinoType`、`CupertinoElevation`、`CupertinoMotion`、`CupertinoColor` |
+| `CupertinoSwitch` / `CupertinoSlider` | 开关（细胶囊 + 白色圆钮，圆钮跟着手走）与滑块（细轨 + 圆柄） |
+| `CupertinoSegmentedControl` | 分段控制：一行标签，白色药丸停在选中段下、跟着选择移动 |
+| `CupertinoButton` | 胶囊文字按钮，Filled / Tinted / Plain 三档 |
+| `CupertinoActivityIndicator` | 活动指示器：八条辐条绕中心渐隐（不确定态；减弱动效时停在呼吸中段） |
+| `CupertinoTextField` | 填充式文本字段，自带清除钮；`Kind::Search` 在行头画放大镜、换搜索框的占位文案——搜索框是同一个控件的另一种说法 |
+| `CupertinoListSection` / `CupertinoListTile` | 列表分组与组内的行：设置页里「一组标题 + 一列行」的形状 |
+| `CupertinoAlertDialog` | 警告对话框：一手宽的卡片压在变暗的页面上，标题、一句话、最多两个答案。答案是**角色**在回答——Cancel 是出口、其余是确认；按下只发 `actionChosen()`，关不关由应用接 |
+
+```cpp
+#include "qxcupertino/cupertinoswitch.h"
+#include "qxcupertino/cupertinotextfield.h"
+
+using namespace QxCupertino;
+
+CupertinoSwitch *sw = new CupertinoSwitch(this);
+CupertinoTextField *search = new CupertinoTextField(this);
+search->setKind(CupertinoTextField::Kind::Search);
+```
+
+## qxharmony — HarmonyOS 风格控件（4.7.2 新增）
+
+一套自成体系的 HarmonyOS 观感控件（命名空间 `QxHarmony`，类 `Harmony*`，文件 `harmony*`）。
+与其它三套控件集、与 `qxribbon` 是**用户五选一的五个选项**——详见[控件集](controls.md)。
+
+| 类 | 说明 |
+| :--- | :--- |
+| 令牌（`harmonytokens.h`） | 五个命名空间：`HarmonyShape`（0/4/8/16/24/全圆）、`HarmonyType`（每级都带中字重）、`HarmonyElevation`、`HarmonyMotion`、`HarmonyColor` |
+| `HarmonySwitch` / `HarmonySlider` | 开关（圆钮跟着手走，而不是等松手才跳）与滑块（按住时气泡浮出报值，松手淡出） |
+| `HarmonyCard` | 卡片：铺在页面上、靠阴影立起；`shadowRoom()` 是页面要给它留出的影的房间 |
+| `HarmonyButton` | 胶囊文字按钮，本族的三档 |
+
+```cpp
+#include "qxharmony/harmonyswitch.h"
+#include "qxharmony/harmonycard.h"
+
+using namespace QxHarmony;
+
+HarmonySwitch *sw = new HarmonySwitch(this);
+HarmonyCard *card = new HarmonyCard(this);
 ```
 
 ## qxwindow — 自定义窗口

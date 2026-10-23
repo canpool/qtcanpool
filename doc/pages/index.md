@@ -35,9 +35,11 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 | :--- | :--- | :--- | :--- |
 | `qxcore` | @ref QxCore | 基础设施：配置（`QxSettings`）、日志（`QxLogger`）、语言切换（`QxTranslator`） | Qt Core |
 | `qxtheme` | @ref QxTheme | 主题引擎：调色板 + 样式表统一应用、运行时切换、持久化、跟随系统 | `qxcore`、Qt Widgets |
-| `qxcontrols` | @ref QxControls | 控件基座：状态机、状态层、描边、投影、无障碍桥（两套控件集的共用层，4.7 新增） | `qxtheme`、Qt Widgets |
+| `qxcontrols` | @ref QxControls | 控件基座：状态机、状态层、描边、投影、无障碍桥（四套控件集的共用层，4.7 新增） | `qxtheme`、Qt Widgets |
 | `qxfluent` | @ref QxFluent | Fluent 风格控件：开关、滑块、徽标、卡片、进度环、评分、揭示等（4.7 新增） | `qxcontrols`、Qt Widgets |
 | `qxmaterial` | @ref QxMaterial | Material 风格控件：开关、滑块、徽标、筹码、卡片、分段按钮、FAB、涟漪等（4.7 新增） | `qxcontrols`、Qt Widgets |
+| `qxcupertino` | @ref QxCupertino | Cupertino 风格控件：开关、滑块、分段控制、按钮、活动指示器、文本字段、列表分组、警告对话框（4.7.2 新增） | `qxcontrols`、Qt Widgets |
+| `qxharmony` | @ref QxHarmony | HarmonyOS 风格控件：开关、滑块、卡片、按钮（4.7.2 新增） | `qxcontrols`、Qt Widgets |
 | `qxwindow` | @ref QxWindow | 自定义窗口：无边框窗口、系统按钮代理、原生窗口上下文 | Qt Widgets |
 | `qxribbon` | @ref QxRibbon | Ribbon 风格界面：菜单栏 / 页 / 分组 / 快捷工具栏 | Qt Widgets |
 | `qxdock` | @ref QxDock | 可停靠窗口：布局管理、标签化面板、浮动容器 | Qt Widgets |
@@ -51,14 +53,14 @@ QtCanpool 提供一整套可直接用于产品开发的界面基础设施：Ribb
 
 ## 版本对照
 
-各库当前版本（**4.7.1** 结算后；该版本已发版，tag `4.7.1`）：
+各库当前版本（**4.7.2** 结算后）：
 
-| `qxcore` | `qxtheme` | `qxcontrols` | `qxfluent` | `qxmaterial` | `qxwindow` | `qxribbon` | `qxdock` | `qxplugin` | `qxapp` |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 0.2.0 | 0.2.2 | 0.1.0 | 0.1.1 | 0.1.1 | 0.3.2 | 0.14.2 | 0.3.3 | 0.3.0 | 0.2.1 |
+| `qxcore` | `qxtheme` | `qxcontrols` | `qxfluent` | `qxmaterial` | `qxcupertino` | `qxharmony` | `qxwindow` | `qxribbon` | `qxdock` | `qxplugin` | `qxapp` |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 0.2.0 | 0.2.2 | 0.1.0 | 0.1.2 | 0.1.2 | 0.1.0 | 0.1.0 | 0.3.3 | 0.14.2 | 0.3.3 | 0.3.0 | 0.2.1 |
 
-`qxcontrols` / `qxfluent` / `qxmaterial` 是 4.7 新开的库，在这一版首次进入表中，库号从
-`0.1.0` 起；4.7.0 之前的版本没有它们的号。
+`qxcontrols` / `qxfluent` / `qxmaterial` 是 4.7 新开的库，`qxcupertino` / `qxharmony` 是 4.7.2
+新开的库；新库首次进入表中，库号从 `0.1.0` 起，更早的版本没有它们的号。
 
 **项目版本**（tag 打在它上面）是发布列车号，**每个库另有自己的版本号**，两者互不绑定（K11）：
 每次项目发版结算一次，这一批里有修复或增量的库才前进号。历史各版本与各库号的完整对照、

@@ -1,5 +1,5 @@
 add_qtc_library(qxmaterial
-  VERSION 0.1.1
+  VERSION 0.1.2
   DEFINES QX_MATERIAL_LIBRARY
   PUBLIC_DEPENDS qxcontrols Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES

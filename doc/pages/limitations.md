@@ -422,7 +422,7 @@ Windows 会发出一条 flags 恰为 `0x37` 的 `WM_WINDOWPOSCHANGING`。**不�
 `Test` 步骤对这条腿跳过。实测（本机 MinGW 同参配置 + 构建）：产物只有
 `libqxwindow.dll` 与 `libqxdock.dll`，未拖进第三个库。
 
-**理由**：十个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
+**理由**：十二个库里**只有两个**含有 macOS 专属代码（判据：`grep -rl Q_OS_MAC src/libs`）——
 - **`qxwindow`**（8 个文件含 `Q_OS_MAC` 分支）：`windowagentbase.cpp` /
   `windowagentwidget.{cpp,h,_p.h}` / `windowcontext.{cpp,_p.h}` / `windowcontext_qt.cpp` /
   `windowsystem_p.h`；另有**两个整文件的 Mac 实现**（整文件只在 macOS 编，内部无需分支）：
