@@ -477,13 +477,14 @@ endif()
 # The control gallery is registered like the others and checked one step further:
 # its --inspect tree is what lets the switch check be made per control (see
 # tst_demoscreenshot.cpp), which is the part a whole-window comparison cannot do.
+# It is captured once per family and judged against one golden per family: a
+# picture of one page cannot stand for the three it does not show, and a golden
+# that mixed them would re-baseline four pages whenever one changed.
 if (TARGET ControlGallery)
-  set(DEMO_GALLERY_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/controlgallery.png")
-  set(DEMO_GALLERY_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/controlgallery.png")
   list(APPEND DEMO_SCREENSHOT_DEFINES
       DEMO_GALLERY_EXECUTABLE="$<TARGET_FILE:ControlGallery>"
-      DEMO_GALLERY_SCREENSHOT_PATH="${DEMO_GALLERY_SCREENSHOT}"
-      DEMO_GALLERY_GOLDEN_PATH="${DEMO_GALLERY_GOLDEN}"
+      DEMO_GALLERY_CAPTURE_DIR="${DEMO_SCREENSHOT_DIR}"
+      DEMO_GALLERY_GOLDEN_DIR="${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}"
   )
   list(APPEND DEMO_SCREENSHOT_TARGETS ControlGallery)
 endif()

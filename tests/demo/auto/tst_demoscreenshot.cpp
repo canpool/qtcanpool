@@ -285,6 +285,27 @@ bool runDemo(const QString &executable, const QString &screenshotPath, const QSt
     return true;
 }
 
+#ifdef DEMO_GALLERY_EXECUTABLE
+/*! The families the gallery shows, in the order its own menu lists them: the
+ *  captures and the goldens are named after these, and the capture loop walks
+ *  them in this order. */
+QStringList galleryStyles()
+{
+    return {QStringLiteral("fluent"), QStringLiteral("material"), QStringLiteral("cupertino"),
+            QStringLiteral("harmony")};
+}
+
+QString galleryCapturePath(const QString &style)
+{
+    return QStringLiteral(DEMO_GALLERY_CAPTURE_DIR) + QLatin1String("/controlgallery-") + style + QLatin1String(".png");
+}
+
+QString galleryGoldenPath(const QString &style)
+{
+    return QStringLiteral(DEMO_GALLERY_GOLDEN_DIR) + QLatin1String("/controlgallery-") + style + QLatin1String(".png");
+}
+#endif
+
 /*!
  * Catches the failures that are worth catching on every run: a demo that starts
  * but renders nothing, or a window that lost its geometry. Whether the pixels
@@ -430,7 +451,11 @@ private:
     QImage m_dockScreenshot;
 #endif
 #ifdef DEMO_GALLERY_EXECUTABLE
-    QImage m_galleryScreenshot;
+    /*!
+     * The gallery captures, keyed by style: one picture per family, because a
+     * page is what is judged and no page is the other three.
+     */
+    QHash<QString, QImage> m_galleryScreenshots;
 #endif
 #ifdef DEMO_FLUENT_EXECUTABLE
     QImage m_fluentScreenshot;
@@ -467,14 +492,19 @@ void tst_DemoScreenshot::initTestCase()
 #endif
 
 #ifdef DEMO_GALLERY_EXECUTABLE
-    QVERIFY2(runDemo(QStringLiteral(DEMO_GALLERY_EXECUTABLE), QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH),
-                     QStringLiteral("controlgallery.log"), error),
-             qPrintable(error));
-    m_galleryScreenshot = loadAsArgb32(QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH));
-    QVERIFY2(
-        !m_galleryScreenshot.isNull(),
-        qPrintable(
-            QStringLiteral("the screenshot could not be read: %1").arg(QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH))));
+    // One run per family: a page is what is judged, and no page is the other
+    // three. The gallery's own default is fluent, so naming it is saying what
+    // a bare run would have meant anyway.
+    for (const QString &style : galleryStyles()) {
+        const QString capturePath = galleryCapturePath(style);
+        QVERIFY2(runDemo(QStringLiteral(DEMO_GALLERY_EXECUTABLE), capturePath,
+                         QStringLiteral("controlgallery-%1.log").arg(style), error, {QStringLiteral("--style"), style}),
+                 qPrintable(error));
+        const QImage screenshot = loadAsArgb32(capturePath);
+        QVERIFY2(!screenshot.isNull(),
+                 qPrintable(QStringLiteral("the %1 capture could not be read: %2").arg(style, capturePath)));
+        m_galleryScreenshots.insert(style, screenshot);
+    }
 #endif
 
 #ifdef DEMO_FLUENT_EXECUTABLE
@@ -1118,13 +1148,19 @@ void checkGallerySwitches(const QString &executable)
 void tst_DemoScreenshot::galleryRenders()
 {
     // The gallery's own ceiling, and not the shared one; see the constant.
-    checkRenders(m_galleryScreenshot, QStringLiteral("controlgallery"), kMaxGalleryDominantPercent);
+    // Asked of every family: a page that rendered nothing is a page the golden
+    // would then silently miss.
+    for (auto it = m_galleryScreenshots.constBegin(); it != m_galleryScreenshots.constEnd(); ++it) {
+        checkRenders(it.value(), QStringLiteral("controlgallery-%1").arg(it.key()), kMaxGalleryDominantPercent);
+    }
 }
 
 void tst_DemoScreenshot::galleryMatchesGolden()
 {
-    checkGolden(m_galleryScreenshot, QStringLiteral(DEMO_GALLERY_GOLDEN_PATH),
-                QStringLiteral(DEMO_GALLERY_SCREENSHOT_PATH), QStringLiteral("controlgallery"));
+    for (auto it = m_galleryScreenshots.constBegin(); it != m_galleryScreenshots.constEnd(); ++it) {
+        checkGolden(it.value(), galleryGoldenPath(it.key()), galleryCapturePath(it.key()),
+                    QStringLiteral("controlgallery-%1").arg(it.key()));
+    }
 }
 
 void tst_DemoScreenshot::gallerySwitchLeavesNoControlBehind()
