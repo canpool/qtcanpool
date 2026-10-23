@@ -59,9 +59,22 @@ public:
     /*! How far through spreading and fading it is, 0 to 1. */
     qreal progress() const;
 
+    /*! True while the widget's own presses start ripples of their own, at
+     *  the place they landed - which is the standing answer. A surface that
+     *  answers from a place of its own choosing turns this off and asks for
+     *  its ripples with start(). */
+    bool isWatchingPress() const;
+    void setWatchPress(bool watch);
+
     /*! Paints the ripple inside \a rect's corners, over what is already there.
      *  Does nothing while there is no ripple to paint. */
     void paint(QPainter *painter, const QRectF &rect, qreal radius) const;
+
+public Q_SLOTS:
+    /*! Starts one ripple from \a origin. For a surface that answers from a
+     *  place of its own - the box a check box keeps, not the row it stands
+     *  in - rather than from wherever the pointer happened to land. */
+    void start(const QPointF &origin);
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 private:

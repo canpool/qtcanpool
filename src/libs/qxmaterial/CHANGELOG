@@ -4,6 +4,16 @@ Feature
 - `MaterialButton`, the command the page is built out of: three variants say
   how much surface the command claims (filled, outlined, text), and the press
   is answered by the same ripple the chip and the floating action button give.
+- `MaterialCheckBox`, a choice that stands beside other choices: a box of
+  eighteen with the tick drawn, three states when the application asks for
+  the third one, and the ripple answering from the box's own centre rather
+  than from wherever the pointer landed.
+- `MaterialRadio`, one choice of several: the primary's ring and dot when it
+  is in force, the brothers that share its parent out of force with it, and
+  the ripple answering from the circle's own centre.
+- `MaterialRipple` answers to start() now, for a surface that answers from a
+  place of its own choosing, and can be told not to watch the widget's own
+  presses.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and

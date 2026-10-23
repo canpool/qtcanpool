@@ -12,7 +12,9 @@ add_qtc_library(qxmaterial
     materialsegmentedbutton.h materialsegmentedbutton.cpp
     materialchip.h materialchip.cpp
     materialcard.h materialcard.cpp
+    materialcheckbox.h materialcheckbox.cpp
     materialdialog.h materialdialog.cpp
+    materialradio.h materialradio.cpp
     materialtextfield.h materialtextfield.cpp
     materialfab.h materialfab.cpp
     materialprogressring.h materialprogressring.cpp

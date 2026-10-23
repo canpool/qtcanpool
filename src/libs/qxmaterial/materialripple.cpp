@@ -44,12 +44,28 @@ public:
     QPointF origin;
     qreal progress = 0.0;
     bool spreading = false;
+    bool watchPress = true;
     QVariantAnimation animation;
 
     QColor ink() const;
     void start(const QPointF &pos);
     void stop();
 };
+
+bool MaterialRipple::isWatchingPress() const
+{
+    return d_ptr->watchPress;
+}
+
+void MaterialRipple::setWatchPress(bool watch)
+{
+    d_ptr->watchPress = watch;
+}
+
+void MaterialRipple::start(const QPointF &origin)
+{
+    d_ptr->start(origin);
+}
 
 QColor MaterialRipplePrivate::ink() const
 {
@@ -186,7 +202,7 @@ void MaterialRipple::paint(QPainter *painter, const QRectF &rect, qreal radius) 
 
 bool MaterialRipple::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == d_ptr->widget && event->type() == QEvent::MouseButtonPress) {
+    if (d_ptr->watchPress && watched == d_ptr->widget && event->type() == QEvent::MouseButtonPress) {
         const auto *mouse = static_cast<const QMouseEvent *>(event);
         if (mouse->button() == Qt::LeftButton) {
             d_ptr->start(eventPos(mouse));
