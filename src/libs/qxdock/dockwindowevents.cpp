@@ -18,6 +18,10 @@
 #include <QDragMoveEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
+// Only the X11 block below asks for the platform name, and that block is
+// compiled by the Linux legs and by nothing on Windows or macOS - the same way
+// the split's missing includes stayed invisible on both local legs.
+#include <QGuiApplication>
 
 QX_DOCK_BEGIN_NAMESPACE
 
