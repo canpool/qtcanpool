@@ -83,6 +83,10 @@ private:
     struct Destination {
         QString text;
         QIcon icon;
+        /*! The heading this destination is listed under. Empty while it is one
+         *  of the destinations that stand on their own - the screen the window
+         *  opens on is not one of nineteen, it is above them. */
+        QString group;
         QWidget *page = Q_NULLPTR;
     };
 

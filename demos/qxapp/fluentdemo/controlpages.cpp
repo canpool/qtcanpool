@@ -583,15 +583,20 @@ DemoPage *tabViewPage(QWidget *parent)
 }
 }   // namespace
 
-QList<DemoPage *> ControlPages::build(QWidget *parent)
+QList<ControlPages::ControlGroup> ControlPages::build(QWidget *parent)
 {
-    // The four the library gained last come first: a page is also how the
-    // newest of a control set is found, and a pane that listed them by age
-    // would put them where nobody looks.
-    return {numberBoxPage(parent),     dropDownButtonPage(parent), toggleSplitButtonPage(parent),
-            contentDialogPage(parent), switchPage(parent),         sliderPage(parent),
-            ratingPage(parent),        badgePage(parent),          cardPage(parent),
-            progressRingPage(parent),  infoBarPage(parent),        teachingTipPage(parent),
-            expanderPage(parent),      breadcrumbBarPage(parent),  commandBarPage(parent),
-            revealPage(parent),        tabViewPage(parent)};
+    // The order inside a group follows what a reader came for rather than what
+    // the library gained last: a group is already the answer to "where is the
+    // new one", since nothing in it is more than a patch old. What the four
+    // newest are is a question Settings - or the release notes - answers better
+    // than a pane whose order changes with every patch.
+    return {
+        {DemoPage::tr("Commands"),
+         {dropDownButtonPage(parent), toggleSplitButtonPage(parent), commandBarPage(parent),
+          breadcrumbBarPage(parent)}},
+        {DemoPage::tr("Input"), {numberBoxPage(parent), switchPage(parent), sliderPage(parent), ratingPage(parent)}},
+        {DemoPage::tr("Surfaces"), {cardPage(parent), expanderPage(parent), tabViewPage(parent)}},
+        {DemoPage::tr("Feedback"),
+         {contentDialogPage(parent), infoBarPage(parent), teachingTipPage(parent), progressRingPage(parent),
+          badgePage(parent), revealPage(parent)}}};
 }

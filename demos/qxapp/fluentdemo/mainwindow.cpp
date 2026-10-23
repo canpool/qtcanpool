@@ -173,13 +173,14 @@ void MainWindow::createNavigation()
     // The pane holds one thing, and what it opens is a screen at a time: a
     // stacked widget is what turns "one room beside the pane" into "one of
     // twenty", and it is also what keeps a screen's state while another is shown.
-    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap) {
+    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap, const QString &group) {
         Destination destination;
         // The name comes from the page and not from a second list beside it: a
         // pane that called a page one thing and the page another would be a
         // demo of two names for one control.
         destination.text = page->title();
         destination.icon = style()->standardIcon(pixmap);
+        destination.group = group;
         destination.page = scrollable(page);
         m_stack->addWidget(destination.page);
         m_destinations.append(destination);
@@ -188,13 +189,15 @@ void MainWindow::createNavigation()
     HomePage *home = new HomePage(m_stack);
     m_settings = new SettingsPage(m_stack);
 
-    addPage(home, QStyle::SP_DirHomeIcon);
+    addPage(home, QStyle::SP_DirHomeIcon, QString());
 
     QStringList titles;
-    const QList<DemoPage *> pages = ControlPages::build(m_stack);
-    for (DemoPage *page : pages) {
-        titles.append(page->title());
-        addPage(page, QStyle::SP_FileIcon);
+    const QList<ControlPages::ControlGroup> groups = ControlPages::build(m_stack);
+    for (const ControlPages::ControlGroup &group : groups) {
+        for (DemoPage *page : group.pages) {
+            titles.append(page->title());
+            addPage(page, QStyle::SP_FileIcon, group.name);
+        }
     }
     // The first control page is one destination past Home, and the index on the
     // first screen opens them by number.
@@ -203,7 +206,11 @@ void MainWindow::createNavigation()
         m_nav->setCurrentIndex(index);
     });
 
-    addPage(m_settings, QStyle::SP_FileDialogDetailedView);
+    // Settings is a destination of its own rather than the last control: it is
+    // about the window the controls are shown in, which is a different question
+    // from what the controls are - so it gets a heading of its own rather than
+    // being read as one more of the feedback controls.
+    addPage(m_settings, QStyle::SP_FileDialogDetailedView, DemoPage::tr("Application"));
 
     m_nav->setContent(m_stack);
     // The pane is built by the same code that narrows it, so there is one place
@@ -415,9 +422,21 @@ void MainWindow::filterDestinations(const QString &needle)
 
     m_nav->clear();
     m_shown.clear();
+    // The heading the pane is under, which is the pane's state rather than the
+    // destination's: a group a search emptied leaves no heading behind, and a
+    // search that keeps one destination of a group still says which group it
+    // is - the heading is written when the listing changes, not once per group
+    // in the table.
+    QString listing;
     for (const Destination &destination : m_destinations) {
         if (!trimmed.isEmpty() && !destination.text.contains(trimmed, Qt::CaseInsensitive)) {
             continue;
+        }
+        if (destination.group != listing) {
+            listing = destination.group;
+            if (!listing.isEmpty()) {
+                m_nav->addHeader(listing);
+            }
         }
         m_shown.append(&destination);
         m_nav->addItem(destination.text, destination.icon);
