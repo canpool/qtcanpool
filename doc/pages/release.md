@@ -1,6 +1,6 @@
 # 发布流程
 
-这一页是**「发一次版本要做的全部动作」的唯一出处**。
+这一页是**「开工一个版本、发一个版本要做的全部动作」的唯一出处**。
 [`doc/ROADMAP-3.x.md`](https://github.com/canpool/qtcanpool/blob/master/doc/ROADMAP-3.x.md) 的附录 B
 与各 `doc/design/**/*-TASKS.md` 里的发布小节是**当时的执行记录**；规则若与本页不一致，以本页为准。
 台账的目录与两层结构（4.7 起一个 minor 一个目录、一个 patch 一份文件）见
@@ -8,6 +8,39 @@
 
 发布分四件事：**过闸门 → 定版本号 → 写三本账 → 推 tag 与 Release**。
 前两件决定"能不能发"，后两件决定"发得对不对"。
+
+**开工**（上一版发布后、本版第一笔代码之前）另有一套固定动作，见 §零；它是发版的镜像，
+不是发版的一部分。
+
+---
+
+## 零、开工：上一版发布后的第一件事
+
+一个版本的生命从**开工**开始，到**发版**结束。开工动作只有五步，全部在**本版第一笔代码之前**
+做完、落成**一笔提交**（`chore(project): open <ver>`）：
+
+| # | 动作 | 判据 |
+| :--- | :--- | :--- |
+| 1 | **定本版号** | K36：**默认 patch**；只有出现改签名 / 删 API / 改名才升 minor（细则见 §二.0） |
+| 2 | **三处版本号齐升** | `cmake/QtCanpoolBranding.cmake` 的 `VERSION` / `COMPAT_VERSION` / `DISPLAY_VERSION`、`ports/qtcanpool/vcpkg.json` 的 `version`、`conanfile.py` 的 `version` —— 值**相等**，`COMPAT_VERSION` 恒等于项目版本 |
+| 3 | **台账开版** | 新 patch 就新建 `doc/design/<minor>/<ver>-TASKS.md`（两层结构见 [`contributing.md`](./contributing.md) §2.1），并在其中写一行**开工记录**：日期 · 上一版 tag · 本版号 · 范围指向 |
+| 4 | **库号一律不动** | 库号只在结算时前进（§二.2）；开工不碰任何 `<lib>/CMakeLists.txt` 的 `VERSION` 与 `<lib>_global.h` 的三个宏 |
+| 5 | **验证与提交** | 版本宏是**编进二进制**的 ⇒ 按 [`contributing.md`](./contributing.md) §8 的**第 2 级**跑两腿构建 + 两腿 ctest，提交信息写 `Verified: level 2 - ...` |
+
+**核对三处是否齐**（复制即用；**只应打印一行**，两行以上就是没对齐）：
+
+```bash
+{ grep -o 'QTPROJECT_[A-Z]*VERSION "[0-9.]*"' cmake/QtCanpoolBranding.cmake | cut -d'"' -f2
+  grep -o '"version": "[0-9.]*"' ports/qtcanpool/vcpkg.json | cut -d'"' -f4
+  grep -o 'version = "[0-9.]*"' conanfile.py | cut -d'"' -f2
+} | sort -u
+```
+
+⚠️ **这一步漏过不止一次**（4.6 漏；4.7 开工才补 `40f0439d`；4.7.2 起草时又漏）。
+后果不是编译错，而是**开发期源码带着上一版的号**——`QTPROJECT_VERSION` 会进插件 `plugin.json`、
+库文件版本属性与文档站页脚（后者取 `DISPLAY_VERSION`）；等到结算才发现，就分不清「哪个号是
+开发期的」。所以它排在本版第一笔代码**之前**，不是结算的一部分。一旦漏了，**当场把这一笔重排到
+最前面并强推**（4.7.2 就是这么处理的），不要带着旧号继续往下走，更不要拖到结算。
 
 ---
 
@@ -100,7 +133,8 @@ git diff --name-only <上次tag>..HEAD -- src/libs/qxdock/ | grep '\.h$'
 两处必须同时改。qmake 侧原有的两处 `.pri` 已随决策 K13 删除，不要再去找。
 
 **项目版本另有三处**：`cmake/QtCanpoolBranding.cmake`、`ports/qtcanpool/vcpkg.json`、`conanfile.py`
-（仓库已无 `qtproject.pri` 之类的第 4 处，不要去找）。三处必须**在「发布、打 tag」的那一刻一同前进、值保持相等**：
+（仓库已无 `qtproject.pri` 之类的第 4 处，不要去找）。三处**在本版开工那一刻**就一同前进、值保持相等
+（动作与核对命令见 §零）；到打 tag 时**不再改动版本号**：
 
 - `cmake/QtCanpoolBranding.cmake` 的三个字段 `VERSION` / `COMPAT_VERSION` / `DISPLAY_VERSION` 同时改、三者相等；
 - `ports/qtcanpool/vcpkg.json` 的 `version`；
@@ -214,3 +248,6 @@ CI 状态与 Release 都走 GitHub API。仓库里有两个**不入库**的辅�
    （目录与两层结构见 `contributing.md` §2.1），并在系列台账 `<minor>-TASKS.md` 里补一行进度；
 2. 确认工作区干净（`git status --short` 为空）；
 3. 两端 `git ls-remote master` 与本地 `git rev-parse master` 三者一致。
+4. **下一版开工**：作者说明下一版是什么之后，按 §零 走完五步（定本版号 / 三处齐升 / 台账开版 /
+   库号不动 / 两腿验证）再动代码。开工不属于发版，但它是这条路的下一段起点——同一件事在这里
+   做一次就不会漏。

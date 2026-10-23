@@ -17,7 +17,7 @@
 
 ## 2. 文档规范（v1）
 
-> 一句话：**代码＋库 CHANGELOG＋台账同笔（台账随代码走，不另开笔）｜ 叙事文档一组收口一笔 `docs(<scope>)` ｜ 根 CHANGELOG 与版本号发版同笔 ｜ 其余各自成笔。**
+> 一句话：**代码＋库 CHANGELOG＋台账同笔（台账随代码走，不另开笔）｜ 叙事文档一组收口一笔 `docs(<scope>)` ｜ 版本号在本版第一笔代码之前单独一笔（开工） ｜ 根 CHANGELOG 发版时与三本账同笔 ｜ 其余各自成笔。**
 
 | 产物 | 落点 | 成笔时机 / 粒度 | 与谁同笔 |
 | :--- | :--- | :--- | :--- |
@@ -26,7 +26,7 @@
 | 台账 | `doc/design/<minor>/<ver>-TASKS.md`（如 `4.7/4.7.0-TASKS.md`） | **随本次改动即时更新**（落了哪条写哪条，不按组、不攒批） | 随代码同一笔（漏写只可补一笔、与代码同笔补） |
 | 叙事文档（限制页、迁移、路线叙事、README） | `doc/pages/*.md`、`doc/design/*.md` 叙事段、README | 一组收口时统一提交，不逐条提 | 组末单独一笔 `docs(<scope>)`；不与台账同笔 |
 | 根 CHANGELOG | `CHANGELOG` | 发版时一次性写 | 与项目版本号前进同笔 |
-| 版本号 + 打包清单 | `QtCanpoolBranding.cmake` + `qtproject.pri` + `vcpkg.json` + `conanfile.py` | 新版本开发刚开始时前进，三处齐升、值相等 | 同笔（`chore(release)`） |
+| 项目版本 | `cmake/QtCanpoolBranding.cmake`（三字段）+ `ports/qtcanpool/vcpkg.json` + `conanfile.py` | **本版第一笔代码之前**前进，三处齐升、值相等（`COMPAT_VERSION` = 项目版本）；五步开工清单见 [发布流程](release.md) §零 | 单独一笔 `chore(project): open <ver>`，**不与任何代码同笔** |
 
 **一个工作段落的顺序**
 
@@ -133,7 +133,10 @@ doc/design/4.7/
 - `master` 是主线（K18）；不建 `release-4.x`。
 - **版本序（K34）**：4.3 `qxwindow` → 4.4 不破坏 API 的内部重构 → 4.5 功能升级（可破坏 API）→ … → 5.0 移除 Qt 5。4.x 长生命周期主版本（类 Qt 5.0→5.15）。4.5 不定位 LTS（LTS 留到 4.6+ 之后才定）。
 - **进号判据（附录 B / K11）**：看「这个库本期有没有修复 / 增量」，不是看「头文件动没动」。构建接线（删版本守卫 / 删 `header.list`）不进号；纯 `.cpp` 修复照样进 patch。结算时逐库问「本期有没有修复」。
-- 版本号在「新版本开发刚开始」时前进：`QtCanpoolBranding.cmake` + `qtproject.pri` + `vcpkg.json` + `conanfile.py` 三处齐升、值相等（`COMPAT_VERSION` = 项目版本）。
+- 版本号在「新版本开发刚开始」时前进，**在本版第一笔代码之前**：`cmake/QtCanpoolBranding.cmake`（三字段）
+  + `ports/qtcanpool/vcpkg.json` + `conanfile.py` **三处齐升、值相等**（`COMPAT_VERSION` = 项目版本）。
+  仓库**没有** `qtproject.pri` 之类的第 4 处。完整五步（定本版号 / 三处齐升 / 台账开版 / 库号不动 /
+  两腿验证）与核对命令见 [发布流程](release.md) §零；库号在开工时一律不动。
 
 ## 10. tag 与发布
 
