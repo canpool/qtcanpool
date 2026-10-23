@@ -46,3 +46,20 @@ Feature
   the reduce-motion switch silences it - and with it the spring, since a spring
   is a journey. There is no sentence in the control: a switch here is the
   capsule and the words beside it are a label of their own.
+- `HarmonySlider`, a rail, a handle that rides it, and a bubble that says the
+  number while the handle is being held. Qt's QSlider is a style's idea of a
+  slider and every one of them draws a groove the toolkit owns; the drawing here
+  is quiet - a rail in the family's grey with the part the handle has reached in
+  its blue, and no marks under either, because a mark every interval would be a
+  second answer to a question the handle has already answered. What makes it
+  this family's is what happens while the pointer is down: a bubble floats over
+  the handle with the value in it and fades out when the handle is let go, since
+  the exact number is what the hand is asking for at that moment and nothing
+  else is - a slider that printed the number, or kept the bubble there, would be
+  answering after the question. The room above the rail belongs to the control
+  for that one reason and is empty the rest of the time, which is why the widget
+  is taller than its rail. A press anywhere on the rail moves the handle there,
+  a press while held follows the pointer at once, and a step from the keyboard
+  or the wheel travels on the quick duration - the same keys as every other
+  family here, one convention for the project rather than one per family. The
+  value is also carried to an assistive tool through a value interface.

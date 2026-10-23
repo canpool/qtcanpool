@@ -6,4 +6,5 @@ add_qtc_library(qxharmony
     qxharmony_global.h
     harmonytokens.h harmonytokens.cpp
     harmonyswitch.h harmonyswitch.cpp
+    harmonyslider.h harmonyslider.cpp
 )
