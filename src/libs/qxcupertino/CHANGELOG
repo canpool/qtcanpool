@@ -134,6 +134,22 @@ Feature
   between it and the row under it, and the line starts where the text starts,
   because a line to the card's edge would cut the card rather than separate two
   rows on it.
+- CupertinoAlertDialog, the alert as a card the width of a hand over a dimmed
+  page. What is this family's here is that the answers are part of the card:
+  cells of it, separated from the question and from each other by hairlines,
+  read as a row rather than as a row of commands - where the other families put
+  their answers in the margin as text with room around them. One answer is a
+  cell across the card, two are halves of it, and three are three cells stacked,
+  which is the platform's own rule and the reason a fourth is refused rather
+  than drawn: a card that stacked it would be taller than the question it asks.
+  The role of an answer decides its ink and nothing else - the affirmative and
+  the way out are the accent, with the way out in the heavier cut, and the one
+  that cannot be taken back is the family's red. The answers ask and do not
+  decide: pressing one emits actionChosen() with its index and leaves the
+  dialog up, because whether the alert was answered, and which way that counts,
+  is the application's. Escape and a press on the veil both put it away, and the
+  result says so.
+
 Bugfix
 - The segmented control's pill is a face standing on the row and not a hole cut
   through it: white on a light page, and on a dark one the family's grey lifted

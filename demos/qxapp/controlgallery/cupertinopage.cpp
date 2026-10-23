@@ -5,6 +5,7 @@
 #include "cupertinopage.h"
 
 #include "qxcupertino/cupertinoactivityindicator.h"
+#include "qxcupertino/cupertinoalertdialog.h"
 #include "qxcupertino/cupertinobutton.h"
 #include "qxcupertino/cupertinolistsection.h"
 #include "qxcupertino/cupertinosegmentedcontrol.h"
@@ -99,6 +100,22 @@ CupertinoPage::CupertinoPage(QWidget *parent)
     // The three levels side by side: what a level is worth is only legible next
     // to the other two.
     addControl<QWidget>(QStringLiteral("cupertinoButton"), QStringLiteral("CupertinoButton"), buttonRow(this));
+
+    // A dialog is not a row: it is a surface the application puts over the page,
+    // so what the row carries is the button that asks for it. The alert is the
+    // one control here whose drawing a capture cannot show - which is why this
+    // row is a way to look at it rather than a picture of it.
+    auto *alert =
+        addControl<CupertinoButton>(QStringLiteral("cupertinoAlertDialog"), QStringLiteral("CupertinoAlertDialog"),
+                                    new CupertinoButton(tr("Show alert"), this));
+    connect(alert, &CupertinoButton::clicked, this, [this]() {
+        CupertinoAlertDialog dialog(this);
+        dialog.setTitle(tr("Delete this item?"));
+        dialog.setMessage(tr("The item goes and cannot come back."));
+        dialog.addAction(tr("Delete"), CupertinoAlertDialog::ActionRole::Destructive);
+        dialog.addAction(tr("Cancel"), CupertinoAlertDialog::ActionRole::Cancel);
+        dialog.exec();
+    });
 
     addSection(tr("Lists"));
 
