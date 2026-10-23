@@ -6,7 +6,9 @@
 
 #include "qxmaterial/materialripple.h"
 #include "qxmaterial/materialtopappbar.h"
+#include "qxwindow/windowagentwidget.h"
 
+#include <QtGui/QContextMenuEvent>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QWindow>
@@ -15,6 +17,7 @@
 #include <QtWidgets/QVBoxLayout>
 
 QX_MATERIAL_USE_NAMESPACE
+QX_WINDOW_USE_NAMESPACE
 
 namespace
 {
@@ -262,10 +265,49 @@ bool TitleBar::eventFilter(QObject *watched, QEvent *event)
     case QEvent::MouseButtonRelease:
         m_moving = false;
         break;
+    case QEvent::MouseButtonDblClick: {
+        const auto *mouse = static_cast<QMouseEvent *>(event);
+        // A double click on a caption maximizes the window, or puts it back -
+        // the gesture a title bar has on every desktop. On an icon it is not
+        // this gesture: the icon is a button in the caption, and a button
+        // pressed twice is a button, not the caption being asked for. That is
+        // the one thing the bar answers and the wrapper cannot, which is why
+        // the bar is asked where its icons stand.
+        if (mouse->button() != Qt::LeftButton || m_bar->actionAt(mouse->pos())) {
+            break;
+        }
+        QWidget *top = window();
+        if (top->isMaximized()) {
+            top->showNormal();
+        } else {
+            top->showMaximized();
+        }
+        return true;
+    }
+#ifdef Q_OS_WIN
+    case QEvent::ContextMenu: {
+        // The system menu is the other half of what a caption has and a client
+        // area does not: right clicking a title bar asks the window itself,
+        // with Move, Size, Minimize, Maximize and Close in it. The agent is the
+        // only thing here that can still ask Windows for it, so it is asked
+        // rather than a menu of our own being invented.
+        const auto *context = static_cast<QContextMenuEvent *>(event);
+        if (!m_agent) {
+            break;
+        }
+        m_agent->showSystemMenu(context->globalPos());
+        return true;
+    }
+#endif
     default:
         break;
     }
     return QWidget::eventFilter(watched, event);
+}
+
+void TitleBar::setWindowAgent(WindowAgentWidget *agent)
+{
+    m_agent = agent;
 }
 
 MaterialTopAppBar *TitleBar::appBar() const

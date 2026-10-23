@@ -217,6 +217,7 @@ void MainWindow::installWindowAgent()
     //    agent is told which one it is, nothing more.
     setMenuWidget(m_titleBar);
     m_agent->setTitleBar(m_titleBar);
+    m_titleBar->setWindowAgent(m_agent);
 
     // 3. Name the system buttons. Naming them is what keeps them clickable: the
     //    hit test calls everything else in the bar the caption, and a press
@@ -242,8 +243,9 @@ void MainWindow::installWindowAgent()
     // 4. The app bar as a whole is client area, because it is one control that
     //    draws its own icons: naming the bar is how a press on one of them
     //    reaches the bar rather than starting a window move. What that costs -
-    //    a press on the bar no longer drags - the caption's wrapper pays back by
-    //    watching for a drag once it has travelled far enough; see TitleBar.
+    //    the caption gestures the hit test gave for free: drag, a double click
+    //    to maximize, and the system menu on a right click - the caption's
+    //    wrapper pays back one at a time; see TitleBar.
     m_agent->setHitTestVisible(m_bar, true);
 
 #ifdef Q_OS_MAC

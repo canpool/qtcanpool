@@ -10,11 +10,16 @@
 #include <QtWidgets/QWidget>
 
 #include "qxmaterial/qxmaterial_global.h"
+#include "qxwindow/qxwindow_global.h"
 
 QX_MATERIAL_BEGIN_NAMESPACE
 class MaterialRipple;
 class MaterialTopAppBar;
 QX_MATERIAL_END_NAMESPACE
+
+QX_WINDOW_BEGIN_NAMESPACE
+class WindowAgentWidget;
+QX_WINDOW_END_NAMESPACE
 
 /*!
  * One caption button of a Material window, drawn here rather than skinned.
@@ -79,6 +84,10 @@ class TitleBar : public QWidget
 public:
     explicit TitleBar(QWidget *parent = Q_NULLPTR);
 
+    /*! The agent that took the window over, which is what still knows how to
+     *  show the system menu the caption used to have. */
+    void setWindowAgent(QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) * agent);
+
     /*! The app bar the window fills: what the screen is called, and what can be
      *  done to it. */
     QX_MATERIAL_PREPEND_NAMESPACE(MaterialTopAppBar) * appBar() const;
@@ -87,12 +96,15 @@ public:
     CaptionButton *maximizeButton() const;
     CaptionButton *closeButton() const;
 protected:
-    /*! Watches the app bar to give back the two things the hit test no longer
-     *  can: a press on the bar that turns into a drag moves the window, because
-     *  the bar answers as client area so that its own icons stay clickable. */
+    /*! Watches the app bar to give back what the hit test no longer can: a
+     *  press on the bar that turns into a drag moves the window, a double click
+     *  on it maximizes the window, and a right click on it asks the window for
+     *  its system menu. All three are what a caption does, and the bar answers
+     *  as client area so that its own icons stay clickable. */
     bool eventFilter(QObject *watched, QEvent *event) override;
 private:
     QX_MATERIAL_PREPEND_NAMESPACE(MaterialTopAppBar) *m_bar = Q_NULLPTR;
+    QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
     CaptionButton *m_minimize = Q_NULLPTR;
     CaptionButton *m_maximize = Q_NULLPTR;
     CaptionButton *m_close = Q_NULLPTR;
