@@ -76,3 +76,16 @@ Feature
   over the surface and not a scale, because a card that shrank under the hand
   would be moving the page under the user's finger, and this family moves things
   when they arrive rather than when they are touched.
+- `HarmonyButton`, a word in a capsule at one of the three levels this family
+  gives an action. `Primary` is the one action on a surface and carries the
+  brand's blue at full strength with the word reversed out of it, `Secondary` is
+  the action beside it standing on the family's grey thinned into the page with
+  the word in the blue - a neutral capsule rather than a thinned blue one,
+  because here the second level is the quiet one - and `Text` is an action that
+  is only a word. The capsule is forty high with twenty either side: a control
+  here is a target before it is a label, which is why it is taller than the other
+  family's button. It casts nothing, because the level this family spends on a
+  lift is the one a surface sits at over the page, and a button is on the page.
+  Pressed, it takes the state layer rather than shrinking. Enter answers on the
+  press and Space on the release, and what the button says is its accessible name
+  for as long as the application has not given it a better one.

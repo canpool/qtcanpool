@@ -8,4 +8,5 @@ add_qtc_library(qxharmony
     harmonyswitch.h harmonyswitch.cpp
     harmonyslider.h harmonyslider.cpp
     harmonycard.h harmonycard.cpp
+    harmonybutton.h harmonybutton.cpp
 )
