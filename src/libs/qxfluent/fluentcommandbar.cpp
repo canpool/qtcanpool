@@ -4,6 +4,7 @@
  **/
 #include "fluentcommandbar.h"
 
+#include "fluentcommandface_p.h"
 #include "fluenttokens.h"
 
 #include "qxcontrols/qxstatelayer.h"
@@ -23,27 +24,15 @@ QX_FLUENT_BEGIN_NAMESPACE
 
 namespace
 {
-// Fluent's command bar measures: a forty tall row holding thirty-two tall
-// commands, an icon of sixteen, and a chevron of twenty for the two roles
-// that carry a menu.
+// Fluent's command bar measures: a forty tall row holding commands of the
+// shared command height, with a tighter inset than a command that stands
+// alone keeps - a row holds many, and density is its own promise.
 constexpr qreal kBarHeight = 40.0;
-constexpr qreal kItemHeight = 32.0;
 constexpr qreal kItemPadding = 8.0;
-constexpr qreal kIconSize = 16.0;
-constexpr qreal kIconGap = 8.0;
-constexpr qreal kChevronWidth = 20.0;
-constexpr qreal kChevronGlyph = 8.0;
 constexpr qreal kItemSpacing = 2.0;
 constexpr qreal kOverflowWidth = 32.0;
 constexpr qreal kDotRadius = 2.0;
 constexpr qreal kDotStep = 6.0;
-
-// A command that is in force is washed in the accent, and a command nobody
-// can use is the same drawing thinned: neither moves the geometry.
-constexpr qreal kCheckedOpacity = 0.12;
-constexpr qreal kDisabledOpacity = 0.4;
-constexpr qreal kDividerOpacity = 0.10;
-constexpr qreal kDividerInset = 6.0;
 
 // What itemAt() answers for the overflow button, which is a place on the bar
 // that no command owns.
@@ -65,21 +54,6 @@ QPointF eventPos(const QMouseEvent *event)
 QRectF centeredVertically(const QWidget *bar, qreal left, qreal width, qreal height)
 {
     return QRectF(left, (bar->height() - height) / 2.0, width, height);
-}
-
-/*! The chevron that says a menu is here: a point turned down, drawn rather
- *  than typed, because a glyph in a font is a glyph the theme cannot colour
- *  and an assistive tool would read. */
-void paintChevron(QPainter *painter, const QRectF &rect, const QColor &color)
-{
-    const qreal x = rect.center().x() - kChevronGlyph / 2.0;
-    const qreal y = rect.center().y() - kChevronGlyph / 4.0;
-    QPainterPath chevron;
-    chevron.moveTo(x, y);
-    chevron.lineTo(x + kChevronGlyph, y);
-    chevron.lineTo(x + kChevronGlyph / 2.0, y + kChevronGlyph / 2.0 + kChevronGlyph / 4.0);
-    painter->setPen(QPen(color, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter->drawPath(chevron);
 }
 }   // namespace
 
@@ -127,22 +101,23 @@ int FluentCommandBarPrivate::itemWidth(const CommandItem &item) const
     const QString text = item.action->text();
     int width = int(kItemPadding);
     if (!item.action->icon().isNull()) {
-        width += int(kIconSize + kIconGap);
+        width += int(CommandFace::kIconSize + CommandFace::kIconGap);
     }
     if (!text.isEmpty()) {
         width += metrics.horizontalAdvance(text);
     }
     width += int(kItemPadding);
     if (item.role == FluentCommandBar::ItemRole::DropDown || item.role == FluentCommandBar::ItemRole::Split) {
-        width += int(kChevronWidth);
+        width += int(CommandFace::kChevronWidth);
     }
-    return qMax(width, int(kItemHeight));
+    return qMax(width, int(CommandFace::kHeight));
 }
 
 QRectF FluentCommandBarPrivate::overflowRect() const
 {
     Q_Q(const FluentCommandBar);
-    return centeredVertically(q, q->width() - kItemPadding / 2.0 - kOverflowWidth, kOverflowWidth, kItemHeight);
+    return centeredVertically(q, q->width() - kItemPadding / 2.0 - kOverflowWidth, kOverflowWidth,
+                              CommandFace::kHeight);
 }
 
 void FluentCommandBarPrivate::relayout()
@@ -190,9 +165,10 @@ void FluentCommandBarPrivate::relayout()
             continue;
         }
         const qreal width = itemWidth(item);
-        item.rect = centeredVertically(q, x, width, kItemHeight);
+        item.rect = centeredVertically(q, x, width, CommandFace::kHeight);
         if (item.role == FluentCommandBar::ItemRole::Split) {
-            item.chevron = QRectF(item.rect.right() - kChevronWidth, item.rect.top(), kChevronWidth, kItemHeight);
+            item.chevron = QRectF(item.rect.right() - CommandFace::kChevronWidth, item.rect.top(),
+                                  CommandFace::kChevronWidth, CommandFace::kHeight);
         }
         x += width + kItemSpacing;
     }
@@ -445,8 +421,8 @@ void FluentCommandBar::paintSurface(QPainter *painter)
     // the token, and inside the command's own corners - a square tint under a
     // rounded wash would show at the corners.
     const qreal radius = cornerRadius();
-    const QColor fill =
-        QxControls::QxStateLayer::layered(palette().color(QPalette::Window), accentColor(), kCheckedOpacity);
+    const QColor fill = QxControls::QxStateLayer::layered(palette().color(QPalette::Window), accentColor(),
+                                                          CommandFace::kCheckedOpacity);
     painter->setBrush(fill);
     for (const CommandItem &item : d_ptr->items) {
         if (item.rect.isEmpty() || !item.action->isChecked()) {
@@ -472,19 +448,20 @@ void FluentCommandBar::paintContent(QPainter *painter)
         const QAction *action = item.action;
         painter->save();
         if (!action->isEnabled()) {
-            painter->setOpacity(kDisabledOpacity);
+            painter->setOpacity(CommandFace::kDisabledOpacity);
         }
         const QColor ink = action->isChecked() ? accentColor() : textColor();
 
         const qreal chevronRoom =
-            (item.role == ItemRole::DropDown || item.role == ItemRole::Split) ? kChevronWidth : 0.0;
+            (item.role == ItemRole::DropDown || item.role == ItemRole::Split) ? CommandFace::kChevronWidth : 0.0;
         const QRectF content = item.rect.adjusted(kItemPadding, 0.0, -kItemPadding - chevronRoom, 0.0);
 
         qreal left = content.left();
         if (!action->icon().isNull()) {
-            const QRectF icon(left, item.rect.center().y() - kIconSize / 2.0, kIconSize, kIconSize);
+            const QRectF icon(left, item.rect.center().y() - CommandFace::kIconSize / 2.0, CommandFace::kIconSize,
+                              CommandFace::kIconSize);
             action->icon().paint(painter, icon.toRect(), Qt::AlignCenter, QIcon::Normal);
-            left += kIconSize + kIconGap;
+            left += CommandFace::kIconSize + CommandFace::kIconGap;
         }
         if (!action->text().isEmpty()) {
             painter->setPen(ink);
@@ -492,15 +469,16 @@ void FluentCommandBar::paintContent(QPainter *painter)
             painter->drawText(label, Qt::AlignLeft | Qt::AlignVCenter, action->text());
         }
         if (chevronRoom > 0.0) {
-            const QRectF chevron(item.rect.right() - kChevronWidth, item.rect.top(), kChevronWidth, kItemHeight);
+            const QRectF chevron(item.rect.right() - CommandFace::kChevronWidth, item.rect.top(),
+                                 CommandFace::kChevronWidth, CommandFace::kHeight);
             if (item.role == ItemRole::Split) {
                 QColor divider = textColor();
-                divider.setAlphaF(kDividerOpacity);
+                divider.setAlphaF(CommandFace::kSeamOpacity);
                 painter->setPen(QPen(divider, 1.0));
-                painter->drawLine(QPointF(chevron.left(), item.rect.top() + kDividerInset),
-                                  QPointF(chevron.left(), item.rect.bottom() - kDividerInset));
+                painter->drawLine(QPointF(chevron.left(), item.rect.top() + CommandFace::kSeamInset),
+                                  QPointF(chevron.left(), item.rect.bottom() - CommandFace::kSeamInset));
             }
-            paintChevron(painter, chevron, ink);
+            CommandFace::paintChevron(painter, chevron, ink);
         }
         painter->restore();
     }

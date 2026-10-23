@@ -4,6 +4,7 @@
  **/
 #include "fluenttogglesplitbutton.h"
 
+#include "fluentcommandface_p.h"
 #include "fluenttokens.h"
 
 #include <QtCore/QtMath>
@@ -17,27 +18,17 @@ QX_FLUENT_BEGIN_NAMESPACE
 
 namespace
 {
-// The same measures FluentDropDownButton uses, because the two sit side by
-// side in the same row and a reader compares them: thirty-two tall, an icon of
-// sixteen, a chevron of twenty.
-constexpr qreal kHeight = 32.0;
+// The inset a command keeps from the edges of its own face when it stands
+// alone: roomier than a command in a bar, which holds many.
 constexpr qreal kPadding = 12.0;
-constexpr qreal kIconSize = 16.0;
-constexpr qreal kIconGap = 8.0;
-constexpr qreal kChevronWidth = 20.0;
-constexpr qreal kChevronGlyph = 8.0;
-constexpr qreal kChevronStroke = 1.5;
 
 // The line between the two halves: the promise is that there are two things
-// here, so the seam is drawn. Inset from the ends, and thin enough to be a
-// seam rather than a border.
-constexpr qreal kSeamInset = 6.0;
-constexpr qreal kSeamOpacity = 0.16;
+// here, so the seam is drawn.
+constexpr qreal kSeamInset = CommandFace::kSeamInset;
+constexpr qreal kSeamOpacity = CommandFace::kSeamOpacity;
 
-// A command in force is washed in the accent, and a command nobody can use is
-// the same drawing thinned.
-constexpr qreal kCheckedOpacity = 0.12;
-constexpr qreal kDisabledOpacity = 0.4;
+// A command in force is washed in the accent.
+constexpr qreal kCheckedOpacity = CommandFace::kCheckedOpacity;
 
 QPointF eventPos(const QMouseEvent *event)
 {
@@ -46,21 +37,6 @@ QPointF eventPos(const QMouseEvent *event)
 #else
     return event->localPos();
 #endif
-}
-
-/*! The chevron that says a menu is here: a point turned down, drawn rather
- *  than typed, because a glyph in a font is a glyph the theme cannot colour
- *  and an assistive tool would read. */
-void paintChevron(QPainter *painter, const QRectF &rect, const QColor &color)
-{
-    const qreal x = rect.center().x() - kChevronGlyph / 2.0;
-    const qreal y = rect.center().y() - kChevronGlyph / 4.0;
-    QPainterPath chevron;
-    chevron.moveTo(x, y);
-    chevron.lineTo(x + kChevronGlyph / 2.0, y + kChevronGlyph / 2.0);
-    chevron.lineTo(x + kChevronGlyph, y);
-    painter->setPen(QPen(color, kChevronStroke, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter->drawPath(chevron);
 }
 }   // namespace
 
@@ -168,43 +144,43 @@ void FluentToggleSplitButton::showMenu()
 
 QSize FluentToggleSplitButton::sizeHint() const
 {
-    qreal width = kPadding + kChevronWidth + kPadding;
+    qreal width = kPadding + CommandFace::kChevronWidth + kPadding;
     if (!d_ptr->icon.isNull()) {
-        width += kIconSize + kIconGap;
+        width += CommandFace::kIconSize + CommandFace::kIconGap;
     }
     if (!d_ptr->text.isEmpty()) {
         const QFontMetricsF metrics(FluentType::font(FluentType::Ramp::Body));
         width += metrics.horizontalAdvance(d_ptr->text);
     }
-    return QSize(qCeil(width), int(kHeight));
+    return QSize(qCeil(width), int(CommandFace::kHeight));
 }
 
 QSize FluentToggleSplitButton::minimumSizeHint() const
 {
     // The body can lose its text to an elision, but neither half can lose its
     // own shape: the chevron and the insets are the least this button can be.
-    qreal width = kPadding + kChevronWidth + kPadding;
+    qreal width = kPadding + CommandFace::kChevronWidth + kPadding;
     if (!d_ptr->icon.isNull()) {
-        width += kIconSize + kIconGap;
+        width += CommandFace::kIconSize + CommandFace::kIconGap;
     }
-    return QSize(qCeil(width), int(kHeight));
+    return QSize(qCeil(width), int(CommandFace::kHeight));
 }
 
 QRectF FluentToggleSplitButton::chevronRect() const
 {
-    return QRectF(width() - kPadding - kChevronWidth, 0.0, kChevronWidth, height());
+    return QRectF(width() - kPadding - CommandFace::kChevronWidth, 0.0, CommandFace::kChevronWidth, height());
 }
 
 QRectF FluentToggleSplitButton::contentRect() const
 {
-    const qreal left = kPadding + (d_ptr->icon.isNull() ? 0.0 : kIconSize + kIconGap);
+    const qreal left = kPadding + (d_ptr->icon.isNull() ? 0.0 : CommandFace::kIconSize + CommandFace::kIconGap);
     const qreal right = chevronRect().left();
     return QRectF(left, 0.0, qMax(qreal(0.0), right - left), height());
 }
 
 QRectF FluentToggleSplitButton::iconRect() const
 {
-    return QRectF(kPadding, (height() - kIconSize) / 2.0, kIconSize, kIconSize);
+    return QRectF(kPadding, (height() - CommandFace::kIconSize) / 2.0, CommandFace::kIconSize, CommandFace::kIconSize);
 }
 
 FluentToggleSplitButton::Half FluentToggleSplitButton::halfAt(const QPointF &pos) const
@@ -246,7 +222,7 @@ void FluentToggleSplitButton::paintContent(QPainter *painter)
 {
     QColor ink = textColor();
     if (!isEnabled()) {
-        ink.setAlphaF(kDisabledOpacity);
+        ink.setAlphaF(CommandFace::kDisabledOpacity);
     }
 
     painter->save();
@@ -274,7 +250,7 @@ void FluentToggleSplitButton::paintContent(QPainter *painter)
         painter->drawText(room, Qt::AlignLeft | Qt::AlignVCenter, shown);
     }
 
-    paintChevron(painter, chevron, ink);
+    CommandFace::paintChevron(painter, chevron, ink);
     painter->restore();
 }
 

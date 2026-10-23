@@ -57,6 +57,16 @@ Feature
   group of top-level destinations, not a destination and not a level. A group of
   destinations is what a parent destination is for.
 
+Optimize
+- The command faces are one drawing now. The command bar and the two buttons
+  that stand alone had each their own copy of the chevron, the measures and the
+  opacities a command is drawn with - three answers to "what does a command
+  look like", which is two too many for things that sit in the same row. They
+  draw from one place now, and the bar takes the shape the buttons brought:
+  its chevron was drawn a shade deeper than theirs, and its seam - the line
+  between the two halves of a split command - a shade lighter, both differences
+  of history rather than of promise.
+
 0.1.1
 ---
 Feature
