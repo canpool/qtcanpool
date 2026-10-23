@@ -1,3 +1,12 @@
+Unreleased
+---
+Bugfix
+- The rail's state washes did not follow the pill: a wash is a flat fill and
+  the fill knows no corners, so the hover tint stood as a square over the
+  rounded shape, and after a click the focus tint stacked a second square on
+  the pill that was already in force. The washes now take the pill's shape
+  from a clip, the way the control's own wash does.
+
 0.1.2
 ---
 Bugfix

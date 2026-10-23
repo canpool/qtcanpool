@@ -8,6 +8,8 @@
 
 #include <QAccessible>
 #include <QAction>
+#include <QImage>
+#include <QMouseEvent>
 #include <QSignalSpy>
 #include <QWheelEvent>
 #include <QtWidgets/QApplication>
@@ -76,6 +78,7 @@ private slots:
     void destinationsPastTheRoomAreNotReachableUntilTheColumnTravels();
     void theKeyboardKeepsWhatItWalksToInSight();
     void aRoomThatHoldsEverythingDoesNotTravel();
+    void theStateWashFollowsThePill();
     void whatAnAssistiveToolReads();
 };
 
@@ -252,6 +255,31 @@ void tst_MaterialNavigationRail::aRoomThatHoldsEverythingDoesNotTravel()
     QCOMPARE(rail->currentIndex(), 0);
     QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(1));
     QCOMPARE(rail->currentIndex(), 1);
+}
+
+/*! A state wash is a flat fill, and a fill knows no corners: the wash a
+ *  destination wears when the pointer is on it has to take the pill's shape
+ *  from a clip, or it paints a square over a pill - and over the destination
+ *  in force, two shapes where one belongs. */
+void tst_MaterialNavigationRail::theStateWashFollowsThePill()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(railWith({QStringLiteral("Home"), QStringLiteral("Mail")}));
+    QCOMPARE(rail->currentIndex(), 0);
+
+    const QImage rest = rail->grab().toImage();
+
+    // The pointer arrives at the second destination, the one not in force.
+    const QPointF center = itemPoint(1);
+    QMouseEvent move(QEvent::MouseMove, center, center, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+    QApplication::sendEvent(rail.get(), &move);
+    QCOMPARE(rail->currentIndex(), 0);
+
+    const QImage frame = rail->grab().toImage();
+    // The second indicator stands at x 12..68, y 68..100. Where the pill is:
+    // tinted.
+    QVERIFY(frame.pixelColor(40, 84) != rest.pixelColor(40, 84));
+    // In the corner its radius rounds away: the page's colour, not a square's.
+    QCOMPARE(frame.pixelColor(13, 69), rest.pixelColor(13, 69));
 }
 
 void tst_MaterialNavigationRail::whatAnAssistiveToolReads()

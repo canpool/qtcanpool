@@ -11,6 +11,7 @@
 #include <QtGui/QFontMetrics>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
+#include <QtGui/QPainterPath>
 #include <QtGui/QResizeEvent>
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QSizePolicy>
@@ -394,6 +395,16 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
         painter->setOpacity(enabled ? (usable ? 1.0 : kDisabledOpacity) : kDisabledOpacity);
 
         const QRectF indicator = d_ptr->indicatorOf(item);
+        // A state wash is a fill and the fill knows no corners; the pill's
+        // shape comes from the clip, as the control's own wash does.
+        const auto wash = [painter, &indicator, radius, this](qreal opacity) {
+            QPainterPath clip;
+            clip.addRoundedRect(indicator, radius, radius);
+            painter->save();
+            painter->setClipPath(clip);
+            QxControls::QxStateLayer::paint(painter, indicator, textColor(), opacity);
+            painter->restore();
+        };
         if (i == d_ptr->current) {
             // The pill: the destination in force wears a shape, and the shape
             // is the accent's - not a tint over the whole row, which would say
@@ -404,10 +415,10 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
             painter->drawRoundedRect(indicator, radius, radius);
         }
         if (i == d_ptr->hovered && i != d_ptr->current) {
-            QxControls::QxStateLayer::paint(painter, indicator, textColor(), QxControls::QxStateLayer::hoverOpacity);
+            wash(QxControls::QxStateLayer::hoverOpacity);
         }
         if (hasFocus() && i == d_ptr->focused) {
-            QxControls::QxStateLayer::paint(painter, indicator, textColor(), QxControls::QxStateLayer::focusOpacity);
+            wash(QxControls::QxStateLayer::focusOpacity);
         }
 
         if (!action->icon().isNull()) {
