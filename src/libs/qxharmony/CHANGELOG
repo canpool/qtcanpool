@@ -27,3 +27,22 @@ Feature
   materials. Those cannot be verified on a machine that does not run the
   platform, so they are not attempted, and a shape that is close without them is
   the goal rather than a shortfall to be filed later.
+- `HarmonySwitch`, a switch whose knob answers the hand rather than the
+  distance. Qt has a check box and no switch, and the two are not the same
+  control: this one says that what it stands for is in force now. The outline -
+  a capsule with a knob in it - is what every family draws, so what makes the
+  drawing this family's is what the knob does. Held, it grows into a rounded
+  rectangle of the family's medium corner, one state rather than a continuum of
+  shapes between a circle and a pill, because a control that changed its outline
+  with the distance travelled would be drawing the pointer rather than the
+  state; the grown knob is kept inside the capsule while it does. Let go, it
+  lands on the springy curve: it passes the place it rests in by a couple of
+  pixels and settles back, which is the opposite reading of the same journey
+  from a family that stops where it arrives. The on colour is the family's
+  semantic blue and not the theme's accent, so a switch stays that blue under
+  every theme; the off track is the family's semantic grey thinned over the
+  page, one alpha that answers both faces, and the knob is white on both. The
+  travel rides on the normal duration, so a theme's motion scale reaches it and
+  the reduce-motion switch silences it - and with it the spring, since a spring
+  is a journey. There is no sentence in the control: a switch here is the
+  capsule and the words beside it are a label of their own.
