@@ -47,6 +47,15 @@ struct Triggers {
         });
     }
 };
+
+/*! Where the bar would draw a mark is protected, and the defect this stands for
+ *  was a mark rather than a pixel: asking the bar where it would draw is the
+ *  question a picture would only be a second answer to. */
+class ProbeBar : public MaterialTopAppBar
+{
+public:
+    using MaterialTopAppBar::chromeRect;
+};
 }   // namespace
 
 class tst_MaterialTopAppBar : public QObject
@@ -63,6 +72,7 @@ private slots:
     void whatIsAtAPoint();
     void beingScrolledUnderLeavesThePage();
     void theKeyboardWalksTheIcons();
+    void aBarNobodyHasBeenOnMarksNothing();
     void whatAnAssistiveToolReads();
 };
 
@@ -261,6 +271,25 @@ void tst_MaterialTopAppBar::theKeyboardWalksTheIcons()
     QTest::keyClick(bar.get(), Qt::Key_Enter);
     QCOMPARE(asked.count, 4);
     QCOMPARE(asked.last, nav);
+}
+
+/*! A bar nobody has pointed at and nobody has walked to has no mark on it. The
+ *  first trailing action used to wear the ring for good: adding it put the
+ *  keyboard's place on the first icon before the keyboard had been anywhere,
+ *  and the mark that says "the keyboard is here" said it about a bar that did
+ *  not have the keyboard at all.
+ *
+ *  Only the empty answer is asserted. The other half - that a bar which does
+ *  hold the keyboard marks where the keyboard is - needs a widget that has
+ *  focus, and the platform the tests run on in CI has none to give; what proves
+ *  this one is the fallback run, where putting the place back on the first icon
+ *  makes it fail. */
+void tst_MaterialTopAppBar::aBarNobodyHasBeenOnMarksNothing()
+{
+    ProbeBar bar;
+    bar.resize(400, 56);
+    bar.addTrailingAction(QStringLiteral("Search"));
+    QVERIFY2(bar.chromeRect().isEmpty(), "a mark where nobody has been");
 }
 
 void tst_MaterialTopAppBar::whatAnAssistiveToolReads()

@@ -1,3 +1,16 @@
+Unreleased
+---
+Bugfix
+- The first action a top app bar was given wore the focus ring from the moment
+  it was added, at eight per cent of ink over a part of the bar nothing had been
+  done to. The ring is a mark that says where the keyboard is, and adding an
+  action was putting the keyboard's place on the first icon before the keyboard
+  had been anywhere - and the bar drew that place whether or not it had the
+  keyboard at all. A mark is now drawn for the pointer wherever the pointer is,
+  and for the keyboard only while the bar holds it; the keyboard's place is
+  found the first time a key arrives, which is soon enough for a ring that is
+  only true once a key has arrived.
+
 0.1.1
 ---
 Feature

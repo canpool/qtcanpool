@@ -270,9 +270,10 @@ QAction *MaterialTopAppBar::addTrailingAction(const QString &text, const QIcon &
 {
     QAction *action = new QAction(icon, text, this);
     d_ptr->trailing.append(action);
-    if (d_ptr->focused < 0) {
-        d_ptr->focused = 0;
-    }
+    // The keyboard's place is where the keyboard has been, and it has not been
+    // anywhere yet: keyPressEvent() puts it on the first icon the first time a
+    // key arrives, which is soon enough for a mark that says "the keyboard is
+    // here".
     d_ptr->relayout();
     update();
     return action;
@@ -359,7 +360,14 @@ qreal MaterialTopAppBar::cornerRadius() const
 QRectF MaterialTopAppBar::chromeRect() const
 {
     d_ptr->relayout();
-    const int index = d_ptr->hovered >= 0 ? d_ptr->hovered : d_ptr->focused;
+    // The pointer's mark and the keyboard's mark are the same rectangle, and
+    // both of them are marks: a bar nobody has pointed at and nobody has walked
+    // to has neither. The keyboard's place is asked for only while the bar has
+    // the keyboard, which is the difference between a place the user walked to
+    // and a place the bar happened to keep - the first trailing action used to
+    // wear the ring from the moment it was added, at eight per cent of ink over
+    // a part of the bar nothing had been done to.
+    const int index = d_ptr->hovered >= 0 ? d_ptr->hovered : (hasFocus() ? d_ptr->focused : -1);
     if (index < 0 || index >= d_ptr->icons.count()) {
         return QRectF();
     }
