@@ -15,6 +15,7 @@ class QAction;
 class QKeyEvent;
 class QMouseEvent;
 class QResizeEvent;
+class QWheelEvent;
 
 QX_FLUENT_BEGIN_NAMESPACE
 
@@ -97,6 +98,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
     QAccessible::Role accessibleRole() const override;
 private:

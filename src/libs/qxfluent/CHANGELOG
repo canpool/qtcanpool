@@ -62,6 +62,21 @@ Feature
   the application: the value is the truth and the text is a way of saying it -
   text that is not a number never reaches the value, and leaving the field puts
   the text back to what the value is.
+- FluentNavigationView scrolls when its destinations do not fit, which a pane
+  that is a column of rows has to: past the room it has, a list that cannot move
+  is a list whose end does not exist. The menu button stays where it is - it is
+  the pane's header rather than its first row - and what moves is the column of
+  destinations under it, clipped to that room so a row scrolled half way out is
+  half a row and not a second header. The wheel is asked what it moved instead of
+  being assumed to have notches in it: a trackpad reports pixels and a wheel
+  reports eighths of a turn, and a notch is the rows the platform's own setting
+  asks for - so the pane moves as fast as the rest of the desktop does. The bar
+  is the overlay one a Fluent pane wears, three wide with no track under it, as
+  long as the part of the list in sight and darker while it is being held; it is
+  the answer to "is there more", so it is drawn whenever there is, rather than
+  only while the pointer is over it. The keyboard keeps its end of it: a
+  destination reached with the arrow keys - or chosen by the application - is
+  scrolled into the room it is being shown in.
 
 Fix
 - FluentCommandBar centres its row in the bar it was given rather than in the

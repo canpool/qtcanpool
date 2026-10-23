@@ -12,6 +12,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QResizeEvent>
+#include <QtGui/QWheelEvent>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
 // QAction is in Widgets on Qt 5 and in Gui on Qt 6, so it is asked for without
 // naming a module - the same way the rest of the libraries ask.
@@ -46,6 +48,18 @@ constexpr qreal kDividerOpacity = 0.10;
 // What itemAt() answers for the menu button, which is a place on the pane no
 // destination owns.
 constexpr int kMenuIndex = -2;
+
+// The pane scrolls when its destinations do not fit, and what it scrolls with
+// is the overlay bar a Fluent pane wears: three wide, two off the divider, no
+// track under it, and no longer than the part of the list that is in sight.
+constexpr qreal kScrollBarWidth = 3.0;
+constexpr qreal kScrollBarMargin = 2.0;
+constexpr qreal kScrollBarMinLength = 24.0;
+constexpr qreal kScrollBarOpacity = 0.3;
+constexpr qreal kScrollBarActiveOpacity = 0.55;
+//! How far to the side of the bar a press still counts as grabbing it: three
+//! wide is a target to look at, not one to hit.
+constexpr qreal kScrollBarReach = 3.0;
 
 QPointF eventPos(const QMouseEvent *event)
 {
@@ -89,9 +103,23 @@ public:
     bool paneOpen = true;
     bool menuHovered = false;
     QWidget *content = Q_NULLPTR;
+    /*! How far up the destinations have been scrolled, in pixels. The menu
+     *  button does not move: it is the pane's header, not its first row. */
+    qreal offset = 0.0;
+    bool draggingBar = false;
+    qreal dragOrigin = 0.0;
+    QPointF dragPos;
 
     qreal paneWidth() const;
     QRectF menuButtonRect() const;
+    qreal viewportTop() const;
+    qreal viewportHeight() const;
+    qreal contentHeight() const;
+    qreal maximumOffset() const;
+    qreal scrollBarLength() const;
+    QRectF scrollBarRect() const;
+    void setOffset(qreal value);
+    void ensureVisible(int index);
     void relayout();
     int itemAt(const QPointF &pos) const;
     void activate(int index);
@@ -107,11 +135,95 @@ QRectF FluentNavigationViewPrivate::menuButtonRect() const
     return QRectF(0.0, 0.0, paneWidth(), kMenuButtonHeight);
 }
 
+qreal FluentNavigationViewPrivate::viewportTop() const
+{
+    return kMenuButtonHeight;
+}
+
+qreal FluentNavigationViewPrivate::viewportHeight() const
+{
+    Q_Q(const FluentNavigationView);
+    return qMax(0.0, qreal(q->height()) - kMenuButtonHeight);
+}
+
+qreal FluentNavigationViewPrivate::contentHeight() const
+{
+    return items.count() * kItemHeight;
+}
+
+qreal FluentNavigationViewPrivate::maximumOffset() const
+{
+    return qMax(0.0, contentHeight() - viewportHeight());
+}
+
+qreal FluentNavigationViewPrivate::scrollBarLength() const
+{
+    const qreal view = viewportHeight();
+    const qreal content = contentHeight();
+    // As much of the bar as the list has in sight, and never so little that
+    // there is nothing left to take hold of.
+    return content > view ? qMax(kScrollBarMinLength, view * view / content) : view;
+}
+
+QRectF FluentNavigationViewPrivate::scrollBarRect() const
+{
+    const qreal view = viewportHeight();
+    const qreal content = contentHeight();
+    if (view <= 0.0 || content <= view) {
+        return QRectF();
+    }
+    const qreal length = scrollBarLength();
+    const qreal travel = view - length;
+    const qreal span = content - view;
+    const qreal y = kMenuButtonHeight + (span > 0.0 ? offset / span * travel : 0.0);
+    return QRectF(paneWidth() - kScrollBarMargin - kScrollBarWidth, y, kScrollBarWidth, length);
+}
+
+void FluentNavigationViewPrivate::setOffset(qreal value)
+{
+    Q_Q(FluentNavigationView);
+    const qreal wanted = qBound(0.0, value, maximumOffset());
+    if (qFuzzyIsNull(wanted - offset)) {
+        return;
+    }
+    offset = wanted;
+    relayout();
+    q->update();
+}
+
+void FluentNavigationViewPrivate::ensureVisible(int index)
+{
+    const qreal view = viewportHeight();
+    // A view that has not been given its height yet has no room to be visible
+    // in, and an application that names a destination in its constructor does so
+    // before the first layout. Answering with a scroll then would be answering a
+    // question nobody asked - and the answer would be wrong: the list would be
+    // left scrolled by one row once the height did arrive, with the destination
+    // it was scrolled for half out of sight above the fold.
+    if (view <= 0.0 || index < 0 || index >= items.count()) {
+        return;
+    }
+    // A destination reached by the keyboard is one the user has to be able to
+    // see: the row it is in is scrolled into the room below the menu button,
+    // and the list never turns further than it has to.
+    const qreal top = index * kItemHeight;
+    const qreal bottom = top + kItemHeight;
+    if (top < offset) {
+        setOffset(top);
+    } else if (bottom > offset + view) {
+        setOffset(bottom - view);
+    }
+}
+
 void FluentNavigationViewPrivate::relayout()
 {
     Q_Q(FluentNavigationView);
     const qreal width = paneWidth();
-    qreal top = kMenuButtonHeight;
+    // The scroll is clamped here rather than only where it is moved: a
+    // destination leaving, a pane unfolding and a view growing all change how
+    // far there is left to scroll, and none of them is the wheel.
+    offset = qBound(0.0, offset, maximumOffset());
+    qreal top = kMenuButtonHeight - offset;
     for (NavigationItem &item : items) {
         item.rect = QRectF(0.0, top, width, kItemHeight);
         top += kItemHeight;
@@ -128,6 +240,11 @@ int FluentNavigationViewPrivate::itemAt(const QPointF &pos) const
     // stand is answered now, because a hit test against stale geometry is a
     // lie - and a view that has never been shown is never told it was resized.
     const_cast<FluentNavigationViewPrivate *>(this)->relayout();
+    // The menu button is not a row, and a row scrolled half under it is not
+    // reachable through the part that is hidden.
+    if (pos.y() < viewportTop()) {
+        return -1;
+    }
     for (int i = 0; i < items.count(); ++i) {
         if (items.at(i).rect.contains(pos)) {
             return i;
@@ -289,6 +406,9 @@ void FluentNavigationView::setCurrentIndex(int index)
         return;
     }
     d_ptr->current = index;
+    // A destination the application selects is one it means the user to look
+    // at, even when the list is longer than the pane.
+    d_ptr->ensureVisible(index);
     update();
     Q_EMIT currentIndexChanged(index);
     Q_EMIT currentItemChanged(currentItem());
@@ -349,9 +469,16 @@ void FluentNavigationView::paintContent(QPainter *painter)
     const bool withWords = d_ptr->paneOpen;
     const QColor accent = accentColor();
 
+    // The destinations live under the menu button, not beside it: the first row
+    // of a scrolled list is half above the fold, and half of it drawn over the
+    // header would be a second header.
+    const QRectF viewport(0.0, d_ptr->viewportTop(), d_ptr->paneWidth(), d_ptr->viewportHeight());
+    painter->save();
+    painter->setClipRect(viewport);
+
     for (int i = 0; i < d_ptr->items.count(); ++i) {
         const NavigationItem &item = d_ptr->items.at(i);
-        if (!item.rect.intersects(rect())) {
+        if (!item.rect.intersects(viewport)) {
             continue;
         }
         const bool usable = item.action->isEnabled();
@@ -398,7 +525,19 @@ void FluentNavigationView::paintContent(QPainter *painter)
             }
         }
     }
+    painter->restore();
     painter->setOpacity(1.0);
+
+    // The bar is drawn last and outside the clip: it stands against the pane's
+    // own edge, which the rows stop short of.
+    const QRectF thumb = d_ptr->scrollBarRect();
+    if (!thumb.isEmpty()) {
+        QColor ink = textColor();
+        ink.setAlphaF(d_ptr->draggingBar || underMouse() ? kScrollBarActiveOpacity : kScrollBarOpacity);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(ink);
+        painter->drawRoundedRect(thumb, kScrollBarWidth / 2.0, kScrollBarWidth / 2.0);
+    }
 }
 
 void FluentNavigationView::resizeEvent(QResizeEvent *event)
@@ -411,6 +550,16 @@ void FluentNavigationView::resizeEvent(QResizeEvent *event)
 void FluentNavigationView::mousePressEvent(QMouseEvent *event)
 {
     const QPointF pos = eventPos(event);
+    // The bar is a handle and lies over the rows it scrolls, so it is grabbed
+    // before any of them is looked at.
+    const QRectF thumb = d_ptr->scrollBarRect();
+    if (!thumb.isEmpty() && thumb.adjusted(-kScrollBarReach, 0.0, kScrollBarReach, 0.0).contains(pos)) {
+        d_ptr->draggingBar = true;
+        d_ptr->dragOrigin = d_ptr->offset;
+        d_ptr->dragPos = pos;
+        update();
+        return;
+    }
     if (d_ptr->menuButtonRect().contains(pos)) {
         d_ptr->armed = kMenuIndex;
     } else {
@@ -422,6 +571,11 @@ void FluentNavigationView::mousePressEvent(QMouseEvent *event)
 void FluentNavigationView::mouseReleaseEvent(QMouseEvent *event)
 {
     const QPointF pos = eventPos(event);
+    if (d_ptr->draggingBar) {
+        d_ptr->draggingBar = false;
+        update();
+        return;
+    }
     const int armed = d_ptr->armed;
     d_ptr->armed = -1;
     if (armed == kMenuIndex) {
@@ -438,6 +592,17 @@ void FluentNavigationView::mouseReleaseEvent(QMouseEvent *event)
 void FluentNavigationView::mouseMoveEvent(QMouseEvent *event)
 {
     const QPointF pos = eventPos(event);
+    if (d_ptr->draggingBar) {
+        // What the hand moved over the bar is asked back in rows: the bar's
+        // travel is shorter than the list's, and the ratio between them is what
+        // makes a small drag move the list as far as the same drag moves the
+        // bar.
+        const qreal travel = d_ptr->viewportHeight() - d_ptr->scrollBarLength();
+        if (travel > 0.0) {
+            d_ptr->setOffset(d_ptr->dragOrigin + (pos.y() - d_ptr->dragPos.y()) * d_ptr->maximumOffset() / travel);
+        }
+        return;
+    }
     const bool menu = d_ptr->menuButtonRect().contains(pos);
     const int hovered = menu ? -1 : d_ptr->itemAt(pos);
     if (menu != d_ptr->menuHovered || hovered != d_ptr->hovered) {
@@ -468,11 +633,13 @@ void FluentNavigationView::keyPressEvent(QKeyEvent *event)
     switch (event->key()) {
     case Qt::Key_Down:
         d_ptr->focused = qMin(d_ptr->focused + 1, count - 1);
+        d_ptr->ensureVisible(d_ptr->focused);
         update();
         event->accept();
         return;
     case Qt::Key_Up:
         d_ptr->focused = qMax(d_ptr->focused - 1, 0);
+        d_ptr->ensureVisible(d_ptr->focused);
         update();
         event->accept();
         return;
@@ -486,6 +653,31 @@ void FluentNavigationView::keyPressEvent(QKeyEvent *event)
         break;
     }
     QxControls::QxControl::keyPressEvent(event);
+}
+
+void FluentNavigationView::wheelEvent(QWheelEvent *event)
+{
+    if (d_ptr->maximumOffset() <= 0.0) {
+        QxControls::QxControl::wheelEvent(event);
+        return;
+    }
+    // The wheel is asked what it moved rather than assumed to have notches in
+    // it: a trackpad reports pixels, a wheel reports eighths of a turn, and a
+    // notch here is the rows the platform's own setting asks for.
+    const QPoint pixels = event->pixelDelta();
+    qreal delta = 0.0;
+    if (!pixels.isNull()) {
+        delta = pixels.y();
+    } else {
+        const qreal notches = event->angleDelta().y() / 120.0;
+        delta = notches * kItemHeight * QApplication::wheelScrollLines();
+    }
+    if (qFuzzyIsNull(delta)) {
+        event->ignore();
+        return;
+    }
+    d_ptr->setOffset(d_ptr->offset - delta);
+    event->accept();
 }
 
 QAccessible::Role FluentNavigationView::accessibleRole() const
