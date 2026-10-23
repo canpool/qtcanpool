@@ -47,3 +47,21 @@ Feature
   motion scale reaches it and the reduce-motion switch silences it without the
   control checking either. There is no sentence in the control: in this family
   a switch is the capsule and the words beside it are a label of their own.
+- `CupertinoSlider`, a thin rail with a round handle that rides it. Qt's QSlider
+  is a style's idea of a slider and every one of them draws a groove the toolkit
+  owns; what this one draws is the least a slider can say - a four pixel rail
+  with capsule ends, the part the handle has reached in the family's blue and the
+  rest in its grey, and no marks under either, because a mark every interval
+  would be a second answer to a question the handle has already answered. The
+  handle is what is taken hold of, and it says so: seven times the height of the
+  rail, lifted off it with the family's raised shadow, and four points wider
+  while it is being dragged - the one thing here that moves without a value
+  changing. A press anywhere on the rail moves the handle there rather than
+  waiting for a drag, since a slider that waited would lie about where the
+  pointer is; a press while it is held follows the pointer at once, where a step
+  from the keyboard or the wheel travels on the quick duration, because there the
+  movement is what tells the user it moved. The keys are the ones every family
+  here answers - the arrows, Page Up and Page Down, Home and End - because a
+  keyboard is one convention for the whole project rather than one per family.
+  The value is also carried to an assistive tool through a value interface, so
+  the number can be read back and set back.
