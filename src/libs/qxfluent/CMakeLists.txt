@@ -39,6 +39,7 @@ add_qtc_library(qxfluent
     fluentnavigationview.h fluentnavigationview.cpp
     fluenttabview.h fluenttabview.cpp
     fluentteachingtip.h fluentteachingtip.cpp
+    fluenttooltip.h fluenttooltip.cpp
     fluentwindowmaterial.h fluentwindowmaterial.cpp
     fluentreveal.h fluentreveal.cpp
 )

@@ -20,6 +20,10 @@ Feature
   is: a fill that ends at the value over the range the application gave, or
   a block that slides and only says the waiting has not stopped; asked for
   less motion, the block holds still in view instead of vanishing.
+- `FluentToolTip`, a note that waits beside its anchor and opens when the
+  pointer or the keyboard arrives and stays: a surface in the page's ink
+  saying its words in the page's colour, standing on whichever side of the
+  anchor it was told, taking no mouse and no focus while it is up.
 
 0.1.2
 ---
