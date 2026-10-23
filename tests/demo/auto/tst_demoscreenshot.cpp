@@ -909,7 +909,24 @@ struct GalleryControl {
 };
 
 /*!
- * Every control of the two control sets the gallery's tree carries, on the page
+ * The four id prefixes the gallery's pages name their rows with: one per family,
+ * spelled the family's way. A row whose id does not start with one of these is
+ * not a control - it is the page, a section heading or a scroll area.
+ */
+bool isGalleryControlName(const QString &name)
+{
+    static const QStringList prefixes{QStringLiteral("fluent"), QStringLiteral("material"), QStringLiteral("cupertino"),
+                                      QStringLiteral("harmony")};
+    for (const QString &prefix : prefixes) {
+        if (name.startsWith(prefix)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*!
+ * Every control of the control sets the gallery's tree carries, on the page
  * that was up when the tree was printed.
  *
  * The page that is not current is in the tree too - laid out squeezed and marked
@@ -935,7 +952,7 @@ QList<GalleryControl> galleryControls(const QString &tree)
     while (it.hasNext()) {
         const QRegularExpressionMatch match = it.next();
         const QString name = match.captured(1);
-        if (!name.startsWith(QStringLiteral("fluent")) && !name.startsWith(QStringLiteral("material"))) {
+        if (!isGalleryControlName(name)) {
             continue;
         }
         // The group carries the space it matched, so it is trimmed before it is
@@ -965,10 +982,14 @@ QList<GalleryControl> galleryControls(const QString &tree)
  *
  * Two switches are asked. The style switch is the one only this demo can make -
  * the set that comes up is a different page painted by a different library, and
- * the one thing it must not bring with it is the other set's answers. The theme
- * switch is the one every demo asks, and the first time the control sets have
- * ever been asked it: both sets read the palette the engine installs, so a
- * control that kept the light ink on a dark sheet shows up here and nowhere else.
+ * the one thing it must not bring with it is the other set's answers. Every
+ * ordered pair of the four sets is walked, not one pair of them: a page built on
+ * arrival and a page woken up on arrival are two different code paths, and the
+ * pair a previous version of this demo happened to make is not the pair the next
+ * one does. The theme switch is the one every demo asks, and the first time the
+ * control sets have ever been asked it: every set reads the palette the engine
+ * installs, so a control that kept the light ink on a dark sheet shows up here
+ * and nowhere else.
  */
 void checkGallerySwitches(const QString &executable)
 {
@@ -977,11 +998,20 @@ void checkGallerySwitches(const QString &executable)
         const char *from;
         const char *to;
     };
-    const GallerySwitch pairs[] = {
-        {"--style", "fluent", "material"},
-        {"--style", "material", "fluent"},
-        {"--theme", "soft-light", "soft-dark"},
-    };
+    // Every ordered pair of the four families: twelve edges, because a switch
+    // that leaves something behind is a one-way thing - a page refreshed on the
+    // way in and one refreshed on the way out are two different code paths, and
+    // the pair the other family happens to make is not the pair this one makes.
+    QList<GallerySwitch> pairs;
+    static const char *const styles[] = {"fluent", "material", "cupertino", "harmony"};
+    for (const char *from : styles) {
+        for (const char *to : styles) {
+            if (from != to) {
+                pairs.append({"--style", from, to});
+            }
+        }
+    }
+    pairs.append({"--theme", "soft-light", "soft-dark"});
 
     QString error;
     for (const GallerySwitch &pair : pairs) {
@@ -1021,7 +1051,9 @@ void checkGallerySwitches(const QString &executable)
         QVERIFY2(!switchedTree.isEmpty(), qPrintable(QStringLiteral("%1: %2").arg(name, error)));
 
         const QList<GalleryControl> controls = galleryControls(freshTree);
-        QVERIFY2(controls.count() >= 12,
+        // Four rows is the shortest page there is: a page that named fewer did
+        // not come up, or the tree stopped naming its rows.
+        QVERIFY2(controls.count() >= 4,
                  qPrintable(QStringLiteral("%1: the gallery named only %2 controls - the page did not come up, "
                                            "or the tree stopped naming them")
                                 .arg(name)
