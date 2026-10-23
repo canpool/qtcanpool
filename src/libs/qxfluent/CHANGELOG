@@ -6,6 +6,12 @@ Feature
   icon or both, and the press never moves it.
 - `FluentDivider`, one hairline that separates: full across the edge it was
   given or inset past the indent the content beside it keeps.
+- `FluentCheckBox`, a choice that stands beside other choices: a box of
+  twenty with the tick drawn, three states when the application asks for the
+  third one, and the whole row answering the pointer.
+- `FluentRadioButton`, one choice of several: the accent's ring and dot when
+  it is in force, and the brothers that share its parent out of force with
+  it.
 
 0.1.2
 ---

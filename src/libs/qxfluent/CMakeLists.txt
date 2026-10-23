@@ -21,7 +21,9 @@ add_qtc_library(qxfluent
     fluentbadge.h fluentbadge.cpp
     fluentbutton.h fluentbutton.cpp
     fluentcard.h fluentcard.cpp
+    fluentcheckbox.h fluentcheckbox.cpp
     fluentdivider.h fluentdivider.cpp
+    fluentradiobutton.h fluentradiobutton.cpp
     fluentnumberbox.h fluentnumberbox.cpp
     fluentprogressring.h fluentprogressring.cpp
     fluentrating.h fluentrating.cpp
