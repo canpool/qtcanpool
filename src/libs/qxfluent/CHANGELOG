@@ -12,6 +12,10 @@ Feature
 - `FluentRadioButton`, one choice of several: the accent's ring and dot when
   it is in force, and the brothers that share its parent out of force with
   it.
+- `FluentComboBox`, a choice the page has already made: the face shows what
+  is in force, the list opens below and turns above when below has no room,
+  and it keeps inside the screen when neither side has room; the keyboard
+  walks the list and answers with Enter.
 
 0.1.2
 ---
