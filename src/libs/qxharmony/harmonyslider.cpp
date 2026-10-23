@@ -10,6 +10,7 @@
 #include "qxcontrols/qxshadowpainter.h"
 
 #include <QtCore/QVariantAnimation>
+#include <QtCore/QtMath>
 #include <QtGui/QFontMetrics>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
@@ -31,6 +32,11 @@ constexpr qreal kHandleSize = 26.0;
 constexpr qreal kBubbleWidth = 40.0;
 constexpr qreal kBubbleGap = 2.0;
 constexpr qreal kBubblePadding = 3.0;
+
+// How far the rail sits above the bottom of the widget. The handle's lower half
+// hangs below the rail and ends at the widget's last row, so this is the room
+// the drawing has under the rail and nothing else.
+constexpr qreal kRailFromBottom = 14.0;
 
 // The part of the rail the handle has not reached is the family's grey thinned
 // over the page, the same one the switch draws its off track with.
@@ -58,7 +64,25 @@ qreal trackWidth(const QWidget *widget)
 
 QRectF trackRect(const QWidget *widget)
 {
-    return QRectF(kHandleSize / 2.0, widget->height() - 14.0 - kTrackHeight / 2.0, trackWidth(widget), kTrackHeight);
+    return QRectF(kHandleSize / 2.0, widget->height() - kRailFromBottom - kTrackHeight / 2.0, trackWidth(widget),
+                  kTrackHeight);
+}
+
+/*! The caption's line in the bubble's padding: the one answer both the place the
+ *  bubble is drawn at and the height the control asks for are built from, so a
+ *  taller font moves the bubble and grows the widget together. */
+qreal bubbleHeight()
+{
+    return QFontMetricsF(HarmonyType::font(HarmonyType::Ramp::Caption)).height() + 2.0 * kBubblePadding;
+}
+
+/*! The height the drawing needs: the rail's room below, the handle's lower half,
+ *  the gap, and the bubble. A slider asked for less than this draws a bubble
+ *  whose top is cut off by the widget's own edge, because a widget cannot paint
+ *  outside itself. */
+qreal drawingHeight()
+{
+    return kRailFromBottom + kHandleSize / 2.0 + kBubbleGap + bubbleHeight() + 1.0;
 }
 
 QRectF handleRect(const QWidget *widget, qreal fraction)
@@ -72,7 +96,7 @@ QRectF handleRect(const QWidget *widget, qreal fraction)
  *  ends - a bubble half off the control would be a bubble cut in half. */
 QRectF bubbleRect(const QWidget *widget, const QRectF &handle)
 {
-    const qreal height = QFontMetricsF(HarmonyType::font(HarmonyType::Ramp::Caption)).height() + 2.0 * kBubblePadding;
+    const qreal height = bubbleHeight();
     const qreal top = handle.top() - kBubbleGap - height;
     const qreal left = qBound(qreal(0.0), handle.center().x() - kBubbleWidth / 2.0, widget->width() - kBubbleWidth);
     return QRectF(left, top, kBubbleWidth, height);
@@ -269,12 +293,17 @@ void HarmonySlider::setPageStep(int step)
 
 QSize HarmonySlider::sizeHint() const
 {
-    return QSize(160, int(kHandleSize + 24));
+    // The height is the drawing's and not a round number: what it holds is a
+    // bubble, and a bubble that did not fit would be half a bubble.
+    return QSize(160, qCeil(drawingHeight()));
 }
 
 QSize HarmonySlider::minimumSizeHint() const
 {
-    return QSize(int(kHandleSize * 2), int(kHandleSize + 8));
+    // Narrower is allowed - the rail is a line and a short one still says what
+    // the control is - but not shorter: the bubble is not optional while the
+    // handle is held, so a control too short for it is a control that lies.
+    return QSize(int(kHandleSize * 2), qCeil(drawingHeight()));
 }
 
 qreal HarmonySlider::cornerRadius() const

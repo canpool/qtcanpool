@@ -91,3 +91,13 @@ Feature
   Pressed, it takes the state layer rather than shrinking. Enter answers on the
   press and Space on the release, and what the button says is its accessible name
   for as long as the application has not given it a better one.
+
+Fixed
+- The slider asks for the height its own drawing needs. The bubble floats above
+  the handle and a widget cannot paint outside itself, so a height worked out
+  from the handle alone drew the bubble with its top sliced off - a row or two
+  on a small font, more on a large one, and a layout that squeezed the control
+  towards its minimum size hint took most of the bubble away. The height is now
+  computed from the caption's line together with the room the rail leaves under
+  itself, and the minimum is that same height: narrower is allowed, shorter is
+  not, because the bubble is not optional while the handle is held.

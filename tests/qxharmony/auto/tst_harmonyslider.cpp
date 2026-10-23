@@ -5,9 +5,11 @@
 #include "tst_global.h"
 
 #include "qxharmony/harmonyslider.h"
+#include "qxharmony/harmonytokens.h"
 
 #include <QAccessible>
 #include <QApplication>
+#include <QFontMetricsF>
 #include <QImage>
 #include <QMouseEvent>
 
@@ -55,6 +57,22 @@ int bluePixels(QWidget *widget, const QRect &area)
     return count;
 }
 
+/*! The first row, counting from the top of the widget, that the bubble reaches;
+ *  -1 while there is no bubble at all. */
+int firstBlueRow(QWidget *widget)
+{
+    const QImage image = widget->grab().toImage();
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            const QColor colour = image.pixelColor(x, y);
+            if (colour.blue() > colour.red() + 40 && colour.blue() > colour.green() + 40) {
+                return y;
+            }
+        }
+    }
+    return -1;
+}
+
 /*! How much ink there is in a part of the widget: anything that is not the page
  *  it sits on. */
 int inkedPixels(QWidget *widget, const QRect &area)
@@ -83,6 +101,7 @@ private slots:
     void aDragFollowsThePointer();
     void theBubbleFloatsOverTheHeldHandle();
     void theBubbleGoesOnceTheHandleIsLetGo();
+    void theBubbleIsWholeAtTheHeightTheSliderAsksFor();
     void theKeyboardStepsIt();
     void itCarriesAValue();
     void thereAreNoMarksUnderTheRail();
@@ -167,6 +186,43 @@ void tst_HarmonySlider::theBubbleGoesOnceTheHandleIsLetGo()
     QTest::mouseRelease(&slider, Qt::LeftButton, Qt::NoModifier, QPoint(100, railRow(&slider)));
     QTest::qWait(400);
     QCOMPARE(bluePixels(&slider, QRect(0, 0, slider.width(), 24)), 0);
+}
+
+/*! The bubble is drawn above the rail, so the room for it is part of what the
+ *  control has to ask for. Asking for less is not a shorter slider: a widget
+ *  cannot paint outside itself, so the bubble would arrive with its top sliced
+ *  off - a slice, not a rounded box. */
+void tst_HarmonySlider::theBubbleIsWholeAtTheHeightTheSliderAsksFor()
+{
+    HarmonySlider slider;
+    slider.setValue(70);
+    slider.resize(200, slider.sizeHint().height());
+    QTest::qWait(300);
+
+    QTest::mousePress(&slider, Qt::LeftButton, Qt::NoModifier, QPoint(140, railRow(&slider)));
+
+    // A whole bubble is the caption's line in its padding. The count is exact
+    // and not a floor: the top edge is a rounded corner, but its first row is
+    // blue across the middle, so a bubble one row short is a bubble with its top
+    // sliced off by the widget's own edge.
+    const qreal line = QFontMetricsF(HarmonyType::font(HarmonyType::Ramp::Caption)).height();
+    const int wanted = qRound(line) + 6;
+    const int bottomOfBubble = railRow(&slider) - kHandleSize / 2 - 2;
+    const int first = firstBlueRow(&slider);
+    QVERIFY(first >= 0);
+    QVERIFY2(bottomOfBubble - first >= wanted,
+             qPrintable(QStringLiteral("the bubble is %1 rows tall where it wants %2: the control asks for %3 "
+                                       "and the drawing needs %4")
+                            .arg(bottomOfBubble - first)
+                            .arg(wanted)
+                            .arg(slider.sizeHint().height())
+                            .arg(slider.minimumSizeHint().height())));
+
+    // And a layout that squeezes it gets the same answer: a control too short for
+    // its own bubble is a control that lies about what it is.
+    QCOMPARE(slider.minimumSizeHint().height(), slider.sizeHint().height());
+
+    QTest::mouseRelease(&slider, Qt::LeftButton, Qt::NoModifier, QPoint(140, railRow(&slider)));
 }
 
 /*! A slider is a value in a range, so the keyboard walks it one step at a time
