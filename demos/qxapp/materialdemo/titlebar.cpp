@@ -169,7 +169,12 @@ TitleBar::TitleBar(QWidget *parent)
     setObjectName(QStringLiteral("materialTitleBar"));
 
     auto *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(QMargins());
+    // Eight on the right, the same as the Fluent demo gives its own caption: a
+    // caption is the window's edge rather than a part of either design language,
+    // so both demos leave the same room there. Without it the close button's red
+    // disc sat two pixels off the frame - a disc that looks poured over the edge
+    // rather than a button standing on the bar.
+    layout->setContentsMargins(QMargins(0, 0, 8, 0));
     layout->setSpacing(0);
 
     m_bar = new MaterialTopAppBar(this);
