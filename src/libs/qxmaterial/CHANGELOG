@@ -1,5 +1,10 @@
 Unreleased
 ---
+Feature
+- `MaterialButton`, the command the page is built out of: three variants say
+  how much surface the command claims (filled, outlined, text), and the press
+  is answered by the same ripple the chip and the floating action button give.
+
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
   the fill knows no corners, so the hover tint stood as a square over the
