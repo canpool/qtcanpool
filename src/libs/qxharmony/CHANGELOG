@@ -63,3 +63,16 @@ Feature
   or the wheel travels on the quick duration - the same keys as every other
   family here, one convention for the project rather than one per family. The
   value is also carried to an assistive tool through a value interface.
+- `HarmonyCard`, a face laid on the page and standing on a shadow. The card is
+  the shape this family is built out of - a surface with a corner you can see and
+  a lift under it - so the two things it carries are the family's large corner
+  and one of the family's elevation levels, and the level is the whole of what
+  tells two cards apart: the same face at a higher level is a card the pointer is
+  on, or one that has been opened over the page. The face is the toolkit's own
+  surface colour rather than the page's, so a card is a different material from
+  what it lies on even where the shadow is thin, and the widget is inset by the
+  room its shadow needs so the shadow is drawn beside the face rather than being
+  cut off at the edge. Held, the card dims - the state a press draws is a layer
+  over the surface and not a scale, because a card that shrank under the hand
+  would be moving the page under the user's finger, and this family moves things
+  when they arrive rather than when they are touched.
