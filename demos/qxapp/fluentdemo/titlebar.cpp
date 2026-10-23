@@ -35,6 +35,14 @@ constexpr int kGlyphSize = 10;
 constexpr int kFieldWidth = 220;
 constexpr int kFieldHeight = 32;
 
+/*! The stroke the close glyph is drawn with. The other glyphs are horizontal
+ *  and vertical strokes that land on whole pixel rows, but the close glyph is
+ *  two 45 degree diagonals: anti-aliasing spreads each of them over two rows at
+ *  roughly half coverage, which reads a step lighter than its brothers at the
+ *  same 1 px. The compensation is the geometry's own - a diagonal needs sqrt(2)
+ *  times the perpendicular stroke to put the same ink on a pixel row. */
+constexpr qreal kCloseStroke = 1.4;
+
 /*! The wash a caption button wears: Fluent's own, which is fainter than a
  *  button's - a caption is not something to aim at. */
 constexpr qreal kHoverOpacity = 0.06;
@@ -182,6 +190,11 @@ void CaptionButton::paintEvent(QPaintEvent *event)
         break;
     }
     case Glyph::Close:
+        // The one glyph that draws its own weight: at the shared 1 px the two
+        // diagonals read lighter than the horizontal and vertical strokes
+        // beside them, however equal the pen says they are.
+        pen.setWidthF(kCloseStroke);
+        painter.setPen(pen);
         painter.drawLine(QPointF(left, top), QPointF(left + kGlyphSize, top + kGlyphSize));
         painter.drawLine(QPointF(left, top + kGlyphSize), QPointF(left + kGlyphSize, top));
         break;

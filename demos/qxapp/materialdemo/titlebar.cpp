@@ -27,6 +27,14 @@ namespace
 constexpr int kButtonSize = 48;
 constexpr int kGlyphSize = 10;
 
+/*! The stroke the close glyph is drawn with. The other glyphs are horizontal
+ *  and vertical strokes that land on whole pixel rows, but the close glyph is
+ *  two 45 degree diagonals: anti-aliasing spreads each of them over two rows at
+ *  roughly half coverage, which reads a step lighter than its brothers at the
+ *  same 1 px. The compensation is the geometry's own - a diagonal needs sqrt(2)
+ *  times the perpendicular stroke to put the same ink on a pixel row. */
+constexpr qreal kCloseStroke = 1.4;
+
 /*! The washes an M3 icon button wears, as fractions of the ink over the
  *  surface - the same three the library's own buttons use. */
 constexpr qreal kHoverOpacity = 0.08;
@@ -160,6 +168,11 @@ void CaptionButton::paintEvent(QPaintEvent *event)
         break;
     }
     case Glyph::Close:
+        // The one glyph that draws its own weight: at the shared 1 px the two
+        // diagonals read lighter than the horizontal and vertical strokes
+        // beside them, however equal the pen says they are.
+        pen.setWidthF(kCloseStroke);
+        painter.setPen(pen);
         painter.drawLine(QPointF(left, top), QPointF(left + kGlyphSize, top + kGlyphSize));
         painter.drawLine(QPointF(left, top + kGlyphSize), QPointF(left + kGlyphSize, top));
         break;
