@@ -92,6 +92,19 @@ Feature
   the release, the same as the other families here, and what the button says is
   its accessible name for as long as the application has not given it a better
   one.
+- CupertinoActivityIndicator, eight spokes fading round a centre - the mark a
+  page shows while it waits. There is no track and no arc and no number in it,
+  which is what tells it apart from a progress bar: a bar answers "how much
+  longer" and this only says "still going", so the spokes are equal, each one
+  fades a little more than the one before, and the whole wheel turns. The fade
+  is fixed to the spokes rather than to the direction of travel - the wheel
+  moves, the light on it does not - which is what the eye reads as a turn. A
+  step of the turn is the family's quickest duration and a whole turn is eight
+  of them, so the theme's motion scale retimes the wheel and reduce motion
+  stops it: the spokes stay drawn, still saying the page is busy, because a
+  wait that vanished with the animation would read as a page that had finished.
+  Hidden, it stops its timer; shown again, it starts one. The wheel is not
+  clickable and is not in the tab order.
 
 Bugfix
 - The segmented control's pill is a face standing on the row and not a hole cut

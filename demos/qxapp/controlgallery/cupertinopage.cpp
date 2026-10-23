@@ -4,6 +4,7 @@
  **/
 #include "cupertinopage.h"
 
+#include "qxcupertino/cupertinoactivityindicator.h"
 #include "qxcupertino/cupertinobutton.h"
 #include "qxcupertino/cupertinosegmentedcontrol.h"
 #include "qxcupertino/cupertinoslider.h"
@@ -79,4 +80,13 @@ CupertinoPage::CupertinoPage(QWidget *parent)
     // The three levels side by side: what a level is worth is only legible next
     // to the other two.
     addControl<QWidget>(QStringLiteral("cupertinoButton"), QStringLiteral("CupertinoButton"), buttonRow(this));
+
+    addSection(tr("Status"));
+
+    // The mark a page shows while it waits. There is no value in it and no way
+    // to stop it from here - a wait belongs to whatever is doing the waiting -
+    // so the row is the mark and nothing else.
+    addControl<CupertinoActivityIndicator>(QStringLiteral("cupertinoActivityIndicator"),
+                                           QStringLiteral("CupertinoActivityIndicator"),
+                                           new CupertinoActivityIndicator(this));
 }
