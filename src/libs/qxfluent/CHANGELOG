@@ -16,6 +16,10 @@ Feature
   is in force, the list opens below and turns above when below has no room,
   and it keeps inside the screen when neither side has room; the keyboard
   walks the list and answers with Enter.
+- `FluentProgressBar`, a track four tall that says how far along something
+  is: a fill that ends at the value over the range the application gave, or
+  a block that slides and only says the waiting has not stopped; asked for
+  less motion, the block holds still in view instead of vanishing.
 
 0.1.2
 ---
