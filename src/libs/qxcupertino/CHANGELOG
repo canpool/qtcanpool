@@ -105,6 +105,20 @@ Feature
   wait that vanished with the animation would read as a page that had finished.
   Hidden, it stops its timer; shown again, it starts one. The wheel is not
   clickable and is not in the tab order.
+- CupertinoTextField, a filled field with a clear button, and the search field
+  it becomes by asking for `Kind::Search`. The difference from an outlined
+  field is the whole of the likeness: this one is a wash of the system's grey
+  over the page, quiet while it is empty and out of use, and the focus is a
+  thin ring in the accent rather than a border that appears. The editing is
+  Qt's - a frameless QLineEdit sits inside the surface, so selection, IMEs,
+  undo and the clipboard are the toolkit's, and the control is the frame, the
+  focus ring and the marks at the edges. The clear button exists only while
+  there is text, because a mark that can only do nothing is worse than no mark;
+  Escape empties the field and Return is the application's, which is the one
+  keyboard rule the field has of its own. In the search kind the magnifier is
+  drawn at the leading edge and the text starts after it, because a search
+  field is a text field with a decoration that is part of it rather than one
+  with a button beside it.
 
 Bugfix
 - The segmented control's pill is a face standing on the row and not a hole cut

@@ -10,4 +10,5 @@ add_qtc_library(qxcupertino
     cupertinosegmentedcontrol.h cupertinosegmentedcontrol.cpp
     cupertinobutton.h cupertinobutton.cpp
     cupertinoactivityindicator.h cupertinoactivityindicator.cpp
+    cupertinotextfield.h cupertinotextfield.cpp
 )

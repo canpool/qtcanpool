@@ -9,7 +9,9 @@
 #include "qxcupertino/cupertinosegmentedcontrol.h"
 #include "qxcupertino/cupertinoslider.h"
 #include "qxcupertino/cupertinoswitch.h"
+#include "qxcupertino/cupertinotextfield.h"
 
+#include <QtGui/QIcon>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -51,6 +53,22 @@ CupertinoPage::CupertinoPage(QWidget *parent)
     : GalleryPage(QStringLiteral("cupertino"), parent)
 {
     addSection(tr("Input"));
+
+    // A filled field: a wash of the system's grey over the page rather than an
+    // outline drawn on it, with the clear button only while there is something
+    // to clear - so the row is given text.
+    auto *field = addControl<CupertinoTextField>(QStringLiteral("cupertinoTextField"),
+                                                 QStringLiteral("CupertinoTextField"), new CupertinoTextField(this));
+    field->setPlaceholderText(tr("Name"));
+    field->setText(tr("Cupertino"));
+
+    // The same control searching: the magnifier is part of what a search field
+    // is and not a button the page puts beside it.
+    auto *search =
+        addControl<CupertinoTextField>(QStringLiteral("cupertinoSearchField"),
+                                       QStringLiteral("CupertinoTextField::Search"), new CupertinoTextField(this));
+    search->setKind(CupertinoTextField::Kind::Search);
+    search->setPlaceholderText(tr("Search"));
 
     // The switch is the family's only control without a label: the capsule is
     // the whole of it, and the sentence beside it belongs to the page.
