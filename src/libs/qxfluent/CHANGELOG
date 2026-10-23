@@ -1,4 +1,4 @@
-Unreleased
+0.1.1
 ---
 Feature
 - FluentContentDialog, a question asked over a dimmed page. Qt's QDialog is a
@@ -50,7 +50,10 @@ Feature
   promise the button cannot keep. Space, Enter, Down and F4 open it, the
   chevron is drawn rather than typed so the theme can colour it and no
   assistive tool reads it as a character, and the text is the accessible name
-  until the application gives a better one.
+  until the application gives a better one. The face is turned by the medium
+  radius every command in a bar is drawn with, and both the hover wash and the
+  focus ring follow that turn - the ring sits at the middle of an edge and not
+  at a corner, which is the case a regression test holds it to.
 - FluentNumberBox, a number you can type and step. QSpinBox is a styled widget
   with the arrows stacked in a corner by a style that a Fluent application has
   to replace anyway; this one is drawn - a field that is an opening in the page

@@ -10,7 +10,7 @@ if (WITH_QXWINDOW)
 endif()
 
 add_qtc_library(qxfluent
-  VERSION 0.1.0
+  VERSION 0.1.1
   DEFINES QX_FLUENT_LIBRARY ${QXFLUENT_WINDOW_DEFINES}
   PUBLIC_DEPENDS qxcontrols ${QXFLUENT_WINDOW_DEPENDS} Qt5::Core Qt5::Gui Qt5::Widgets
   SOURCES

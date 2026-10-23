@@ -1,4 +1,4 @@
-Unreleased
+0.3.3
 ---
 Changed
 - dockcontainer.cpp is three files now, split by responsibility rather than by
@@ -39,6 +39,9 @@ Changed
   floating windows around it; and the events the window receives from outside -
   both eventFilter branches, showEvent and the four drag events - go to
   dockwindowevents.cpp. No line was rewritten on the way and no behaviour changed.
+  The X11 branch, which only the Linux legs compile, now spells out the two
+  includes it uses - `<QApplication>` and `<QWindow>` - in the file that uses
+  them, instead of reaching them through another header.
 - DockWindowPrivate joins the accessibility declaration in dockwindow_p.h, which
   is where a private header keeps what its implementation files share. It is still
   not part of the exported API: the public class reaches it through the same

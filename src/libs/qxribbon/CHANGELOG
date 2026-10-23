@@ -1,4 +1,4 @@
-Unreleased
+0.14.2
 ---
 Changed
 - ribbonbar.cpp is five files now, split by responsibility rather than by size:

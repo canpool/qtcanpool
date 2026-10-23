@@ -1,3 +1,68 @@
+4.7.1
+---
+- A patch that carries new controls, which is what a patch means in this
+  project: the five files that had grown past a thousand lines are split by
+  responsibility, six controls are added to the two control sets, and both
+  demonstration applications are rebuilt around them. Every library's public
+  API only gained declarations this time - not one signature changed, nothing
+  was removed and nothing was renamed - so the compatibility promise of the 4.7
+  series still holds and the project version is a patch
+- qxribbon 0.14.2. ribbonbar.cpp is five files now, cut by responsibility
+  rather than by size: the object model stays where it was, layout and the
+  events that ask for a re-layout get a file, everything the ribbon paints
+  itself gets another, the private state with its slots and the key tips get a
+  third, and the two attached Qt classes get the last. No line was rewritten on
+  the way and no behaviour changed; the public headers did not move at all. The
+  three file-level helpers that more than one of the new files needs now live in
+  ribbonbar_p.h as inline entities - that header is installed but not exported,
+  so it is not part of the API
+- qxdock 0.3.3. The four files of the dock are twelve now, each cut the same
+  way: drag and drop, the state pair, the events and the title bar side move out
+  of the file that held them, and the four private classes that used to be
+  defined inside a .cpp move verbatim into dockcontainer_p.h, dockwidget_p.h and
+  dockpanel_p.h. No line was rewritten and no behaviour changed, and the public
+  ABI is the same one: a private class reaches its public owner through the same
+  d-pointer it always did. The z-order counter stayed in the file of its only
+  user, because a stateful static in a header would give every translation unit
+  its own copy and the order would stop being one order
+- qxfluent 0.1.1. Four controls join the set. FluentNumberBox is a number you
+  can type and step, drawn rather than styled, with the value as the truth and
+  the text as a way of saying it. FluentDropDownButton is a command that is a
+  menu - the whole face opens it, chevron included - and FluentToggleSplitButton
+  is the same shape with the other promise: a press on the left does the
+  command, a press on the right opens the menu, and the button stays down while
+  the command is in effect. FluentContentDialog asks a question over a dimmed
+  page: the veil, the shadow and the rounded card are drawn here while the
+  window underneath is still a QDialog, because modality, Escape, exec() and a
+  result code are the toolkit's. Behaviour that changed in this library, each
+  its own entry in its CHANGELOG: FluentNavigationView scrolls when its
+  destinations do not fit instead of losing the ones past the room it has, and
+  FluentCommandBar centres its row in the height the bar was given and follows
+  the actions it draws, so a command that is disabled or renamed through its
+  QAction now says so
+- qxmaterial 0.1.1. Two controls join the set: MaterialTextField, the field that
+  keeps its label, and MaterialDialog, in the two shapes M3 gives a dialog - a
+  basic one that is a question with at most two answers, and a full-screen one
+  that is a place to work in. MaterialTopAppBar gained actionAt(), the public
+  answer to "what stands at this point" that the bar already knew privately; a
+  caption can now tell a press on its icons from a press on its face, which is
+  what a double click on the window and a right click on the system menu are
+  made of
+- qxcore 0.2.0, qxtheme 0.2.2, qxcontrols 0.1.0, qxwindow 0.3.2, qxplugin 0.3.0
+  and qxapp 0.2.1 keep the numbers they had. This is a conclusion, not an
+  omission: none of them was touched in this patch - qxcore and qxplugin have
+  been unchanged since 4.5.0, qxtheme and qxwindow finished their own work in
+  4.6.0 and 4.7.0, qxcontrols opened in 4.7.0 and nothing has reached it since,
+  and what 4.7.1 changed around qxapp lives in the demos and the theme sheets
+- The two demos are rebuilt around the controls rather than keeping a sample of
+  each. fluentdemo opens on a caption of its own and lists every Fluents control
+  as a page, with the window's pane, its settings page and its fold button
+  telling each other the same thing; materialdemo is a set of whole screens -
+  dashboard, album, pricing, sign in, blog, checkout and a catalogue of the
+  controls - each one a template that can be copied out. Neither change reaches
+  the libraries: a control that was wrong was fixed in its library, and the fix
+  is in the entry above
+
 4.7.0
 ---
 - Three libraries join the set, and the two of them that draw controls are two

@@ -78,7 +78,7 @@
 
 #define QX_FLUENT_VERSION_MAJOR 0
 #define QX_FLUENT_VERSION_MINOR 1
-#define QX_FLUENT_VERSION_PATCH 0
+#define QX_FLUENT_VERSION_PATCH 1
 /*
    QX_FLUENT_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_FLUENT_VERSION >= QT_VERSION_CHECK(0, 5, 3))

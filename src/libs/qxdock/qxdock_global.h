@@ -87,7 +87,7 @@
 
 #define QX_DOCK_VERSION_MAJOR 0
 #define QX_DOCK_VERSION_MINOR 3
-#define QX_DOCK_VERSION_PATCH 2
+#define QX_DOCK_VERSION_PATCH 3
 /*
    QX_DOCK_VERSION is (major << 16) + (minor << 8) + patch.
    can be used like #if (QX_DOCK_VERSION >= QT_VERSION_CHECK(0, 5, 3))
