@@ -15,10 +15,6 @@ QX_HARMONY_USE_NAMESPACE
 
 namespace
 {
-// The card's face is inset by the room its shadow needs, so the corner being
-// checked is measured from there.
-constexpr int kShadowRoom = 8;
-
 QColor pixel(QWidget *widget, int x, int y)
 {
     return widget->grab().toImage().pixelColor(x, y);
@@ -70,15 +66,20 @@ void tst_HarmonyCard::theCornerIsTheFamilys()
     QCOMPARE(card.sizeHint(), QSize(200, 120));
     card.resize(200, 120);
 
+    // The room the card reserves for its shadow is a number the card answers
+    // rather than one a caller copies: what a card carries has to stay inside
+    // the same line the face is inset to.
+    QCOMPARE(HarmonyCard::shadowRoom(), 8.0);
+    const int room = int(HarmonyCard::shadowRoom());
     const QColor face = card.palette().color(QPalette::Base);
     const qreal radius = HarmonyShape::radius(HarmonyShape::Radius::Large);
     QVERIFY(radius > 12.0);
 
     // Just inside the face's corner there is no face - the corner has been cut,
     // and what is there is the shadow under it.
-    QVERIFY(pixel(&card, kShadowRoom + 2, kShadowRoom + 2) != face);
+    QVERIFY(pixel(&card, room + 2, room + 2) != face);
     // Far enough in, the face is there.
-    QCOMPARE(pixel(&card, kShadowRoom + int(radius), kShadowRoom + int(radius)), face);
+    QCOMPARE(pixel(&card, room + int(radius), room + int(radius)), face);
 }
 
 /*! A card is a surface rather than a hole in the page: its face is the
@@ -105,7 +106,8 @@ void tst_HarmonyCard::aHigherLevelCastsMoreShadow()
     QCOMPARE(lifted.elevation(), HarmonyElevation::Level::Sheet);
 
     // The room the shadow is drawn in, under the face and beside it.
-    const QRect floor(20, 120 - kShadowRoom, 160, kShadowRoom + 4);
+    const int room = int(HarmonyCard::shadowRoom());
+    const QRect floor(20, 120 - room, 160, room + 4);
     QVERIFY(inkedPixels(&lifted, floor) > inkedPixels(&resting, floor));
 }
 

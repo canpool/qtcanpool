@@ -40,6 +40,11 @@ public:
      *  default, which is a card at rest on the page. */
     HarmonyElevation::Level elevation() const;
 
+    /*! The room the shadow is drawn in, on every edge of the widget: the face
+     *  is inset by it and anything the card carries has to stay inside the
+     *  same line, because that part of the rectangle is the shadow's. */
+    static qreal shadowRoom();
+
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
 

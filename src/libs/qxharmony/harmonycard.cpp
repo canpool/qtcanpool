@@ -43,6 +43,11 @@ HarmonyCard::HarmonyCard(QWidget *parent)
     return d_ptr->level;
 }
 
+qreal HarmonyCard::shadowRoom()
+{
+    return kShadowRoom;
+}
+
 void HarmonyCard::setElevation(HarmonyElevation::Level level)
 {
     if (d_ptr->level == level) {

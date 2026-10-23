@@ -75,7 +75,9 @@ Feature
   cut off at the edge. Held, the card dims - the state a press draws is a layer
   over the surface and not a scale, because a card that shrank under the hand
   would be moving the page under the user's finger, and this family moves things
-  when they arrive rather than when they are touched.
+  when they arrive rather than when they are touched. The room the shadow needs
+  is answered by `shadowRoom()`, so what a card carries can stay inside the face
+  without the caller copying a number out of a comment.
 - `HarmonyButton`, a word in a capsule at one of the three levels this family
   gives an action. `Primary` is the one action on a surface and carries the
   brand's blue at full strength with the word reversed out of it, `Secondary` is
