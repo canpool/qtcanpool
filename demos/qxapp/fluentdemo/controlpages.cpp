@@ -213,6 +213,25 @@ DemoPage *toggleSplitButtonPage(QWidget *parent)
     return page;
 }
 
+DemoPage *alertsPage(QWidget *parent)
+{
+    auto *page = new DemoPage(tr("Alerts"),
+                              tr("The three ways this application says something to the reader without "
+                                 "taking the window away from them."),
+                              parent);
+    page->addSection(tr("Which one to reach for"));
+
+    page->addNote(tr("A content dialog is the one that waits: it is for a question the application cannot "
+                     "answer on its own, and nothing else happens until it is answered."));
+    page->addNote(tr("An info bar is the one that stays: something has already happened and still matters "
+                     "after it has been read - a connection lost, a file only partly saved - and it goes "
+                     "when the reader says so."));
+    page->addNote(tr("A teaching tip points at what it is about, and is for the one thing the reader has not "
+                     "found yet."));
+    page->addStretch();
+    return page;
+}
+
 DemoPage *contentDialogPage(QWidget *parent)
 {
     auto *page = new DemoPage(tr("Content dialog"),
@@ -362,6 +381,25 @@ DemoPage *cardPage(QWidget *parent)
                               card(FluentElevation::Level::Depth8, tr("Lifted: a card that is hovered."), page),
                               card(FluentElevation::Level::Depth16, tr("A menu, or a flyout."), page)}));
 
+    page->addStretch();
+    return page;
+}
+
+DemoPage *statusPage(QWidget *parent)
+{
+    auto *page = new DemoPage(tr("Status"),
+                              tr("What a screen says about itself while nothing is being asked of the "
+                                 "reader: that something is running, that something has news, that there is "
+                                 "more here than the window shows."),
+                              parent);
+    page->addSection(tr("The smallest form that carries it"));
+
+    page->addNote(tr("A progress ring answers \"how long\" when the work cannot yet say: it says that "
+                     "something is running, which is already more than an empty pane says."));
+    page->addNote(tr("A badge is a count on the thing the count is about, and belongs on that control rather "
+                     "than in a corner of the window the reader has to go and look at."));
+    page->addNote(tr("A reveal is for the one line a control needs and the layout has no room for: it appears "
+                     "on the pointer, and nothing around it moves to make room."));
     page->addStretch();
     return page;
 }
@@ -590,13 +628,32 @@ QList<ControlPages::ControlGroup> ControlPages::build(QWidget *parent)
     // new one", since nothing in it is more than a patch old. What the four
     // newest are is a question Settings - or the release notes - answers better
     // than a pane whose order changes with every patch.
-    return {
-        {DemoPage::tr("Commands"),
-         {dropDownButtonPage(parent), toggleSplitButtonPage(parent), commandBarPage(parent),
-          breadcrumbBarPage(parent)}},
-        {DemoPage::tr("Input"), {numberBoxPage(parent), switchPage(parent), sliderPage(parent), ratingPage(parent)}},
-        {DemoPage::tr("Surfaces"), {cardPage(parent), expanderPage(parent), tabViewPage(parent)}},
-        {DemoPage::tr("Feedback"),
-         {contentDialogPage(parent), infoBarPage(parent), teachingTipPage(parent), progressRingPage(parent),
-          badgePage(parent), revealPage(parent)}}};
+    // Feedback is the one group that arrives in two parts, and it is the group
+    // that shows a pane can fold: a destination over other destinations is the
+    // only thing a fold has to act on, and a fold on the narrow window is only
+    // reachable from one. The part is a page of its own rather than a heading,
+    // because what is opened has to be somewhere to go.
+    const QString alerts = DemoPage::tr("Alerts");
+    const QString status = DemoPage::tr("Status");
+    return {{DemoPage::tr("Commands"),
+             {{dropDownButtonPage(parent), QString()},
+              {toggleSplitButtonPage(parent), QString()},
+              {commandBarPage(parent), QString()},
+              {breadcrumbBarPage(parent), QString()}}},
+            {DemoPage::tr("Input"),
+             {{numberBoxPage(parent), QString()},
+              {switchPage(parent), QString()},
+              {sliderPage(parent), QString()},
+              {ratingPage(parent), QString()}}},
+            {DemoPage::tr("Surfaces"),
+             {{cardPage(parent), QString()}, {expanderPage(parent), QString()}, {tabViewPage(parent), QString()}}},
+            {DemoPage::tr("Feedback"),
+             {{alertsPage(parent), QString()},
+              {contentDialogPage(parent), alerts},
+              {infoBarPage(parent), alerts},
+              {teachingTipPage(parent), alerts},
+              {statusPage(parent), QString()},
+              {progressRingPage(parent), status},
+              {badgePage(parent), status},
+              {revealPage(parent), status}}}};
 }

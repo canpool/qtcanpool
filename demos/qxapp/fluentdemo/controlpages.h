@@ -20,11 +20,15 @@ class QWidget;
  * rectangle; these pages are the other half - each control on a screen that
  * uses it for something, with a line saying what it is for.
  *
- * They arrive in groups because nineteen screens in a flat column is a list to
+ * They arrive in groups because a flat column of every screen is a list to
  * read rather than a set to steer by: a reader who came for a way to type a
  * number should not have to know that NumberBox is older than BreadcrumbBar to
  * find it. What the group is called is the pane's heading over it, and it is
  * decided here, beside the page, rather than in the window that lists them.
+ *
+ * A page may also stand under a part of its group rather than under the group
+ * itself, which is the one place these pages show a pane that folds: the part
+ * is a page of its own, so the row over the others opens as well as closes.
  *
  * A page here is built by one function and knows nothing about the window it
  * ends up in: what a page cannot do - fold the pane, apply a window material,
@@ -33,10 +37,22 @@ class QWidget;
  */
 namespace ControlPages
 {
+/*! A page the pane lists, and the category it is listed under when it has one.
+ *
+ *  A category is a page too - it is opened the way any other destination is -
+ *  so the row that carries it is a destination of the pane and not a heading:
+ *  what a heading cannot do is close. A page with an empty \c parent stands
+ *  directly under the group's heading, and a group may be all of one kind.
+ */
+struct ControlEntry {
+    DemoPage *page = Q_NULLPTR;
+    QString parent;
+};
+
 /*! A heading the pane puts over its destinations, and the pages under it. */
 struct ControlGroup {
     QString name;
-    QList<DemoPage *> pages;
+    QList<ControlEntry> pages;
 };
 
 /*! Builds every control page. The pages are parented to \a parent. */

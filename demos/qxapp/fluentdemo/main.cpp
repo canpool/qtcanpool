@@ -83,6 +83,9 @@ int main(int argc, char *argv[])
     QCommandLineOption pageOption(QStringLiteral("page"),
                                   QStringLiteral("Open destination <index> (0-based), as clicking it does."),
                                   QStringLiteral("index"));
+    QCommandLineOption searchOption(QStringLiteral("search"),
+                                    QStringLiteral("Narrow the pane to what contains <text>, as typing it does."),
+                                    QStringLiteral("text"));
     QCommandLineOption themeOption(QStringLiteral("theme"),
                                    QStringLiteral("Start with the theme <id>, for example accent-dark."),
                                    QStringLiteral("id"));
@@ -94,6 +97,7 @@ int main(int argc, char *argv[])
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
     parser.addOption(pageOption);
+    parser.addOption(searchOption);
     parser.addOption(themeOption);
     parser.addOption(langOption);
     parser.addOption(inspectOption);
@@ -148,6 +152,16 @@ int main(int argc, char *argv[])
     }
 
     qDebug() << "window build cost:" << cost.elapsed() << " ms";
+
+    if (parser.isSet(searchOption)) {
+        // Asked for before the destination is, because narrowing the pane
+        // rebuilds it and the index a destination has is a position in what
+        // the pane lists now.
+        const QString text = parser.value(searchOption);
+        QTimer::singleShot(0, &w, [&w, text]() {
+            w.setSearch(text);
+        });
+    }
 
     if (parser.isSet(pageOption)) {
         bool ok = false;

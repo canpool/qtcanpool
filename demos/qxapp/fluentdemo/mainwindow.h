@@ -64,6 +64,10 @@ public:
     void applyTheme(const QString &themeId);
     /*! Opens destination \a index, as clicking it in the pane does. */
     void setDestination(int index);
+    /*! Writes \a text into the caption's search field, as typing it does: what
+     *  the pane lists is the field's answer, so this is a way to show a
+     *  narrowed pane without a hand on the keyboard. */
+    void setSearch(const QString &text);
 
     /*!
      * Prints every widget in the window with its rectangle, in window
@@ -85,8 +89,13 @@ private:
         QIcon icon;
         /*! The heading this destination is listed under. Empty while it is one
          *  of the destinations that stand on their own - the screen the window
-         *  opens on is not one of nineteen, it is above them. */
+         *  opens on is not one of them, it is above them. */
         QString group;
+        /*! The destination this one is listed under, empty while it stands on
+         *  its own. A parent is a destination as well - pressing it opens what
+         *  is under it and goes there - so the pane lists nothing that cannot
+         *  be reached. */
+        QString parent;
         QWidget *page = Q_NULLPTR;
     };
 

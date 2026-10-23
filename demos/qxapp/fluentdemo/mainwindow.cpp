@@ -19,6 +19,8 @@
 #include "qxtheme/qxthememotion.h"
 #include "qxwindow/windowagentwidget.h"
 
+#include <QtCore/QHash>
+#include <QtCore/QSet>
 #include <QtCore/QSignalBlocker>
 #include <QtCore/QTextStream>
 #include <QtCore/QTimer>
@@ -133,6 +135,13 @@ void MainWindow::setDestination(int index)
     m_nav->setCurrentIndex(index);
 }
 
+void MainWindow::setSearch(const QString &text)
+{
+    // The field is written rather than the pane: what the pane lists is the
+    // field's answer, and a way in that skipped it would be a second search.
+    m_titleBar->searchField()->setText(text);
+}
+
 void MainWindow::printTree()
 {
     QTextStream out(stdout);
@@ -172,8 +181,9 @@ void MainWindow::createNavigation()
 
     // The pane holds one thing, and what it opens is a screen at a time: a
     // stacked widget is what turns "one room beside the pane" into "one of
-    // twenty", and it is also what keeps a screen's state while another is shown.
-    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap, const QString &group) {
+    // them", and it is also what keeps a screen's state while another is shown.
+    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap, const QString &group,
+                                const QString &parent) {
         Destination destination;
         // The name comes from the page and not from a second list beside it: a
         // pane that called a page one thing and the page another would be a
@@ -181,6 +191,7 @@ void MainWindow::createNavigation()
         destination.text = page->title();
         destination.icon = style()->standardIcon(pixmap);
         destination.group = group;
+        destination.parent = parent;
         destination.page = scrollable(page);
         m_stack->addWidget(destination.page);
         m_destinations.append(destination);
@@ -189,14 +200,14 @@ void MainWindow::createNavigation()
     HomePage *home = new HomePage(m_stack);
     m_settings = new SettingsPage(m_stack);
 
-    addPage(home, QStyle::SP_DirHomeIcon, QString());
+    addPage(home, QStyle::SP_DirHomeIcon, QString(), QString());
 
     QStringList titles;
     const QList<ControlPages::ControlGroup> groups = ControlPages::build(m_stack);
     for (const ControlPages::ControlGroup &group : groups) {
-        for (DemoPage *page : group.pages) {
-            titles.append(page->title());
-            addPage(page, QStyle::SP_FileIcon, group.name);
+        for (const ControlPages::ControlEntry &entry : group.pages) {
+            titles.append(entry.page->title());
+            addPage(entry.page, QStyle::SP_FileIcon, group.name, entry.parent);
         }
     }
     // The first control page is one destination past Home, and the index on the
@@ -210,7 +221,7 @@ void MainWindow::createNavigation()
     // about the window the controls are shown in, which is a different question
     // from what the controls are - so it gets a heading of its own rather than
     // being read as one more of the feedback controls.
-    addPage(m_settings, QStyle::SP_FileDialogDetailedView, DemoPage::tr("Application"));
+    addPage(m_settings, QStyle::SP_FileDialogDetailedView, DemoPage::tr("Application"), QString());
 
     m_nav->setContent(m_stack);
     // The pane is built by the same code that narrows it, so there is one place
@@ -422,24 +433,54 @@ void MainWindow::filterDestinations(const QString &needle)
 
     m_nav->clear();
     m_shown.clear();
+    // Which destinations carry others, and which of those have a page the
+    // search wants: a part is on the pane when the search named it or named
+    // something under it, because the page a search found has to be listed
+    // where it stands - under the part, not beside it as if the group had no
+    // parts at all.
+    QSet<QString> parts;
+    QSet<QString> wanted;
+    for (const Destination &destination : m_destinations) {
+        if (destination.parent.isEmpty()) {
+            continue;
+        }
+        parts.insert(destination.parent);
+        if (trimmed.isEmpty() || destination.text.contains(trimmed, Qt::CaseInsensitive)) {
+            wanted.insert(destination.parent);
+        }
+    }
+
     // The heading the pane is under, which is the pane's state rather than the
     // destination's: a group a search emptied leaves no heading behind, and a
     // search that keeps one destination of a group still says which group it
     // is - the heading is written when the listing changes, not once per group
     // in the table.
     QString listing;
+    QHash<QString, QAction *> opened;
     for (const Destination &destination : m_destinations) {
-        if (!trimmed.isEmpty() && !destination.text.contains(trimmed, Qt::CaseInsensitive)) {
+        const bool listed = trimmed.isEmpty() || destination.text.contains(trimmed, Qt::CaseInsensitive);
+        // A part is listed for what is under it as well as for itself, and it
+        // is a destination either way: pressing it is a journey to its own
+        // page that also opens or closes what stands under it.
+        const bool shown = parts.contains(destination.text) ? (listed || wanted.contains(destination.text)) : listed;
+        if (!shown) {
             continue;
         }
         if (destination.group != listing) {
             listing = destination.group;
+            opened.clear();
             if (!listing.isEmpty()) {
                 m_nav->addHeader(listing);
             }
         }
         m_shown.append(&destination);
-        m_nav->addItem(destination.text, destination.icon);
+        // A part is listed before its pages, so by the time one of them arrives
+        // the row to put it under exists: the pane is told where a destination
+        // stands, and it is the pane that decides what a parent does.
+        QAction *action = m_nav->addItem(destination.text, destination.icon, opened.value(destination.parent));
+        if (parts.contains(destination.text)) {
+            opened.insert(destination.text, action);
+        }
     }
 
     // A search that narrows the pane away from the screen in front must not
