@@ -15,6 +15,7 @@ class QAction;
 class QKeyEvent;
 class QMouseEvent;
 class QResizeEvent;
+class QWheelEvent;
 
 QX_MATERIAL_BEGIN_NAMESPACE
 
@@ -42,6 +43,12 @@ class MaterialNavigationRailPrivate;
  * fixed across and preferred down, which is what a parent layout is told; a
  * rail made wider than eighty by hand keeps its column in the middle of the
  * room rather than against the left edge of it.
+ *
+ * More destinations than the room holds does not make a wider rail - a rail is
+ * a column - so the column travels: the wheel moves it, the keyboard keeps the
+ * destination it walks to in sight, and what is above or below the room is
+ * clipped rather than drawn outside it. Nothing below the last destination is
+ * reachable by aiming at it, which is what "not in the room" has to mean.
  */
 class QX_MATERIAL_EXPORT MaterialNavigationRail : public QxControls::QxControl
 {
@@ -88,6 +95,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
     void leaveEvent(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
 

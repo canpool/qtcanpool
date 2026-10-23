@@ -9,6 +9,8 @@
 #include <QAccessible>
 #include <QAction>
 #include <QSignalSpy>
+#include <QWheelEvent>
+#include <QtWidgets/QApplication>
 #include <QWidget>
 
 QX_MATERIAL_USE_NAMESPACE
@@ -39,6 +41,24 @@ MaterialNavigationRail *railWith(const QStringList &labels)
     rail->resize(rail->sizeHint());
     return rail;
 }
+
+// One notch of the wheel, aimed at the middle of the rail. The constructor
+// this uses is the one both Qt 5 and Qt 6 give with a scroll phase, so the
+// same line builds on either.
+void wheelBy(MaterialNavigationRail *rail, int degrees)
+{
+    const QPointF center(rail->width() / 2.0, rail->height() / 2.0);
+    QWheelEvent wheel(center, center, QPoint(), QPoint(0, degrees), Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase,
+                      false);
+    QApplication::sendEvent(rail, &wheel);
+}
+
+// A room that holds three destinations and no more: one hundred and sixty-eight
+// pixels between the paddings, with six destinations in the column.
+void railOfThreeRooms(MaterialNavigationRail *rail)
+{
+    rail->setFixedSize(kRailWidth, kTopPadding + 3 * kItemHeight + kTopPadding);
+}
 }   // namespace
 
 class tst_MaterialNavigationRail : public QObject
@@ -53,6 +73,9 @@ private slots:
     void theColumnKeepsItsWidthAndStaysInTheMiddle();
     void aDestinationNobodyCanUseIsNotPutInForce();
     void theKeyboardWalksTheColumn();
+    void destinationsPastTheRoomAreNotReachableUntilTheColumnTravels();
+    void theKeyboardKeepsWhatItWalksToInSight();
+    void aRoomThatHoldsEverythingDoesNotTravel();
     void whatAnAssistiveToolReads();
 };
 
@@ -163,6 +186,72 @@ void tst_MaterialNavigationRail::theKeyboardWalksTheColumn()
     // The top is a wall.
     QTest::keyClick(rail.get(), Qt::Key_Up);
     QCOMPARE(rail->currentIndex(), 0);
+}
+
+/*! More destinations than the room holds does not make a wider rail: the
+ *  column travels. What has travelled out of the room is clipped, and it is
+ *  also not something a pointer can reach - "not in the room" has to mean not
+ *  on the rail, or the rail would answer a press aimed at the header or the
+ *  padding with a destination that is not there. */
+void tst_MaterialNavigationRail::destinationsPastTheRoomAreNotReachableUntilTheColumnTravels()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(
+        railWith({QStringLiteral("Home"), QStringLiteral("Mail"), QStringLiteral("Notes"), QStringLiteral("Clock"),
+                  QStringLiteral("Files"), QStringLiteral("Drone")}));
+    railOfThreeRooms(rail.get());
+
+    // Under the room there is no destination, even where the fourth one's
+    // rectangle would reach if it were drawn: a press there is a press on
+    // nothing.
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier, QPoint(kRailWidth / 2, rail->height() - 6));
+    QCOMPARE(rail->currentIndex(), 0);
+
+    // A notch of the wheel is a destination. One notch down, the fourth stands
+    // where the band's middle is, and it is the one that answers.
+    wheelBy(rail.get(), -120);
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier,
+                      QPoint(kRailWidth / 2, kTopPadding + 2 * kItemHeight + kItemHeight / 2));
+    QCOMPARE(rail->currentIndex(), 3);
+}
+
+/*! Walking the column with the keyboard ends on a destination the walker can
+ *  see: putting one in force is saying "here", and "here" the reader has to be
+ *  able to look at. The column travels to where the keyboard went. */
+void tst_MaterialNavigationRail::theKeyboardKeepsWhatItWalksToInSight()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(
+        railWith({QStringLiteral("Home"), QStringLiteral("Mail"), QStringLiteral("Notes"), QStringLiteral("Clock"),
+                  QStringLiteral("Files"), QStringLiteral("Drone")}));
+    railOfThreeRooms(rail.get());
+
+    for (int i = 0; i < 5; ++i) {
+        QTest::keyClick(rail.get(), Qt::Key_Down);
+    }
+    QCOMPARE(rail->currentIndex(), 5);
+
+    // The last one is in sight: the band's middle answers to it.
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier,
+                      QPoint(kRailWidth / 2, kTopPadding + 2 * kItemHeight + kItemHeight / 2));
+    QCOMPARE(rail->currentIndex(), 5);
+
+    // And the top of the room now shows what travelled up: the fourth stands
+    // where the first was laid out.
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier,
+                      QPoint(kRailWidth / 2, kTopPadding + kItemHeight / 2));
+    QCOMPARE(rail->currentIndex(), 3);
+}
+
+/*! A rail whose column fits does not travel: the wheel is not the rail's to
+ *  answer with, and the column stands where it was laid out. */
+void tst_MaterialNavigationRail::aRoomThatHoldsEverythingDoesNotTravel()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(railWith({QStringLiteral("Home"), QStringLiteral("Mail")}));
+
+    wheelBy(rail.get(), -120);
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(0));
+    QCOMPARE(rail->currentIndex(), 0);
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(1));
+    QCOMPARE(rail->currentIndex(), 1);
 }
 
 void tst_MaterialNavigationRail::whatAnAssistiveToolReads()

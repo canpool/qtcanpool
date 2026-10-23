@@ -10,6 +10,15 @@ Bugfix
   and for the keyboard only while the bar holds it; the keyboard's place is
   found the first time a key arrives, which is soon enough for a ring that is
   only true once a key has arrived.
+- Destinations past the rail's room were unreachable by eye and reachable by
+  accident at the same time: the column was laid out to its full extent and
+  clipped by the window only, so the destinations below the bottom padding were
+  invisible while their rectangles still caught a press aimed at the padding.
+  The column now travels inside the room it was given - the wheel moves it a
+  destination a notch, the keyboard keeps what it walks to in sight, putting a
+  destination in force brings it into view, and what stands outside the room is
+  clipped and beyond the pointer alike. A rail whose column fits does not
+  travel, and the wheel it is not owed passes on.
 
 0.1.1
 ---

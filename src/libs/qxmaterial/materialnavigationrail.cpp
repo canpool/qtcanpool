@@ -12,6 +12,7 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QResizeEvent>
+#include <QtGui/QWheelEvent>
 #include <QtWidgets/QSizePolicy>
 #include <QtWidgets/QWidget>
 // QAction is in Widgets on Qt 5 and in Gui on Qt 6, so it is asked for without
@@ -59,6 +60,9 @@ public:
     int current = -1;
     int focused = -1;
     QWidget *header = Q_NULLPTR;
+    /*! How far the column has travelled up out of the room it was given, in
+     *  pixels of the column's own extent. Zero while everything fits. */
+    qreal offset = 0.0;
 
     qreal columnLeft() const;
     qreal itemsTop() const;
@@ -67,6 +71,14 @@ public:
     int itemAt(const QPointF &pos) const;
     QRectF indicatorOf(const QRectF &item) const;
     QSize headerSize() const;
+    /*! The band of the rail the column lives in: under the header, over the
+     *  bottom padding. */
+    qreal viewportTop() const;
+    qreal viewportBottom() const;
+    qreal maxOffset() const;
+    void clampOffset();
+    /*! Moves the column so destination \a index stands whole inside the band. */
+    void ensureVisible(int index);
 };
 
 /*! The room the header takes. A widget that has been given a fixed size still
@@ -107,7 +119,48 @@ qreal MaterialNavigationRailPrivate::itemsTop() const
 
 QRectF MaterialNavigationRailPrivate::itemRect(int index) const
 {
-    return QRectF(columnLeft(), itemsTop() + qreal(index) * kItemHeight, kRailWidth, kItemHeight);
+    return QRectF(columnLeft(), itemsTop() + qreal(index) * kItemHeight - offset, kRailWidth, kItemHeight);
+}
+
+/*! Where the column's room starts and ends. The room is what is left between
+ *  the header and the bottom padding, and it is what clips the column: a
+ *  destination drawn past it is not on the rail, so it must not be one a
+ *  pointer can reach either. */
+qreal MaterialNavigationRailPrivate::viewportTop() const
+{
+    return itemsTop();
+}
+
+qreal MaterialNavigationRailPrivate::viewportBottom() const
+{
+    Q_Q(const MaterialNavigationRail);
+    return qMax(viewportTop(), qreal(q->height()) - kTopPadding);
+}
+
+qreal MaterialNavigationRailPrivate::maxOffset() const
+{
+    const qreal content = qreal(items.count()) * kItemHeight;
+    return qMax(0.0, content - (viewportBottom() - viewportTop()));
+}
+
+void MaterialNavigationRailPrivate::clampOffset()
+{
+    offset = qBound(0.0, offset, maxOffset());
+}
+
+void MaterialNavigationRailPrivate::ensureVisible(int index)
+{
+    if (index < 0 || index >= items.count()) {
+        return;
+    }
+    const qreal top = qreal(index) * kItemHeight;
+    const qreal room = viewportBottom() - viewportTop();
+    if (top < offset) {
+        offset = top;
+    } else if (top + kItemHeight > offset + room) {
+        offset = top + kItemHeight - room;
+    }
+    clampOffset();
 }
 
 void MaterialNavigationRailPrivate::layoutHeader()
@@ -127,6 +180,12 @@ QRectF MaterialNavigationRailPrivate::indicatorOf(const QRectF &item) const
 
 int MaterialNavigationRailPrivate::itemAt(const QPointF &pos) const
 {
+    // Outside the band there is no destination to hit, even where a clipped
+    // one's rectangle would say otherwise: a press on the header is a press on
+    // the header, and a press under the column is a press on nothing.
+    if (pos.y() < viewportTop() || pos.y() > viewportBottom()) {
+        return -1;
+    }
     for (int i = 0; i < items.count(); ++i) {
         if (itemRect(i).contains(pos)) {
             return i;
@@ -185,6 +244,7 @@ void MaterialNavigationRail::removeDestination(QAction *action)
             d_ptr->focused = d_ptr->items.isEmpty() ? -1 : d_ptr->items.count() - 1;
         }
         d_ptr->hovered = -1;
+        d_ptr->clampOffset();
         delete action;
         updateGeometry();
         update();
@@ -202,6 +262,7 @@ void MaterialNavigationRail::clear()
     d_ptr->current = -1;
     d_ptr->focused = -1;
     d_ptr->hovered = -1;
+    d_ptr->offset = 0.0;
     for (QAction *action : items) {
         delete action;
     }
@@ -265,6 +326,10 @@ void MaterialNavigationRail::setCurrentIndex(int index)
         return;
     }
     d_ptr->current = index;
+    // The destination in force is of no use where it cannot be seen: putting
+    // one in force is saying "here", and "here" the reader has to be able to
+    // look at. The column travels to it.
+    d_ptr->ensureVisible(index);
     update();
     Q_EMIT currentIndexChanged(index);
     Q_EMIT currentDestinationChanged(currentDestination());
@@ -313,6 +378,12 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
     const QColor accent = accentColor();
     const qreal radius = MaterialShape::radius(MaterialShape::Radius::Circular);
 
+    // The column is clipped to the room it was given: what has travelled out
+    // of it is not on the rail, and drawing it would put a destination where
+    // the header or the padding stands.
+    painter->save();
+    painter->setClipRect(
+        QRectF(0.0, d_ptr->viewportTop(), qreal(width()), d_ptr->viewportBottom() - d_ptr->viewportTop()));
     for (int i = 0; i < d_ptr->items.count(); ++i) {
         const QRectF item = d_ptr->itemRect(i);
         if (!item.intersects(rect())) {
@@ -353,12 +424,15 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
             painter->drawText(labelRect, Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine, text);
         }
     }
-    painter->setOpacity(1.0);
+    painter->restore();
 }
 
 void MaterialNavigationRail::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
+    // A taller room takes the travel back; a shorter one asks for more. Either
+    // way the column must stand where the room now allows.
+    d_ptr->clampOffset();
     d_ptr->layoutHeader();
     QxControls::QxControl::resizeEvent(event);
 }
@@ -390,6 +464,26 @@ void MaterialNavigationRail::mouseMoveEvent(QMouseEvent *event)
         d_ptr->hovered = hovered;
         update();
     }
+}
+
+void MaterialNavigationRail::wheelEvent(QWheelEvent *event)
+{
+    // A notch of the wheel is a destination: the column moves in whole steps
+    // of the measure it is laid out with, which keeps "where did it go" a
+    // question with a whole-number answer.
+    if (d_ptr->maxOffset() <= 0.0) {
+        QxControls::QxControl::wheelEvent(event);
+        return;
+    }
+    const int delta = event->angleDelta().y();
+    if (delta == 0) {
+        QxControls::QxControl::wheelEvent(event);
+        return;
+    }
+    d_ptr->offset -= delta > 0 ? kItemHeight : -kItemHeight;
+    d_ptr->clampOffset();
+    update();
+    event->accept();
 }
 
 void MaterialNavigationRail::leaveEvent(QEvent *event)
