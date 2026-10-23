@@ -121,6 +121,21 @@ add_qtc_test(tst_qxmaterial
         ${QXMATERIAL_TEST_SOURCES}
 )
 
+# ------------------------------------------------------------ qxcupertino --
+# One suite per control library, kept apart from the others on purpose: a test
+# here may only build what qxcupertino builds on, so a family that starts
+# leaning on another family's shapes fails to link rather than passing quietly.
+file(GLOB QXCUPERTINO_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxcupertino/auto/tst_*.cpp")
+add_qtc_test(tst_qxcupertino
+    DEPENDS qxcupertino
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxcupertino/auto/main.cpp"
+        ${QXCUPERTINO_TEST_SOURCES}
+)
+
 # ------------------------------------------------------------------- qxapp --
 # qxapp is the application framework, so its test links the whole stack: the
 # shell builds a ribbon window with a dock area and a theme.

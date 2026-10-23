@@ -4,6 +4,7 @@ option(WITH_QXTHEME "Build qxtheme library" ON)
 option(WITH_QXCONTROLS "Build qxcontrols library" ON)
 option(WITH_QXFLUENT "Build qxfluent library" ON)
 option(WITH_QXMATERIAL "Build qxmaterial library" ON)
+option(WITH_QXCUPERTINO "Build qxcupertino library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
@@ -55,6 +56,16 @@ endif()
 # mechanism, and those live in qxcontrols.
 if (WITH_QXMATERIAL AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxmaterial)
+endif()
+
+# qxcupertino is a third control library on the same base and with the same
+# rules: it knows qxcontrols and qxtheme, and it knows nothing of the other
+# families - not their names, not their tokens, not their shapes. What it adds
+# is a different answer to the same questions, which is why nothing two
+# families both use is a form; the forms stay in each family and only the
+# mechanisms live in qxcontrols.
+if (WITH_QXCUPERTINO AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
+  add_subdirectory(qxcupertino)
 endif()
 
 if (WITH_QXRIBBON)
