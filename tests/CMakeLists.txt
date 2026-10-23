@@ -136,6 +136,18 @@ add_qtc_test(tst_qxcupertino
         ${QXCUPERTINO_TEST_SOURCES}
 )
 
+# -------------------------------------------------------------- qxharmony --
+file(GLOB QXHARMONY_TEST_SOURCES CONFIGURE_DEPENDS "${QTCANPOOL_TESTS_DIR}/qxharmony/auto/tst_*.cpp")
+add_qtc_test(tst_qxharmony
+    DEPENDS qxharmony
+    INCLUDES "${QTCANPOOL_TESTS_DIR}/common"
+    SOURCES
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.cpp"
+        "${QTCANPOOL_TESTS_DIR}/common/tst_global.h"
+        "${QTCANPOOL_TESTS_DIR}/qxharmony/auto/main.cpp"
+        ${QXHARMONY_TEST_SOURCES}
+)
+
 # ------------------------------------------------------------------- qxapp --
 # qxapp is the application framework, so its test links the whole stack: the
 # shell builds a ribbon window with a dock area and a theme.

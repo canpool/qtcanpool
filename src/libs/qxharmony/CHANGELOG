@@ -1,0 +1,29 @@
+Unreleased
+---
+Feature
+- The library opens, with the family's five scales and no control yet. The
+  vocabulary its controls will share, and where it differs from the families
+  beside it:
+
+    * the corners are large enough to be the shape rather than a softened edge:
+      a control is eight, a card sixteen, a layer over the page twenty-four;
+    * the ramp carries weight twice - every step is set at a medium weight
+      because text here leans forward, and the strong cut is the step above that
+      at the same size. No typeface is shipped with it: the family's own is a
+      file, and carrying one would put a licence and a dozen megabytes into
+      every application that draws a switch;
+    * a surface stands up rather than being lit - the spread is tighter and the
+      darkness higher than in a family that draws a lift as light. That is a
+      choice, not an approximation: the same lift drawn two ways;
+    * the motion has a curve the other families do not: the springy one arrives
+      with a little more than it needs and settles back, and it belongs to the
+      things that land rather than to anything that merely changes colour;
+    * the semantic colours are the system's, in both of the two cuts they come
+      in. They are here rather than on the palette because they are not the
+      theme's to choose - let the brand's blue follow a theme's accent and it is
+      a different design language wearing these shapes.
+
+  What it does not carry is the other half of the likeness: the platform's own
+  materials. Those cannot be verified on a machine that does not run the
+  platform, so they are not attempted, and a shape that is close without them is
+  the goal rather than a shortfall to be filed later.

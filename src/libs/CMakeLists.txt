@@ -5,6 +5,7 @@ option(WITH_QXCONTROLS "Build qxcontrols library" ON)
 option(WITH_QXFLUENT "Build qxfluent library" ON)
 option(WITH_QXMATERIAL "Build qxmaterial library" ON)
 option(WITH_QXCUPERTINO "Build qxcupertino library" ON)
+option(WITH_QXHARMONY "Build qxharmony library" ON)
 option(WITH_QXRIBBON "Build qxribbon library" ON)
 option(WITH_QXDOCK   "Build qxdock library" ON)
 option(WITH_QXWINDOW "Build qxwindow library" ON)
@@ -66,6 +67,14 @@ endif()
 # mechanisms live in qxcontrols.
 if (WITH_QXCUPERTINO AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
   add_subdirectory(qxcupertino)
+endif()
+
+# qxharmony is the fourth, on the same base and under the same rule: it reads
+# qxcontrols and qxtheme and knows no other family. Four families answering the
+# same questions four ways is the point - what they share is a mechanism, and
+# the mechanisms are in qxcontrols; every form stays home.
+if (WITH_QXHARMONY AND WITH_QXCONTROLS AND WITH_QXTHEME AND WITH_QXCORE)
+  add_subdirectory(qxharmony)
 endif()
 
 if (WITH_QXRIBBON)
