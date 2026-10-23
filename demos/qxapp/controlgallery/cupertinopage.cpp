@@ -114,6 +114,17 @@ CupertinoPage::CupertinoPage(QWidget *parent)
         dialog.setMessage(tr("The item goes and cannot come back."));
         dialog.addAction(tr("Delete"), CupertinoAlertDialog::ActionRole::Destructive);
         dialog.addAction(tr("Cancel"), CupertinoAlertDialog::ActionRole::Cancel);
+        // The alert asks and the page answers - the same bargain the Material
+        // dialog row makes. An alert says which answer was pressed and nothing
+        // else, so without this the two answers are cells that light up and
+        // leave the question standing: a question nobody can be done with.
+        connect(&dialog, &CupertinoAlertDialog::actionChosen, &dialog, [&dialog](int index) {
+            if (dialog.actionRole(index) == CupertinoAlertDialog::ActionRole::Cancel) {
+                dialog.reject();
+            } else {
+                dialog.accept();
+            }
+        });
         dialog.exec();
     });
 
