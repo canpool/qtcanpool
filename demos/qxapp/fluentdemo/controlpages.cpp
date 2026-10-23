@@ -633,27 +633,35 @@ QList<ControlPages::ControlGroup> ControlPages::build(QWidget *parent)
     // only thing a fold has to act on, and a fold on the narrow window is only
     // reachable from one. The part is a page of its own rather than a heading,
     // because what is opened has to be somewhere to go.
+    // The glyph beside each name says what the page is about rather than which
+    // patch added it: a column of identical marks is a column a reader has to
+    // read, and a pane whose marks say nothing is spending the width words
+    // would have used. The two parts carry the mark of what is under them -
+    // a warning sign over the alerts, a dial over the status pages - because a
+    // part is a destination too and is listed like one.
     const QString alerts = DemoPage::tr("Alerts");
     const QString status = DemoPage::tr("Status");
     return {{DemoPage::tr("Commands"),
-             {{dropDownButtonPage(parent), QString()},
-              {toggleSplitButtonPage(parent), QString()},
-              {commandBarPage(parent), QString()},
-              {breadcrumbBarPage(parent), QString()}}},
+             {{dropDownButtonPage(parent), QString(), QStringLiteral("square-chevron-down")},
+              {toggleSplitButtonPage(parent), QString(), QStringLiteral("arrows-split-2")},
+              {commandBarPage(parent), QString(), QStringLiteral("grid-dots")},
+              {breadcrumbBarPage(parent), QString(), QStringLiteral("route")}}},
             {DemoPage::tr("Input"),
-             {{numberBoxPage(parent), QString()},
-              {switchPage(parent), QString()},
-              {sliderPage(parent), QString()},
-              {ratingPage(parent), QString()}}},
+             {{numberBoxPage(parent), QString(), QStringLiteral("arrows-up-down")},
+              {switchPage(parent), QString(), QStringLiteral("toggle-left")},
+              {sliderPage(parent), QString(), QStringLiteral("adjustments")},
+              {ratingPage(parent), QString(), QStringLiteral("star")}}},
             {DemoPage::tr("Surfaces"),
-             {{cardPage(parent), QString()}, {expanderPage(parent), QString()}, {tabViewPage(parent), QString()}}},
+             {{cardPage(parent), QString(), QStringLiteral("layout-cards")},
+              {expanderPage(parent), QString(), QStringLiteral("chevrons-down")},
+              {tabViewPage(parent), QString(), QStringLiteral("tabs")}}},
             {DemoPage::tr("Feedback"),
-             {{alertsPage(parent), QString()},
-              {contentDialogPage(parent), alerts},
-              {infoBarPage(parent), alerts},
-              {teachingTipPage(parent), alerts},
-              {statusPage(parent), QString()},
-              {progressRingPage(parent), status},
-              {badgePage(parent), status},
-              {revealPage(parent), status}}}};
+             {{alertsPage(parent), QString(), QStringLiteral("alert-triangle")},
+              {contentDialogPage(parent), alerts, QStringLiteral("app-window")},
+              {infoBarPage(parent), alerts, QStringLiteral("info-circle")},
+              {teachingTipPage(parent), alerts, QStringLiteral("bulb")},
+              {statusPage(parent), QString(), QStringLiteral("gauge")},
+              {progressRingPage(parent), status, QStringLiteral("progress")},
+              {badgePage(parent), status, QStringLiteral("bell")},
+              {revealPage(parent), status, QStringLiteral("sparkles")}}}};
 }

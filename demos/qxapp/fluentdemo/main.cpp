@@ -94,6 +94,8 @@ int main(int argc, char *argv[])
                                   QStringLiteral("language"));
     QCommandLineOption inspectOption(QStringLiteral("inspect"),
                                      QStringLiteral("Print every widget with its rectangle and exit."));
+    QCommandLineOption foldOption(QStringLiteral("fold"),
+                                  QStringLiteral("Fold the pane to its icons, as the caption's command does."));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
     parser.addOption(pageOption);
@@ -101,6 +103,7 @@ int main(int argc, char *argv[])
     parser.addOption(themeOption);
     parser.addOption(langOption);
     parser.addOption(inspectOption);
+    parser.addOption(foldOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
     // switches (-platform, -style, ...), which the parser would reject as
@@ -171,6 +174,15 @@ int main(int argc, char *argv[])
                 w.setDestination(index);
             });
         }
+    }
+
+    if (parser.isSet(foldOption)) {
+        // The pane's other width, which is the shape the pane is most itself:
+        // asked for after the destination, so the capture shows a folded pane
+        // with the screen it opens still in front.
+        QTimer::singleShot(0, &w, [&w]() {
+            w.setPaneOpen(false);
+        });
     }
 
     if (parser.isSet(themeOption)) {

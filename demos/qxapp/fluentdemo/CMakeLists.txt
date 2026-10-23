@@ -32,6 +32,10 @@ add_qtc_executable(FluentDemo
     controlpages.cpp controlpages.h
     homepage.cpp homepage.h
     settingspage.cpp settingspage.h
+    # The glyphs the pane puts beside its destinations, drawn in the pane's ink:
+    # one svg set, painted per theme (see icons.h) rather than shipped twice.
+    icons.cpp icons.h
+    fluentdemo.qrc
     # The style sheets the themes the command bar offers are read from
     # (:/themes/*.css) - the same bundle the other demos offer.
     ${CMAKE_SOURCE_DIR}/res/themes.qrc

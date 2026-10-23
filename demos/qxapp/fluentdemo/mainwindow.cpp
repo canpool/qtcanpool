@@ -7,6 +7,7 @@
 #include "controlpages.h"
 #include "demopage.h"
 #include "homepage.h"
+#include "icons.h"
 #include "settingspage.h"
 #include "titlebar.h"
 
@@ -32,7 +33,6 @@
 #include <QScrollArea>
 #include <QStackedWidget>
 #include <QStatusBar>
-#include <QStyle>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -135,6 +135,14 @@ void MainWindow::setDestination(int index)
     m_nav->setCurrentIndex(index);
 }
 
+void MainWindow::setPaneOpen(bool open)
+{
+    // The pane is the one that knows what a width means, and it says so when it
+    // changes: the caption's command and the switch on Settings hear it from
+    // there, so a caller that is neither does not have to tell them as well.
+    m_nav->setPaneOpen(open);
+}
+
 void MainWindow::setSearch(const QString &text)
 {
     // The field is written rather than the pane: what the pane lists is the
@@ -182,14 +190,13 @@ void MainWindow::createNavigation()
     // The pane holds one thing, and what it opens is a screen at a time: a
     // stacked widget is what turns "one room beside the pane" into "one of
     // them", and it is also what keeps a screen's state while another is shown.
-    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap, const QString &group,
-                                const QString &parent) {
+    const auto addPage = [this](DemoPage *page, const QString &icon, const QString &group, const QString &parent) {
         Destination destination;
         // The name comes from the page and not from a second list beside it: a
         // pane that called a page one thing and the page another would be a
         // demo of two names for one control.
         destination.text = page->title();
-        destination.icon = style()->standardIcon(pixmap);
+        destination.icon = icon;
         destination.group = group;
         destination.parent = parent;
         destination.page = scrollable(page);
@@ -200,14 +207,14 @@ void MainWindow::createNavigation()
     HomePage *home = new HomePage(m_stack);
     m_settings = new SettingsPage(m_stack);
 
-    addPage(home, QStyle::SP_DirHomeIcon, QString(), QString());
+    addPage(home, QStringLiteral("home"), QString(), QString());
 
     QStringList titles;
     const QList<ControlPages::ControlGroup> groups = ControlPages::build(m_stack);
     for (const ControlPages::ControlGroup &group : groups) {
         for (const ControlPages::ControlEntry &entry : group.pages) {
             titles.append(entry.page->title());
-            addPage(entry.page, QStyle::SP_FileIcon, group.name, entry.parent);
+            addPage(entry.page, entry.icon, group.name, entry.parent);
         }
     }
     // The first control page is one destination past Home, and the index on the
@@ -221,7 +228,7 @@ void MainWindow::createNavigation()
     // about the window the controls are shown in, which is a different question
     // from what the controls are - so it gets a heading of its own rather than
     // being read as one more of the feedback controls.
-    addPage(m_settings, QStyle::SP_FileDialogDetailedView, DemoPage::tr("Application"), QString());
+    addPage(m_settings, QStringLiteral("settings"), DemoPage::tr("Application"), QString());
 
     m_nav->setContent(m_stack);
     // The pane is built by the same code that narrows it, so there is one place
@@ -397,6 +404,13 @@ void MainWindow::createConnections()
 
     connect(m_titleBar, &TitleBar::searchTextChanged, this, &MainWindow::filterDestinations);
 
+    // A theme is a palette and a set of sheets, and the pane's icons are
+    // neither: they are pictures taken of the ink the palette gave at the time,
+    // so they are taken again when the palette it came from is replaced.
+    connect(QxThemeManager::instance(), &QxThemeManager::themeChanged, this, [this](const QString &) {
+        redrawIcons();
+    });
+
     connect(m_settings, &SettingsPage::paneOpenChanged, this, [this](bool open) {
         m_nav->setPaneOpen(open);
     });
@@ -433,6 +447,12 @@ void MainWindow::filterDestinations(const QString &needle)
 
     m_nav->clear();
     m_shown.clear();
+    // Emptying the pane destroys the rows it was showing, so what each
+    // destination remembers about its row is a loan that has just been called
+    // in: a pointer kept past this would be to a row the pane has deleted.
+    for (Destination &destination : m_destinations) {
+        destination.action = Q_NULLPTR;
+    }
     // Which destinations carry others, and which of those have a page the
     // search wants: a part is on the pane when the search named it or named
     // something under it, because the page a search found has to be listed
@@ -457,7 +477,7 @@ void MainWindow::filterDestinations(const QString &needle)
     // in the table.
     QString listing;
     QHash<QString, QAction *> opened;
-    for (const Destination &destination : m_destinations) {
+    for (Destination &destination : m_destinations) {
         const bool listed = trimmed.isEmpty() || destination.text.contains(trimmed, Qt::CaseInsensitive);
         // A part is listed for what is under it as well as for itself, and it
         // is a destination either way: pressing it is a journey to its own
@@ -477,7 +497,12 @@ void MainWindow::filterDestinations(const QString &needle)
         // A part is listed before its pages, so by the time one of them arrives
         // the row to put it under exists: the pane is told where a destination
         // stands, and it is the pane that decides what a parent does.
-        QAction *action = m_nav->addItem(destination.text, destination.icon, opened.value(destination.parent));
+        // The glyph is painted here rather than kept with the destination: the
+        // ink is the theme's, and a pane made again - by a search, or by a
+        // theme change - has to be made in the ink of the theme in force.
+        QAction *action = m_nav->addItem(destination.text, Icons::named(destination.icon, m_nav->textColor()),
+                                         opened.value(destination.parent));
+        destination.action = action;
         if (parts.contains(destination.text)) {
             opened.insert(destination.text, action);
         }
@@ -501,5 +526,19 @@ void MainWindow::filterDestinations(const QString &needle)
     }
     if (index >= 0) {
         m_nav->setCurrentIndex(index);
+    }
+}
+
+void MainWindow::redrawIcons()
+{
+    // A stroke glyph is a shape in a colour, and the colour is baked when the
+    // picture is made - so a theme change is answered by making the pictures
+    // again, not by asking the pane to repaint. The rows are left alone: a
+    // theme changes what a pane looks like, not which parts are open.
+    const QColor ink = m_nav->textColor();
+    for (Destination &destination : m_destinations) {
+        if (destination.action) {
+            destination.action->setIcon(Icons::named(destination.icon, ink));
+        }
     }
 }

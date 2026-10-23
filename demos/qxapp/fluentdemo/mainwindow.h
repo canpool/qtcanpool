@@ -6,7 +6,6 @@
 #define MAINWINDOW_H
 
 #include <QtCore/QVector>
-#include <QtGui/QIcon>
 #include <QtWidgets/QMainWindow>
 
 #include "qxfluent/qxfluent_global.h"
@@ -64,6 +63,9 @@ public:
     void applyTheme(const QString &themeId);
     /*! Opens destination \a index, as clicking it in the pane does. */
     void setDestination(int index);
+    /*! Opens the pane to its full width (\a open) or folds it to its icons, as
+     *  the caption's command and the switch on Settings do. */
+    void setPaneOpen(bool open);
     /*! Writes \a text into the caption's search field, as typing it does: what
      *  the pane lists is the field's answer, so this is a way to show a
      *  narrowed pane without a hand on the keyboard. */
@@ -86,7 +88,11 @@ private:
      *  pane, and the screen it opens. */
     struct Destination {
         QString text;
-        QIcon icon;
+        /*! The glyph the pane draws beside the name, named rather than held as
+         *  a picture: the picture has to be painted in the ink of the page it
+         *  lands on, and that ink is only known when the row is made - and
+         *  again when the theme changes. */
+        QString icon;
         /*! The heading this destination is listed under. Empty while it is one
          *  of the destinations that stand on their own - the screen the window
          *  opens on is not one of them, it is above them. */
@@ -97,6 +103,12 @@ private:
          *  be reached. */
         QString parent;
         QWidget *page = Q_NULLPTR;
+        /*! The row the pane made for it, empty while the pane is not listing
+         *  it. A row is the pane's to destroy - narrowing the pane destroys
+         *  every row it had - so this is a loan, cleared when the pane is
+         *  emptied, and the one thing that lets a change of theme repaint the
+         *  icons without rebuilding the rows the reader has opened or closed. */
+        QAction *action = Q_NULLPTR;
     };
 
     void createTheme(const QString &themeId);
@@ -108,6 +120,11 @@ private:
     /*! Rebuilds the pane from the destinations whose names contain \a needle,
      *  keeping the screen in front if it is still one of them. */
     void filterDestinations(const QString &needle);
+
+    /*! Repaints the icons the pane is listing in the ink of the theme now in
+     *  force. The rows are left as they are: what a theme changes about a pane
+     *  is the colour of what it draws, not which rows are open. */
+    void redrawIcons();
 
     TitleBar *m_titleBar = Q_NULLPTR;
     QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;

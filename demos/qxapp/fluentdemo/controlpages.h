@@ -47,6 +47,12 @@ namespace ControlPages
 struct ControlEntry {
     DemoPage *page = Q_NULLPTR;
     QString parent;
+    /*! The glyph the pane puts beside the page's name, named rather than drawn:
+     *  the file is one of this demo's own (see icons.h), and which one belongs
+     *  to a page is decided here for the same reason the group is - beside the
+     *  page, by whoever knows what the page is for. Empty leaves the row with
+     *  no icon, which is what a heading gets. */
+    QString icon;
 };
 
 /*! A heading the pane puts over its destinations, and the pages under it. */
