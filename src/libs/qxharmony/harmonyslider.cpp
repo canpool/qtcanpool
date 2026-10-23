@@ -217,8 +217,8 @@ void HarmonySlider::setValue(int value)
     // A drag answers at once - a handle that lags the pointer is a broken
     // slider - but a step travels, because there the movement is what tells the
     // user it moved.
-    const QxTheme::QxMotion motion
-        = HarmonyMotion::forDuration(HarmonyMotion::Duration::Quick, HarmonyMotion::Easing::Standard);
+    const QxTheme::QxMotion motion =
+        HarmonyMotion::forDuration(HarmonyMotion::Duration::Quick, HarmonyMotion::Easing::Standard);
     const qreal target = d_ptr->fractionOf(bounded);
     d_ptr->animation.stop();
     if (d_ptr->dragging || motion.duration <= 0) {
