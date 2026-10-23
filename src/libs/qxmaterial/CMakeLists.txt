@@ -18,6 +18,7 @@ add_qtc_library(qxmaterial
     materialradio.h materialradio.cpp
     materialtextfield.h materialtextfield.cpp
     materialfab.h materialfab.cpp
+    materialprogress.h materialprogress.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
     materialskeleton.h materialskeleton.cpp
