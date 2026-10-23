@@ -77,6 +77,29 @@ bool onDarkFace(const QWidget *widget)
 {
     return widget->palette().color(QPalette::Window).lightness() < 128;
 }
+
+/*! The pill's face: the family's white on a light page, and on a dark one a grey
+ *  lifted off the page.
+ *
+ *  The pill is a face standing on the row, so it has to be a step lighter than
+ *  the row on either page. White is the step on a light one; on a dark one white
+ *  is not a step, it is a hole cut through the page - and the label, which is
+ *  the family's light ink there, would land white on white. Lifting the family's
+ *  grey off the page keeps the pill a step lighter than the track and the ink a
+ *  contrast against it, which is the same relation the light page has.
+ */
+QColor pillFace(const QWidget *widget, bool dark)
+{
+    if (!dark) {
+        return QColor(Qt::white);
+    }
+    const QColor page = widget->palette().color(QPalette::Window);
+    const QColor grey = CupertinoColor::color(CupertinoColor::Role::Gray, true);
+    constexpr qreal lift = 0.55;
+    return QColor(qRound(grey.red() * lift + page.red() * (1.0 - lift)),
+                  qRound(grey.green() * lift + page.green() * (1.0 - lift)),
+                  qRound(grey.blue() * lift + page.blue() * (1.0 - lift)));
+}
 }   // namespace
 
 class CupertinoSegmentedControlPrivate
@@ -243,7 +266,7 @@ void CupertinoSegmentedControl::paintSurface(QPainter *painter)
         QxControls::QxShadowPainter::paint(painter, pill, pillRadius,
                                            CupertinoColor::color(CupertinoColor::Role::Gray, dark),
                                            CupertinoElevation::shadow(CupertinoElevation::Level::Raised));
-        painter->setBrush(Qt::white);
+        painter->setBrush(pillFace(this, dark));
         painter->drawRoundedRect(pill, pillRadius, pillRadius);
     }
 

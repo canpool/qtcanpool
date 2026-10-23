@@ -92,3 +92,13 @@ Feature
   the release, the same as the other families here, and what the button says is
   its accessible name for as long as the application has not given it a better
   one.
+
+Fixed
+- The segmented control's pill is a face standing on the row and not a hole cut
+  through it: white on a light page, and on a dark one the family's grey lifted
+  off the page. Left white on a dark page the pill was a bright square in the
+  middle of the row, and the label - which is the family's light ink there -
+  landed white on white, so the pick read as an empty cell. The ink stays the
+  palette's, because it is the page's ink; it is the face that has to be a step
+  lighter than the row on either page, and white is that step on only one of
+  them.

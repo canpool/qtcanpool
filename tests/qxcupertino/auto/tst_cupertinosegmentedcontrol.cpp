@@ -78,6 +78,7 @@ private slots:
     void thePillSlidesAndCoversTheLineItPasses();
     void currentIndexRoundTrips();
     void oneSegmentAndNoneAtAllDoNotBreakIt();
+    void thePillAndItsLabelStayApartOnADarkPage();
 private:
     qreal m_wasScale = 1.0;
 };
@@ -235,6 +236,48 @@ void tst_CupertinoSegmentedControl::oneSegmentAndNoneAtAllDoNotBreakIt()
     QTest::keyClick(&control, Qt::Key_Home);
     QCOMPARE(control.currentIndex(), 0);
     QVERIFY(!control.grab().isNull());
+}
+
+/*! The pill is a face standing on the row, and its label is the family's ink on
+ *  that face - which means the two cannot both follow the theme: the ink is the
+ *  page's, the face is the pill's.
+ *
+ *  On a dark page that difference is the whole of it. White would not be a face
+ *  there, it would be a hole cut through the row, and the pointer at the ink
+ *  would be white on white: the pick would read as an empty cell. What the pill
+ *  has to be instead is a step lighter than the row, and the label a contrast
+ *  against whatever that step turned out to be. */
+void tst_CupertinoSegmentedControl::thePillAndItsLabelStayApartOnADarkPage()
+{
+    CupertinoSegmentedControl control;
+    control.resize(kWidth, control.sizeHint().height());
+    control.setItems({QStringLiteral("Day"), QStringLiteral("Week"), QStringLiteral("Month")});
+
+    // The page the dark themes carry, with the light ink that goes with it.
+    QPalette dark = control.palette();
+    dark.setColor(QPalette::Window, QColor(0x3a, 0x3a, 0x3a));
+    dark.setColor(QPalette::WindowText, QColor(0xf3, 0xf2, 0xf1));
+    control.setPalette(dark);
+
+    // The pill's colour, read in the band above the word where there is nothing
+    // but the face.
+    const QColor face = pixel(&control, 20, pillRow(&control));
+    // The row's own fill, read in the same band between the pill and the edge.
+    const QColor page = dark.color(QPalette::Window);
+    QVERIFY2(face.lightness() > page.lightness() + 15,
+             qPrintable(QStringLiteral("the pill is %1 against a page of %2: not a step up")
+                            .arg(face.lightness())
+                            .arg(page.lightness())));
+
+    // And the label is legible on it. Read from the two colours rather than from
+    // the pixels: a platform with no font draws no glyph to measure, and the
+    // question here is about the ink and the face, not about a word being drawn.
+    const QColor ink = dark.color(QPalette::WindowText);
+    QVERIFY2(qAbs(ink.lightness() - face.lightness()) >= 60,
+             qPrintable(QStringLiteral("the label and the pill it sits on are %1 apart: %2 on %3")
+                            .arg(qAbs(ink.lightness() - face.lightness()))
+                            .arg(ink.lightness())
+                            .arg(face.lightness())));
 }
 
 TEST_ADD(tst_CupertinoSegmentedControl)
