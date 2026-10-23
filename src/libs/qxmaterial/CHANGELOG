@@ -34,6 +34,14 @@ Feature
   and an input method behave the way the platform taught the user to expect,
   and the field reports what a single-line field has to report: textChanged
   whether the text was typed or set, editingFinished, and returnPressed.
+- MaterialTopAppBar::actionAt(), which says what stands at a point in the bar
+  and says nothing when that point is the bar itself. The leading icon and the
+  trailing ones answer alike, because the question it answers is not which row
+  a point is in but whether it belongs to an icon at all. A window that hands
+  its whole app bar over as client area - the only way an icon the bar paints
+  itself can be clicked - gives up the caption with it, and telling "the user
+  pressed a button" from "the user pressed the caption" is what lets a caption
+  gesture be given back without taking the buttons away again.
 
 Fix
 - MaterialDialog now answers the pointer over its answers and its cross. They

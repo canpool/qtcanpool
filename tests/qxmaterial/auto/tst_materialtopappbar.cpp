@@ -60,6 +60,7 @@ private slots:
     void aPressRunsWhatItLandedOn();
     void anIconNobodyCanUseDoesNothing();
     void aPressThatLandsOnNoIconIsNothing();
+    void whatIsAtAPoint();
     void beingScrolledUnderLeavesThePage();
     void theKeyboardWalksTheIcons();
     void whatAnAssistiveToolReads();
@@ -179,6 +180,33 @@ void tst_MaterialTopAppBar::aPressThatLandsOnNoIconIsNothing()
 
     QTest::mouseClick(bar.get(), Qt::LeftButton, Qt::NoModifier, QPoint(200, kIconMiddle));
     QCOMPARE(asked.count, 0);
+}
+
+/*! A bar used as a window's caption is asked one question by its wrapper:
+ *  whether a point belongs to an icon or to the caption. The leading icon and
+ *  the trailing ones answer alike, because the question is not which row a
+ *  point is in - and the answer follows the room the bar has, because that is
+ *  what the icons are placed by. */
+void tst_MaterialTopAppBar::whatIsAtAPoint()
+{
+    std::unique_ptr<MaterialTopAppBar> bar(new MaterialTopAppBar);
+    QVERIFY(!bar->actionAt(leadingPoint()));
+
+    QAction *nav = bar->setLeadingAction(QStringLiteral("Menu"));
+    QAction *more = bar->addTrailingAction(QStringLiteral("More"));
+    bar->resize(400, 56);
+
+    QCOMPARE(bar->actionAt(leadingPoint()), nav);
+    QCOMPARE(bar->actionAt(trailingPoint(400, 0)), more);
+    // The name of the screen is the bar itself, and so is the room beside it.
+    QVERIFY(!bar->actionAt(QPoint(200, kIconMiddle)));
+    QVERIFY(!bar->actionAt(QPoint(200, 52)));
+
+    // A wider bar moves its trailing icons with its edge, so a point that was
+    // on one is on the bar now and a point that was on the bar is on one.
+    bar->resize(600, 56);
+    QVERIFY(!bar->actionAt(trailingPoint(400, 0)));
+    QCOMPARE(bar->actionAt(trailingPoint(600, 0)), more);
 }
 
 /*! What it means that content has moved under the bar: it stops being the

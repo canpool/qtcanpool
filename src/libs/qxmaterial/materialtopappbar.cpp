@@ -310,6 +310,18 @@ QList<QAction *> MaterialTopAppBar::trailingActions() const
     return d_ptr->trailing;
 }
 
+QAction *MaterialTopAppBar::actionAt(const QPoint &pos) const
+{
+    // The same layout a press is answered from, asked in the same way: a bar
+    // that told a caller one thing about where an icon is and then answered a
+    // press somewhere else would be two answers to one question.
+    const int index = d_ptr->itemAt(pos);
+    if (index < 0 || index >= d_ptr->icons.count()) {
+        return Q_NULLPTR;
+    }
+    return d_ptr->icons.at(index).action;
+}
+
 int MaterialTopAppBar::heightFor(Variant variant)
 {
     switch (variant) {

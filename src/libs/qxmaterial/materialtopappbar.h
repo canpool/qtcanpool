@@ -9,6 +9,7 @@
 
 #include "qxcontrols/qxcontrol.h"
 
+#include <QtCore/QPoint>
 #include <QtGui/QIcon>
 
 class QAction;
@@ -96,6 +97,15 @@ public:
     void removeTrailingAction(QAction *action);
     void clearTrailingActions();
     QList<QAction *> trailingActions() const;
+
+    /*! The icon standing at \a pos, in the bar's coordinates, or null when the
+     *  point is on the bar itself. The leading icon and the trailing ones
+     *  answer alike, because the question this answers is not which row a
+     *  point is in but whether it belongs to an icon at all: a window using
+     *  the bar as its caption has to tell "the user pressed a button" from
+     *  "the user pressed the caption", and only the bar knows where its icons
+     *  are. */
+    QAction *actionAt(const QPoint &pos) const;
 
     /*! The room the bar asks for at \a variant, which is the whole of what
      *  the four are told apart by. */
