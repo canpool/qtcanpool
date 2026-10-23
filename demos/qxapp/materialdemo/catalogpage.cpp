@@ -275,10 +275,17 @@ void CatalogPage::openDialog()
                           "asked for and waited on, which is why there are two answers and no third."));
     dialog->setButtonText(MaterialDialog::Role::Primary, tr("Discard"));
     dialog->setButtonText(MaterialDialog::Role::Secondary, tr("Keep"));
-    connect(dialog, &MaterialDialog::buttonClicked, this, [this](MaterialDialog::Role role) {
-        Q_EMIT messageRequested(role == MaterialDialog::Role::Primary
-                                    ? tr("Discarded, in a demo that had nothing to discard.")
-                                    : tr("Kept: the draft is as it was."));
+    connect(dialog, &MaterialDialog::buttonClicked, this, [this, dialog](MaterialDialog::Role role) {
+        const bool discarded = role == MaterialDialog::Role::Primary;
+        // The answers ask and do not decide: putting the dialog away is the
+        // page's move, and until it makes it nothing has been answered.
+        if (discarded) {
+            dialog->accept();
+        } else {
+            dialog->reject();
+        }
+        Q_EMIT messageRequested(discarded ? tr("Discarded, in a demo that had nothing to discard.")
+                                          : tr("Kept: the draft is as it was."));
     });
     dialog->open();
 }
