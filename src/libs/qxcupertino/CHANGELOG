@@ -79,3 +79,16 @@ Feature
   that sits on another - and a label that has not been picked is the ink thinned.
   One segment and none at all are states a data change can put it in, and neither
   is a crash: there is simply nothing to move.
+- `CupertinoButton`, a word in a capsule at one of the three levels the family
+  gives an action. The levels are the whole of what tells one button from
+  another - there is no icon, no second line and no arrow: `Filled` is the one
+  action on a surface and carries the family's blue at full strength with the
+  word reversed out of it, `Tinted` is the ones beside it with the same blue
+  thinned into the page and the word in the blue, and `Plain` is an action that
+  is only a word. The capsule casts nothing, because a raised thing in this
+  family lies on something and a button lies on the page. Pressed, it takes the
+  state layer the base draws rather than shrinking: a control that moved under
+  the finger would be moving the page. Enter answers on the press and Space on
+  the release, the same as the other families here, and what the button says is
+  its accessible name for as long as the application has not given it a better
+  one.
