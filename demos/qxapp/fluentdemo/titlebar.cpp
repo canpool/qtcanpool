@@ -17,17 +17,22 @@ QX_FLUENT_USE_NAMESPACE
 
 namespace
 {
-/*! The height of the bar, and the height of the buttons in it. 44 rather than
- *  the 32 of a bare caption: the search field lives here, and a field as tall as
- *  itself is not part of a caption. */
-constexpr int kBarHeight = 44;
+/*! The height of the bar, and the height of the buttons in it. 48 rather than
+ *  the 32 of a bare caption: the search field and the command bar live here, and
+ *  a command bar is a 40 tall row of 32 tall commands - giving it less than that
+ *  cuts the bottom off every command in it. */
+constexpr int kBarHeight = 48;
+/*! A caption button is a 46 by 32 rectangle centred in the bar, which is the
+ *  size WinUI gives them: the bar is the window's edge, the buttons are places
+ *  on it, and a button as tall as the bar reads as a block rather than a button. */
 constexpr int kCaptionWidth = 46;
+constexpr int kCaptionHeight = 32;
 constexpr int kIconWidth = 40;
 constexpr int kIconSize = 16;
 /*! The square the glyphs are drawn in, which is centred in the button. */
 constexpr int kGlyphSize = 10;
 constexpr int kFieldWidth = 220;
-constexpr int kFieldHeight = 30;
+constexpr int kFieldHeight = 32;
 
 /*! The wash a caption button wears: Fluent's own, which is fainter than a
  *  button's - a caption is not something to aim at. */
@@ -54,6 +59,9 @@ CaptionButton::CaptionButton(Glyph glyph, QWidget *parent)
     // focus away from the window it belongs to when it is clicked.
     setFocusPolicy(Qt::NoFocus);
     setCursor(m_glyph == Glyph::App ? Qt::ArrowCursor : Qt::ArrowCursor);
+    // A fixed height rather than a policy: the bar is taller than a caption
+    // button by design, and the layout is what centres it.
+    setFixedHeight(kCaptionHeight);
 }
 
 CaptionButton::Glyph CaptionButton::glyph() const
@@ -72,7 +80,7 @@ void CaptionButton::setGlyph(Glyph glyph)
 
 QSize CaptionButton::sizeHint() const
 {
-    return QSize(m_glyph == Glyph::App ? kIconWidth : kCaptionWidth, kBarHeight);
+    return QSize(m_glyph == Glyph::App ? kIconWidth : kCaptionWidth, kCaptionHeight);
 }
 
 bool CaptionButton::event(QEvent *event)
@@ -214,7 +222,9 @@ TitleBar::TitleBar(QWidget *parent)
 
     m_bar = new FluentCommandBar(this);
     m_bar->setObjectName(QStringLiteral("commandBar"));
-    m_bar->setFixedHeight(kFieldHeight);
+    // No height is forced on the command bar: it measures forty for a row of
+    // thirty-two tall commands and centres them in that, so a shorter row clips
+    // the bottom off every command. The 48 high bar is what gives it its room.
     layout->addWidget(m_bar);
 
     layout->addSpacing(4);

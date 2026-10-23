@@ -18,15 +18,28 @@ QX_MATERIAL_USE_NAMESPACE
 
 namespace
 {
-/*! The circle a Material caption button wears, which is the size of the icon
- *  button M3 puts at the top of a screen. */
-constexpr int kButtonSize = 40;
+/*! The circle a Material caption button wears. 48 is not a choice about
+ *  captions: it is the square the bar's own trailing icons use, so the window's
+ *  buttons and the app's buttons in the same bar are the same size. */
+constexpr int kButtonSize = 48;
 constexpr int kGlyphSize = 10;
 
 /*! The washes an M3 icon button wears, as fractions of the ink over the
  *  surface - the same three the library's own buttons use. */
 constexpr qreal kHoverOpacity = 0.08;
 constexpr qreal kPressedOpacity = 0.12;
+
+/*! What a close button turns when the pointer is on it, on every platform that
+ *  draws one: the only red on an otherwise monochrome caption. The two demos use
+ *  the same two colours - a caption button is the window's, not the family's. */
+QColor closeHover()
+{
+    return QColor(196, 43, 28);
+}
+QColor closePressed()
+{
+    return QColor(162, 34, 22);
+}
 }   // namespace
 
 CaptionButton::CaptionButton(Glyph glyph, QWidget *parent)
@@ -88,17 +101,26 @@ void CaptionButton::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     const bool closeButton = m_glyph == Glyph::Close;
+    const bool lit = underMouse() || isDown();
     QColor ink = palette().color(QPalette::WindowText);
-    if (closeButton && (isDown() || underMouse())) {
-        ink = palette().color(QPalette::HighlightedText);
+    if (closeButton && lit) {
+        // White on the red, not the palette's highlighted text: the disc is red
+        // on every theme, so the glyph on it is white on every theme too.
+        ink = QColor(Qt::white);
     }
 
     // The wash is a circle, not the rectangle: that is the whole difference
-    // between an M3 icon button and a Fluent caption button.
+    // between an M3 icon button and a Fluent caption button. The close button is
+    // the one that is not a wash - it turns red, whole, because closing is not a
+    // state of the surface but the one way out of it.
     const QPointF centre = QRectF(rect()).center();
     const qreal radius = kButtonSize / 2.0 - 2.0;
     const QRectF disc(centre.x() - radius, centre.y() - radius, radius * 2.0, radius * 2.0);
-    if (underMouse() || isDown()) {
+    if (closeButton && lit) {
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(isDown() ? closePressed() : closeHover());
+        painter.drawEllipse(disc);
+    } else if (lit) {
         const QColor layer = palette().color(QPalette::Highlight);
         const qreal opacity = isDown() ? kPressedOpacity : kHoverOpacity;
         painter.setPen(Qt::NoPen);
@@ -154,9 +176,10 @@ TitleBar::TitleBar(QWidget *parent)
     m_bar->setObjectName(QStringLiteral("appBar"));
     layout->addWidget(m_bar, 1);
 
-    // The buttons sit in a column of their own against the top edge, so that a
-    // bar of any height keeps its corner: the buttons belong to the window, and
-    // a window's buttons do not move down when the name gets bigger.
+    // The buttons sit in a column of their own at the window's edge, centred in
+    // it the way the bar centres its own icons: a 48 button in a 56 bar is four
+    // above and four below, and the row lines up with the trailing icons it
+    // stands next to instead of riding the top edge.
     auto *column = new QWidget(this);
     auto *columnLayout = new QVBoxLayout(column);
     columnLayout->setContentsMargins(QMargins());
@@ -183,6 +206,7 @@ TitleBar::TitleBar(QWidget *parent)
         button->setPalette(m_bar->palette());
     }
 
+    columnLayout->addStretch(1);
     columnLayout->addWidget(buttons);
     columnLayout->addStretch(1);
     layout->addWidget(column);
