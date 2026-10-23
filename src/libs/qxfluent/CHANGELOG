@@ -11,6 +11,45 @@ Bugfix
   platform that has no materials: the material still answers no there, as
   before.
 
+Feature
+- FluentNavigationView now has the second shape WinUI's navigation view has: a
+  destination can hold destinations under it, which is the difference between a
+  pane of nineteen places and a pane of three things that each hold six. It is
+  still one control with one list - not a list control beside a tree control -
+  because there is no model here to be flat or nested: `addItem(text, icon,
+  parent)` puts a destination under another one and the pane draws it there,
+  stepping it in by its depth.
+- The destinations keep the indexes they have whatever is open. An index is a
+  name rather than a place on the pane, so folding a group does not renumber
+  anything that follows it, and `items()` still answers every destination the
+  view holds, folded or not. Naming a folded destination with
+  `setCurrentIndex()` opens the groups above it, rather than putting it in force
+  somewhere the reader cannot see.
+- A parent is a destination like any other. Pressing it turns it over and goes
+  there in the same press, which is WinUI's SelectsOnInvoked; an application
+  that wants a group to be only a group says so by not connecting to the
+  action, which is what an action that is not connected means everywhere else.
+  A group opens and closes from the arrow at the trailing edge of its parent,
+  from Right and Left, from `setExpanded()`, and from `expandedChanged()` for
+  whoever needs to know.
+- Folded, the pane is its icons and there is no room beside one for what stands
+  under it - so what stands under it steps out instead, into a panel over the
+  page whose rows are the pane's rows and whose indentation is the pane's
+  indentation. That is WinUI's LeftCompact reading of a hierarchy, and the
+  reason a fold on a hierarchical pane is not a dead end: a destination folded
+  away is still a destination that can be reached. Pressing a parent in that
+  shape is a way in rather than a journey, since the panel is what the press
+  asked for.
+- A group remembers being open, and a destination added under another one
+  starts visible: a control whose new destinations arrived folded would be
+  hiding the thing it was just given. A parent that is carrying the destination
+  in force somewhere under it says so with the bar at the leading edge and none
+  of the wash, because it is not the destination itself - WinUI's
+  IsChildSelected.
+- `addHeader()` is unchanged by this: a heading is room on the pane over a
+  group of top-level destinations, not a destination and not a level. A group of
+  destinations is what a parent destination is for.
+
 0.1.1
 ---
 Feature

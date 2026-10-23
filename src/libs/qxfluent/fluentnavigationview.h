@@ -14,6 +14,7 @@
 class QAction;
 class QKeyEvent;
 class QMouseEvent;
+class QRectF;
 class QResizeEvent;
 class QWheelEvent;
 
@@ -52,9 +53,46 @@ public:
 
     /*! Adds \a text as a destination and returns it. The view owns it. */
     QAction *addItem(const QString &text, const QIcon &icon = QIcon());
+    /*!
+     * Adds \a text under \a parent and returns it.
+     *
+     * This is the view's second shape: a destination that is a place of its
+     * own and the head of a group of places under it - what WinUI calls a
+     * hierarchical navigation view, and what separates a pane of nineteen
+     * destinations from a pane of three things that each hold six.
+     *
+     * A parent is a destination like any other: it can be in force, pressing
+     * it runs it, and pressing it also opens it. The arrow at its trailing
+     * edge says which way it is. A heading is not a destination and cannot be
+     * a parent.
+     */
+    QAction *addItem(const QString &text, const QIcon &icon, QAction *parent);
+    /*!
+     * Adds \a text as a heading over the destinations added after it.
+     *
+     * A heading is not a destination and does not become one: it is not
+     * counted by currentIndex(), it is never in force, and neither the
+     * pointer nor the keyboard can land on it. What it is for is saying what
+     * the destinations under it are for, which a flat column of nineteen of
+     * them is unable to say. Headings stand at the top level of the pane; a
+     * group of destinations is what a parent destination is for.
+     *
+     * Folded, the heading is a rule rather than words and keeps its height:
+     * the destinations under it stay where they were when the pane folds,
+     * which is the one thing a reader needs of a fold.
+     */
+    void addHeader(const QString &text);
     void removeItem(QAction *action);
     void clear();
     QList<QAction *> items() const;
+
+    /*! The destination \a item stands under, or null while it is one of the
+     *  top level - or is not in this view at all. */
+    QAction *parentItem(QAction *item) const;
+
+    /*! True while the destinations under \a item are showing. A destination
+     *  with nothing under it is never expanded. */
+    bool isExpanded(QAction *item) const;
 
     /*! The destination in force, or null while there is none. */
     QAction *currentItem() const;
@@ -75,11 +113,16 @@ public Q_SLOTS:
     void setPaneOpen(bool open);
     void setCurrentIndex(int index);
     void setCurrentItem(QAction *action);
+    /*! Shows or hides the destinations under \a item, and says so if it
+     *  changed. A folded pane opens \a item as a flyout instead, which this
+     *  does not touch. */
+    void setExpanded(QAction *item, bool expanded);
 
 Q_SIGNALS:
     void paneOpenChanged(bool open);
     void currentIndexChanged(int index);
     void currentItemChanged(QAction *action);
+    void expandedChanged(QAction *item, bool expanded);
 protected:
     /*!
      * Nothing: a view is a column of destinations and a room beside it, and
@@ -102,6 +145,10 @@ protected:
 
     QAccessible::Role accessibleRole() const override;
 private:
+    /*! Opens \a parent beside the pane, in a panel whose rows are what stands
+     *  under it. Only a folded pane asks for one: open, there is room. */
+    void showFlyout(QAction *parent, const QRectF &anchor);
+
     Q_DISABLE_COPY(FluentNavigationView)
     QX_DECLARE_PRIVATE(FluentNavigationView)
 };
