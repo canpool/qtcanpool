@@ -6,6 +6,7 @@
 
 #include "fluenttokens.h"
 
+#include "qxcontrols/qxpopupsurface.h"
 #include "qxcontrols/qxstatelayer.h"
 
 #include <QtGui/QFontMetrics>
@@ -45,14 +46,14 @@ namespace
 /*! The surface the answers open into. It is a popup the combo owns: painted
  *  from the family's tokens, walked with the keys, closed by a click
  *  outside itself - the three things a list of answers owes. */
-class FluentComboPopup : public QWidget
+class FluentComboPopup : public QxControls::QxPopupSurface
 {
 public:
     explicit FluentComboPopup(FluentComboBox *combo)
-        : QWidget(nullptr, Qt::Popup | Qt::FramelessWindowHint)
+        : QxControls::QxPopupSurface(combo)
         , m_combo(combo)
     {
-        setFocusPolicy(Qt::StrongFocus);
+        setSurfaceRadius(kListRadius);
     }
 
     /*! Where the chosen answer lands; set once, by the combo that owns it. */
@@ -62,23 +63,7 @@ public:
     {
         m_highlight = current;
         m_offset = qBound(0, current - visibleRows() / 2, qMax(0, count() - visibleRows()));
-        syncGeometry();
-        show();
-        setFocus();
-        grabKeyboard();
-    }
-
-    int chosen() const
-    {
-        return m_chosen;
-    }
-    bool wasChosen() const
-    {
-        return m_chosen >= 0;
-    }
-    void reset()
-    {
-        m_chosen = -1;
+        QxControls::QxPopupSurface::open();
     }
 
     int count() const
@@ -97,15 +82,7 @@ public:
         return qMax(1, int((kListMaxHeight - 2 * kListPadding) / kRowHeight));
     }
 
-    void syncGeometry()
-    {
-        const int rows = qMin(count(), visibleRows());
-        const int height = int(2 * kListPadding + rows * kRowHeight);
-        const int width = qMax(m_combo->width(), sizeHint().width());
-        resize(width, height);
-    }
-
-    QSize sizeHint() const override
+    QSize contentSizeHint() const override
     {
         const QFontMetrics metrics(FluentType::font(FluentType::Ramp::Body));
         int widest = 0;
@@ -113,45 +90,34 @@ public:
         for (const QString &item : items) {
             widest = qMax(widest, metrics.horizontalAdvance(item));
         }
-        return QSize(int(2 * (kListPadding + kRowPadding) + widest + kChevronWidth),
+        return QSize(qMax(m_combo->width(), int(2 * (kListPadding + kRowPadding) + widest + kChevronWidth)),
                      int(2 * kListPadding + qMin(count(), visibleRows()) * kRowHeight));
     }
 
-    void paintEvent(QPaintEvent *event) override
+    void paintContent(QPainter *painter, const QRectF &content) override
     {
-        Q_UNUSED(event)
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        const QRectF face(rect());
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(palette().color(QPalette::Window));
-        painter.drawRoundedRect(face, kListRadius, kListRadius);
-        painter.setBrush(QxControls::QxStateLayer::layered(palette().color(QPalette::Window),
-                                                           palette().color(QPalette::WindowText), 0.14));
-        painter.drawRoundedRect(face.adjusted(0.5, 0.5, -0.5, -0.5), kListRadius, kListRadius);
-
-        painter.setRenderHint(QPainter::Antialiasing, false);
+        painter->setRenderHint(QPainter::Antialiasing, false);
         const QFont font = FluentType::font(FluentType::Ramp::Body);
-        painter.setFont(font);
-        const QFontMetrics metrics(font);
+        painter->setFont(font);
         const int rows = qMin(count() - m_offset, visibleRows());
         for (int row = 0; row < rows; ++row) {
             const int index = m_offset + row;
-            const QRectF rowRect(kListPadding, kListPadding + row * kRowHeight, width() - 2 * kListPadding, kRowHeight);
+            const QRectF rowRect(content.left() + kListPadding, content.top() + kListPadding + row * kRowHeight,
+                                 content.width() - 2 * kListPadding, kRowHeight);
             if (index == m_highlight) {
-                painter.setPen(Qt::NoPen);
-                painter.setBrush(QxControls::QxStateLayer::layered(
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(QxControls::QxStateLayer::layered(
                     palette().color(QPalette::Window), palette().color(QPalette::WindowText), kSelectedOpacity));
-                painter.drawRoundedRect(rowRect.adjusted(2.0, 2.0, -2.0, -2.0), 4.0, 4.0);
+                painter->drawRoundedRect(rowRect.adjusted(2.0, 2.0, -2.0, -2.0), 4.0, 4.0);
             } else if (index == m_hover) {
-                painter.setPen(Qt::NoPen);
-                painter.setBrush(QxControls::QxStateLayer::layered(
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(QxControls::QxStateLayer::layered(
                     palette().color(QPalette::Window), palette().color(QPalette::WindowText), kHoverOpacity));
-                painter.drawRoundedRect(rowRect.adjusted(2.0, 2.0, -2.0, -2.0), 4.0, 4.0);
+                painter->drawRoundedRect(rowRect.adjusted(2.0, 2.0, -2.0, -2.0), 4.0, 4.0);
             }
-            painter.setPen(palette().color(QPalette::WindowText));
-            painter.drawText(rowRect.adjusted(kRowPadding, 0.0, -kRowPadding, 0.0),
-                             Qt::AlignVCenter | Qt::TextSingleLine, itemAt(index));
+            painter->setPen(palette().color(QPalette::WindowText));
+            painter->drawText(rowRect.adjusted(kRowPadding, 0.0, -kRowPadding, 0.0),
+                              Qt::AlignVCenter | Qt::TextSingleLine, itemAt(index));
         }
     }
 
@@ -162,7 +128,7 @@ public:
 #else
         const QPointF pos = event->localPos();
 #endif
-        m_hover = rowAt(pos.y());
+        m_hover = rowAt(pos.y() - contentRect().top());
         update();
     }
 
@@ -173,13 +139,13 @@ public:
 #else
         const QPointF pos = event->localPos();
 #endif
-        const int row = rowAt(pos.y());
+        const int row = rowAt(pos.y() - contentRect().top());
         if (row >= 0) {
             choose(m_offset + row);
         }
     }
 
-    void wheelEvent(QWheelEvent *event)
+    void wheelEvent(QWheelEvent *event) override
     {
         const int steps = event->angleDelta().y() > 0 ? -1 : 1;
         const int furthest = qMax(0, count() - visibleRows());
@@ -217,11 +183,8 @@ public:
                 choose(m_highlight);
             }
             break;
-        case Qt::Key_Escape:
-            close();
-            break;
         default:
-            QWidget::keyPressEvent(event);
+            QxControls::QxPopupSurface::keyPressEvent(event);
         }
     }
 private:
@@ -251,7 +214,6 @@ private:
 
     void choose(int index)
     {
-        m_chosen = index;
         close();
         if (onSelect) {
             onSelect(index);
@@ -262,7 +224,6 @@ private:
     int m_highlight = -1;
     int m_hover = -1;
     int m_offset = 0;
-    int m_chosen = -1;
 };
 }   // namespace
 
@@ -276,38 +237,12 @@ public:
     FluentComboPopup *popup = Q_NULLPTR;
 
     QRectF chevronRect(const QSizeF &face) const;
-    void placePopup();
 };
 
 QRectF FluentComboBoxPrivate::chevronRect(const QSizeF &face) const
 {
     return QRectF(face.width() - kPadding - kChevronWidth, (face.height() - kChevronWidth) / 2.0, kChevronWidth,
                   kChevronWidth);
-}
-
-void FluentComboBoxPrivate::placePopup()
-{
-    Q_Q(FluentComboBox);
-    popup->syncGeometry();
-    const QScreen *screen = q->screen() ? q->screen() : QGuiApplication::primaryScreen();
-    const QRect room = screen->availableGeometry();
-    const QPoint below = q->mapToGlobal(QPoint(0, q->height()));
-    const QPoint above = q->mapToGlobal(QPoint(0, 0));
-    const int height = popup->height();
-
-    // Below first; above when below has no room for it; and when neither
-    // has, the list keeps inside the screen, over the face if it must.
-    int y = below.y() + 1;
-    if (y + height > room.bottom() + 1) {
-        if (above.y() - 1 - height >= room.top()) {
-            y = above.y() - 1 - height;
-        } else {
-            y = qBound(room.top(), below.y() + 1, room.bottom() + 1 - height);
-        }
-    }
-    int x = q->mapToGlobal(QPoint(0, 0)).x();
-    x = qBound(room.left(), x, room.right() + 1 - popup->width());
-    popup->move(x, y);
 }
 
 FluentComboBox::FluentComboBox(QWidget *parent)
@@ -410,8 +345,6 @@ void FluentComboBox::showPopup()
             setCurrentIndex(index);
         };
     }
-    d_ptr->popup->reset();
-    d_ptr->placePopup();
     d_ptr->popup->open(d_ptr->current);
 }
 

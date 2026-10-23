@@ -11,6 +11,10 @@ Feature
 - `MaterialRadio`, one choice of several: the primary's ring and dot when it
   is in force, the brothers that share its parent out of force with it, and
   the ripple answering from the circle's own centre.
+- `MaterialSelect`, a choice the field has already made: the same filled or
+  outlined face the text field keeps, the answer where the editor would sit,
+  and the list of choices opening on the shared popup surface - a column of
+  rows of forty-eight, the answer in force wearing the mark at its left.
 - `MaterialRipple` answers to start() now, for a surface that answers from a
   place of its own choosing, and can be told not to watch the widget's own
   presses.

@@ -1,3 +1,12 @@
+Unreleased
+---
+Feature
+- `QxPopupSurface`, the surface a set of answers opens into: it is drawn and
+  lifted off the page, it opens beside its anchor and keeps inside the
+  screen, and it goes away when the keyboard asks it to or the pointer lands
+  outside it. What a family carries on it - its radius and its content -
+  stays with the family.
+
 0.1.0
 ---
 Feature
