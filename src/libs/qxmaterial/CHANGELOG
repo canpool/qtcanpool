@@ -55,6 +55,13 @@ Feature
   again by clicking it or with the arrow keys; a step ahead cannot, since how
   far along the work is, is the work's answer.
 
+- `MaterialTabs`, the row that says which page of a few is in front: a name
+  per tab, the accent standing under the one in force as an indicator two
+  tall that travels there - unless the application asked for less motion, and
+  then it is simply there. A row too narrow for its tabs slides, so the tab in
+  force is shown whole; that is what tells tabs from the segmented button,
+  where every choice has to be seen at once.
+
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
   the fill knows no corners, so the hover tint stood as a square over the
