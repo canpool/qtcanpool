@@ -39,6 +39,13 @@ DRIVEN = {
 
 DIMS = ["pointer", "keys", "focus", "disabled", "theme", "motion", "a11y", "rtl"]
 
+# What makes a widget carry a movement: an animation class of its own, or the
+# tier lookup that a family hands out instead of a number. Both are read from
+# the source, because the question is what the widget does, not what its test
+# says about it.
+ANIMATES = r"QPropertyAnimation|QVariantAnimation|QAbstractAnimation|QTimeLine" \
+           r"|forDuration\s*\(|motionFor\s*\("
+
 # Dimensions a row cannot have at all, with the reason that goes in the doc.
 # A cell only takes the reason when the test file shows no evidence either:
 # evidence wins over theory, because a widget someone managed to focus has a
@@ -162,15 +169,37 @@ def read_test(family, stem):
     return io.open(path, encoding="utf-8", errors="replace").read()
 
 
-def cells_for(family, stems, reason):
+def source_draws_motion(family, label):
+    """Does the widget's own source ask for a movement at all?
+
+    A widget with no animation has no reduce-motion state to test: writing
+    "default only" in that cell would invent a gap and then send someone to
+    fill it with a case that can only assert that nothing moves. The question
+    is answered from the source, by the classes that carry a movement and the
+    tier lookup that hands out its length.
+    """
+    for name in re.findall(r"[A-Z][A-Za-z]+", label):
+        path = os.path.join(ROOT, "src", "libs", family, name.lower() + ".cpp")
+        if os.path.exists(path):
+            text = io.open(path, encoding="utf-8", errors="replace").read()
+            if re.search(ANIMATES, text):
+                return True
+    return False
+
+
+def cells_for(family, stems, reason, label=""):
     """One row: dimension -> one of the five marks, plus the reason text."""
     text = "\n".join(filter(None, (read_test(family, s) for s in stems)))
     has_file = bool(text)
     driven = {d: bool(re.search(DRIVEN[d], text)) for d in DIMS}
     na = NA[reason][0] if reason else set()
+    # A widget that never moves has no reduced-motion state. Evidence first:
+    # a case that turns the switch and watches something wins over the source
+    # read, because the case is the stronger claim.
+    still = not driven["motion"] and not source_draws_motion(family, label)
     row, reasons = {}, []
     for d in DIMS:
-        if d in na and not driven[d]:
+        if (d in na or (d == "motion" and still)) and not driven[d]:
             row[d] = "—"
         elif not has_file:
             row[d] = "∅"
@@ -182,6 +211,8 @@ def cells_for(family, stems, reason):
         blocked = [d for d in DIMS if row[d] == "—"]
         if blocked:
             reasons.append(NA[reason][1])
+    if still and row["motion"] == "—":
+        reasons.append("不画动效：源码里没有动画类，也不问档位")
     if "rtl" in row and row["rtl"] == "—":
         pass
     elif row["rtl"] == "✗":
@@ -197,7 +228,7 @@ def render():
         out.append("| 件 | 指针 | 键盘 | 焦点 | 禁用 | 主题 | 减弱动效 | 无障碍 | 右到左 | 不适用理由 |")
         out.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |")
         for label, stems, reason in rows:
-            row, why = cells_for(folder, stems, reason)
+            row, why = cells_for(folder, stems, reason, label)
             # RTL: nothing in the three libraries reads the layout direction,
             # so a widget that draws its own geometry cannot mirror. T1-c says
             # record that and do not pretend with a case.
@@ -222,7 +253,7 @@ def render_debt():
     debt = {d: {"○": [], "∅": []} for d in dims}
     for family, folder, rows in GROUPS:
         for label, stems, reason in rows:
-            row, _ = cells_for(folder, stems, reason)
+            row, _ = cells_for(folder, stems, reason, label)
             for d in dims:
                 if row[d] in ("○", "∅"):
                     debt[d][row[d]].append(label)
