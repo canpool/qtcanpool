@@ -9,6 +9,8 @@ add_qtc_library(qxcontrols
     qxstatelayer.h qxstatelayer.cpp
     qxpopupsurface.h qxpopupsurface.cpp
     qxtooltip.h qxtooltip.cpp
+    qxcalendarflyout.h qxcalendarflyout.cpp
+    qxtimeflyout.h qxtimeflyout.cpp
     qxringpainter.h qxringpainter.cpp
     qxshadowpainter.h qxshadowpainter.cpp
 )

@@ -15,6 +15,18 @@ Feature
   screen, and it goes away when the keyboard asks it to or the pointer lands
   outside it. What a family carries on it - its radius and its content -
   stays with the family.
+- `QxCalendarFlyout`, the month a date control opens: six weeks to the grid,
+  the weekdays named over it, the arrows to walk the months, and the day
+  taken standing in the accent - what falls outside the month dimmed rather
+  than gone, today left as a ring so a click elsewhere is not a loss. The
+  keyboard walks the days in all four directions, and the day is spoken once,
+  when it is taken. Which font the head and the weekday row wear, and how
+  deep the corners are drawn, is the family's to say.
+- `QxTimeFlyout`, the two columns an hour and a minute are taken from: an
+  hour of twenty-four beside a minute of sixty, six rows of each on show,
+  the taken one standing in a pill of the accent. The wheel looks and does
+  not take - a turn is not an answer - a click takes, and the arrow keys walk
+  the column the keyboard sits in. The row's font is the family's to say.
 
 0.1.0
 ---
