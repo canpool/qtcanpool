@@ -243,6 +243,11 @@ CatalogPage::CatalogPage(QWidget *parent)
     shapeLayout->addWidget(skeletonFace);
     shapeLayout->addStretch(1);
     addRow(tr("What has not arrived"), shapes);
+    // The two shapes below are placeholders, and a placeholder nothing explains
+    // is a pair of grey boxes: what the screen is waiting for is said here.
+    QLabel *waiting = new QLabel(tr("A line where a name will be and a circle where a face will be."), this);
+    waiting->setFont(MaterialType::font(MaterialType::Scale::Body));
+    addRow(QString(), waiting);
 
     addSection(tr("A count"));
 

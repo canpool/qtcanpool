@@ -483,3 +483,10 @@ Bugfix
   below the name it asked for. The prompt stands on the line the text is typed
   on now; the middle of the field was never that line, because the room above it
   belongs to the label once the label floats up.
+- A segmented button divided its row equally, which hands the same width to
+  "Day" and to "Month": the segment that came up short drew its word clipped, so
+  the third choice of three read "Mont". Each segment is as wide as its own word
+  with the room on both sides of it, and the room the row has to spare is shared
+  out after that; the measurement is fractional and rounded up, for the same
+  reason as everywhere else. Where a segment stands is an answer now, for a
+  caller that puts something on one.

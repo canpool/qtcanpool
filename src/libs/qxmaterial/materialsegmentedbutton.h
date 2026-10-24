@@ -44,6 +44,10 @@ public:
     int currentIndex() const;
     /*! The text of the segment in force; empty while there is none. */
     QString currentText() const;
+    /*! Where segment \a index stands, in the row's own coordinates. Widths are
+     *  the words' own with the spare room shared out, so a caller that puts
+     *  something on a segment - a count, a mark - knows where to put it. */
+    QRect segmentRect(int index) const;
 
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;

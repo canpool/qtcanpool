@@ -8,7 +8,9 @@
 
 #include "qxcontrols/qxcontrol.h"
 
-#include <QtGui/QFontMetrics>
+#include <QtGui/QFontMetricsF>
+#include <QtCore/QtMath>
+#include <QtCore/QVector>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QResizeEvent>
@@ -192,11 +194,31 @@ void MaterialSegmentedButtonPrivate::relayout()
         return;
     }
     const QRect inner = q_ptr->rect().adjusted(int(kInset), int(kInset), -int(kInset), -int(kInset));
-    const qreal each = qreal(inner.width()) / qreal(segments.count());
+    // Each segment asks for what its own word needs, and the room left over is
+    // shared out equally. Dividing the row equally instead hands "Day" and
+    // "Month" the same width, and the segment that came up short draws its word
+    // clipped - which is how the third choice of three read "Mont".
+    const QFontMetricsF metrics(MaterialType::font(MaterialType::Scale::Body));
+    qreal asked = 0.0;
+    QVector<qreal> demand;
+    demand.reserve(segments.count());
+    for (Segment *segment : segments) {
+        const qreal needed = qMax(kMinSegmentWidth, metrics.horizontalAdvance(segment->text()) + 2.0 * kPadding);
+        demand.append(needed);
+        asked += needed;
+    }
+    // Squeezed below what the words need, every segment keeps its own width and
+    // the row runs out of the widget: a row that clips its last edge is readable
+    // and a row that clips every word is not.
+    const qreal spare = (qreal(inner.width()) - asked) / qreal(segments.count());
+    const qreal share = spare > 0.0 ? spare : 0.0;
+    qreal x = inner.left();
     for (int i = 0; i < segments.count(); ++i) {
-        const int left = inner.left() + qRound(i * each);
-        const int right = inner.left() + qRound((i + 1) * each);
+        const qreal width = demand.at(i) + share;
+        const int left = qRound(x);
+        const int right = qRound(x + width);
         segments.at(i)->setGeometry(left, inner.top(), qMax(0, right - left), inner.height());
+        x += width;
     }
 }
 
@@ -269,14 +291,22 @@ QString MaterialSegmentedButton::currentText() const
     return segment ? segment->text() : QString();
 }
 
+QRect MaterialSegmentedButton::segmentRect(int index) const
+{
+    const Segment *segment = d_ptr->segments.value(index, Q_NULLPTR);
+    return segment ? segment->geometry() : QRect();
+}
+
 QSize MaterialSegmentedButton::sizeHint() const
 {
-    const QFontMetrics metrics(MaterialType::font(MaterialType::Scale::Body));
+    // Fractional metrics, rounded up: half a pixel short is a word drawn over
+    // the edge of the segment that was measured to hold it.
+    const QFontMetricsF metrics(MaterialType::font(MaterialType::Scale::Body));
     qreal width = 2.0 * kInset;
     for (const Segment *segment : d_ptr->segments) {
-        width += qMax(kMinSegmentWidth, metrics.horizontalAdvance(segment->text()) + 2.0 * kPadding);
+        width += qMax(kMinSegmentWidth, qCeil(metrics.horizontalAdvance(segment->text())) + 2.0 * kPadding);
     }
-    return QSize(qRound(width), int(kHeight));
+    return QSize(qCeil(width), int(kHeight));
 }
 
 QSize MaterialSegmentedButton::minimumSizeHint() const

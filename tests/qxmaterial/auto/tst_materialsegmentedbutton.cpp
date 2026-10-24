@@ -6,7 +6,10 @@
 
 #include "qxmaterial/materialsegmentedbutton.h"
 
+#include "qxmaterial/materialtokens.h"
+
 #include <QAccessible>
+#include <QFontMetricsF>
 #include <QSignalSpy>
 #include <QWidget>
 
@@ -31,6 +34,7 @@ private slots:
     void aClickPutsASegmentInForce();
     void theArrowsMoveWhatIsInForce();
     void theRowIsOneStopOnTheKeyboard();
+    void aSegmentIsWideEnoughForItsOwnWord();
     void whatAnAssistiveToolReads();
 private:
     bool m_wasActive = false;
@@ -122,6 +126,36 @@ void tst_MaterialSegmentedButton::theRowIsOneStopOnTheKeyboard()
 
 /*! What an assistive tool is told: a row of radio buttons, one of which is
  *  checked - which is what a choice out of a fixed number is. */
+/*! A segment is as wide as its own word plus the room on both sides of it, and
+ *  the room the row has to spare is shared out after that. Dividing the row
+ *  equally instead gives "Day" and "Month" the same width, and the segment that
+ *  came up short draws its word clipped - which is how the demo's third choice
+ *  of three read "Mont". */
+void tst_MaterialSegmentedButton::aSegmentIsWideEnoughForItsOwnWord()
+{
+    MaterialSegmentedButton row;
+    const QStringList words = QStringList{QStringLiteral("Day"), QStringLiteral("Week"), QStringLiteral("Month")};
+    row.setItems(words);
+    row.resize(row.sizeHint());
+    row.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&row));
+
+    constexpr qreal kPadding = 12.0;
+    const QFontMetricsF metrics(MaterialType::font(MaterialType::Scale::Body));
+    for (int i = 0; i < words.count(); ++i) {
+        const qreal needed = metrics.horizontalAdvance(words.at(i)) + 2.0 * kPadding;
+        QVERIFY2(row.segmentRect(i).width() >= needed, qPrintable(QStringLiteral("%1 asks for %2 and has %3")
+                                                                      .arg(words.at(i))
+                                                                      .arg(needed)
+                                                                      .arg(row.segmentRect(i).width())));
+    }
+
+    // And they still stand side by side without a gap or an overlap.
+    for (int i = 1; i < words.count(); ++i) {
+        QCOMPARE(row.segmentRect(i).left(), row.segmentRect(i - 1).right() + 1);
+    }
+}
+
 void tst_MaterialSegmentedButton::whatAnAssistiveToolReads()
 {
     MaterialSegmentedButton button;
