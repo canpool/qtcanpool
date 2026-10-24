@@ -64,6 +64,12 @@ Feature
   that stack - an icon over a centred name, the tint and the stroke of the
   accent on the chosen one, and a reflow when the view is narrowed. Icon mode
   of the same view, for the same reason.
+- `FluentTreeView`, the list's rows one level in: a node thirty-two tall -
+  denser, because a tree is followed rather than scanned - every level sixteen
+  further in, and the small chevron in a gutter at the left of whatever has
+  more under it, turned to point down once it is open. The gutter is kept
+  whether or not there is a mark in it, so a name does not jump sideways the
+  moment its node gains a child.
 
 0.1.2
 ---

@@ -49,6 +49,7 @@ add_qtc_library(qxfluent
     fluenttimepicker.h fluenttimepicker.cpp
     fluentlistview.h fluentlistview.cpp
     fluentgridview.h fluentgridview.cpp
+    fluenttreeview.h fluenttreeview.cpp
     fluentwindowmaterial.h fluentwindowmaterial.cpp
     fluentreveal.h fluentreveal.cpp
 )
