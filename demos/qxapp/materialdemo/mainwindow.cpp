@@ -16,6 +16,9 @@
 #include "pricingpage.h"
 #include "settingspage.h"
 #include "signinpage.h"
+#include "signinsidepage.h"
+#include "signuppage.h"
+#include "stickyfooterpage.h"
 #include "titlebar.h"
 
 #include "qxapp/qxthemebundle.h"
@@ -438,14 +441,20 @@ void MainWindow::createNavigation()
         });
     };
 
-    // Six templates, then the catalogue: a template is a whole screen built out
+    // The templates, then the catalogue: a template is a whole screen built out
     // of this library - which is what an application would actually build - and
-    // the catalogue is the library itself, one control per row.
+    // the catalogue is the library itself, one control per row. The order is the
+    // order an application is met in: what it is for, what it holds, what it
+    // costs, and then the three screens that make an account and the ones that
+    // read what the account made.
     addPage(new HomePage(m_stack), QStringLiteral("home"));
     addPage(new AlbumPage(m_stack), QStringLiteral("photo"));
     addPage(new PricingPage(m_stack), QStringLiteral("diamond"));
     addPage(new SignInPage(m_stack), QStringLiteral("login"));
+    addPage(new SignInSidePage(m_stack), QStringLiteral("login"));
+    addPage(new SignUpPage(m_stack), QStringLiteral("logout"));
     addPage(new BlogPage(m_stack), QStringLiteral("article"));
+    addPage(new StickyFooterPage(m_stack), QStringLiteral("article"));
     addPage(new OrderPage(m_stack), QStringLiteral("receipt"));
     addPage(new CatalogPage(m_stack), QStringLiteral("table"));
     addPage(new LedgerPage(m_stack), QStringLiteral("file"));

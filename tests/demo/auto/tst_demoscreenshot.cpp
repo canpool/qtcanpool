@@ -101,7 +101,13 @@ constexpr int kMaterialAlbumPage = 1;
 /*! The two screens that present rows of four things: the one the family has a
  *  table for, and the one it does not. */
 constexpr int kFluentTablePage = 12;
-constexpr int kMaterialLedgerPage = 7;
+/*! The three screens the account is met through, and the one whose footer is
+ *  pinned. They stand between the sign-in screen and the blog, so everything
+ *  below them in the rail moved when they arrived - the ledger included. */
+constexpr int kMaterialEntrancePage = 4;
+constexpr int kMaterialSignUpPage = 5;
+constexpr int kMaterialFooterPage = 7;
+constexpr int kMaterialLedgerPage = 10;
 /*! The table the Ledger screen is built on, in the two measures the library
  *  fixes: a heading line and a line of data. Kept here so that a table one row
  *  short of its content is a failure of this test and not of the arithmetic. */
@@ -483,6 +489,9 @@ private slots:
     void materialDemoAnswersItsWidth();
     void materialDemoNamesFitItsRail();
     void materialDemoAlbumPageRenders();
+    void materialDemoEntrancePageRenders();
+    void materialDemoSignUpPageRenders();
+    void materialDemoFooterPageRenders();
     void materialDemoLedgerPageShowsItsTable();
 #endif
 private:
@@ -757,6 +766,22 @@ struct WidgetLine {
     QRect rect;
     bool hidden = false;
 };
+
+/*! How many of \a widgets stand on the screen in force and are \a className.
+ *
+ *  The tree prints every screen the window keeps - the ones not in force are
+ *  marked hidden - so "the control is on this page" is a count of the visible
+ *  ones, not of the lines that carry the class. */
+int visibleCount(const QList<WidgetLine> &widgets, const QString &className)
+{
+    int count = 0;
+    for (const WidgetLine &widget : widgets) {
+        if (!widget.hidden && widget.className.endsWith(className)) {
+            ++count;
+        }
+    }
+    return count;
+}
 
 /*! Every widget line of an --inspect tree, in the order the tree prints them -
  *  which is the order the widgets stand in their parents, so the first visible
@@ -1640,6 +1665,95 @@ void tst_DemoScreenshot::materialDemoAlbumPageRenders()
     QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
     checkGolden(screenshot, QStringLiteral(DEMO_MATERIAL_ALBUM_GOLDEN_PATH), path,
                 QStringLiteral("materialdemo-album"));
+}
+
+/*! Signing in beside a band of the accent: the same decision as the screen
+ *  before it, arranged the other way.
+ *
+ *  What is held here is the one question this screen asks that no other screen
+ *  asks - an account chosen from what the window knows instead of typed out in
+ *  full - so the autocomplete has to be on the page, and not on one of the
+ *  screens standing behind it. */
+void tst_DemoScreenshot::materialDemoEntrancePageRenders()
+{
+    const QString path = QFileInfo(QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH)).absolutePath() +
+                         QStringLiteral("/materialdemo-entrance.png");
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), path, QStringLiteral("materialdemo-entrance.log"), error,
+                     {QStringLiteral("--page"), QString::number(kMaterialEntrancePage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+    QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
+
+    const QString tree = runInspectWith(QStringLiteral(DEMO_MATERIAL_EXECUTABLE),
+                                        QStringList{QStringLiteral("--page"), QString::number(kMaterialEntrancePage),
+                                                    QStringLiteral("--width"), QStringLiteral("1280")},
+                                        QStringLiteral("materialdemo-entrance-tree.log"), error);
+    QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+    const QList<WidgetLine> widgets = widgetsIn(tree);
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialAutocomplete")), 1);
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialCheckBox")), 1);
+    // The password row is a plain field: the account above it is the
+    // autocomplete, which is a field of its own kind and counted above.
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialTextField")), 1);
+}
+
+/*! Making an account: four rows and one question about the account rather than
+ *  about the person, asked with the control that is a set of switches. */
+void tst_DemoScreenshot::materialDemoSignUpPageRenders()
+{
+    const QString path = QFileInfo(QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH)).absolutePath() +
+                         QStringLiteral("/materialdemo-signup.png");
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), path, QStringLiteral("materialdemo-signup.log"), error,
+                     {QStringLiteral("--page"), QString::number(kMaterialSignUpPage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+    QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
+
+    const QString tree = runInspectWith(QStringLiteral(DEMO_MATERIAL_EXECUTABLE),
+                                        QStringList{QStringLiteral("--page"), QString::number(kMaterialSignUpPage),
+                                                    QStringLiteral("--width"), QStringLiteral("1280")},
+                                        QStringLiteral("materialdemo-signup-tree.log"), error);
+    QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+    const QList<WidgetLine> widgets = widgetsIn(tree);
+    // Two names, an email and a password: the four rows the form asks for.
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialTextField")), 4);
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialToggleButtonGroup")), 1);
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialCheckBox")), 1);
+}
+
+/*! The page too short to fill its window, with the band at its foot: what is
+ *  kept here is that the foot is the paginator and that it is on the screen in
+ *  force rather than under one of the others. */
+void tst_DemoScreenshot::materialDemoFooterPageRenders()
+{
+    const QString path = QFileInfo(QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH)).absolutePath() +
+                         QStringLiteral("/materialdemo-footer.png");
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), path, QStringLiteral("materialdemo-footer.log"), error,
+                     {QStringLiteral("--page"), QString::number(kMaterialFooterPage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+    QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
+
+    const QString tree = runInspectWith(QStringLiteral(DEMO_MATERIAL_EXECUTABLE),
+                                        QStringList{QStringLiteral("--page"), QString::number(kMaterialFooterPage),
+                                                    QStringLiteral("--width"), QStringLiteral("1280")},
+                                        QStringLiteral("materialdemo-footer-tree.log"), error);
+    QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+    const QList<WidgetLine> widgets = widgetsIn(tree);
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialPagination")), 1);
+    QCOMPARE(visibleCount(widgets, QStringLiteral("MaterialAvatar")), 1);
 }
 
 /*! The Ledger screen: rows of four things under a heading, kept by the family's

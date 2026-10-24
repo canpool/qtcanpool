@@ -4,7 +4,7 @@
 ##
 
 # A Material application, not a gallery: a top app bar, a navigation rail, a
-# floating action button, a snackbar, six template screens built out of
+# floating action button, a snackbar, ten template screens built out of
 # QxMaterial alone, and the catalogue of what the library ships. Where the
 # control gallery puts one control in each row so that a change in what a
 # control paints shows up, this puts them to work - which is the other half of
@@ -38,12 +38,15 @@ add_qtc_executable(MaterialDemo
     mainwindow.cpp mainwindow.h
     titlebar.cpp titlebar.h
     demopage.cpp demopage.h
-    # The six templates: a whole screen each, built out of the library alone.
+    # The templates: a whole screen each, built out of the library alone.
     homepage.cpp homepage.h
     albumpage.cpp albumpage.h
     pricingpage.cpp pricingpage.h
     signinpage.cpp signinpage.h
+    signinsidepage.cpp signinsidepage.h
+    signuppage.cpp signuppage.h
     blogpage.cpp blogpage.h
+    stickyfooterpage.cpp stickyfooterpage.h
     orderpage.cpp orderpage.h
     ledgerpage.cpp ledgerpage.h
     # The library itself, one control per row, and the window's own settings.
