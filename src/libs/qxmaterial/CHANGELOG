@@ -90,6 +90,13 @@ Feature
   read along its rows, so the lines that run across it are the ones that
   matter. It is the table view with a delegate of the family's, the decision
   the list and the grid already took.
+- `MaterialBottomNavigation`, the rail's other half: the few destinations a
+  phone keeps where the thumb reaches, a row along the bottom rather than a
+  column at the side. The same answer to "which one am I on" - a pill of the
+  accent behind the icon, and the name under it turning to the accent with it -
+  because it is the same question asked along a different edge. The rest of the
+  row is held back rather than drawn in another colour: what says "this one" is
+  the accent, and the others have to be quiet for it to be heard.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and

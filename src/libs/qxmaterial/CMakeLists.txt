@@ -31,6 +31,7 @@ add_qtc_library(qxmaterial
     materialdatepicker.h materialdatepicker.cpp
     materialtimepicker.h materialtimepicker.cpp
     materialtable.h materialtable.cpp
+    materialbottomnavigation.h materialbottomnavigation.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
     materialskeleton.h materialskeleton.cpp
