@@ -4,6 +4,8 @@
  **/
 #include "tst_global.h"
 
+#include "qxtheme/qxthememotion.h"
+
 #include "qxmaterial/materialsnackbar.h"
 
 #include <QAccessible>
@@ -47,6 +49,7 @@ private slots:
     void theKeyboardIsAWayOutOfIt();
     void whatAnAssistiveToolReads();
     void aBarNobodyCanAnswerIsDrawnFainter();
+    void noMotionPutsItThereAtOnce();
 private:
     bool m_wasActive = false;
 };
@@ -198,6 +201,30 @@ void tst_MaterialSnackbar::aBarNobodyCanAnswerIsDrawnFainter()
     snackbar.setEnabled(false);
     const QImage faded = snackbar.grab().toImage();
     QVERIFY(faded != live);
+}
+
+/*! A snackbar arrives by rising from under the edge, which is the whole of its
+ *  entrance. Asked for less motion it is simply there - not a shorter rise, but
+ *  no rise at all.
+ */
+void tst_MaterialSnackbar::noMotionPutsItThereAtOnce()
+{
+    const bool was = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(true);
+
+    QWidget host;
+    host.resize(400, 300);
+    host.show();
+
+    MaterialSnackbar snackbar(&host);
+    snackbar.showMessage(QStringLiteral("Message sent"), 0);
+
+    const QPoint arrived = snackbar.pos();
+    QVERIFY(arrived.y() < host.height());
+    QTest::qWait(100);
+    QCOMPARE(snackbar.pos(), arrived);
+
+    QxTheme::setMotionReduced(was);
 }
 
 TEST_ADD(tst_MaterialSnackbar)

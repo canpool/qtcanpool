@@ -4,6 +4,8 @@
  **/
 #include "tst_global.h"
 
+#include "qxtheme/qxthememotion.h"
+
 #include "qxmaterial/materialprogressring.h"
 
 #include "qxtheme/qxthememanager.h"
@@ -46,6 +48,7 @@ private slots:
     void theArcGrowsAndShrinksAsItGoesRound();
     void whatAnAssistiveToolReads();
     void aRingNobodyCanUseIsDrawnFainter();
+    void noMotionStopsTheSweep();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -170,6 +173,36 @@ void tst_MaterialProgressRing::aRingNobodyCanUseIsDrawnFainter()
     ring.setEnabled(false);
     const QImage faded = ring.grab().toImage();
     QVERIFY(faded != live);
+}
+
+/*! An arc that sweeps says something is happening. Asked for less motion it
+ *  stands still and says only that it is waiting - and the sweep comes back when
+ *  the switch goes back, or the case would pass on a ring that never moved.
+ */
+void tst_MaterialProgressRing::noMotionStopsTheSweep()
+{
+    const bool was = QxTheme::isMotionReduced();
+
+    QxTheme::setMotionReduced(true);
+    MaterialProgressRing still;
+    still.resize(still.sizeHint());
+    QVERIFY(still.isIndeterminate());
+    still.show();
+    QTest::qWait(120);
+    const QImage first = still.grab().toImage();
+    QTest::qWait(150);
+    QVERIFY(still.grab().toImage() == first);
+
+    QxTheme::setMotionReduced(false);
+    MaterialProgressRing turning;
+    turning.resize(turning.sizeHint());
+    turning.show();
+    QTest::qWait(120);
+    const QImage start = turning.grab().toImage();
+    QTest::qWait(150);
+    QVERIFY(turning.grab().toImage() != start);
+
+    QxTheme::setMotionReduced(was);
 }
 
 TEST_ADD(tst_MaterialProgressRing)

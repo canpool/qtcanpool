@@ -4,6 +4,8 @@
  **/
 #include "tst_global.h"
 
+#include "qxtheme/qxthememotion.h"
+
 #include "qxmaterial/materialslider.h"
 
 #include <QAccessible>
@@ -59,6 +61,7 @@ private slots:
     void itCarriesAValue();
     void thereAreNoMarksUnderTheTrack();
     void aTrackNobodyCanMoveIsDrawnFainter();
+    void noMotionPutsTheHandleThereAtOnce();
 };
 
 void tst_MaterialSlider::cleanup()
@@ -179,6 +182,30 @@ void tst_MaterialSlider::aTrackNobodyCanMoveIsDrawnFainter()
     slider.setEnabled(false);
     const QImage faded = slider.grab().toImage();
     QVERIFY(faded != live);
+}
+
+/*! A step travels when the theme lets it travel and lands at once when the user
+ *  has asked for less motion: the handle is where the value is, with no wait.
+ */
+void tst_MaterialSlider::noMotionPutsTheHandleThereAtOnce()
+{
+    const bool was = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(true);
+
+    MaterialSlider slider;
+    slider.resize(200, slider.sizeHint().height());
+    slider.show();
+    // The first frame after a window comes up is still settling into its own
+    // geometry; the reading is taken once it has.
+    QTest::qWait(120);
+    const QImage atRest = slider.grab().toImage();
+    slider.setValue(slider.maximum());
+    const QImage justAfter = slider.grab().toImage();
+    QVERIFY(justAfter != atRest);
+    QTest::qWait(200);
+    QVERIFY(slider.grab().toImage() == justAfter);
+
+    QxTheme::setMotionReduced(was);
 }
 
 TEST_ADD(tst_MaterialSlider)

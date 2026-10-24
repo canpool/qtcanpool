@@ -4,6 +4,8 @@
  **/
 #include "tst_global.h"
 
+#include "qxtheme/qxthememotion.h"
+
 #include "qxmaterial/materialdialog.h"
 
 #include <QAccessible>
@@ -101,6 +103,7 @@ private slots:
     void escapeIsTheWayOut();
     void theContentIsWhatTheDialogHolds();
     void whatAnAssistiveToolReads();
+    void noMotionArrivesWithoutAFade();
 private:
     bool m_wasActive = false;
 };
@@ -345,6 +348,24 @@ void tst_MaterialDialog::whatAnAssistiveToolReads()
     QVERIFY(iface);
     QCOMPARE(iface->role(), QAccessible::Dialog);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! Reduced motion is not a shorter arrival, it is no arrival: the card is there
+ *  at full weight in the frame it was opened in.
+ */
+void tst_MaterialDialog::noMotionArrivesWithoutAFade()
+{
+    const bool was = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(true);
+
+    Page page;
+    MaterialDialog dialog(&page.window);
+    dialog.setTitle(QStringLiteral("Discard draft?"));
+    dialog.show();
+
+    QCOMPARE(dialog.windowOpacity(), 1.0);
+
+    QxTheme::setMotionReduced(was);
 }
 
 TEST_ADD(tst_MaterialDialog)

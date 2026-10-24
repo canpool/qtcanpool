@@ -4,6 +4,8 @@
  **/
 #include "tst_global.h"
 
+#include "qxtheme/qxthememotion.h"
+
 #include "qxmaterial/materialswitch.h"
 
 #include "qxtheme/qxthememanager.h"
@@ -46,6 +48,7 @@ private slots:
     void theSentenceIsItsName();
     void whatAnAssistiveToolReads();
     void aSwitchNobodyCanFlipIsDrawnFainter();
+    void noMotionCrossesAtOnce();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -156,6 +159,28 @@ void tst_MaterialSwitch::aSwitchNobodyCanFlipIsDrawnFainter()
 
     // And it stays where it was: fading is not flipping.
     QVERIFY(!materialSwitch.isOn());
+}
+
+/*! The handle crosses on a Material duration, and no duration is a crossing that
+ *  has already happened: the switch stands in its new state at once.
+ */
+void tst_MaterialSwitch::noMotionCrossesAtOnce()
+{
+    const bool was = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(true);
+
+    MaterialSwitch materialSwitch;
+    materialSwitch.resize(materialSwitch.sizeHint());
+    materialSwitch.show();
+    QTest::qWait(120);
+    const QImage off = materialSwitch.grab().toImage();
+    materialSwitch.setOn(true);
+    const QImage justAfter = materialSwitch.grab().toImage();
+    QVERIFY(justAfter != off);
+    QTest::qWait(200);
+    QVERIFY(materialSwitch.grab().toImage() == justAfter);
+
+    QxTheme::setMotionReduced(was);
 }
 
 TEST_ADD(tst_MaterialSwitch)
