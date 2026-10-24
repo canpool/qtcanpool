@@ -10,6 +10,7 @@
 #include "qxtheme/qxthememotion.h"
 
 #include <QAccessible>
+#include <QImage>
 #include <QLabel>
 
 QX_FLUENT_USE_NAMESPACE
@@ -33,6 +34,7 @@ private slots:
     void openingGivesTheBodyRoom();
     void reduceMotionOpensItAtOnce();
     void itIsAButtonThatOpensSomething();
+    void aHeaderNobodyCanOpenIsDrawnFaded();
 private:
     bool m_wasReduced = false;
     bool m_wasActive = false;
@@ -115,6 +117,30 @@ void tst_FluentExpander::itIsAButtonThatOpensSomething()
     QVERIFY(openIface);
     QVERIFY(openIface->state().expanded);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(openIface));
+}
+
+/*! A header nobody can open is drawn faded, and does not open either: the
+ *  chevron still points at a body it will not show, which is the part that
+ *  makes the promise. */
+void tst_FluentExpander::aHeaderNobodyCanOpenIsDrawnFaded()
+{
+    FluentExpander ready;
+    ready.resize(200, 60);
+    ready.setTitle(QStringLiteral("Advanced"));
+    const QImage live = ready.grab().toImage();
+
+    FluentExpander faded;
+    faded.resize(200, 60);
+    faded.setTitle(QStringLiteral("Advanced"));
+    // Pinned, so only the family's own ink can make the frames differ.
+    qtcPinDisabledColours(&faded);
+    faded.setEnabled(false);
+
+    QTest::mousePress(&faded, Qt::LeftButton, Qt::NoModifier, QPoint(100, 20));
+    QTest::mouseRelease(&faded, Qt::LeftButton, Qt::NoModifier, QPoint(100, 20));
+
+    QVERIFY(!faded.isExpanded());
+    QVERIFY(faded.grab().toImage() != live);
 }
 
 TEST_ADD(tst_FluentExpander)

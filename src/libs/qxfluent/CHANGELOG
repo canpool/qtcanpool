@@ -128,6 +128,10 @@ Bugfix
   in the same ink whether the control could be used or not, which is a face
   that promises what the hand will not get. Both are drawn faded now, the way
   every other control in the family already was.
+- A `FluentExpander` header nobody could open looked exactly like one they
+  could: the click was taken and did nothing, and the chevron went on pointing
+  at a body it would not show. The header is drawn faded now, for the same
+  reason and at the same strength as the rest of the family.
 
 0.1.2
 ---

@@ -20,6 +20,10 @@ constexpr qreal kHeaderHeight = 40.0;
 constexpr qreal kChevronInset = 12.0;
 constexpr qreal kChevronSize = 8.0;
 constexpr qreal kTitleGap = 16.0;
+
+// A header nobody can open is drawn faded, the way every other control is: a
+// chevron that still points at a body it will not show is a promise.
+constexpr qreal kDisabledOpacity = 0.4;
 }   // namespace
 
 class FluentExpanderPrivate
@@ -173,6 +177,7 @@ void FluentExpander::paintContent(QPainter *painter)
 {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     // The chevron turns as the body comes out: a triangle that is half way
     // between pointing at the body and pointing into it is what tells the eye
@@ -192,6 +197,7 @@ void FluentExpander::paintContent(QPainter *painter)
     painter->save();
     painter->setFont(FluentType::font(FluentType::Ramp::Body));
     painter->setPen(textColor());
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     const QRectF title(kChevronInset + kChevronSize + kTitleGap, 0.0,
                        width() - kChevronInset - kChevronSize - kTitleGap, kHeaderHeight);
     painter->drawText(title, Qt::AlignLeft | Qt::AlignVCenter, d_ptr->title);
