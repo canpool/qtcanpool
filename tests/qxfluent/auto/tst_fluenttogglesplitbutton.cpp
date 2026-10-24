@@ -51,6 +51,7 @@ private slots:
     void aPressIsAnsweredByTheHalfItStartedOn();
     void theKeyboardTogglesAndOpens();
     void beingOnIsWashedInTheAccent();
+    void aCommandNobodyCanPressIsDrawnFainter();
     void anEmptyMenuIsNotOpened();
     void theMenuIsTheButtonsOwn();
     void whatAnAssistiveToolReads();
@@ -243,6 +244,29 @@ void tst_FluentToggleSplitButton::whatAnAssistiveToolReads()
     QVERIFY(onIface->state().checked);
     QCOMPARE(onIface->text(QAccessible::Name), QStringLiteral("Pin"));
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(onIface));
+}
+
+/*! A command nobody can press is written a step down - the words, the icon and
+ *  the chevron - and neither half answers. Pinned to the active colours first, so
+ *  the frame that differs is the button's own drawing.
+ */
+void tst_FluentToggleSplitButton::aCommandNobodyCanPressIsDrawnFainter()
+{
+    FluentToggleSplitButton button;
+    giveSize(&button);
+    button.setText(QStringLiteral("Pin"));
+    button.show();
+    qtcPinDisabledColours(&button);
+
+    const QImage live = button.grab().toImage();
+    button.setEnabled(false);
+    const QImage faded = button.grab().toImage();
+    QVERIFY(faded != live);
+
+    QSignalSpy toggled(&button, &FluentToggleSplitButton::toggled);
+    QTest::mouseClick(&button, Qt::LeftButton, Qt::NoModifier, QPoint(kBodyX, kHeight / 2));
+    QVERIFY(!button.isChecked());
+    QCOMPARE(toggled.count(), 0);
 }
 
 TEST_ADD(tst_FluentToggleSplitButton)

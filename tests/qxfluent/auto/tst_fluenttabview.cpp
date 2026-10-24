@@ -83,6 +83,7 @@ private slots:
     void theContentFollowsTheRoomItIsGiven();
     void closingIsAskedAboutNotDone();
     void theRowIsWalkedSideways();
+    void aRowNobodyCanChooseIsDrawnFainter();
     void whatAnAssistiveToolReads();
 };
 
@@ -209,6 +210,25 @@ void tst_FluentTabView::whatAnAssistiveToolReads()
     QAccessibleInterface *face = QAccessible::queryAccessibleInterface(view.get());
     QVERIFY(face);
     QCOMPARE(face->role(), QAccessible::PageTabList);
+}
+
+/*! A row of tabs nobody can choose is written a step down - every tab at once,
+ *  because the whole view is what was turned off. Pinned first, so the frame that
+ *  differs is the view's own drawing.
+ */
+void tst_FluentTabView::aRowNobodyCanChooseIsDrawnFainter()
+{
+    std::unique_ptr<FluentTabView> view(viewWith({QStringLiteral("One"), QStringLiteral("Two")}, false));
+    view->show();
+    qtcPinDisabledColours(view.get());
+
+    const QImage live = view->grab().toImage();
+    view->setEnabled(false);
+    const QImage faded = view->grab().toImage();
+    QVERIFY(faded != live);
+
+    // And the choice does not move: a tab nobody can look at is not one.
+    QCOMPARE(view->currentIndex(), 0);
 }
 
 TEST_ADD(tst_FluentTabView)

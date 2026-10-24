@@ -85,6 +85,7 @@ private Q_SLOTS:
     void takingTheDayInForceChoosesIt();
 
     void theAccessibleFaceIsATable();
+    void aCalendarNobodyCanUseIsDrawnFainter();
 };
 
 namespace
@@ -442,6 +443,27 @@ void tst_FluentCalendarView::theAccessibleFaceIsATable()
     QCOMPARE(face->text(QAccessible::Name), QStringLiteral("Calendar"));
     QCOMPARE(face->text(QAccessible::Value), QStringLiteral("2026-03-12"));
     QVERIFY(face->state().focusable);
+}
+
+/*! A calendar nobody can use is written a step down: the month's name, the day
+ *  numbers and the weekday heads, all at once. Pinned first, so what differs is
+ *  the view's own drawing rather than the palette's disabled colours.
+ */
+void tst_FluentCalendarView::aCalendarNobodyCanUseIsDrawnFainter()
+{
+    QWidget *page = makePage();
+    FluentCalendarView *view = makeView(page);
+    view->setVisibleMonth(QDate(2026, 3, 1));
+    qtcPinDisabledColours(view);
+
+    const QImage live = view->grab().toImage();
+    view->setEnabled(false);
+    const QImage faded = view->grab().toImage();
+    QVERIFY(faded != live);
+
+    // Still the month it was on: fading is not moving.
+    QCOMPARE(view->visibleMonth(), QDate(2026, 3, 1));
+    delete page;
 }
 
 TEST_ADD(tst_FluentCalendarView)
