@@ -51,6 +51,7 @@ private slots:
     void theOtherSideWhenThereIsNoRoom();
     void theSideItWasAskedFor();
     void theCrossDismissesIt();
+    void aTipNobodyCanUseIsDrawnFainter();
     void aTipWithNothingToPointAtIsNothing();
     void whatItSaysIsWhatItIs();
     void whatAnAssistiveToolReads();
@@ -126,6 +127,31 @@ void tst_FluentTeachingTip::theCrossDismissesIt()
 
     QVERIFY(!tip.isOpen());
     QCOMPARE(closed.count(), 1);
+}
+
+/*! A tip nobody can use keeps its paper and steps its writing down: the title,
+ *  the message and the cross fade together while the surface stays the surface.
+ *  The palette's disabled group is pinned first, so the only hand that can make
+ *  the two frames differ is the tip's own.
+ */
+void tst_FluentTeachingTip::aTipNobodyCanUseIsDrawnFainter()
+{
+    Scene scene(QSize(600, 600), QRect(250, 200, 40, 20));
+    FluentTeachingTip tip;
+    tip.setTarget(&scene.target);
+    tip.setTitle(QStringLiteral("Find what you need"));
+    tip.setMessage(QStringLiteral("The search keeps the filters you chose last time."));
+    tip.setOpen(true);
+    qtcPinDisabledColours(&tip);
+
+    const QImage live = tip.grab().toImage();
+    tip.setEnabled(false);
+    const QImage faded = tip.grab().toImage();
+    QVERIFY(faded != live);
+
+    // It is still there and still says what it is: fading is not dismissing.
+    QVERIFY(tip.isOpen());
+    QVERIFY(!tip.title().isEmpty());
 }
 
 /*! A tip with nothing to point at is not a tip: it is a sentence floating over

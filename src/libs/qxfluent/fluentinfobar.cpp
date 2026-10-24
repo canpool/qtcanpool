@@ -21,6 +21,9 @@ constexpr qreal kIconSize = 24.0;
 constexpr qreal kIconGap = 12.0;
 constexpr qreal kCloseSize = 24.0;
 constexpr qreal kLineGap = 2.0;
+// The step a control takes down when nobody can use it - the same .4 the
+// rest of the family keeps.
+constexpr qreal kDisabledOpacity = 0.4;
 
 // The severities, as colours: a theme has a role for a highlight and none for
 // "warning", so a bar carries these itself.
@@ -194,6 +197,9 @@ void FluentInfoBar::paintContent(QPainter *painter)
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    // A bar nobody can use is still a bar: the disc, the words and the cross
+    // all step down together rather than staying at full voice.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     // The disc: the severity, in its own colour, holding its own mark.
     const QRectF disc(kPadding, (height() - kIconSize) / 2.0, kIconSize, kIconSize);

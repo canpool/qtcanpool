@@ -26,6 +26,10 @@ constexpr qreal kGap = 8.0;
 constexpr qreal kWidth = 320.0;
 constexpr qreal kCloseSize = 24.0;
 constexpr qreal kIconGap = 12.0;
+
+// The step a control takes down when nobody can use it - the same .4 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.4;
 constexpr qreal kLineGap = 4.0;
 constexpr qreal kStrokeWidth = 1.0;
 constexpr qreal kStrokeOpacity = 0.10;
@@ -341,6 +345,9 @@ void FluentTeachingTip::paintContent(QPainter *painter)
 {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    // The surface stays a surface - it is the paper, not the writing - and the
+    // title, the body and the cross step down together.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     const QRectF body = bodyRect(this, d_ptr->side);
     const qreal right = body.right() - kPadding - kCloseSize - kIconGap;

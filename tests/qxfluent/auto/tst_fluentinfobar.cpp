@@ -35,6 +35,7 @@ private slots:
     void closingTakesItAwayAndSaysSo();
     void theRestOfTheBarDoesNotCloseIt();
     void aMessageIsAnotherLine();
+    void aBarNobodyCanUseIsDrawnFainter();
     void itIsAnAlert();
 private:
     bool m_hadOverride = false;
@@ -112,6 +113,33 @@ void tst_FluentInfoBar::aMessageIsAnotherLine()
     withMessage.setMessage(QStringLiteral("Your changes are on the disk."));
 
     QVERIFY(withMessage.sizeHint().height() > oneLine);
+}
+
+/*! A bar nobody can use is still read, but at a step down: the disc, the title,
+ *  the message and the cross all fade together. The palette's disabled group is
+ *  pinned first - Qt fades a turned-off widget by itself - so the only hand that
+ *  can make these two frames differ is the bar's own.
+ */
+void tst_FluentInfoBar::aBarNobodyCanUseIsDrawnFainter()
+{
+    FluentInfoBar bar;
+    bar.setTitle(QStringLiteral("Saved"));
+    bar.setMessage(QStringLiteral("Your changes are on the disk."));
+    bar.resize(320, bar.sizeHint().height());
+    qtcPinDisabledColours(&bar);
+
+    const QImage live = bar.grab().toImage();
+    bar.setEnabled(false);
+    const QImage faded = bar.grab().toImage();
+    QVERIFY(faded != live);
+
+    // Fainter, not gone, and no longer answering: the cross is a request the bar
+    // cannot take any more.
+    QVERIFY(bar.isOpen());
+    QSignalSpy closed(&bar, &FluentInfoBar::closed);
+    QTest::mousePress(&bar, Qt::LeftButton, Qt::NoModifier, QPoint(bar.width() - 24, bar.height() / 2));
+    QCOMPARE(closed.count(), 0);
+    QVERIFY(bar.isOpen());
 }
 
 /*! A bar is a message that stays, which is what an assistive tool calls an

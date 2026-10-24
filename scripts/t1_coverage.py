@@ -53,8 +53,8 @@ ANIMATES = r"QPropertyAnimation|QVariantAnimation|QAbstractAnimation|QTimeLine" 
 NA = {
     "nonwidget": ({"pointer", "keys", "focus", "disabled", "a11y", "rtl"},
                   "非控件（`QObject` 派生或命名空间）：不进焦点链、不产生可访问对象、无自身几何"),
-    "decoration": ({"pointer", "keys", "focus"},
-                   "纯装饰：不接收输入、不进入焦点链"),
+    "decoration": ({"pointer", "keys", "focus", "disabled"},
+                   "纯装饰：不接收输入、不进入焦点链，也没有「被禁用」这一状态可画"),
     "indicator": ({"pointer", "keys", "focus"},
                   "只作指示、不接受输入：不接收指针、不进入焦点链"),
     "tokens": ({"pointer", "keys", "focus", "disabled", "a11y", "rtl"},

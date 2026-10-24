@@ -67,6 +67,7 @@ private slots:
     void aStepBeforeTheLastIsAWayBack();
     void theHoverMarksTheStepUnderThePointer();
     void theKeyboardWalksThePath();
+    void aPathNobodyCanWalkIsDrawnFainter();
     void anEmptyPathIsNothing();
     void theStepInForceHasRoomForItsWord();
 };
@@ -160,6 +161,28 @@ void tst_FluentBreadcrumbBar::theKeyboardWalksThePath()
     QTest::keyClick(&bar, Qt::Key_Right);
     QTest::keyClick(&bar, Qt::Key_Enter);
     QCOMPARE(clicked.count(), 1);
+}
+
+/*! A path nobody can walk is still the path, written a step down - the steps,
+ *  the separators and the chevrons together, so the row keeps one voice. The
+ *  palette's disabled group is pinned first, leaving only the bar's own hand.
+ */
+void tst_FluentBreadcrumbBar::aPathNobodyCanWalkIsDrawnFainter()
+{
+    FluentBreadcrumbBar bar;
+    bar.setItems({QStringLiteral("Home"), QStringLiteral("Library"), QStringLiteral("This file")});
+    bar.resize(bar.sizeHint());
+    qtcPinDisabledColours(&bar);
+
+    const QImage live = bar.grab().toImage();
+    bar.setEnabled(false);
+    const QImage faded = bar.grab().toImage();
+    QVERIFY(faded != live);
+
+    // And the steps answer nothing: a way back that cannot be walked is not one.
+    QSignalSpy clicked(&bar, &FluentBreadcrumbBar::itemClicked);
+    QTest::mousePress(&bar, Qt::LeftButton, Qt::NoModifier, stepCenter(&bar, 0));
+    QCOMPARE(clicked.count(), 0);
 }
 
 /*! With nothing to show the bar is nothing: no path to read, and nothing that

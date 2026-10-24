@@ -21,6 +21,10 @@ constexpr qreal kStepPadding = 8.0;
 constexpr qreal kSeparatorWidth = 12.0;
 constexpr qreal kChevronSize = 5.0;
 
+// The step a control takes down when nobody can use it - the same .4 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.4;
+
 QPointF eventPos(const QMouseEvent *event)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -150,6 +154,9 @@ void FluentBreadcrumbBar::paintContent(QPainter *painter)
     }
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    // A path nobody can walk is still the path, written fainter: the steps, the
+    // separators and the chevron all step down together.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     for (int i = 0; i < d_ptr->items.count(); ++i) {
         const QRectF step = d_ptr->stepRect(i);

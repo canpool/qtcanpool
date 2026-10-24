@@ -132,6 +132,12 @@ Bugfix
   could: the click was taken and did nothing, and the chevron went on pointing
   at a body it would not show. The header is drawn faded now, for the same
   reason and at the same strength as the rest of the family.
+- A `FluentInfoBar`, a `FluentBreadcrumbBar` and a `FluentTeachingTip` each
+  took the pointer away when they were turned off and drew the same pixels
+  either way: the disc, the path and the tip's sentence stayed at full voice on
+  a face that could not be used. All three are drawn faded now, the content
+  only - a surface is the paper rather than the writing, and dimming it would
+  let the page through where the control stands.
 
 0.1.2
 ---
