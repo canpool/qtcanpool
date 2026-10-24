@@ -36,6 +36,13 @@ Feature
   with rows of forty-eight carrying actions - words, an icon, the check in
   the primary on the one in force, a hairline between groups - and the
   keyboard walking the ones that can be worked.
+- `MaterialListItem`, a row of a list that says one line or two - forty-eight
+  tall one, seventy-two two - with a leading icon, a trailing widget the
+  application puts there, the wash of being pointed at, and the accent under
+  the chosen row with its words in the accent too. `MaterialList` keeps the
+  rows in the order given and one of them in force: a click, or the keyboard
+  on a row, chooses it and says so twice - once for the click, once for the
+  choosing.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and

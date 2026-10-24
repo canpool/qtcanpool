@@ -63,16 +63,39 @@ void tst_MaterialCheckable::theThreeAnswersWearThreeFaces()
     MaterialCheckBox box;
     box.resize(box.sizeHint());
 
-    // A point inside the box that neither the tick nor the bar crosses.
-    const QPoint inside(6, 14);
-    box.setCheckState(Qt::Unchecked);
-    QCOMPARE(box.grab().toImage().pixelColor(inside), box.palette().color(QPalette::Window));
+    // The box is the eighteen-wide square at the row's left, and the answer
+    // is read where it is drawn rather than at a point guessed from the
+    // row's height: the height follows the font the platform brought, the
+    // square does not.
+    const auto accentPixels = [](const QImage &image, int *outside) {
+        int count = 0;
+        *outside = 0;
+        for (int y = 0; y < image.height(); ++y) {
+            for (int x = 0; x < image.width(); ++x) {
+                if (image.pixelColor(x, y) == kAccent) {
+                    ++count;
+                    if (x >= 18) {
+                        ++*outside;
+                    }
+                }
+            }
+        }
+        return count;
+    };
+    int outside = 0;
 
+    box.setCheckState(Qt::Unchecked);
+    // An empty box keeps the page: it asks for no accent at all.
+    QCOMPARE(accentPixels(box.grab().toImage(), &outside), 0);
     box.setCheckState(Qt::Checked);
-    QCOMPARE(box.grab().toImage().pixelColor(inside), kAccent);
+    // The answer is the primary, and it is the box that wears it.
+    QVERIFY(accentPixels(box.grab().toImage(), &outside) > 0);
+    QCOMPARE(outside, 0);
 
     box.setCheckState(Qt::PartiallyChecked);
-    QCOMPARE(box.grab().toImage().pixelColor(inside), kAccent);
+    // The partial answer is the primary too - the bar is drawn in it.
+    QVERIFY(accentPixels(box.grab().toImage(), &outside) > 0);
+    QCOMPARE(outside, 0);
 }
 
 /*! The label is half of the same answer: a press on the words turns the box

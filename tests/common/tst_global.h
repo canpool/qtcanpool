@@ -11,12 +11,17 @@
 #include <QtTest/QtTest>
 
 /*!
-
  * An offscreen platform without a font directory of its own writes no words:
  * every glyph comes out as the empty box, so a judgement read off a frame -
  * the prompt moved, the echo is not the words - cannot be read. Gives the
  * platform a font to write with when it has none; a platform that has fonts
  * answers differently and loses nothing.
+ *
+ * The font is only put in the database, not made the application's: making
+ * it the application's would remeasure every row of every test that runs
+ * after this one, and a judgement that reads a frame at a fixed point would
+ * then be reading a different layout. A test that needs to name the family
+ * asks the database for it.
  */
 inline void qtcGiveFonts()
 {
@@ -29,14 +34,6 @@ inline void qtcGiveFonts()
     if (families.isEmpty()) {
         QFontDatabase::addApplicationFont(QStringLiteral("C:/Windows/Fonts/segoeui.ttf"));
         QFontDatabase::addApplicationFont(QStringLiteral("C:/Windows/Fonts/arial.ttf"));
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        families = QFontDatabase::families();
-#else
-        families = QFontDatabase().families();
-#endif
-        if (!families.isEmpty()) {
-            QApplication::setFont(QFont(families.first()));
-        }
     }
 }
 
