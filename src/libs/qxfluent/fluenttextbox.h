@@ -93,14 +93,19 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     QAccessible::Role accessibleRole() const override;
+protected:
+    /*! The room at the trailing edge where the box's own answer stands - the
+     *  clear, here; a box that keeps a different answer in that room, as a
+     *  password's reveal does, paints it here. */
+    virtual QRectF clearRect() const;
+    /*! True when the box has something to erase and may be worked; false
+     *  otherwise. A box whose trailing room answers something other than the
+     *  clear says so here. */
+    virtual bool clearWanted() const;
 private:
     /*! The editor's room: after the icon, before the clear, the height of
      *  the box. */
     QRectF editorRect() const;
-    /*! The clear's room, while there is something to erase and the box may
-     *  be worked; empty otherwise. */
-    QRectF clearRect() const;
-    bool clearWanted() const;
     /*! Hands the editor the room it has now. */
     void updateEditor();
 

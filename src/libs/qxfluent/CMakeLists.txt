@@ -42,6 +42,7 @@ add_qtc_library(qxfluent
     fluenttooltip.h fluenttooltip.cpp
     fluenttextbox.h fluenttextbox.cpp
     fluentmenuflyout.h fluentmenuflyout.cpp
+    fluentpasswordbox.h fluentpasswordbox.cpp
     fluentwindowmaterial.h fluentwindowmaterial.cpp
     fluentreveal.h fluentreveal.cpp
 )

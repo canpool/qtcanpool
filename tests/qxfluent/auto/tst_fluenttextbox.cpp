@@ -26,17 +26,6 @@ QImage grabOf(QWidget *widget)
     return widget->grab().toImage();
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-QStringList fontFamilies()
-{
-    return QFontDatabase().families();
-}
-#else
-QStringList fontFamilies()
-{
-    return QFontDatabase::families();
-}
-#endif
 }   // namespace
 
 class tst_FluentTextBox : public QObject
@@ -57,17 +46,7 @@ private slots:
 void tst_FluentTextBox::init()
 {
     QxTheme::QxThemeManager::instance()->setAccentColor(kAccent);
-    // An offscreen platform without a font directory of its own writes no
-    // words at all, and the prompt is words: give the platform a font to
-    // write them with before anything here is read off a frame. A platform
-    // that has fonts answers differently and loses nothing.
-    if (fontFamilies().isEmpty()) {
-        QFontDatabase::addApplicationFont(QStringLiteral("C:/Windows/Fonts/segoeui.ttf"));
-        QFontDatabase::addApplicationFont(QStringLiteral("C:/Windows/Fonts/arial.ttf"));
-        if (!fontFamilies().isEmpty()) {
-            QApplication::setFont(QFont(fontFamilies().first()));
-        }
-    }
+    qtcGiveFonts();
 }
 
 void tst_FluentTextBox::cleanup()

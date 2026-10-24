@@ -4,9 +4,41 @@
  **/
 #pragma once
 
+#include <QtWidgets/QApplication>
+#include <QtGui/QFontDatabase>
 #include <QObject>
 #include <QVector>
 #include <QtTest/QtTest>
+
+/*!
+
+ * An offscreen platform without a font directory of its own writes no words:
+ * every glyph comes out as the empty box, so a judgement read off a frame -
+ * the prompt moved, the echo is not the words - cannot be read. Gives the
+ * platform a font to write with when it has none; a platform that has fonts
+ * answers differently and loses nothing.
+ */
+inline void qtcGiveFonts()
+{
+    QStringList families;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    families = QFontDatabase::families();
+#else
+    families = QFontDatabase().families();
+#endif
+    if (families.isEmpty()) {
+        QFontDatabase::addApplicationFont(QStringLiteral("C:/Windows/Fonts/segoeui.ttf"));
+        QFontDatabase::addApplicationFont(QStringLiteral("C:/Windows/Fonts/arial.ttf"));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        families = QFontDatabase::families();
+#else
+        families = QFontDatabase().families();
+#endif
+        if (!families.isEmpty()) {
+            QApplication::setFont(QFont(families.first()));
+        }
+    }
+}
 
 #define TEST_RUN(TestObject)                                                                                           \
     TestObject TestObject##_var;                                                                                       \

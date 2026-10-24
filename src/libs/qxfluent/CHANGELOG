@@ -34,6 +34,9 @@ Feature
   thirty-two carrying actions - words, an icon, the shortcut beside them, a
   check on the one in force, a hairline between groups, a heading naming
   them - and the keyboard walking the ones that can be worked.
+- `FluentPasswordBox`, the text box keeping a secret: the characters it
+  holds are drawn as the echo until the eye at the trailing edge is held
+  down - and they are the echo again the moment it is let go.
 
 0.1.2
 ---
