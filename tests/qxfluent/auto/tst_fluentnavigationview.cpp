@@ -133,6 +133,7 @@ private slots:
     void namingAFoldedDestinationOpensTheGroupsAboveIt();
     void aFoldedPaneOpensAGroupBesideItself();
     void pressingOutsideThePanelPutsItAway();
+    void thePanelIsAWindowWhoseCornersShowThrough();
     void whatAnAssistiveToolReads();
 };
 
@@ -553,6 +554,26 @@ void tst_FluentNavigationView::pressingOutsideThePanelPutsItAway()
     QTest::mouseClick(view.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(0));
     QVERIFY2(!popupOf(view.get()), "a press outside the panel puts it away");
     QCOMPARE(view->currentIndex(), 0);
+}
+
+/*! A panel has turned corners, and a corner is only turned where the room
+ *  outside it is the page rather than the panel's own window. On Windows a
+ *  window is translucent only when it is frameless as well, and the panel that
+ *  was not showed a black square in each of its four corners. */
+void tst_FluentNavigationView::thePanelIsAWindowWhoseCornersShowThrough()
+{
+    Hierarchy h;
+    std::unique_ptr<FluentNavigationView> view(h.view);
+    view->setPaneOpen(false);
+
+    QTest::mouseClick(view.get(), Qt::LeftButton, Qt::NoModifier, itemPoint(1));
+    QWidget *panel = popupOf(view.get());
+    QVERIFY2(panel, "a folded pane opens a panel beside the icon it belongs to");
+
+    QVERIFY2(panel->windowFlags().testFlag(Qt::FramelessWindowHint),
+             "a window with a frame is drawn over a background its corners do not show through");
+    QVERIFY2(panel->testAttribute(Qt::WA_TranslucentBackground), "the corners a panel leaves are unpainted");
+    QVERIFY2(panel->testAttribute(Qt::WA_NoSystemBackground), "and nothing may fill the room it left");
 }
 
 void tst_FluentNavigationView::whatAnAssistiveToolReads()

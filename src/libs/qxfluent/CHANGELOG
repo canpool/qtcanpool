@@ -100,6 +100,12 @@ Bugfix
   text does not fill - was answered with whichever row stood at that height.
   A row is the rectangle it is drawn in now, and the list hears the pointer
   while it moves, so the row under it lights.
+- The panel a folded pane opens beside an icon had a black square in each of
+  its four corners: the panel turns its corners, but a window is translucent
+  on Windows only when it has no frame as well, and this one kept its frame -
+  so the room the panel left unpainted was the window's own, filled in by the
+  system. The panel is a frameless window now, and the page shows through the
+  corners it does not cover.
 
 0.1.2
 ---

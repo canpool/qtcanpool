@@ -177,7 +177,12 @@ class NavigationFlyout : public QWidget
 {
 public:
     NavigationFlyout(QWidget *owner, const QColor &face, const QColor &ink, const QColor &accent)
-        : QWidget(owner, Qt::Popup)
+        // The frame is not the panel's: it is what keeps the panel's own
+        // window from being translucent on Windows at all. A frameless window
+        // is a layered one there, and a layered one is drawn over the desktop
+        // rather than over a background the system fills in - which is why the
+        // four corners this panel leaves unpainted came out black.
+        : QWidget(owner, Qt::Popup | Qt::FramelessWindowHint)
         , m_face(face)
         , m_ink(ink)
         , m_accent(accent)
