@@ -1,18 +1,5 @@
 Unreleased
 ---
-Bugfix
-- `FluentComboBox` read any release as an answer, including the one that
-  ended the click which opened the list. Where the list has to be laid over
-  the field - a window too small for it either side, a screen with no room -
-  that click came up on the first row and took it, so the list was gone
-  before the button was up: the click had asked for the list and got a choice
-  out of it. A row is answered by a click that began on it now, which is also
-  what keeps a drag off one answer from choosing another.
-- A row of `FluentComboBox`'s list was a height rather than a rectangle: a
-  press or a release beside the rows - the shadow's margin, or the width the
-  text does not fill - was answered with whichever row stood at that height.
-  A row is the rectangle it is drawn in now, and the list hears the pointer
-  while it moves, so the row under it lights.
 Feature
 - `FluentButton`, the command the page is built out of: three kinds say three
   weights of command (standard, accent, subtle), a face carries words or an
@@ -99,6 +86,20 @@ Feature
   is chosen by the pointer or walked to by the keyboard, and what counts as
   chosen is the selection mode's to say: one day, several, or a run of them
   between two ends, which is drawn as a run rather than as a scatter.
+
+Bugfix
+- `FluentComboBox` read any release as an answer, including the one that
+  ended the click which opened the list. Where the list has to be laid over
+  the field - a window too small for it either side, a screen with no room -
+  that click came up on the first row and took it, so the list was gone
+  before the button was up: the click had asked for the list and got a choice
+  out of it. A row is answered by a click that began on it now, which is also
+  what keeps a drag off one answer from choosing another.
+- A row of `FluentComboBox`'s list was a height rather than a rectangle: a
+  press or a release beside the rows - the shadow's margin, or the width the
+  text does not fill - was answered with whichever row stood at that height.
+  A row is the rectangle it is drawn in now, and the list hears the pointer
+  while it moves, so the row under it lights.
 
 0.1.2
 ---

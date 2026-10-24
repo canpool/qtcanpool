@@ -407,6 +407,17 @@ jobs:
         # are properties of the text rather than of a build.
         run: python3 scripts/check-encoding.py
 
+      - name: Check the library changelogs keep their shape
+        # Every library keeps one small document - the version in force, a rule
+        # under it, and one section per kind of change - and it is the only file
+        # in the tree that no compiler, test or formatter reads. A section that
+        # runs into the entry above it, a kind spelled its own way, or the same
+        # kind started a second time instead of added to differs from the right
+        # shape by one blank line, so a review does not catch it and the release
+        # notes read as a wall. scripts/check-changelog.py asserts the shape of
+        # the block still being written and leaves the published ones alone.
+        run: python3 scripts/check-changelog.py
+
   quality:
     # Coverage and sanitizers. Both need a full configure and a compiler, so
     # they share one job and one Qt install rather than paying for two. Linux-only

@@ -1,5 +1,28 @@
 Unreleased
 ---
+Feature
+- `QxToolTip`, the note a control explains itself with: it watches its
+  anchor, waits out an arrival before it opens, stays a while and goes, and
+  is the page turned inside out - the ink as the surface, the page's colour
+  as the text. It takes no mouse and no focus while it is up.
+- `QxPopupSurface`, the surface a set of answers opens into: it is drawn and
+  lifted off the page, it opens beside its anchor and keeps inside the
+  screen, and it goes away when the keyboard asks it to or the pointer lands
+  outside it. What a family carries on it - its radius and its content -
+  stays with the family.
+- `QxCalendarFlyout`, the month a date control opens: six weeks to the grid,
+  the weekdays named over it, the arrows to walk the months, and the day
+  taken standing in the accent - what falls outside the month dimmed rather
+  than gone, today left as a ring so a click elsewhere is not a loss. The
+  keyboard walks the days in all four directions, and the day is spoken once,
+  when it is taken. Which font the head and the weekday row wear, and how
+  deep the corners are drawn, is the family's to say.
+- `QxTimeFlyout`, the two columns an hour and a minute are taken from: an
+  hour of twenty-four beside a minute of sixty, six rows of each on show,
+  the taken one standing in a pill of the accent. The wheel looks and does
+  not take - a turn is not an answer - a click takes, and the arrow keys walk
+  the column the keyboard sits in. The row's font is the family's to say.
+
 Bugfix
 - The popup surface said `dismissed` twice when Escape put it away - once for
   the key, once again for the going - and once when every other hand put it
@@ -27,28 +50,6 @@ Bugfix
   stopped pointing at anything, so a field put away while its list was open
   took the process down with it. A surface goes with its anchor now, and says
   nothing on the way out - the hands that would have heard it are already gone.
-Feature
-- `QxToolTip`, the note a control explains itself with: it watches its
-  anchor, waits out an arrival before it opens, stays a while and goes, and
-  is the page turned inside out - the ink as the surface, the page's colour
-  as the text. It takes no mouse and no focus while it is up.
-- `QxPopupSurface`, the surface a set of answers opens into: it is drawn and
-  lifted off the page, it opens beside its anchor and keeps inside the
-  screen, and it goes away when the keyboard asks it to or the pointer lands
-  outside it. What a family carries on it - its radius and its content -
-  stays with the family.
-- `QxCalendarFlyout`, the month a date control opens: six weeks to the grid,
-  the weekdays named over it, the arrows to walk the months, and the day
-  taken standing in the accent - what falls outside the month dimmed rather
-  than gone, today left as a ring so a click elsewhere is not a loss. The
-  keyboard walks the days in all four directions, and the day is spoken once,
-  when it is taken. Which font the head and the weekday row wear, and how
-  deep the corners are drawn, is the family's to say.
-- `QxTimeFlyout`, the two columns an hour and a minute are taken from: an
-  hour of twenty-four beside a minute of sixty, six rows of each on show,
-  the taken one standing in a pill of the accent. The wheel looks and does
-  not take - a turn is not an answer - a click takes, and the arrow keys walk
-  the column the keyboard sits in. The row's font is the family's to say.
 
 0.1.0
 ---
