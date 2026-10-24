@@ -69,6 +69,12 @@ QColor darkestPixel(const QImage &image, const QRect &room)
     return darkest;
 }
 
+/*! How far apart two colours are, as the distance between them in the cube. */
+int distance(const QColor &a, const QColor &b)
+{
+    return qAbs(a.red() - b.red()) + qAbs(a.green() - b.green()) + qAbs(a.blue() - b.blue());
+}
+
 /*! Tell \a widget the pointer has arrived, the way the platform would. */
 void pointerArrives(QWidget *widget)
 {
@@ -271,9 +277,21 @@ void tst_MaterialToggleButtonGroup::aButtonThatIsOnWearsTheAccent()
                             .arg(off.width())
                             .arg(off.height())));
 
-    // And its label is the accent, while its neighbour's is the page's ink.
-    QVERIFY(accentPixels(frame, on) > 0);
-    QCOMPARE(accentPixels(frame, off), 0);
+    // And its label takes the accent, while its neighbour's stays the page's ink.
+    // Read as "which of the two the darkest pixel of the label stands nearer
+    // to", not as "a pixel of exactly the accent's colour": how solid a glyph
+    // comes out is the platform's font's business, and a thin one at fourteen
+    // points can be given no fully covered pixel at all.
+    // Both labels are drawn by the same font at the same size, so the two are
+    // compared with each other rather than with a colour: one leans toward the
+    // accent and the other away from it, whatever the platform's glyphs are.
+    const QColor ink = row->palette().color(QPalette::WindowText);
+    const QColor onInk = darkestPixel(frame, on);
+    const QColor offInk = darkestPixel(frame, off);
+    QVERIFY2(distance(onInk, accent) < distance(offInk, accent),
+             qPrintable(QStringLiteral("%1 is not nearer the accent than %2").arg(onInk.name(), offInk.name())));
+    QVERIFY2(distance(offInk, ink) < distance(onInk, ink),
+             qPrintable(QStringLiteral("%1 is not nearer the ink than %2").arg(offInk.name(), onInk.name())));
 }
 
 /*! The pointer arriving and the button being pushed are two different washes. */
