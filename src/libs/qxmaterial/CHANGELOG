@@ -23,6 +23,10 @@ Feature
   gave - the track a surface one step from the page, the fill the primary -
   or a block that slides and only says the waiting has not stopped; asked for
   less motion, the block holds still in view instead of vanishing.
+- `MaterialTooltip`, a small plain chip in the inverse pair - the inverse
+  surface under the inverse on-surface - that says a word about the control
+  it waits beside, and says it without an arrow. The mechanism is the shared
+  tooltip in `qxcontrols`; Material's is the corner the chip turns by.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and

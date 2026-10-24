@@ -8,6 +8,7 @@ add_qtc_library(qxcontrols
     qxcontrolaccessible.h qxcontrolaccessible.cpp
     qxstatelayer.h qxstatelayer.cpp
     qxpopupsurface.h qxpopupsurface.cpp
+    qxtooltip.h qxtooltip.cpp
     qxringpainter.h qxringpainter.cpp
     qxshadowpainter.h qxshadowpainter.cpp
 )

@@ -1,6 +1,10 @@
 Unreleased
 ---
 Feature
+- `QxToolTip`, the note a control explains itself with: it watches its
+  anchor, waits out an arrival before it opens, stays a while and goes, and
+  is the page turned inside out - the ink as the surface, the page's colour
+  as the text. It takes no mouse and no focus while it is up.
 - `QxPopupSurface`, the surface a set of answers opens into: it is drawn and
   lifted off the page, it opens beside its anchor and keeps inside the
   screen, and it goes away when the keyboard asks it to or the pointer lands
