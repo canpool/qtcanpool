@@ -5,31 +5,51 @@
 #include "fluentpage.h"
 #include "fluentmaterialwindow.h"
 
+#include "qxfluent/fluentautosuggestbox.h"
+#include "qxfluent/fluentavatar.h"
 #include "qxfluent/fluentbadge.h"
 #include "qxfluent/fluentbreadcrumbbar.h"
+#include "qxfluent/fluentbutton.h"
+#include "qxfluent/fluentcalendarview.h"
 #include "qxfluent/fluentcard.h"
+#include "qxfluent/fluentcheckbox.h"
+#include "qxfluent/fluentcombobox.h"
 #include "qxfluent/fluentcommandbar.h"
 #include "qxfluent/fluentcontentdialog.h"
+#include "qxfluent/fluentdatepicker.h"
+#include "qxfluent/fluentdivider.h"
 #include "qxfluent/fluentdropdownbutton.h"
 #include "qxfluent/fluentexpander.h"
+#include "qxfluent/fluentgridview.h"
 #include "qxfluent/fluentinfobar.h"
+#include "qxfluent/fluentlistview.h"
+#include "qxfluent/fluentmenuflyout.h"
 #include "qxfluent/fluentnumberbox.h"
+#include "qxfluent/fluentpasswordbox.h"
+#include "qxfluent/fluentprogressbar.h"
 #include "qxfluent/fluentprogressring.h"
+#include "qxfluent/fluentradiobutton.h"
 #include "qxfluent/fluentrating.h"
 #include "qxfluent/fluentreveal.h"
 #include "qxfluent/fluentslider.h"
 #include "qxfluent/fluentswitch.h"
 #include "qxfluent/fluentteachingtip.h"
+#include "qxfluent/fluenttextbox.h"
+#include "qxfluent/fluenttimepicker.h"
 #include "qxfluent/fluenttogglesplitbutton.h"
 #include "qxfluent/fluenttokens.h"
+#include "qxfluent/fluenttooltip.h"
+#include "qxfluent/fluenttreeview.h"
 #include "qxfluent/fluentwindowmaterial.h"
 
 #include <QtGui/QPainter>
 #include <QComboBox>
+#include <QDate>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMenu>
 #include <QPushButton>
+#include <QTime>
 #include <QVBoxLayout>
 
 QX_FLUENT_USE_NAMESPACE
@@ -82,6 +102,57 @@ FluentPage::FluentPage(QWidget *parent)
     : GalleryPage(QStringLiteral("fluent"), parent)
 {
     addSection(tr("Input"));
+
+    auto *button = addControl<FluentButton>(QStringLiteral("fluentButton"), QStringLiteral("FluentButton"),
+                                            new FluentButton(this));
+    button->setText(tr("Accent"));
+    button->setKind(FluentButton::Kind::Accent);
+
+    auto *check = addControl<FluentCheckBox>(QStringLiteral("fluentCheckBox"), QStringLiteral("FluentCheckBox"),
+                                             new FluentCheckBox(this));
+    check->setText(tr("Keep me posted"));
+    check->setChecked(true);
+
+    // Two radios side by side: a choice of one among others is the whole of what
+    // a radio says, and one alone in a row says nothing.
+    auto *radioHost = new QWidget(this);
+    auto *radioLayout = new QHBoxLayout(radioHost);
+    radioLayout->setContentsMargins(0, 0, 0, 0);
+    radioLayout->setSpacing(24);
+    auto *everyDay = new FluentRadioButton(radioHost);
+    everyDay->setText(tr("Day"));
+    everyDay->setChecked(true);
+    auto *everyWeek = new FluentRadioButton(radioHost);
+    everyWeek->setText(tr("Week"));
+    radioLayout->addWidget(everyDay);
+    radioLayout->addWidget(everyWeek);
+    addControl<QWidget>(QStringLiteral("fluentRadioButton"), QStringLiteral("FluentRadioButton"), radioHost);
+
+    auto *combo = addControl<FluentComboBox>(QStringLiteral("fluentComboBox"), QStringLiteral("FluentComboBox"),
+                                             new FluentComboBox(this));
+    combo->setItems(QStringList{tr("Day"), tr("Week"), tr("Month")});
+    combo->setCurrentIndex(1);
+
+    auto *box = addControl<FluentTextBox>(QStringLiteral("fluentTextBox"), QStringLiteral("FluentTextBox"),
+                                          new FluentTextBox(this));
+    box->setPlaceholderText(tr("Search the gallery"));
+
+    auto *password = addControl<FluentPasswordBox>(QStringLiteral("fluentPasswordBox"),
+                                                   QStringLiteral("FluentPasswordBox"), new FluentPasswordBox(this));
+    password->setText(QStringLiteral("correct horse"));
+
+    auto *suggest = addControl<FluentAutoSuggestBox>(
+        QStringLiteral("fluentAutoSuggestBox"), QStringLiteral("FluentAutoSuggestBox"), new FluentAutoSuggestBox(this));
+    suggest->setPlaceholderText(tr("Type a fruit"));
+    suggest->setSuggestions(QStringList{tr("Apple"), tr("Apricot"), tr("Banana")});
+
+    auto *dayField = addControl<FluentDatePicker>(QStringLiteral("fluentDatePicker"),
+                                                  QStringLiteral("FluentDatePicker"), new FluentDatePicker(this));
+    dayField->setDate(QDate(2026, 10, 24));
+
+    auto *timeField = addControl<FluentTimePicker>(QStringLiteral("fluentTimePicker"),
+                                                   QStringLiteral("FluentTimePicker"), new FluentTimePicker(this));
+    timeField->setTime(QTime(9, 30));
 
     auto *onOff = addControl<FluentSwitch>(QStringLiteral("fluentSwitch"), QStringLiteral("FluentSwitch"),
                                            new FluentSwitch(this));
@@ -137,6 +208,39 @@ FluentPage::FluentPage(QWidget *parent)
     cardLayout->setContentsMargins(cardInset, cardInset, cardInset, cardInset);
     cardLayout->addWidget(new QLabel(tr("A card lifts what is on it."), card));
 
+    auto *divider = addControl<FluentDivider>(QStringLiteral("fluentDivider"), QStringLiteral("FluentDivider"),
+                                              new FluentDivider(this));
+    divider->setFixedWidth(240);
+
+    auto *avatar = addControl<FluentAvatar>(QStringLiteral("fluentAvatar"), QStringLiteral("FluentAvatar"),
+                                            new FluentAvatar(this));
+    avatar->setName(tr("Ada Lovelace"));
+
+    // The three views of a collection, one row each and the same shape of room:
+    // what tells them apart is the shape of what they show, not the data in it.
+    auto *list = addControl<FluentListView>(QStringLiteral("fluentListView"), QStringLiteral("FluentListView"),
+                                            new FluentListView(this));
+    list->setItems(QStringList{tr("Album"), tr("Artist"), tr("Genre")});
+    list->setFixedSize(240, 132);
+
+    auto *grid = addControl<FluentGridView>(QStringLiteral("fluentGridView"), QStringLiteral("FluentGridView"),
+                                            new FluentGridView(this));
+    grid->setItems(QStringList{tr("One"), tr("Two"), tr("Three"), tr("Four")});
+    grid->setFixedSize(240, 132);
+
+    auto *tree = addControl<FluentTreeView>(QStringLiteral("fluentTreeView"), QStringLiteral("FluentTreeView"),
+                                            new FluentTreeView(this));
+    QStandardItem *library = tree->addNode(tr("Library"));
+    tree->addChild(library, tr("Album"));
+    tree->addChild(library, tr("Single"));
+    tree->expandAll();
+    tree->setFixedSize(240, 132);
+
+    auto *calendar = addControl<FluentCalendarView>(QStringLiteral("fluentCalendarView"),
+                                                    QStringLiteral("FluentCalendarView"), new FluentCalendarView(this));
+    calendar->setSelectedDate(QDate(2026, 10, 24));
+    calendar->setFixedSize(320, 280);
+
     addSection(tr("Feedback"));
 
     auto *ring = addControl<FluentProgressRing>(QStringLiteral("fluentProgressRing"),
@@ -149,6 +253,21 @@ FluentPage::FluentPage(QWidget *parent)
     info->setTitle(tr("Saved"));
     info->setMessage(tr("The gallery wrote nothing to disk."));
     info->setOpen(true);
+
+    auto *progress = addControl<FluentProgressBar>(QStringLiteral("fluentProgressBar"),
+                                                   QStringLiteral("FluentProgressBar"), new FluentProgressBar(this));
+    progress->setMinimum(0);
+    progress->setMaximum(100);
+    progress->setValue(60);
+
+    // A tooltip is a window that arrives over the page, so the row is the thing
+    // it waits beside: hovering the button shows it, and a capture of the page
+    // cannot hold a second window - the same bargain the dialog row makes.
+    auto *tipAnchor = addControl<QPushButton>(QStringLiteral("fluentToolTip"), QStringLiteral("FluentToolTip"),
+                                              new QPushButton(tr("Hover me"), this));
+    auto *tooltip = new FluentToolTip(this);
+    tooltip->setAnchor(tipAnchor);
+    tooltip->setText(tr("A tooltip says a word about the control it waits beside."));
 
     // A dialog is a window that covers the page it was opened over, so the row
     // is what opens it rather than the dialog - a window capture cannot hold
@@ -197,6 +316,17 @@ FluentPage::FluentPage(QWidget *parent)
     sortMenu->addAction(tr("By name"));
     sortMenu->addAction(tr("By date"));
     sort->setMenu(sortMenu);
+
+    // A flyout is a surface of its own, like the dialog and the teaching tip: the
+    // row is the button it opens from.
+    auto *menuButton = addControl<QPushButton>(QStringLiteral("fluentMenuFlyout"), QStringLiteral("FluentMenuFlyout"),
+                                               new QPushButton(tr("Open the menu"), this));
+    auto *flyout = new FluentMenuFlyout(menuButton);
+    flyout->addAction(tr("Rename"));
+    flyout->addCheckable(tr("Show hidden"), true);
+    flyout->addSeparator();
+    flyout->addAction(tr("Delete"));
+    connect(menuButton, &QPushButton::clicked, flyout, &FluentMenuFlyout::open);
 
     addSection(tr("Effects and transients"));
 

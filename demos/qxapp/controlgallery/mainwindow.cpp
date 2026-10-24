@@ -153,13 +153,24 @@ QSize MainWindow::captureSize() const
     }
     const int chrome = height() - shown->viewport()->height();
 
-    // Every page, in the order the tabs were added: the tallest one decides the
-    // height, because a row below the fold is a row a capture cannot name.
-    for (const QString &id : m_styleOrder) {
-        const GalleryPage *page = m_pages.value(id, Q_NULLPTR);
-        if (page) {
-            size.setHeight(qMax(size.height(), page->height() + chrome));
-        }
+    // The page on show decides the height, and not the tallest page there is.
+    //
+    // A capture is of one page - the style decides which - and a window sized for
+    // the tallest one leaves a short page's picture mostly empty. An empty
+    // picture is not a neutral thing to have: the visual regression test reads a
+    // frame that is one colour from edge to edge as "the demo rendered nothing",
+    // and a page twice the height of another is enough to make it say so about
+    // the shorter one. Rows below the fold were the reason the tallest page used
+    // to be asked; the page on show has no rows below its own fold, which is the
+    // whole point of sizing it for itself.
+    //
+    // The two sides of a switch comparison still agree: both runs are asked for
+    // the style they end on, so both are sized by the same page.
+    const QWidget *page = shown->widget();
+    if (page) {
+        // Never shorter than the floor, and never shorter than the page on show
+        // plus the window round it.
+        size.setHeight(qMax(kCaptureHeight, page->height() + chrome));
     }
     return size;
 }
