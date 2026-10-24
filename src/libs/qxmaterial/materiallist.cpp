@@ -90,6 +90,15 @@ void MaterialList::addItem(MaterialListItem *item)
     // A row that is taken away is no longer the chosen one: the list does
     // not keep a name without a row behind it.
     connect(item, &QObject::destroyed, this, [this, item]() {
+        // The row may be going away because the list is, and a list deletes its
+        // own data before its children - so by the time the last row says it is
+        // gone, there is no list left to tell. Answering then is reading what
+        // has already been freed, which is the crash a list of rows took with it
+        // the first time a window was closed; the row's going is the whole of
+        // what there is to know at that point, and the list is going with it.
+        if (!d_ptr) {
+            return;
+        }
         if (d_ptr->current == item) {
             d_ptr->current = Q_NULLPTR;
             Q_EMIT currentItemChanged(Q_NULLPTR);

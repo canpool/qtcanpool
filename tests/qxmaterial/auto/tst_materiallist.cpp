@@ -53,6 +53,7 @@ private slots:
     void theTrailingWidgetStandsAfterTheWords();
     void theKeyboardAnswersForAPress();
     void whatAnAssistiveToolReads();
+    void aListGoesAwayWithItsRows();
 private:
     MaterialList *m_list = nullptr;
 };
@@ -271,6 +272,27 @@ void tst_MaterialList::whatAnAssistiveToolReads()
     state = iface->state();
     QCOMPARE(state.selected, true);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A list goes away with its rows, and a row does not ask the list anything on
+ *  the way out.
+ *
+ * There is nothing to assert beyond getting to the next line: the list deletes
+ * its own data before its children, so a row that answered the list's teardown
+ * was reading what had already been freed - the crash a window took with it the
+ * first time a gallery closed on a list of rows.
+ */
+void tst_MaterialList::aListGoesAwayWithItsRows()
+{
+    auto *list = new MaterialList;
+    list->resize(240, 160);
+    for (int i = 0; i < 3; ++i) {
+        list->addItem(QStringLiteral("Row %1").arg(i));
+    }
+    // The chosen row is the one that answers: a list with nothing chosen has
+    // nothing to give up, and the crash was in giving it up.
+    list->setCurrentItem(list->itemAt(1));
+    delete list;
 }
 
 TEST_ADD(tst_MaterialList)
