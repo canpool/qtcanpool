@@ -54,6 +54,16 @@ Feature
   columns beside it that change it: the day's hours and the hour's minutes,
   each a click away and the wheel away, and a time finished when one of its
   two has been taken - it comes back to the field.
+- `FluentListView`, rows of things to choose from, forty tall each: an icon and
+  a line of text with the pointer's wash over them and, once chosen, the accent
+  - a tint behind the row and the short rounded bar at its left that says which
+  row is the one in force. The container is Qt's own view, so a model, a
+  selection, the keyboard and an accessibility interface are the framework's;
+  what this decides is how a row looks.
+- `FluentGridView`, the same things laid out as tiles that wrap instead of rows
+  that stack - an icon over a centred name, the tint and the stroke of the
+  accent on the chosen one, and a reflow when the view is narrowed. Icon mode
+  of the same view, for the same reason.
 
 0.1.2
 ---
