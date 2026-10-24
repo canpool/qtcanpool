@@ -70,6 +70,13 @@ Feature
   more under it, turned to point down once it is open. The gutter is kept
   whether or not there is a mark in it, so a name does not jump sideways the
   moment its node gains a child.
+- `FluentAvatar`, a face for a name - what WinUI calls a person picture: round
+  and always round, twenty-four or forty or fifty-six, showing the picture when
+  there is one and the name's initials when there is not. The initials are the
+  first letters of the first two words, which is how a person is shortened when
+  the face is small; one word keeps one letter, because inventing a second
+  would be putting a letter in someone's mouth. A face answers no press and
+  takes no wash: an icon of a person must not look like something to click.
 
 0.1.2
 ---

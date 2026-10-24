@@ -50,6 +50,7 @@ add_qtc_library(qxfluent
     fluentlistview.h fluentlistview.cpp
     fluentgridview.h fluentgridview.cpp
     fluenttreeview.h fluenttreeview.cpp
+    fluentavatar.h fluentavatar.cpp
     fluentwindowmaterial.h fluentwindowmaterial.cpp
     fluentreveal.h fluentreveal.cpp
 )
