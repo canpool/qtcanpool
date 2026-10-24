@@ -26,6 +26,7 @@ private Q_SLOTS:
     void aFreeFieldTakesWritingThatMatchesNothing();
     void aClosedFieldDoesNot();
     void theListIsAsWideAsTheQuestion();
+    void aFieldNobodyCanTypeInIsDrawnFainter();
 };
 
 namespace
@@ -233,6 +234,25 @@ void tst_MaterialAutocomplete::theListIsAsWideAsTheQuestion()
 
     QVERIFY2(field->popup()->width() >= field->width(),
              qPrintable(QStringLiteral("list %1, field %2").arg(field->popup()->width()).arg(field->width())));
+}
+
+/*! A suggest field nobody can type in is written a step down - the fade lives in
+ *  the text field it is built on. Both palettes are pinned, so what differs
+ *  between the two frames is the family's own hand.
+ */
+void tst_MaterialAutocomplete::aFieldNobodyCanTypeInIsDrawnFainter()
+{
+    QWidget *page = makePage();
+    MaterialAutocomplete *field = makeField(page);
+    qtcPinDisabledColours(field);
+    qtcPinDisabledColours(field->lineEdit());
+
+    const QImage live = field->grab().toImage();
+    field->setEnabled(false);
+    const QImage faded = field->grab().toImage();
+    QVERIFY(faded != live);
+
+    delete page;
 }
 
 TEST_ADD(tst_MaterialAutocomplete)

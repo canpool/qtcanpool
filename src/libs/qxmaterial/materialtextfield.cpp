@@ -44,6 +44,10 @@ constexpr qreal kHairlineOpacity = 0.42;
 constexpr qreal kRestStroke = 1.0;
 constexpr qreal kFocusStroke = 2.0;
 
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
+
 /*! The line the text is typed on, in field coordinates: the editor's own row,
  *  which is not the middle of the field - the room above it belongs to the
  *  label once the label has floated up. A label reading as the prompt stands
@@ -235,6 +239,9 @@ void MaterialTextField::paintSurface(QPainter *painter)
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    // A field nobody can type in is written a step down: its container, its
+    // stroke and the indicator under it, all at the same hand.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     if (d_ptr->variant == Variant::Filled) {
         // The container: the page's ink, thinned, with the corners turned at
@@ -270,6 +277,7 @@ void MaterialTextField::paintContent(QPainter *painter)
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     // An outlined label floats onto the stroke, so it opens a window in it:
     // a stroke behind a twelve point label reads as struck through. The window
@@ -282,10 +290,9 @@ void MaterialTextField::paintContent(QPainter *painter)
         painter->fillRect(window, palette().color(QPalette::Window));
     }
 
-    QColor ink = textColor();
-    if (!isEnabled()) {
-        ink.setAlphaF(0.4);
-    }
+    // The label fades with the rest of the field rather than on its own account:
+    // a second step here would put it at a fifteenth of the page.
+    const QColor ink = textColor();
     painter->setPen(hasFocus() ? accentColor() : ink);
     painter->setFont(labelFont(progress));
     painter->drawText(target, Qt::AlignLeft | Qt::AlignVCenter, d_ptr->label);

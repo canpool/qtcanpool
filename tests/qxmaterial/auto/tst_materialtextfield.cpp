@@ -198,6 +198,7 @@ private slots:
     void theTextIsTheEditorsText();
     void enterIsReported();
     void theFieldIsEditableText();
+    void aFieldNobodyCanTypeInIsDrawnFainter();
 private:
     bool m_wasReduced = false;
     bool m_wasActive = false;
@@ -455,6 +456,28 @@ void tst_MaterialTextField::theFieldIsEditableText()
     QCOMPARE(iface->role(), QAccessible::EditableText);
 
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A field nobody can type in is written a step down: the box, the label and the
+ *  writing together. Both the face and the line edit inside it are pinned to the
+ *  active colours - Qt greys the line edit through its own palette, and with only
+ *  the face pinned the two frames would differ with the family's hand taken out.
+ */
+void tst_MaterialTextField::aFieldNobodyCanTypeInIsDrawnFainter()
+{
+    MaterialTextField field;
+    field.setVariant(MaterialTextField::Variant::Outlined);
+    field.setLabel(QStringLiteral("Email"));
+    field.setText(QStringLiteral("someone@example.com"));
+    field.resize(kFieldWidth, kFieldHeight);
+    field.show();
+    qtcPinDisabledColours(&field);
+    qtcPinDisabledColours(field.lineEdit());
+
+    const QImage live = field.grab().toImage();
+    field.setEnabled(false);
+    const QImage faded = field.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialTextField)

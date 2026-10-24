@@ -91,6 +91,7 @@ private slots:
     void thePointerLiftsIt();
     void itIsPressedByThePointerAndTheKeyboard();
     void whatItSaysIsItsName();
+    void aButtonNobodyCanPressIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -189,6 +190,24 @@ void tst_MaterialFAB::whatItSaysIsItsName()
     QCOMPARE(iface->role(), QAccessible::PushButton);
     QCOMPARE(iface->text(QAccessible::Name), QStringLiteral("Compose"));
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A floating action nobody can press is written a step down - its disc, its
+ *  glyph and its word together. Pinned first, so the frame that differs is the
+ *  button's own.
+ */
+void tst_MaterialFAB::aButtonNobodyCanPressIsDrawnFainter()
+{
+    MaterialFAB fab;
+    fab.setText(QStringLiteral("Compose"));
+    fab.resize(fab.sizeHint());
+    fab.show();
+    qtcPinDisabledColours(&fab);
+
+    const QImage live = fab.grab().toImage();
+    fab.setEnabled(false);
+    const QImage faded = fab.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialFAB)

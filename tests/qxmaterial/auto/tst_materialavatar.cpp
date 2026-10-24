@@ -45,6 +45,7 @@ private slots:
     void theShapeCutsTheEdge();
     void theToneChoosesTheStand();
     void whatAnAssistiveToolReads();
+    void aFaceNobodyCanUseIsDrawnFainter();
 private:
     bool m_hadOverride = false;
 };
@@ -228,6 +229,24 @@ void tst_MaterialAvatar::whatAnAssistiveToolReads()
     QCOMPARE(iface->text(QAccessible::Name), QStringLiteral("Grace Hopper"));
     QVERIFY(iface->state().readOnly);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A face nobody can use is written a step down: the letter or the picture, at
+ *  the same hand the rest of the family fades with. The palette's disabled group
+ *  is pinned first, so the frame that differs is the face's own.
+ */
+void tst_MaterialAvatar::aFaceNobodyCanUseIsDrawnFainter()
+{
+    MaterialAvatar avatar;
+    avatar.setName(QStringLiteral("Qx"));
+    avatar.resize(avatar.sizeHint());
+    avatar.show();
+    qtcPinDisabledColours(&avatar);
+
+    const QImage live = avatar.grab().toImage();
+    avatar.setEnabled(false);
+    const QImage faded = avatar.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialAvatar)

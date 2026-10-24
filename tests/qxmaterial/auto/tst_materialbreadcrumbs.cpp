@@ -135,6 +135,7 @@ private Q_SLOTS:
     void whereTheUserIsIsNeverFoldedAway();
     void aNewPathIsShownFolded();
     void theBarAnswersForItsPath();
+    void aPathNobodyCanWalkIsDrawnFainter();
 };
 
 void tst_MaterialBreadcrumbs::initTestCase()
@@ -440,6 +441,24 @@ void tst_MaterialBreadcrumbs::theBarAnswersForItsPath()
     QVERIFY(face);
     QCOMPARE(face->role(), QAccessible::List);
     QCOMPARE(bar->accessibleName(), QStringLiteral("Home / Projects / Qx"));
+}
+
+/*! A path nobody can walk is written a step down - the steps, the separators and
+ *  the fold together. Pinned first, leaving only the bar's own hand between the
+ *  two frames.
+ */
+void tst_MaterialBreadcrumbs::aPathNobodyCanWalkIsDrawnFainter()
+{
+    QWidget *page = makePage();
+    MaterialBreadcrumbs *bar = makeBar(page, shortPath());
+    qtcPinDisabledColours(bar);
+
+    const QImage live = bar->grab().toImage();
+    bar->setEnabled(false);
+    const QImage faded = bar->grab().toImage();
+    QVERIFY(faded != live);
+
+    delete page;
 }
 
 TEST_ADD(tst_MaterialBreadcrumbs)

@@ -35,6 +35,7 @@ private slots:
     void oneChoiceOfSeveralStandsAlone();
     void theRippleAnswersFromTheBoxNotTheRow();
     void whatAnAssistiveToolReads();
+    void aChoiceNobodyCanMakeIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     bool m_wasReduced = false;
@@ -182,6 +183,33 @@ void tst_MaterialCheckable::whatAnAssistiveToolReads()
     QVERIFY(radioFace->state().checkable);
     radio.setChecked(true);
     QVERIFY(QAccessible::queryAccessibleInterface(&radio)->state().checked);
+}
+
+/*! A choice nobody can make is written a step down - the box and the radio both,
+ *  since the two faces of one answer share one hand. Pinned first, so what
+ *  differs is the family's drawing rather than the palette's disabled group.
+ */
+void tst_MaterialCheckable::aChoiceNobodyCanMakeIsDrawnFainter()
+{
+    MaterialCheckBox box;
+    box.setText(QStringLiteral("Remember me"));
+    box.resize(box.sizeHint());
+    box.show();
+    qtcPinDisabledColours(&box);
+
+    const QImage boxLive = box.grab().toImage();
+    box.setEnabled(false);
+    QVERIFY(box.grab().toImage() != boxLive);
+
+    MaterialRadio radio;
+    radio.setText(QStringLiteral("Monthly"));
+    radio.resize(radio.sizeHint());
+    radio.show();
+    qtcPinDisabledColours(&radio);
+
+    const QImage radioLive = radio.grab().toImage();
+    radio.setEnabled(false);
+    QVERIFY(radio.grab().toImage() != radioLive);
 }
 
 TEST_ADD(tst_MaterialCheckable)

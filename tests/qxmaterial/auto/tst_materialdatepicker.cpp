@@ -25,6 +25,7 @@ private slots:
     void aDayTakenComesBackToTheField();
     void openingShowsTheMonthInForce();
     void nothingIsSaidForNoDay();
+    void aFieldNobodyCanOpenIsDrawnFainter();
 private:
     QWidget *m_page = nullptr;
 };
@@ -121,6 +122,25 @@ void tst_MaterialDatePicker::nothingIsSaidForNoDay()
     QCOMPARE(picker.date(), QDate(2026, 3, 15));
     QCOMPARE(picker.lineEdit()->text(), QStringLiteral("2026-03-15"));
     QCOMPARE(changedSpy.count(), 0);
+}
+
+/*! A picker nobody can open is written a step down. The palette is pinned on the
+ *  face and on the line edit inside it, so the only hand left that can move a
+ *  pixel is the family's own.
+ */
+void tst_MaterialDatePicker::aFieldNobodyCanOpenIsDrawnFainter()
+{
+    MaterialDatePicker picker(m_page);
+    picker.setDate(QDate(2026, 3, 15));
+    picker.resize(280, 56);
+    picker.show();
+    qtcPinDisabledColours(&picker);
+    qtcPinDisabledColours(picker.lineEdit());
+
+    const QImage live = picker.grab().toImage();
+    picker.setEnabled(false);
+    const QImage faded = picker.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialDatePicker)

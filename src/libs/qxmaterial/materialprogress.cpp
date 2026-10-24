@@ -24,6 +24,9 @@ namespace
 constexpr qreal kTrackHeight = 4.0;
 constexpr qreal kBlockFraction = 0.4;
 constexpr qreal kMutedOpacity = 0.24;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 
 /*! The accessible face of a track: how far along is a number, and an assistive
  *  tool reads it the same way it reads a slider's. */
@@ -191,6 +194,8 @@ QSize MaterialProgress::minimumSizeHint() const
 
 void MaterialProgress::paintSurface(QPainter *painter)
 {
+    // A bar nobody can use steps its track down.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     // The whole track: a surface one step from the page, the muted ink the
     // slider's track is made of.
     QColor muted = textColor();
@@ -207,6 +212,8 @@ void MaterialProgress::paintSurface(QPainter *painter)
 
 void MaterialProgress::paintContent(QPainter *painter)
 {
+    // And the fill that says how far along it is.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     const QRectF track(0.0, (height() - kTrackHeight) / 2.0, width(), kTrackHeight);
     const qreal radius = kTrackHeight / 2.0;
     QPainterPath path;

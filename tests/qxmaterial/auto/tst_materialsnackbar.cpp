@@ -46,6 +46,7 @@ private slots:
     void theOneThingToDoAboutItCanBeAskedFor();
     void theKeyboardIsAWayOutOfIt();
     void whatAnAssistiveToolReads();
+    void aBarNobodyCanAnswerIsDrawnFainter();
 private:
     bool m_wasActive = false;
 };
@@ -177,6 +178,26 @@ void tst_MaterialSnackbar::whatAnAssistiveToolReads()
     QCOMPARE(iface->role(), QAccessible::AlertMessage);
     QCOMPARE(iface->text(QAccessible::Name), QStringLiteral("Message sent"));
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A snackbar nobody can answer is still read, but a step down: the message and
+ *  the action together. Pinned first, so the difference measured is the bar's own.
+ */
+void tst_MaterialSnackbar::aBarNobodyCanAnswerIsDrawnFainter()
+{
+    QWidget host;
+    host.resize(400, 300);
+    host.show();
+
+    MaterialSnackbar snackbar(&host);
+    snackbar.showMessage(QStringLiteral("Message sent"), 0);
+    QTest::qWait(kEntranceWait);
+    qtcPinDisabledColours(&snackbar);
+
+    const QImage live = snackbar.grab().toImage();
+    snackbar.setEnabled(false);
+    const QImage faded = snackbar.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialSnackbar)

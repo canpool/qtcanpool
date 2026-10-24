@@ -37,6 +37,7 @@ private slots:
     void theWheelTurnsAColumnWithoutSayingSo();
     void aClickTakesWhatItLandsOn();
     void enterTakesItAwayAndEscapePutsItAway();
+    void aFieldNobodyCanOpenIsDrawnFainter();
 private:
     QWidget *m_page = nullptr;
 };
@@ -177,6 +178,24 @@ void tst_MaterialTimePicker::enterTakesItAwayAndEscapePutsItAway()
     QVERIFY(!picker.flyout()->isVisible());
     QCOMPARE(dismissedSpy.count(), 2);
     QCOMPARE(picker.time(), QTime(9, 5));
+}
+
+/*! A time field nobody can open is written a step down, for the reason the date
+ *  picker's case gives: both palettes pinned, one frame before and one after.
+ */
+void tst_MaterialTimePicker::aFieldNobodyCanOpenIsDrawnFainter()
+{
+    MaterialTimePicker picker(m_page);
+    picker.setTime(QTime(9, 5));
+    picker.resize(280, 56);
+    picker.show();
+    qtcPinDisabledColours(&picker);
+    qtcPinDisabledColours(picker.lineEdit());
+
+    const QImage live = picker.grab().toImage();
+    picker.setEnabled(false);
+    const QImage faded = picker.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialTimePicker)

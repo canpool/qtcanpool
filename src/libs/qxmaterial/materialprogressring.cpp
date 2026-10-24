@@ -28,6 +28,9 @@ constexpr qreal kTrackOpacity = 0.24;
 constexpr int kSweepDuration = 1500;
 constexpr qreal kShortestArc = 40.0;
 constexpr qreal kLongestArc = 300.0;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 
 // Qt measures arcs in sixteenths of a degree, from three o'clock, going
 // counter-clockwise. Material's ring starts at twelve.
@@ -170,6 +173,8 @@ void MaterialProgressRing::setIndeterminate(bool on)
 
 void MaterialProgressRing::paintSurface(QPainter *painter)
 {
+    // A ring nobody can use steps its track and its arc down together.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     const qreal inset = kStrokeWidth / 2.0;
     const QRectF area = QRectF(rect()).adjusted(inset, inset, -inset, -inset);
 

@@ -45,6 +45,7 @@ private slots:
     void theKeyboardTurnsIt();
     void theSentenceIsItsName();
     void whatAnAssistiveToolReads();
+    void aSwitchNobodyCanFlipIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -136,6 +137,25 @@ void tst_MaterialSwitch::whatAnAssistiveToolReads()
     QVERIFY(iface->state().checkable);
     QVERIFY(iface->state().checked);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A switch nobody can flip is written a step down - the track and the handle,
+ *  together. Pinned first, so the difference measured is the switch's own.
+ */
+void tst_MaterialSwitch::aSwitchNobodyCanFlipIsDrawnFainter()
+{
+    MaterialSwitch materialSwitch;
+    materialSwitch.resize(materialSwitch.sizeHint());
+    materialSwitch.show();
+    qtcPinDisabledColours(&materialSwitch);
+
+    const QImage live = materialSwitch.grab().toImage();
+    materialSwitch.setEnabled(false);
+    const QImage faded = materialSwitch.grab().toImage();
+    QVERIFY(faded != live);
+
+    // And it stays where it was: fading is not flipping.
+    QVERIFY(!materialSwitch.isOn());
 }
 
 TEST_ADD(tst_MaterialSwitch)

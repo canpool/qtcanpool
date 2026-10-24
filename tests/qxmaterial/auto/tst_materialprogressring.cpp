@@ -45,6 +45,7 @@ private slots:
     void howFarAlongIsDrawnAsAnArcOverATrack();
     void theArcGrowsAndShrinksAsItGoesRound();
     void whatAnAssistiveToolReads();
+    void aRingNobodyCanUseIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -151,6 +152,24 @@ void tst_MaterialProgressRing::whatAnAssistiveToolReads()
     QCOMPARE(ring.value(), 70);
     QCOMPARE(changed.count(), 1);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A ring nobody can use is written a step down, for the reason the bar's case
+ *  gives: the track and the arc that says how far along it is.
+ */
+void tst_MaterialProgressRing::aRingNobodyCanUseIsDrawnFainter()
+{
+    MaterialProgressRing ring;
+    ring.resize(ring.sizeHint());
+    ring.setIndeterminate(false);
+    ring.setValue(40);
+    ring.show();
+    qtcPinDisabledColours(&ring);
+
+    const QImage live = ring.grab().toImage();
+    ring.setEnabled(false);
+    const QImage faded = ring.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialProgressRing)

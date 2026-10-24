@@ -103,6 +103,7 @@ private Q_SLOTS:
     void pressingADestinationPutsItInForce();
     void theKeyboardWalksTheDestinations();
     void theDrawerAnswersAsAList();
+    void aPanelNobodyCanUseIsWrittenFainter();
 };
 
 namespace
@@ -337,6 +338,27 @@ void tst_MaterialDrawer::theDrawerAnswersAsAList()
     QCOMPARE(drawer->destinations().count(), 3);
     QCOMPARE(drawer->currentDestination(), drawer->destinations().at(0));
     QCOMPARE(drawer->destinations().at(1)->text(), QStringLiteral("Starred"));
+}
+
+/*! A panel nobody can use is written a step down: the destinations, the section
+ *  heads and the pill together. Pinned first, so the frame that differs is the
+ *  panel's own drawing.
+ */
+void tst_MaterialDrawer::aPanelNobodyCanUseIsWrittenFainter()
+{
+    QWidget *page = makePage();
+    MaterialDrawer *drawer = makeDrawer(page);
+    drawer->setVariant(MaterialDrawer::Variant::Persistent);
+    drawer->setOpen(true);
+    QTest::qWaitForWindowExposed(drawer);
+    qtcPinDisabledColours(drawer);
+
+    const QImage live = drawer->grab().toImage();
+    drawer->setEnabled(false);
+    const QImage faded = drawer->grab().toImage();
+    QVERIFY(faded != live);
+
+    delete page;
 }
 
 TEST_ADD(tst_MaterialDrawer)

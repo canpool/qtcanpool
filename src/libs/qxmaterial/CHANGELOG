@@ -233,6 +233,16 @@ Bugfix
   the handle, the names and the indicator, the segments and the frame around
   them, the circles and the ticks, the header's name and its chevron - at the
   same fraction the rest of the family keeps.
+- A text field said it was turned off by greying its label and nothing else: the
+  container, the stroke and the writing stood at full voice, so a field nobody
+  could type in looked ready for typing. The pickers and the suggest box built on
+  it said nothing at all - their labels are empty until the application names
+  them, and the label was the only part that faded. The whole field steps down
+  now, and the label with it rather than ahead of it.
+- A floating action, a snackbar and the two progress widgets took the press away
+  when they were turned off and drew the same pixels as before, which is a face
+  that looks usable and answers nothing. Each steps its own drawing down now, at
+  the fraction the rest of the family keeps.
 
 0.1.2
 ---

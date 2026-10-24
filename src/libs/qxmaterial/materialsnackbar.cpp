@@ -29,6 +29,9 @@ constexpr int kActionGap = 8;
 // How long it stays by default: long enough to read a sentence, not long
 // enough to wait for.
 constexpr int kDefaultDuration = 4000;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 
 QPoint eventPos(const QMouseEvent *event)
 {
@@ -209,6 +212,8 @@ QRectF MaterialSnackbar::chromeRect() const
 
 void MaterialSnackbar::paintSurface(QPainter *painter)
 {
+    // A bar nobody can answer keeps its paper, written a step down.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     const QRectF area = QRectF(rect());
     const qreal radius = cornerRadius();
 
@@ -224,6 +229,8 @@ void MaterialSnackbar::paintSurface(QPainter *painter)
 
 void MaterialSnackbar::paintContent(QPainter *painter)
 {
+    // Its message and its action step down with it.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     const QFontMetrics metrics(MaterialType::font(MaterialType::Scale::Body));
     const QColor ink = palette().color(QPalette::Window);
     const QRect action = d_ptr->actionRect();

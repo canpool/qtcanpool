@@ -63,6 +63,7 @@ private slots:
     void anEndlessTrackSlides();
     void reduceMotionStopsTheSlideWithoutErasingIt();
     void howFarAlongIsThereForAnAssistiveTool();
+    void aBarNobodyCanUseIsDrawnFainter();
 private:
     bool m_wasReduced = false;
     bool m_wasActive = false;
@@ -216,6 +217,24 @@ void tst_MaterialProgress::howFarAlongIsThereForAnAssistiveTool()
     QCOMPARE(progress.value(), 60);
 
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A bar nobody can use is written a step down: the track and the fill that says
+ *  how far along it is. Pinned first, leaving only the bar's own hand.
+ */
+void tst_MaterialProgress::aBarNobodyCanUseIsDrawnFainter()
+{
+    MaterialProgress progress;
+    progress.resize(120, 4);
+    progress.setIndeterminate(false);
+    progress.setValue(60);
+    progress.show();
+    qtcPinDisabledColours(&progress);
+
+    const QImage live = progress.grab().toImage();
+    progress.setEnabled(false);
+    const QImage faded = progress.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialProgress)

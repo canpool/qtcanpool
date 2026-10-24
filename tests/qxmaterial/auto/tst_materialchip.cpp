@@ -51,6 +51,7 @@ private slots:
     void theMarkTakesRoomWhenAFilterIsInForce();
     void theKeyboardPressesIt();
     void whatAnAssistiveToolReads();
+    void aChipNobodyCanPressIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -190,6 +191,28 @@ void tst_MaterialChip::whatAnAssistiveToolReads()
     QVERIFY(iface->state().checkable);
     QVERIFY(iface->state().checked);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A chip nobody can press is written a step down: its word and its mark,
+ *  together. Pinned first, so the difference measured is the chip's own.
+ */
+void tst_MaterialChip::aChipNobodyCanPressIsDrawnFainter()
+{
+    MaterialChip chip(MaterialChip::Kind::Assist);
+    chip.setText(QStringLiteral("Add to calendar"));
+    chip.resize(chip.sizeHint());
+    chip.show();
+    qtcPinDisabledColours(&chip);
+
+    const QImage live = chip.grab().toImage();
+    chip.setEnabled(false);
+    const QImage faded = chip.grab().toImage();
+    QVERIFY(faded != live);
+
+    // And the press is not taken: fading is not a promise that anything changed.
+    QSignalSpy pressed(&chip, &MaterialChip::clicked);
+    QTest::mouseClick(&chip, Qt::LeftButton);
+    QCOMPARE(pressed.count(), 0);
 }
 
 TEST_ADD(tst_MaterialChip)

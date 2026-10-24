@@ -54,6 +54,7 @@ private slots:
     void theKeyboardAnswersForAPress();
     void whatAnAssistiveToolReads();
     void aListGoesAwayWithItsRows();
+    void aListNobodyCanUseIsDrawnFainter();
 private:
     MaterialList *m_list = nullptr;
 };
@@ -293,6 +294,22 @@ void tst_MaterialList::aListGoesAwayWithItsRows()
     // nothing to give up, and the crash was in giving it up.
     list->setCurrentItem(list->itemAt(1));
     delete list;
+}
+
+/*! A list nobody can use is written a step down: its rows fade, because the rows
+ *  are the list. Pinned first, so what differs between the two frames is the
+ *  family's own hand rather than the palette's disabled group.
+ */
+void tst_MaterialList::aListNobodyCanUseIsDrawnFainter()
+{
+    m_list->addItem(QStringLiteral("Inbox"));
+    m_list->addItem(QStringLiteral("Starred"), QStringLiteral("3 unread"));
+    qtcPinDisabledColours(m_list);
+
+    const QImage live = m_list->grab().toImage();
+    m_list->setEnabled(false);
+    const QImage faded = m_list->grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialList)

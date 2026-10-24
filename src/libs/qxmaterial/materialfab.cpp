@@ -19,6 +19,9 @@ namespace
 // Material's FAB is fifty-six across, and its icon is twenty-four of that.
 constexpr qreal kSize = 56.0;
 constexpr qreal kIconSize = 24.0;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 }   // namespace
 
 class MaterialFABPrivate
@@ -125,6 +128,8 @@ QColor MaterialFAB::washColor() const
 
 void MaterialFAB::paintSurface(QPainter *painter)
 {
+    // A floating action nobody can press steps its disc and its ripple down.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     const QRectF surface = QRectF(contentsRect());
     const qreal radius = cornerRadius();
     const QxTheme::QxShadow shadow = MaterialElevation::shadow(d_ptr->level());
@@ -146,6 +151,8 @@ void MaterialFAB::paintSurface(QPainter *painter)
 
 void MaterialFAB::paintContent(QPainter *painter)
 {
+    // And its glyph with them, so the whole button keeps one voice.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     if (d_ptr->icon.isNull()) {
         return;
     }

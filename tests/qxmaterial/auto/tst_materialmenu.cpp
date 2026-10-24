@@ -31,6 +31,7 @@ private slots:
     void hoverWashesItsRow();
     void aCommandInForceWearsThePrimaryCheck();
     void theKeyboardWalksTheCommands();
+    void aCommandNobodyCanPickIsWrittenFainter();
 private:
     QWidget *m_anchor = nullptr;
 };
@@ -166,6 +167,24 @@ void tst_MaterialMenu::theKeyboardWalksTheCommands()
     QCOMPARE(triggeredSpy.count(), 1);
     QCOMPARE(actionSpy.count(), 1);
     QVERIFY(!menu.isVisible());
+}
+
+/*! A command nobody can pick is written a step down while its brothers keep
+ *  their voice - the row is still there to be read, which is the point of a
+ *  menu that says what is out of reach.
+ */
+void tst_MaterialMenu::aCommandNobodyCanPickIsWrittenFainter()
+{
+    MaterialMenu menu(m_anchor);
+    menu.addAction(QStringLiteral("Share"));
+    menu.addAction(QStringLiteral("Get link"));
+    menu.open();
+    qtcPinDisabledColours(&menu);
+
+    const QImage live = menu.grab().toImage();
+    menu.actions().at(0)->setEnabled(false);
+    const QImage faded = menu.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialMenu)

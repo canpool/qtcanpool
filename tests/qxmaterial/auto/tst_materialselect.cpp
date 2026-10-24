@@ -48,6 +48,7 @@ private slots:
     void aClickBesideTheRowsIsNoAnswer();
     void theRowUnderThePointerLights();
     void aClickOffTheListPutsItAway();
+    void aFieldNobodyCanOpenIsDrawnFainter();
 private:
     bool m_hadOverride = false;
 };
@@ -284,6 +285,24 @@ void tst_MaterialSelect::aClickOffTheListPutsItAway()
     QVERIFY(!select->popup()->isVisible());
     QCOMPARE(select->currentIndex(), 2);
     window.close();
+}
+
+/*! A select nobody can open is written a step down: the field, its label and the
+ *  chevron together. Pinned first, so the frame that differs is the field's own.
+ */
+void tst_MaterialSelect::aFieldNobodyCanOpenIsDrawnFainter()
+{
+    QWidget window;
+    window.resize(400, 400);
+    MaterialSelect *select = selectWith(&window, 4);
+    select->show();
+    QTest::qWaitForWindowExposed(&window);
+    qtcPinDisabledColours(select);
+
+    const QImage live = select->grab().toImage();
+    select->setEnabled(false);
+    const QImage faded = select->grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialSelect)
