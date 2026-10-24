@@ -132,6 +132,16 @@ Feature
   are shut where there is nowhere to go, so the row never rearranges itself
   under the pointer. The keyboard is one stop, on the page in force, with the
   arrows moving a page at a time and Home / End going to the ends.
+- `MaterialRating`, a row of stars filled up to the one that was chosen. Material
+  draws a star as a solid, so a star that is on has no outline of its own - the
+  accent is its edge as well as its inside - and an empty one is the only star
+  drawn as a line. What the pointer says replaces what is rated rather than
+  adding to it, because a row that kept four stars while the pointer was on the
+  second would be saying a click here would give four. `readOnly` is for a score
+  that is there to be read: nothing to press, nothing to preview, and not a place
+  in the way of the keyboard. MUI's precision - a rating that counts in halves -
+  is not here: it answers a different question, and both families have only ever
+  asked how many stars.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
