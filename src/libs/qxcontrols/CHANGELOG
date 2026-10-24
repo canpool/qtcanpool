@@ -1,5 +1,10 @@
 Unreleased
 ---
+Bugfix
+- The popup surface said `dismissed` twice when Escape put it away - once for
+  the key, once again for the going - and once when every other hand put it
+  away. The answer is said by the going now, wherever the hand came from, and
+  says itself once.
 Feature
 - `QxToolTip`, the note a control explains itself with: it watches its
   anchor, waits out an arrival before it opens, stays a while and goes, and

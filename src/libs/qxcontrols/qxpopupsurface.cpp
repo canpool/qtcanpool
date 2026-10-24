@@ -134,7 +134,9 @@ void QxPopupSurface::paintEvent(QPaintEvent *event)
 void QxPopupSurface::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
-        Q_EMIT dismissed();
+        // The going-away is announced by the hide, which is where every
+        // other hand that puts the surface away announces it too: one
+        // answer, said once.
         close();
         event->accept();
         return;

@@ -29,6 +29,11 @@ Feature
   under a hairline, the prompt that goes when the words come, an icon before
   them for what the box is for, a clear at the right that empties the box
   and says so, and the accent along the foot while the keyboard is in.
+- `FluentMenuFlyout`, the surface a list of commands opens into, drawn by the
+  family on the shared popup surface instead of styled into a QMenu: rows of
+  thirty-two carrying actions - words, an icon, the shortcut beside them, a
+  check on the one in force, a hairline between groups, a heading naming
+  them - and the keyboard walking the ones that can be worked.
 
 0.1.2
 ---
