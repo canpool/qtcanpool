@@ -129,6 +129,9 @@ themes->setTheme(QStringLiteral("fluent-dark"));
 | `QxRingPainter` | 描边（焦点环等）绘制 |
 | `QxShadowPainter` | 九宫格缓存的投影绘制：`paint(painter, rect, radius, color, shadow)` |
 | `QxControlAccessible` | 无障碍桥：`accessibleRole()` / `fillAccessibleState()`；滑块与圆环另实现 `QAccessibleValueInterface` |
+| `QxPopupSurface`（4.7.3） | 弹层表面：带阴影的圆角面 + 锚点三段定位（下方 / 翻转 / 内缩）+ 关外点击 + Esc → `dismissed()`；子类只答 `contentSizeHint()` / `paintContent()` 两个钩子。菜单、下拉、日历、建议列表都是它的消费者 |
+| `QxToolTip`（4.7.3） | 提示的**时序**（延迟 400 ms、停留 5 s、焦点到达也显示、锚点隐藏即收）与窗口处理，画法留给子类 |
+| `QxCalendarFlyout` / `QxTimeFlyout`（4.7.3） | 月份的宫格与时分两列：排布、取值、禁用日期与「今天」都在这一层，两族只换表面与行高 |
 
 ```cpp
 #include "qxcontrols/qxcontrol.h"
@@ -154,14 +157,24 @@ protected:
 | 类 | 说明 |
 | :--- | :--- |
 | 令牌（`fluenttokens.h`） | 四个命名空间：`FluentShape`（圆角 0/2/4/6/8/9999）、`FluentType`、`FluentElevation`、`FluentMotion` |
+| `FluentButton` | 命令按钮：三档 `Kind`（Standard / Accent / Subtle）说三种分量，脸可以是字、图标或两者；悬停洗色、按下不位移 |
+| `FluentDivider` | 1 px 分隔线：`Full` 通栏或 `Inset` 让过内容的缩进 |
+| `FluentCheckBox` / `FluentRadioButton` | 勾选框（含 `PartiallyChecked`）与单选（同父兄弟互斥）；标签在右，整行都答指针 |
 | `FluentSwitch` / `FluentSlider` | 开关与滑块 |
+| `FluentTextBox` / `FluentPasswordBox` / `FluentAutoSuggestBox` | 输入三件：单行（占位、前置 / 后置图标、清除钮，输入仍是 `QLineEdit` 的）/ 密码（尾部的眼睛**按住**才显示，松手即回）/ 边写边给建议（`QStringList` 起，Esc 收、Enter 补全） |
+| `FluentComboBox` | 非可编辑下拉：列表开在下方，下方没地方翻到上方，两侧都没地方就贴屏幕边内缩 |
 | `FluentNumberBox` | 数字框：字段是带细边的开口，步进是旁边一列两条尖角（各是一条命令，不是 QSpinBox 的角落箭头）；值是**真身**、文本是说法——非数字进不了值，离开字段把文本改回值 |
-| `FluentBadge` / `FluentCard` | 徽标与卡片 |
-| `FluentProgressRing` / `FluentRating` | 进度环与评分 |
-| `FluentExpander` / `FluentInfoBar` / `FluentBreadcrumbBar` | 展开器、信息条、面包屑 |
-| `FluentCommandBar` / `FluentTeachingTip` | 命令条与教学提示 |
+| `FluentMenuFlyout` | 自绘菜单面（`QxPopupSurface` 的消费者）：条目 / 分隔 / 小节标题 / 图标位 / 快捷键列 / 勾选态，键盘只走能用的那些 |
 | `FluentDropDownButton` / `FluentToggleSplitButton` | 菜单按钮（整面开菜单，菜单归按钮所有、应用只填）与切换分体按钮（左半是**保持按下的命令**、右半开菜单，从哪半按下就只算哪半） |
+| `FluentToolTip` | 四向提示（默认上方），延迟 400 ms 出现、停留 5 s，键盘焦点到达也显示 |
+| `FluentProgressRing` / `FluentProgressBar` / `FluentRating` | 环、线性进度条（determinate / indeterminate，减弱动效下停住但**不消失**）、评分 |
+| `FluentBadge` / `FluentCard` | 徽标与卡片 |
+| `FluentExpander` / `FluentInfoBar` / `FluentBreadcrumbBar` | 展开器、信息条、面包屑（最后一步是在力的位置，不可点） |
+| `FluentCommandBar` / `FluentTeachingTip` | 命令条与教学提示 |
 | `FluentContentDialog` | 内容对话框：纱幕 + 64 级阴影 + 圆角卡片，卡片里放应用给的内容；按钮是 `QPushButton`，按下只发信号、不自决，角色来回答「哪个是肯定、哪个是出口」 |
+| `FluentAvatar` | WinUI `PersonPicture` 的对应物：字母或图片，永远正圆；不吃指针也不吃焦点——脸放在列表里不该像可点 |
+| `FluentListView` / `FluentGridView` / `FluentTreeView` | 三个容器，都走 `QListView` / `QTreeView` + 自绘 delegate：列表（行 + 选择态）、网格、树（缩进 + 展开箭头由 delegate 画） |
+| `FluentCalendarView` / `FluentDatePicker` / `FluentTimePicker` | 完整日历（一年半的月份叠着滚，点名回到本年月、点年回到十年）与两个 picker——宫格 flyout 是日历的**输入面**，两者不互相替代 |
 | `FluentNavigationView` / `FluentTabView` | 骨架层：导航视图（目的地列 + 内容区，列可折叠成仅图标，折叠是视图自己的状态）与页签视图（选中的标记是页签下一条短横线；关闭先问，由应用决定） |
 | `FluentReveal` | 指针附近的揭示高亮 |
 | `FluentWindowMaterial` | 窗口材质（Mica / Acrylic；仅在 `WITH_QXWINDOW` 打开时可用，否则回答「没有」） |
@@ -173,8 +186,25 @@ Material 观感的同一层对应物（命名空间 `QxMaterial`，类 `Material
 | 类 | 说明 |
 | :--- | :--- |
 | 令牌（`materialtokens.h`） | 四个命名空间：`MaterialShape`（0/4/8/16/28/9999）、`MaterialType`（Label12 … Display36）、`MaterialElevation`（六档）、`MaterialMotion`（含 `Easing`） |
+| `MaterialButton` | 命令按钮：三变体 `Filled` / `Outlined` / `Text`；涟漪与 Fab / Chip 是同一份 `MaterialRipple` |
+| `MaterialCheckBox` / `MaterialRadio` | 勾选框（含第三态）与单选（同父兄弟互斥）；涟漪落在**框上**而不是整行 |
 | `MaterialSwitch` / `MaterialSlider` | 开关与滑块（无刻度：按下即跳、拖动跟随、键盘步进） |
 | `MaterialTextField` | 文本字段：标签是**字段名**，字段空着且没有键盘时当提示、一旦有其一就浮起来变小；Filled 有底色与指示线（得焦点时加粗转强调色），Outlined 的标签浮进描边的缺口里 |
+| `MaterialSelect` | 下拉选择：站在文本字段上（Filled / Outlined 沿用），列表开在下方、没地方翻上方、两侧都没地方就内缩 |
+| `MaterialAutocomplete` | 自动补全：`MaterialTextField` 的子类 + 共用弹层；「写了什么」与「选了什么」分开——`currentText()` 是结果，`text()` 是手上这行字 |
+| `MaterialMenu` | 菜单（`QxPopupSurface` 的消费者）：条目高 48、左侧图标或强调色勾位、分隔线 |
+| `MaterialList` / `MaterialListItem` | 列表与行：一行 48 / 两行 72，前导图标或 `MaterialAvatar`、尾随动作位，选中与悬停走洗色 |
+| `MaterialTable` | 表格：`QTableView` + 自绘 delegate，列名走 `QHeaderView` 子类（头部不经过 delegate），列宽可 `Stretch` 铺满 |
+| `MaterialImageList` | 图集：一格是「照片 + 一条横在某一缘的名字条」——MUI 的 `ImageListItem` / `ImageListItemBar` 在这里合成一件 |
+| `MaterialAvatar` | 头像：字母 / 图标 / 图片三源（图片 > 图标 > 字母），字母取名字首个非空字符；不是控件（不吃焦点与洗色） |
+| `MaterialTabs` / `MaterialStepper` | 页签（可滑动、强调色指示条贴底）与横向步骤条（完成 / 当前 / 待来三态，可点回退）；`Tabs` 与 `SegmentedButton` 是两种形态，不互相替代 |
+| `MaterialAccordion` | 折叠面板：单开 / 多开两模式，展开高度走动效；与 Fluent 的 `Expander` 是两族的各一件 |
+| `MaterialDatePicker` / `MaterialTimePicker` | 日期与时间 picker：字段 + 宫格 flyout / 时分转轮，宫格与时分轮与 Fluent 共用（`QxCalendarFlyout` / `QxTimeFlyout`） |
+| `MaterialTooltip` / `MaterialDivider` | 提示（反色对，无箭头，四向）与分隔线（`Full` / `Inset` / `Middle` 三变体） |
+| `MaterialProgress` | 线性进度条：determinate / indeterminate，轨道用 `SurfaceVariant`、条用 `Primary`（都取自令牌，不写死） |
+| `MaterialPagination` / `MaterialRating` / `MaterialToggleButtonGroup` | 页码条、评分、开关组（**没有一个必须开**——这是它与分段按钮的分界，写在头注释与库账里） |
+| `MaterialSpeedDial` / `MaterialBottomNavigation` / `MaterialDrawer` | 从 FAB 展开的动作、窄屏底部的导航条、临时 / 常驻的抽屉（`permanent` 不另做——那就是 rail） |
+| `MaterialBreadcrumbs` | 面包屑：与 Fluent 的 `BreadcrumbBar` **是两个控件**——这条路径会折，那一条把每一步都摆出来 |
 | `MaterialBadge` / `MaterialChip` / `MaterialCard` | 徽标、筹码（Assist / Filter）与卡片（Elevated / Filled / Outlined） |
 | `MaterialSegmentedButton` | 分段按钮：**整行一个键盘停靠点**，左右键移动选中项 |
 | `MaterialFAB` / `MaterialProgressRing` | 浮动操作按钮（带涟漪）与进度环（不确定态为伸缩弧） |

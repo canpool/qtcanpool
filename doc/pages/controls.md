@@ -46,6 +46,9 @@
 | 描边（焦点环） | 画法一致，只是颜色不同 | `QxRingPainter` |
 | 投影 | 两族都要，且都按「档位 → 一组数字」取 | `QxShadowPainter` |
 | 无障碍桥 | `QAccessible` 的接线与角色枚举与观感无关 | `QxControlAccessible` |
+| **弹层表面**（4.7.3） | 阴影圆角面 + 锚点三段定位（下方 / 翻转 / 内缩）+ 关外点击 + Esc，各族只换行高与颜色 | `QxPopupSurface` |
+| **提示的时序**（4.7.3） | 「延迟出现、停留五秒、焦点到达也显示」与观感无关；画法由子类答 | `QxToolTip` |
+| **日历宫格 / 时分轮**（4.7.3） | 一个月怎么排、一天怎么取值、时分的取值范围，答案相同 | `QxCalendarFlyout` / `QxTimeFlyout` |
 | **圆角档位** | **答案不同**（0/2/4/6/8 对 0/4/8/16/28） | **各自**：`FluentShape` / `MaterialShape` |
 | **动效时长与曲线** | **答案不同**（Fluent 一组、Material 另一组，且 Material 另分 `Easing`） | **各自**：`FluentMotion` / `MaterialMotion` |
 | **圆角档位（平台族）** | **答案又不同**（Cupertino 6/8/10/16 对 Harmony 4/8/16/24，与上一行两族也不同） | **各自**：`CupertinoShape` / `HarmonyShape` |
@@ -68,24 +71,44 @@ Mica Alt，因此那一个文件在 `WITH_QXWINDOW` 打开时才侧向依赖 `qx
 | 高度 / 投影 | `FluentElevation::Level` | `MaterialElevation::Level`（六档：偏移量 / 模糊 / 透明度各一组） | `CupertinoElevation::Level` | `HarmonyElevation::Level` |
 | 动效 | `FluentMotion::Duration` | `MaterialMotion::Duration` + `MaterialMotion::Easing` | `CupertinoMotion::Duration` + `CupertinoMotion::Easing` | `HarmonyMotion::Duration` + `HarmonyMotion::Easing` |
 | 指针高亮 | `FluentReveal`（指针附近的揭示） | `MaterialRipple`（按下处扩散的涟漪） | — | — |
+| 命令按钮 | `FluentButton`（`Standard` / `Accent` / `Subtle`） | `MaterialButton`（`Filled` / `Outlined` / `Text`） | `CupertinoButton`（Filled / Tinted / Plain） | `HarmonyButton`（本族三档） |
+| 勾选 / 单选 | `FluentCheckBox` / `FluentRadioButton` | `MaterialCheckBox` / `MaterialRadio`（涟漪在框上，不在整行） | — | — |
 | 开关 / 滑块 | `FluentSwitch` / `FluentSlider` | `MaterialSwitch` / `MaterialSlider`（无刻度） | `CupertinoSwitch` / `CupertinoSlider`（细轨 + 圆柄） | `HarmonySwitch` / `HarmonySlider`（按住时气泡浮出报值） |
 | 数字输入 | `FluentNumberBox`（值是真身、文本是说法） | — | — | — |
-| 文本输入 | — | `MaterialTextField`（标签是字段名，会浮起；Filled / Outlined） | `CupertinoTextField`（填充式 + 清除钮；`Kind::Search` 即搜索框） | — |
-| 菜单 / 分体按钮 | `FluentDropDownButton`（整面开菜单） / `FluentToggleSplitButton`（左半命令、右半菜单） | — | — | — |
+| 文本输入 | `FluentTextBox`（可挂前置 / 后置图标、可带清除钮） / `FluentPasswordBox`（揭示是**按住**） / `FluentAutoSuggestBox`（边写边给建议） | `MaterialTextField`（标签是字段名，会浮起；Filled / Outlined） | `CupertinoTextField`（填充式 + 清除钮；`Kind::Search` 即搜索框） | — |
+| 下拉 / 选择 | `FluentComboBox`（非可编辑；下方没地方翻到上方、贴边内缩） | `MaterialSelect`（站在文本字段上，Filled / Outlined 沿用） | — | — |
+| 菜单 / 分体按钮 | `FluentMenuFlyout`（自绘菜单面） / `FluentDropDownButton`（整面开菜单） / `FluentToggleSplitButton`（左半命令、右半菜单） | `MaterialMenu`（条目高 48，左侧图标 / 勾位） | — | — |
+| 提示 | `FluentToolTip` | `MaterialTooltip`（反色对，无箭头） | — | — |
+| 分隔 | `FluentDivider`（Full / Inset） | `MaterialDivider`（Full / Inset / Middle） | — | — |
 | 徽标 / 卡片 | `FluentBadge` / `FluentCard` | `MaterialBadge` / `MaterialCard`（三变体） | — | `HarmonyCard`（靠阴影立在页面上） |
-| 进度 | `FluentProgressRing` | `MaterialProgressRing`（不确定态为**伸缩弧**，不是定长旋转弧） | `CupertinoActivityIndicator`（八条辐条绕中心渐隐） | — |
+| 进度 | `FluentProgressRing`（环） / `FluentProgressBar`（线性） | `MaterialProgressRing`（不确定态为**伸缩弧**，不是定长旋转弧） / `MaterialProgress`（线性） | `CupertinoActivityIndicator`（八条辐条绕中心渐隐） | — |
 | 反馈 / 对话框 | `FluentInfoBar` / `FluentTeachingTip` / `FluentContentDialog`（Primary / Secondary / Close 三种角色） | `MaterialSnackbar` / `MaterialSkeleton` / `MaterialDialog`（Basic / FullScreen） | `CupertinoAlertDialog`（答案是**角色**在回答：Cancel 出口、其余确认） | — |
-| 列表 / 分组 | — | — | `CupertinoListSection` / `CupertinoListTile`（设置页的分组行） | — |
+| 列表 / 分组 | `FluentListView` / `FluentGridView` / `FluentTreeView` | `MaterialList`（一行 / 两行） / `MaterialImageList` / `MaterialTable` | `CupertinoListSection` / `CupertinoListTile`（设置页的分组行） | — |
+| 头像 | `FluentAvatar`（即 WinUI 的 PersonPicture） | `MaterialAvatar`（字母 / 图标 / 图片三源） | — | — |
+| 日历 / 日期时间 | `FluentCalendarView`（完整日历） / `FluentDatePicker` / `FluentTimePicker` | `MaterialDatePicker` / `MaterialTimePicker` | — | — |
+| 页签 / 步骤 | `FluentTabView`（见下行骨架） | `MaterialTabs`（可滑动、指示条贴底） / `MaterialStepper` | — | — |
+| 折叠面板 | `FluentExpander` | `MaterialAccordion`（单开 / 多开） | — | — |
+| 路径 / 页码 / 评分 / 开关组 | `FluentBreadcrumbBar` / `FluentRating` | `MaterialBreadcrumbs`（长路径会折） / `MaterialPagination` / `MaterialRating` / `MaterialToggleButtonGroup` | — | — |
+| 底部导航 / 抽屉 | — | `MaterialBottomNavigation` / `MaterialDrawer`（temporary / persistent） | — | — |
 | 骨架（导航 / 页签） | `FluentNavigationView` / `FluentTabView` | `MaterialNavigationRail` / `MaterialTopAppBar` | — | — |
 
-⚠️ **映射不等于对称**：各族都有对方没有的东西（Material 有文本字段，Fluent 有数字框与菜单
-按钮，Cupertino 有列表分组与活动指示器），缺的一侧写 `—`，意思是「本族没有这一件」，**不是**
-「借另一族那件来顶上」——混用两套控件集没有做过任何对齐工作（见 §一）。
+⚠️ **4.7.3 之后：基础件已齐，差异从「缺件」变成了「画法」**（完备性原则，见
+[4.7.3 计划](../design/4.7/4.7.3-TASKS.md) §零）——按钮、勾选 / 单选、文本输入、下拉 / 选择、
+菜单、提示、分隔、进度、列表 / 表格、头像、日历、页签、折叠、路径 / 页码 / 评分，两族**各有一件**；
+同名的不对齐（形状、动效、状态色各取自本族令牌），但选了一族不会因此少一样东西。
+
+剩下的不对称是**清单残余**，不是「这一族不做」：Material 只剩 `Timeline` 一件；Fluent 剩 `MenuBar`
+（`MenuFlyout` 不是它的替代）/ `Pivot` / `ScrollView` / `ColorPicker` / `SwipeControl` 五件，都**没有
+替代实现**，落点待圈定。Cupertino / HarmonyOS 仍只有骨架与样板三件（4.7.2 的范围），缺的一侧写 `—`
+意思是「本族没有这一件」，**不是**「借另一族那件来顶上」——混用两套控件集没有做过任何对齐工作（见 §一）。
 
 差异的**判据**（写新控件时照这个判断）：
 
 - **同名控件允许长得不一样**——两族的形状、动效、状态色各自取自本族令牌，不要求对齐。
 - **只有「两族答案相同」的机制才下沉**（见上一节的表）。
+- **形态相近的两件要写清分界，而不是合并**：`MaterialTabs`（页签，可滑动、可多行）与
+  `MaterialSegmentedButton`（分段，必须全见）互不替代；`MaterialToggleButtonGroup`（可以一个都
+  不在力）与分段（永远有一个在力）的分界同理。分界写在两处头注释与库账里，不靠读者猜。
 - **动效一律尊重减弱动效开关**：`QxTheme::isMotionReduced()` 为真时，涟漪不画、
   骨架屏停在呼吸中段、进度环停转——「动」的部分关掉，「在不在、是多少」的部分照旧。
 
