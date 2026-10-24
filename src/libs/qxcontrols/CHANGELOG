@@ -12,6 +12,21 @@ Bugfix
   away. The press is not replayed to a surface any more: `WA_NoMouseReplay` is
   the answer Qt's own menus and combo boxes give, and every surface here gives
   it now.
+- A surface had no hover at all. A widget is told where the pointer is while
+  it moves only when it asked to be told, and a surface never asked - so the
+  pointer crossed a list's rows and nothing lit under it. It asks now, and the
+  answer is one line for every surface there is.
+- A press that landed off the surface was measured from the surface's own
+  corner and answered as if it belonged: a click on the page behind arrived at
+  a list as a place inside it, and a row taken from the height alone answered
+  with whatever stood there - so a click that meant "put this away" picked an
+  answer instead. A surface reads a press outside itself as the pointer asking
+  for it to go, and goes.
+- A surface outlived its anchor: the list stayed up after the field it
+  belonged to was gone and went on reading its rows through a pointer that had
+  stopped pointing at anything, so a field put away while its list was open
+  took the process down with it. A surface goes with its anchor now, and says
+  nothing on the way out - the hands that would have heard it are already gone.
 Feature
 - `QxToolTip`, the note a control explains itself with: it watches its
   anchor, waits out an arrival before it opens, stays a while and goes, and

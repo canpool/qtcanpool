@@ -42,7 +42,25 @@ QxPopupSurface::QxPopupSurface(QWidget *anchor)
 {
     QX_SET_PRIVATE(d_ptr)
     d_ptr->anchor = anchor;
+    if (anchor) {
+        // A surface has nothing to stand beside once its anchor is gone, and
+        // everything it draws is read from the anchor - so it goes with the
+        // anchor rather than outliving it with a pointer that has stopped
+        // pointing at anything.
+        connect(anchor, &QObject::destroyed, this, [this]() {
+            // The anchor's own hands are still connected to this surface while
+            // it is being torn down, and a going announced now would reach them
+            // half gone - so the last going is a quiet one.
+            blockSignals(true);
+            hide();
+            deleteLater();
+        });
+    }
     setFocusPolicy(Qt::StrongFocus);
+    // A surface has rows that light under the pointer, and a widget is told
+    // where the pointer is only while a button is down unless it asked to be
+    // told always - so a list that never asked has no hover at all.
+    setMouseTracking(true);
     // A surface is opened by the press that lands on its anchor, and the grab
     // moves to it while that button is still down - so Qt replays the press to
     // the surface it has just opened. The replay arrives at the pointer's
@@ -151,6 +169,20 @@ void QxPopupSurface::keyPressEvent(QKeyEvent *event)
         return;
     }
     QWidget::keyPressEvent(event);
+}
+
+void QxPopupSurface::mousePressEvent(QMouseEvent *event)
+{
+    // While a surface is up it holds the pointer, so a press on the page behind
+    // arrives here too - measured from this window's corner, and outside it.
+    // That press asks for the surface to go, and it goes before it can answer
+    // anything with the place the press landed.
+    if (!rect().contains(event->pos())) {
+        close();
+        event->accept();
+        return;
+    }
+    QWidget::mousePressEvent(event);
 }
 
 void QxPopupSurface::hideEvent(QHideEvent *event)

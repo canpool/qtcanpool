@@ -8,6 +8,11 @@ Bugfix
   before the button was up: the click had asked for the list and got a choice
   out of it. A row is answered by a click that began on it now, which is also
   what keeps a drag off one answer from choosing another.
+- A row of `MaterialSelect`'s list was a height rather than a rectangle: a
+  press or a release beside the rows - the shadow's margin, or the width the
+  text does not fill - was answered with whichever row stood at that height.
+  A row is the rectangle it is drawn in now, and the list hears the pointer
+  while it moves, so the row under it lights.
 Feature
 - `MaterialButton`, the command the page is built out of: three variants say
   how much surface the command claims (filled, outlined, text), and the press

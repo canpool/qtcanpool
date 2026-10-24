@@ -45,6 +45,9 @@ private slots:
     void aRowIsFortyEightTall();
     void theSameChoiceSaidTwiceIsSilence();
     void theReleaseThatEndsTheOpeningClickIsNoAnswer();
+    void aClickBesideTheRowsIsNoAnswer();
+    void theRowUnderThePointerLights();
+    void aClickOffTheListPutsItAway();
 private:
     bool m_hadOverride = false;
 };
@@ -208,6 +211,77 @@ void tst_MaterialSelect::theReleaseThatEndsTheOpeningClickIsNoAnswer()
                         QPoint(select->popup()->width() / 2, firstRow));
 
     QVERIFY(select->popup()->isVisible());
+    QCOMPARE(select->currentIndex(), 2);
+    window.close();
+}
+
+/*! A place beside the rows is not a row.
+ *
+ *  The surface is a window with a shadow's margin around the list, and while
+ *  it is up the pointer belongs to it: everything the pointer does anywhere on
+ *  the screen arrives here with the place it happened measured from this
+ *  window's corner. A row read from the height alone answers clicks that
+ *  landed beside the list with whichever answer stands at that height.
+ */
+void tst_MaterialSelect::aClickBesideTheRowsIsNoAnswer()
+{
+    QWidget window;
+    window.resize(400, 400);
+    MaterialSelect *select = selectWith(&window, 4);
+    select->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+    select->setCurrentIndex(2);
+
+    select->showPopup();
+    QVERIFY(select->popup()->isVisible());
+
+    const QRect margin = select->popup()->contentsRect();
+    const QPoint beside(margin.left() / 2, int(margin.top() + 48 / 2.0));
+    QTest::mouseClick(select->popup(), Qt::LeftButton, Qt::NoModifier, beside);
+
+    QVERIFY(select->popup()->isVisible());
+    QCOMPARE(select->currentIndex(), 2);
+    window.close();
+}
+
+/*! The list lights the row under the pointer, and to know that it has to hear
+ *  the pointer: a widget is told where the mouse is while it moves only when
+ *  it asked to be. */
+void tst_MaterialSelect::theRowUnderThePointerLights()
+{
+    QWidget window;
+    window.resize(400, 400);
+    MaterialSelect *select = selectWith(&window, 4);
+    select->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+
+    select->showPopup();
+    QVERIFY(select->popup()->isVisible());
+    QVERIFY(select->popup()->hasMouseTracking());
+    window.close();
+}
+
+/*! A press that lands off the surface altogether is the pointer asking for it
+ *  to go, and it goes without carrying an answer out with it. */
+void tst_MaterialSelect::aClickOffTheListPutsItAway()
+{
+    QWidget window;
+    window.resize(400, 400);
+    MaterialSelect *select = selectWith(&window, 4);
+    select->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+    select->setCurrentIndex(2);
+
+    select->showPopup();
+    QVERIFY(select->popup()->isVisible());
+
+    const QPoint off(select->popup()->width() + 40, 20);
+    QTest::mouseClick(select->popup(), Qt::LeftButton, Qt::NoModifier, off);
+
+    QVERIFY(!select->popup()->isVisible());
     QCOMPARE(select->currentIndex(), 2);
     window.close();
 }

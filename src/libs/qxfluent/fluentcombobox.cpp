@@ -13,6 +13,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QScreen>
 #include <QtGui/QWheelEvent>
+#include <QtCore/QPointer>
 #include <QtWidgets/QApplication>
 #include <QtMath>
 #include <functional>
@@ -68,11 +69,11 @@ public:
 
     int count() const
     {
-        return m_combo->count();
+        return m_combo ? m_combo->count() : 0;
     }
     QString itemAt(int index) const
     {
-        return m_combo->items().value(index);
+        return m_combo ? m_combo->items().value(index) : QString();
     }
 
     /*! The rows the list can hold at once, which is also how far it scrolls
@@ -86,11 +87,12 @@ public:
     {
         const QFontMetrics metrics(FluentType::font(FluentType::Ramp::Body));
         int widest = 0;
-        const QStringList items = m_combo->items();
+        const QStringList items = m_combo ? m_combo->items() : QStringList();
         for (const QString &item : items) {
             widest = qMax(widest, metrics.horizontalAdvance(item));
         }
-        return QSize(qMax(m_combo->width(), int(2 * (kListPadding + kRowPadding) + widest + kChevronWidth)),
+        const int face = m_combo ? m_combo->width() : 0;
+        return QSize(qMax(face, int(2 * (kListPadding + kRowPadding) + widest + kChevronWidth)),
                      int(2 * kListPadding + qMin(count(), visibleRows()) * kRowHeight));
     }
 
@@ -123,7 +125,7 @@ public:
 
     void mouseMoveEvent(QMouseEvent *event) override
     {
-        m_hover = rowAt(eventPosOf(event).y() - contentRect().top());
+        m_hover = rowAt(eventPosOf(event));
         update();
     }
 
@@ -133,7 +135,13 @@ public:
         // its own is not an answer: the click that opened the list can end over
         // a row - the list does not always stand clear of the field - and that
         // click asked for the list, not for the first thing in it.
-        m_pressedRow = rowAt(eventPosOf(event).y() - contentRect().top());
+        // The surface answers a press that landed off it by going away, and a
+        // press that answered nothing else is no row of this list.
+        QxControls::QxPopupSurface::mousePressEvent(event);
+        if (!isVisible()) {
+            return;
+        }
+        m_pressedRow = rowAt(eventPosOf(event));
         update();
     }
 
@@ -141,7 +149,7 @@ public:
     {
         const int pressed = m_pressedRow;
         m_pressedRow = -1;
-        const int row = rowAt(eventPosOf(event).y() - contentRect().top());
+        const int row = rowAt(eventPosOf(event));
         // The same row as the press, and no dragging off one answer onto
         // another: a row is answered by a click, not by wherever a drag ends.
         if (row >= 0 && row == pressed) {
@@ -203,13 +211,22 @@ private:
 #endif
     }
 
-    /*! The row the y coordinate falls in, in offset terms; -1 when it falls
-     *  on the padding or past the list. */
-    int rowAt(qreal y) const
+    /*! The row the pointer is over, in offset terms; -1 when it is anywhere
+     *  else - the shadow's margin, the sides the rows do not fill, or past the
+     *  last row. While the list is up it holds the pointer, so everything the
+     *  pointer does anywhere on the screen arrives here measured from this
+     *  window's corner: a row taken from the height alone answers a click that
+     *  landed beside the list with whichever answer stands at that height. */
+    int rowAt(const QPointF &pos) const
     {
-        const int row = int((y - kListPadding) / kRowHeight);
+        const QRectF content = contentRect();
+        if (!content.contains(pos)) {
+            return -1;
+        }
+        const int row = int((pos.y() - content.top() - kListPadding) / kRowHeight);
         const int rows = qMin(count() - m_offset, visibleRows());
-        return (row >= 0 && row < rows) ? row : -1;
+        const bool across = pos.x() >= content.left() + kListPadding && pos.x() <= content.right() - kListPadding;
+        return (row >= 0 && row < rows && across) ? row : -1;
     }
 
     void moveHighlight(int steps)
@@ -235,7 +252,7 @@ private:
         }
     }
 
-    FluentComboBox *m_combo;
+    QPointer<FluentComboBox> m_combo;
     int m_highlight = -1;
     int m_hover = -1;
     int m_offset = 0;

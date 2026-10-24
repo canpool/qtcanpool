@@ -39,6 +39,9 @@ private slots:
     void theSameChoiceSaidTwiceIsSilence();
     void aClickOnTheFaceLeavesTheListOpen();
     void theReleaseThatEndsTheOpeningClickIsNoAnswer();
+    void aClickBesideTheRowsIsNoAnswer();
+    void theRowUnderThePointerLights();
+    void aClickOffTheListPutsItAway();
 };
 
 /*! The standing answer: the list opens under the face, one pixel of air
@@ -233,6 +236,83 @@ void tst_FluentComboBox::theReleaseThatEndsTheOpeningClickIsNoAnswer()
     QTest::mouseRelease(combo->popup(), Qt::LeftButton, Qt::NoModifier, QPoint(combo->popup()->width() / 2, firstRow));
 
     QVERIFY(combo->popup()->isVisible());
+    QCOMPARE(combo->currentIndex(), 2);
+    window.close();
+}
+
+/*! A place beside the rows is not a row.
+ *
+ *  The surface is a window with a shadow's margin around the list, and while
+ *  it is up the pointer belongs to it: everything the pointer does anywhere on
+ *  the screen arrives here with the place it happened measured from this
+ *  window's corner. A row read from the height alone answers clicks that
+ *  landed beside the list - the margin, or anywhere to the left of the rows -
+ *  with whichever answer stands at that height, so a click that meant "put
+ *  this away" picks something instead.
+ */
+void tst_FluentComboBox::aClickBesideTheRowsIsNoAnswer()
+{
+    QWidget window;
+    window.resize(400, 300);
+    FluentComboBox *combo = comboWith(&window, 4, QStringLiteral("Item"));
+    combo->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+    combo->setCurrentIndex(2);
+
+    combo->showPopup();
+    QVERIFY(combo->popup()->isVisible());
+
+    const QRect margin = combo->popup()->contentsRect();
+    // Inside the surface's window, level with the first row, and off the list.
+    const QPoint beside(margin.left() / 2, int(margin.top() + 4 + 40 / 2.0));
+    QTest::mouseClick(combo->popup(), Qt::LeftButton, Qt::NoModifier, beside);
+
+    QVERIFY(combo->popup()->isVisible());
+    QCOMPARE(combo->currentIndex(), 2);
+    window.close();
+}
+
+/*! The list lights the row under the pointer, and to know that it has to hear
+ *  the pointer: a widget is told where the mouse is while it moves only when
+ *  it asked to be, and a list that never asked has no hover at all - the
+ *  pointer crosses its rows and nothing answers. */
+void tst_FluentComboBox::theRowUnderThePointerLights()
+{
+    QWidget window;
+    window.resize(400, 300);
+    FluentComboBox *combo = comboWith(&window, 4, QStringLiteral("Item"));
+    combo->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+
+    combo->showPopup();
+    QVERIFY(combo->popup()->isVisible());
+    QVERIFY(combo->popup()->hasMouseTracking());
+    window.close();
+}
+
+/*! A press that lands off the surface altogether is the pointer asking for it
+ *  to go, and it goes without carrying an answer out with it. While the list
+ *  is up it holds the pointer, so a click on the page behind arrives here as
+ *  well - measured from this window's corner, and outside it. */
+void tst_FluentComboBox::aClickOffTheListPutsItAway()
+{
+    QWidget window;
+    window.resize(400, 300);
+    FluentComboBox *combo = comboWith(&window, 4, QStringLiteral("Item"));
+    combo->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+    combo->setCurrentIndex(2);
+
+    combo->showPopup();
+    QVERIFY(combo->popup()->isVisible());
+
+    const QPoint off(combo->popup()->width() + 40, 20);
+    QTest::mouseClick(combo->popup(), Qt::LeftButton, Qt::NoModifier, off);
+
+    QVERIFY(!combo->popup()->isVisible());
     QCOMPARE(combo->currentIndex(), 2);
     window.close();
 }

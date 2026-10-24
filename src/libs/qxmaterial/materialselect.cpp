@@ -9,6 +9,7 @@
 #include "qxcontrols/qxpopupsurface.h"
 #include "qxcontrols/qxstatelayer.h"
 
+#include <QtCore/QPointer>
 #include <QtGui/QFontMetrics>
 #include <QtGui/QPainter>
 #include <QtGui/QScreen>
@@ -65,11 +66,11 @@ public:
 
     int count() const
     {
-        return m_select->count();
+        return m_select ? m_select->count() : 0;
     }
     QString itemAt(int index) const
     {
-        return m_select->items().value(index);
+        return m_select ? m_select->items().value(index) : QString();
     }
     int visibleRows() const
     {
@@ -84,7 +85,7 @@ public:
     {
         const QFontMetrics metrics(MaterialType::font(MaterialType::Scale::Body));
         int widest = 0;
-        const QStringList items = m_select->items();
+        const QStringList items = m_select ? m_select->items() : QStringList();
         for (const QString &item : items) {
             widest = qMax(widest, metrics.horizontalAdvance(item));
         }
@@ -116,7 +117,8 @@ public:
                 // The answer in force wears the mark at its left, where an
                 // unchosen row keeps nothing.
                 painter->setRenderHint(QPainter::Antialiasing, false);
-                painter->setPen(QPen(m_select->accentColor(), kMarkStroke));
+                painter->setPen(
+                    QPen(m_select ? m_select->accentColor() : palette().color(QPalette::WindowText), kMarkStroke));
                 const QPointF tip(rowRect.left() + kMarkInset + kMarkStroke / 2.0, rowRect.center().y());
                 painter->drawLine(QPointF(rowRect.left() + kMarkInset * 0.4, rowRect.center().y()), tip);
                 painter->drawLine(tip, QPointF(rowRect.left() + kMarkInset + kMarkZone / 4.0,
@@ -131,7 +133,7 @@ public:
 
     void mouseMoveEvent(QMouseEvent *event) override
     {
-        m_hover = rowAt(eventPosOf(event).y() - contentRect().top());
+        m_hover = rowAt(eventPosOf(event));
         update();
     }
 
@@ -141,7 +143,13 @@ public:
         // its own is not an answer: the click that opened the list can end over
         // a row - the list does not always stand clear of the field - and that
         // click asked for the list, not for the first thing in it.
-        m_pressedRow = rowAt(eventPosOf(event).y() - contentRect().top());
+        // The surface answers a press that landed off it by going away, and a
+        // press that answered nothing else is no row of this list.
+        QxControls::QxPopupSurface::mousePressEvent(event);
+        if (!isVisible()) {
+            return;
+        }
+        m_pressedRow = rowAt(eventPosOf(event));
         update();
     }
 
@@ -149,7 +157,7 @@ public:
     {
         const int pressed = m_pressedRow;
         m_pressedRow = -1;
-        const int row = rowAt(eventPosOf(event).y() - contentRect().top());
+        const int row = rowAt(eventPosOf(event));
         // The same row as the press, and no dragging off one answer onto
         // another: a row is answered by a click, not by wherever a drag ends.
         if (row >= 0 && row == pressed) {
@@ -207,8 +215,19 @@ public:
         }
     }
 private:
-    int rowAt(qreal y) const
+    /*! The row the pointer is over; -1 when it is anywhere else - the
+     *  shadow's margin, the sides the rows do not fill, or past the last row.
+     *  While the list is up it holds the pointer, so everything the pointer
+     *  does anywhere on the screen arrives here measured from this window's
+     *  corner: a row taken from the height alone answers a click that landed
+     *  beside the list with whichever answer stands at that height. */
+    int rowAt(const QPointF &pos) const
     {
+        const QRectF content = contentRect();
+        if (!content.contains(pos)) {
+            return -1;
+        }
+        const qreal y = pos.y() - content.top();
         if (y < 0 || y >= qMin(count() - m_offset, visibleRows()) * kRowHeight) {
             return -1;
         }
@@ -229,7 +248,7 @@ private:
         update();
     }
 
-    MaterialSelect *m_select;
+    QPointer<MaterialSelect> m_select;
     int m_highlight = -1;
     int m_hover = -1;
     int m_offset = 0;
