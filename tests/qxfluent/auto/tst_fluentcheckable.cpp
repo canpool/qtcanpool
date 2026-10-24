@@ -49,6 +49,7 @@ private slots:
     void oneChoiceOfSeveralStandsAlone();
     void whatAnAssistiveToolReads();
     void aChoiceNobodyCanUseDoesNotChange();
+    void theKeyboardLandsOnIt();
 private:
     bool m_hadOverride = false;
 };
@@ -193,6 +194,23 @@ void tst_FluentCheckable::aChoiceNobodyCanUseDoesNotChange()
     QCOMPARE(box.checkState(), Qt::Unchecked);
     QCOMPARE(changed.count(), 0);
     QVERIFY(box.grab().toImage() != live);
+}
+
+/*! The keyboard finds it, and the ring says where the keyboard is: a control
+ *  the keyboard cannot reach is a control half the users cannot use, and one it
+ *  reaches without a mark is a control they cannot find.
+ */
+void tst_FluentCheckable::theKeyboardLandsOnIt()
+{
+    FluentCheckBox widget;
+    widget.setText(QStringLiteral("Remember me"));
+    widget.resize(widget.sizeHint());
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_FluentCheckable)

@@ -55,6 +55,7 @@ private slots:
     void anEmptyMenuIsNotOpened();
     void theMenuIsTheButtonsOwn();
     void whatAnAssistiveToolReads();
+    void theKeyboardLandsOnIt();
 private:
     bool m_wasActive = false;
 };
@@ -267,6 +268,23 @@ void tst_FluentToggleSplitButton::aCommandNobodyCanPressIsDrawnFainter()
     QTest::mouseClick(&button, Qt::LeftButton, Qt::NoModifier, QPoint(kBodyX, kHeight / 2));
     QVERIFY(!button.isChecked());
     QCOMPARE(toggled.count(), 0);
+}
+
+/*! The keyboard finds it, and the ring says where the keyboard is: a control
+ *  the keyboard cannot reach is a control half the users cannot use, and one it
+ *  reaches without a mark is a control they cannot find.
+ */
+void tst_FluentToggleSplitButton::theKeyboardLandsOnIt()
+{
+    FluentToggleSplitButton widget;
+    widget.setText(QStringLiteral("Pin"));
+    widget.resize(widget.sizeHint());
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_FluentToggleSplitButton)

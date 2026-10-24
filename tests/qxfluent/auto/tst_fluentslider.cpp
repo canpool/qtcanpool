@@ -62,6 +62,7 @@ private slots:
     void aSliderNobodyCanUseIsDrawnFaded();
     void ticksAppearWhenTheRailIsDivided();
     void theValueIsThereForAnAssistiveTool();
+    void theKeyboardLandsOnIt();
 private:
     bool m_wasReduced = false;
     bool m_wasActive = false;
@@ -214,6 +215,23 @@ void tst_FluentSlider::theValueIsThereForAnAssistiveTool()
     QCOMPARE(slider.value(), 42);
 
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! The keyboard finds it, and the ring says where the keyboard is: a control
+ *  the keyboard cannot reach is a control half the users cannot use, and one it
+ *  reaches without a mark is a control they cannot find.
+ */
+void tst_FluentSlider::theKeyboardLandsOnIt()
+{
+    FluentSlider widget;
+    widget.resize(200, widget.sizeHint().height());
+    widget.setValue(40);
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_FluentSlider)

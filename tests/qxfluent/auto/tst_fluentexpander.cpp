@@ -35,6 +35,7 @@ private slots:
     void reduceMotionOpensItAtOnce();
     void itIsAButtonThatOpensSomething();
     void aHeaderNobodyCanOpenIsDrawnFaded();
+    void theKeyboardLandsOnIt();
 private:
     bool m_wasReduced = false;
     bool m_wasActive = false;
@@ -141,6 +142,23 @@ void tst_FluentExpander::aHeaderNobodyCanOpenIsDrawnFaded()
 
     QVERIFY(!faded.isExpanded());
     QVERIFY(faded.grab().toImage() != live);
+}
+
+/*! The keyboard finds it, and the ring says where the keyboard is: a control
+ *  the keyboard cannot reach is a control half the users cannot use, and one it
+ *  reaches without a mark is a control they cannot find.
+ */
+void tst_FluentExpander::theKeyboardLandsOnIt()
+{
+    FluentExpander widget;
+    widget.setTitle(QStringLiteral("More"));
+    widget.resize(240, widget.sizeHint().height());
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_FluentExpander)

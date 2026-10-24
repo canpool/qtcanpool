@@ -74,6 +74,7 @@ private slots:
     void aDisabledFaceDoesNotWash();
     void aClickReachesWhoeverListens();
     void theTwoVariantsOfTheLinePartByAnIndent();
+    void theKeyboardLandsOnIt();
 private:
     bool m_hadOverride = false;
 };
@@ -172,6 +173,25 @@ void tst_FluentButton::theTwoVariantsOfTheLinePartByAnIndent()
     const int insetStart = lineStart(&inset, 0);
     QVERIFY(fullStart >= 0);
     QCOMPARE(insetStart - fullStart, 24);
+}
+
+/*! The keyboard finds it, and the ring says where the keyboard is: a control
+ *  the keyboard cannot reach is a control half the users cannot use, and one it
+ *  reaches without a mark is a control they cannot find.
+ */
+void tst_FluentButton::theKeyboardLandsOnIt()
+{
+    FluentButton widget;
+    widget.setText(QStringLiteral("Save"));
+    widget.resize(widget.sizeHint());
+    widget.show();
+    QApplication::processEvents();
+
+    // A control the keyboard cannot reach is a control half the users cannot
+    // use. Reaching it means focus actually lands and is reported back.
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_FluentButton)

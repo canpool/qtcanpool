@@ -59,6 +59,7 @@ private slots:
     void theKeyboardWalksIt();
     void theStarsAreTheRange();
     void aRatingNobodyCanUseIsDrawnFaded();
+    void theKeyboardLandsOnIt();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -167,6 +168,23 @@ void tst_FluentRating::aRatingNobodyCanUseIsDrawnFaded()
     faded.setEnabled(false);
 
     QCOMPARE(accentPixels(&faded), 0);
+}
+
+/*! The keyboard finds it, and the ring says where the keyboard is: a control
+ *  the keyboard cannot reach is a control half the users cannot use, and one it
+ *  reaches without a mark is a control they cannot find.
+ */
+void tst_FluentRating::theKeyboardLandsOnIt()
+{
+    FluentRating widget;
+    widget.setCount(5);
+    widget.resize(widget.sizeHint());
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_FluentRating)
