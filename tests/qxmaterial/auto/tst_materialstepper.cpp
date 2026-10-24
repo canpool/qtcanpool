@@ -59,6 +59,7 @@ private slots:
     void sayingTheSameStepTwiceSaysNothing();
     void captionsMakeTheRowTaller();
     void theKeyboardWalksBack();
+    void aPathNobodyCanWalkIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     MaterialStepper *m_stepper = nullptr;
@@ -228,6 +229,27 @@ void tst_MaterialStepper::theKeyboardWalksBack()
     // At the first step there is nowhere back to go.
     QTest::keyClick(m_stepper, Qt::Key_Left);
     QCOMPARE(m_stepper->currentStep(), 0);
+}
+
+/*! A path nobody can walk is written a step down: the circles, the names and the
+ *  ticks that say which steps are done. Pinned first, so the difference measured
+ *  is the row's own drawing.
+ */
+void tst_MaterialStepper::aPathNobodyCanWalkIsDrawnFainter()
+{
+    m_stepper->addStep(QStringLiteral("Cart"));
+    m_stepper->addStep(QStringLiteral("Ship"));
+    m_stepper->addStep(QStringLiteral("Done"));
+    m_stepper->setCurrentStep(1);
+    qtcPinDisabledColours(m_stepper);
+
+    const QImage live = m_stepper->grab().toImage();
+    m_stepper->setEnabled(false);
+    const QImage faded = m_stepper->grab().toImage();
+    QVERIFY(faded != live);
+
+    // And the step does not move: fading is not walking.
+    QCOMPARE(m_stepper->currentStep(), 1);
 }
 
 TEST_ADD(tst_MaterialStepper)

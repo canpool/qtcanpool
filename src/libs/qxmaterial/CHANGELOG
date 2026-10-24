@@ -226,6 +226,13 @@ Bugfix
   there and could not be found. The rail, the bottom navigation and the drawer
   ask the state layer what the surface under them can carry now, and wear the
   stronger fraction where the page is dark.
+- Five controls answered nothing when they were turned off and said nothing on
+  the page either: the slider, the row of tabs, the segmented row, the stepper
+  and the accordion drew the same pixels either way, so what stood there looked
+  usable and took no press. Each steps its own drawing down now - the track and
+  the handle, the names and the indicator, the segments and the frame around
+  them, the circles and the ticks, the header's name and its chevron - at the
+  same fraction the rest of the family keeps.
 
 0.1.2
 ---

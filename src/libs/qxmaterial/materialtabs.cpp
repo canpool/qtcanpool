@@ -34,6 +34,10 @@ constexpr qreal kIndicatorHeight = 2.0;
 // clicked.
 constexpr qreal kQuietInkOpacity = 0.6;
 constexpr qreal kHoverOpacity = 0.08;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
+
 // The least of the row that is worth showing when the tabs are wider than it.
 constexpr qreal kMinVisible = 120.0;
 
@@ -228,6 +232,9 @@ void MaterialTabs::paintEvent(QPaintEvent *event)
     Q_UNUSED(event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
+    // A row nobody can pick is written a step down - the names and the indicator
+    // under the one in force, so the row keeps one voice.
+    painter.setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     const QColor accent = QxTheme::QxThemeManager::instance()->accentColor();
     const QColor page = palette().color(QPalette::Window);

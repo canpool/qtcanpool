@@ -27,6 +27,9 @@ constexpr qreal kHandleSize = 20.0;
 // The track the handle has not reached is the surface the page is made of,
 // one step away from it.
 constexpr qreal kMutedOpacity = 0.24;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 
 QPointF eventPos(const QMouseEvent *event)
 {
@@ -255,6 +258,9 @@ void MaterialSlider::paintSurface(QPainter *painter)
     const QRectF handle = handleRect(this, d_ptr->position);
 
     painter->save();
+    // A slider nobody can move is still a slider: the track, the part the handle
+    // has reached and the handle itself step down together.
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
     painter->setPen(Qt::NoPen);
 
     // The track: the part the handle has reached is the primary colour, the

@@ -40,6 +40,9 @@ constexpr qreal kMinColumn = 96.0;
 constexpr qreal kQuietInkOpacity = 0.6;
 constexpr qreal kOutlineOpacity = 0.12;
 constexpr qreal kConnectorWalkedOpacity = 0.4;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 
 QPointF eventPos(const QMouseEvent *event)
 {
@@ -197,6 +200,9 @@ void MaterialStepper::paintEvent(QPaintEvent *event)
     Q_UNUSED(event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
+    // A path nobody can walk is written a step down: the circles, the names and
+    // the ticks that say which steps are done.
+    painter.setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     const QColor accent = QxTheme::QxThemeManager::instance()->accentColor();
     const QColor page = palette().color(QPalette::Window);

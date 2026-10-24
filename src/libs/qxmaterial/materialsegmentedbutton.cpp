@@ -28,6 +28,10 @@ constexpr qreal kPadding = 12.0;
 // The divider, and the outline round the row, are the one surface a step away
 // from the page - not the outline of a control that can be pressed.
 constexpr qreal kOutlineOpacity = 0.30;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
+
 // The fill of the segment in force: a tint, because the row is still on the
 // page and not a button of its own.
 constexpr qreal kSelectedFill = 0.16;
@@ -108,6 +112,9 @@ public:
 
     void paintSurface(QPainter *painter) override
     {
+        // A segment nobody can pick steps down with its row: the fill alone
+        // would leave the name answering in a full voice.
+        painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
         if (!isCurrent()) {
             return;
         }
@@ -120,6 +127,7 @@ public:
 
     void paintContent(QPainter *painter) override
     {
+        painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
         const QRectF area = QRectF(rect());
         if (m_index > 0) {
             QColor divider = textColor();
@@ -325,6 +333,8 @@ void MaterialSegmentedButton::paintEvent(QPaintEvent *event)
     Q_UNUSED(event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+    // The frame around the row steps down with the choices inside it.
+    painter.setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     QColor outline = palette().color(QPalette::WindowText);
     outline.setAlphaF(kOutlineOpacity);

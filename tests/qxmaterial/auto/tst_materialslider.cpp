@@ -58,6 +58,7 @@ private slots:
     void theKeyboardStepsIt();
     void itCarriesAValue();
     void thereAreNoMarksUnderTheTrack();
+    void aTrackNobodyCanMoveIsDrawnFainter();
 };
 
 void tst_MaterialSlider::cleanup()
@@ -159,6 +160,25 @@ void tst_MaterialSlider::thereAreNoMarksUnderTheTrack()
     // something.
     QVERIFY(inkedPixels(&slider, leftEnd) > 0);
     QCOMPARE(inkedPixels(&slider, underLeftEnd), 0);
+}
+
+/*! A slider nobody can move is written a step down: the track, the part the
+ *  handle has reached and the handle itself. The palette's disabled group is
+ *  pinned first - Qt fades a turned-off widget by itself - so the difference that
+ *  is measured is the face's own.
+ */
+void tst_MaterialSlider::aTrackNobodyCanMoveIsDrawnFainter()
+{
+    MaterialSlider slider;
+    slider.resize(200, slider.sizeHint().height());
+    slider.setValue(60);
+    slider.show();
+    qtcPinDisabledColours(&slider);
+
+    const QImage live = slider.grab().toImage();
+    slider.setEnabled(false);
+    const QImage faded = slider.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialSlider)

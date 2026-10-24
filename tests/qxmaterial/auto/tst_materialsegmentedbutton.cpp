@@ -36,6 +36,7 @@ private slots:
     void theRowIsOneStopOnTheKeyboard();
     void aSegmentIsWideEnoughForItsOwnWord();
     void whatAnAssistiveToolReads();
+    void aRowNobodyCanPickIsDrawnFainter();
 private:
     bool m_wasActive = false;
 };
@@ -176,6 +177,29 @@ void tst_MaterialSegmentedButton::whatAnAssistiveToolReads()
     QVERIFY(iface->state().checkable);
     QVERIFY(!iface->state().checked);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A segmented row nobody can pick is written a step down: three names and the
+ *  one in force together. Pinned first, leaving only the row's own hand.
+ */
+void tst_MaterialSegmentedButton::aRowNobodyCanPickIsDrawnFainter()
+{
+    MaterialSegmentedButton button;
+    button.setItems(QStringList() << QStringLiteral("Day") << QStringLiteral("Week") << QStringLiteral("Month"));
+    button.resize(button.sizeHint());
+    button.show();
+    qtcPinDisabledColours(&button);
+
+    const QImage live = button.grab().toImage();
+    button.setEnabled(false);
+    const QImage faded = button.grab().toImage();
+    QVERIFY(faded != live);
+
+    // And a press changes nothing: the row is not taking answers.
+    QSignalSpy changed(&button, &MaterialSegmentedButton::currentIndexChanged);
+    QTest::mouseClick(&button, Qt::LeftButton, Qt::NoModifier, QPoint(button.width() - 20, button.height() / 2));
+    QCOMPARE(button.currentIndex(), 0);
+    QCOMPARE(changed.count(), 0);
 }
 
 TEST_ADD(tst_MaterialSegmentedButton)

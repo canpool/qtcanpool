@@ -34,6 +34,9 @@ constexpr qreal kChevron = 24.0;
 constexpr qreal kOutlineOpacity = 0.12;
 constexpr qreal kHoverOpacity = 0.08;
 constexpr qreal kQuietInkOpacity = 0.6;
+// The step a control takes down when nobody can use it - the same .38 the rest
+// of the family keeps.
+constexpr qreal kDisabledOpacity = 0.38;
 
 QPointF eventPos(const QMouseEvent *event)
 {
@@ -141,6 +144,9 @@ protected:
         Q_UNUSED(event)
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
+        // A header nobody can open is written a step down: the name and the
+        // chevron together, while the column keeps its shape.
+        painter.setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
         const QColor accent = QxTheme::QxThemeManager::instance()->accentColor();
         const QColor page = palette().color(QPalette::Window);

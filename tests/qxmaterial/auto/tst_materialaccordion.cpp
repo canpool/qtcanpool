@@ -51,6 +51,7 @@ private slots:
     void noMotionOpensItAtOnce();
     void aClickOnTheHeaderOpensIt();
     void theKeyboardOpensIt();
+    void aSectionNobodyCanOpenIsDrawnFainter();
 private:
     bool m_wasReduced = false;
 };
@@ -223,6 +224,25 @@ void tst_MaterialAccordion::theKeyboardOpensIt()
     QVERIFY(accordion.isSectionExpanded(0));
     QTest::keyClick(header, Qt::Key_Return);
     QVERIFY(!accordion.isSectionExpanded(0));
+}
+
+/*! A section nobody can open is written a step down - both headers, since the
+ *  whole accordion is what was turned off. Pinned first, leaving only its own
+ *  hand between the two frames.
+ */
+void tst_MaterialAccordion::aSectionNobodyCanOpenIsDrawnFainter()
+{
+    MaterialAccordion accordion;
+    accordion.addSection(QStringLiteral("Shipping"), body());
+    accordion.addSection(QStringLiteral("Payment"));
+    accordion.resize(320, accordion.sizeHint().height());
+    accordion.show();
+    qtcPinDisabledColours(&accordion);
+
+    const QImage live = accordion.grab().toImage();
+    accordion.setEnabled(false);
+    const QImage faded = accordion.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_MaterialAccordion)

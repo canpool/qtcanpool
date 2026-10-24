@@ -78,6 +78,7 @@ private slots:
     void aClickMovesTheTab();
     void theKeyboardWalksTheRow();
     void aNarrowRowSlidesToTheTabInForce();
+    void aRowNobodyCanPickIsDrawnFainter();
 private:
     bool m_hadOverride = false;
     bool m_wasReduced = false;
@@ -235,6 +236,23 @@ void tst_MaterialTabs::aNarrowRowSlidesToTheTabInForce()
     QVERIFY(!room.isNull());
     QCOMPARE(room.left(), last.left());
     QCOMPARE(room.width(), last.width());
+}
+
+/*! A row of tabs nobody can pick is written a step down - every name and the
+ *  indicator under the one in force. Pinned first, so what differs between the
+ *  two frames is the row's own drawing rather than the palette's disabled group.
+ */
+void tst_MaterialTabs::aRowNobodyCanPickIsDrawnFainter()
+{
+    qtcPinDisabledColours(m_tabs);
+
+    const QImage live = m_tabs->grab().toImage();
+    m_tabs->setEnabled(false);
+    const QImage faded = m_tabs->grab().toImage();
+    QVERIFY(faded != live);
+
+    // And the choice stays where it was: fading is not moving.
+    QCOMPARE(m_tabs->currentIndex(), 0);
 }
 
 TEST_ADD(tst_MaterialTabs)
