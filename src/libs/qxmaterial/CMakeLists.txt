@@ -37,6 +37,7 @@ add_qtc_library(qxmaterial
     materialtogglebuttongroup.h materialtogglebuttongroup.cpp
     materialpagination.h materialpagination.cpp
     materialrating.h materialrating.cpp
+    materialspeeddial.h materialspeeddial.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
     materialskeleton.h materialskeleton.cpp

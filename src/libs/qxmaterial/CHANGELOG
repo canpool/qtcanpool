@@ -142,6 +142,18 @@ Feature
   in the way of the keyboard. MUI's precision - a rating that counts in halves -
   is not here: it answers a different question, and both families have only ever
   asked how many stars.
+- `MaterialSpeedDial`, the one thing a screen is for with the rest of what it can
+  do tucked behind it: a floating action button that lets its actions out in a
+  column when it is pressed, and puts them away behind the one that was taken.
+  The actions are children of the host rather than of the dial, because an action
+  that flies out has to leave the dial's own square and a widget cannot paint
+  outside itself. The button draws a cross while the dial is open instead of
+  turning the icon the application gave it by forty-five degrees: that icon is
+  the application's picture of what the screen is for, and a pencil turned does
+  not say close. The actions keep their names on show, drawn on the side they fly
+  away from, because the way to find out what a round button does should not be
+  to point at it. Only up and down: a row that flew sideways would have nowhere
+  to put a name, and a row of icon buttons along an edge is a toolbar.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
