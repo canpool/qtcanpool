@@ -10,9 +10,11 @@
 #include <QAction>
 #include <QImage>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QSignalSpy>
 #include <QWheelEvent>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QToolTip>
 #include <QWidget>
 
 QX_MATERIAL_USE_NAMESPACE
@@ -25,9 +27,12 @@ using QxMaterial::MaterialNavigationRail;
 // destination, and fifty-six per destination with the indicator in the top
 // thirty-two of it. Aiming at one means knowing where it stands.
 constexpr int kRailWidth = 80;
+constexpr int kFoldedWidth = 72;
 constexpr int kTopPadding = 12;
 constexpr int kItemHeight = 56;
 constexpr int kHeaderGap = 12;
+constexpr int kIndicatorHeight = 32;
+constexpr int kLabelHeight = 20;
 
 QPoint itemPoint(int index)
 {
@@ -61,6 +66,55 @@ void railOfThreeRooms(MaterialNavigationRail *rail)
 {
     rail->setFixedSize(kRailWidth, kTopPadding + 3 * kItemHeight + kTopPadding);
 }
+
+// The pointer comes to rest on a destination. A move is what the rail answers
+// to - it has nothing to say about buttons - so a move is what is sent.
+void hover(MaterialNavigationRail *rail, const QPoint &pos)
+{
+    const QPointF at(pos);
+    QMouseEvent move(QEvent::MouseMove, at, at, Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+    QApplication::sendEvent(rail, &move);
+}
+
+/*! Whether this build can draw words at all. A platform with no fonts draws
+ *  none - the offscreen platform under Qt 5 has no font to give - and then a
+ *  rail that says a name and one that does not look the same, so the drawing of
+ *  words is only claimed where there are words to be drawn. Asking the font
+ *  database is not the same question: Qt 6 answers it empty and still draws. */
+bool wordsCanBeDrawn()
+{
+    QImage probe(48, 20, QImage::Format_ARGB32_Premultiplied);
+    probe.fill(Qt::white);
+    QPainter painter(&probe);
+    painter.setPen(Qt::black);
+    painter.drawText(probe.rect(), Qt::AlignCenter, QStringLiteral("Mail"));
+    painter.end();
+    for (int y = 0; y < probe.height(); ++y) {
+        for (int x = 0; x < probe.width(); ++x) {
+            if (probe.pixelColor(x, y) != QColor(Qt::white)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/*! Whether anything was drawn in the band under a destination's indicator,
+ *  which is where its name stands when it has one: the surface is flat there,
+ *  so a band that holds anything but the surface holds a name. */
+bool namedBelowIndicator(const QImage &frame, int index)
+{
+    const QColor surface = frame.pixelColor(1, 1);
+    const int top = kTopPadding + index * kItemHeight + kIndicatorHeight;
+    for (int y = top; y < top + kLabelHeight && y < frame.height(); ++y) {
+        for (int x = 1; x < frame.width() - 1; ++x) {
+            if (frame.pixelColor(x, y) != surface) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 }   // namespace
 
 class tst_MaterialNavigationRail : public QObject
@@ -80,6 +134,8 @@ private slots:
     void aRoomThatHoldsEverythingDoesNotTravel();
     void theStateWashFollowsThePill();
     void whatAnAssistiveToolReads();
+    void foldingTakesTheWordsAndKeepsTheDestinations();
+    void aFoldedRowSaysTheNameItDoesNotDraw();
 };
 
 void tst_MaterialNavigationRail::cleanup()
@@ -291,6 +347,76 @@ void tst_MaterialNavigationRail::whatAnAssistiveToolReads()
     // A short column of destinations is a list, and it is the column that an
     // assistive tool is meant to walk - not the room beside it.
     QCOMPARE(face->role(), QAccessible::List);
+}
+
+/*! Folding is a statement about the words, not about the destinations: the
+ *  column narrows to the icons it keeps, says so once, and the row the pointer
+ *  aims at is still the row it was - while the name that stood under the
+ *  indicator is gone, and comes back when the rail is opened again. */
+void tst_MaterialNavigationRail::foldingTakesTheWordsAndKeepsTheDestinations()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(railWith({QStringLiteral("Home"), QStringLiteral("Mail")}));
+    QCOMPARE(rail->isFolded(), false);
+    QCOMPARE(rail->sizeHint().width(), kRailWidth);
+    QCOMPARE(rail->minimumSizeHint().width(), kRailWidth);
+    if (wordsCanBeDrawn()) {
+        QVERIFY(namedBelowIndicator(rail->grab().toImage(), 1));
+    }
+
+    QSignalSpy spy(rail.get(), &MaterialNavigationRail::foldedChanged);
+    rail->setFolded(true);
+    QCOMPARE(rail->isFolded(), true);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.at(0).at(0).toBool(), true);
+
+    // Being told the state it is already in is not news.
+    rail->setFolded(true);
+    QCOMPARE(spy.count(), 1);
+
+    // The words are what folding takes: the width it asks for is the icons'.
+    QCOMPARE(rail->sizeHint().width(), kFoldedWidth);
+    QCOMPARE(rail->minimumSizeHint().width(), kFoldedWidth);
+    if (wordsCanBeDrawn()) {
+        QVERIFY(!namedBelowIndicator(rail->grab().toImage(), 1));
+    }
+
+    // The destinations are still the destinations: aiming at the middle of the
+    // narrower column is still aiming at the second one.
+    QTest::mouseClick(rail.get(), Qt::LeftButton, Qt::NoModifier,
+                      QPoint(kFoldedWidth / 2, kTopPadding + kItemHeight + kItemHeight / 2));
+    QCOMPARE(rail->currentIndex(), 1);
+
+    // Opening it again puts the words back, and the width with them.
+    rail->setFolded(false);
+    QCOMPARE(rail->sizeHint().width(), kRailWidth);
+    QCOMPARE(spy.count(), 2);
+    if (wordsCanBeDrawn()) {
+        QVERIFY(namedBelowIndicator(rail->grab().toImage(), 1));
+    }
+}
+
+/*! A folded row keeps the name it no longer draws: the pointer that rests on it
+ *  is told, which is the whole of what folding took away. An open rail draws the
+ *  words, so it has nothing to add over them.
+ *
+ *  What is watched here is what the rail says. A tip that is put away is the
+ *  window system's to take down - this build keeps it up - so its going away is
+ *  not something a test can see. */
+void tst_MaterialNavigationRail::aFoldedRowSaysTheNameItDoesNotDraw()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(railWith({QStringLiteral("Home"), QStringLiteral("Mail")}));
+
+    hover(rail.get(), itemPoint(1));
+    QCOMPARE(QToolTip::text(), QString());
+
+    rail->setFolded(true);
+    const QImage rest = rail->grab().toImage();
+    hover(rail.get(), itemPoint(1));
+    QCOMPARE(QToolTip::text(), QStringLiteral("Mail"));
+
+    // The row is answered as a row still is: the wash of being pointed at, in
+    // the pill's shape and where the pill stands.
+    QVERIFY(rail->grab().toImage().pixelColor(40, 84) != rest.pixelColor(40, 84));
 }
 
 TEST_ADD(tst_MaterialNavigationRail)

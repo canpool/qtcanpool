@@ -15,6 +15,7 @@
 #include <QtGui/QResizeEvent>
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QSizePolicy>
+#include <QtWidgets/QToolTip>
 #include <QtWidgets/QWidget>
 // QAction is in Widgets on Qt 5 and in Gui on Qt 6, so it is asked for without
 // naming a module - the same way the rest of the libraries ask.
@@ -27,6 +28,7 @@ namespace
 // Material's rail measures: a column eighty wide, an indicator fifty-six by
 // thirty-two behind the icon, an icon of twenty-four, and a label under it.
 constexpr qreal kRailWidth = 80.0;
+constexpr qreal kFoldedWidth = 72.0;
 constexpr qreal kItemHeight = 56.0;
 constexpr qreal kIndicatorWidth = 56.0;
 constexpr qreal kIndicatorHeight = 32.0;
@@ -48,6 +50,17 @@ QPointF eventPos(const QMouseEvent *event)
     return event->localPos();
 #endif
 }
+
+// Where the pointer is on the screen, which is where a tooltip is asked to
+// stand: the row's own coordinates would put it over the row.
+QPoint eventGlobalPos(const QMouseEvent *event)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return event->globalPosition().toPoint();
+#else
+    return event->globalPos();
+#endif
+}
 }   // namespace
 
 class MaterialNavigationRailPrivate
@@ -56,6 +69,7 @@ public:
     QX_DECLARE_PUBLIC(MaterialNavigationRail)
 
     QList<QAction *> items;
+    bool folded = false;
     int hovered = -1;
     int armed = -1;
     int current = -1;
@@ -67,6 +81,9 @@ public:
 
     qreal columnLeft() const;
     qreal itemsTop() const;
+    /*! The width the column takes: the words' when it is open, the icons'
+     *  when it is folded. */
+    qreal railWidth() const;
     QRectF itemRect(int index) const;
     void layoutHeader();
     int itemAt(const QPointF &pos) const;
@@ -94,6 +111,11 @@ QSize MaterialNavigationRailPrivate::headerSize() const
     return hint.isValid() ? hint : header->size();
 }
 
+qreal MaterialNavigationRailPrivate::railWidth() const
+{
+    return folded ? kFoldedWidth : kRailWidth;
+}
+
 /*! Where the column stands across the rail.
  *
  *  The column is eighty wide wherever the rail was made wider than that, and
@@ -107,7 +129,7 @@ QSize MaterialNavigationRailPrivate::headerSize() const
 qreal MaterialNavigationRailPrivate::columnLeft() const
 {
     Q_Q(const MaterialNavigationRail);
-    return qMax(0.0, (qreal(q->width()) - kRailWidth) / 2.0);
+    return qMax(0.0, (qreal(q->width()) - railWidth()) / 2.0);
 }
 
 qreal MaterialNavigationRailPrivate::itemsTop() const
@@ -120,7 +142,7 @@ qreal MaterialNavigationRailPrivate::itemsTop() const
 
 QRectF MaterialNavigationRailPrivate::itemRect(int index) const
 {
-    return QRectF(columnLeft(), itemsTop() + qreal(index) * kItemHeight - offset, kRailWidth, kItemHeight);
+    return QRectF(columnLeft(), itemsTop() + qreal(index) * kItemHeight - offset, railWidth(), kItemHeight);
 }
 
 /*! Where the column's room starts and ends. The room is what is left between
@@ -170,7 +192,7 @@ void MaterialNavigationRailPrivate::layoutHeader()
         return;
     }
     const QSize size = headerSize();
-    header->setGeometry(int(columnLeft() + (kRailWidth - qreal(size.width())) / 2.0), int(kTopPadding), size.width(),
+    header->setGeometry(int(columnLeft() + (railWidth() - qreal(size.width())) / 2.0), int(kTopPadding), size.width(),
                         size.height());
 }
 
@@ -318,6 +340,32 @@ QWidget *MaterialNavigationRail::headerWidget() const
     return d_ptr->header;
 }
 
+bool MaterialNavigationRail::isFolded() const
+{
+    return d_ptr->folded;
+}
+
+void MaterialNavigationRail::setFolded(bool folded)
+{
+    if (d_ptr->folded == folded) {
+        return;
+    }
+    d_ptr->folded = folded;
+    // The column is narrower now, so where it stands is a new answer - and the
+    // header goes with it. The travel of the column is the same question the
+    // room asks, so it is closed against the room that is left.
+    d_ptr->layoutHeader();
+    d_ptr->clampOffset();
+    // A narrower column answers where the pointer is differently, and a folded
+    // row shows no words - so whatever was said about the row the pointer was
+    // on is no longer true. The rail says it does not know.
+    d_ptr->hovered = -1;
+    QToolTip::hideText();
+    updateGeometry();
+    update();
+    Q_EMIT foldedChanged(folded);
+}
+
 void MaterialNavigationRail::setCurrentIndex(int index)
 {
     if (d_ptr->current == index) {
@@ -350,12 +398,12 @@ QSize MaterialNavigationRail::sizeHint() const
 {
     const int header = d_ptr->header ? d_ptr->headerSize().height() + int(kHeaderGap) : 0;
     const int items = int(d_ptr->items.count()) * int(kItemHeight);
-    return QSize(int(kRailWidth), int(kTopPadding) + header + items + int(kTopPadding));
+    return QSize(int(d_ptr->railWidth()), int(kTopPadding) + header + items + int(kTopPadding));
 }
 
 QSize MaterialNavigationRail::minimumSizeHint() const
 {
-    return QSize(int(kRailWidth), int(kTopPadding) + int(kItemHeight) + int(kTopPadding));
+    return QSize(int(d_ptr->railWidth()), int(kTopPadding) + int(kItemHeight) + int(kTopPadding));
 }
 
 QRectF MaterialNavigationRail::chromeRect() const
@@ -427,8 +475,14 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
             action->icon().paint(painter, iconRect.toRect(), Qt::AlignCenter, usable ? QIcon::Normal : QIcon::Disabled);
         }
 
-        const QRectF labelRect(item.left(), indicator.bottom(), kRailWidth, kLabelHeight);
-        const QString text = metrics.elidedText(action->text(), Qt::ElideRight, int(kRailWidth) - 8);
+        if (d_ptr->folded) {
+            // A folded row is the icon and the pill: the words are what the
+            // pointer is told when it rests here, and what an assistive tool
+            // reads, and neither is drawn.
+            continue;
+        }
+        const QRectF labelRect(item.left(), indicator.bottom(), d_ptr->railWidth(), kLabelHeight);
+        const QString text = metrics.elidedText(action->text(), Qt::ElideRight, int(d_ptr->railWidth()) - 8);
         if (!text.isEmpty()) {
             painter->setFont(label);
             painter->setPen(textColor());
@@ -473,6 +527,13 @@ void MaterialNavigationRail::mouseMoveEvent(QMouseEvent *event)
     const int hovered = d_ptr->itemAt(eventPos(event));
     if (hovered != d_ptr->hovered) {
         d_ptr->hovered = hovered;
+        // A folded rail says the name it does not draw, where a pointer resting
+        // on the row can read it. An open rail draws it, so it says nothing.
+        if (d_ptr->folded && hovered >= 0) {
+            QToolTip::showText(eventGlobalPos(event), d_ptr->items.at(hovered)->text(), this);
+        } else {
+            QToolTip::hideText();
+        }
         update();
     }
 }
@@ -501,6 +562,11 @@ void MaterialNavigationRail::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event)
     d_ptr->hovered = -1;
+    // The name a folded row was saying goes with the pointer that was resting
+    // on it.
+    if (d_ptr->folded) {
+        QToolTip::hideText();
+    }
     update();
 }
 

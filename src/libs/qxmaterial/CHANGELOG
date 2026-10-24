@@ -178,6 +178,13 @@ Feature
   see. The step the user is on is never folded away, and the bar does not
   shorten a step to fit: a path too long for its room is a path with too many
   steps.
+- `MaterialNavigationRail` folds to its icons. A rail is a column, and a column
+  costs a third of a narrow window - so a rail given a page with room for the
+  page but not for the page and the column folds to seventy-two wide and keeps
+  its destinations: the words are the first thing to go, because the pill
+  already says which destination is in force and the icon is what the row was
+  aimed at anyway. The name is not lost - it is what a pointer resting on a
+  folded row is told, and it is still the name an assistive tool reads.
 
 Bugfix
 - Deleting a `MaterialList` that had rows in it took the process with it: a row

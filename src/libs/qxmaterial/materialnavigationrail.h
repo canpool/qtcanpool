@@ -54,6 +54,7 @@ class QX_MATERIAL_EXPORT MaterialNavigationRail : public QxControls::QxControl
 {
     Q_OBJECT
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
+    Q_PROPERTY(bool folded READ isFolded WRITE setFolded NOTIFY foldedChanged)
 public:
     explicit MaterialNavigationRail(QWidget *parent = Q_NULLPTR);
     ~MaterialNavigationRail() override;
@@ -73,16 +74,33 @@ public:
     void setHeaderWidget(QWidget *widget);
     QWidget *headerWidget() const;
 
+    /*!
+     * Whether the rail is folded to its icons.
+     *
+     * A rail is a column, and a column costs a third of a narrow window - so a
+     * screen that has the room for a page but not for a page and a column folds
+     * the column to its icons and keeps the destinations. The words are the
+     * first thing to go because the pill already says which destination is in
+     * force and an icon is what the row was aimed at anyway; the label is not
+     * lost, it is what the pointer is told when it rests on a folded row, and
+     * it is still the name an assistive tool reads.
+     */
+    bool isFolded() const;
+
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
 
 public Q_SLOTS:
     void setCurrentIndex(int index);
     void setCurrentDestination(QAction *action);
+    /*! Fold the rail to its icons, or unfold it. A folded rail is narrower: the
+     *  width it asks for is the icons' and not the words'. */
+    void setFolded(bool folded);
 
 Q_SIGNALS:
     void currentIndexChanged(int index);
     void currentDestinationChanged(QAction *action);
+    void foldedChanged(bool folded);
 protected:
     /*! Nothing: a rail is a column of destinations with a pill on one of them,
      *  and the wash and the ring belong to a destination. */
