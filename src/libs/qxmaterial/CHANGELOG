@@ -169,6 +169,15 @@ Feature
   A tile never shows part of a photograph with the page beside it - the picture
   is scaled until it covers the tile and the middle of it is what is shown - and
   the grid keeps the height its rows came to rather than scrolling inside itself.
+- `MaterialBreadcrumbs`, the path to where the user is, each step of it before
+  the last a way back: the ways back wear the primary, because to Material a
+  link is the accent, and the step the user is on wears the page's own ink,
+  because it is where they already are and nothing about it is a move. A path
+  longer than the bar shows keeps both ends and folds the middle behind a mark
+  that unrolls it - once, since a path the user unrolled is one they chose to
+  see. The step the user is on is never folded away, and the bar does not
+  shorten a step to fit: a path too long for its room is a path with too many
+  steps.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
