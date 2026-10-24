@@ -107,6 +107,16 @@ Feature
   closes. The sheet is a widget of its own rather than something the panel
   paints, because it has to be under the panel and over everything else, and
   one widget cannot stand in two places in a stack.
+- `MaterialAutocomplete`, a field that answers before the answer is written
+  out: the same filled or outlined face, with the answers that still fit the
+  writing offered under it as the writing goes in. Taking a row writes it into
+  the field; typing takes the answer back, because a value that no longer
+  matches what the field says is not a value; Escape puts the list away and
+  leaves the writing where it was. A field that only answers with its list is a
+  select that can be typed into; `freeSolo` is what makes writing that matches
+  nothing an answer too. The multiple-answer variant - the chips inside the
+  field - is not here: the chips would have to live in the editor's own room,
+  and the field has no room inside it to give.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
