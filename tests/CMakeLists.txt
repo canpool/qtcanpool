@@ -496,10 +496,20 @@ endif()
 if (TARGET FluentDemo)
   set(DEMO_FLUENT_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/fluentdemo.png")
   set(DEMO_FLUENT_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/fluentdemo.png")
+  # The Rating screen is a second capture of the same binary, because the window
+  # it opens on cannot stand for a page that waits for its answers and then
+  # draws them. The index is the page's place in the pane and is named in the
+  # test rather than here (see kFluentRatingPage): a page moved in the pane moves
+  # there, where the rest of what is known about these screens is written down.
+  set(DEMO_FLUENT_RATING_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/fluentdemo-rating.png")
+  set(DEMO_FLUENT_RATING_GOLDEN
+      "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/fluentdemo-rating.png")
   list(APPEND DEMO_SCREENSHOT_DEFINES
       DEMO_FLUENT_EXECUTABLE="$<TARGET_FILE:FluentDemo>"
       DEMO_FLUENT_SCREENSHOT_PATH="${DEMO_FLUENT_SCREENSHOT}"
       DEMO_FLUENT_GOLDEN_PATH="${DEMO_FLUENT_GOLDEN}"
+      DEMO_FLUENT_RATING_SCREENSHOT_PATH="${DEMO_FLUENT_RATING_SCREENSHOT}"
+      DEMO_FLUENT_RATING_GOLDEN_PATH="${DEMO_FLUENT_RATING_GOLDEN}"
   )
   list(APPEND DEMO_SCREENSHOT_TARGETS FluentDemo)
 endif()
@@ -507,10 +517,17 @@ endif()
 if (TARGET MaterialDemo)
   set(DEMO_MATERIAL_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/materialdemo.png")
   set(DEMO_MATERIAL_GOLDEN "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/materialdemo.png")
+  # The Album screen, for the same reason: it is the page whose pictures arrive
+  # after it does, and the tiles it shows are drawn rather than shipped.
+  set(DEMO_MATERIAL_ALBUM_SCREENSHOT "${DEMO_SCREENSHOT_DIR}/materialdemo-album.png")
+  set(DEMO_MATERIAL_ALBUM_GOLDEN
+      "${QTCANPOOL_TESTS_DIR}/demo/golden/${CMAKE_SYSTEM_NAME}/${DEMO_GOLDEN_QT}/materialdemo-album.png")
   list(APPEND DEMO_SCREENSHOT_DEFINES
       DEMO_MATERIAL_EXECUTABLE="$<TARGET_FILE:MaterialDemo>"
       DEMO_MATERIAL_SCREENSHOT_PATH="${DEMO_MATERIAL_SCREENSHOT}"
       DEMO_MATERIAL_GOLDEN_PATH="${DEMO_MATERIAL_GOLDEN}"
+      DEMO_MATERIAL_ALBUM_SCREENSHOT_PATH="${DEMO_MATERIAL_ALBUM_SCREENSHOT}"
+      DEMO_MATERIAL_ALBUM_GOLDEN_PATH="${DEMO_MATERIAL_ALBUM_GOLDEN}"
   )
   list(APPEND DEMO_SCREENSHOT_TARGETS MaterialDemo)
 endif()
@@ -523,11 +540,15 @@ if (DEMO_SCREENSHOT_DEFINES)
       SOURCES
         "${QTCANPOOL_TESTS_DIR}/demo/auto/tst_demoscreenshot.cpp"
         # The page transition both application demos put in front of their
-        # stacks. It is held here to what it promises - a page fades in, rises
-        # the last pixels, and is simply there when less motion is asked for -
-        # which is the part no capture of a finished window can say.
+        # stacks, and the wait they put in front of a page with nothing to show
+        # yet. They are held here to what they promise - a page fades in, rises
+        # the last pixels, and is simply there when less motion is asked for; a
+        # screen waits and then shows what it waited for - which is the part no
+        # capture of a finished window can say.
         "${CMAKE_SOURCE_DIR}/demos/qxapp/common/pagetransition.cpp"
         "${CMAKE_SOURCE_DIR}/demos/qxapp/common/pagetransition.h"
+        "${CMAKE_SOURCE_DIR}/demos/qxapp/common/loadingstate.cpp"
+        "${CMAKE_SOURCE_DIR}/demos/qxapp/common/loadingstate.h"
   )
   # Running the test is what builds it, and the test launches the demos: without
   # these dependencies they may simply not exist yet.

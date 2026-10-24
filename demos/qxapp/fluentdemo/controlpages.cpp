@@ -5,6 +5,7 @@
 #include "controlpages.h"
 
 #include "demopage.h"
+#include "loadingstate.h"
 
 #include "qxfluent/fluentbadge.h"
 #include "qxfluent/fluentbutton.h"
@@ -29,11 +30,13 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtGui/QPainter>
+#include <QtGui/QPainterPath>
 #include <QAction>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QVBoxLayout>
 
 QX_FLUENT_USE_NAMESPACE
@@ -319,13 +322,260 @@ DemoPage *sliderPage(QWidget *parent)
     return page;
 }
 
+/*! How many answers the summary is about, and how long they take to arrive.
+ *
+ *  The duration is the page's own and not a token from the family's motion
+ *  vocabulary: nothing is moving from one state to another, the answers are
+ *  simply not in hand yet. */
+constexpr int kAnswers = 24;
+constexpr int kAnswersPerWeek = 3;
+constexpr int kCollectMs = 1200;
+
+/*! The run of answers, drawn.
+ *
+ *  Bars would say the same numbers and a column of numbers says them better. A
+ *  line says the one thing neither does - whether the answers are rising - so
+ *  the summary holds the average in words and the run of them as a line, and
+ *  nothing else.
+ *
+ *  Two states have to be drawn and they are not the same drawing. With answers
+ *  there is a line to read against the grid; with none there is nothing to
+ *  average and the honest drawing is a broken line saying the shape is yet to
+ *  come - a line drawn flat through zero would be read as "the answers are
+ *  terrible" rather than "there are no answers", which is the one thing a
+ *  summary must never say by accident.
+ *
+ *  It follows the palette because it is data and not a photograph: the same
+ *  numbers in a dark window are the same numbers, and the accent is what the
+ *  theme says it is.
+ */
+class AnswerTrend : public QWidget
+{
+public:
+    explicit AnswerTrend(QWidget *parent)
+        : QWidget(parent)
+    {
+        setMinimumHeight(96);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    }
+
+    void setAnswerCount(int count)
+    {
+        m_count = qMax(count, 0);
+        update();
+    }
+
+    /*! The average over the first @p weeks of the run, or zero before there is
+     *  a week to average. */
+    static qreal average(int weeks)
+    {
+        const int counted = qBound(0, weeks, int(sizeof(kWeekly) / sizeof(kWeekly[0])));
+        if (counted == 0) {
+            return 0.0;
+        }
+        qreal sum = 0.0;
+        for (int week = 0; week < counted; ++week) {
+            sum += kWeekly[week];
+        }
+        return sum / counted;
+    }
+protected:
+    void paintEvent(QPaintEvent *) override
+    {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+
+        const QRectF area = QRectF(rect()).adjusted(2.0, 8.0, -2.0, -8.0);
+        if (area.width() <= 0.0 || area.height() <= 0.0) {
+            return;
+        }
+
+        QColor grid = palette().color(QPalette::PlaceholderText);
+        grid.setAlpha(48);
+        painter.setPen(QPen(grid, 1.0));
+        // Three lines: the worst answer, the middle and the best. The scale is
+        // one to five, so the middle is a line the eye can judge against.
+        for (int step = 0; step <= 2; ++step) {
+            const qreal y = area.top() + area.height() * step / 2.0;
+            painter.drawLine(QPointF(area.left(), y), QPointF(area.right(), y));
+        }
+
+        const int weeks = qMin(m_count / kAnswersPerWeek, int(sizeof(kWeekly) / sizeof(kWeekly[0])));
+        if (weeks < 2) {
+            // Nothing to join up yet, so the line says so rather than standing
+            // for a run of answers that never happened.
+            QColor empty = palette().color(QPalette::PlaceholderText);
+            empty.setAlpha(120);
+            QPen dashes(empty, 1.5, Qt::DashLine);
+            painter.setPen(dashes);
+            const qreal middle = area.center().y();
+            painter.drawLine(QPointF(area.left(), middle), QPointF(area.right(), middle));
+            return;
+        }
+
+        QPolygonF line;
+        for (int week = 0; week < weeks; ++week) {
+            const qreal x = area.left() + area.width() * week / (weeks - 1);
+            const qreal y = area.bottom() - area.height() * kWeekly[week] / 5.0;
+            line.append(QPointF(x, y));
+        }
+
+        // What is under the line is the run so far, said quietly: it is the
+        // trend that is the message and not the area beneath it.
+        QColor under = palette().color(QPalette::Highlight);
+        under.setAlpha(38);
+        QPainterPath fill;
+        fill.moveTo(line.first().x(), area.bottom());
+        for (const QPointF &point : line) {
+            fill.lineTo(point);
+        }
+        fill.lineTo(line.last().x(), area.bottom());
+        fill.closeSubpath();
+        painter.fillPath(fill, under);
+
+        const QColor accent = palette().color(QPalette::Highlight);
+        painter.setPen(QPen(accent, 2.0));
+        painter.setBrush(Qt::NoBrush);
+        painter.drawPolyline(line);
+
+        // A disc at every point, and a larger one at the last: where the run
+        // ends is what the reader came to see.
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(accent);
+        for (int week = 0; week < line.size(); ++week) {
+            painter.drawEllipse(line.at(week), week == line.size() - 1 ? 4.0 : 2.5,
+                                week == line.size() - 1 ? 4.0 : 2.5);
+        }
+    }
+private:
+    /*! The average of each week, oldest first, on the scale the reader answers
+     *  on. Fixed numbers: a page that drew a different run every time would make
+     *  a screenshot of it useless as a record of what it looked like. */
+    static constexpr qreal kWeekly[8] = {3.0, 3.5, 2.9, 3.7, 4.1, 3.8, 4.4, 4.1};
+
+    int m_count = 0;
+};
+
+constexpr qreal AnswerTrend::kWeekly[8];
+
+/*! What a set of answers adds up to, in one surface: the average, how many
+ *  answers it is the average of, and the run they make.
+ *
+ *  The count is the whole of its interface because the count is the whole of
+ *  its state: nothing has arrived, some has, or all of it has. */
+class RatingSummary : public QWidget
+{
+public:
+    explicit RatingSummary(QWidget *parent)
+        : QWidget(parent)
+    {
+        auto *layout = new QVBoxLayout(this);
+        layout->setContentsMargins(QMargins());
+        layout->setSpacing(2);
+
+        auto *headline = new QWidget(this);
+        auto *headlineLayout = new QHBoxLayout(headline);
+        headlineLayout->setContentsMargins(QMargins());
+        headlineLayout->setSpacing(12);
+        m_average = new QLabel(headline);
+        m_average->setFont(FluentType::font(FluentType::Ramp::Title, true));
+        headlineLayout->addWidget(m_average, 0, Qt::AlignBottom);
+        m_words = new QLabel(headline);
+        m_words->setFont(FluentType::font(FluentType::Ramp::Caption));
+        m_words->setForegroundRole(QPalette::PlaceholderText);
+        headlineLayout->addWidget(m_words, 0, Qt::AlignBottom);
+        headlineLayout->addStretch(1);
+        layout->addWidget(headline);
+
+        m_trend = new AnswerTrend(this);
+        layout->addWidget(m_trend, 1);
+
+        auto *caption = new QLabel(this);
+        caption->setFont(FluentType::font(FluentType::Ramp::Caption));
+        caption->setForegroundRole(QPalette::PlaceholderText);
+        caption->setText(QCoreApplication::translate("ControlPages", "The last eight weeks"));
+        layout->addWidget(caption);
+
+        setAnswerCount(0);
+    }
+
+    void setAnswerCount(int count)
+    {
+        m_trend->setAnswerCount(qMax(count, 0));
+
+        if (count <= 0) {
+            m_average->setText(QStringLiteral("\u2014"));
+            m_words->setText(QCoreApplication::translate("ControlPages", "No answers yet"));
+            return;
+        }
+
+        // To one decimal: a second one would be a precision nobody rates at.
+        const int weeks = qMax(count / kAnswersPerWeek, 1);
+        m_average->setText(QString::number(AnswerTrend::average(weeks), 'f', 1));
+        m_words->setText(QCoreApplication::translate("ControlPages", "out of 5, from %1 answers").arg(count));
+    }
+private:
+    QLabel *m_average = Q_NULLPTR;
+    QLabel *m_words = Q_NULLPTR;
+    AnswerTrend *m_trend = Q_NULLPTR;
+};
+
 DemoPage *ratingPage(QWidget *parent)
 {
-    auto *page = new DemoPage(tr("Rating"),
-                              tr("A value the user sets by pointing at one of a few marks, and reads back "
-                                 "the same way."),
-                              parent);
-    page->addSection(tr("How good was it"));
+    auto *page =
+        new DemoPage(tr("Rating"), tr("What a set of answers adds up to, and the one the reader gives."), parent);
+    page->addSection(tr("What the answers say"));
+
+    page->addNote(tr("A question asked and not yet answered leaves a screen with nothing to show, and "
+                     "nothing is the one thing it can show wrongly: an empty surface reads as an answer. "
+                     "So the screen says what it is doing - a ring where the summary will be, an average "
+                     "of a dash rather than of zero - and then shows what the answers came to."));
+
+    auto *summary = new RatingSummary(page);
+    auto *surface = new FluentCard(page);
+    surface->setElevation(FluentElevation::Level::Depth4);
+    auto *surfaceLayout = new QVBoxLayout(surface);
+    const int inset = FluentCard::shadowMargin(FluentElevation::Level::Depth4) + 8;
+    surfaceLayout->setContentsMargins(inset, inset, inset, inset);
+    surfaceLayout->addWidget(summary);
+
+    auto *arrival = new QStackedWidget(page);
+
+    auto *waiting = new QWidget(arrival);
+    auto *waitingLayout = new QVBoxLayout(waiting);
+    waitingLayout->setContentsMargins(QMargins());
+    waitingLayout->setSpacing(10);
+    waitingLayout->addStretch(1);
+    auto *ring = new FluentProgressRing(waiting);
+    // Indeterminate: the screen does not know how long the answers will take,
+    // and a ring that claimed to know would be a lie the user waits on.
+    ring->setIndeterminate(true);
+    ring->setFixedSize(36, 36);
+    waitingLayout->addWidget(ring, 0, Qt::AlignHCenter);
+    auto *words = readout(waiting, tr("Collecting the answers"));
+    words->setForegroundRole(QPalette::PlaceholderText);
+    waitingLayout->addWidget(words, 0, Qt::AlignHCenter);
+    waitingLayout->addStretch(1);
+
+    auto *arrived = new QWidget(arrival);
+    auto *arrivedLayout = new QVBoxLayout(arrived);
+    arrivedLayout->setContentsMargins(QMargins());
+    arrivedLayout->addWidget(surface);
+
+    arrival->addWidget(waiting);
+    arrival->addWidget(arrived);
+    page->addBlock(arrival);
+
+    auto *loading = new LoadingState(arrival, waiting, arrived, page);
+    // The answers are already here in the summary: what the wait switches is
+    // whether the screen is showing them, which is what a screen that has just
+    // asked for them does.
+    loading->startOnFirstShow(page, kCollectMs);
+    QObject::connect(loading, &LoadingState::finished, page, [summary]() {
+        summary->setAnswerCount(kAnswers);
+    });
+
+    page->addSection(tr("Your answer"));
 
     page->addNote(tr("A rating is a slider with pictures: the same keyboard steps, the same contract, and the "
                      "same honest answer when a screen reader asks what it is worth."));
@@ -338,6 +588,21 @@ DemoPage *ratingPage(QWidget *parent)
     });
     page->addRow(tr("Stars"), rating);
     page->addRow(QString(), answer);
+
+    // The two states the screen can be in, on demand: fetching again, and
+    // having nothing at all. A demo of a wait nobody can call for would only
+    // ever be seen by whoever watched it at start-up.
+    auto *collect = new FluentButton(page);
+    collect->setText(tr("Collect them again"));
+    auto *clear = new FluentButton(page);
+    clear->setText(tr("Clear the answers"));
+    QObject::connect(collect, &FluentButton::clicked, page, [loading]() {
+        loading->start(kCollectMs);
+    });
+    QObject::connect(clear, &FluentButton::clicked, page, [summary]() {
+        summary->setAnswerCount(0);
+    });
+    page->addBlock(row(page, {collect, clear}));
 
     page->addStretch();
     return page;

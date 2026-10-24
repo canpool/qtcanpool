@@ -62,12 +62,15 @@
 #include <QtCore/QProcess>
 #include <QtCore/QProcessEnvironment>
 #include <QtCore/QRegularExpression>
+#include <QtTest/QSignalSpy>
 #include <QtCore/QStringList>
 #include <QtGui/QImage>
 #include <QtTest/QtTest>
 #include <QtWidgets/QGraphicsOpacityEffect>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QStackedWidget>
 
+#include "loadingstate.h"
 #include "pagetransition.h"
 #include "qxtheme/qxthememotion.h"
 
@@ -83,6 +86,18 @@ namespace
  * to be a lower bound, so the floor sits an order of magnitude above blank.
  */
 constexpr int kMinDistinctColours = 20;
+
+/*!
+ * Where the two screens that arrive are in their windows' panes.
+ *
+ * A page is opened by number, which is what --page takes, so these are places
+ * in a list and not names: a destination inserted above one of them moves it.
+ * What catches that is the golden - a capture of the wrong screen is a capture
+ * that does not match - and what catches a --page that did nothing at all is
+ * the comparison with the window's own first screen below.
+ */
+constexpr int kFluentRatingPage = 8;
+constexpr int kMaterialAlbumPage = 1;
 
 /*!
  * The other half of the same proxy: a blank window is one colour over (almost)
@@ -424,6 +439,9 @@ private slots:
     void aPageArrivesRatherThanAppearing();
     void lessMotionPutsThePageThereAtOnce();
     void aSecondChangeDoesNotQueueBehindTheFirst();
+    void aWaitEndsOnTheScreenTheWaitWasFor();
+    void aWaitCanBeEndedBeforeItsTimeIsUp();
+    void theWaitingBeginsWhenTheScreenIsFirstShown();
 
     void ribbonDemoRenders();
     void ribbonDemoMatchesGolden();
@@ -444,6 +462,7 @@ private slots:
     void fluentDemoMatchesGolden();
     void fluentThemeSwitchMatchesAFreshStart();
     void fluentDemoAnswersItsWidth();
+    void fluentDemoRatingPageRenders();
 #endif
 #ifdef DEMO_MATERIAL_EXECUTABLE
     void materialDemoRenders();
@@ -451,6 +470,7 @@ private slots:
     void materialThemeSwitchMatchesAFreshStart();
     void materialDemoAnswersItsWidth();
     void materialDemoNamesFitItsRail();
+    void materialDemoAlbumPageRenders();
 #endif
 private:
     QImage m_ribbonScreenshot;
@@ -1464,6 +1484,27 @@ void tst_DemoScreenshot::fluentDemoAnswersItsWidth()
     checkWidthsRespond(QStringLiteral(DEMO_FLUENT_EXECUTABLE), QStringLiteral("fluentdemo"),
                        {{1280, 320}, {1000, 320}, {999, 48}, {641, 48}, {639, 48}, {500, 48}});
 }
+
+/*! The Rating screen: the answers arrive, and what they add up to is drawn.
+ *
+ *  A capture of a second screen rather than of the window it opens on, because
+ *  what is being checked is only on this one - the line that says whether the
+ *  answers are rising, and the average they make. */
+void tst_DemoScreenshot::fluentDemoRatingPageRenders()
+{
+    const QString path = QStringLiteral(DEMO_FLUENT_RATING_SCREENSHOT_PATH);
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_FLUENT_EXECUTABLE), path, QStringLiteral("fluentdemo-rating.log"), error,
+                     {QStringLiteral("--page"), QString::number(kFluentRatingPage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+
+    checkRenders(screenshot, QStringLiteral("fluentdemo-rating"), kMaxApplicationDemoDominantPercent);
+    QVERIFY2(screenshot != m_fluentScreenshot, "--page opened nothing: the capture is the window's first screen");
+    checkGolden(screenshot, QStringLiteral(DEMO_FLUENT_RATING_GOLDEN_PATH), path, QStringLiteral("fluentdemo-rating"));
+}
 #endif
 
 #ifdef DEMO_MATERIAL_EXECUTABLE
@@ -1496,6 +1537,29 @@ void tst_DemoScreenshot::materialDemoAnswersItsWidth()
     // that says so.
     checkWidthsRespond(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), QStringLiteral("materialdemo"),
                        {{1280, 80}, {1000, 80}, {999, 72}, {641, 72}, {639, 0}, {500, 0}});
+}
+
+/*! The Album screen: the cover is there from the first frame and the twelve
+ *  photographs arrive after it.
+ *
+ *  Captured for the same reason as the Rating screen, and for one more: the
+ *  tiles and the cover are drawn by hand rather than shipped as pictures, so
+ *  this capture is the only record of what they look like. */
+void tst_DemoScreenshot::materialDemoAlbumPageRenders()
+{
+    const QString path = QStringLiteral(DEMO_MATERIAL_ALBUM_SCREENSHOT_PATH);
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), path, QStringLiteral("materialdemo-album.log"), error,
+                     {QStringLiteral("--page"), QString::number(kMaterialAlbumPage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+
+    checkRenders(screenshot, QStringLiteral("materialdemo-album"), kMaxApplicationDemoDominantPercent);
+    QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
+    checkGolden(screenshot, QStringLiteral(DEMO_MATERIAL_ALBUM_GOLDEN_PATH), path,
+                QStringLiteral("materialdemo-album"));
 }
 
 void tst_DemoScreenshot::materialDemoNamesFitItsRail()
@@ -1698,6 +1762,99 @@ void tst_DemoScreenshot::aSecondChangeDoesNotQueueBehindTheFirst()
     QCOMPARE(first.pos(), QPoint(0, 0));
 
     QxTheme::setMotionReduced(wasReduced);
+}
+
+/*!
+ * The three tests below are about a wait, not about a picture: they drive the
+ * LoadingState both application demos put in front of a page that has nothing
+ * to show yet, so that the wait can be stopped and let run without a stopwatch
+ * and without a demo.
+ */
+
+/*! A wait ends on the screen it was waiting for, and says so once. */
+void tst_DemoScreenshot::aWaitEndsOnTheScreenTheWaitWasFor()
+{
+    QStackedWidget stack;
+    stack.resize(320, 200);
+    QLabel waiting(QStringLiteral("waiting"));
+    QLabel content(QStringLiteral("here"));
+    stack.addWidget(&waiting);
+    stack.addWidget(&content);
+
+    LoadingState state(&stack, &waiting, &content);
+    QSignalSpy arrived(&state, &LoadingState::finished);
+
+    // A screen opens on the shape of what is coming, not on the answer: showing
+    // the content first and taking it away again is the one thing a wait is for.
+    QVERIFY(state.isLoading());
+    QCOMPARE(stack.currentWidget(), &waiting);
+
+    state.start(40);
+    QVERIFY(state.isLoading());
+
+    QTRY_VERIFY(!state.isLoading());
+    QCOMPARE(stack.currentWidget(), &content);
+    QCOMPARE(arrived.count(), 1);
+}
+
+/*! Ending a wait early is the same arrival, not a second one: the content is
+ *  there, the clock is off, and nothing is said twice. */
+void tst_DemoScreenshot::aWaitCanBeEndedBeforeItsTimeIsUp()
+{
+    QStackedWidget stack;
+    QLabel waiting(QStringLiteral("waiting"));
+    QLabel content(QStringLiteral("here"));
+    stack.addWidget(&waiting);
+    stack.addWidget(&content);
+
+    LoadingState state(&stack, &waiting, &content);
+    QSignalSpy arrived(&state, &LoadingState::finished);
+
+    // Longer than this test will live: only finish() can end it.
+    state.start(60 * 1000);
+    QVERIFY(state.isLoading());
+
+    state.finish();
+    QCOMPARE(stack.currentWidget(), &content);
+    QCOMPARE(arrived.count(), 1);
+
+    // Already there, so there is nothing to say: a screen that announced its
+    // content twice would have every listener it has act twice.
+    state.finish();
+    QCOMPARE(arrived.count(), 1);
+    QVERIFY(!state.isLoading());
+}
+
+/*! The wait belongs to the first show. A screen built at start-up waits when it
+ *  is opened - and coming back to it does not ask it to fetch what it has. */
+void tst_DemoScreenshot::theWaitingBeginsWhenTheScreenIsFirstShown()
+{
+    QStackedWidget stack;
+    QLabel waiting(QStringLiteral("waiting"));
+    QLabel content(QStringLiteral("here"));
+    stack.addWidget(&waiting);
+    stack.addWidget(&content);
+
+    QWidget screen;
+    LoadingState state(&stack, &waiting, &content);
+    state.startOnFirstShow(&screen, 40);
+
+    // Armed and not running: the placeholder is up so the screen cannot flash
+    // its content, and nothing is counting down until somebody looks.
+    QVERIFY(state.isLoading());
+    QTest::qWait(80);
+    QVERIFY(state.isLoading());
+
+    screen.show();
+    QTRY_VERIFY(!state.isLoading());
+    QCOMPARE(stack.currentWidget(), &content);
+
+    // Closed and opened again: the answers are already here.
+    screen.hide();
+    screen.show();
+    QTest::qWait(80);
+    QVERIFY(!state.isLoading());
+    QCOMPARE(stack.currentWidget(), &content);
 }
 
 #include "tst_demoscreenshot.moc"
