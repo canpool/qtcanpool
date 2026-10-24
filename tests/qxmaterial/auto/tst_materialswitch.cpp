@@ -39,6 +39,8 @@ class tst_MaterialSwitch : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -181,6 +183,17 @@ void tst_MaterialSwitch::noMotionCrossesAtOnce()
     QVERIFY(materialSwitch.grab().toImage() == justAfter);
 
     QxTheme::setMotionReduced(was);
+}
+
+void tst_MaterialSwitch::theKeyboardLandsOnIt()
+{
+    MaterialSwitch widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialSwitch)

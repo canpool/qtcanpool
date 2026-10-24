@@ -34,6 +34,8 @@ class tst_MaterialAvatar : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -247,6 +249,17 @@ void tst_MaterialAvatar::aFaceNobodyCanUseIsDrawnFainter()
     avatar.setEnabled(false);
     const QImage faded = avatar.grab().toImage();
     QVERIFY(faded != live);
+}
+
+void tst_MaterialAvatar::theKeyboardLandsOnIt()
+{
+    MaterialAvatar widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialAvatar)

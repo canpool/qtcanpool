@@ -27,6 +27,8 @@ class tst_MaterialCheckable : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -210,6 +212,17 @@ void tst_MaterialCheckable::aChoiceNobodyCanMakeIsDrawnFainter()
     const QImage radioLive = radio.grab().toImage();
     radio.setEnabled(false);
     QVERIFY(radio.grab().toImage() != radioLive);
+}
+
+void tst_MaterialCheckable::theKeyboardLandsOnIt()
+{
+    MaterialCheckBox widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialCheckable)

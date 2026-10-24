@@ -39,6 +39,8 @@ class tst_MaterialSnackbar : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void itStaysOutOfTheWayUntilItIsAsked();
@@ -225,6 +227,17 @@ void tst_MaterialSnackbar::noMotionPutsItThereAtOnce()
     QCOMPARE(snackbar.pos(), arrived);
 
     QxTheme::setMotionReduced(was);
+}
+
+void tst_MaterialSnackbar::theKeyboardLandsOnIt()
+{
+    MaterialSnackbar widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialSnackbar)

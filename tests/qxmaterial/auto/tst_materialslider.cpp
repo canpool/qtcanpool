@@ -53,6 +53,8 @@ class tst_MaterialSlider : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void aPressOnTheTrackMovesTheHandle();
@@ -206,6 +208,17 @@ void tst_MaterialSlider::noMotionPutsTheHandleThereAtOnce()
     QVERIFY(slider.grab().toImage() == justAfter);
 
     QxTheme::setMotionReduced(was);
+}
+
+void tst_MaterialSlider::theKeyboardLandsOnIt()
+{
+    MaterialSlider widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialSlider)

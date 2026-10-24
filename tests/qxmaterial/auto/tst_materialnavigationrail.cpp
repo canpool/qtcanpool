@@ -123,6 +123,8 @@ class tst_MaterialNavigationRail : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void theRailHoldsWhatItIsGiven();
@@ -457,6 +459,17 @@ void tst_MaterialNavigationRail::aFoldedRowSaysTheNameItDoesNotDraw()
     // The row is answered as a row still is: the wash of being pointed at, in
     // the pill's shape and where the pill stands.
     QVERIFY(rail->grab().toImage().pixelColor(40, 84) != rest.pixelColor(40, 84));
+}
+
+void tst_MaterialNavigationRail::theKeyboardLandsOnIt()
+{
+    MaterialNavigationRail widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialNavigationRail)

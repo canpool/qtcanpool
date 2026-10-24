@@ -23,6 +23,7 @@ class tst_MaterialMenu : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -185,6 +186,17 @@ void tst_MaterialMenu::aCommandNobodyCanPickIsWrittenFainter()
     menu.actions().at(0)->setEnabled(false);
     const QImage faded = menu.grab().toImage();
     QVERIFY(faded != live);
+}
+
+void tst_MaterialMenu::theKeyboardLandsOnIt()
+{
+    MaterialMenu widget(m_anchor);
+    widget.open();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialMenu)

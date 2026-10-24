@@ -62,6 +62,8 @@ class tst_MaterialTopAppBar : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void theBarHoldsWhatItIsGiven();
@@ -302,6 +304,17 @@ void tst_MaterialTopAppBar::whatAnAssistiveToolReads()
     // A row of things that can be done to the screen, which is what a toolbar
     // is to an assistive tool.
     QCOMPARE(face->role(), QAccessible::ToolBar);
+}
+
+void tst_MaterialTopAppBar::theKeyboardLandsOnIt()
+{
+    MaterialTopAppBar widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialTopAppBar)

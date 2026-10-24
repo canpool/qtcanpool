@@ -82,6 +82,8 @@ class tst_MaterialFAB : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -208,6 +210,17 @@ void tst_MaterialFAB::aButtonNobodyCanPressIsDrawnFainter()
     fab.setEnabled(false);
     const QImage faded = fab.grab().toImage();
     QVERIFY(faded != live);
+}
+
+void tst_MaterialFAB::theKeyboardLandsOnIt()
+{
+    MaterialFAB widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialFAB)

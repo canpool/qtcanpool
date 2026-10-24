@@ -91,6 +91,8 @@ class tst_MaterialDialog : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void theCardSitsInTheMiddleOfADimmedPage();
@@ -366,6 +368,17 @@ void tst_MaterialDialog::noMotionArrivesWithoutAFade()
     QCOMPARE(dialog.windowOpacity(), 1.0);
 
     QxTheme::setMotionReduced(was);
+}
+
+void tst_MaterialDialog::theKeyboardLandsOnIt()
+{
+    MaterialDialog widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialDialog)

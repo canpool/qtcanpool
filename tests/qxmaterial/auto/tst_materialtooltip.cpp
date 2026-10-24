@@ -39,6 +39,7 @@ class tst_MaterialTooltip : public QObject
 {
     Q_OBJECT
 private slots:
+    void aTransientHintStaysOutOfTheFocusPath();
     void theChipStandsWhereItIsTold();
     void theChipIsTheInversePair();
     void theKeyboardOpensItTooAndLeavingClosesIt();
@@ -118,6 +119,19 @@ void tst_MaterialTooltip::theKeyboardOpensItTooAndLeavingClosesIt()
 
     focusLeaves(&anchor);
     QVERIFY(!tip.isVisible());
+}
+
+void tst_MaterialTooltip::aTransientHintStaysOutOfTheFocusPath()
+{
+    MaterialTooltip widget;
+    widget.show();
+    QApplication::processEvents();
+
+    // A tooltip is a transient hint; it must never capture keyboard focus.
+    widget.setFocus();
+    QApplication::processEvents();
+    QVERIFY(!widget.hasFocus());
+    QVERIFY(QApplication::focusWidget() != &widget);
 }
 
 TEST_ADD(tst_MaterialTooltip)

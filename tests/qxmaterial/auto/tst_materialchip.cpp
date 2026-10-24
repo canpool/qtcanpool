@@ -43,6 +43,8 @@ class tst_MaterialChip : public QObject
 {
     Q_OBJECT
 private slots:
+
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -213,6 +215,17 @@ void tst_MaterialChip::aChipNobodyCanPressIsDrawnFainter()
     QSignalSpy pressed(&chip, &MaterialChip::clicked);
     QTest::mouseClick(&chip, Qt::LeftButton);
     QCOMPARE(pressed.count(), 0);
+}
+
+void tst_MaterialChip::theKeyboardLandsOnIt()
+{
+    MaterialChip widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QVERIFY(widget.hasFocus());
+    QCOMPARE(QApplication::focusWidget(), &widget);
 }
 
 TEST_ADD(tst_MaterialChip)

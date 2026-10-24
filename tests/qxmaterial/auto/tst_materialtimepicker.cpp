@@ -28,6 +28,7 @@ class tst_MaterialTimePicker : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -196,6 +197,18 @@ void tst_MaterialTimePicker::aFieldNobodyCanOpenIsDrawnFainter()
     picker.setEnabled(false);
     const QImage faded = picker.grab().toImage();
     QVERIFY(faded != live);
+}
+
+void tst_MaterialTimePicker::theKeyboardLandsOnIt()
+{
+    MaterialTimePicker widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_MaterialTimePicker)
