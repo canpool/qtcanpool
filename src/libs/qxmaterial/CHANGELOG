@@ -48,6 +48,12 @@ Feature
   source it was given winning - on a stand that is either the primary or the
   page's own variant, in three sides and three shapes. It is a face and not a
   control: no press, no focus ring and no wash.
+- `MaterialStepper`, the way a long piece of work is told apart into steps: a
+  number in a circle with its name under it, joined by a line - the ones
+  already walked in the accent with a tick, the one in force ringed by the
+  accent, the ones ahead a quiet outline. A step that is behind can be taken
+  again by clicking it or with the arrow keys; a step ahead cannot, since how
+  far along the work is, is the work's answer.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
