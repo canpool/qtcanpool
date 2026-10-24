@@ -43,6 +43,11 @@ Feature
   rows in the order given and one of them in force: a click, or the keyboard
   on a row, chooses it and says so twice - once for the click, once for the
   choosing.
+- `MaterialAvatar`, the small face that stands for a person or a thing: a
+  picture, an icon, or the first letter of a name in capitals - the first
+  source it was given winning - on a stand that is either the primary or the
+  page's own variant, in three sides and three shapes. It is a face and not a
+  control: no press, no focus ring and no wash.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
