@@ -220,6 +220,12 @@ Bugfix
   figure, wide for "99+". A badge keeps the size its count asks for now, however
   much room the row has to spare; and one figure is a circle while two are a
   pill, because it is the count that decides the shape.
+- The destination in force lost its pill on a dark page. The fill was the accent
+  at twelve per cent of the surface, and on a near-black surface twelve per cent
+  of that shorter distance lands within a shade of the page - the shape was
+  there and could not be found. The rail, the bottom navigation and the drawer
+  ask the state layer what the surface under them can carry now, and wear the
+  stronger fraction where the page is dark.
 
 0.1.2
 ---

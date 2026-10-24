@@ -41,6 +41,27 @@ inline constexpr qreal pressedOpacity = 0.12;
 /*! The content is being carried. The strongest wash a control wears. */
 inline constexpr qreal draggedOpacity = 0.16;
 
+/*! The fill a chosen thing wears on a light surface: the accent at this much. */
+inline constexpr qreal selectedFillOpacity = 0.12;
+/*! The same fill on a dark surface, where the lighter fraction is not the
+ *  same step - see selectedFillOpacityFor(). */
+inline constexpr qreal selectedFillOpacityOnDark = 0.30;
+
+/*!
+ * The fraction a chosen thing's fill needs on \a base.
+ *
+ * A fill is a wash toward the accent, so the step it buys is that fraction of
+ * the distance between the surface and the accent - and the distance is not
+ * the same on both schemes. A near-black surface stands closer to a
+ * mid-lightness accent than white does, so the fraction that reads as a slab
+ * on white lands a shade away from the dark surface and the shape is lost.
+ *
+ * Which fraction a family asks for is still the family's to say; what it
+ * cannot say once and for both schemes is this. An invalid \a base has no
+ * lightness to read and takes the light surface's answer.
+ */
+qreal QX_CONTROLS_EXPORT selectedFillOpacityFor(const QColor &base);
+
 /*!
  * \a opacity cut into [0, 1] - a token that overreaches clamps instead of
  * painting a state the design never drew.

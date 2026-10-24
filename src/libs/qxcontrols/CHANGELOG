@@ -22,6 +22,13 @@ Feature
   the taken one standing in a pill of the accent. The wheel looks and does
   not take - a turn is not an answer - a click takes, and the arrow keys walk
   the column the keyboard sits in. The row's font is the family's to say.
+- `QxStateLayer` answers what a chosen thing's fill needs on the surface it is
+  drawn on: `selectedFillOpacityFor()`, the accent fraction a pill or a tab
+  wears, and the two tokens behind it. One fraction is not one step on both
+  schemes - a near-black surface stands closer to a mid-lightness accent than
+  white does, so the same twelve per cent buys a smaller step exactly where the
+  eye has the least to work with - and the answer is the stronger fraction
+  where the page is dark.
 
 Bugfix
 - The popup surface said `dismissed` twice when Escape put it away - once for

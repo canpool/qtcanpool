@@ -262,7 +262,8 @@ void tst_MaterialDrawer::theDestinationInForceWearsThePill()
     const QImage frame = drawer->grab().toImage();
     const QColor page_ = drawer->palette().color(QPalette::Window);
     const QColor accent = QxTheme::QxThemeManager::instance()->accentColor();
-    const QColor pill = QxControls::QxStateLayer::layered(page_, accent, 0.12);
+    const QColor pill =
+        QxControls::QxStateLayer::layered(page_, accent, QxControls::QxStateLayer::selectedFillOpacityFor(page_));
 
     // Between the icon and the name, on the pill's own line: at sixty it is the
     // one in force, at sixty through the next row it is not.

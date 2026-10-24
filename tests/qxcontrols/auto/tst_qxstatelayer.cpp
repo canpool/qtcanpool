@@ -19,6 +19,7 @@ private slots:
     void layeredComposites();
     void paintMatchesLayered();
     void restDrawsNothing();
+    void aChosenFillKeepsItsStepOnADarkSurface();
 };
 
 /*! An opacity that overreaches clamps instead of painting a state the design
@@ -93,6 +94,39 @@ void tst_QxStateLayer::restDrawsNothing()
     painter.end();
 
     QCOMPARE(image.pixelColor(4, 4), base);
+}
+
+/*! A chosen thing's fill is a wash toward the accent, so the step it buys is
+ *  the fraction times the distance between the surface and the accent - and a
+ *  near-black surface stands closer to a mid-lightness accent than white does.
+ *  One fraction for both schemes therefore buys a smaller step exactly where
+ *  the eye has the least to work with, which is why the darker surface is
+ *  asked for more of it. What is promised: neither fill is a shade away from
+ *  its own surface, and the dark one is not the weaker of the two. */
+void tst_QxStateLayer::aChosenFillKeepsItsStepOnADarkSurface()
+{
+    const QColor light(0xff, 0xff, 0xff);
+    const QColor dark(0x1f, 0x1f, 0x1f);
+
+    // Which surface asks for which fraction: a light one asks for the token,
+    // a dark one for the token that buys the step back, and a colour with no
+    // lightness to read is taken for the lighter of the two.
+    QCOMPARE(QxStateLayer::selectedFillOpacityFor(light), QxStateLayer::selectedFillOpacity);
+    QCOMPARE(QxStateLayer::selectedFillOpacityFor(dark), QxStateLayer::selectedFillOpacityOnDark);
+    QCOMPARE(QxStateLayer::selectedFillOpacityFor(QColor()), QxStateLayer::selectedFillOpacity);
+
+    const auto step = [](const QColor &surface, const QColor &accent) {
+        const QColor fill = QxStateLayer::layered(surface, accent, QxStateLayer::selectedFillOpacityFor(surface));
+        return qAbs(fill.lightnessF() - surface.lightnessF());
+    };
+    // The accents the two schemes actually run with, so the step is the one a
+    // reader would see and not a step between two colours of convenience.
+    const qreal onLight = step(light, QColor(0x00, 0x78, 0xd4));
+    const qreal onDark = step(dark, QColor(0x3a, 0x96, 0xdd));
+
+    QVERIFY(onLight >= 0.05);
+    QVERIFY(onDark >= 0.05);
+    QVERIFY(onDark >= onLight);
 }
 
 TEST_ADD(tst_QxStateLayer)

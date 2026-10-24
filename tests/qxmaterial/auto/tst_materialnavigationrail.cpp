@@ -5,6 +5,8 @@
 #include "tst_global.h"
 
 #include "qxmaterial/materialnavigationrail.h"
+#include "qxcontrols/qxstatelayer.h"
+#include "qxtheme/qxthememanager.h"
 
 #include <QAccessible>
 #include <QAction>
@@ -133,6 +135,7 @@ private slots:
     void theKeyboardKeepsWhatItWalksToInSight();
     void aRoomThatHoldsEverythingDoesNotTravel();
     void theStateWashFollowsThePill();
+    void thePillCanBeFoundOnEitherScheme();
     void whatAnAssistiveToolReads();
     void foldingTakesTheWordsAndKeepsTheDestinations();
     void aFoldedRowSaysTheNameItDoesNotDraw();
@@ -336,6 +339,43 @@ void tst_MaterialNavigationRail::theStateWashFollowsThePill()
     QVERIFY(frame.pixelColor(40, 84) != rest.pixelColor(40, 84));
     // In the corner its radius rounds away: the page's colour, not a square's.
     QCOMPARE(frame.pixelColor(13, 69), rest.pixelColor(13, 69));
+}
+
+/*! The pill is the accent's shape over the rail's own surface, and a fill that
+ *  cannot be told from the surface is not a shape. Both schemes are measured
+ *  off the rail itself, with the accents those schemes run with: the promise
+ *  the dark one makes is the promise the light one keeps - a destination in
+ *  force you can point at, and no weaker for being on a dark page. */
+void tst_MaterialNavigationRail::thePillCanBeFoundOnEitherScheme()
+{
+    std::unique_ptr<MaterialNavigationRail> rail(railWith({QStringLiteral("Home"), QStringLiteral("Mail")}));
+
+    const auto step = [&rail](const QColor &surface, const QColor &accent) {
+        // The accent is the engine's and one at a time, so it is set and read
+        // back before the next surface is measured.
+        QxTheme::QxThemeManager::instance()->setAccentColor(accent);
+        QPalette palette = rail->palette();
+        palette.setColor(QPalette::Window, surface);
+        rail->setPalette(palette);
+
+        const QImage frame = rail->grab().toImage();
+        const QColor page = frame.pixelColor(1, 1);
+        // The first destination is the one in force, and it wears no icon
+        // here: the middle of its pill holds the fill and nothing over it.
+        const QColor pill = frame.pixelColor(kRailWidth / 2, kTopPadding + kIndicatorHeight / 2);
+        return qAbs(pill.lightnessF() - page.lightnessF());
+    };
+
+    const qreal onLight = step(QColor(0xff, 0xff, 0xff), QColor(0x00, 0x78, 0xd4));
+    const qreal onDark = step(QColor(0x1f, 0x1f, 0x1f), QColor(0x3a, 0x96, 0xdd));
+    QxTheme::QxThemeManager::instance()->setAccentColor(QColor());
+
+    // Barely there is not a shape, on either page ...
+    QVERIFY(onLight >= 0.05);
+    QVERIFY(onDark >= 0.05);
+    // ... and the darker page, which has less distance to spend, does not come
+    // out with the weaker pill.
+    QVERIFY(onDark >= onLight);
 }
 
 void tst_MaterialNavigationRail::whatAnAssistiveToolReads()

@@ -41,11 +41,10 @@ constexpr int kIconInset = 16;
 constexpr int kIconSize = 24;
 constexpr int kTextGap = 16;
 
-// The pill behind the destination in force is the accent's own shape at the
-// strength Material gives an active indicator; one nobody can use is the same
-// drawing thinned. The ones that are not in force are the page's ink, nearly
-// whole: a drawer is a list of names, and names are read.
-constexpr qreal kIndicatorOpacity = 0.12;
+// The pill behind the destination in force is the accent's own shape, at the
+// strength the state layer says the surface under it can carry; one nobody can
+// use is the same drawing thinned. The ones that are not in force are the
+// page's ink, nearly whole: a drawer is a list of names, and names are read.
 constexpr qreal kDisabledOpacity = 0.38;
 constexpr qreal kRestingOpacity = 0.87;
 constexpr qreal kSectionOpacity = 0.6;
@@ -695,10 +694,12 @@ void MaterialDrawer::paintContent(QPainter *painter)
         painter->setOpacity(enabled ? (usable ? 1.0 : kDisabledOpacity) : kDisabledOpacity);
         if (inForce) {
             // The pill: the destination in force wears a shape, and the shape
-            // is the accent's - the drawer's answer is the rail's answer.
+            // is the accent's - the drawer's answer is the rail's answer, down
+            // to how much of the accent the surface under it can carry.
+            const QColor surface = palette().color(QPalette::Window);
             painter->setPen(Qt::NoPen);
-            painter->setBrush(
-                QxControls::QxStateLayer::layered(palette().color(QPalette::Window), accent, kIndicatorOpacity));
+            painter->setBrush(QxControls::QxStateLayer::layered(
+                surface, accent, QxControls::QxStateLayer::selectedFillOpacityFor(surface)));
             painter->drawRoundedRect(pill, radius, radius);
         } else if (i == d_ptr->hovered) {
             wash(QxControls::QxStateLayer::hoverOpacity);

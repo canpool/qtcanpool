@@ -37,9 +37,9 @@ constexpr qreal kLabelHeight = 20.0;
 constexpr qreal kHeaderGap = 12.0;
 constexpr qreal kTopPadding = 12.0;
 
-// The indicator is the accent's own shape at the strength Material gives an
-// active indicator; a destination nobody can use is the same drawing thinned.
-constexpr qreal kIndicatorOpacity = 0.12;
+// The indicator is the accent's own shape, at the strength the state layer
+// says the surface under it can carry; a destination nobody can use is the
+// same drawing thinned.
 constexpr qreal kDisabledOpacity = 0.38;
 
 QPointF eventPos(const QMouseEvent *event)
@@ -456,10 +456,13 @@ void MaterialNavigationRail::paintContent(QPainter *painter)
         if (i == d_ptr->current) {
             // The pill: the destination in force wears a shape, and the shape
             // is the accent's - not a tint over the whole row, which would say
-            // "pressed" in a language Material does not speak.
+            // "pressed" in a language Material does not speak. How much of the
+            // accent goes into it is the surface's to answer: one fraction is
+            // not one step on both schemes.
+            const QColor surface = palette().color(QPalette::Window);
             painter->setPen(Qt::NoPen);
-            painter->setBrush(
-                QxControls::QxStateLayer::layered(palette().color(QPalette::Window), accent, kIndicatorOpacity));
+            painter->setBrush(QxControls::QxStateLayer::layered(
+                surface, accent, QxControls::QxStateLayer::selectedFillOpacityFor(surface)));
             painter->drawRoundedRect(indicator, radius, radius);
         }
         if (i == d_ptr->hovered && i != d_ptr->current) {

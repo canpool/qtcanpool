@@ -128,7 +128,8 @@ void tst_MaterialBottomNavigation::theDestinationInForceWearsThePill()
     const QImage frame = bar->grab().toImage();
     const QColor page_ = bar->palette().color(QPalette::Window);
     const QColor accent = QxTheme::QxThemeManager::instance()->accentColor();
-    const QColor pill = QxControls::QxStateLayer::layered(page_, accent, 0.12);
+    const QColor pill =
+        QxControls::QxStateLayer::layered(page_, accent, QxControls::QxStateLayer::selectedFillOpacityFor(page_));
 
     // The top edge of the pill, over the icon and clear of it: at fifty it is
     // the one in force, at a hundred and fifty the next one.

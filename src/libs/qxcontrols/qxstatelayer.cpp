@@ -20,6 +20,18 @@ qreal clampedOpacity(qreal opacity)
     return opacity > 1.0 ? 1.0 : opacity;
 }
 
+qreal selectedFillOpacityFor(const QColor &base)
+{
+    // One fraction is not one step: the wash moves the surface toward the
+    // accent by that fraction of the distance between the two, and a dark
+    // surface stands nearer a mid-lightness accent than white does. The
+    // stronger fraction is what buys back the step the shorter distance costs.
+    if (base.isValid() && base.lightnessF() < 0.5) {
+        return selectedFillOpacityOnDark;
+    }
+    return selectedFillOpacity;
+}
+
 QColor layered(const QColor &base, const QColor &layer, qreal opacity)
 {
     if (!layer.isValid()) {

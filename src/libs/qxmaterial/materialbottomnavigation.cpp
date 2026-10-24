@@ -33,10 +33,9 @@ constexpr qreal kLabelHeight = 18.0;
 constexpr int kLeastItemWidth = 56;
 constexpr int kHintItemWidth = 80;
 
-// The pill behind the destination in force is the accent's own shape at the
-// strength Material gives an active indicator; one nobody can use is the same
-// drawing thinned.
-constexpr qreal kIndicatorOpacity = 0.12;
+// The pill behind the destination in force is the accent's own shape, at the
+// strength the state layer says the surface under it can carry; one nobody can
+// use is the same drawing thinned.
 constexpr qreal kDisabledOpacity = 0.38;
 // A destination that is not the one in force is held back rather than drawn in
 // another colour: what says "this one" is the accent and the pill, so the rest
@@ -280,10 +279,12 @@ void MaterialBottomNavigation::paintContent(QPainter *painter)
         if (inForce) {
             // The pill: the destination in force wears a shape, and the shape
             // is the accent's - the same answer the rail gives, because it is
-            // the same question asked along a different edge.
+            // the same question asked along a different edge, down to how much
+            // of the accent the surface under it can carry.
+            const QColor surface = palette().color(QPalette::Window);
             painter->setPen(Qt::NoPen);
-            painter->setBrush(
-                QxControls::QxStateLayer::layered(palette().color(QPalette::Window), accent, kIndicatorOpacity));
+            painter->setBrush(QxControls::QxStateLayer::layered(
+                surface, accent, QxControls::QxStateLayer::selectedFillOpacityFor(surface)));
             painter->drawRoundedRect(indicator, radius, radius);
         } else if (i == d_ptr->hovered) {
             wash(QxControls::QxStateLayer::hoverOpacity);
