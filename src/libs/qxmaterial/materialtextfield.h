@@ -94,14 +94,17 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     QAccessible::Role accessibleRole() const override;
+
+    /*! Where the label stands at \a progress: 0 is in the field, 1 is out of
+     *  the way. The field itself does not read it from outside, but a subclass
+     *  that draws around the label - a picker whose label names what it holds -
+     *  needs to know where the label will be. */
+    QRectF labelRect(qreal progress) const;
+    QFont labelFont(qreal progress) const;
 private:
     /*! The field itself: the whole widget when filled, inset from the top when
      *  outlined so the floated label has somewhere to stand. */
     QRectF fieldRect() const;
-    /*! Where the label stands at \a progress: 0 is in the field, 1 is out of
-     *  the way. */
-    QRectF labelRect(qreal progress) const;
-    QFont labelFont(qreal progress) const;
     /*! How far out of the way the label is right now: 0 or 1 unless a move is
      *  under way, in which case it is where the move has got to. The answer is
      *  read from the field rather than remembered, because a label whose place

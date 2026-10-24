@@ -21,17 +21,20 @@ QX_THEME_USE_NAMESPACE
 
 namespace
 {
-// A field sized to its hint. The outlined stroke stands at y 8, the editor
-// begins at y 30, and the two bands below are the two places the label can be
-// - both of them clear of the stroke's own rows and of the editor's.
+// A field sized to its hint. The outlined stroke stands at y 8 and the editor
+// begins at y 30. The two bands below are the two places the label can be: the
+// floated one is above the stroke and clear of everything else, and the resting
+// one is on the line the text is typed on - which is the editor's own row, so
+// ink there can be the label's, the writing's or the caret's, and a case that
+// needs to tell them apart has to look at more than the row count.
 constexpr int kFieldWidth = 240;
 constexpr int kFieldHeight = 56;
 constexpr int kLabelLeft = 16;
 constexpr int kLabelRight = 224;
 constexpr int kFloatedBandTop = 2;
 constexpr int kFloatedBandBottom = 7;
-constexpr int kRestBandTop = 24;
-constexpr int kRestBandBottom = 29;
+constexpr int kRestBandTop = 30;
+constexpr int kRestBandBottom = 35;
 constexpr int kStrokeTop = 8;
 constexpr int kStrokeBottom = 54;
 constexpr int kIndicatorY = 55;
@@ -101,6 +104,24 @@ int labelRows(QWidget *widget, int y0, int y1)
     return rows;
 }
 
+/*! Columns between \a y0..y1 that carry something other than the page. A word
+ *  covers dozens of them; a caret covers one. */
+int labelColumns(QWidget *widget, int y0, int y1)
+{
+    const QImage image = capture(widget);
+    const QColor page = pageOf(widget);
+    int columns = 0;
+    for (int x = kLabelLeft; x < qMin(kLabelRight, image.width()); ++x) {
+        for (int y = y0; y < qMin(y1, image.height()); ++y) {
+            if (image.pixelColor(x, y) != page) {
+                ++columns;
+                break;
+            }
+        }
+    }
+    return columns;
+}
+
 /*! The first row that carries ink - a stroke's or a label's - looked at clear
  *  of the side strokes, which are ink on every row they run through. */
 int topRow(QWidget *widget)
@@ -150,6 +171,14 @@ QLineEdit *editorOf(MaterialTextField *field)
 {
     return field->findChild<QLineEdit *>();
 }
+
+/*! Reaches where the label stands, which the base keeps to itself. A prompt on
+ *  a line of its own is a caret away from the text it names. */
+class ProbeField : public MaterialTextField
+{
+public:
+    using MaterialTextField::labelRect;
+};
 }   // namespace
 
 class tst_MaterialTextField : public QObject
@@ -160,6 +189,7 @@ private slots:
     void cleanup();
 
     void theLabelReadsAsThePromptUntilThereIsSomethingToSay();
+    void thePromptStandsOnTheLineTheTextIsTypedOn();
     void typingKeepsTheLabelOutOfTheWay();
     void theLabelFloatsOntoTheStroke();
     void theGapInTheStrokeIsTheLabelSquaring();
@@ -216,7 +246,36 @@ void tst_MaterialTextField::theLabelReadsAsThePromptUntilThereIsSomethingToSay()
     QVERIFY(field.hasFocus());
 
     QVERIFY(labelRows(&field, kFloatedBandTop, kFloatedBandBottom) > 0);
-    QCOMPARE(labelRows(&field, kRestBandTop, kRestBandBottom), 0);
+    // What is left on the field's line is the caret: it stands where the prompt
+    // stood, because the prompt stands where the writing does. A caret is one
+    // column of ink and a word is dozens, so a count says which is there.
+    QVERIFY(labelColumns(&field, kRestBandTop, kRestBandBottom) <= 3);
+}
+
+/*! The label reading as the prompt stands on the line the text is typed on, in
+ *  both variants. The middle of the field is not that line: the room above it
+ *  is the label's once the label has floated up, and a prompt six pixels above
+ *  the caret it asks for makes a click land somewhere the writing is not. */
+void tst_MaterialTextField::thePromptStandsOnTheLineTheTextIsTypedOn()
+{
+    const MaterialTextField::Variant variants[] = {MaterialTextField::Variant::Filled,
+                                                   MaterialTextField::Variant::Outlined};
+    for (MaterialTextField::Variant variant : variants) {
+        ProbeField field;
+        field.setVariant(variant);
+        field.setLabel(QStringLiteral("Account"));
+        field.resize(kFieldWidth, kFieldHeight);
+        field.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&field));
+
+        QLineEdit *editor = editorOf(&field);
+        QVERIFY(editor);
+        // 0 is the label in the field: no text, and the keyboard elsewhere.
+        // The editor's own middle in real numbers: QRect::center() truncates
+        // the half pixel an even extent has, and this is a comparison of lines.
+        const QRect box = editor->geometry();
+        QCOMPARE(field.labelRect(0.0).center().y(), box.top() + box.height() / 2.0);
+    }
 }
 
 /*! And it stays out of the way once there is text, even when the keyboard has
@@ -234,8 +293,10 @@ void tst_MaterialTextField::typingKeepsTheLabelOutOfTheWay()
     field.resize(kFieldWidth, kFieldHeight);
 
     field.setText(QStringLiteral("someone@example.com"));
+    // The label is up on the stroke. Rows on the field's line no longer say
+    // whether it left: the writing is on those rows, and the prompt shares them
+    // with it by design.
     QVERIFY(labelRows(&field, kFloatedBandTop, kFloatedBandBottom) > 0);
-    QCOMPARE(labelRows(&field, kRestBandTop, kRestBandBottom), 0);
 
     // Clearing it puts the label back, because there is nothing to say again.
     field.clear();

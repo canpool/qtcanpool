@@ -478,3 +478,8 @@ Bugfix
   layout cannot hand it the room that belongs to the screen - which is how a
   floating action button in its header came to sit off the middle of a rail a
   parent had stretched.
+- The label reading as the prompt stood in the middle of the field while the
+  writing was typed six pixels lower, so a field clicked into put its caret
+  below the name it asked for. The prompt stands on the line the text is typed
+  on now; the middle of the field was never that line, because the room above it
+  belongs to the label once the label floats up.

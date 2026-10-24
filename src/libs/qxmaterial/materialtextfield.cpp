@@ -44,6 +44,16 @@ constexpr qreal kHairlineOpacity = 0.42;
 constexpr qreal kRestStroke = 1.0;
 constexpr qreal kFocusStroke = 2.0;
 
+/*! The line the text is typed on, in field coordinates: the editor's own row,
+ *  which is not the middle of the field - the room above it belongs to the
+ *  label once the label has floated up. A label reading as the prompt stands
+ *  here too, or the caret would answer a click six pixels off its own name. */
+qreal textLineCenterY(const QRectF &field)
+{
+    const qreal top = field.top() + kEditorTop;
+    return top + (field.height() - kEditorTop - kEditorBottom) / 2.0;
+}
+
 /*! A rectangle rounded at the top only: a filled text field is an opening with
  *  a floor, not a card. */
 QPainterPath topRoundedPath(const QRectF &rect, qreal radius)
@@ -204,8 +214,8 @@ QRectF MaterialTextField::labelRect(qreal progress) const
     const qreal left = field.left() + kSideInset;
     const qreal width = qMax(qreal(0.0), field.width() - 2 * kSideInset);
 
-    // Where it reads as the prompt: the line the text will be typed on.
-    const qreal restTop = field.center().y() - height / 2.0;
+    // Where it reads as the prompt: the line the text is typed on.
+    const qreal restTop = textLineCenterY(field) - height / 2.0;
     // Where it goes: inside the top of a filled field, and on the outline of
     // an outlined one - which is why the outlined field is inset from the top.
     const qreal floatTop = d_ptr->variant == Variant::Filled ? field.top() + kFloatInset : field.top() - height / 2.0;
