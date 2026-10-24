@@ -22,6 +22,10 @@ constexpr qreal kStarGap = 4.0;
 // the inner radius is what decides whether it reads as a star or as a flower.
 constexpr qreal kInnerRatio = 0.45;
 
+// A rating nobody can use is drawn faded, the way every other control is. The
+// stars were the one part of a disabled row that still looked ready to answer.
+constexpr qreal kDisabledOpacity = 0.4;
+
 QPointF eventPos(const QMouseEvent *event)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -189,6 +193,7 @@ void FluentRating::paintContent(QPainter *painter)
 {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     // The row reads as two rows at once: what is rated, and - while the
     // pointer is over it - what a click here would rate it. The second is

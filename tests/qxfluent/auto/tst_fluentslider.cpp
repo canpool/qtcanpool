@@ -59,6 +59,7 @@ private slots:
     void aDragCarriesTheThumb();
     void theKeyboardWalksTheRange();
     void theRailFillsUpToTheThumb();
+    void aSliderNobodyCanUseIsDrawnFaded();
     void ticksAppearWhenTheRailIsDivided();
     void theValueIsThereForAnAssistiveTool();
 private:
@@ -148,6 +149,31 @@ void tst_FluentSlider::theRailFillsUpToTheThumb()
     // At the far end the thumb is there, in the accent.
     const QColor thumb = pixel(&slider, kRight, 6);
     QCOMPARE(thumb, kAccent);
+}
+
+/*! A slider nobody can use is drawn faded: it refuses the pointer, and it has
+ *  to say so before the pointer finds out. The thumb is the part that used to
+ *  look ready anyway. */
+void tst_FluentSlider::aSliderNobodyCanUseIsDrawnFaded()
+{
+    FluentSlider ready;
+    ready.resize(120, 24);
+    ready.setValue(50);
+    QTest::qWait(kSettleWait);
+    QCOMPARE(pixel(&ready, kMiddle, 6), kAccent);
+
+    FluentSlider faded;
+    faded.resize(120, 24);
+    faded.setValue(50);
+    QTest::qWait(kSettleWait);
+    faded.setEnabled(false);
+
+    const QImage fadedFrame = faded.grab().toImage();
+    QVERIFY2(
+        fadedFrame.pixelColor(kMiddle, 6) != kAccent,
+        qPrintable(
+            QStringLiteral("the thumb kept the accent whole at %1").arg(fadedFrame.pixelColor(kMiddle, 6).name())));
+    QVERIFY(fadedFrame != ready.grab().toImage());
 }
 
 /*! The marks are Fluent's way of saying the rail is divided: without an

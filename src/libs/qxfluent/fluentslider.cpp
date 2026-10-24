@@ -29,6 +29,10 @@ constexpr qreal kTickGap = 2.0;
 // they are drawn as.
 constexpr qreal kMutedOpacity = 0.12;
 
+// A slider nobody can use is drawn faded, the way every other control is: the
+// thumb was the one part of a disabled row that still looked ready.
+constexpr qreal kDisabledOpacity = 0.4;
+
 QPointF eventPos(const QMouseEvent *event)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -276,6 +280,7 @@ void FluentSlider::paintSurface(QPainter *painter)
 
     painter->save();
     painter->setPen(Qt::NoPen);
+    painter->setOpacity(isEnabled() ? 1.0 : kDisabledOpacity);
 
     // The rail: the part the thumb has reached is the accent, the part it has
     // not is the page thinned.

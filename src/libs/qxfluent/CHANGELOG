@@ -123,6 +123,11 @@ Bugfix
   corner drawn as an oval arc, so a badge holding "12" was an ellipse instead of
   a pill and a progress bar's track was a lens instead of a bar. Both turn their
   corners by half the short side now, which is what the buttons already did.
+- A `FluentSlider` and a `FluentRating` refused the pointer when they were
+  turned off, and said nothing else: the rail, the thumb and the stars came out
+  in the same ink whether the control could be used or not, which is a face
+  that promises what the hand will not get. Both are drawn faded now, the way
+  every other control in the family already was.
 
 0.1.2
 ---

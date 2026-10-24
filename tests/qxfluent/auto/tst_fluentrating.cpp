@@ -58,6 +58,7 @@ private slots:
     void theHoverSaysWhatAClickWouldDo();
     void theKeyboardWalksIt();
     void theStarsAreTheRange();
+    void aRatingNobodyCanUseIsDrawnFaded();
 private:
     bool m_hadOverride = false;
     bool m_wasActive = false;
@@ -149,6 +150,23 @@ void tst_FluentRating::theStarsAreTheRange()
     QCOMPARE(rating.value(), 2);
 
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A rating nobody can use is drawn faded. It already refuses the click; a
+ *  row of stars that still looks ready to answer is the part that lies. */
+void tst_FluentRating::aRatingNobodyCanUseIsDrawnFaded()
+{
+    FluentRating ready;
+    ready.resize(ready.sizeHint());
+    ready.setValue(3);
+    QVERIFY(accentPixels(&ready) > 0);
+
+    FluentRating faded;
+    faded.resize(faded.sizeHint());
+    faded.setValue(3);
+    faded.setEnabled(false);
+
+    QCOMPARE(accentPixels(&faded), 0);
 }
 
 TEST_ADD(tst_FluentRating)
