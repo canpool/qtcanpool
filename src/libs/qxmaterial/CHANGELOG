@@ -27,6 +27,10 @@ Feature
   surface under the inverse on-surface - that says a word about the control
   it waits beside, and says it without an arrow. The mechanism is the shared
   tooltip in `qxcontrols`; Material's is the corner the chip turns by.
+- `MaterialDivider`, one hairline in the outline the family reads its edges
+  with: full across the width it was given, inset past the indent the
+  content beside it keeps, or middle - kept from both ends, touching
+  neither.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
