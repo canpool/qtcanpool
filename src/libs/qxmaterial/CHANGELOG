@@ -83,6 +83,13 @@ Feature
   own child and stays the field's business, but a field whose writing is not
   the point - the two pickers - has to put the editor out of the writing's
   way, and nothing else in the field can do that for a subclass.
+- `MaterialTable`, rows of cells under a row of names: the names fifty-six
+  tall in the small print's heavier cut and the page's ink at six tenths, the
+  rows fifty-two tall with sixteen either side, the pointer's wash and the
+  chosen row's tint behind the cells, and one hairline under each - a table is
+  read along its rows, so the lines that run across it are the ones that
+  matter. It is the table view with a delegate of the family's, the decision
+  the list and the grid already took.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
