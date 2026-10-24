@@ -13,6 +13,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
+#include <QtGui/QPainter>
 #include <QtGui/QPalette>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
@@ -51,9 +52,35 @@ QLabel *line(const QString &text, MaterialType::Scale scale, bool strong, QWidge
 QLabel *onBand(const QString &text, MaterialType::Scale scale, bool strong, QWidget *parent)
 {
     QLabel *label = line(text, scale, strong, parent);
-    label->setStyleSheet(QStringLiteral("color: palette(highlighted-text);"));
+    // Transparent as well as coloured: the themed sheet fills every QWidget with
+    // the surface colour, and a label that let it through would put a dark card
+    // behind every line of a page that has no cards.
+    label->setStyleSheet(QStringLiteral("color: palette(highlighted-text); background: transparent;"));
     return label;
 }
+
+/*! The band itself: the accent, painted where it stands.
+ *
+ *  A themed sheet fills every QWidget with the surface colour - a dark scheme
+ *  has to repaint what the platform style would otherwise leave light - and that
+ *  fill is the sheet's, so it wins over a widget's own window colour. A band
+ *  that asked for the accent through QPalette::Window therefore came out the
+ *  colour of the page in the dark and looked like nothing at all. It paints its
+ *  own fill instead, where no sheet can reach. */
+class Band : public QWidget
+{
+public:
+    explicit Band(QWidget *parent)
+        : QWidget(parent)
+    {
+    }
+protected:
+    void paintEvent(QPaintEvent *) override
+    {
+        QPainter painter(this);
+        painter.fillRect(rect(), palette().color(QPalette::Highlight));
+    }
+};
 }   // namespace
 
 SignInSidePage::SignInSidePage(QWidget *parent)
@@ -72,12 +99,8 @@ SignInSidePage::SignInSidePage(QWidget *parent)
     splitLayout->setContentsMargins(QMargins());
     splitLayout->setSpacing(0);
 
-    auto *band = new QWidget(split);
+    auto *band = new Band(split);
     band->setFixedWidth(kBandWidth);
-    band->setAutoFillBackground(true);
-    QPalette painted = band->palette();
-    painted.setColor(QPalette::Window, painted.color(QPalette::Highlight));
-    band->setPalette(painted);
 
     auto *bandLayout = new QVBoxLayout(band);
     bandLayout->setContentsMargins(kInset, kInset, kInset, kInset);
