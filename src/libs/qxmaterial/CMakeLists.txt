@@ -35,6 +35,7 @@ add_qtc_library(qxmaterial
     materialdrawer.h materialdrawer.cpp
     materialautocomplete.h materialautocomplete.cpp
     materialtogglebuttongroup.h materialtogglebuttongroup.cpp
+    materialpagination.h materialpagination.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
     materialskeleton.h materialskeleton.cpp

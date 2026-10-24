@@ -125,6 +125,13 @@ Feature
   are not the row's business. Each button is as wide as its own label asks
   rather than an equal share, and the row shares out any extra room evenly, so
   the buttons keep the difference their labels asked for.
+- `MaterialPagination`, the row at the foot of a long list that says which part
+  of it is on screen: the first and last page always, the pages either side of
+  the one in force, and an ellipsis wherever pages were left out - MUI's
+  arithmetic, kept as MUI states it. The arrows at the ends are always drawn and
+  are shut where there is nowhere to go, so the row never rearranges itself
+  under the pointer. The keyboard is one stop, on the page in force, with the
+  arrows moving a page at a time and Home / End going to the ends.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
