@@ -97,6 +97,16 @@ Feature
   because it is the same question asked along a different edge. The rest of the
   row is held back rather than drawn in another colour: what says "this one" is
   the accent, and the others have to be quiet for it to be heard.
+- `MaterialDrawer`, the third answer to the same question: the destinations a
+  page cannot hold on either edge, in a panel that comes out over it. It is a
+  list of the rail's destinations, drawn the rail's way and wider - a pill
+  behind the one in force, sections between them, a rule where a section ends -
+  in two of Material's variants: temporary, on a sheet that dims the page and
+  goes away when the sheet or Escape is pressed; persistent, part of the page,
+  taking its room from the layout while it is open and giving it back when it
+  closes. The sheet is a widget of its own rather than something the panel
+  paints, because it has to be under the panel and over everything else, and
+  one widget cannot stand in two places in a stack.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
