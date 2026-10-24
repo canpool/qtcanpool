@@ -195,8 +195,10 @@ void FluentProgressBar::paintSurface(QPainter *painter)
 
     const QRectF track(0.0, (height() - kTrackHeight) / 2.0, width(), kTrackHeight);
     QPainterPath path;
-    path.addRoundedRect(track, FluentShape::radius(FluentShape::Radius::Circular),
-                        FluentShape::radius(FluentShape::Radius::Circular));
+    // Half the track's own height, not the round-any-corner number: past half
+    // the short side a corner is drawn as an oval arc, and the track would be
+    // a lens rather than a bar with round ends.
+    path.addRoundedRect(track, kTrackHeight / 2.0, kTrackHeight / 2.0);
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->fillPath(path, muted);

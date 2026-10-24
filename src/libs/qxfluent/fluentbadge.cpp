@@ -118,7 +118,13 @@ QSize FluentBadge::minimumSizeHint() const
 
 qreal FluentBadge::cornerRadius() const
 {
-    return FluentShape::radius(FluentShape::Radius::Circular);
+    // Half the short side, which is what "round" means on a rectangle that is
+    // not square. Circular is a number large enough to round any corner, and a
+    // corner radius past half its side is not held back by the side: each
+    // corner keeps the radii it was given and is drawn as an oval arc, so a
+    // badge holding two figures came out as an ellipse rather than a pill. The
+    // buttons next door already answer this way, and for this reason.
+    return kPillHeight / 2.0;
 }
 
 void FluentBadge::paintSurface(QPainter *painter)

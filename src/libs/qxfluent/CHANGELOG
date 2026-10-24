@@ -118,6 +118,11 @@ Bugfix
   figure, wide for "99+". A badge keeps the size its count asks for now, however
   much room the row has to spare; and one figure is a circle while two are a
   pill, because it is the count that decides the shape.
+- A corner was asked to round "as far as it goes", which is not what a rectangle
+  that is not square gets: past half its short side the radius is kept and the
+  corner drawn as an oval arc, so a badge holding "12" was an ellipse instead of
+  a pill and a progress bar's track was a lens instead of a bar. Both turn their
+  corners by half the short side now, which is what the buttons already did.
 
 0.1.2
 ---

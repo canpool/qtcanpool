@@ -40,6 +40,15 @@ int darkerThan(QWidget *widget, int y, int from, int to, const QColor &page)
     }
     return count;
 }
+
+/*! Reaches the corner radius the base keeps to itself. What a surface is
+ *  rounded by is the badge's shape, and there is one rule for a rectangle that
+ *  is not square: half its short side. */
+class ProbeBadge : public FluentBadge
+{
+public:
+    using FluentBadge::cornerRadius;
+};
 }   // namespace
 
 class tst_FluentBadge : public QObject
@@ -52,6 +61,7 @@ private slots:
     void aCountIsAPillAndNoCountIsADot();
     void oneFigureIsACircleAndTwoAreAPill();
     void aRowWithRoomToSpareDoesNotStretchIt();
+    void theCornersTurnHalfTheShortSide();
     void theBadgeIsTheAccent();
     void pastTheMaximumTheCountIsClipped();
     void whatItSays();
@@ -98,6 +108,25 @@ void tst_FluentBadge::oneFigureIsACircleAndTwoAreAPill()
     two.setCount(12);
     QVERIFY(two.sizeHint().width() > two.sizeHint().height());
     QCOMPARE(two.sizeHint().height(), one.sizeHint().height());
+}
+
+/*! A round end is half the short side. Asking for "as round as it gets" is the
+ *  same answer on a square and a different one on everything else: past half
+ *  the short side the corner keeps the radii it was given and is drawn as an
+ *  oval arc, so a badge holding "12" came out an ellipse rather than a pill. */
+void tst_FluentBadge::theCornersTurnHalfTheShortSide()
+{
+    ProbeBadge one;
+    one.setCount(5);
+    QCOMPARE(one.cornerRadius(), one.sizeHint().height() / 2.0);
+    // One figure in a square cell: half the side is what makes it a circle.
+    QCOMPARE(one.sizeHint().width(), one.sizeHint().height());
+
+    ProbeBadge two;
+    two.setCount(12);
+    QVERIFY(two.sizeHint().width() > two.sizeHint().height());
+    QCOMPARE(two.cornerRadius(), two.sizeHint().height() / 2.0);
+    QVERIFY(two.cornerRadius() * 2 <= two.sizeHint().width());
 }
 
 /*! Put in a row with room to spare, the badge is still the size its count asked
