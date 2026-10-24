@@ -5,11 +5,13 @@
 #include "tst_global.h"
 
 #include "qxmaterial/materialtogglebuttongroup.h"
+#include "qxmaterial/materialtokens.h"
 
 #include "qxcontrols/qxstatelayer.h"
 
 #include "qxtheme/qxthememanager.h"
 
+#include <QtGui/QFontMetricsF>
 #include <QtGui/QPainter>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtGui/QEnterEvent>
@@ -23,6 +25,8 @@ namespace
 // The row's own measures, read the way a reader reads them.
 constexpr int kRowHeight = 40;
 constexpr int kLeastWidth = 48;
+// The room the family leaves between a label and the edge of its cell.
+constexpr int kTextPadding = 16;
 
 /*! How many pixels of \a room are the accent itself, allowance made for the
  *  one or two of anti-aliasing either side of it. */
@@ -96,6 +100,7 @@ private Q_SLOTS:
     void initTestCase();
 
     void theRowIsAsWideAsItsButtonsAsk();
+    void aLabelIsDrawnWholeAtTheWidthItAsks();
     void nothingHasToBeOn();
     void oneButtonAtATimeUnlessToldOtherwise();
     void aButtonThatIsOnWearsTheAccent();
@@ -183,6 +188,45 @@ void tst_MaterialToggleButtonGroup::theRowIsAsWideAsItsButtonsAsk()
     QCOMPARE(row->buttonRect(0).width(), narrow + 10);
     QCOMPARE(row->buttonRect(2).width(), wide + 10);
     QCOMPARE(row->buttonRect(2).right(), row->width() - 1);
+}
+
+/*! The room a cell gives its label is the room the label really takes.
+ *
+ *  A label is measured with the font metrics and drawn by the text engine, and
+ *  the two do not agree to the pixel: the metrics round an advance to a whole
+ *  pixel and the engine keeps the fraction, and a label whose advances end in a
+ *  half is drawn cut on the button it asked for. So the question is asked of
+ *  the fractional metrics - the cell has to be at least that wide, whatever the
+ *  font the machine has - and the two pixels the family indents a label with
+ *  are the two the reader's eye also sees.
+ *
+ *  Read here rather than painted: the cut only happens on a font whose advances
+ *  end in a half, so a test that compared two frames would pass on this
+ *  machine's fonts and fail on the next one's. */
+void tst_MaterialToggleButtonGroup::aLabelIsDrawnWholeAtTheWidthItAsks()
+{
+    QWidget *page = makePage();
+    auto *row = new MaterialToggleButtonGroup(page);
+    const QStringList labels{QStringLiteral("Personal"), QStringLiteral("Team"), QStringLiteral("Underline")};
+    for (const QString &label : labels) {
+        row->addButton(label);
+    }
+    row->resize(row->sizeHint());
+    row->move(0, 60);
+    row->show();
+
+    const QFontMetricsF metrics(MaterialType::font(MaterialType::Scale::Body));
+    for (int index = 0; index < labels.count(); ++index) {
+        // What the label needs, to the fraction, and what the cell gives it:
+        // the cell's width less the padding on both sides.
+        const qreal needed = metrics.horizontalAdvance(labels.at(index));
+        const int room = row->buttonRect(index).width() - 2 * kTextPadding;
+        QVERIFY2(room >= needed,
+                 qPrintable(QStringLiteral("\"%1\" needs %2 pixels and the cell gives it %3 - it is drawn cut")
+                                .arg(labels.at(index))
+                                .arg(needed)
+                                .arg(room)));
+    }
 }
 
 /*! The first of the three places this parts company with a segmented button:

@@ -187,6 +187,11 @@ Feature
   folded row is told, and it is still the name an assistive tool reads.
 
 Bugfix
+- A toggle button group gave its labels one pixel less than they take, and a
+  label that ends a hair past a whole pixel was drawn cut - "Personal" stood
+  there as "Perso...". The width a button asks for is now measured with the
+  fractional metrics, so what a cell gives its label is what the label really
+  needs, on the fonts whose advances do not land on a pixel.
 - Deleting a `MaterialList` that had rows in it took the process with it: a row
   answers its own going away, and a list deletes its own data before its
   children, so by the time the last row answered there was no list left to tell

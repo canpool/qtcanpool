@@ -10,7 +10,7 @@
 #include "qxcontrols/qxstatelayer.h"
 
 #include <QtCore/QtMath>
-#include <QtGui/QFontMetrics>
+#include <QtGui/QFontMetricsF>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
@@ -118,7 +118,12 @@ int askedWidth(const QString &text, const QIcon &icon)
         }
     }
     if (!text.isEmpty()) {
-        content += QFontMetrics(MaterialType::font(MaterialType::Scale::Body)).horizontalAdvance(text);
+        // The fractional metrics, not the whole-pixel ones: the advance of a
+        // label is a real number and the text engine keeps the fraction, while
+        // the whole-pixel metrics round it down - so a button given the rounded
+        // width draws its last letter cut, on whichever fonts have advances
+        // that do not end on a pixel.
+        content += QFontMetricsF(MaterialType::font(MaterialType::Scale::Body)).horizontalAdvance(text);
     }
     return qMax(kLeastWidth, int(qCeil(content)) + 2 * int(kTextPadding));
 }
