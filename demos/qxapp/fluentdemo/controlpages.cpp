@@ -7,6 +7,8 @@
 #include "demopage.h"
 
 #include "qxfluent/fluentbadge.h"
+#include "qxfluent/fluentbutton.h"
+#include "qxfluent/fluentcombobox.h"
 #include "qxfluent/fluentbreadcrumbbar.h"
 #include "qxfluent/fluentcard.h"
 #include "qxfluent/fluentcommandbar.h"
@@ -28,7 +30,6 @@
 #include <QtCore/QCoreApplication>
 #include <QtGui/QPainter>
 #include <QAction>
-#include <QtWidgets/QComboBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMenu>
@@ -242,9 +243,10 @@ DemoPage *contentDialogPage(QWidget *parent)
 
     page->addNote(tr("The dialog asks and the page answers: a button says which answer it was and nothing "
                      "else, so what happens next is written here and not in the dialog."));
-    auto *launcher = new QPushButton(tr("Delete the draft"), page);
+    auto *launcher = new FluentButton(page);
+    launcher->setText(tr("Delete the draft"));
     auto *answer = readout(page, tr("Nothing has been asked yet."));
-    QObject::connect(launcher, &QPushButton::clicked, page, [launcher, answer]() {
+    QObject::connect(launcher, &FluentButton::clicked, page, [launcher, answer]() {
         // Made per ask and deleted when it closes: a dialog that outlived its
         // question would answer the next one with the last one's states.
         auto *dialog = new FluentContentDialog(launcher->window());
@@ -354,12 +356,14 @@ DemoPage *badgePage(QWidget *parent)
     auto *badge = new FluentBadge(page);
     badge->setCount(12);
     badge->setMaximumCount(99);
-    auto *add = new QPushButton(tr("Add one"), page);
-    auto *clear = new QPushButton(tr("Clear"), page);
-    QObject::connect(add, &QPushButton::clicked, badge, [badge]() {
+    auto *add = new FluentButton(page);
+    add->setText(tr("Add one"));
+    auto *clear = new FluentButton(page);
+    clear->setText(tr("Clear"));
+    QObject::connect(add, &FluentButton::clicked, badge, [badge]() {
         badge->setCount(qMin(badge->count() + 1, badge->maximumCount() + 20));
     });
-    QObject::connect(clear, &QPushButton::clicked, badge, [badge]() {
+    QObject::connect(clear, &FluentButton::clicked, badge, [badge]() {
         badge->setCount(0);
     });
     page->addBlock(row(page, {badge, add, clear}));
@@ -450,14 +454,17 @@ DemoPage *infoBarPage(QWidget *parent)
     info->setOpen(true);
     page->addBlock(info);
 
-    auto *severity = new QComboBox(page);
-    severity->addItem(tr("Informational"), int(FluentInfoBar::Severity::Informational));
-    severity->addItem(tr("Success"), int(FluentInfoBar::Severity::Success));
-    severity->addItem(tr("Warning"), int(FluentInfoBar::Severity::Warning));
-    severity->addItem(tr("Error"), int(FluentInfoBar::Severity::Error));
+    // The answers are the severities in their own order, so a row's index is
+    // its severity: a list of data payloads beside a list of answers is a
+    // second thing to keep in step, and it can only drift.
+    auto *severity = new FluentComboBox(page);
+    severity->addItem(tr("Informational"));
+    severity->addItem(tr("Success"));
+    severity->addItem(tr("Warning"));
+    severity->addItem(tr("Error"));
     severity->setCurrentIndex(1);
-    QObject::connect(severity, QOverload<int>::of(&QComboBox::activated), info, [info, severity](int index) {
-        info->setSeverity(static_cast<FluentInfoBar::Severity>(severity->itemData(index).toInt()));
+    QObject::connect(severity, &FluentComboBox::currentIndexChanged, info, [info](int index) {
+        info->setSeverity(static_cast<FluentInfoBar::Severity>(index));
     });
     page->addRow(tr("Severity"), severity);
 
@@ -482,8 +489,9 @@ DemoPage *teachingTipPage(QWidget *parent)
     page->addNote(tr("The tip is told its target rather than its position, so it stays right when the "
                      "window is resized, scrolled or moved to another screen - a popup placed by "
                      "coordinates would be wrong on all three."));
-    auto *target = new QPushButton(tr("Point at me"), page);
-    QObject::connect(target, &QPushButton::clicked, page, [page, target]() {
+    auto *target = new FluentButton(page);
+    target->setText(tr("Point at me"));
+    QObject::connect(target, &FluentButton::clicked, page, [page, target]() {
         auto *tip = new FluentTeachingTip(target->window());
         tip->setAttribute(Qt::WA_DeleteOnClose);
         tip->setTitle(tr("A teaching tip"));

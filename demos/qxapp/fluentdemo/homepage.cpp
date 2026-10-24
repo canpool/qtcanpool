@@ -4,12 +4,12 @@
  **/
 #include "homepage.h"
 
+#include "qxfluent/fluentbutton.h"
 #include "qxfluent/fluentcard.h"
 #include "qxfluent/fluenttokens.h"
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QVBoxLayout>
 
 QX_FLUENT_USE_NAMESPACE
@@ -69,19 +69,23 @@ void HomePage::setCatalogue(const QStringList &titles, int firstDestination)
     m_firstDestination = firstDestination;
 
     for (int i = 0; i < titles.count(); ++i) {
-        auto *entry = new QPushButton(titles.at(i), m_index->parentWidget());
+        auto *entry = new FluentButton(m_index->parentWidget());
+        entry->setText(titles.at(i));
         // A button rather than a link: the index is a list of things the
         // application can show, and a button is what Qt puts in the keyboard's
-        // way and tells a screen reader is pressable.
-        entry->setFlat(true);
+        // way and tells a screen reader is pressable. The quiet kind, because a
+        // grid of forty accented commands would say that every screen is the
+        // one command a view is allowed to point at.
+        entry->setKind(FluentButton::Kind::Subtle);
         entry->setCursor(Qt::PointingHandCursor);
-        // Whatever the column gets: a name too long for it is elided by the
-        // button, and a page that is as wide as its longest label is a page the
-        // window cannot show whole.
+        // Whatever the column gets: a page that is as wide as its longest name
+        // is a page the window cannot show whole, so the cell is the column and
+        // the name inside it is the page's own business. Three columns of a page
+        // that is at least 680 wide hold the longest name in this index with
+        // room to spare, which is why nothing is cut here.
         entry->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-        entry->setFont(FluentType::font(FluentType::Ramp::Body));
         const int destination = m_firstDestination + i;
-        connect(entry, &QPushButton::clicked, this, [this, destination]() {
+        connect(entry, &FluentButton::clicked, this, [this, destination]() {
             Q_EMIT destinationRequested(destination);
         });
         m_index->addWidget(entry, i / kColumns, i % kColumns);

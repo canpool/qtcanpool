@@ -10,10 +10,10 @@
 #include "qxfluent/fluentbadge.h"
 #include "qxfluent/fluentbreadcrumbbar.h"
 #include "qxfluent/fluentbutton.h"
+#include "qxfluent/fluentcombobox.h"
 #include "qxfluent/fluentcalendarview.h"
 #include "qxfluent/fluentcard.h"
 #include "qxfluent/fluentcheckbox.h"
-#include "qxfluent/fluentcombobox.h"
 #include "qxfluent/fluentcommandbar.h"
 #include "qxfluent/fluentcontentdialog.h"
 #include "qxfluent/fluentdatepicker.h"
@@ -43,7 +43,6 @@
 #include "qxfluent/fluentwindowmaterial.h"
 
 #include <QtGui/QPainter>
-#include <QComboBox>
 #include <QDate>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -263,8 +262,9 @@ FluentPage::FluentPage(QWidget *parent)
     // A tooltip is a window that arrives over the page, so the row is the thing
     // it waits beside: hovering the button shows it, and a capture of the page
     // cannot hold a second window - the same bargain the dialog row makes.
-    auto *tipAnchor = addControl<QPushButton>(QStringLiteral("fluentToolTip"), QStringLiteral("FluentToolTip"),
-                                              new QPushButton(tr("Hover me"), this));
+    auto *tipAnchor = addControl<FluentButton>(QStringLiteral("fluentToolTip"), QStringLiteral("FluentToolTip"),
+                                               new FluentButton(this));
+    tipAnchor->setText(tr("Hover me"));
     auto *tooltip = new FluentToolTip(this);
     tooltip->setAnchor(tipAnchor);
     tooltip->setText(tr("A tooltip says a word about the control it waits beside."));
@@ -272,10 +272,10 @@ FluentPage::FluentPage(QWidget *parent)
     // A dialog is a window that covers the page it was opened over, so the row
     // is what opens it rather than the dialog - a window capture cannot hold
     // two, which is the same bargain the teaching tip row makes.
-    auto *dialogButton =
-        addControl<QPushButton>(QStringLiteral("fluentContentDialogLauncher"), QStringLiteral("FluentContentDialog"),
-                                new QPushButton(tr("Ask me something"), this));
-    connect(dialogButton, &QPushButton::clicked, this, [this]() {
+    auto *dialogButton = addControl<FluentButton>(QStringLiteral("fluentContentDialogLauncher"),
+                                                  QStringLiteral("FluentContentDialog"), new FluentButton(this));
+    dialogButton->setText(tr("Ask me something"));
+    connect(dialogButton, &FluentButton::clicked, this, [this]() {
         if (!m_dialog) {
             m_dialog = new FluentContentDialog(this);
             m_dialog->setTitle(tr("Save before closing?"));
@@ -319,14 +319,15 @@ FluentPage::FluentPage(QWidget *parent)
 
     // A flyout is a surface of its own, like the dialog and the teaching tip: the
     // row is the button it opens from.
-    auto *menuButton = addControl<QPushButton>(QStringLiteral("fluentMenuFlyout"), QStringLiteral("FluentMenuFlyout"),
-                                               new QPushButton(tr("Open the menu"), this));
+    auto *menuButton = addControl<FluentButton>(QStringLiteral("fluentMenuFlyout"), QStringLiteral("FluentMenuFlyout"),
+                                                new FluentButton(this));
+    menuButton->setText(tr("Open the menu"));
     auto *flyout = new FluentMenuFlyout(menuButton);
     flyout->addAction(tr("Rename"));
     flyout->addCheckable(tr("Show hidden"), true);
     flyout->addSeparator();
     flyout->addAction(tr("Delete"));
-    connect(menuButton, &QPushButton::clicked, flyout, &FluentMenuFlyout::open);
+    connect(menuButton, &FluentButton::clicked, flyout, &FluentMenuFlyout::open);
 
     addSection(tr("Effects and transients"));
 
@@ -335,10 +336,10 @@ FluentPage::FluentPage(QWidget *parent)
     // A teaching tip is a popup of its own, so the row is what opens it rather
     // than the tip: a tip that was open would be a second top-level window, and
     // a window capture cannot hold two.
-    auto *tipButton =
-        addControl<QPushButton>(QStringLiteral("fluentTeachingTipLauncher"), QStringLiteral("FluentTeachingTip"),
-                                new QPushButton(tr("Point at me"), this));
-    connect(tipButton, &QPushButton::clicked, this, [this, tipButton]() {
+    auto *tipButton = addControl<FluentButton>(QStringLiteral("fluentTeachingTipLauncher"),
+                                               QStringLiteral("FluentTeachingTip"), new FluentButton(this));
+    tipButton->setText(tr("Point at me"));
+    connect(tipButton, &FluentButton::clicked, this, [this, tipButton]() {
         if (!m_tip) {
             m_tip = new FluentTeachingTip(this);
             m_tip->setTitle(tr("A teaching tip"));
@@ -360,41 +361,42 @@ FluentPage::FluentPage(QWidget *parent)
     auto *materialRow = new QWidget(this);
     auto *materialLayout = new QHBoxLayout(materialRow);
     materialLayout->setContentsMargins(0, 0, 0, 0);
-    auto *materialBox = new QComboBox(materialRow);
-    materialBox->addItem(tr("None"), int(FluentWindowMaterial::Material::None));
-    materialBox->addItem(tr("Mica"), int(FluentWindowMaterial::Material::Mica));
-    materialBox->addItem(tr("Mica Alt"), int(FluentWindowMaterial::Material::MicaAlt));
-    materialBox->addItem(tr("Acrylic"), int(FluentWindowMaterial::Material::Acrylic));
+    // The answers are the materials in their own order, so a row's index is its
+    // material: a payload beside each answer is a second list to keep in step.
+    auto *materialBox = new FluentComboBox(materialRow);
+    materialBox->addItem(tr("None"));
+    materialBox->addItem(tr("Mica"));
+    materialBox->addItem(tr("Mica Alt"));
+    materialBox->addItem(tr("Acrylic"));
+    materialBox->setCurrentIndex(int(FluentWindowMaterial::Material::None));
     auto *materialState = new QLabel(tr("no window yet"), materialRow);
     materialLayout->addWidget(materialBox);
     materialLayout->addWidget(materialState);
     addControl<QWidget>(QStringLiteral("fluentWindowMaterial"), QStringLiteral("FluentWindowMaterial"), materialRow);
 
-    connect(
-        materialBox, QOverload<int>::of(&QComboBox::activated), this, [this, materialBox, materialState](int index) {
-            if (!m_materialWindow) {
-                // Made on the first ask and not in the constructor, for the
-                // same reason the tip and the dialog are: a material is
-                // asked of a window, and a window that exists before it is
-                // wanted is one more top-level window the capture has to
-                // explain.
-                m_materialWindow = new FluentMaterialWindow(this);
-                m_windowMaterial = new FluentWindowMaterial(m_materialWindow);
-            }
-            const auto wanted = static_cast<FluentWindowMaterial::Material>(materialBox->itemData(index).toInt());
-            const bool took = m_windowMaterial->apply(wanted);
-            if (wanted == FluentWindowMaterial::Material::None) {
-                m_materialWindow->setMaterialText(tr("No material is asked for: the window is the application's own."));
-            } else if (took) {
-                m_materialWindow->setMaterialText(
-                    tr("%1 is what this window is made of.").arg(materialBox->itemText(index)));
-            } else {
-                m_materialWindow->setMaterialText(
-                    tr("%1 is not something this platform gives.").arg(materialBox->itemText(index)));
-            }
-            materialState->setText(took ? tr("applied") : tr("not applied"));
-            m_materialWindow->show();
-            m_materialWindow->raise();
-            m_materialWindow->activateWindow();
-        });
+    connect(materialBox, &FluentComboBox::currentIndexChanged, this, [this, materialBox, materialState](int index) {
+        if (!m_materialWindow) {
+            // Made on the first ask and not in the constructor, for the
+            // same reason the tip and the dialog are: a material is
+            // asked of a window, and a window that exists before it is
+            // wanted is one more top-level window the capture has to
+            // explain.
+            m_materialWindow = new FluentMaterialWindow(this);
+            m_windowMaterial = new FluentWindowMaterial(m_materialWindow);
+        }
+        const auto wanted = static_cast<FluentWindowMaterial::Material>(index);
+        const bool took = m_windowMaterial->apply(wanted);
+        if (wanted == FluentWindowMaterial::Material::None) {
+            m_materialWindow->setMaterialText(tr("No material is asked for: the window is the application's own."));
+        } else if (took) {
+            m_materialWindow->setMaterialText(tr("%1 is what this window is made of.").arg(materialBox->currentText()));
+        } else {
+            m_materialWindow->setMaterialText(
+                tr("%1 is not something this platform gives.").arg(materialBox->currentText()));
+        }
+        materialState->setText(took ? tr("applied") : tr("not applied"));
+        m_materialWindow->show();
+        m_materialWindow->raise();
+        m_materialWindow->activateWindow();
+    });
 }

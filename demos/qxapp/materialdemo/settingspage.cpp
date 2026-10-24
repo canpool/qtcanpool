@@ -4,12 +4,12 @@
  **/
 #include "settingspage.h"
 
+#include "qxmaterial/materialselect.h"
 #include "qxmaterial/materialswitch.h"
 #include "qxmaterial/materialtokens.h"
 
 #include "qxtheme/qxthememanager.h"
 
-#include <QComboBox>
 #include <QLabel>
 
 QX_THEME_USE_NAMESPACE
@@ -26,15 +26,24 @@ SettingsPage::SettingsPage(QWidget *parent)
                "its own - which is what a screen that is a place wants, and is why they are taller rather "
                "than bolder."));
 
-    auto *variantBox = new QComboBox(this);
-    variantBox->addItem(tr("Small"), int(MaterialTopAppBar::Variant::Small));
-    variantBox->addItem(tr("Center aligned"), int(MaterialTopAppBar::Variant::CenterAligned));
-    variantBox->addItem(tr("Medium"), int(MaterialTopAppBar::Variant::Medium));
-    variantBox->addItem(tr("Large"), int(MaterialTopAppBar::Variant::Large));
-    connect(variantBox, QOverload<int>::of(&QComboBox::activated), this, [this, variantBox](int index) {
-        Q_EMIT variantRequested(static_cast<MaterialTopAppBar::Variant>(variantBox->itemData(index).toInt()));
+    // The answers are the shapes in their own order, so a row's index is its
+    // shape: a payload beside each answer is a second list to keep in step.
+    // The select carries the name of the choice itself - it is a field, and a
+    // field is labelled - so the row does not say it a second time.
+    auto *variantBox = new MaterialSelect(this);
+    variantBox->setLabel(tr("Shape"));
+    variantBox->addItem(tr("Small"));
+    variantBox->addItem(tr("Center aligned"));
+    variantBox->addItem(tr("Medium"));
+    variantBox->addItem(tr("Large"));
+    // The bar is built at Small and only this page moves it, so the field starts
+    // there: a select that shows nothing is a question already answered
+    // somewhere else.
+    variantBox->setCurrentIndex(int(MaterialTopAppBar::Variant::Small));
+    connect(variantBox, &MaterialSelect::currentIndexChanged, this, [this](int index) {
+        Q_EMIT variantRequested(static_cast<MaterialTopAppBar::Variant>(index));
     });
-    addRow(tr("Shape"), variantBox);
+    addRow(QString(), variantBox);
 
     auto *scrolled = new MaterialSwitch(this);
     scrolled->setText(tr("Say content has moved under the bar"));
@@ -61,21 +70,25 @@ SettingsPage::SettingsPage(QWidget *parent)
 
     addSection(tr("Theme"));
 
-    auto *themeBox = new QComboBox(this);
+    // The ids are the answers, in the engine's order; the field shows the names.
     const QStringList ids = engine->themeIds();
+    auto *themeBox = new MaterialSelect(this);
+    themeBox->setLabel(tr("In force"));
     for (const QString &id : ids) {
-        themeBox->addItem(engine->themeInfo(id).name, id);
+        themeBox->addItem(engine->themeInfo(id).name);
     }
     themeBox->setCurrentIndex(ids.indexOf(engine->theme()));
-    connect(themeBox, QOverload<int>::of(&QComboBox::activated), this, [engine, themeBox](int index) {
-        engine->setTheme(themeBox->itemData(index).toString());
+    connect(themeBox, &MaterialSelect::currentIndexChanged, this, [engine, ids](int index) {
+        // The engine answering with the theme that is already in force says so
+        // by not emitting, which is what keeps this from going round.
+        engine->setTheme(ids.value(index));
     });
-    connect(engine, &QxThemeManager::themeChanged, this, [themeBox](const QString &id) {
+    connect(engine, &QxThemeManager::themeChanged, this, [themeBox, ids](const QString &id) {
         // Following the system changes the theme without the box being touched,
         // so what is showing is read back from the engine.
-        themeBox->setCurrentIndex(themeBox->findData(id));
+        themeBox->setCurrentIndex(ids.indexOf(id));
     });
-    addRow(tr("In force"), themeBox);
+    addRow(QString(), themeBox);
 
     addStretch();
 }

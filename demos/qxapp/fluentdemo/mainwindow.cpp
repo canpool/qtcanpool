@@ -13,6 +13,7 @@
 
 #include "qxapp/qxthemebundle.h"
 #include "qxfluent/fluentcommandbar.h"
+#include "qxfluent/fluenttextbox.h"
 #include "qxfluent/fluentnavigationview.h"
 #include "qxfluent/fluentwindowmaterial.h"
 #include "qxtheme/qxtheme.h"
@@ -29,7 +30,6 @@
 #include <QEvent>
 #include <QResizeEvent>
 #include <QActionGroup>
-#include <QLineEdit>
 #include <QMenu>
 #include <QScrollArea>
 #include <QStackedWidget>

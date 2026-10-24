@@ -9,8 +9,8 @@
 #include "qxmaterial/materialavatar.h"
 #include "qxmaterial/materialbadge.h"
 #include "qxmaterial/materialbottomnavigation.h"
-#include "qxmaterial/materialbreadcrumbs.h"
 #include "qxmaterial/materialbutton.h"
+#include "qxmaterial/materialbreadcrumbs.h"
 #include "qxmaterial/materialcard.h"
 #include "qxmaterial/materialcheckbox.h"
 #include "qxmaterial/materialchip.h"
@@ -49,7 +49,6 @@
 #include <QDate>
 #include <QIcon>
 #include <QPainter>
-#include <QPushButton>
 #include <QPixmap>
 #include <QLabel>
 #include <QHBoxLayout>
@@ -316,8 +315,10 @@ MaterialPage::MaterialPage(QWidget *parent)
     // A tooltip is a window that arrives over the page, so the row is the thing
     // it waits beside: hovering the button shows it, and a capture of the page
     // cannot hold a second window - the same bargain the dialog row makes.
-    auto *tipAnchor = addControl<QPushButton>(QStringLiteral("materialTooltip"), QStringLiteral("MaterialTooltip"),
-                                              new QPushButton(tr("Hover me"), this));
+    auto *tipAnchor = addControl<MaterialButton>(QStringLiteral("materialTooltip"), QStringLiteral("MaterialTooltip"),
+                                                 new MaterialButton(this));
+    tipAnchor->setText(tr("Hover me"));
+    tipAnchor->setVariant(MaterialButton::Variant::Outlined);
     auto *tooltip = new MaterialTooltip(this);
     tooltip->setAnchor(tipAnchor);
     tooltip->setText(tr("A tooltip says a word about the control it waits beside."));
@@ -339,10 +340,11 @@ MaterialPage::MaterialPage(QWidget *parent)
     // is what opens it rather than the dialog - a window capture cannot hold
     // two, which is the same bargain the teaching tip row on the Fluent page
     // makes.
-    auto *dialogButton =
-        addControl<QPushButton>(QStringLiteral("materialDialogLauncher"), QStringLiteral("MaterialDialog"),
-                                new QPushButton(tr("Ask me something"), this));
-    connect(dialogButton, &QPushButton::clicked, this, [this]() {
+    auto *dialogButton = addControl<MaterialButton>(QStringLiteral("materialDialogLauncher"),
+                                                    QStringLiteral("MaterialDialog"), new MaterialButton(this));
+    dialogButton->setText(tr("Ask me something"));
+    dialogButton->setVariant(MaterialButton::Variant::Outlined);
+    connect(dialogButton, &MaterialButton::clicked, this, [this]() {
         if (!m_dialog) {
             m_dialog = new MaterialDialog(this);
             m_dialog->setTitle(tr("Discard draft?"));
@@ -378,14 +380,16 @@ MaterialPage::MaterialPage(QWidget *parent)
     dial->addAction(tr("Upload a file"), plusIcon());
     dial->addAction(tr("Note"), plusIcon());
 
-    auto *menuButton = addControl<QPushButton>(QStringLiteral("materialMenu"), QStringLiteral("MaterialMenu"),
-                                               new QPushButton(tr("Open the menu"), this));
+    auto *menuButton = addControl<MaterialButton>(QStringLiteral("materialMenu"), QStringLiteral("MaterialMenu"),
+                                                  new MaterialButton(this));
+    menuButton->setText(tr("Open the menu"));
+    menuButton->setVariant(MaterialButton::Variant::Outlined);
     auto *menu = new MaterialMenu(menuButton);
     menu->addAction(tr("Rename"));
     menu->addCheckable(tr("Show hidden"), true);
     menu->addSeparator();
     menu->addAction(tr("Delete"));
-    connect(menuButton, &QPushButton::clicked, menu, &MaterialMenu::open);
+    connect(menuButton, &MaterialButton::clicked, menu, &MaterialMenu::open);
 
     auto *bottomBar = addControl<MaterialBottomNavigation>(QStringLiteral("materialBottomNavigation"),
                                                            QStringLiteral("MaterialBottomNavigation"),

@@ -5,6 +5,7 @@
 #include "titlebar.h"
 
 #include "qxfluent/fluentcommandbar.h"
+#include "qxfluent/fluenttextbox.h"
 #include "qxfluent/fluenttokens.h"
 #include "qxcontrols/qxstatelayer.h"
 
@@ -12,7 +13,6 @@
 #include <QtGui/QPainterPath>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
 
 QX_FLUENT_USE_NAMESPACE
 
@@ -235,13 +235,17 @@ TitleBar::TitleBar(QWidget *parent)
     m_title->setFont(FluentType::font(FluentType::Ramp::Body, true));
     layout->addWidget(m_title);
 
-    m_search = new QLineEdit(this);
+    // The family's own box, not a QLineEdit in the system's dress: the caption
+    // is the one row every window shows, and it is exactly where a demo that
+    // dresses Qt's widgets starts to look like two applications.
+    m_search = new FluentTextBox(this);
     m_search->setObjectName(QStringLiteral("captureSearch"));
     m_search->setPlaceholderText(tr("Search"));
-    m_search->setClearButtonEnabled(true);
+    // The clear at the right is the box's own - it arrives with the first
+    // letter and empties the box when it is taken, so nothing is asked for here.
     m_search->setFixedSize(kFieldWidth, kFieldHeight);
     layout->addWidget(m_search);
-    connect(m_search, &QLineEdit::textChanged, this, &TitleBar::searchTextChanged);
+    connect(m_search, &FluentTextBox::textChanged, this, &TitleBar::searchTextChanged);
 
     layout->addStretch(1);
 
@@ -281,7 +285,7 @@ FluentCommandBar *TitleBar::commandBar() const
     return m_bar;
 }
 
-QLineEdit *TitleBar::searchField() const
+QX_FLUENT_PREPEND_NAMESPACE(FluentTextBox) * TitleBar::searchField() const
 {
     return m_search;
 }

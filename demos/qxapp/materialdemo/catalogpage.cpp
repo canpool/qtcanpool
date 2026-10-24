@@ -5,6 +5,7 @@
 #include "catalogpage.h"
 
 #include "qxmaterial/materialbadge.h"
+#include "qxmaterial/materialbutton.h"
 #include "qxmaterial/materialcard.h"
 #include "qxmaterial/materialchip.h"
 #include "qxmaterial/materialdialog.h"
@@ -21,7 +22,6 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtGui/QPainter>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -249,14 +249,20 @@ CatalogPage::CatalogPage(QWidget *parent)
     auto *badge = new MaterialBadge(this);
     badge->setCount(12);
     badge->setMaximumCount(99);
-    auto *add = new QPushButton(tr("Add one"));
-    auto *clear = new QPushButton(tr("Clear"));
-    connect(add, &QPushButton::clicked, this, [badge]() {
+    // Outlined, not filled: a badge being nudged up is not the one command this
+    // screen is pointing at.
+    auto *add = new MaterialButton(this);
+    add->setText(tr("Add one"));
+    add->setVariant(MaterialButton::Variant::Outlined);
+    auto *clear = new MaterialButton(this);
+    clear->setText(tr("Clear"));
+    clear->setVariant(MaterialButton::Variant::Outlined);
+    connect(add, &MaterialButton::clicked, this, [badge]() {
         // Past its maximum a badge stops counting and says so: "127" is not more
         // useful than "99+", and it is wider.
         badge->setCount(qMin(badge->count() + 1, badge->maximumCount() + 20));
     });
-    connect(clear, &QPushButton::clicked, this, [badge]() {
+    connect(clear, &MaterialButton::clicked, this, [badge]() {
         badge->setCount(0);
     });
     addBlock(rowOf({badge, add, clear}, this));

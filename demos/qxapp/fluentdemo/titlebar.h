@@ -11,10 +11,10 @@
 #include "qxfluent/qxfluent_global.h"
 
 class QLabel;
-class QLineEdit;
 
 QX_FLUENT_BEGIN_NAMESPACE
 class FluentCommandBar;
+class FluentTextBox;
 QX_FLUENT_END_NAMESPACE
 
 /*!
@@ -87,7 +87,7 @@ public:
     /*! The empty command bar the window fills. The bar owns it. */
     QX_FLUENT_PREPEND_NAMESPACE(FluentCommandBar) * commandBar() const;
     /*! The field the pane is narrowed with; empty means "all of it". */
-    QLineEdit *searchField() const;
+    QX_FLUENT_PREPEND_NAMESPACE(FluentTextBox) * searchField() const;
 
     CaptionButton *iconButton() const;
     CaptionButton *minimizeButton() const;
@@ -100,7 +100,7 @@ Q_SIGNALS:
     void searchTextChanged(const QString &text);
 private:
     QX_FLUENT_PREPEND_NAMESPACE(FluentCommandBar) *m_bar = Q_NULLPTR;
-    QLineEdit *m_search = Q_NULLPTR;
+    QX_FLUENT_PREPEND_NAMESPACE(FluentTextBox) *m_search = Q_NULLPTR;
     QLabel *m_title = Q_NULLPTR;
     CaptionButton *m_icon = Q_NULLPTR;
     CaptionButton *m_minimize = Q_NULLPTR;

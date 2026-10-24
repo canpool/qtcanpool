@@ -388,6 +388,15 @@ jobs:
         # with the other static text checks in this job.
         run: python3 scripts/check-icons.py
 
+      - name: Check the demos put no bare Qt control on a page
+        # The demos are what the two libraries are shown by, and a QPushButton
+        # on a qxmaterial screen is a control the library does not have - one
+        # the theme sheets dress anyway, so the page keeps looking plausible
+        # while it stops being the family it claims to be. The count came down
+        # to zero in 4.7.3 and the budget stays there: one added is the finding.
+        # Like the two checks above it reads text, so it needs no Qt and no SDK.
+        run: python3 scripts/check-demo-widgets.py
+
       - name: Check the sources are UTF-8 with no byte order mark
         # The other half of the encoding argument, and the half that needs no
         # toolchain. The `encoding` job proves MSVC reads the files right; this
