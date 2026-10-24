@@ -41,6 +41,19 @@ Feature
   into: the writing drives the flyout's list - what still matches is in it -
   and Enter, or a click, takes what is in hand into the box, while Escape
   puts the list away without touching what was written.
+- `FluentCalendarFlyout`, a month laid out as the grid it is: the days of the
+  week across the top, the days below, the months either side a click away,
+  and today standing where today stands in its own ring. A day is taken with
+  a click or walked to with the keyboard and taken with Enter; Escape puts
+  the month away.
+- `FluentDatePicker`, the field that says which day is in force and the
+  calendar beside it that changes it. The writing is not the point here, so
+  the field does not take a keyboard: a day taken in the flyout comes back to
+  the field as its date.
+- `FluentTimePicker`, the field that says which time is in force and the two
+  columns beside it that change it: the day's hours and the hour's minutes,
+  each a click away and the wheel away, and a time finished when one of its
+  two has been taken - it comes back to the field.
 
 0.1.2
 ---
