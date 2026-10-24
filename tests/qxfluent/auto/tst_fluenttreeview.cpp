@@ -22,6 +22,23 @@ namespace
 constexpr int kRowHeight = 32;
 constexpr int kIndent = 16;
 constexpr int kChevronSize = 12;
+constexpr int kPadding = 8;
+constexpr int kChevronGap = 8;
+constexpr int kWordsLeft = kPadding + kChevronSize + kChevronGap;
+
+/*! How much ink \a room carries: the distance of its pixels from the page, added
+ *  up - the reading a faded name answers with a fraction of. */
+qreal inkWeight(const QImage &image, const QRect &room, const QColor &page)
+{
+    qreal weight = 0.0;
+    const QRect room_ = room.intersected(image.rect());
+    for (int y = room_.top(); y <= room_.bottom(); ++y) {
+        for (int x = room_.left(); x <= room_.right(); ++x) {
+            weight += qAbs(qreal(image.pixelColor(x, y).lightness()) - qreal(page.lightness()));
+        }
+    }
+    return weight;
+}
 
 /*! How many pixels of \a room are the accent itself, allowance made for the
  *  one or two of anti-aliasing either side of it. */
@@ -70,6 +87,7 @@ private slots:
     void theChevronSaysThereIsMore();
     void thePointerWashesTheNodeItIsOver();
     void theChosenNodeWearsTheAccent();
+    void aNodeNobodyCanPickIsWrittenFainter();
     void theKeyboardWalksAndOpens();
     void whatIsUnderANodeIsItsOwn();
     void theSizeIsTheRowsItShows();
@@ -209,6 +227,48 @@ void tst_FluentTreeView::theChosenNodeWearsTheAccent()
     const QRect otherBar(2, kRowHeight / 2 - 6, 3, 12);
     QVERIFY(accentPixels(frame, chosenBar) > 0);
     QCOMPARE(accentPixels(frame, otherBar), 0);
+}
+
+/*! A node nobody can pick is written fainter - the words and the chevron alike,
+ *  both kept at thirty-eight parts in a hundred. Measured before and after the
+ *  node is turned off, so what changes is the state and not the letters.
+ */
+void tst_FluentTreeView::aNodeNobodyCanPickIsWrittenFainter()
+{
+    FluentTreeView *tree = makeTree();
+    auto *model_ = qobject_cast<QStandardItemModel *>(tree->model());
+    QVERIFY(model_);
+    // The palette's own disabled group would fade a turned-off node by itself.
+    // Pinned to the active group, the fade that is measured is the delegate's.
+    qtcPinDisabledColours(tree);
+
+    const QRect leaf = tree->visualRect(tree->model()->index(1, 0));
+    const QRect words(leaf.left() + kWordsLeft, leaf.top() + 2, leaf.width() - kWordsLeft - kPadding, kRowHeight - 4);
+    const QRect branch = tree->visualRect(tree->model()->index(0, 0));
+    const QRect chevron(branch.left() + kPadding, branch.center().y() - kChevronSize / 2, kChevronSize, kChevronSize);
+    const QColor page = tree->viewport()->palette().color(QPalette::Window);
+
+    const QImage before = tree->viewport()->grab().toImage();
+    const qreal wholeWords = inkWeight(before, words, page);
+    const qreal wholeChevron = inkWeight(before, chevron, page);
+    QVERIFY(wholeWords > 0.0);
+    QVERIFY(wholeChevron > 0.0);
+
+    model_->item(0)->setEnabled(false);
+    model_->item(1)->setEnabled(false);
+    const QImage after = tree->viewport()->grab().toImage();
+
+    // The leaf's name: still written, at a fraction of its weight.
+    const qreal fadedWords = inkWeight(after, words, page);
+    QVERIFY(fadedWords > 0.0);
+    QVERIFY2(fadedWords < wholeWords * 0.7,
+             qPrintable(QStringLiteral("words whole %1, faded %2").arg(wholeWords).arg(fadedWords)));
+    // The branch's chevron: faded with its words, so the mark and the name stay
+    // of one voice.
+    const qreal fadedChevron = inkWeight(after, chevron, page);
+    QVERIFY(fadedChevron > 0.0);
+    QVERIFY2(fadedChevron < wholeChevron * 0.7,
+             qPrintable(QStringLiteral("chevron whole %1, faded %2").arg(wholeChevron).arg(fadedChevron)));
 }
 
 /*! The keyboard walks the open nodes and opens what it walks onto. */

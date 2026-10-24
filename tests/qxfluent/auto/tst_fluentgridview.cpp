@@ -9,6 +9,7 @@
 #include "qxtheme/qxthememanager.h"
 
 #include <QtGui/QPainter>
+#include <QtGui/QStandardItem>
 #include <QtGui/QStandardItemModel>
 #include <QtWidgets/QStyleOptionViewItem>
 #include <QAccessible>
@@ -20,6 +21,27 @@ namespace
 // The tile's own measures, read the way a reader reads them.
 constexpr int kTileWidth = 152;
 constexpr int kTileHeight = 112;
+constexpr int kIconSize = 32;
+constexpr int kIconTop = 20;
+constexpr int kNameGap = 10;
+constexpr int kNameHeight = 32;
+constexpr int kNameInset = 8;
+
+/*! How much ink \a room carries: the distance of its pixels from the page, added
+ *  up. A name written at a fraction of its weight answers with a fraction of the
+ *  sum, so "fainter" is read without naming a colour - which is what makes the
+ *  reading hold in either theme. */
+qreal inkWeight(const QImage &image, const QRect &room, const QColor &page)
+{
+    qreal weight = 0.0;
+    const QRect room_ = room.intersected(image.rect());
+    for (int y = room_.top(); y <= room_.bottom(); ++y) {
+        for (int x = room_.left(); x <= room_.right(); ++x) {
+            weight += qAbs(qreal(image.pixelColor(x, y).lightness()) - qreal(page.lightness()));
+        }
+    }
+    return weight;
+}
 
 /*! How many pixels of \a room are the accent itself, allowance made for the
  *  one or two of anti-aliasing either side of it. */
@@ -52,6 +74,7 @@ private slots:
     void theTilesWrapBeforeTheyStack();
     void thePointerWashesTheTileItIsOver();
     void theChosenTileWearsTheAccentAroundIt();
+    void aTileNobodyCanPickIsWrittenFainter();
     void theKeyboardWalksTheTiles();
     void theSizeIsTwoTilesEitherWay();
     void theAccessibleFaceIsAList();
@@ -167,6 +190,45 @@ void tst_FluentGridView::theChosenTileWearsTheAccentAroundIt()
     QVERIFY(accentPixels(frame, QRect(other.left() + 20, other.top(), other.width() - 40, 2)) == 0);
     // And its name takes the accent too.
     QVERIFY(accentPixels(frame, QRect(tile.left(), tile.top() + 60, tile.width(), 28)) > 0);
+}
+
+/*! A tile nobody can pick is written fainter than one that can: the delegate
+ *  keeps a disabled name at thirty-eight parts in a hundred. Read as the tile
+ *  before and after it is turned off, so the same name is measured twice - two
+ *  tiles side by side would differ by their letters as much as by their state.
+ */
+void tst_FluentGridView::aTileNobodyCanPickIsWrittenFainter()
+{
+    FluentGridView *grid = makeGrid();
+    auto *model_ = qobject_cast<QStandardItemModel *>(grid->model());
+    QVERIFY(model_);
+    // A turned-off tile would be drawn from the palette's disabled group as
+    // well, and that alone is already fainter. Held to the active group, the
+    // only thing left that can fade the name is the delegate's own hand.
+    qtcPinDisabledColours(grid);
+
+    const QRect tile = grid->visualRect(grid->model()->index(1, 0));
+    const QRect name(tile.left() + kNameInset, tile.top() + kIconTop + kIconSize + kNameGap,
+                     tile.width() - 2 * kNameInset, kNameHeight);
+    const QRect beside = grid->visualRect(grid->model()->index(0, 0));
+    const QRect otherName(beside.left() + kNameInset, beside.top() + kIconTop + kIconSize + kNameGap,
+                          beside.width() - 2 * kNameInset, kNameHeight);
+    const QColor page = grid->palette().color(QPalette::Window);
+
+    const QImage before = grid->grab().toImage();
+    const qreal whole = inkWeight(before, name, page);
+    QVERIFY(whole > 0.0);
+
+    model_->item(1)->setEnabled(false);
+    const QImage after = grid->grab().toImage();
+    const qreal faded = inkWeight(after, name, page);
+
+    // Written still - a tile that kept its name is not a tile that lost it -
+    // but at a fraction of its weight.
+    QVERIFY(faded > 0.0);
+    QVERIFY2(faded < whole * 0.7, qPrintable(QStringLiteral("whole %1, faded %2").arg(whole).arg(faded)));
+    // And only the tile that was turned off: its neighbour is untouched.
+    QCOMPARE(inkWeight(after, otherName, page), inkWeight(before, otherName, page));
 }
 
 /*! The keyboard walks the tiles: Right for the next one across, Down for the
