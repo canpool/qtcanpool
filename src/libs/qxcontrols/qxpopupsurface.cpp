@@ -43,6 +43,15 @@ QxPopupSurface::QxPopupSurface(QWidget *anchor)
     QX_SET_PRIVATE(d_ptr)
     d_ptr->anchor = anchor;
     setFocusPolicy(Qt::StrongFocus);
+    // A surface is opened by the press that lands on its anchor, and the grab
+    // moves to it while that button is still down - so Qt replays the press to
+    // the surface it has just opened. The replay arrives at the pointer's
+    // place, which is on the anchor and therefore outside the surface, and Qt
+    // reads a press outside a popup as a click away and closes it: the list
+    // shows on the press and is gone by the release, too fast to answer. This
+    // is the attribute Qt's own menus and combo boxes set for exactly that
+    // reason, and one surface owes the same answer as another.
+    setAttribute(Qt::WA_NoMouseReplay, true);
     const int margin = shadowMargin();
     setContentsMargins(margin, margin, margin, margin);
 }

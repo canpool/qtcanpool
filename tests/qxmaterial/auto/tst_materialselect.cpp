@@ -44,6 +44,7 @@ private slots:
     void theChosenRowWearsTheMarkAtItsLeft();
     void aRowIsFortyEightTall();
     void theSameChoiceSaidTwiceIsSilence();
+    void theReleaseThatEndsTheOpeningClickIsNoAnswer();
 private:
     bool m_hadOverride = false;
 };
@@ -178,6 +179,37 @@ void tst_MaterialSelect::theSameChoiceSaidTwiceIsSilence()
     select.setCurrentIndex(9);
     QCOMPARE(changed.count(), 1);
     QCOMPARE(select.currentIndex(), 1);
+}
+
+/*! The list answers a click that started on the list.
+ *
+ *  A click that opens the list can end with the pointer over a row, because
+ *  the list does not always stand clear of the field: in a window too small
+ *  for it either side, or near the bottom of the screen, it is laid over the
+ *  field itself and the pointer comes up inside it. Reading that release as an
+ *  answer picks a choice nobody made, on a click that only meant to open the
+ *  list - the list shows on the press and is gone by the release.
+ */
+void tst_MaterialSelect::theReleaseThatEndsTheOpeningClickIsNoAnswer()
+{
+    QWidget window;
+    window.resize(400, 400);
+    MaterialSelect *select = selectWith(&window, 4);
+    select->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+    select->setCurrentIndex(2);
+
+    select->showPopup();
+    QVERIFY(select->popup()->isVisible());
+
+    const int firstRow = int(select->popup()->contentsRect().top() + 48 / 2.0);
+    QTest::mouseRelease(select->popup(), Qt::LeftButton, Qt::NoModifier,
+                        QPoint(select->popup()->width() / 2, firstRow));
+
+    QVERIFY(select->popup()->isVisible());
+    QCOMPARE(select->currentIndex(), 2);
+    window.close();
 }
 
 TEST_ADD(tst_MaterialSelect)

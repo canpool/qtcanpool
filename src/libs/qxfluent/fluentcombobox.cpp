@@ -123,26 +123,31 @@ public:
 
     void mouseMoveEvent(QMouseEvent *event) override
     {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        const QPointF pos = event->position();
-#else
-        const QPointF pos = event->localPos();
-#endif
-        m_hover = rowAt(pos.y() - contentRect().top());
+        m_hover = rowAt(eventPosOf(event).y() - contentRect().top());
+        update();
+    }
+
+    void mousePressEvent(QMouseEvent *event) override
+    {
+        // What the button came down on is what it may come up on. A release on
+        // its own is not an answer: the click that opened the list can end over
+        // a row - the list does not always stand clear of the field - and that
+        // click asked for the list, not for the first thing in it.
+        m_pressedRow = rowAt(eventPosOf(event).y() - contentRect().top());
         update();
     }
 
     void mouseReleaseEvent(QMouseEvent *event) override
     {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        const QPointF pos = event->position();
-#else
-        const QPointF pos = event->localPos();
-#endif
-        const int row = rowAt(pos.y() - contentRect().top());
-        if (row >= 0) {
+        const int pressed = m_pressedRow;
+        m_pressedRow = -1;
+        const int row = rowAt(eventPosOf(event).y() - contentRect().top());
+        // The same row as the press, and no dragging off one answer onto
+        // another: a row is answered by a click, not by wherever a drag ends.
+        if (row >= 0 && row == pressed) {
             choose(m_offset + row);
         }
+        update();
     }
 
     void wheelEvent(QWheelEvent *event) override
@@ -188,6 +193,16 @@ public:
         }
     }
 private:
+    /*! Where the pointer is, whichever way this Qt spells it. */
+    QPointF eventPosOf(QMouseEvent *event) const
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        return event->position();
+#else
+        return event->localPos();
+#endif
+    }
+
     /*! The row the y coordinate falls in, in offset terms; -1 when it falls
      *  on the padding or past the list. */
     int rowAt(qreal y) const
@@ -224,6 +239,7 @@ private:
     int m_highlight = -1;
     int m_hover = -1;
     int m_offset = 0;
+    int m_pressedRow = -1;
 };
 }   // namespace
 

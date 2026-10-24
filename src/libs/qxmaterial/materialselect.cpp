@@ -135,15 +135,30 @@ public:
         update();
     }
 
+    void mousePressEvent(QMouseEvent *event) override
+    {
+        // What the button came down on is what it may come up on. A release on
+        // its own is not an answer: the click that opened the list can end over
+        // a row - the list does not always stand clear of the field - and that
+        // click asked for the list, not for the first thing in it.
+        m_pressedRow = rowAt(eventPosOf(event).y() - contentRect().top());
+        update();
+    }
+
     void mouseReleaseEvent(QMouseEvent *event) override
     {
+        const int pressed = m_pressedRow;
+        m_pressedRow = -1;
         const int row = rowAt(eventPosOf(event).y() - contentRect().top());
-        if (row >= 0) {
+        // The same row as the press, and no dragging off one answer onto
+        // another: a row is answered by a click, not by wherever a drag ends.
+        if (row >= 0 && row == pressed) {
             close();
             if (onSelect) {
                 onSelect(m_offset + row);
             }
         }
+        update();
     }
 
     void wheelEvent(QWheelEvent *event) override
@@ -218,6 +233,7 @@ private:
     int m_highlight = -1;
     int m_hover = -1;
     int m_offset = 0;
+    int m_pressedRow = -1;
 };
 }   // namespace
 

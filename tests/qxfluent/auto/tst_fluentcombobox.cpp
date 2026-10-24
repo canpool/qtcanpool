@@ -37,6 +37,8 @@ private slots:
     void theListKeepsInsideTheScreenWhenNeitherHasRoom();
     void theKeyboardWalksTheListAndAnswers();
     void theSameChoiceSaidTwiceIsSilence();
+    void aClickOnTheFaceLeavesTheListOpen();
+    void theReleaseThatEndsTheOpeningClickIsNoAnswer();
 };
 
 /*! The standing answer: the list opens under the face, one pixel of air
@@ -164,6 +166,75 @@ void tst_FluentComboBox::theSameChoiceSaidTwiceIsSilence()
     combo.setCurrentIndex(5);
     QCOMPARE(changed.count(), 1);
     QCOMPARE(combo.currentIndex(), 1);
+}
+
+/*! The click that opens the list opens it, and the rest of that same click
+ *  leaves it alone.
+ *
+ *  The press lands on the face, the list opens under it, and the grab has
+ *  already moved to the list by the time the button comes up - so the release
+ *  arrives at the list, not at the face. A list that answers any release
+ *  closes on the very click that opened it: it shows on the press and is gone
+ *  by the release, which is too fast to read, let alone choose from.
+ *
+ *  The press is replayed to whatever has the grab when it is opened, and a
+ *  replayed press lands where the pointer is - outside the surface - which is
+ *  a click away as far as Qt is concerned. \c WA_NoMouseReplay is what Qt's own
+ *  menus and combo boxes set to keep that from happening, and the assertion
+ *  below is the one thing a test can hold of it: the mechanism is inside the
+ *  platform, and a synthetic event never goes through it.
+ */
+void tst_FluentComboBox::aClickOnTheFaceLeavesTheListOpen()
+{
+    QWidget window;
+    window.resize(400, 300);
+    FluentComboBox *combo = comboWith(&window, 4, QStringLiteral("Item"));
+    combo->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+
+    QTest::mousePress(combo, Qt::LeftButton);
+    QVERIFY(combo->popup());
+    QVERIFY(combo->popup()->isVisible());
+    QTest::mouseRelease(combo, Qt::LeftButton);
+    QTest::qWait(50);
+    QVERIFY(combo->popup()->isVisible());
+    QCOMPARE(combo->currentIndex(), 0);
+
+    QVERIFY(combo->popup()->testAttribute(Qt::WA_NoMouseReplay));
+    window.close();
+}
+
+/*! The list answers a click that started on the list.
+ *
+ *  A click that opens the list can end with the pointer over a row, because
+ *  the list does not always stand clear of the field: in a window too small
+ *  for it either side, or near the bottom of the screen, it is laid over the
+ *  field itself and the pointer comes up inside it. Reading that release as an
+ *  answer picks a choice nobody made, on a click that only meant to open the
+ *  list - the list shows on the press and is gone by the release, too quick to
+ *  read, let alone choose from.
+ */
+void tst_FluentComboBox::theReleaseThatEndsTheOpeningClickIsNoAnswer()
+{
+    QWidget window;
+    window.resize(400, 300);
+    FluentComboBox *combo = comboWith(&window, 4, QStringLiteral("Item"));
+    combo->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+    combo->setCurrentIndex(2);
+
+    combo->showPopup();
+    QVERIFY(combo->popup()->isVisible());
+
+    // The button comes up over the first row of a list nothing was pressed on.
+    const int firstRow = int(combo->popup()->contentsRect().top() + 4 + 40 / 2.0);
+    QTest::mouseRelease(combo->popup(), Qt::LeftButton, Qt::NoModifier, QPoint(combo->popup()->width() / 2, firstRow));
+
+    QVERIFY(combo->popup()->isVisible());
+    QCOMPARE(combo->currentIndex(), 2);
+    window.close();
 }
 
 TEST_ADD(tst_FluentComboBox)

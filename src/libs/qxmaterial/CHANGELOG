@@ -1,5 +1,13 @@
 Unreleased
 ---
+Bugfix
+- `MaterialSelect` read any release as an answer, including the one that
+  ended the click which opened the list. Where the list has to be laid over
+  the field - a window too small for it either side, a screen with no room -
+  that click came up on the first row and took it, so the list was gone
+  before the button was up: the click had asked for the list and got a choice
+  out of it. A row is answered by a click that began on it now, which is also
+  what keeps a drag off one answer from choosing another.
 Feature
 - `MaterialButton`, the command the page is built out of: three variants say
   how much surface the command claims (filled, outlined, text), and the press
