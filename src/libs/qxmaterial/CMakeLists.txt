@@ -27,6 +27,7 @@ add_qtc_library(qxmaterial
     materialavatar.h materialavatar.cpp
     materialstepper.h materialstepper.cpp
     materialtabs.h materialtabs.cpp
+    materialaccordion.h materialaccordion.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
     materialskeleton.h materialskeleton.cpp

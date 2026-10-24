@@ -62,6 +62,12 @@ Feature
   force is shown whole; that is what tells tabs from the segmented button,
   where every choice has to be seen at once.
 
+- `MaterialAccordion`, a column of headers each keeping a body it can open: the
+  body travels out from under its header on the family's own duration, and the
+  chevron turns over as it comes. One header at a time by default - opening one
+  closes the one before - or every header for itself, when the application says
+  so. Asked for less motion, a header is simply open.
+
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
   the fill knows no corners, so the hover tint stood as a square over the
