@@ -566,3 +566,39 @@ plain `QMainWindow` + 同一个样式表可以复现（与 ribbon 无关），ri
 2 需要按平台/Qt 大版本分基线（截图基线已经是按 `CMAKE_SYSTEM_NAME`/`Qt<N>` 分的）；
 3–5 是测试写法问题，不属库；6 只能走 `handleDockWidgetDrop()`；
 9 需要 `QT_BUILD_INTERNAL` 的双端接线。
+
+---
+
+## 四族风格库不镜像右到左（the four style libraries do not mirror for right to left）
+
+**现象**：应用语言换成阿拉伯语、希伯来语这类从右往左书写的语言（或直接
+`setLayoutDirection(Qt::RightToLeft)`）时，`qxfluent` / `qxmaterial` / `qxcupertino` / `qxharmony`
+的控件只有一半会跟着动：
+
+- **跟着动的**是交给 `QLayout` 排的那些几何——一行里的按钮顺序、面板与内容谁在左谁在右，
+  这些 Qt 自己会换边。
+- **不动的**是每处自绘的左右语义：文字的起边（`fluentbreadcrumbbar.cpp`、`fluentcommandbar.cpp`、
+  `fluentdropdownbutton.cpp`、`fluentexpander.cpp`、`fluentinfobar.cpp` 等六处写死
+  `Qt::AlignLeft`）、贴在某一侧的容器（`fluentnavigationview.cpp` 的窗格起于 `x = 0.0`）、
+  指示条与进度从哪一头长、圆角的起手方向。
+
+所以整块面板看起来「镜像成功了」，但细看每一行文字仍从左边开始——**这不是崩，是没做**。
+
+**成因**：`src/libs` 下五个渲染库（`qxcontrols` 与四个风格库 `qxfluent`、`qxmaterial`、`qxcupertino`、
+`qxharmony`）搜 `RightToLeft` / `setLayoutDirection` / `isRightToLeft` / `LayoutDirection`：
+**五处全部 0 命中**。没有一个绘制函数问过方向，几何一律按左起算；上面举的例子都在 `qxfluent`，
+`qxmaterial` 同一写法（`materialnavigationrail.cpp:419` 的底色、`:435` 的滚动区同理按 `x = 0` 起算）。
+
+**现状**：**不支持**（4.7.3 T1-c 的议题「两族要不要支持布局镜像」的结论）。处置是三条：
+`doc/design/4.7/4.7-T1-COVERAGE.md` 的该列记 `✗`；**不为它造用例**，也不写「看起来能用」的断言；
+本页记在这里，免得下一次又被人当成新发现的缺陷。
+
+**要改变它需要什么**：不是改一行常量能办的。每一处自绘几何都要改成按 `isRightToLeft()` 分支，
+或者统一走 `QStyle::visualRect()` / `visualAlignment()` 这类会看方向的入口；动手之前先立判据
+——**哪几件必须镜像、哪几件允许不镜像**（比如进度条的填充方向、分隔线的粗细端），
+否则补完仍然是一半对一半。另需一根能真跑的腿：`offscreen` 下镜像与否看不出来，
+得在带窗口系统的机器上抓图比。
+
+**相关**：同一批用例里 DPR ≠ 1 的显示也没有人走过（两族 0 处用 `devicePixelRatio`），
+但那条是**「没用例」**而不是「不支持」——Qt 自己按逻辑像素缩放，没有证据说它坏。
+
