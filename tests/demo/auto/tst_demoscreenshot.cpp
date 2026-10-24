@@ -441,6 +441,7 @@ private slots:
     void materialDemoMatchesGolden();
     void materialThemeSwitchMatchesAFreshStart();
     void materialDemoAnswersItsWidth();
+    void materialDemoNamesFitItsRail();
 #endif
 private:
     QImage m_ribbonScreenshot;
@@ -849,6 +850,110 @@ void checkWidthsRespond(const QString &executable, const QString &name, const QL
             QVERIFY2(widget.rect.width() == expected.destinations,
                      qPrintable(QStringLiteral("%1: the rail is %2 wide").arg(at).arg(widget.rect.width())));
         }
+    }
+}
+
+/*!
+ * How wide a name may be before a rail cuts it: the rail's eighty pixels less
+ * the four it keeps at each side. Measured at the label type, "Checkout" came to
+ * exactly the budget and "Dashboard" to eighty-three - which is how every
+ * capture this demo ever produced came to say "Dashbo..." without anybody
+ * reading it as a defect. A folded rail hands the name to a tooltip; a column
+ * has no such second chance, so the names have to fit.
+ */
+constexpr int kRailNameBudget = 72;
+
+/*! One destination a Material window offers, and how wide its name comes out at
+ *  under the type the rail draws it in. */
+struct DestinationName {
+    QString text;
+    int advance = 0;
+};
+
+/*!
+ * The destinations a Material window prints after its own tree, one line each:
+ * \code
+ * destination "Home" 47
+ * \endcode
+ * A picture cannot answer this one. A name cut to "Dashbo..." and a name that was
+ * always "Home" both look deliberate once drawn; a number does not.
+ */
+QList<DestinationName> destinationNames(const QString &tree)
+{
+    static const QRegularExpression pattern(QStringLiteral("^destination \"([^\"]*)\" (\\d+)$"));
+    QList<DestinationName> names;
+    const QStringList lines = tree.split(QLatin1Char('\n'));
+    for (QString text : lines) {
+        text.remove(QLatin1Char('\r'));
+        const QRegularExpressionMatch match = pattern.match(text);
+        if (match.hasMatch()) {
+            names.append({match.captured(1), match.captured(2).toInt()});
+        }
+    }
+    return names;
+}
+
+/*! What a window says about the type it measured those names with. */
+struct TypeProbe {
+    bool present = false;
+    bool proportional = false;
+};
+
+/*!
+ * The probe line a window prints beside the names: two four-glyph strings and
+ * their widths.
+ * \code
+ * type "iiii" 32 "MMMM" 32
+ * \endcode
+ *
+ * A four-glyph string is as wide as its letters only in a font that has letters.
+ * The offscreen plugin has no font database - it draws every glyph as the same
+ * box - so its widths are the letter count times sixteen, and the budget above
+ * would report every name too wide for the rail on a platform where nothing
+ * fits. The two numbers tell a platform that can be asked apart from one that
+ * cannot, and the caller turns the second into a skip rather than into a pass.
+ */
+TypeProbe typeProbe(const QString &tree)
+{
+    static const QRegularExpression pattern(QStringLiteral("^type \"([^\"]*)\" (\\d+) \"([^\"]*)\" (\\d+)$"));
+    TypeProbe probe;
+    const QStringList lines = tree.split(QLatin1Char('\n'));
+    for (QString text : lines) {
+        text.remove(QLatin1Char('\r'));
+        const QRegularExpressionMatch match = pattern.match(text);
+        if (!match.hasMatch()) {
+            continue;
+        }
+        probe.present = true;
+        probe.proportional = match.captured(2).toInt() != match.captured(4).toInt();
+    }
+    return probe;
+}
+
+/*!
+ * The rail's names, measured instead of looked at.
+ *
+ * The window answers the elision by naming its pages shorter - "Dashboard" is
+ * eighty-three pixels against the seventy-two a column has, "Home" is
+ * forty-seven - so what is asserted is that no name reaches the budget today.
+ * The measuring itself is the demo's: the type is the platform's, and this
+ * process is guiless with no font database of its own to measure with.
+ */
+void checkNamesFitTheRail(const QString &tree, const QString &name)
+{
+    const QList<DestinationName> names = destinationNames(tree);
+    QVERIFY2(names.count() >= 4, qPrintable(QStringLiteral("%1: the window named %2 destinations - it did not "
+                                                           "come up, or it stopped naming them")
+                                                .arg(name)
+                                                .arg(names.count())));
+    for (const DestinationName &destination : names) {
+        QVERIFY2(!destination.text.isEmpty(), qPrintable(QStringLiteral("%1: a destination has no name").arg(name)));
+        QVERIFY2(destination.advance <= kRailNameBudget,
+                 qPrintable(QStringLiteral("%1: \"%2\" is %3 pixels wide and a rail has %4 for a name - it is "
+                                           "drawn cut; name the page shorter rather than widening the rail")
+                                .arg(name, destination.text)
+                                .arg(destination.advance)
+                                .arg(kRailNameBudget)));
     }
 }
 
@@ -1382,6 +1487,31 @@ void tst_DemoScreenshot::materialDemoAnswersItsWidth()
     // that says so.
     checkWidthsRespond(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), QStringLiteral("materialdemo"),
                        {{1280, 80}, {1000, 80}, {999, 72}, {641, 72}, {639, 0}, {500, 0}});
+}
+
+void tst_DemoScreenshot::materialDemoNamesFitItsRail()
+{
+    // The rail is eighty pixels wide and draws its names at the label type, and
+    // a name that does not fit is elided - silently, in every capture this demo
+    // ever produced. The pages are named shorter now; this is what says they
+    // still fit, and it asks at the widest window because the names it reads are
+    // the same ones the folded rail hands to a tooltip.
+    QString error;
+    const QString tree = runInspectWith(QStringLiteral(DEMO_MATERIAL_EXECUTABLE),
+                                        QStringList{QStringLiteral("--width"), QStringLiteral("1280"),
+                                                    QStringLiteral("--theme"), QStringLiteral("soft-light")},
+                                        QStringLiteral("materialdemo-names.log"), error);
+    QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+    const TypeProbe probe = typeProbe(tree);
+    QVERIFY2(probe.present, "the demo did not say what type it measured the names with");
+    if (!probe.proportional) {
+        QSKIP("the platform draws every glyph as the same box - the offscreen plugin has no font "
+              "database, so a name measures its letter count times sixteen and nothing fits a "
+              "column; set QT_QPA_PLATFORM to a real plugin to have the names measured");
+    }
+
+    checkNamesFitTheRail(tree, QStringLiteral("materialdemo"));
 }
 #endif
 

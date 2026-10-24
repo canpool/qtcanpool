@@ -2,8 +2,8 @@
  * Copyright (C) 2026 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#ifndef CHECKOUTPAGE_H
-#define CHECKOUTPAGE_H
+#ifndef ORDERPAGE_H
+#define ORDERPAGE_H
 
 #include "demopage.h"
 
@@ -25,14 +25,14 @@ QX_MATERIAL_END_NAMESPACE
  * stepper is - and unlike a row of buttons it cannot be read as three things to
  * do at the same time.
  */
-class CheckoutPage : public DemoPage
+class OrderPage : public DemoPage
 {
     Q_OBJECT
 public:
-    explicit CheckoutPage(QWidget *parent = Q_NULLPTR);
+    explicit OrderPage(QWidget *parent = Q_NULLPTR);
 private:
     QX_MATERIAL_PREPEND_NAMESPACE(MaterialSegmentedButton) *m_steps = Q_NULLPTR;
     QStackedWidget *m_pages = Q_NULLPTR;
 };
 
-#endif   // CHECKOUTPAGE_H
+#endif   // ORDERPAGE_H

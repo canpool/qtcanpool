@@ -34,12 +34,12 @@ add_qtc_executable(MaterialDemo
     titlebar.cpp titlebar.h
     demopage.cpp demopage.h
     # The six templates: a whole screen each, built out of the library alone.
-    dashboardpage.cpp dashboardpage.h
+    homepage.cpp homepage.h
     albumpage.cpp albumpage.h
     pricingpage.cpp pricingpage.h
     signinpage.cpp signinpage.h
     blogpage.cpp blogpage.h
-    checkoutpage.cpp checkoutpage.h
+    orderpage.cpp orderpage.h
     # The library itself, one control per row, and the window's own settings.
     catalogpage.cpp catalogpage.h
     settingspage.cpp settingspage.h

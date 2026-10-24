@@ -2,8 +2,8 @@
  * Copyright (C) 2026 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#ifndef DASHBOARDPAGE_H
-#define DASHBOARDPAGE_H
+#ifndef HOMEPAGE_H
+#define HOMEPAGE_H
 
 #include "demopage.h"
 
@@ -23,13 +23,13 @@ class BarChart;
  * library in would be showing that library, and what a control set has to prove
  * is that a screen can be built out of it alone.
  */
-class DashboardPage : public DemoPage
+class HomePage : public DemoPage
 {
     Q_OBJECT
 public:
-    explicit DashboardPage(QWidget *parent = Q_NULLPTR);
+    explicit HomePage(QWidget *parent = Q_NULLPTR);
 private:
     BarChart *m_chart = Q_NULLPTR;
 };
 
-#endif   // DASHBOARDPAGE_H
+#endif   // HOMEPAGE_H

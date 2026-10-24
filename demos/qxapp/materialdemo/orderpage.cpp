@@ -2,7 +2,7 @@
  * Copyright (C) 2026 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "checkoutpage.h"
+#include "orderpage.h"
 
 #include "qxmaterial/materialcard.h"
 #include "qxmaterial/materialchip.h"
@@ -61,8 +61,8 @@ QVBoxLayout *stepLayout(MaterialCard *card)
 }
 }   // namespace
 
-CheckoutPage::CheckoutPage(QWidget *parent)
-    : DemoPage(tr("Checkout"), tr("One decision taken in three steps, and never all three at once."), parent)
+OrderPage::OrderPage(QWidget *parent)
+    : DemoPage(tr("Order"), tr("One decision taken in three steps, and never all three at once."), parent)
 {
     m_steps = new MaterialSegmentedButton(this);
     m_steps->setItems(QStringList{tr("Address"), tr("Payment"), tr("Review")});

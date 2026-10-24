@@ -2,7 +2,7 @@
  * Copyright (C) 2026 maminjie <canpool@163.com>
  * SPDX-License-Identifier: MulanPSL-2.0
  **/
-#include "dashboardpage.h"
+#include "homepage.h"
 
 #include "qxmaterial/materialcard.h"
 #include "qxmaterial/materialchip.h"
@@ -181,8 +181,8 @@ private:
     QList<int> m_values;
 };
 
-DashboardPage::DashboardPage(QWidget *parent)
-    : DemoPage(tr("Dashboard"),
+HomePage::HomePage(QWidget *parent)
+    : DemoPage(tr("Home"),
                tr("The screen an application opens on when what it is about is a number that moves: what "
                   "the figures are doing, what they are made of, and what came in while nobody was looking."),
                parent)

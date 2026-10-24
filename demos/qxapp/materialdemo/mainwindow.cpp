@@ -7,8 +7,8 @@
 #include "albumpage.h"
 #include "blogpage.h"
 #include "catalogpage.h"
-#include "checkoutpage.h"
-#include "dashboardpage.h"
+#include "orderpage.h"
+#include "homepage.h"
 #include "demopage.h"
 #include "pricingpage.h"
 #include "settingspage.h"
@@ -30,6 +30,7 @@
 #include <QtCore/QTextStream>
 #include <QAction>
 #include <QEvent>
+#include <QFontMetrics>
 #include <QResizeEvent>
 #include <QScrollArea>
 #include <QStackedWidget>
@@ -152,6 +153,27 @@ void MainWindow::printTree()
 {
     QTextStream out(stdout);
     describe(out, this, 0);
+
+    // A rail cuts a name that does not fit its column, and a cut name is the one
+    // thing the rail cannot say another way - so the names are measured here and
+    // the measurement is printed: the test that reads this holds the budget, and
+    // a name that grows is caught as a number rather than as a picture nobody
+    // looks twice at. The type is the family's label scale, which is the type
+    // the rail draws its names in.
+    const QFontMetrics metrics(MaterialType::font(MaterialType::Scale::Label));
+
+    // What that type is worth on this platform, as two four-glyph strings. The
+    // offscreen plugin has no font database and draws every glyph as the same
+    // box, so there a name is as wide as its letter count times sixteen and no
+    // name fits a real column - a number the reader of this has to be able to
+    // tell apart from a measurement with letters in it.
+    out << "type \"iiii\" " << metrics.horizontalAdvance(QStringLiteral("iiii")) << " \"MMMM\" "
+        << metrics.horizontalAdvance(QStringLiteral("MMMM")) << '\n';
+
+    const QList<QAction *> places = m_rail->destinations();
+    for (QAction *place : places) {
+        out << "destination \"" << place->text() << "\" " << metrics.horizontalAdvance(place->text()) << '\n';
+    }
 }
 
 void MainWindow::changeEvent(QEvent *event)
@@ -399,12 +421,12 @@ void MainWindow::createNavigation()
     // Six templates, then the catalogue: a template is a whole screen built out
     // of this library - which is what an application would actually build - and
     // the catalogue is the library itself, one control per row.
-    addPage(new DashboardPage(m_stack), QStyle::SP_DirHomeIcon);
+    addPage(new HomePage(m_stack), QStyle::SP_DirHomeIcon);
     addPage(new AlbumPage(m_stack), QStyle::SP_DirIcon);
     addPage(new PricingPage(m_stack), QStyle::SP_FileDialogListView);
     addPage(new SignInPage(m_stack), QStyle::SP_ArrowForward);
     addPage(new BlogPage(m_stack), QStyle::SP_FileIcon);
-    addPage(new CheckoutPage(m_stack), QStyle::SP_FileDialogDetailedView);
+    addPage(new OrderPage(m_stack), QStyle::SP_FileDialogDetailedView);
     addPage(new CatalogPage(m_stack), QStyle::SP_FileDialogContentsView);
 
     // What the window is, as opposed to what it is showing, stays last: it is
