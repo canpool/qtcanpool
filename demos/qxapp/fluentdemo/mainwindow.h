@@ -27,6 +27,7 @@ QX_WINDOW_END_NAMESPACE
 QX_FLUENT_USE_NAMESPACE
 
 class DemoPage;
+class PageTransition;
 class SettingsPage;
 class TitleBar;
 
@@ -145,6 +146,9 @@ private:
     QAction *m_fold = Q_NULLPTR;
     FluentNavigationView *m_nav = Q_NULLPTR;
     QStackedWidget *m_stack = Q_NULLPTR;
+    /*! How a screen arrives when the pane changes it: the page fades in and
+     *  rises the last eight pixels, over the family's own motion. */
+    PageTransition *m_transition = Q_NULLPTR;
     SettingsPage *m_settings = Q_NULLPTR;
     /*! Every destination in the order the pane shows them, and the ones it is
      *  showing now - a narrowed pane is the second list, and the index the view

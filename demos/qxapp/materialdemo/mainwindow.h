@@ -34,6 +34,7 @@ class WindowAgentWidget;
 QX_WINDOW_END_NAMESPACE
 
 class DemoPage;
+class PageTransition;
 class FeedbackPage;
 class SettingsPage;
 class TitleBar;
@@ -130,6 +131,9 @@ private:
     MaterialFAB *m_fab = Q_NULLPTR;
     MaterialSnackbar *m_snackbar = Q_NULLPTR;
     QStackedWidget *m_stack = Q_NULLPTR;
+    /*! How a screen arrives when a destination is chosen: it fades in and
+     *  rises the last eight pixels, over Material's own motion. */
+    PageTransition *m_transition = Q_NULLPTR;
     SettingsPage *m_settings = Q_NULLPTR;
 };
 

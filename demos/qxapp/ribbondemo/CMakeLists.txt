@@ -35,12 +35,14 @@ endif()
 
 # The glyphs the groups and the quick access bar draw from: the one set the
 # demos share, painted from the palette by QxThemeIcons rather than shipped here.
-include("${CMAKE_CURRENT_SOURCE_DIR}/../common/icons.cmake")
+# The groups open pages of their own, but a ribbon does not take the reader
+# between them, so this demo compiles the glyphs and not the transition.
+include("${CMAKE_CURRENT_SOURCE_DIR}/../common/common.cmake")
 
 add_qtc_executable(RibbonDemo
   DEPENDS ${_ribbondemo_depends}
   DEFINES ${_ribbondemo_defines}
-  INCLUDES ${QXAPP_ICON_INCLUDES}
+  INCLUDES ${QXAPP_COMMON_INCLUDES}
   SOURCES
     aboutdialog.cpp aboutdialog.h
     applypage.cpp applypage.h

@@ -10,6 +10,7 @@
 #include "icons.h"
 #include "orderpage.h"
 #include "homepage.h"
+#include "pagetransition.h"
 #include "demopage.h"
 #include "pricingpage.h"
 #include "settingspage.h"
@@ -415,6 +416,7 @@ void MainWindow::createNavigation()
 
     m_stack = new QStackedWidget(this);
     m_stack->setObjectName(QStringLiteral("screens"));
+    m_transition = new PageTransition(m_stack, this);
 
     // A destination is a screen and the icon beside its name, and the name is
     // the page's own - the rail, the caption and the page's heading all read it
@@ -459,7 +461,12 @@ void MainWindow::createConnections()
     // keyboard, or asked for from the command line. The bar's title follows
     // with it, because the name of the screen is the screen's.
     connect(m_rail, &MaterialNavigationRail::currentIndexChanged, this, [this](int index) {
-        m_stack->setCurrentIndex(index);
+        // A screen comes in rather than replaces. Medium on the emphasized
+        // curve is Material's own answer for a change that covers distance; the
+        // user's answer to less motion is already folded into it, and then the
+        // page is simply there.
+        m_transition->show(m_stack->widget(index), MaterialMotion::forDuration(MaterialMotion::Duration::Medium,
+                                                                               MaterialMotion::Easing::Emphasized));
     });
     connect(m_rail, &MaterialNavigationRail::currentDestinationChanged, this, [this](QAction *destination) {
         if (!destination) {

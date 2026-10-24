@@ -8,6 +8,7 @@
 #include "demopage.h"
 #include "homepage.h"
 #include "icons.h"
+#include "pagetransition.h"
 #include "settingspage.h"
 #include "titlebar.h"
 
@@ -15,6 +16,7 @@
 #include "qxfluent/fluentcommandbar.h"
 #include "qxfluent/fluenttextbox.h"
 #include "qxfluent/fluentnavigationview.h"
+#include "qxfluent/fluenttokens.h"
 #include "qxfluent/fluentwindowmaterial.h"
 #include "qxtheme/qxtheme.h"
 #include "qxtheme/qxthememanager.h"
@@ -237,6 +239,7 @@ void MainWindow::createNavigation()
     m_nav->setObjectName(QStringLiteral("navigation"));
     m_stack = new QStackedWidget(this);
     m_stack->setObjectName(QStringLiteral("screens"));
+    m_transition = new PageTransition(m_stack, this);
 
     // The pane holds one thing, and what it opens is a screen at a time: a
     // stacked widget is what turns "one room beside the pane" into "one of
@@ -444,7 +447,10 @@ void MainWindow::createConnections()
     // the list the pane is showing, which a search can shorten.
     connect(m_nav, &FluentNavigationView::currentIndexChanged, this, [this](int index) {
         if (index >= 0 && index < m_shown.count()) {
-            m_stack->setCurrentWidget(m_shown.at(index)->page);
+            // A screen comes in rather than replaces: the fade and the rise are
+            // the family's own motion, so less motion is answered with a page
+            // that is simply there.
+            m_transition->show(m_shown.at(index)->page, FluentMotion::forDuration(FluentMotion::Duration::Normal));
         }
     });
     connect(m_nav, &FluentNavigationView::currentItemChanged, this, [this](QAction *item) {
@@ -572,6 +578,9 @@ void MainWindow::filterDestinations(const QString &needle)
     if (index < 0 && m_stack->currentWidget() == Q_NULLPTR && !m_shown.isEmpty()) {
         // The first build, and nothing in front yet: the pane's first answer is
         // the screen that comes up, so that the window never opens on a blank.
+        // It is put there rather than made to arrive: the window opens on a
+        // screen, and a page rising into an empty window would be an arrival
+        // from nowhere.
         index = 0;
         m_stack->setCurrentWidget(m_shown.at(0)->page);
     }

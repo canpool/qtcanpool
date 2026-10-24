@@ -517,9 +517,17 @@ endif()
 
 if (DEMO_SCREENSHOT_DEFINES)
   add_qtc_test(tst_demoscreenshot
-      DEPENDS Qt5::Gui
+      DEPENDS Qt5::Gui Qt5::Widgets qxtheme
       DEFINES ${DEMO_SCREENSHOT_DEFINES}
-      SOURCES "${QTCANPOOL_TESTS_DIR}/demo/auto/tst_demoscreenshot.cpp"
+      INCLUDES "${CMAKE_SOURCE_DIR}/demos/qxapp/common"
+      SOURCES
+        "${QTCANPOOL_TESTS_DIR}/demo/auto/tst_demoscreenshot.cpp"
+        # The page transition both application demos put in front of their
+        # stacks. It is held here to what it promises - a page fades in, rises
+        # the last pixels, and is simply there when less motion is asked for -
+        # which is the part no capture of a finished window can say.
+        "${CMAKE_SOURCE_DIR}/demos/qxapp/common/pagetransition.cpp"
+        "${CMAKE_SOURCE_DIR}/demos/qxapp/common/pagetransition.h"
   )
   # Running the test is what builds it, and the test launches the demos: without
   # these dependencies they may simply not exist yet.

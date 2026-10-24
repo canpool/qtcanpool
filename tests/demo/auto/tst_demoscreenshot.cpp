@@ -65,6 +65,11 @@
 #include <QtCore/QStringList>
 #include <QtGui/QImage>
 #include <QtTest/QtTest>
+#include <QtWidgets/QGraphicsOpacityEffect>
+#include <QtWidgets/QStackedWidget>
+
+#include "pagetransition.h"
+#include "qxtheme/qxthememotion.h"
 
 namespace
 {
@@ -415,6 +420,10 @@ class tst_DemoScreenshot : public QObject
 
 private slots:
     void initTestCase();
+
+    void aPageArrivesRatherThanAppearing();
+    void lessMotionPutsThePageThereAtOnce();
+    void aSecondChangeDoesNotQueueBehindTheFirst();
 
     void ribbonDemoRenders();
     void ribbonDemoMatchesGolden();
@@ -1577,6 +1586,118 @@ void tst_DemoScreenshot::dockChromeKeepsItsHeightAcrossThemes()
 }
 #endif
 
-QTEST_GUILESS_MAIN(tst_DemoScreenshot)
+// A QApplication rather than the guiless main this suite used to have: the
+// demos are still launched as processes and still judge their own frames, but
+// the page transition they share is a widget animation and is held to what it
+// promises in this binary, where there is an application to build widgets on.
+QTEST_MAIN(tst_DemoScreenshot)
+
+/*!
+ * The three tests below are about a page change, not about a picture: they use
+ * the PageTransition both application demos put in front of their stacks, on a
+ * stack of their own, so that what is asserted is the transition rather than
+ * where a demo happens to keep its pages.
+ */
+
+/*! A page arrives rather than appearing: it comes up from nothing, from a few
+ *  pixels below its place, and settles there. */
+void tst_DemoScreenshot::aPageArrivesRatherThanAppearing()
+{
+    const bool wasReduced = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(false);
+
+    QStackedWidget stack;
+    stack.resize(400, 300);
+    QWidget first;
+    QWidget second;
+    stack.addWidget(&first);
+    stack.addWidget(&second);
+    stack.show();
+
+    const QxTheme::QxMotion motion = QxTheme::motionFor(1);
+    QVERIFY(motion.duration > 0);
+
+    PageTransition transition(&stack);
+    transition.show(&second, motion);
+    QCOMPARE(stack.currentWidget(), &second);
+    QCOMPARE(transition.duration(), motion.duration);
+    QVERIFY(transition.isRunning());
+
+    // On its way in: not yet opaque, and still below the place it is going to.
+    auto *fade = qobject_cast<QGraphicsOpacityEffect *>(second.graphicsEffect());
+    QVERIFY(fade);
+    QVERIFY(fade->opacity() < 1.0);
+    QVERIFY(second.y() > 0);
+
+    // And it gets there, painted directly again.
+    QTRY_VERIFY(!transition.isRunning());
+    QCOMPARE(second.graphicsEffect(), Q_NULLPTR);
+    QCOMPARE(second.pos(), QPoint(0, 0));
+
+    QxTheme::setMotionReduced(wasReduced);
+}
+
+/*! Less motion asks for no travel at all: the family answers a duration of zero,
+ *  and the page is put in front exactly as a plain setCurrentWidget would. */
+void tst_DemoScreenshot::lessMotionPutsThePageThereAtOnce()
+{
+    const bool wasReduced = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(true);
+
+    QStackedWidget stack;
+    stack.resize(400, 300);
+    QWidget first;
+    QWidget second;
+    stack.addWidget(&first);
+    stack.addWidget(&second);
+    stack.show();
+
+    const QxTheme::QxMotion motion = QxTheme::motionFor(1);
+    QCOMPARE(motion.duration, 0);
+
+    PageTransition transition(&stack);
+    transition.show(&second, motion);
+    QCOMPARE(stack.currentWidget(), &second);
+    QCOMPARE(transition.duration(), 0);
+    QVERIFY(!transition.isRunning());
+    QCOMPARE(second.graphicsEffect(), Q_NULLPTR);
+    QCOMPARE(second.pos(), QPoint(0, 0));
+
+    QxTheme::setMotionReduced(wasReduced);
+}
+
+/*! A change while the last one is still arriving settles it and starts the new
+ *  one: a hand on the arrow keys leaves no queue of pages behind it. */
+void tst_DemoScreenshot::aSecondChangeDoesNotQueueBehindTheFirst()
+{
+    const bool wasReduced = QxTheme::isMotionReduced();
+    QxTheme::setMotionReduced(false);
+
+    QStackedWidget stack;
+    stack.resize(400, 300);
+    QWidget first;
+    QWidget second;
+    stack.addWidget(&first);
+    stack.addWidget(&second);
+    stack.show();
+    stack.setCurrentWidget(&first);
+
+    const QxTheme::QxMotion motion = QxTheme::motionFor(1);
+    PageTransition transition(&stack);
+    transition.show(&second, motion);
+    QVERIFY(transition.isRunning());
+
+    transition.show(&first, motion);
+    QCOMPARE(stack.currentWidget(), &first);
+    QVERIFY(transition.isRunning());
+    // The page the first change was bringing in is left as it was found.
+    QCOMPARE(second.graphicsEffect(), Q_NULLPTR);
+    QCOMPARE(second.pos(), QPoint(0, 0));
+
+    QTRY_VERIFY(!transition.isRunning());
+    QCOMPARE(first.pos(), QPoint(0, 0));
+
+    QxTheme::setMotionReduced(wasReduced);
+}
 
 #include "tst_demoscreenshot.moc"
