@@ -26,6 +26,7 @@ class tst_FluentAutoSuggestBox : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
 
     void theWritingDrivesTheList();
@@ -162,6 +163,18 @@ void tst_FluentAutoSuggestBox::aBoxNobodyCanTypeInIsDrawnFainter()
     box.setEnabled(false);
     const QImage faded = box.grab().toImage();
     QVERIFY(faded != live);
+}
+
+void tst_FluentAutoSuggestBox::theKeyboardLandsOnIt()
+{
+    FluentAutoSuggestBox widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentAutoSuggestBox)

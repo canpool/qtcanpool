@@ -40,6 +40,7 @@ class tst_FluentMenuFlyout : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -190,6 +191,19 @@ void tst_FluentMenuFlyout::escapePutsItAway()
     QCOMPARE(dismissed.count(), 1);
     QCOMPARE(triggeredSpy.count(), 0);
     QCOMPARE(flyout.currentAction(), first);
+}
+
+void tst_FluentMenuFlyout::theKeyboardLandsOnIt()
+{
+    FluentMenuFlyout widget(m_anchor);
+    widget.show();
+    widget.open();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentMenuFlyout)

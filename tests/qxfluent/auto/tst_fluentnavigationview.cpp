@@ -112,6 +112,7 @@ class tst_FluentNavigationView : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void initTestCase();
     void cleanup();
 
@@ -585,6 +586,18 @@ void tst_FluentNavigationView::whatAnAssistiveToolReads()
     // A column of destinations is a list, and the room beside it is not what an
     // assistive tool is meant to walk.
     QCOMPARE(face->role(), QAccessible::List);
+}
+
+void tst_FluentNavigationView::theKeyboardLandsOnIt()
+{
+    FluentNavigationView widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentNavigationView)

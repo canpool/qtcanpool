@@ -45,6 +45,7 @@ class tst_FluentTeachingTip : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void itPointsAtWhatItIsAbout();
@@ -194,6 +195,18 @@ void tst_FluentTeachingTip::whatAnAssistiveToolReads()
     QVERIFY(iface);
     QCOMPARE(iface->role(), QAccessible::HelpBalloon);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+void tst_FluentTeachingTip::theKeyboardLandsOnIt()
+{
+    FluentTeachingTip widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentTeachingTip)

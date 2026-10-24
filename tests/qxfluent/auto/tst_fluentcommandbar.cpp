@@ -65,6 +65,7 @@ class tst_FluentCommandBar : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void aClickRunsTheCommand();
@@ -224,6 +225,18 @@ void tst_FluentCommandBar::whatAnAssistiveToolReads()
     QVERIFY(iface);
     QCOMPARE(iface->role(), QAccessible::ToolBar);
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+void tst_FluentCommandBar::theKeyboardLandsOnIt()
+{
+    FluentCommandBar widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentCommandBar)

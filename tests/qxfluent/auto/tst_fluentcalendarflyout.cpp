@@ -39,6 +39,7 @@ class tst_FluentCalendarFlyout : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -223,6 +224,19 @@ void tst_FluentCalendarFlyout::itIsCompleteWhenMotionIsReduced()
     }
     QVERIFY(inkRows > 1);
     QxTheme::setMotionReduced(false);
+}
+
+void tst_FluentCalendarFlyout::theKeyboardLandsOnIt()
+{
+    FluentCalendarFlyout widget(m_anchor);
+    widget.show();
+    widget.open();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentCalendarFlyout)

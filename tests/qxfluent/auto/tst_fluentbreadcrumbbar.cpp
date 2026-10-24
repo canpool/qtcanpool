@@ -62,6 +62,7 @@ class tst_FluentBreadcrumbBar : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void thePathIsWhatItSays();
     void theLastStepIsNotADestination();
     void aStepBeforeTheLastIsAWayBack();
@@ -241,6 +242,26 @@ void tst_FluentBreadcrumbBar::anEmptyPathIsNothing()
     QSignalSpy clicked(&bar, &FluentBreadcrumbBar::itemClicked);
     QTest::mousePress(&bar, Qt::LeftButton, Qt::NoModifier, QPoint(1, 1));
     QCOMPARE(clicked.count(), 0);
+}
+
+void tst_FluentBreadcrumbBar::theKeyboardLandsOnIt()
+{
+    FluentBreadcrumbBar widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setItems({QStringLiteral("Home"), QStringLiteral("Library"), QStringLiteral("This file")});
+    // The bar paints its own path and only has a width once it has items, so a
+    // layout would size it; the focus that lands on it is the layout's, not a
+    // zero-width window's.
+    widget.resize(widget.sizeHint());
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentBreadcrumbBar)

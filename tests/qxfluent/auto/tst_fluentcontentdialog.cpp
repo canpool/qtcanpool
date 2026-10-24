@@ -63,6 +63,7 @@ class tst_FluentContentDialog : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void thePageUnderItIsDimmedAndTheCardIsNot();
@@ -300,6 +301,18 @@ void tst_FluentContentDialog::theEntranceIsSkippedWhenMotionIsReduced()
     arriving.setTitle(QStringLiteral("A question"));
     arriving.show();
     QCOMPARE(arriving.windowOpacity(), 1.0);
+}
+
+void tst_FluentContentDialog::theKeyboardLandsOnIt()
+{
+    FluentContentDialog widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentContentDialog)

@@ -75,6 +75,7 @@ class tst_FluentTabView : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void cleanup();
 
     void aTabIsSomethingOpen();
@@ -229,6 +230,18 @@ void tst_FluentTabView::aRowNobodyCanChooseIsDrawnFainter()
 
     // And the choice does not move: a tab nobody can look at is not one.
     QCOMPARE(view->currentIndex(), 0);
+}
+
+void tst_FluentTabView::theKeyboardLandsOnIt()
+{
+    FluentTabView widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentTabView)

@@ -33,6 +33,7 @@ class tst_FluentComboBox : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void theAnswerOpensBelowWhenThereIsRoom();
     void theListTurnsAboveWhenBelowHasNoRoom();
     void theListKeepsInsideTheScreenWhenNeitherHasRoom();
@@ -339,6 +340,18 @@ void tst_FluentComboBox::aFaceNobodyCanUseDoesNotOpen()
     QVERIFY(combo->grab().toImage() != live);
 
     window.close();
+}
+
+void tst_FluentComboBox::theKeyboardLandsOnIt()
+{
+    FluentComboBox widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentComboBox)

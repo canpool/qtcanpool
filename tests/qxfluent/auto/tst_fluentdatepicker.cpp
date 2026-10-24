@@ -19,6 +19,7 @@ class tst_FluentDatePicker : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -138,6 +139,18 @@ void tst_FluentDatePicker::aFieldNobodyCanOpenIsDrawnFainter()
     picker.setEnabled(false);
     const QImage faded = picker.grab().toImage();
     QVERIFY(faded != live);
+}
+
+void tst_FluentDatePicker::theKeyboardLandsOnIt()
+{
+    FluentDatePicker widget(m_page);
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentDatePicker)

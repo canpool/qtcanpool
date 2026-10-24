@@ -32,6 +32,7 @@ class tst_FluentTextBox : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -175,6 +176,18 @@ void tst_FluentTextBox::anIconMakesRoomBeforeTheWords()
 
     box.setLeadingIcon(box.style()->standardIcon(QStyle::SP_FileDialogContentsView));
     QVERIFY(box.sizeHint().width() > bare.width());
+}
+
+void tst_FluentTextBox::theKeyboardLandsOnIt()
+{
+    FluentTextBox widget;
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentTextBox)

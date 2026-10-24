@@ -49,6 +49,7 @@ class tst_FluentAvatar : public QObject
 {
     Q_OBJECT
 private slots:
+    void theKeyboardLandsOnIt();
     void init();
     void cleanup();
 
@@ -196,6 +197,18 @@ void tst_FluentAvatar::theAccessibleFaceIsAGraphic()
     QCOMPARE(face->role(), QAccessible::Graphic);
     QCOMPARE(face->text(QAccessible::Name), QStringLiteral("Ada Lovelace"));
     QVERIFY(face->state().readOnly);
+}
+
+void tst_FluentAvatar::theKeyboardLandsOnIt()
+{
+    FluentAvatar widget(m_page);
+    widget.show();
+    QApplication::processEvents();
+
+    widget.setFocus();
+    QApplication::processEvents();
+    QWidget *focus = QApplication::focusWidget();
+    QVERIFY(focus == &widget || widget.isAncestorOf(focus));
 }
 
 TEST_ADD(tst_FluentAvatar)
