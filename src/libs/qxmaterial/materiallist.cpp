@@ -50,6 +50,17 @@ MaterialList::MaterialList(QWidget *parent)
 
 MaterialList::~MaterialList()
 {
+    // A row answers when it is taken away, and a list takes its rows with it -
+    // but a list deletes its own data before its children, so by the time the
+    // last row says it is gone there is nothing left of the list to tell, and
+    // answering would be reading a member of an object that has already been
+    // destroyed (a window closed on a list of rows took the process with it the
+    // first time). The answers are dropped here instead, while the list is
+    // still whole: every row is going with it, and none of them is news. This
+    // has to happen before the data goes, since that is where the rows are.
+    for (int i = 0; i < count(); ++i) {
+        QObject::disconnect(itemAt(i), Q_NULLPTR, this, Q_NULLPTR);
+    }
     QX_FINI_PRIVATE()
 }
 
@@ -87,18 +98,11 @@ void MaterialList::addItem(MaterialListItem *item)
         Q_EMIT itemClicked(item);
         d_ptr->choose(item);
     });
-    // A row that is taken away is no longer the chosen one: the list does
-    // not keep a name without a row behind it.
+    // A row that is taken away is no longer the chosen one: the list does not
+    // keep a name without a row behind it. A row taken away *with* the list is
+    // not among these - the destructor drops the answers before the rows go,
+    // because by then there is no list left to hear one.
     connect(item, &QObject::destroyed, this, [this, item]() {
-        // The row may be going away because the list is, and a list deletes its
-        // own data before its children - so by the time the last row says it is
-        // gone, there is no list left to tell. Answering then is reading what
-        // has already been freed, which is the crash a list of rows took with it
-        // the first time a window was closed; the row's going is the whole of
-        // what there is to know at that point, and the list is going with it.
-        if (!d_ptr) {
-            return;
-        }
         if (d_ptr->current == item) {
             d_ptr->current = Q_NULLPTR;
             Q_EMIT currentItemChanged(Q_NULLPTR);

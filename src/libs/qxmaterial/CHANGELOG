@@ -190,8 +190,8 @@ Bugfix
 - Deleting a `MaterialList` that had rows in it took the process with it: a row
   answers its own going away, and a list deletes its own data before its
   children, so by the time the last row answered there was no list left to tell
-  and the answer read what had already been freed. A list now says nothing when
-  the row that is leaving is leaving with the list itself.
+  and the answer read what had already been freed. A list now drops the answers
+  before its rows go: the rows are going with it, and none of them is news.
 - The rail's state washes did not follow the pill: a wash is a flat fill and
   the fill knows no corners, so the hover tint stood as a square over the
   rounded shape, and after a click the focus tint stacked a second square on
