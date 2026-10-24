@@ -6,8 +6,9 @@
 
 #include "materialtokens.h"
 
-#include <QtGui/QFontMetrics>
+#include <QtGui/QFontMetricsF>
 #include <QtGui/QPainter>
+#include <QtMath>
 
 QX_MATERIAL_BEGIN_NAMESPACE
 
@@ -64,6 +65,9 @@ MaterialBadge::MaterialBadge(QWidget *parent)
     // the pointer takes hold of: it is a mark on something else.
     setFocusPolicy(Qt::NoFocus);
     setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    // And it keeps the size its count asks for: a row with room to spare would
+    // otherwise stretch it, and a circle stretched one way only is an ellipse.
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 MaterialBadge::~MaterialBadge()
@@ -109,9 +113,15 @@ QSize MaterialBadge::sizeHint() const
     if (d_ptr->count <= 0) {
         return QSize(int(kDotSize), int(kDotSize));
     }
-    const QFontMetrics metrics(MaterialType::font(MaterialType::Scale::Label));
-    const int width = metrics.horizontalAdvance(d_ptr->label()) + int(2 * kPadding);
-    return QSize(qMax(width, int(kBadgeHeight)), int(kBadgeHeight));
+    // One figure is a circle, more than one is a pill: same rule as the other
+    // family's badge, because it is the count that decides the shape and not
+    // the family. Measured in fractional pixels and rounded up, so a digit is
+    // never a little wider than the room it was given.
+    const QString label = d_ptr->label();
+    const QFontMetricsF metrics(MaterialType::font(MaterialType::Scale::Label));
+    const int needed = int(qCeil(metrics.horizontalAdvance(label))) + int(2 * kPadding);
+    const int width = label.size() <= 1 ? int(kBadgeHeight) : qMax(int(kBadgeHeight), needed);
+    return QSize(width, int(kBadgeHeight));
 }
 
 QSize MaterialBadge::minimumSizeHint() const

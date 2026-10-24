@@ -112,6 +112,12 @@ Bugfix
   its last letter missing still reads as a word. A step is measured in the
   ramp it is drawn in now, and in fractional pixels, so a cell is never
   narrower than its word at any weight.
+- A badge asked for the width its count needs and then took whatever a row
+  gave it: put beside a button, the row made it a hundred wide and thirty tall,
+  and a shape that is a circle at its own size became an ellipse - tall for one
+  figure, wide for "99+". A badge keeps the size its count asks for now, however
+  much room the row has to spare; and one figure is a circle while two are a
+  pill, because it is the count that decides the shape.
 
 0.1.2
 ---

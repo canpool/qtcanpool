@@ -8,8 +8,9 @@
 
 #include "qxcontrols/qxstatelayer.h"
 
-#include <QtGui/QFontMetrics>
+#include <QtGui/QFontMetricsF>
 #include <QtGui/QPainter>
+#include <QtMath>
 
 QX_FLUENT_BEGIN_NAMESPACE
 
@@ -50,6 +51,10 @@ FluentBadge::FluentBadge(QWidget *parent)
     // A badge is not something the keyboard stops at: it says something about
     // the control it sits beside.
     setFocusPolicy(Qt::NoFocus);
+    // And it is the size its count asks for, whatever it is put in: a row that
+    // has room to spare would otherwise stretch it, and a circle stretched one
+    // way only is an ellipse - which is what the demo's badge had become.
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 FluentBadge::~FluentBadge()
@@ -94,9 +99,15 @@ QSize FluentBadge::sizeHint() const
     if (d_ptr->count <= 0) {
         return QSize(int(kDotSize), int(kDotSize));
     }
-    const QFontMetrics metrics(FluentType::font(FluentType::Ramp::Caption));
-    const int text = metrics.horizontalAdvance(d_ptr->label());
-    const int width = qMax(int(kPillHeight), text + int(2 * kPillPadding));
+    // One figure is a circle - a number read at a glance is a dot with a
+    // figure in it, not a lozenge - and more than one is a pill whose width is
+    // the figure's with room on both sides. Fractional metrics, rounded up, for
+    // the same reason the rest of the family measures that way: half a pixel
+    // short is a drawn digit over the edge.
+    const QString label = d_ptr->label();
+    const QFontMetricsF metrics(FluentType::font(FluentType::Ramp::Caption));
+    const int needed = int(qCeil(metrics.horizontalAdvance(label))) + int(2 * kPillPadding);
+    const int width = label.size() <= 1 ? int(kPillHeight) : qMax(int(kPillHeight), needed);
     return QSize(width, int(kPillHeight));
 }
 

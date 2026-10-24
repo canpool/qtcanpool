@@ -7,6 +7,7 @@
 #include "qxmaterial/materialbadge.h"
 
 #include <QAccessible>
+#include <QHBoxLayout>
 
 QX_MATERIAL_USE_NAMESPACE
 
@@ -17,6 +18,8 @@ private slots:
     void cleanup();
 
     void aCountIsAnumberAndNoCountIsADot();
+    void oneFigureIsACircleAndTwoAreAPill();
+    void aRowWithRoomToSpareDoesNotStretchIt();
     void itStopsCountingAtTheMaximum();
     void itIsAMarkNotAStop();
     void whatAnAssistiveToolReads();
@@ -43,6 +46,39 @@ void tst_MaterialBadge::aCountIsAnumberAndNoCountIsADot()
 
     badge.setCount(0);
     QCOMPARE(badge.sizeHint(), dot);
+}
+
+/*! One figure is read at a glance, so it is a circle; two are already a number
+ *  and the badge grows sideways for them. The count decides the shape, and it
+ *  decides it the same way in both families. */
+void tst_MaterialBadge::oneFigureIsACircleAndTwoAreAPill()
+{
+    MaterialBadge one;
+    one.setCount(5);
+    QCOMPARE(one.sizeHint().width(), one.sizeHint().height());
+
+    MaterialBadge two;
+    two.setCount(12);
+    QVERIFY(two.sizeHint().width() > two.sizeHint().height());
+    QCOMPARE(two.sizeHint().height(), one.sizeHint().height());
+}
+
+/*! Put in a row with room to spare, the badge is still the size its count asked
+ *  for: a circle stretched one way only is an ellipse. */
+void tst_MaterialBadge::aRowWithRoomToSpareDoesNotStretchIt()
+{
+    QWidget row;
+    auto *layout = new QHBoxLayout(&row);
+    auto *badge = new MaterialBadge(&row);
+    badge->setCount(5);
+    const QSize asked = badge->sizeHint();
+    layout->addWidget(badge);
+    layout->addStretch(1);
+    row.resize(400, 80);
+    row.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&row));
+
+    QCOMPARE(badge->size(), asked);
 }
 
 /*! Past the maximum a badge stops counting and starts saying so: "127" is not
