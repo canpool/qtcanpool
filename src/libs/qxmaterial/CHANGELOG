@@ -154,6 +154,21 @@ Feature
   away from, because the way to find out what a round button does should not be
   to point at it. Only up and down: a row that flew sideways would have nowhere
   to put a name, and a row of icon buttons along an edge is a toolbar.
+- `MaterialImageList`, a grid of pictures with their names on them. A picture is
+  a tile the list draws - the photograph, and a bar across one edge of it
+  carrying the name and, when there is one, the line under the name - because a
+  picture tile holds three things, and asking the application to build the same
+  three every time is how a grid turns into a layout. A tile may take more than
+  one cell, and the list packs rather than wraps: it walks the cells in reading
+  order and stands each picture where its span fits, so a two-row picture does
+  not leave the cells under it empty unless the application ordered its pictures
+  to fit. The bar is a scrim rather than a surface: it darkens the photograph and
+  the words on it are white, because what stands behind the words is a picture
+  the theme has never seen and cannot promise contrast for. The far end of the
+  bar is a place for the application's own widget, and its clicks stay its own.
+  A tile never shows part of a photograph with the page beside it - the picture
+  is scaled until it covers the tile and the middle of it is what is shown - and
+  the grid keeps the height its rows came to rather than scrolling inside itself.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
