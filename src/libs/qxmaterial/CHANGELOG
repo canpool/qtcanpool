@@ -117,6 +117,14 @@ Feature
   nothing an answer too. The multiple-answer variant - the chips inside the
   field - is not here: the chips would have to live in the editor's own room,
   and the field has no room inside it to give.
+- `MaterialToggleButtonGroup`, a row of buttons that are each on or off. It is
+  not `MaterialSegmentedButton` with a flag: a segmented row always has one part
+  in force, this one may have none and pressing the one that is on turns it off,
+  and `exclusive` means at most one rather than exactly one. Without it the
+  buttons are independent switches, Tab stops on each of them, and the arrows
+  are not the row's business. Each button is as wide as its own label asks
+  rather than an equal share, and the row shares out any extra room evenly, so
+  the buttons keep the difference their labels asked for.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and
