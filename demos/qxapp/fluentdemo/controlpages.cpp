@@ -14,9 +14,11 @@
 #include "qxfluent/fluentcard.h"
 #include "qxfluent/fluentcommandbar.h"
 #include "qxfluent/fluentcontentdialog.h"
+#include "qxfluent/fluentdivider.h"
 #include "qxfluent/fluentdropdownbutton.h"
 #include "qxfluent/fluentexpander.h"
 #include "qxfluent/fluentinfobar.h"
+#include "qxfluent/fluentlistview.h"
 #include "qxfluent/fluentnumberbox.h"
 #include "qxfluent/fluentprogressring.h"
 #include "qxfluent/fluentrating.h"
@@ -892,6 +894,129 @@ DemoPage *tabViewPage(QWidget *parent)
     page->addStretch();
     return page;
 }
+
+/*! The three columns that are not the target, at fixed widths.
+ *
+ *  A column as wide as its widest word moves as soon as a word grows, and a
+ *  table whose columns move is a list of lines. These are numbers, and the
+ *  header and every row read the same numbers - which is what lets a test say
+ *  that a column starts at one x: it is the same x on every line, or the
+ *  numbers stopped being the whole story.
+ */
+constexpr int kResultWidth = 96;
+constexpr int kTookWidth = 80;
+constexpr int kCasesWidth = 64;
+constexpr int kColumnGap = 16;
+
+/*! One line of the table: what ran, how it went, how long it took, and how many
+ *  cases it covered. */
+struct Run {
+    const char *target;
+    const char *result;
+    const char *took;
+    const char *cases;
+};
+
+const Run kRuns[] = {{QT_TR_NOOP("windows-latest"), QT_TR_NOOP("Passed"), QT_TR_NOOP("6m 12s"), QT_TR_NOOP("412")},
+                     {QT_TR_NOOP("ubuntu-latest"), QT_TR_NOOP("Passed"), QT_TR_NOOP("4m 03s"), QT_TR_NOOP("412")},
+                     {QT_TR_NOOP("macos-latest"), QT_TR_NOOP("Failed"), QT_TR_NOOP("5m 48s"), QT_TR_NOOP("407")},
+                     {QT_TR_NOOP("ubuntu, Qt 5"), QT_TR_NOOP("Passed"), QT_TR_NOOP("3m 57s"), QT_TR_NOOP("412")},
+                     {QT_TR_NOOP("wasm"), QT_TR_NOOP("Skipped"), QT_TR_NOOP("1m 20s"), QT_TR_NOOP("0")}};
+
+/*! The words over the columns, in the shape the rows have: a header built by
+ *  the same code as a row cannot drift from it. */
+const Run kHeading = {QT_TR_NOOP("Target"), QT_TR_NOOP("Result"), QT_TR_NOOP("Took"), QT_TR_NOOP("Cases")};
+
+/*! A cell of a fixed-width column.
+ *
+ *  The name is what a test reads it by, so it is given here rather than made up
+ *  at each call: a column is one thing on every line, and the lines have to
+ *  answer to the same name to be checkable.
+ */
+QLabel *column(const QString &text, int width, const char *name, bool header, QWidget *parent)
+{
+    auto *label = new QLabel(text, parent);
+    label->setObjectName(QLatin1String(name));
+    label->setFixedWidth(width);
+    label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    label->setFont(FluentType::font(FluentType::Ramp::Body, header));
+    if (header) {
+        label->setForegroundRole(QPalette::PlaceholderText);
+    }
+    return label;
+}
+
+/*! One line of the table, or the heading over the lines.
+ *
+ *  The row is a widget of the page's standing where a list row stands, because
+ *  what a row says is four columns and the list says one thing per row: the
+ *  model keeps the count, and the arrangement on a line is the application's.
+ */
+QWidget *tableRow(const Run &run, bool header, QWidget *parent)
+{
+    auto *row = new QWidget(parent);
+    auto *layout = new QHBoxLayout(row);
+    layout->setContentsMargins(12, 0, 12, 0);
+    layout->setSpacing(kColumnGap);
+
+    auto *target = new QLabel(tr(run.target), row);
+    target->setObjectName(QStringLiteral("column-name"));
+    target->setFont(FluentType::font(FluentType::Ramp::Body, header));
+    if (header) {
+        target->setForegroundRole(QPalette::PlaceholderText);
+    }
+    layout->addWidget(target, 1);
+
+    layout->addWidget(column(tr(run.result), kResultWidth, "column-status", header, row));
+    layout->addWidget(column(tr(run.took), kTookWidth, "column-when", header, row));
+    layout->addWidget(column(tr(run.cases), kCasesWidth, "column-amount", header, row));
+    return row;
+}
+
+DemoPage *tablePage(QWidget *parent)
+{
+    auto *page = new DemoPage(tr("Table"),
+                              tr("Rows of the same four things, arranged as a table: there is no table "
+                                 "control, and the arrangement is the page's."),
+                              parent);
+    page->addSection(tr("One run of the suite"));
+
+    page->addNote(tr("A table is four decisions and no control: a heading that says what each column holds, "
+                     "widths that do not depend on the words in them, a line that keeps one row from the "
+                     "next, and rows that are read rather than edited. The heading is a row of labels built by "
+                     "the same code as a row, the widths are numbers, the lines are dividers, and the rows are "
+                     "the list - which is what still says which row the pointer is over and which one is in "
+                     "force."));
+
+    auto *table = new QWidget(page);
+    auto *layout = new QVBoxLayout(table);
+    layout->setContentsMargins(QMargins());
+    layout->setSpacing(0);
+
+    layout->addWidget(tableRow(kHeading, true, table));
+    layout->addWidget(new FluentDivider(table));
+
+    auto *list = new FluentListView(table);
+    const int count = int(sizeof(kRuns) / sizeof(kRuns[0]));
+    for (int row = 0; row < count; ++row) {
+        list->addItem(QString());
+    }
+    for (int row = 0; row < count; ++row) {
+        list->setIndexWidget(list->model()->index(row, 0), tableRow(kRuns[row], false, list));
+    }
+    // A list is as tall as it wants to be, not as tall as its rows: without this
+    // the table would be three rows and a scrollbar in a taller space.
+    const int rowHeight = list->sizeHintForRow(0);
+    if (rowHeight > 0) {
+        list->setFixedHeight(rowHeight * count + 2 * list->frameWidth());
+    }
+    layout->addWidget(list);
+    layout->addWidget(new FluentDivider(table));
+    page->addBlock(table);
+
+    page->addStretch();
+    return page;
+}
 }   // namespace
 
 QList<ControlPages::ControlGroup> ControlPages::build(QWidget *parent)
@@ -927,7 +1052,8 @@ QList<ControlPages::ControlGroup> ControlPages::build(QWidget *parent)
             {DemoPage::tr("Surfaces"),
              {{cardPage(parent), QString(), QStringLiteral("layout-cards")},
               {expanderPage(parent), QString(), QStringLiteral("chevrons-down")},
-              {tabViewPage(parent), QString(), QStringLiteral("tabs")}}},
+              {tabViewPage(parent), QString(), QStringLiteral("tabs")},
+              {tablePage(parent), QString(), QStringLiteral("table")}}},
             {DemoPage::tr("Feedback"),
              {{alertsPage(parent), QString(), QStringLiteral("alert-triangle")},
               {contentDialogPage(parent), alerts, QStringLiteral("app-window")},

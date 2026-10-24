@@ -45,6 +45,7 @@ add_qtc_executable(MaterialDemo
     signinpage.cpp signinpage.h
     blogpage.cpp blogpage.h
     orderpage.cpp orderpage.h
+    ledgerpage.cpp ledgerpage.h
     # The library itself, one control per row, and the window's own settings.
     catalogpage.cpp catalogpage.h
     settingspage.cpp settingspage.h

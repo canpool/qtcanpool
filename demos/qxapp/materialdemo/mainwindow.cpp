@@ -9,6 +9,7 @@
 #include "catalogpage.h"
 #include "icons.h"
 #include "orderpage.h"
+#include "ledgerpage.h"
 #include "homepage.h"
 #include "pagetransition.h"
 #include "demopage.h"
@@ -447,6 +448,7 @@ void MainWindow::createNavigation()
     addPage(new BlogPage(m_stack), QStringLiteral("article"));
     addPage(new OrderPage(m_stack), QStringLiteral("receipt"));
     addPage(new CatalogPage(m_stack), QStringLiteral("table"));
+    addPage(new LedgerPage(m_stack), QStringLiteral("file"));
 
     // What the window is, as opposed to what it is showing, stays last: it is
     // not a place the user works in.

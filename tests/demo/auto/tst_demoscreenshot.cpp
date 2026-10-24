@@ -98,6 +98,16 @@ constexpr int kMinDistinctColours = 20;
  */
 constexpr int kFluentRatingPage = 8;
 constexpr int kMaterialAlbumPage = 1;
+/*! The two screens that present rows of four things: the one the family has a
+ *  table for, and the one it does not. */
+constexpr int kFluentTablePage = 12;
+constexpr int kMaterialLedgerPage = 7;
+/*! The table the Ledger screen is built on, in the two measures the library
+ *  fixes: a heading line and a line of data. Kept here so that a table one row
+ *  short of its content is a failure of this test and not of the arithmetic. */
+constexpr int kTableHeaderHeight = 56;
+constexpr int kTableRowHeight = 52;
+constexpr int kLedgerRows = 5;
 
 /*!
  * The other half of the same proxy: a blank window is one colour over (almost)
@@ -463,6 +473,8 @@ private slots:
     void fluentThemeSwitchMatchesAFreshStart();
     void fluentDemoAnswersItsWidth();
     void fluentDemoRatingPageRenders();
+    void fluentDemoTablePageRenders();
+    void theTableColumnsLineUp();
 #endif
 #ifdef DEMO_MATERIAL_EXECUTABLE
     void materialDemoRenders();
@@ -471,6 +483,7 @@ private slots:
     void materialDemoAnswersItsWidth();
     void materialDemoNamesFitItsRail();
     void materialDemoAlbumPageRenders();
+    void materialDemoLedgerPageShowsItsTable();
 #endif
 private:
     QImage m_ribbonScreenshot;
@@ -1505,6 +1518,73 @@ void tst_DemoScreenshot::fluentDemoRatingPageRenders()
     QVERIFY2(screenshot != m_fluentScreenshot, "--page opened nothing: the capture is the window's first screen");
     checkGolden(screenshot, QStringLiteral(DEMO_FLUENT_RATING_GOLDEN_PATH), path, QStringLiteral("fluentdemo-rating"));
 }
+
+/*! The Table screen: rows of four things under a heading, arranged by the page
+ *  because the family has no table control.
+ *
+ *  No golden: the picture is a few words and four lines, and what is worth
+ *  holding is held better elsewhere - that the page opens is this capture, and
+ *  that its columns are columns is the tree assertion after it. */
+void tst_DemoScreenshot::fluentDemoTablePageRenders()
+{
+    const QString path =
+        QFileInfo(QStringLiteral(DEMO_FLUENT_SCREENSHOT_PATH)).absolutePath() + QStringLiteral("/fluentdemo-table.png");
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_FLUENT_EXECUTABLE), path, QStringLiteral("fluentdemo-table.log"), error,
+                     {QStringLiteral("--page"), QString::number(kFluentTablePage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+
+    checkRenders(screenshot, QStringLiteral("fluentdemo-table"), kMaxApplicationDemoDominantPercent);
+    QVERIFY2(screenshot != m_fluentScreenshot, "--page opened nothing: the capture is the window's first screen");
+}
+
+/*! The columns are columns: every cell of one starts at the same x, and the
+ *  heading is one of the cells.
+ *
+ *  This can only be asked of the window whose family has no table. Its columns
+ *  are widgets the page placed, so they can drift - which is exactly why the
+ *  capture above would not catch it, since a picture of two columns one pixel
+ *  out looks like a picture of two columns. A table view keeps its own columns,
+ *  so on the other side there is nothing for a page to get wrong. */
+void tst_DemoScreenshot::theTableColumnsLineUp()
+{
+    QString error;
+    const QString tree = runInspectWith(QStringLiteral(DEMO_FLUENT_EXECUTABLE),
+                                        QStringList{QStringLiteral("--page"), QString::number(kFluentTablePage),
+                                                    QStringLiteral("--width"), QStringLiteral("1280")},
+                                        QStringLiteral("fluentdemo-table-tree.log"), error);
+    QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+    const QList<WidgetLine> widgets = widgetsIn(tree);
+    const QStringList columns{QStringLiteral("column-name"), QStringLiteral("column-status"),
+                              QStringLiteral("column-when"), QStringLiteral("column-amount")};
+    for (const QString &column : columns) {
+        int seen = 0;
+        int left = -1;
+        for (const WidgetLine &widget : widgets) {
+            if (widget.objectName != column) {
+                continue;
+            }
+            if (left < 0) {
+                left = widget.rect.x();
+            }
+            QVERIFY2(widget.rect.x() == left,
+                     qPrintable(QStringLiteral("%1: a cell starts at %2 while the column starts at %3")
+                                    .arg(column)
+                                    .arg(widget.rect.x())
+                                    .arg(left)));
+            ++seen;
+        }
+        // The heading and the five lines under it. A column that lost a line is
+        // worse than one that is a pixel out of line: the first is a page that
+        // stopped drawing and the second is a page that never lined up.
+        QVERIFY2(seen == 6,
+                 qPrintable(QStringLiteral("%1: %2 cells, and the table has six lines").arg(column).arg(seen)));
+    }
+}
 #endif
 
 #ifdef DEMO_MATERIAL_EXECUTABLE
@@ -1560,6 +1640,47 @@ void tst_DemoScreenshot::materialDemoAlbumPageRenders()
     QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
     checkGolden(screenshot, QStringLiteral(DEMO_MATERIAL_ALBUM_GOLDEN_PATH), path,
                 QStringLiteral("materialdemo-album"));
+}
+
+/*! The Ledger screen: rows of four things under a heading, kept by the family's
+ *  table control - the one screen in this demo that needed a control rather than
+ *  an arrangement, and the one the other window has to arrange by hand.
+ *
+ *  Counted in the tree rather than measured in the capture. The rows of this
+ *  screen are words, and on the Qt 5 leg the offscreen surface inks no words at
+ *  all (every Qt 5 golden here is wordless for the same reason), so a capture of
+ *  it is a flat sheet on that leg and "was anything drawn" refuses a page that
+ *  drew everything. What the table is asked instead is what it can answer on
+ *  both legs: that it stands on the page, taut, as tall as its heading plus its
+ *  five lines. The capture is still taken, and still has to differ from the
+ *  window's first screen - that is what says --page went somewhere. */
+void tst_DemoScreenshot::materialDemoLedgerPageShowsItsTable()
+{
+    const QString path = QFileInfo(QStringLiteral(DEMO_MATERIAL_SCREENSHOT_PATH)).absolutePath() +
+                         QStringLiteral("/materialdemo-ledger.png");
+    QString error;
+    QVERIFY2(runDemo(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), path, QStringLiteral("materialdemo-ledger.log"), error,
+                     {QStringLiteral("--page"), QString::number(kMaterialLedgerPage)}),
+             qPrintable(error));
+
+    const QImage screenshot = loadAsArgb32(path);
+    QVERIFY2(!screenshot.isNull(), qPrintable(QStringLiteral("the screenshot could not be read: %1").arg(path)));
+    QVERIFY2(screenshot != m_materialScreenshot, "--page opened nothing: the capture is the window's first screen");
+
+    const QString tree = runInspectWith(QStringLiteral(DEMO_MATERIAL_EXECUTABLE),
+                                        QStringList{QStringLiteral("--page"), QString::number(kMaterialLedgerPage),
+                                                    QStringLiteral("--width"), QStringLiteral("1280")},
+                                        QStringLiteral("materialdemo-ledger-tree.log"), error);
+    QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+    const int table = heightIn(tree, QStringLiteral("QxMaterial::MaterialTable .* \\(\\d+,\\d+ (\\d+)x(\\d+)\\)"));
+    QVERIFY2(table > 0, "the Ledger screen opened without a table on it");
+    // The table is not stretched to the page: its height is its own, so a row
+    // that went missing shows up here as a table one row short.
+    const int rows = (table - kTableHeaderHeight) / kTableRowHeight;
+    QCOMPARE(table, kTableHeaderHeight + rows * kTableRowHeight);
+    QVERIFY2(rows == kLedgerRows,
+             qPrintable(QStringLiteral("the table is %1 rows tall, and the Ledger has %2").arg(rows).arg(kLedgerRows)));
 }
 
 void tst_DemoScreenshot::materialDemoNamesFitItsRail()
