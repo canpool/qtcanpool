@@ -10,6 +10,7 @@
 #include "qxtheme/qxthememanager.h"
 
 #include <QAccessible>
+#include <QImage>
 #include <QSignalSpy>
 #include <QtWidgets/QApplication>
 
@@ -47,6 +48,7 @@ private slots:
     void theKeyboardAsksTheSameQuestion();
     void oneChoiceOfSeveralStandsAlone();
     void whatAnAssistiveToolReads();
+    void aChoiceNobodyCanUseDoesNotChange();
 private:
     bool m_hadOverride = false;
 };
@@ -168,6 +170,29 @@ void tst_FluentCheckable::whatAnAssistiveToolReads()
     QVERIFY(radioFace->state().checkable);
     radio.setChecked(true);
     QVERIFY(QAccessible::queryAccessibleInterface(&radio)->state().checked);
+}
+
+/*! A choice nobody can use does not change, however the question is put: the
+ *  row still takes the click and the key, and answers neither. */
+void tst_FluentCheckable::aChoiceNobodyCanUseDoesNotChange()
+{
+    FluentCheckBox box;
+    box.setText(QStringLiteral("Include archives"));
+    box.resize(box.sizeHint());
+    const QImage live = box.grab().toImage();
+
+    // Qt fades a disabled widget through its palette; pinned, the only thing
+    // left that can change is what the control itself paints.
+    qtcPinDisabledColours(&box);
+
+    box.setEnabled(false);
+    QSignalSpy changed(&box, &FluentCheckBox::stateChanged);
+    QTest::mouseClick(&box, Qt::LeftButton, Qt::NoModifier, QPoint(box.width() - 6, box.height() / 2));
+    QTest::keyClick(&box, Qt::Key_Space);
+
+    QCOMPARE(box.checkState(), Qt::Unchecked);
+    QCOMPARE(changed.count(), 0);
+    QVERIFY(box.grab().toImage() != live);
 }
 
 TEST_ADD(tst_FluentCheckable)

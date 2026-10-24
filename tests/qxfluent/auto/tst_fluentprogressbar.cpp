@@ -61,6 +61,7 @@ private slots:
     void anEndlessBarSlides();
     void reduceMotionStopsTheSlideWithoutErasingIt();
     void howFarAlongIsThereForAnAssistiveTool();
+    void aBarNobodyCanUseHoldsStill();
 private:
     bool m_wasReduced = false;
     bool m_wasActive = false;
@@ -184,6 +185,23 @@ void tst_FluentProgressBar::howFarAlongIsThereForAnAssistiveTool()
     QCOMPARE(bar.value(), 60);
 
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A bar nobody can use holds still: the slide is the bar saying that
+ *  something is still happening, and a control that cannot be used makes no
+ *  claim about anything happening. What holds still is the block, not an empty
+ *  track. */
+void tst_FluentProgressBar::aBarNobodyCanUseHoldsStill()
+{
+    FluentProgressBar bar;
+    bar.resize(120, 4);
+    bar.setIndeterminate(true);
+    bar.setEnabled(false);
+
+    const QImage before = bar.grab().toImage();
+    QTest::qWait(200);
+    QCOMPARE(bar.grab().toImage(), before);
+    QVERIFY(accentPixels(&bar) > 0);
 }
 
 TEST_ADD(tst_FluentProgressBar)

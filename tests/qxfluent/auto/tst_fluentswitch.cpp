@@ -43,6 +43,7 @@ private slots:
     void onFillsTheTrackAndMovesTheKnob();
     void reducedMotionPutsTheKnobThereAtOnce();
     void aClickToggles();
+    void aSwitchNobodyCanUseStaysPut();
     void theKeyboardToggles();
     void theLabelIsTheAccessibleName();
     void whatItIsAndWhetherItIsOn();
@@ -190,6 +191,29 @@ void tst_FluentSwitch::theLabelWidensTheHint()
 
     QVERIFY(labelled.width() > bare.width());
     QCOMPARE(labelled.height(), bare.height());
+}
+
+/*! A switch nobody can use stays where it is: the click is still taken and
+ *  is not an answer. */
+void tst_FluentSwitch::aSwitchNobodyCanUseStaysPut()
+{
+    FluentSwitch sw;
+    sw.resize(40, 20);
+    const QImage live = sw.grab().toImage();
+
+    // Qt fades a disabled widget through its palette; pinned, the only thing
+    // left that can change is what the control itself paints.
+    qtcPinDisabledColours(&sw);
+
+    sw.setEnabled(false);
+    QSignalSpy toggled(&sw, &FluentSwitch::toggled);
+    QTest::mousePress(&sw, Qt::LeftButton, Qt::NoModifier, QPoint(10, 10));
+    QTest::mouseRelease(&sw, Qt::LeftButton, Qt::NoModifier, QPoint(10, 10));
+    QTest::keyClick(&sw, Qt::Key_Space);
+
+    QVERIFY(!sw.isOn());
+    QCOMPARE(toggled.count(), 0);
+    QVERIFY(sw.grab().toImage() != live);
 }
 
 TEST_ADD(tst_FluentSwitch)

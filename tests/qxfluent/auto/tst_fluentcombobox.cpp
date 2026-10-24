@@ -8,6 +8,7 @@
 
 #include <QSignalSpy>
 #include <QtGui/QGuiApplication>
+#include <QtGui/QImage>
 #include <QtGui/QScreen>
 #include <QtWidgets/QApplication>
 #include <QtTest/QTest>
@@ -42,6 +43,7 @@ private slots:
     void aClickBesideTheRowsIsNoAnswer();
     void theRowUnderThePointerLights();
     void aClickOffTheListPutsItAway();
+    void aFaceNobodyCanUseDoesNotOpen();
 };
 
 /*! The standing answer: the list opens under the face, one pixel of air
@@ -314,6 +316,28 @@ void tst_FluentComboBox::aClickOffTheListPutsItAway()
 
     QVERIFY(!combo->popup()->isVisible());
     QCOMPARE(combo->currentIndex(), 2);
+    window.close();
+}
+
+/*! A face nobody can use does not open: a list offered by a control that
+ *  cannot take the answer is a promise with nothing behind it. */
+void tst_FluentComboBox::aFaceNobodyCanUseDoesNotOpen()
+{
+    QWidget window;
+    window.resize(400, 300);
+    FluentComboBox *combo = comboWith(&window, 4, QStringLiteral("Item"));
+    combo->move(50, 100);
+    window.show();
+    QTest::qWait(50);
+
+    const QImage live = combo->grab().toImage();
+    combo->setEnabled(false);
+    combo->showPopup();
+
+    QVERIFY(combo->popup() == nullptr || !combo->popup()->isVisible());
+    // And the face says so before the hand finds out.
+    QVERIFY(combo->grab().toImage() != live);
+
     window.close();
 }
 

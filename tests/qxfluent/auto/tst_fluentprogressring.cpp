@@ -44,6 +44,7 @@ private slots:
     void aRingWithAnEndDrawsHowFarAlongItIs();
     void anEndlessRingTurns();
     void reduceMotionStopsTheTurning();
+    void aRingNobodyCanUseHoldsStill();
     void howFarAlongIsThereForAnAssistiveTool();
 private:
     bool m_wasReduced = false;
@@ -134,6 +135,20 @@ void tst_FluentProgressRing::howFarAlongIsThereForAnAssistiveTool()
     QCOMPARE(ring.value(), 40);
 
     QAccessible::deleteAccessibleInterface(QAccessible::uniqueId(iface));
+}
+
+/*! A ring nobody can use holds still, for the reason the flat bar does: the
+ *  turn is a claim, and a control that cannot be used makes none. */
+void tst_FluentProgressRing::aRingNobodyCanUseHoldsStill()
+{
+    FluentProgressRing ring;
+    ring.resize(32, 32);
+    ring.setIndeterminate(true);
+    ring.setEnabled(false);
+
+    const QImage before = ring.grab().toImage();
+    QTest::qWait(400);
+    QCOMPARE(ring.grab().toImage(), before);
 }
 
 TEST_ADD(tst_FluentProgressRing)

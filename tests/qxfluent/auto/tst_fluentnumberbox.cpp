@@ -68,6 +68,7 @@ private slots:
     void aTypedNumberBecomesTheValue();
     void theValueIsThereForAnAssistiveTool();
     void theFieldSaysItHasTheKeyboard();
+    void aBoxNobodyCanUseHoldsItsValue();
 private:
     bool m_wasActive = false;
 };
@@ -277,6 +278,26 @@ void tst_FluentNumberBox::theFieldSaysItHasTheKeyboard()
 
     QVERIFY(focused != resting);
     QCOMPARE(focused.blue(), kAccent.blue());
+}
+
+/*! A box nobody can use keeps what it holds: the arrows and the keys are the
+ *  question, and a control that cannot take it does not answer. */
+void tst_FluentNumberBox::aBoxNobodyCanUseHoldsItsValue()
+{
+    FluentNumberBox box;
+    box.resize(kBoxWidth, kBoxHeight);
+    box.setRange(0, 100);
+    box.setValue(50);
+    const QImage live = box.grab().toImage();
+
+    box.setEnabled(false);
+    QLineEdit *editor = editorOf(&box);
+    QVERIFY(editor);
+    QTest::keyClick(editor, Qt::Key_Up);
+    QTest::keyClick(editor, Qt::Key_PageDown);
+
+    QCOMPARE(box.value(), 50);
+    QVERIFY(box.grab().toImage() != live);
 }
 
 TEST_ADD(tst_FluentNumberBox)

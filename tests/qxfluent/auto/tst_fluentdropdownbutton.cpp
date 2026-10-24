@@ -10,6 +10,7 @@
 
 #include <QAccessible>
 #include <QApplication>
+#include <QImage>
 #include <QMenu>
 #include <QSignalSpy>
 
@@ -56,6 +57,7 @@ private slots:
     void whatItIs();
     void aChangeOfTextIsAnnounced();
     void theRingFollowsTheCorners();
+    void aButtonNobodyCanUseOffersNothing();
 private:
     bool m_wasActive = false;
 };
@@ -220,6 +222,29 @@ void tst_FluentDropDownButton::theRingFollowsTheCorners()
     QVERIFY(!isAccent(pixel(&button, 0, 0)));
 
     QxTheme::QxThemeManager::instance()->setAccentColor(QColor());
+}
+
+/*! A button nobody can use offers nothing: the face is the question the menu
+ *  answers, and a control that cannot take the answer stays shut. */
+void tst_FluentDropDownButton::aButtonNobodyCanUseOffersNothing()
+{
+    FluentDropDownButton button;
+    giveSize(&button);
+    button.setText(QStringLiteral("Sort"));
+    button.menu()->addAction(QStringLiteral("By name"));
+    const QImage live = button.grab().toImage();
+
+    QSignalSpy showing(&button, &FluentDropDownButton::aboutToShowMenu);
+    // Qt fades a disabled widget through its palette; pinned, the only thing
+    // left that can change is what the control itself paints.
+    qtcPinDisabledColours(&button);
+
+    button.setEnabled(false);
+    QTest::mouseClick(&button, Qt::LeftButton, Qt::NoModifier, QPoint(12, kHeight / 2));
+
+    QCOMPARE(showing.count(), 0);
+    QVERIFY(!button.menu()->isVisible());
+    QVERIFY(button.grab().toImage() != live);
 }
 
 TEST_ADD(tst_FluentDropDownButton)

@@ -6,6 +6,8 @@
 
 #include <QtWidgets/QApplication>
 #include <QtGui/QFontDatabase>
+#include <QtGui/QPalette>
+#include <QtWidgets/QWidget>
 #include <QObject>
 #include <QVector>
 #include <QtTest/QtTest>
@@ -40,6 +42,31 @@ inline void qtcGiveFonts()
 #define TEST_RUN(TestObject)                                                                                           \
     TestObject TestObject##_var;                                                                                       \
     QTest::qExec(&TestObject##_var, argc, argv);
+
+/*!
+ * Pins a widget's disabled colours to its active ones.
+ *
+ * Qt fades a turned-off widget through its palette before the widget draws
+ * anything, so a frame taken from a disabled control already differs from a
+ * frame taken from the same control when it was on - without the control
+ * having said a word. A case that wants to know whether the control itself
+ * says something has to take that fade out of the picture; pinning the
+ * palette to one set of colours leaves only what the control paints.
+ *
+ * It lives here rather than in the three cases that need it for a duller
+ * reason too: the matrix reads "the case set a palette" as evidence that the
+ * theme dimension was exercised, and a pinned palette is the opposite of a
+ * theme test.
+ */
+inline void qtcPinDisabledColours(QWidget *widget)
+{
+    QPalette pinned = widget->palette();
+    for (int role = 0; role < QPalette::NColorRoles; ++role) {
+        const QPalette::ColorRole colour = QPalette::ColorRole(role);
+        pinned.setColor(QPalette::Disabled, colour, pinned.color(QPalette::Active, colour));
+    }
+    widget->setPalette(pinned);
+}
 
 class TestInfo;
 
