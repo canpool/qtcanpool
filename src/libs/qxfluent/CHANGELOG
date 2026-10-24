@@ -77,6 +77,15 @@ Feature
   the face is small; one word keeps one letter, because inventing a second
   would be putting a letter in someone's mouth. A face answers no press and
   takes no wash: an icon of a person must not look like something to click.
+- `FluentCalendarView`, the whole calendar rather than the grid a date picker
+  opens: a year and a half of months one under the other, walked with the
+  wheel, with the day in force painted on the day it falls on. The name of a
+  month is a way out of the month - pressing it pulls the view back to that
+  year's twelve, pressing the year pulls it back to the ten years around it -
+  so a day two years off is three presses away rather than twenty-four. A day
+  is chosen by the pointer or walked to by the keyboard, and what counts as
+  chosen is the selection mode's to say: one day, several, or a run of them
+  between two ends, which is drawn as a run rather than as a scatter.
 
 0.1.2
 ---

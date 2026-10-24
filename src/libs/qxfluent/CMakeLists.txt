@@ -46,6 +46,7 @@ add_qtc_library(qxfluent
     fluentautosuggestbox.h fluentautosuggestbox.cpp
     fluentcalendarflyout.h fluentcalendarflyout.cpp
     fluentdatepicker.h fluentdatepicker.cpp
+    fluentcalendarview.h fluentcalendarview.cpp
     fluenttimepicker.h fluenttimepicker.cpp
     fluentlistview.h fluentlistview.cpp
     fluentgridview.h fluentgridview.cpp
