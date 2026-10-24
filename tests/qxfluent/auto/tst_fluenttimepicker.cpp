@@ -37,6 +37,7 @@ private slots:
     void theWheelTurnsAColumnWithoutSayingSo();
     void aClickTakesWhatItLandsOn();
     void enterTakesItAwayAndEscapePutsItAway();
+    void aFieldNobodyCanOpenIsDrawnFainter();
 private:
     QWidget *m_page = nullptr;
 };
@@ -177,6 +178,27 @@ void tst_FluentTimePicker::enterTakesItAwayAndEscapePutsItAway()
     QVERIFY(!picker.flyout()->isVisible());
     QCOMPARE(dismissedSpy.count(), 2);
     QCOMPARE(picker.time(), QTime(9, 5));
+}
+
+/*! A time field nobody can open is drawn a step down, for the reason the date
+ *  picker's case gives: pinned colours, one frame before and one after, and the
+ *  flyout left to the cases that own it.
+ */
+void tst_FluentTimePicker::aFieldNobodyCanOpenIsDrawnFainter()
+{
+    FluentTimePicker picker(m_page);
+    picker.setTime(QTime(9, 5));
+    picker.setGeometry(0, 0, 160, 32);
+    picker.show();
+    qtcPinDisabledColours(&picker);
+    // The typing inside is a QLineEdit of its own, and Qt greys that one through
+    // its palette: pinned too, so the only thing left to move is the face.
+    qtcPinDisabledColours(picker.lineEdit());
+
+    const QImage live = picker.grab().toImage();
+    picker.setEnabled(false);
+    const QImage faded = picker.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_FluentTimePicker)

@@ -26,6 +26,7 @@ private slots:
     void aDayTakenComesBackToTheField();
     void openingShowsTheMonthInForce();
     void nothingIsSaidForNoDay();
+    void aFieldNobodyCanOpenIsDrawnFainter();
 private:
     QWidget *m_page = nullptr;
 };
@@ -113,6 +114,30 @@ void tst_FluentDatePicker::nothingIsSaidForNoDay()
     QCOMPARE(picker.date(), QDate(2026, 3, 15));
     QCOMPARE(picker.lineEdit()->text(), QStringLiteral("2026-03-15"));
     QCOMPARE(changedSpy.count(), 0);
+}
+
+/*! A picker nobody can open is drawn a step down. Pinned to the active colours
+ *  first, so what differs between the two frames is the face's own hand.
+ *
+ *  Only the frame is asserted: the field is read-only by design, so a press on it
+ *  can only open the calendar, and that flyout has its own cases in
+ *  `tst_FluentCalendarFlyout`.
+ */
+void tst_FluentDatePicker::aFieldNobodyCanOpenIsDrawnFainter()
+{
+    FluentDatePicker picker(m_page);
+    picker.setDate(QDate(2026, 3, 15));
+    picker.setGeometry(0, 0, 160, 32);
+    picker.show();
+    qtcPinDisabledColours(&picker);
+    // The typing inside is a QLineEdit of its own, and Qt greys that one through
+    // its palette: pinned too, so the only thing left to move is the face.
+    qtcPinDisabledColours(picker.lineEdit());
+
+    const QImage live = picker.grab().toImage();
+    picker.setEnabled(false);
+    const QImage faded = picker.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_FluentDatePicker)

@@ -33,6 +33,7 @@ private slots:
     void aClickTakesWhatWasClicked();
     void escapePutsTheListAwayWithoutTouchingTheWriting();
     void aListWithNothingToOfferDoesNotOpen();
+    void aBoxNobodyCanTypeInIsDrawnFainter();
 };
 
 void tst_FluentAutoSuggestBox::init()
@@ -138,6 +139,29 @@ void tst_FluentAutoSuggestBox::aListWithNothingToOfferDoesNotOpen()
     QVERIFY(box.flyout()->isVisible());
     box.lineEdit()->setText(QStringLiteral("zz"));
     QVERIFY(!box.flyout()->isVisible());
+}
+
+/*! A suggest box nobody can type in is drawn a step down: the box, the prompt
+ *  and the icon together. The palette's disabled group is pinned first - Qt fades
+ *  a turned-off widget by itself - so the difference that is measured is the
+ *  face's own.
+ *
+ *  The interaction half is not asserted here: the list opens on the writing,
+ *  and the writing is driven by the inner line edit, so a case would be reading
+ *  QLineEdit's answer rather than this face's.
+ */
+void tst_FluentAutoSuggestBox::aBoxNobodyCanTypeInIsDrawnFainter()
+{
+    FluentAutoSuggestBox box;
+    giveSuggestions(&box);
+    box.resize(160, 32);
+    box.show();
+    qtcPinDisabledColours(&box);
+
+    const QImage live = box.grab().toImage();
+    box.setEnabled(false);
+    const QImage faded = box.grab().toImage();
+    QVERIFY(faded != live);
 }
 
 TEST_ADD(tst_FluentAutoSuggestBox)
