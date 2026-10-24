@@ -37,6 +37,10 @@ Feature
 - `FluentPasswordBox`, the text box keeping a secret: the characters it
   holds are drawn as the echo until the eye at the trailing edge is held
   down - and they are the echo again the moment it is let go.
+- `FluentAutoSuggestBox`, the text box that answers while it is being written
+  into: the writing drives the flyout's list - what still matches is in it -
+  and Enter, or a click, takes what is in hand into the box, while Escape
+  puts the list away without touching what was written.
 
 0.1.2
 ---
