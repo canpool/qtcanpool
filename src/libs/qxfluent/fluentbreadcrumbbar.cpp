@@ -6,10 +6,11 @@
 
 #include "fluenttokens.h"
 
-#include <QtGui/QFontMetrics>
+#include <QtGui/QFontMetricsF>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
+#include <QtMath>
 
 QX_FLUENT_BEGIN_NAMESPACE
 
@@ -44,8 +45,14 @@ public:
         if (index < 0 || index >= items.count()) {
             return 0;
         }
-        const QFontMetrics metrics(FluentType::font(FluentType::Ramp::Body));
-        return int(metrics.horizontalAdvance(items.at(index)) + 2 * kStepPadding);
+        // A step is as wide as the word it holds, measured in the ramp that
+        // word is drawn in - and the last step is drawn strong while the ones
+        // before it are not. Measured in one ramp and drawn in the other, the
+        // room is short by the weight, and the last letter goes over the edge:
+        // that is how "Controls" came out as "Control".
+        const bool strong = index == items.count() - 1;
+        const QFontMetricsF metrics(FluentType::font(FluentType::Ramp::Body, strong));
+        return int(qCeil(metrics.horizontalAdvance(items.at(index)) + 2 * kStepPadding));
     }
 
     int stepLeft(int index) const
@@ -110,11 +117,12 @@ void FluentBreadcrumbBar::setItems(const QStringList &items)
 QSize FluentBreadcrumbBar::sizeHint() const
 {
     if (d_ptr->items.isEmpty()) {
-        return QSize(0, QFontMetrics(FluentType::font(FluentType::Ramp::Body)).height() + int(2 * kStepPadding));
+        const QFontMetricsF metrics(FluentType::font(FluentType::Ramp::Body));
+        return QSize(0, int(qCeil(metrics.height() + 2 * kStepPadding)));
     }
     const int width = d_ptr->stepLeft(d_ptr->items.count() - 1) + d_ptr->stepWidth(d_ptr->items.count() - 1);
-    const QFontMetrics metrics(FluentType::font(FluentType::Ramp::Body));
-    return QSize(width, metrics.height() + int(2 * kStepPadding));
+    const QFontMetricsF metrics(FluentType::font(FluentType::Ramp::Body));
+    return QSize(width, int(qCeil(metrics.height() + 2 * kStepPadding)));
 }
 
 QSize FluentBreadcrumbBar::minimumSizeHint() const

@@ -8,7 +8,7 @@
 #include "qxfluent/fluenttokens.h"
 
 #include <QApplication>
-#include <QFontMetrics>
+#include <QFontMetricsF>
 #include <QMouseEvent>
 #include <QSignalSpy>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -68,6 +68,7 @@ private slots:
     void theHoverMarksTheStepUnderThePointer();
     void theKeyboardWalksThePath();
     void anEmptyPathIsNothing();
+    void theStepInForceHasRoomForItsWord();
 };
 
 /*! What an assistive tool reads is the path in one sentence, not a row of
@@ -163,6 +164,51 @@ void tst_FluentBreadcrumbBar::theKeyboardWalksThePath()
 
 /*! With nothing to show the bar is nothing: no path to read, and nothing that
  *  could answer a click. */
+/*! The last step is the one in force and is drawn strong, so its cell is
+ *  measured in the strong ramp as well.
+ *
+ *  Measured in the body ramp and drawn in the strong one, the cell is short by
+ *  the weight and the last letter goes over its edge. The breadcrumb in the
+ *  demo said "Library > Fluent > Control" for as long as that held, and nobody
+ *  read it as a defect: a word missing its last letter still reads as a word.
+ *
+ *  Read from the size hint rather than from a picture, because what is wrong is
+ *  arithmetic - the cell is asked for in the wrong ramp - and where a picture of
+ *  it would be red or green depends on how wide this machine's bold happens to
+ *  be. */
+void tst_FluentBreadcrumbBar::theStepInForceHasRoomForItsWord()
+{
+    FluentBreadcrumbBar bar;
+    const QStringList path{QStringLiteral("Library"), QStringLiteral("Fluent"), QStringLiteral("Controls")};
+    bar.setItems(path);
+
+    // Where the cell of the last step begins: every step before it is drawn in
+    // the body ramp, and the separator between two steps is a gap.
+    const QFontMetricsF body(FluentType::font(FluentType::Ramp::Body));
+    qreal left = 0.0;
+    for (int i = 0; i < path.count() - 1; ++i) {
+        left += body.horizontalAdvance(path.at(i)) + 2 * kStepPadding + kSeparatorWidth;
+    }
+    // What the last step takes in the ramp it is drawn in.
+    const QFontMetricsF strong(FluentType::font(FluentType::Ramp::Body, true));
+    const qreal needed = strong.horizontalAdvance(path.last()) + 2 * kStepPadding;
+
+    // A platform whose bold is no wider than its regular would pass this
+    // whatever the bar did, so it says so rather than claiming a green that was
+    // never in question - the offscreen plugin of this machine loads no font
+    // database at all and draws every glyph the same box.
+    if (qAbs(strong.horizontalAdvance(path.last()) - body.horizontalAdvance(path.last())) < 0.5) {
+        QSKIP("this platform draws the strong ramp as wide as the body ramp");
+    }
+
+    QVERIFY2(bar.sizeHint().width() >= int(qCeil(left + needed)),
+             qPrintable(QStringLiteral("\"%1\" needs %2 pixels and the bar gives it %3 - the last letter is "
+                                       "drawn cut")
+                            .arg(path.last())
+                            .arg(needed)
+                            .arg(bar.sizeHint().width() - int(qCeil(left)))));
+}
+
 void tst_FluentBreadcrumbBar::anEmptyPathIsNothing()
 {
     FluentBreadcrumbBar bar;

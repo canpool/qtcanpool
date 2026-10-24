@@ -106,6 +106,12 @@ Bugfix
   so the room the panel left unpainted was the window's own, filled in by the
   system. The panel is a frameless window now, and the page shows through the
   corners it does not cover.
+- The last step of a `FluentBreadcrumbBar` was measured in the body ramp and
+  drawn in the strong one, so its cell came up short by the weight of the
+  letters: the demo's path read "Library > Fluent > Control", and a word with
+  its last letter missing still reads as a word. A step is measured in the
+  ramp it is drawn in now, and in fractional pixels, so a cell is never
+  narrower than its word at any weight.
 
 0.1.2
 ---
