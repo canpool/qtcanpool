@@ -16,6 +16,7 @@
 #include "titlebar.h"
 
 #include "qxapp/qxthemebundle.h"
+#include "qxmaterial/materialdrawer.h"
 #include "qxmaterial/materialfab.h"
 #include "qxmaterial/materialnavigationrail.h"
 #include "qxmaterial/materialsnackbar.h"
@@ -29,6 +30,7 @@
 #include <QtCore/QTextStream>
 #include <QAction>
 #include <QEvent>
+#include <QResizeEvent>
 #include <QScrollArea>
 #include <QStackedWidget>
 #include <QStatusBar>
@@ -80,6 +82,29 @@ QWidget *scrollable(DemoPage *page)
     area->setFrameShape(QFrame::NoFrame);
     return area;
 }
+
+/*! The two widths at which this window changes shape.
+ *
+ *  They are not round numbers picked for looks: a rail and a page worth reading
+ *  need a thousand between them, and under six hundred and forty a column takes
+ *  too much of the window to still be a column - which is where Material stops
+ *  putting the destinations at the side and brings them over the page instead.
+ *  The three answers are Material's own: a rail, a rail folded to its icons, and
+ *  a drawer.
+ */
+constexpr int kWideWindow = 1000;
+constexpr int kNarrowWindow = 640;
+
+/*! Which of the three shapes a window \a across pixels wide is in: 0 a rail
+ *  beside the page, 1 the rail folded to its icons, 2 the destinations in a
+ *  drawer over the page. */
+int shapeOf(int across)
+{
+    if (across >= kWideWindow) {
+        return 0;
+    }
+    return across >= kNarrowWindow ? 1 : 2;
+}
 }   // namespace
 
 MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &themeId)
@@ -104,6 +129,10 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     createConnections();
 
     resize(1100, 760);
+    // The shape is worked out here as well as on every resize, because the
+    // window the user sees first is already a size and the shell was built
+    // before there was one to ask about.
+    applyWidth(width());
     statusBar()->showMessage(tr("Ready"));
 }
 
@@ -133,6 +162,12 @@ void MainWindow::changeEvent(QEvent *event)
         m_titleBar->maximizeButton()->setChecked(isMaximized());
     }
     QMainWindow::changeEvent(event);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    applyWidth(event->size().width());
 }
 
 void MainWindow::createTheme(const QString &themeId)
@@ -175,6 +210,77 @@ void MainWindow::createShell()
     m_snackbar = new MaterialSnackbar(body);
     m_snackbar->setObjectName(QStringLiteral("snackbar"));
     m_snackbar->hide();
+
+    // The drawer stands over the same room the page does, which is why it is
+    // built here and not beside the rail: it is what the window does instead of
+    // the rail when the window is too narrow for one.
+    createDrawer();
+}
+
+void MainWindow::createDrawer()
+{
+    m_drawer = new MaterialDrawer(centralWidget());
+    m_drawer->setObjectName(QStringLiteral("drawer"));
+    m_drawer->setVariant(MaterialDrawer::Variant::Temporary);
+
+    // The destinations are the rail's, in the rail's order and with the names
+    // the rail took from the pages: two lists would be two places a screen has
+    // a name, and one of them would be wrong the day a page is renamed.
+    const QList<QAction *> places = m_rail->destinations();
+    for (QAction *place : places) {
+        m_drawer->addDestination(place->text(), place->icon());
+    }
+    m_drawer->setCurrentIndex(m_rail->currentIndex());
+}
+
+void MainWindow::applyWidth(int across)
+{
+    const int shape = shapeOf(across);
+    if (shape == m_shape) {
+        // The window has not crossed a width, so nothing about the destinations
+        // has changed - and a window that undid the user's own fold on every
+        // resize would be working against them.
+        return;
+    }
+    m_shape = shape;
+
+    // Down to the icons at the middle width and gone at the narrow one: what a
+    // rail costs the page is a column's worth of it, and a page with less than
+    // that to spare is a page the destinations come over instead. The floating
+    // action button goes with the rail, since the rail's head is where it
+    // stands; a window this narrow would put it over the page, which is the
+    // page's own arrangement and not this window's.
+    m_rail->setVisible(shape != 2);
+    m_rail->setFolded(shape == 1);
+    if (shape == 2) {
+        giveMenuButton();
+    } else {
+        takeMenuButton();
+        m_drawer->close();
+    }
+}
+
+void MainWindow::giveMenuButton()
+{
+    if (m_menu) {
+        return;
+    }
+    // The way into the drawer stands where the bar's leading icon stands. The
+    // bar owns the action and destroys it when the place is cleared, which is
+    // why the pointer is dropped with it rather than kept.
+    m_menu = m_bar->setLeadingAction(tr("Destinations"), style()->standardIcon(QStyle::SP_TitleBarMenuButton));
+    connect(m_menu, &QAction::triggered, this, [this]() {
+        m_drawer->toggle();
+    });
+}
+
+void MainWindow::takeMenuButton()
+{
+    if (!m_menu) {
+        return;
+    }
+    m_bar->clearLeadingAction();
+    m_menu = Q_NULLPTR;
 }
 
 void MainWindow::buildTitleBar()
@@ -337,5 +443,18 @@ void MainWindow::createConnections()
     });
     connect(m_settings, &SettingsPage::scrolledChanged, this, [this](bool scrolled) {
         m_bar->setScrolled(scrolled);
+    });
+
+    // The drawer is the rail for a window too narrow to hold one, so the two
+    // are one answer in two shapes: each is told where the other is, and
+    // choosing a destination in the drawer is choosing that destination - after
+    // which the panel goes away, because the question it was asked has been
+    // answered.
+    connect(m_drawer, &MaterialDrawer::currentIndexChanged, m_rail, &MaterialNavigationRail::setCurrentIndex);
+    connect(m_rail, &MaterialNavigationRail::currentIndexChanged, m_drawer, &MaterialDrawer::setCurrentIndex);
+    connect(m_drawer, &MaterialDrawer::currentDestinationChanged, this, [this](QAction *destination) {
+        if (destination) {
+            m_drawer->close();
+        }
     });
 }

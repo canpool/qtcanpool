@@ -27,6 +27,7 @@
 #include <QtCore/QTimer>
 #include <QAction>
 #include <QEvent>
+#include <QResizeEvent>
 #include <QActionGroup>
 #include <QLineEdit>
 #include <QMenu>
@@ -84,6 +85,28 @@ QWidget *scrollable(DemoPage *page)
  *  system menu, so that the second click of a double click can cancel it. Short
  *  enough that the menu still feels like it opened on the click. */
 constexpr int kSystemMenuDelay = 75;
+
+/*! The two widths at which this window changes shape.
+ *
+ *  A pane with its words is a third of the window, so it is only worth its room
+ *  beside a page that still reads as a page: a thousand across is where that
+ *  stops being true. Six hundred and forty is the narrow one - the width at
+ *  which a Material window gives the destinations up to a drawer, and where
+ *  this one keeps them folded, because a Fluent pane has two widths and the
+ *  narrower of them is still a column rather than a panel over the page.
+ */
+constexpr int kWideWindow = 1000;
+constexpr int kNarrowWindow = 640;
+
+/*! Which of the three widths a window \a across pixels wide is in: 0 wide, 1
+ *  the middle one, 2 narrow. */
+int shapeOf(int across)
+{
+    if (across >= kWideWindow) {
+        return 0;
+    }
+    return across >= kNarrowWindow ? 1 : 2;
+}
 }   // namespace
 
 MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &themeId)
@@ -120,6 +143,10 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     resize(1100, 760);
 
     createConnections();
+    // The shape is worked out here as well as on every resize, because the
+    // window the user sees first is already a size and the shell was built
+    // before there was one to ask about.
+    applyWidth(width());
     statusBar()->showMessage(tr("Ready"));
 }
 
@@ -164,6 +191,30 @@ void MainWindow::changeEvent(QEvent *event)
         m_titleBar->maximizeButton()->setChecked(isMaximized());
     }
     QMainWindow::changeEvent(event);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    applyWidth(event->size().width());
+}
+
+void MainWindow::applyWidth(int across)
+{
+    const int shape = shapeOf(across);
+    if (shape == m_shape) {
+        // The window has not crossed a width, so nothing about the pane has
+        // changed - and a window that undid the user's own fold on every resize
+        // would be working against them.
+        return;
+    }
+    m_shape = shape;
+
+    // The words are the first thing a narrow window has no room for, and the
+    // pane is the one that knows how to give them up: it is asked, and it says
+    // so when it changed, which is how the caption's command and the switch on
+    // Settings keep up without this window telling them.
+    m_nav->setPaneOpen(shape == 0);
 }
 
 void MainWindow::createTheme(const QString &themeId)

@@ -96,6 +96,10 @@ int main(int argc, char *argv[])
                                      QStringLiteral("Print every widget with its rectangle and exit."));
     QCommandLineOption foldOption(QStringLiteral("fold"),
                                   QStringLiteral("Fold the pane to its icons, as the caption's command does."));
+    QCommandLineOption widthOption(QStringLiteral("width"),
+                                   QStringLiteral("Make the window <pixels> wide and show it, which is what the "
+                                                  "responsive checks ask for."),
+                                   QStringLiteral("pixels"));
     parser.addOption(screenshotOption);
     parser.addOption(delayOption);
     parser.addOption(pageOption);
@@ -104,6 +108,7 @@ int main(int argc, char *argv[])
     parser.addOption(langOption);
     parser.addOption(inspectOption);
     parser.addOption(foldOption);
+    parser.addOption(widthOption);
 
     // parse(), not process(): the demo is routinely started with Qt's own
     // switches (-platform, -style, ...), which the parser would reject as
@@ -144,7 +149,17 @@ int main(int argc, char *argv[])
 
     MainWindow w(nullptr, !screenshotFile.isEmpty());
 
-    if (screenshotFile.isEmpty()) {
+    bool widthGiven = false;
+    const int across = parser.value(widthOption).toInt(&widthGiven);
+    widthGiven = widthGiven && across > 0;
+
+    if (widthGiven) {
+        // A window told how wide to be is not maximized: the question is what
+        // the window does at that width, and a window manager that maximized it
+        // would be answering a different one.
+        w.resize(across, 800);
+        w.show();
+    } else if (screenshotFile.isEmpty()) {
         w.showMaximized();
     } else {
         // A fixed size keeps the capture comparable between runs: there is no

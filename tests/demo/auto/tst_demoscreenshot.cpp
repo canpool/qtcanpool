@@ -434,11 +434,13 @@ private slots:
     void fluentDemoRenders();
     void fluentDemoMatchesGolden();
     void fluentThemeSwitchMatchesAFreshStart();
+    void fluentDemoAnswersItsWidth();
 #endif
 #ifdef DEMO_MATERIAL_EXECUTABLE
     void materialDemoRenders();
     void materialDemoMatchesGolden();
     void materialThemeSwitchMatchesAFreshStart();
+    void materialDemoAnswersItsWidth();
 #endif
 private:
     QImage m_ribbonScreenshot;
@@ -702,6 +704,152 @@ int heightIn(const QString &tree, const QString &pattern)
 {
     const QRegularExpressionMatch match = QRegularExpression(pattern).match(tree);
     return match.hasMatch() ? match.captured(2).toInt() : -1;
+}
+
+/*! One line of an --inspect tree: what a widget is, what it is called, and where
+ *  it stands in the window. */
+struct WidgetLine {
+    QString className;
+    QString objectName;
+    QRect rect;
+    bool hidden = false;
+};
+
+/*! Every widget line of an --inspect tree, in the order the tree prints them -
+ *  which is the order the widgets stand in their parents, so the first visible
+ *  one of a kind is the one that matters. */
+QList<WidgetLine> widgetsIn(const QString &tree)
+{
+    static const QRegularExpression shape(
+        QStringLiteral("^(\\s*)(\\S+) \"([^\"]*)\" \\((-?\\d+),(-?\\d+) (\\d+)x(\\d+)\\)( hidden)?$"));
+    QList<WidgetLine> widgets;
+    const QStringList lines = tree.split(QLatin1Char('\n'));
+    for (QString line : lines) {
+        // The demos write their trees to stdout, and on Windows that is a text
+        // stream: every line arrives with the carriage return still on it.
+        line.remove(QLatin1Char('\r'));
+        const QRegularExpressionMatch match = shape.match(line);
+        if (!match.hasMatch()) {
+            continue;
+        }
+        WidgetLine widget;
+        widget.className = match.captured(2);
+        widget.objectName = match.captured(3);
+        widget.rect = QRect(match.captured(4).toInt(), match.captured(5).toInt(), match.captured(6).toInt(),
+                            match.captured(7).toInt());
+        widget.hidden = !match.captured(8).isEmpty();
+        widgets.append(widget);
+    }
+    return widgets;
+}
+
+/*! The first widget in @p widgets that @p wanted accepts, or null when there is
+ *  none. A pointer into the list, which the caller keeps alive. */
+template <typename Predicate> const WidgetLine *firstWidget(const QList<WidgetLine> &widgets, Predicate wanted)
+{
+    for (const WidgetLine &widget : widgets) {
+        if (wanted(widget)) {
+            return &widget;
+        }
+    }
+    return nullptr;
+}
+
+/*!
+ * One width a demo window is asked about, and what its destinations are supposed
+ * to take at that width: eighty for a rail beside the page, seventy-two for the
+ * same rail folded to its icons, three hundred and twenty for a Fluent pane with
+ * its words, forty-eight for that pane folded - and none at all once a Material
+ * window has given the rail up for a drawer that comes over the page.
+ */
+struct WidthCase {
+    int across;
+    int destinations;
+};
+
+/*!
+ * The responsive check: the same window at several widths, told apart by the one
+ * thing a capture cannot say - the shape it came out in.
+ *
+ * A picture of a five-hundred-wide window is plausible whichever shape the window
+ * thought it was, so this reads the widget tree the demos print under --inspect.
+ * Three questions, and they are the three the plan asks: nothing scrolls sideways
+ * (a window that has to be pushed about to see its own page did not fit), the bar
+ * that names the page still has the whole width (whatever a narrow window gives
+ * up, the name of the screen is not one of them), and the destinations take the
+ * room the width says they take, with the page having the rest right up to the
+ * window's edge.
+ *
+ * The widths sit either side of both breakpoints as well as on the three tiers,
+ * because a boundary is where an off-by-one lives.
+ */
+void checkWidthsRespond(const QString &executable, const QString &name, const QList<WidthCase> &cases)
+{
+    for (const WidthCase &expected : cases) {
+        QString error;
+        // One theme for every width: what is being read is geometry, and a window
+        // that changed theme between two runs would be a second difference.
+        const QString tree = runInspectWith(executable,
+                                            QStringList{QStringLiteral("--width"), QString::number(expected.across),
+                                                        QStringLiteral("--theme"), QStringLiteral("soft-light")},
+                                            QStringLiteral("%1-%2.log").arg(name).arg(expected.across), error);
+        QVERIFY2(!tree.isEmpty(), qPrintable(error));
+
+        const QList<WidgetLine> widgets = widgetsIn(tree);
+        QVERIFY2(!widgets.isEmpty(),
+                 qPrintable(QStringLiteral("%1 at %2: the tree holds no widgets").arg(name).arg(expected.across)));
+        const QString at = QStringLiteral("%1 at %2 across").arg(name).arg(expected.across);
+
+        // The window is the width that was asked for. If it is not, the rest of
+        // this is measuring something else.
+        QVERIFY2(widgets.first().rect.width() == expected.across,
+                 qPrintable(QStringLiteral("%1: the window is %2 wide").arg(at).arg(widgets.first().rect.width())));
+
+        // Nothing lies across the window: a scrollbar wider than it is tall is a
+        // page that has to be pushed about to be read.
+        for (const WidgetLine &widget : widgets) {
+            if (widget.hidden || !widget.className.endsWith(QStringLiteral("QScrollBar"))) {
+                continue;
+            }
+            QVERIFY2(widget.rect.width() <= widget.rect.height(),
+                     qPrintable(QStringLiteral("%1: a scrollbar lies across the window").arg(at)));
+        }
+
+        // The bar that names the page spans the window.
+        const WidgetLine *titleBar = firstWidget(widgets, [](const WidgetLine &widget) {
+            return !widget.hidden && widget.className == QStringLiteral("TitleBar");
+        });
+        QVERIFY2(titleBar, qPrintable(QStringLiteral("%1: the window names nothing").arg(at)));
+        QVERIFY2(titleBar->rect.width() == expected.across,
+                 qPrintable(QStringLiteral("%1: the title bar is %2 wide").arg(at).arg(titleBar->rect.width())));
+
+        // The page the window opens on takes everything the destinations left,
+        // and reaches the window's edge.
+        const WidgetLine *page = firstWidget(widgets, [](const WidgetLine &widget) {
+            return !widget.hidden && widget.className == QStringLiteral("QScrollArea");
+        });
+        QVERIFY2(page, qPrintable(QStringLiteral("%1: no page is showing").arg(at)));
+        QVERIFY2(page->rect.x() == expected.destinations, qPrintable(QStringLiteral("%1: the page starts at %2, not %3")
+                                                                         .arg(at)
+                                                                         .arg(page->rect.x())
+                                                                         .arg(expected.destinations)));
+        QVERIFY2(
+            page->rect.x() + page->rect.width() == expected.across,
+            qPrintable(QStringLiteral("%1: the page ends at %2").arg(at).arg(page->rect.x() + page->rect.width())));
+
+        // A rail that is on screen is a rail in the layout: it takes the room the
+        // page does not have rather than lying over it - and there is none of it
+        // where the width says there should be none.
+        for (const WidgetLine &widget : widgets) {
+            if (widget.hidden || !widget.className.endsWith(QStringLiteral("MaterialNavigationRail"))) {
+                continue;
+            }
+            QVERIFY2(expected.destinations > 0,
+                     qPrintable(QStringLiteral("%1: a rail stands where there should be none").arg(at)));
+            QVERIFY2(widget.rect.width() == expected.destinations,
+                     qPrintable(QStringLiteral("%1: the rail is %2 wide").arg(at).arg(widget.rect.width())));
+        }
+    }
 }
 
 /*!
@@ -1191,6 +1339,17 @@ void tst_DemoScreenshot::fluentThemeSwitchMatchesAFreshStart()
     checkThemeSwitches(QStringLiteral(DEMO_FLUENT_EXECUTABLE), QStringLiteral("fluentdemo"), m_themeScreenshots,
                        applicationDemoSwitches());
 }
+
+void tst_DemoScreenshot::fluentDemoAnswersItsWidth()
+{
+    // A Fluent pane has two widths and this window picks between them: the pane
+    // with its words while a page still reads as a page beside it, and the same
+    // pane folded to its icons when it does not. There is no third width - a
+    // pane that came over the page would be a pane widget this view does not
+    // have - so the narrow width keeps the fold rather than inventing a shape.
+    checkWidthsRespond(QStringLiteral(DEMO_FLUENT_EXECUTABLE), QStringLiteral("fluentdemo"),
+                       {{1280, 320}, {1000, 320}, {999, 48}, {641, 48}, {639, 48}, {500, 48}});
+}
 #endif
 
 #ifdef DEMO_MATERIAL_EXECUTABLE
@@ -1210,6 +1369,19 @@ void tst_DemoScreenshot::materialThemeSwitchMatchesAFreshStart()
 {
     checkThemeSwitches(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), QStringLiteral("materialdemo"), m_themeScreenshots,
                        applicationDemoSwitches());
+}
+
+void tst_DemoScreenshot::materialDemoAnswersItsWidth()
+{
+    // Material has three answers here and the window takes one per width: a rail
+    // beside the page, the same rail folded to its icons, and - once a column
+    // would be too much of the window to still be a column - no rail at all,
+    // with the destinations in a drawer the app bar's leading button brings out.
+    // The drawer itself is asked about where it belongs (tst_materialdrawer);
+    // what is checked here is that the column gives up its room at the width
+    // that says so.
+    checkWidthsRespond(QStringLiteral(DEMO_MATERIAL_EXECUTABLE), QStringLiteral("materialdemo"),
+                       {{1280, 80}, {1000, 80}, {999, 72}, {641, 72}, {639, 0}, {500, 0}});
 }
 #endif
 

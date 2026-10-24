@@ -83,6 +83,10 @@ protected:
      *  the system menu maximizes it, a double click on the frame does - and a
      *  glyph that only follows its own clicks would be guessing. */
     void changeEvent(QEvent *event) override;
+    /*! Tells the pane how much room it has: the pane with its words while the
+     *  window can hold a column beside a page, and folded to its icons when it
+     *  cannot. */
+    void resizeEvent(QResizeEvent *event) override;
 private:
     /*! A place the pane can go to: what it is called, what it looks like in the
      *  pane, and the screen it opens. */
@@ -117,6 +121,11 @@ private:
     void installWindowAgent();
     void createConnections();
 
+    /*! Puts the pane into the shape a window \a across pixels wide has, and
+     *  does nothing when it is already in that shape - a window that reset the
+     *  pane on every resize would undo the fold the user had just asked for. */
+    void applyWidth(int across);
+
     /*! Rebuilds the pane from the destinations whose names contain \a needle,
      *  keeping the screen in front if it is still one of them. */
     void filterDestinations(const QString &needle);
@@ -128,6 +137,9 @@ private:
 
     TitleBar *m_titleBar = Q_NULLPTR;
     QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
+    /*! The shape the window is in, as one of the three widths. -1 is "not yet
+     *  worked out", which is what the first resize answers. */
+    int m_shape = -1;
     /*! The caption's fold: one of two ways to ask the pane the same thing, and
      *  the one that has to be told when the other was used. */
     QAction *m_fold = Q_NULLPTR;
