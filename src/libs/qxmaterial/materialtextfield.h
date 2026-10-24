@@ -9,6 +9,8 @@
 
 #include "qxcontrols/qxcontrol.h"
 
+class QLineEdit;
+
 QX_MATERIAL_BEGIN_NAMESPACE
 
 class MaterialTextFieldPrivate;
@@ -53,6 +55,13 @@ public:
     Variant variant() const;
     QString label() const;
     QString text() const;
+
+    /*! The line editor the field writes through. It is the field's own child
+     *  and the field is what the label and the stroke answer to, so this is
+     *  handed out for the one thing the field cannot do for a subclass: a
+     *  field whose writing is not the point - a picker, which says a day the
+     *  calendar chose - has to put the editor out of the writing's way. */
+    QLineEdit *lineEdit() const;
 
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;

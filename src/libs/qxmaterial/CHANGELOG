@@ -67,6 +67,22 @@ Feature
   chevron turns over as it comes. One header at a time by default - opening one
   closes the one before - or every header for itself, when the application says
   so. Asked for less motion, a header is simply open.
+- `MaterialDatePicker`, the field that says which day is in force, and the
+  month it opens to change that day in: a text field held read-only, because
+  the writing is not the point - the day is chosen in the calendar and comes
+  back to the field already written, and a day that is not a day leaves the
+  field saying what it said. The calendar is the shared flyout, written in
+  this family's type and turned by this family's corner for a surface that
+  sits on the page.
+- `MaterialTimePicker`, the field that says which time is in force, and the
+  two columns it opens: the day's hours beside the hour's minutes, a value
+  taken in either of them finishing a time that comes back written. The
+  columns stay up after a take - a time has two halves, and the other half
+  may be next - until the keyboard or a click outside puts them away.
+- `MaterialTextField` hands out its `lineEdit()`. The editor is the field's
+  own child and stays the field's business, but a field whose writing is not
+  the point - the two pickers - has to put the editor out of the writing's
+  way, and nothing else in the field can do that for a subclass.
 
 Bugfix
 - The rail's state washes did not follow the pill: a wash is a flat fill and

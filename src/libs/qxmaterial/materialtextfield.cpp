@@ -120,6 +120,11 @@ QString MaterialTextField::text() const
     return d_ptr->edit ? d_ptr->edit->text() : QString();
 }
 
+QLineEdit *MaterialTextField::lineEdit() const
+{
+    return d_ptr->edit;
+}
+
 void MaterialTextField::setVariant(Variant variant)
 {
     if (d_ptr->variant == variant) {
