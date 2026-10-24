@@ -7,6 +7,7 @@
 #include "albumpage.h"
 #include "blogpage.h"
 #include "catalogpage.h"
+#include "icons.h"
 #include "orderpage.h"
 #include "homepage.h"
 #include "demopage.h"
@@ -23,6 +24,7 @@
 #include "qxmaterial/materialtokens.h"
 #include "qxmaterial/materialtopappbar.h"
 #include "qxtheme/qxtheme.h"
+#include "qxtheme/qxthemeicon.h"
 #include "qxtheme/qxthememanager.h"
 #include "qxtheme/qxthememotion.h"
 #include "qxwindow/windowagentwidget.h"
@@ -125,6 +127,11 @@ MainWindow::MainWindow(QWidget *parent, bool screenshotMode, const QString &them
     if (screenshotMode) {
         QxTheme::setMotionReduced(true);
     }
+
+    // Made after the first theme and before any screen, so every glyph the
+    // shell asks for is asked for in the palette of the theme the window opens
+    // in - and repainted from the new one when the settings screen switches.
+    m_icons = new QxThemeIcons(this);
 
     createShell();
     createConnections();
@@ -289,8 +296,12 @@ void MainWindow::giveMenuButton()
     }
     // The way into the drawer stands where the bar's leading icon stands. The
     // bar owns the action and destroys it when the place is cleared, which is
-    // why the pointer is dropped with it rather than kept.
-    m_menu = m_bar->setLeadingAction(tr("Destinations"), style()->standardIcon(QStyle::SP_TitleBarMenuButton));
+    // why the pointer is dropped with it rather than kept. The glyph is handed
+    // over rather than painted here: a stroke glyph written in one colour has
+    // to be painted again when the theme moves, and the set that does that is
+    // the one that knows which actions it holds.
+    m_menu = m_bar->setLeadingAction(tr("Destinations"));
+    m_icons->add(m_menu, Icons::file(QStringLiteral("menu-2")), QPalette::WindowText, QSize(24, 24));
     connect(m_menu, &QAction::triggered, this, [this]() {
         m_drawer->toggle();
     });
@@ -319,18 +330,21 @@ void MainWindow::buildTitleBar()
 
     // What can be done to the screen as a whole stands at the bar's far end,
     // drawn as icons - an action without one holds a pressable place and shows
-    // nothing, so each is given a standard icon the way the rail's are. What
-    // they do is the demo's to say, and the snackbar is how it says it.
-    connect(m_bar->addTrailingAction(tr("Search"), style()->standardIcon(QStyle::SP_FileDialogContentsView)),
-            &QAction::triggered, this, [this]() {
-                m_snackbar->showMessage(tr("Nothing to search yet: the bar's actions are the application's "
-                                           "to give work to."));
-            });
-    connect(m_bar->addTrailingAction(tr("More"), style()->standardIcon(QStyle::SP_FileDialogListView)),
-            &QAction::triggered, this, [this]() {
-                m_snackbar->showMessage(tr("Nothing further up: a bar that had a menu in it would open it "
-                                           "here."));
-            });
+    // nothing, so each is given a glyph out of the set all three demos share.
+    // What they do is the demo's to say, and the snackbar is how it says it.
+    QAction *search = m_bar->addTrailingAction(tr("Search"));
+    m_icons->add(search, Icons::file(QStringLiteral("search")), QPalette::WindowText, QSize(24, 24));
+    connect(search, &QAction::triggered, this, [this]() {
+        m_snackbar->showMessage(tr("Nothing to search yet: the bar's actions are the application's "
+                                   "to give work to."));
+    });
+
+    QAction *more = m_bar->addTrailingAction(tr("More"));
+    m_icons->add(more, Icons::file(QStringLiteral("dots")), QPalette::WindowText, QSize(24, 24));
+    connect(more, &QAction::triggered, this, [this]() {
+        m_snackbar->showMessage(tr("Nothing further up: a bar that had a menu in it would open it "
+                                   "here."));
+    });
 }
 
 void MainWindow::installWindowAgent()
@@ -405,11 +419,14 @@ void MainWindow::createNavigation()
     // A destination is a screen and the icon beside its name, and the name is
     // the page's own - the rail, the caption and the page's heading all read it
     // from there, so a place has one name rather than three.
-    const auto addPage = [this](DemoPage *page, QStyle::StandardPixmap pixmap) {
+    const auto addPage = [this](DemoPage *page, const QString &glyph) {
         if (m_firstTitle.isEmpty()) {
             m_firstTitle = page->title();
         }
-        m_rail->addDestination(page->title(), style()->standardIcon(pixmap));
+        // The glyph is handed to the theme's set rather than put on the action
+        // here: what the file is drawn in is one colour, and the set is what
+        // paints it again from the palette when the theme moves.
+        m_icons->add(m_rail->addDestination(page->title()), Icons::file(glyph), QPalette::WindowText, QSize(24, 24));
         m_stack->addWidget(scrollable(page));
         // The snackbar belongs to the window, so a screen that has something to
         // say says it through the window rather than keeping one of its own.
@@ -421,18 +438,18 @@ void MainWindow::createNavigation()
     // Six templates, then the catalogue: a template is a whole screen built out
     // of this library - which is what an application would actually build - and
     // the catalogue is the library itself, one control per row.
-    addPage(new HomePage(m_stack), QStyle::SP_DirHomeIcon);
-    addPage(new AlbumPage(m_stack), QStyle::SP_DirIcon);
-    addPage(new PricingPage(m_stack), QStyle::SP_FileDialogListView);
-    addPage(new SignInPage(m_stack), QStyle::SP_ArrowForward);
-    addPage(new BlogPage(m_stack), QStyle::SP_FileIcon);
-    addPage(new OrderPage(m_stack), QStyle::SP_FileDialogDetailedView);
-    addPage(new CatalogPage(m_stack), QStyle::SP_FileDialogContentsView);
+    addPage(new HomePage(m_stack), QStringLiteral("home"));
+    addPage(new AlbumPage(m_stack), QStringLiteral("photo"));
+    addPage(new PricingPage(m_stack), QStringLiteral("diamond"));
+    addPage(new SignInPage(m_stack), QStringLiteral("login"));
+    addPage(new BlogPage(m_stack), QStringLiteral("article"));
+    addPage(new OrderPage(m_stack), QStringLiteral("receipt"));
+    addPage(new CatalogPage(m_stack), QStringLiteral("table"));
 
     // What the window is, as opposed to what it is showing, stays last: it is
     // not a place the user works in.
     m_settings = new SettingsPage(m_stack);
-    addPage(m_settings, QStyle::SP_FileDialogInfoView);
+    addPage(m_settings, QStringLiteral("settings"));
 }
 
 void MainWindow::createConnections()

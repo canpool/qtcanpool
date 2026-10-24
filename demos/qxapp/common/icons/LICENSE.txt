@@ -5,13 +5,17 @@ The icons under this directory come from Tabler Icons.
 
 Version taken: 3.49.0 (npm @tabler/icons@3.49.0)
 
-Only the icons this demo actually uses are kept here, not the whole set.
+Only the icons the demos actually use are kept here, not the whole set. One
+copy serves all three: the ribbon demo's groups, the fluent demo's pane and the
+material demo's rail and app bar draw from this directory.
+
 Each file is the upstream file with one change applied: stroke="currentColor"
-is rewritten to stroke="#000000". Both tinting mechanisms in this project work
-on concrete colour values - qxribbon repaints the rasterised alpha, qxdock
-replaces colour literals in the svg text - so an inherited currentColor would
-leave the icon untinted. The shape of every icon is untouched. See
-doc/pages/icons.md for the policy these files are checked against.
+is rewritten to stroke="#000000", and the class attribute the upstream package
+carries is dropped. Both tinting mechanisms in this project work on concrete
+colour values - qxribbon repaints the rasterised alpha, qxdock replaces colour
+literals in the svg text - so an inherited currentColor would leave the icon
+untinted. The shape of every icon is untouched. See doc/pages/icons.md for the
+policy these files are checked against.
 
 The upstream licence, verbatim:
 

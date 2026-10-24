@@ -4,6 +4,7 @@
  **/
 #include "mainwindow.h"
 
+#include "icons.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonbutton.h"
 #include "qxribbon/ribbonbuttongroup.h"
@@ -227,7 +228,7 @@ void MainWindow::createStatusBar()
     bar->addSeparator();
     QAction *position = bar->addAction(tr("Ln 1, Col 1"));
 
-    QAction *viewSwitch = createAction(tr("Toggle view"), QStringLiteral(":/icon/res/tabler/eye.svg"));
+    QAction *viewSwitch = createAction(tr("Toggle view"), Icons::file(QStringLiteral("eye")));
     viewSwitch->setCheckable(true);
     bar->addPermanentAction(viewSwitch);
 
@@ -371,28 +372,28 @@ void MainWindow::createQuickAccessBar()
     connect(quickAccessBar, &RibbonQuickAccessBar::customizeDialogRequested, this, [this]() {
         onActionCustomizeAndSaveTriggered(false);
     });
-    QAction *saveQab = createAction(tr("save"), QStringLiteral(":/icon/res/tabler/device-floppy.svg"), "save-quickbar");
+    QAction *saveQab = createAction(tr("save"), Icons::file(QStringLiteral("device-floppy")), "save-quickbar");
     saveQab->setStatusTip(tr("Save the current document to disk"));
     quickAccessBar->addAction(saveQab);
-    quickAccessBar->addAction(createAction(tr("printer"), QStringLiteral(":/icon/res/tabler/printer.svg")));
+    quickAccessBar->addAction(createAction(tr("printer"), Icons::file(QStringLiteral("printer"))));
 
-    QAction *undoQab = createAction(tr("undo"), QStringLiteral(":/icon/res/tabler/arrow-back-up.svg"));
+    QAction *undoQab = createAction(tr("undo"), Icons::file(QStringLiteral("arrow-back-up")));
     undoQab->setStatusTip(tr("Undo the last action"));
     quickAccessBar->addAction(undoQab);
-    QAction *redoQab = createAction(tr("redo"), QStringLiteral(":/icon/res/tabler/arrow-forward-up.svg"));
+    QAction *redoQab = createAction(tr("redo"), Icons::file(QStringLiteral("arrow-forward-up")));
     redoQab->setStatusTip(tr("Redo the last undone action"));
     quickAccessBar->addAction(redoQab);
 
-    QAction *menuAction = createAction(tr("file"), QStringLiteral(":/icon/res/tabler/file.svg"));
+    QAction *menuAction = createAction(tr("file"), Icons::file(QStringLiteral("file")));
     RibbonMenu *m = new RibbonMenu(tr("file"), this);
     for (int i = 0; i < 10; ++i) {
-        m->addAction(createAction(tr("file%1").arg(i + 1), QStringLiteral(":/icon/res/tabler/file.svg")));
+        m->addAction(createAction(tr("file%1").arg(i + 1), Icons::file(QStringLiteral("file"))));
     }
     menuAction->setMenu(m);
     quickAccessBar->addAction(menuAction);
 
     QAction *actionCustomizeAndSave =
-        createAction(tr("customize and save"), QStringLiteral(":/icon/res/tabler/adjustments.svg"));
+        createAction(tr("customize and save"), Icons::file(QStringLiteral("adjustments")));
     quickAccessBar->addAction(actionCustomizeAndSave);
     connect(actionCustomizeAndSave, &QAction::triggered, this, &MainWindow::onActionCustomizeAndSaveTriggered);
 
@@ -407,7 +408,7 @@ void MainWindow::createRightButtonGroup()
 {
     RibbonButtonGroup *rightBar = ribbonBar()->cornerButtonGroup(Qt::BottomRightCorner);
     m_themeGroup = new QActionGroup(this);
-    QAction *actionTheme = createAction(tr("theme"), QStringLiteral(":/icon/res/tabler/palette.svg"));
+    QAction *actionTheme = createAction(tr("theme"), Icons::file(QStringLiteral("palette")));
     RibbonMenu *menu = new RibbonMenu(tr("theme"), this);
     actionTheme->setMenu(menu);
     // One entry per theme the demo offers, in the order they are listed above.
@@ -416,7 +417,7 @@ void MainWindow::createRightButtonGroup()
     }
     rightBar->addAction(actionTheme);
 
-    QAction *actionHelp = createAction(tr("help"), QStringLiteral(":/icon/res/tabler/help-circle.svg"));
+    QAction *actionHelp = createAction(tr("help"), Icons::file(QStringLiteral("help-circle")));
     connect(actionHelp, &QAction::triggered, this, &MainWindow::onActionHelpTriggered);
     rightBar->addAction(actionHelp);
 
@@ -479,8 +480,7 @@ void MainWindow::createBackstage()
     // too, so they stay readable when the window is dark.
     auto addCommand = [this, backstage](const QString &glyph, const QString &text) {
         QAction *action = backstage->addAction(QIcon(), text);
-        m_icons->add(action, QStringLiteral(":/icon/res/tabler/%1.svg").arg(glyph), QPalette::ButtonText,
-                     QSize(24, 24));
+        m_icons->add(action, Icons::file(glyph), QPalette::ButtonText, QSize(24, 24));
         return action;
     };
 
@@ -548,7 +548,7 @@ void MainWindow::addSomeOtherAction()
     QAction *acttext4 = new QAction(tr("text action4"), bar);
     QAction *acttext5 = new QAction(tr("text action5"), bar);
 
-    QAction *actIcon1 = new QAction(QIcon(QStringLiteral(":/icon/res/tabler/file.svg")), tr("action with icon"), bar);
+    QAction *actIcon1 = new QAction(QIcon(Icons::file(QStringLiteral("file"))), tr("action with icon"), bar);
 
     m_actionTagText = RibbonActionsManager::UserDefineActionTag + 1;
     m_actionTagWithIcon = RibbonActionsManager::UserDefineActionTag + 2;

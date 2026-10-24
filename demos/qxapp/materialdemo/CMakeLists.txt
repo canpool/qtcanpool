@@ -25,9 +25,14 @@ if (TARGET Qt5::lrelease)
     "QTCANPOOL_TRANSLATIONS_DIR=\"${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations\"")
 endif()
 
+# The glyphs the bar and the rail draw: the one set the demos share, painted
+# from the palette by QxThemeIcons rather than taken from the style.
+include("${CMAKE_CURRENT_SOURCE_DIR}/../common/icons.cmake")
+
 add_qtc_executable(MaterialDemo
   DEPENDS qxmaterial qxapp qxcore qxtheme qxwindow Qt5::Core Qt5::Widgets
   DEFINES ${_materialdemo_defines}
+  INCLUDES ${QXAPP_ICON_INCLUDES}
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
@@ -43,6 +48,7 @@ add_qtc_executable(MaterialDemo
     # The library itself, one control per row, and the window's own settings.
     catalogpage.cpp catalogpage.h
     settingspage.cpp settingspage.h
+    ${QXAPP_ICON_SOURCES}
     # The style sheets the themes the settings screen offers are read from
     # (:/themes/*.css) - the same bundle the other demos offer.
     ${CMAKE_SOURCE_DIR}/res/themes.qrc

@@ -9,6 +9,7 @@
 
 #include "qxmaterial/qxmaterial_global.h"
 #include "qxwindow/qxwindow_global.h"
+#include "qxtheme/qxtheme_global.h"
 
 class QAction;
 class QStackedWidget;
@@ -20,6 +21,10 @@ class MaterialNavigationRail;
 class MaterialSnackbar;
 class MaterialTopAppBar;
 QX_MATERIAL_END_NAMESPACE
+
+QX_THEME_BEGIN_NAMESPACE
+class QxThemeIcons;
+QX_THEME_END_NAMESPACE
 
 QX_MATERIAL_USE_NAMESPACE
 QX_WINDOW_USE_NAMESPACE
@@ -106,6 +111,11 @@ private:
     int m_shape = -1;
     TitleBar *m_titleBar = Q_NULLPTR;
     QX_WINDOW_PREPEND_NAMESPACE(WindowAgentWidget) *m_agent = Q_NULLPTR;
+    /*! The glyphs the bar and the rail draw, repainted whenever the palette the
+     *  theme installed is replaced - a stroke glyph carries one colour in its
+     *  file and cannot read a palette, so a theme change is answered by making
+     *  the pictures again rather than by asking the widgets to repaint. */
+    QX_THEME_PREPEND_NAMESPACE(QxThemeIcons) *m_icons = Q_NULLPTR;
     /*! The app bar the caption holds: the screen's name and the things that can
      *  be done to it. It is the library's own control, and the caption is only
      *  where the window puts it. */

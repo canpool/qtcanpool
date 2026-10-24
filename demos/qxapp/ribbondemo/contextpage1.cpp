@@ -4,6 +4,7 @@
  **/
 #include "contextpage1.h"
 
+#include "icons.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribboncontainers.h"
 #include "qxribbon/ribbongroup.h"
@@ -15,17 +16,6 @@
 #include <QSpinBox>
 
 QX_THEME_USE_NAMESPACE
-
-namespace
-{
-
-/*! Where the demo keeps the single-colour glyphs it repaints from the palette. */
-QString glyphPath(const QString &name)
-{
-    return QStringLiteral(":/icon/res/tabler/") + name + QStringLiteral(".svg");
-}
-
-}   // namespace
 
 ContextPage1::ContextPage1(QxThemeIcons *icons, QWidget *parent)
     : RibbonPage(parent)
@@ -142,7 +132,7 @@ QAction *ContextPage1::createAction(const QString &text, const QString &glyph)
     QAction *action = new QAction(text, this);
     action->setObjectName(text);
 
-    const QString path = glyphPath(glyph);
+    const QString path = Icons::file(glyph);
     if (m_icons) {
         // Handing the action over is what keeps the glyph following the theme:
         // the icon is painted from the palette now, and painted again whenever

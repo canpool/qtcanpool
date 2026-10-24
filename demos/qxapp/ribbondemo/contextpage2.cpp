@@ -4,6 +4,7 @@
  **/
 #include "contextpage2.h"
 
+#include "icons.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbongroup.h"
 
@@ -17,12 +18,6 @@ QX_THEME_USE_NAMESPACE
 
 namespace
 {
-
-/*! Where the demo keeps the single-colour glyphs it repaints from the palette. */
-QString glyphPath(const QString &name)
-{
-    return QStringLiteral(":/icon/res/tabler/") + name + QStringLiteral(".svg");
-}
 
 /*!
  * One button of the layout group: the row proportion it takes, and whether the
@@ -103,7 +98,7 @@ QAction *ContextPage2::createAction(const QString &text, const QString &glyph, c
     // which is what the customization file addresses it by.
     action->setObjectName(objName.isEmpty() ? text : objName);
 
-    const QString path = glyphPath(glyph);
+    const QString path = Icons::file(glyph);
     if (m_icons) {
         // Handing the action over is what keeps the glyph following the theme:
         // the icon is painted from the palette now, and painted again whenever

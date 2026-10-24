@@ -4,6 +4,7 @@
  **/
 #include "homepage.h"
 
+#include "icons.h"
 #include "qxribbon/ribbonapplicationbutton.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbonbuttongroup.h"
@@ -25,17 +26,6 @@
 #include <QRadioButton>
 
 QX_THEME_USE_NAMESPACE
-
-namespace
-{
-
-/*! Where the demo keeps the single-colour glyphs it repaints from the palette. */
-QString glyphPath(const QString &name)
-{
-    return QStringLiteral(":/icon/res/tabler/") + name + QStringLiteral(".svg");
-}
-
-}   // namespace
 
 HomePage::HomePage(QxThemeIcons *icons, QWidget *parent)
     : RibbonPage(parent)
@@ -372,7 +362,7 @@ QAction *HomePage::createAction(const QString &text, const QString &glyph, const
     QAction *action = new QAction(text, this);
     action->setObjectName(objName.isEmpty() ? text : objName);
 
-    const QString path = glyphPath(glyph);
+    const QString path = Icons::file(glyph);
     if (m_icons) {
         // Handing the action over is what keeps the glyph following the theme:
         // the icon is painted from the palette now, and painted again whenever

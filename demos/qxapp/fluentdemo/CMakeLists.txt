@@ -21,9 +21,14 @@ if (TARGET Qt5::lrelease)
     "QTCANPOOL_TRANSLATIONS_DIR=\"${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations\"")
 endif()
 
+# The glyphs the pane puts beside its destinations, drawn in the pane's ink:
+# the one set the demos share, painted per theme rather than shipped per demo.
+include("${CMAKE_CURRENT_SOURCE_DIR}/../common/icons.cmake")
+
 add_qtc_executable(FluentDemo
   DEPENDS qxfluent qxapp qxcore qxtheme qxwindow Qt5::Core Qt5::Widgets
   DEFINES ${_fluentdemo_defines}
+  INCLUDES ${QXAPP_ICON_INCLUDES}
   SOURCES
     main.cpp
     mainwindow.cpp mainwindow.h
@@ -32,10 +37,8 @@ add_qtc_executable(FluentDemo
     controlpages.cpp controlpages.h
     homepage.cpp homepage.h
     settingspage.cpp settingspage.h
-    # The glyphs the pane puts beside its destinations, drawn in the pane's ink:
-    # one svg set, painted per theme (see icons.h) rather than shipped twice.
-    icons.cpp icons.h
-    fluentdemo.qrc
+    # The shared glyph set, bundled into this binary like the themes below.
+    ${QXAPP_ICON_SOURCES}
     # The style sheets the themes the command bar offers are read from
     # (:/themes/*.css) - the same bundle the other demos offer.
     ${CMAKE_SOURCE_DIR}/res/themes.qrc

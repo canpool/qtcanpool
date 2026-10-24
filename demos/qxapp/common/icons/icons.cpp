@@ -20,12 +20,12 @@ namespace
 constexpr int kPixels = 32;
 constexpr qreal kDensity = 2.0;
 
-QString pathOf(const QString &name)
-{
-    return QStringLiteral(":/icon/res/icons/%1.svg").arg(name);
-}
-
 }   // namespace
+
+QString Icons::file(const QString &name)
+{
+    return QStringLiteral(":/icons/svg/%1.svg").arg(name);
+}
 
 QIcon Icons::named(const QString &name, const QColor &ink)
 {
@@ -33,7 +33,8 @@ QIcon Icons::named(const QString &name, const QColor &ink)
     // same name on the other theme is another picture, and a cache keyed by
     // the name alone would hand a dark page the colour of the light one.
     static QHash<QString, QIcon> drawn;
-    const QString key = name + QLatin1Char('#') + ink.name(QColor::HexArgb);
+    const QString path = file(name);
+    const QString key = path + QLatin1Char('#') + ink.name(QColor::HexArgb);
     const auto found = drawn.constFind(key);
     if (found != drawn.constEnd()) {
         return found.value();
@@ -46,7 +47,7 @@ QIcon Icons::named(const QString &name, const QColor &ink)
         // The file is asked to draw itself rather than read as a picture: svg
         // has no size of its own that matters here, and what is wanted is the
         // glyph filling the square at whatever density it was asked for.
-        QIcon(pathOf(name)).paint(&painter, QRect(0, 0, kPixels, kPixels), Qt::AlignCenter);
+        QIcon(path).paint(&painter, QRect(0, 0, kPixels, kPixels), Qt::AlignCenter);
         // What the glyph was drawn in is thrown away and only its shape kept:
         // filling where it was drawn with the ink is what makes one file serve
         // both a light page and a dark one.

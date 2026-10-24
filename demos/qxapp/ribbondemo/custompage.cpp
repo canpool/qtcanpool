@@ -4,6 +4,7 @@
  **/
 #include "custompage.h"
 
+#include "icons.h"
 #include "qxribbon/ribbonbar.h"
 #include "qxribbon/ribbongroup.h"
 #include "qxribbon/ribbonquickaccessbar.h"
@@ -13,17 +14,6 @@
 #include <QAction>
 
 QX_THEME_USE_NAMESPACE
-
-namespace
-{
-
-/*! Where the demo keeps the single-colour glyphs it repaints from the palette. */
-QString glyphPath(const QString &name)
-{
-    return QStringLiteral(":/icon/res/tabler/") + name + QStringLiteral(".svg");
-}
-
-}   // namespace
 
 CustomPage::CustomPage(QxThemeIcons *icons, QWidget *parent)
     : RibbonPage(parent)
@@ -84,7 +74,7 @@ QAction *CustomPage::createAction(const QString &text, const QString &glyph)
     // which is what the customization file addresses it by.
     action->setObjectName(text);
 
-    const QString path = glyphPath(glyph);
+    const QString path = Icons::file(glyph);
     if (m_icons) {
         // Handing the action over is what keeps the glyph following the theme:
         // the icon is painted from the palette now, and painted again whenever

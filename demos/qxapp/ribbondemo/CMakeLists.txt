@@ -33,9 +33,14 @@ if (TARGET Qt5::lrelease)
     "QTCANPOOL_TRANSLATIONS_DIR=\"${CMAKE_BINARY_DIR}/${IDE_DATA_PATH}/translations\"")
 endif()
 
+# The glyphs the groups and the quick access bar draw from: the one set the
+# demos share, painted from the palette by QxThemeIcons rather than shipped here.
+include("${CMAKE_CURRENT_SOURCE_DIR}/../common/icons.cmake")
+
 add_qtc_executable(RibbonDemo
   DEPENDS ${_ribbondemo_depends}
   DEFINES ${_ribbondemo_defines}
+  INCLUDES ${QXAPP_ICON_INCLUDES}
   SOURCES
     aboutdialog.cpp aboutdialog.h
     applypage.cpp applypage.h
@@ -46,6 +51,7 @@ add_qtc_executable(RibbonDemo
     otherpage.cpp otherpage.h
     main.cpp
     mainwindow.cpp mainwindow.h
+    ${QXAPP_ICON_SOURCES}
     ribbondemo.qrc
     ribbondemo.rc
     # The style sheets the demo offers as themes (:/themes/*.css).
