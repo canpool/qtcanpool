@@ -40,6 +40,28 @@ int travelDuration()
 {
     return MaterialMotion::forDuration(MaterialMotion::Duration::Short).duration;
 }
+
+/*! The indicator once it has got there.
+ *
+ *  The travel runs on the event loop's own clock, so a fixed wait is a guess
+ *  about the machine: a runner under load delivers the last frame late, and the
+ *  row is then read one pixel short of the tab it is under - which is what a
+ *  narrow row on CI reported. Asking until the indicator stands where the tab
+ *  is costs a fast machine nothing and says what the test means.
+ */
+QRect arrivedIndicator(MaterialTabs *tabs)
+{
+    const QRect target = tabs->tabRect(tabs->currentIndex());
+    QRect room = indicatorRoom(tabs->grab().toImage());
+    for (int waited = 0; waited < travelDuration() * 4 + 400; waited += 20) {
+        if (room.left() == target.left() && room.width() == target.width()) {
+            break;
+        }
+        QTest::qWait(20);
+        room = indicatorRoom(tabs->grab().toImage());
+    }
+    return room;
+}
 }   // namespace
 
 class tst_MaterialTabs : public QObject
@@ -114,8 +136,7 @@ void tst_MaterialTabs::theIndicatorStandsUnderTheTabInForce()
     QCOMPARE(room.width(), m_tabs->tabRect(0).width());
 
     m_tabs->setCurrentIndex(1);
-    QTest::qWait(travelDuration() + 80);
-    room = indicatorRoom(m_tabs->grab().toImage());
+    room = arrivedIndicator(m_tabs);
     QCOMPARE(room.left(), m_tabs->tabRect(1).left());
     QCOMPARE(room.width(), m_tabs->tabRect(1).width());
 }
@@ -131,8 +152,7 @@ void tst_MaterialTabs::theIndicatorTravelsThere()
     const QRect starting = indicatorRoom(m_tabs->grab().toImage());
     QVERIFY(starting.left() < m_tabs->tabRect(2).left());
 
-    QTest::qWait(travelDuration() + 80);
-    const QRect arrived = indicatorRoom(m_tabs->grab().toImage());
+    const QRect arrived = arrivedIndicator(m_tabs);
     QCOMPARE(arrived.left(), m_tabs->tabRect(2).left());
     QVERIFY(from.left() < arrived.left());
 }
@@ -205,14 +225,13 @@ void tst_MaterialTabs::aNarrowRowSlidesToTheTabInForce()
 
     QVERIFY(narrow.tabRect(0).left() >= 0);
     narrow.setCurrentIndex(5);
-    QTest::qWait(travelDuration() + 80);
 
     // The last tab is pulled fully into the row.
     const QRect last = narrow.tabRect(5);
     QVERIFY(last.left() >= 0);
     QVERIFY(last.right() < narrow.width());
 
-    const QRect room = indicatorRoom(narrow.grab().toImage());
+    const QRect room = arrivedIndicator(&narrow);
     QVERIFY(!room.isNull());
     QCOMPARE(room.left(), last.left());
     QCOMPARE(room.width(), last.width());
