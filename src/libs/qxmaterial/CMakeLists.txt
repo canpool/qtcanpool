@@ -21,6 +21,7 @@ add_qtc_library(qxmaterial
     materialprogress.h materialprogress.cpp
     materialtooltip.h materialtooltip.cpp
     materialdivider.h materialdivider.cpp
+    materialmenu.h materialmenu.cpp
     materialprogressring.h materialprogressring.cpp
     materialsnackbar.h materialsnackbar.cpp
     materialskeleton.h materialskeleton.cpp
